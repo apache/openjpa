@@ -26,14 +26,14 @@ import org.apache.openjpa.persistence.*;
 import org.apache.openjpa.persistence.models.library.*;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestLibService extends SingleEMFTestCase 
+public class TestLibService extends SingleEMFTestCase
         implements TransactionalEntityManagerFactory {
 
-    private static EnumSet<AutoDetachType> txScope = 
+    private static EnumSet<AutoDetachType> txScope =
             EnumSet.allOf(AutoDetachType.class);
-    
+
     private LibService service;
-    
+
     public EntityManager getTransactionalEntityManager() {
         // return a transactionally scoped entity manager
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -41,30 +41,30 @@ public class TestLibService extends SingleEMFTestCase
         em.setAutoDetach(txScope);
         return em;
     }
-    
+
     public void setUp() {
         // declare the library model classes
         super.setUp(DROP_TABLES, Book.class, Borrower.class, Subject.class,
             Volunteer.class);
-        
+
         // put golden data in database
         LibTestingService libTestingService = new LibTestingService();
         libTestingService.setEntityManager(emf.createEntityManager());
         libTestingService.repopulateDB();
         libTestingService.close();
-        
+
         // create the LibService
         service = new LibServiceImpl();
         service.setTransactionalEntityManagerFactory(this);
     }
-    
+
     public void tearDown() throws Exception {
         super.tearDown();
         service = null;
     }
-        
+
     /**
-     * Using known data, test the LibraryService.findBookByTitle() method and 
+     * Using known data, test the LibraryService.findBookByTitle() method and
      * verify the information returned.
      */
     public void testFindBookByTitle() {
@@ -82,7 +82,7 @@ public class TestLibService extends SingleEMFTestCase
             // get the book's borrower
             Borrower borrower = book.getBorrower();
             assertNotNull("could not find the borrower " + bName, borrower);
-            assertEquals("the borrower found was not " + bName, bName, 
+            assertEquals("the borrower found was not " + bName, bName,
                     borrower.getName());
 
             // get the borrower's volunteer status
@@ -90,7 +90,7 @@ public class TestLibService extends SingleEMFTestCase
             assertNotNull("could not find " + bName + "'s volunteer status",
                     volunteer);
             assertTrue("could not find the reference from " + bName
-                    + "'s volunteer status back to " + bName, 
+                    + "'s volunteer status back to " + bName,
                     volunteer.getBorrower() == borrower);
 
             // get the book's subjects
@@ -113,13 +113,13 @@ public class TestLibService extends SingleEMFTestCase
         try {
             Borrower harry = service.findBorrowerByName(bName);
             assertNotNull("Could not find " + bName, harry);
-            assertEquals("the borrower found is not " + bName, bName, 
+            assertEquals("the borrower found is not " + bName, bName,
                     harry.getName());
         } catch (Exception e) {
             fail("Unable to find borrower by name");
         }
     }
-    
+
     /**
      * Using known data, test the LibraryService.borrowBook() operation.
      * <ul>
@@ -161,7 +161,7 @@ public class TestLibService extends SingleEMFTestCase
             fail("Unable to borrow a book");
         }
     }
-    
+
     /**
      * Test the LibraryService.returnBook() operation, etc.
      */

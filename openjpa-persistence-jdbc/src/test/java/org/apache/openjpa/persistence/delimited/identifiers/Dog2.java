@@ -25,7 +25,7 @@ import javax.persistence.Entity;
 @DiscriminatorValue("Dog")
 public class Dog2 extends Animal2 {
     public Dog2() {}
-    
+
     public Dog2(int id) {
         super(id);
     }

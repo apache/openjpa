@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**
  * Basic test to check FinderQuery caches.
- *   
+ *
  * @author Pinaki Poddar
  *
  */
@@ -40,7 +40,7 @@ public class TestFinderCache extends SQLListenerTestCase {
     public static final String[] BOOK_NAMES = {"Argumentative Indian", "Tin Drum", "Blink"};
     public static final long[] CD_IDS = {1001, 2001, 3001};
     public static final String[] CD_LABELS =  {"Beatles", "Sinatra", "Don't Rock My Boat"};
-    
+
     void createTestData() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -59,17 +59,17 @@ public class TestFinderCache extends SQLListenerTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
+
     public void setUp() {
-        super.setUp(CLEAR_TABLES, 
+        super.setUp(CLEAR_TABLES,
                 "openjpa.RuntimeUnenhancedClasses", "unsupported",
                 "openjpa.DynamicEnhancementAgent", "false",
                 "openjpa.DataCache","false",
-                Merchandise.class, Book.class, CD.class, 
+                Merchandise.class, Book.class, CD.class,
             Author.class, Person.class, Singer.class, Address.class);
         createTestData();
     }
-    
+
     public void testFinder() {
         //closeEMF(emf);  // close EMF provided by SingleEMFTestCase
         OpenJPAEntityManagerFactorySPI emf1 = createEMF("openjpa.jdbc.FinderCache", "false");
@@ -80,7 +80,7 @@ public class TestFinderCache extends SQLListenerTestCase {
         closeEMF(emf1);
         closeEMF(emf2);
     }
-    
+
     public void testSQLEventListener() {
         EntityManager em = emf.createEntityManager();
         int N = 3;
@@ -95,7 +95,7 @@ public class TestFinderCache extends SQLListenerTestCase {
         assertEquals(BOOK_IDS.length*N, sql.size());
         em.close();
     }
-    
+
     /**
      * Run a finder query for each identifiers N times and report the median
      * execution time.
@@ -117,7 +117,7 @@ public class TestFinderCache extends SQLListenerTestCase {
         Collections.sort(stats);
         return stats.get(N/2);
     }
-    
+
     FinderCache getCache(OpenJPAEntityManagerFactorySPI oemf) {
         return ((JDBCConfiguration) oemf.getConfiguration()).
                 getFinderCacheInstance();

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -66,7 +66,7 @@ public class EnumValueHandler
         DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
         return map(vm, colName, io, adapt);
     }
-    
+
     public Column[] map(ValueMapping vm, DBIdentifier name, ColumnIO io,
         boolean adapt) {
         // all enum classes have a static method called 'values()'
@@ -75,8 +75,8 @@ public class EnumValueHandler
             Method m = vm.getType().getMethod("values", (Class[]) null);
             _vals = (Enum[]) m.invoke(null, (Object[]) null);
         } catch (Exception e) {
-            
-            throw new MetaDataException(_loc.get("not-enum-field", 
+
+            throw new MetaDataException(_loc.get("not-enum-field",
                     vm.getFieldMapping().getFullName(true), Exceptions.toClassName(vm.getType()))).setCause(e);
         }
 

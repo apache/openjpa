@@ -14,14 +14,14 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
 import org.apache.openjpa.meta.ClassMetaData;
 
 ////////////////////////////////////////////////////////////
-// NOTE: Do not change property names; see SequenceMetaData 
+// NOTE: Do not change property names; see SequenceMetaData
 // for standard property names.
 ////////////////////////////////////////////////////////////
 

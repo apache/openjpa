@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -25,37 +25,37 @@ import javax.persistence.*;
 public class Dependent3 {
     @EmbeddedId
     DependentId3 id;
-    
+
     @MapsId("empPK")
     @ManyToOne Employee3 emp;
-    
+
     @MapsId("parentPK")
     @OneToOne Parent3 parent;
-    
+
     public Employee3 getEmp() {
         return emp;
     }
-    
+
     public void setEmp(Employee3 emp) {
         this.emp = emp;
     }
-    
+
     public Parent3 getParent() {
         return parent;
     }
-    
+
     public void setParent(Parent3 parent) {
         this.parent = parent;
     }
-    
+
     public DependentId3 getId() {
         return id;
     }
-    
+
     public void setId(DependentId3 id) {
         this.id = id;
     }
-    
+
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof Dependent3)) return false;
@@ -70,7 +70,7 @@ public class Dependent3 {
         if (parent == null && p0 != null) return false;
         return true;
     }
-    
+
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + id.hashCode();
@@ -78,5 +78,5 @@ public class Dependent3 {
         ret = ret * 31 + parent.hashCode();
         return ret;
     }
-    
+
 }

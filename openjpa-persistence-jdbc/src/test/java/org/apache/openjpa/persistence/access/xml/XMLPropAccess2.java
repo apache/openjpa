@@ -23,7 +23,7 @@ public class XMLPropAccess2 {
     private int id;
 
     private int version;
-    
+
     private String strField;
 
     public void setId(int id) {
@@ -48,8 +48,8 @@ public class XMLPropAccess2 {
 
     public String getStrProp() {
         return strField;
-    } 
-    
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropAccess2) {
             XMLPropAccess2 pa = (XMLPropAccess2)obj;

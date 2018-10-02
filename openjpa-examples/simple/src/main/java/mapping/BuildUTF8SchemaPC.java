@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package mapping;
 
@@ -40,15 +40,15 @@ public class BuildUTF8SchemaPC {
     @Basic
     @Column(name = "cha\u00EEne", length = 50)
     private String stringField = null;
-        
-    
+
+
     public BuildUTF8SchemaPC() {}
-    
+
     public BuildUTF8SchemaPC(String chain)
     {
         stringField = chain;
     }
-    
+
     public String getStringField() {
         return stringField;
     }

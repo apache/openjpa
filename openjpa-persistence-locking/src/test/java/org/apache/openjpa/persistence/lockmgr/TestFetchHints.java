@@ -2309,7 +2309,7 @@ public class TestFetchHints extends SequencedActionsTest {
     }
 
     @SuppressWarnings("deprecation")
-    private void similarLockTimeoutHintsTest(OpenJPAEntityManager oem, String winner, 
+    private void similarLockTimeoutHintsTest(OpenJPAEntityManager oem, String winner,
         Object expected, Object... hintNvalues) {
         JDBCFetchPlan fPlan = (JDBCFetchPlan) oem.pushFetchPlan();
         JDBCFetchConfigurationImpl fConfig = (JDBCFetchConfigurationImpl) fPlan
@@ -2325,7 +2325,7 @@ public class TestFetchHints extends SequencedActionsTest {
             if (hintName.equals(winner)) {
                 assertEquals(expectedValue.getClass(), getValue.getClass());
                 assertEquals(expectedValue, getValue);
-            } 
+            }
         }
         assertEquals(expected, fPlan.getLockTimeout());
         assertEquals(expected, fConfig.getLockTimeout());
@@ -2344,36 +2344,36 @@ public class TestFetchHints extends SequencedActionsTest {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();
 
-        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333, 
+        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333,
             JavaxQueryTimeout, 333,
             OpenJPAQueryTimeout, 111,
             FetchPlanQueryTimeout, 222);
-        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333, 
+        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333,
             OpenJPAQueryTimeout, 111,
             FetchPlanQueryTimeout, 222,
             JavaxQueryTimeout, 333);
-        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333, 
+        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333,
             JavaxQueryTimeout, 333,
             FetchPlanQueryTimeout, 222,
             OpenJPAQueryTimeout, 111);
-        similarQueryTimeoutHintsTest(oem, FetchPlanQueryTimeout, 222, 
+        similarQueryTimeoutHintsTest(oem, FetchPlanQueryTimeout, 222,
             OpenJPAQueryTimeout, 111,
             FetchPlanQueryTimeout, 222);
-        similarQueryTimeoutHintsTest(oem, FetchPlanQueryTimeout, 222, 
+        similarQueryTimeoutHintsTest(oem, FetchPlanQueryTimeout, 222,
             FetchPlanQueryTimeout, 222,
             OpenJPAQueryTimeout, 111);
-        similarQueryTimeoutHintsTest(oem, OpenJPAQueryTimeout, 111, 
+        similarQueryTimeoutHintsTest(oem, OpenJPAQueryTimeout, 111,
             OpenJPAQueryTimeout, 111);
-        similarQueryTimeoutHintsTest(oem, FetchPlanQueryTimeout, 222, 
+        similarQueryTimeoutHintsTest(oem, FetchPlanQueryTimeout, 222,
             FetchPlanQueryTimeout, 222);
-        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333, 
+        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333,
             JavaxQueryTimeout, 333);
 
         em.close();
     }
 
     @SuppressWarnings("deprecation")
-    private void similarQueryTimeoutHintsTest(OpenJPAEntityManager oem, String winner, 
+    private void similarQueryTimeoutHintsTest(OpenJPAEntityManager oem, String winner,
         Object expected, Object... hintNvalues) {
         JDBCFetchPlan fPlan = (JDBCFetchPlan) oem.pushFetchPlan();
         JDBCFetchConfigurationImpl fConfig = (JDBCFetchConfigurationImpl) fPlan

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -31,7 +31,7 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
 public class TestSubqueries extends CriteriaTest {
-    
+
     public void testExist() {
         String query = "SELECT DISTINCT o.name FROM CompUser o WHERE EXISTS"
                 + " (SELECT c FROM Address c WHERE c = o.address )";
@@ -47,7 +47,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    
+
     public void testNotExist() {
         String query = "SELECT DISTINCT o.name FROM CompUser o WHERE NOT EXISTS"
                 + " (SELECT s FROM CompUser s WHERE s.address.country = "
@@ -67,9 +67,9 @@ public class TestSubqueries extends CriteriaTest {
     }
 
     public void testAny() {
-        String query = "SELECT o.name FROM CompUser o " 
+        String query = "SELECT o.name FROM CompUser o "
                      + "WHERE o.address.zipCode = "
-                     + " ANY (SELECT s.computerName " 
+                     + " ANY (SELECT s.computerName "
                      + " FROM CompUser s WHERE s.address.country IS NOT NULL)";
 
         CriteriaQuery<String> q = cb.createQuery(String.class);
@@ -90,7 +90,7 @@ public class TestSubqueries extends CriteriaTest {
         String query = "select o1.id from Order o1 where o1.id in "
                 + " (select distinct o.id from LineItem i, Order o"
                 + " where i.quantity > 10 and o.count > 1000 and i.id = o.id)";
-        
+
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<Order> o1 = q.from(Order.class);
         q.select(o1.get(Order_.id));
@@ -103,7 +103,7 @@ public class TestSubqueries extends CriteriaTest {
                 .get(Order_.id))));
         sq.select(o.get(Order_.id)).distinct(true);
         q.where(cb.in(o1.get(Order_.id)).value(sq));
-        
+
         assertEquivalence(q, query);
     }
 
@@ -111,7 +111,7 @@ public class TestSubqueries extends CriteriaTest {
         String query = "select o.id from Order o where o.customer.balanceOwed ="
                 + " (select max(o2.customer.balanceOwed) from Order o2"
                 + " where o.customer.id = o2.customer.id)";
-        
+
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<Order> o = q.from(Order.class);
         q.select(o.get(Order_.id));
@@ -122,7 +122,7 @@ public class TestSubqueries extends CriteriaTest {
         q.where(cb.equal(o.get(Order_.customer).get(Customer_.balanceOwed), sq
                 .select(cb.max(o2.get(Order_.customer).get(
                         Customer_.balanceOwed)))));
-        
+
         assertEquivalence(q, query);
     }
 
@@ -130,7 +130,7 @@ public class TestSubqueries extends CriteriaTest {
         String query = "select o from Order o where o.customer.balanceOwed ="
                 + " (select max(o2.customer.balanceOwed) from Order o2"
                 + " where o.customer.id = o2.customer.id)";
-        
+
         CriteriaQuery<Order> q = cb.createQuery(Order.class);
         Root<Order> o = q.from(Order.class);
         q.select(o);
@@ -141,14 +141,14 @@ public class TestSubqueries extends CriteriaTest {
         q.where(cb.equal(o.get(Order_.customer).get(Customer_.balanceOwed), sq
                 .select(cb.max(o2.get(Order_.customer).get(
                         Customer_.balanceOwed)))));
-        
+
         assertEquivalence(q, query);
     }
 
     public void testSubquery04() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select count(i) from o.lineItems i)";
-        
+
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<Order> o = q.from(Order.class);
         q.select(o.get(Order_.id));
@@ -162,7 +162,7 @@ public class TestSubqueries extends CriteriaTest {
     public void testSubquery05() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select count(o.quantity) from Order o)";
-        
+
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<Order> o = q.from(Order.class);
         q.select(o.get(Order_.id));
@@ -170,11 +170,11 @@ public class TestSubqueries extends CriteriaTest {
         Root<Order> o2 = sq.from(Order.class);
         q.where(cb.gt(o.get(Order_.quantity), sq.select(cb.count(o2
                 .get(Order_.quantity)))));
-        
+
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery06() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select count(o.id) from Order o)";
@@ -186,11 +186,11 @@ public class TestSubqueries extends CriteriaTest {
         Root<Order> o2 = sq.from(Order.class);
         q.where(cb.gt(o.get(Order_.quantity), sq.select(cb.count(o2
                 .get(Order_.id)))));
-        
+
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery07() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select avg(o.quantity) from Order o)";
@@ -202,7 +202,7 @@ public class TestSubqueries extends CriteriaTest {
         Root<Order> o2 = sq.from(Order.class);
         q.where(cb.gt(o.get(Order_.quantity), sq.select(cb.avg(o2
                 .get(Order_.quantity)))));
-        
+
         assertEquivalence(q, query);
     }
 
@@ -210,7 +210,7 @@ public class TestSubqueries extends CriteriaTest {
         String query = "select c.name from Customer c "
                 + "where exists(select o from c.orders o where o.id = 1) "
                 + "or exists(select o from c.orders o where o.id = 2)";
-        
+
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<Customer> c = q.from(Customer.class);
         q.select(c.get(Customer_.name));
@@ -225,17 +225,17 @@ public class TestSubqueries extends CriteriaTest {
         sq2.where(cb.equal(o2.get(Order_.id), 2)).select(o2);
 
         q.where(cb.or(cb.exists(sq1), cb.exists(sq2)));
-        
+
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery09() {
         String query = "select c.name from Customer c, in(c.orders) o "
                 + "where o.quantity between "
                 + "(select max(o.quantity) from Order o) and "
                 + "(select avg(o.quantity) from Order o) ";
-        
+
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<Customer> c = q.from(Customer.class);
         q.select(c.get(Customer_.name));
@@ -250,15 +250,15 @@ public class TestSubqueries extends CriteriaTest {
 
         SetJoin<Customer, Order> o = c.join(Customer_.orders);
         q.where(cb.between(o.get(Order_.quantity), sq1, sq2.as(Integer.class)));
-        
+
         assertEquivalence(q, query);
     }
 
     public void testSubquery10() {
         String query = "select o.id from Order o where o.quantity >"
-                + " (select sum(o2.quantity) from Customer c, " 
+                + " (select sum(o2.quantity) from Customer c, "
                 + "in(c.orders) o2) ";
-        
+
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<Order> o = q.from(Order.class);
         q.select(o.get(Order_.id));
@@ -269,11 +269,11 @@ public class TestSubqueries extends CriteriaTest {
         sq.select(cb.sum(o2.get(Order_.quantity)));
 
         q.where(cb.gt(o.get(Order_.quantity), sq));
-        
+
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery11() {
         String query = "select o.id from Order o where o.quantity between"
                 + " (select avg(o2.quantity) from Customer c, in(c.orders) o2)"
@@ -298,7 +298,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery12() {
         String query = "select o.id from Customer c, in(c.orders)o "
                 + "where o.quantity > (select sum(o2.quantity)"
@@ -314,7 +314,7 @@ public class TestSubqueries extends CriteriaTest {
         SetJoin<Customer, Order> o2 = sqc.join(Customer_.orders);
         sq.select(cb.sum(o2.get(Order_.quantity)));
         q.where(cb.gt(o.get(Order_.quantity), sq));
-        
+
         assertEquivalence(q, query);
     }
 
@@ -322,7 +322,7 @@ public class TestSubqueries extends CriteriaTest {
         String query = "select o1.id, c.name from Order o1, Customer c"
                 + " where o1.quantity = "
                 + " any(select o2.quantity from in(c.orders) o2)";
-        
+
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
         Root<Order> o1 = q.from(Order.class);
         Root<Customer> c = q.from(Customer.class);
@@ -334,11 +334,11 @@ public class TestSubqueries extends CriteriaTest {
         sq.select(o2.get(Order_.quantity));
 
         q.where(cb.equal(o1.get(Order_.quantity), cb.any(sq)));
-        
+
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery14() {
         String query = "SELECT p, m FROM Publisher p "
             + "LEFT OUTER JOIN p.magazineCollection m "
@@ -356,23 +356,23 @@ public class TestSubqueries extends CriteriaTest {
         Subquery<Integer> sq = q.subquery(Integer.class);
         Root<Magazine> m2 = sq.from(Magazine.class);
         q.where(cb.equal(
-                m.get(Magazine_.id), 
+                m.get(Magazine_.id),
                 sq.select(cb.max(m2.get(Magazine_.id)))));
 
         Subquery<Integer> sq2 = q.subquery(Integer.class);
         Root<Magazine> m3 = sq2.from(Magazine.class);
-        
+
         sq2.where(cb.equal(
-                m3.get(Magazine_.idPublisher).get(Publisher_.id), 
+                m3.get(Magazine_.idPublisher).get(Publisher_.id),
                 p.get(Publisher_.id)));
-        
+
         sq.where(cb.and(cb.equal(
-                   m2.get(Magazine_.idPublisher).get(Publisher_.id), 
-                   p.get(Publisher_.id)), 
+                   m2.get(Magazine_.idPublisher).get(Publisher_.id),
+                   p.get(Publisher_.id)),
                 cb.equal(
-                   m2.get(Magazine_.id), 
+                   m2.get(Magazine_.id),
                    sq2.select(cb.max(m3.get(Magazine_.id))))));
-        
+
         assertEquivalence(q, query);
     }
 
@@ -398,11 +398,11 @@ public class TestSubqueries extends CriteriaTest {
         );
 
         q.where(cb.equal(o.get(Order_.delivered), sq));
-        
+
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery16() {
         String query = "select o1.id from Order o1 where o1.quantity > "
                 + " (select o.quantity*2 from LineItem i, Order o"
@@ -426,7 +426,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery17() {
         String query = "select o.id from Order o where o.customer.name ="
                 + " (select substring(o2.customer.name, 3) from Order o2"
@@ -461,11 +461,11 @@ public class TestSubqueries extends CriteriaTest {
         ListJoin<Order, LineItem> i = o2.join(Order_.lineItems);
 
         q.where(cb.gt(o.get(Order_.orderTs).as(Long.class), sq.select(cb.currentTimestamp()).as(Long.class)));
-        
+
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery19() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select SQRT(o.quantity) from Order o where o.delivered" +
@@ -483,7 +483,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery20() {
         String query = "select o.id from Order o where o.customer.name in"
                 + " (select CONCAT(o.customer.name, 'XX') from Order o"
@@ -506,14 +506,14 @@ public class TestSubqueries extends CriteriaTest {
         String query = "select c from Customer c where c.creditRating ="
                 + " (select "
                 + "   CASE WHEN o2.quantity > 10 THEN "
-       + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.POOR " 
+       + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.POOR "
                 + "WHEN o2.quantity = 10 THEN "
-       + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.GOOD " 
+       + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.GOOD "
                 + "     ELSE "
-   + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.EXCELLENT " 
+   + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.EXCELLENT "
                 + "     END from Order o2"
                 + " where c.id = o2.customer.id)";
-        
+
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
         q.select(c);
@@ -521,15 +521,15 @@ public class TestSubqueries extends CriteriaTest {
         Subquery<Object> sq = q.subquery(Object.class);
         Root<Order> o2 = sq.from(Order.class);
         sq.where(cb.equal(
-            c.get(Customer_.id), 
+            c.get(Customer_.id),
             o2.get(Order_.customer).get(Customer_.id)));
         Expression<Object> generalCase = cb.selectCase()
-          .when(cb.gt(o2.get(Order_.quantity), 10), 
+          .when(cb.gt(o2.get(Order_.quantity), 10),
                   Customer.CreditRating.POOR)
-          .when(cb.equal(o2.get(Order_.quantity), 10), 
+          .when(cb.equal(o2.get(Order_.quantity), 10),
                   Customer.CreditRating.GOOD)
                 .otherwise(Customer.CreditRating.EXCELLENT);
-        
+
         sq.select(generalCase);
         q.where(cb.equal(c.get(Customer_.creditRating), sq));
         assertEquivalence(q, query);
@@ -542,26 +542,26 @@ public class TestSubqueries extends CriteriaTest {
                         "CreditRating.POOR) "
                 + "from Customer c1 where c1.name = 'Famzy') order by c.name " +
                         "DESC";
-        
+
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
         q.select(c);
-        q.orderBy(cb.desc(c.get(Customer_.name)));        
+        q.orderBy(cb.desc(c.get(Customer_.name)));
 
         Subquery<Customer.CreditRating> sq =
             q.subquery(Customer.CreditRating.class);
         Root<Customer> c1 = sq.from(Customer.class);
         sq.where(cb.equal(c1.get(Customer_.name), "Famzy"));
-        
+
         Expression<Customer.CreditRating> coalesce = cb.coalesce(
-                c1.get(Customer_.creditRating), 
+                c1.get(Customer_.creditRating),
                 Customer.CreditRating.POOR);
         sq.select(coalesce);
         q.where(cb.equal(c.get(Customer_.creditRating),sq));
         assertEquivalence(q, query);
     }
 
-    
+
     public void testSubquery23() {
         String query =
             "select c from Customer c "
@@ -573,16 +573,16 @@ public class TestSubqueries extends CriteriaTest {
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
         q.select(c);
-        q.orderBy(cb.desc(c.get(Customer_.name)));        
+        q.orderBy(cb.desc(c.get(Customer_.name)));
 
         Subquery<Customer.CreditRating> sq =
             q.subquery(Customer.CreditRating.class);
         Root<Customer> c1 = sq.from(Customer.class);
         sq.where(cb.equal(c1.get(Customer_.name), "Famzy"));
-        
+
         q.where(cb.equal(c.get(Customer_.creditRating),
             sq.select(cb.nullif(c1.get(Customer_.creditRating),
-                Customer.CreditRating.POOR))));    
+                Customer.CreditRating.POOR))));
         assertEquivalence(q, query);
     }
 }

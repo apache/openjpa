@@ -14,23 +14,23 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 import javax.persistence.Entity;
 
 @Entity
-public class ManyOneEntitySub 
+public class ManyOneEntitySub
     extends ManyOneEntity {
 
     private int subInt;
 
-    public int getSubInt() { 
-        return subInt; 
+    public int getSubInt() {
+        return subInt;
     }
 
-    public void setSubInt(int subInt) { 
-        this.subInt = subInt; 
+    public void setSubInt(int subInt) {
+        this.subInt = subInt;
     }
 }

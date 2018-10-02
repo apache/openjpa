@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.derivedid;
 
@@ -41,10 +41,10 @@ public class TestDerivedIdentity  extends SQLListenerTestCase {
 
     public void populate() {
         EntityManager em = emf.createEntityManager();
-        
+
         for (int i = 0; i < 2; i++) {
             long time = (long) (System.currentTimeMillis() / 1000)+i*1317;
-            BigDecimal did = new BigDecimal(time);            
+            BigDecimal did = new BigDecimal(time);
             EBigDecimalID e1 = new EBigDecimalID(did);
             EDBigDecimalID e2 = new EDBigDecimalID(e1);
             em.persist(e1);
@@ -62,7 +62,7 @@ public class TestDerivedIdentity  extends SQLListenerTestCase {
             EDDateID e6 = new EDDateID(e5);
             em.persist(e5);
             em.persist(e6);
-            
+
             if (i == 0) {
                 java.sql.Date sid = new java.sql.Date(time);
                 ESQLDateID e7 = new ESQLDateID(sid);
@@ -71,7 +71,7 @@ public class TestDerivedIdentity  extends SQLListenerTestCase {
                 em.persist(e8);
             }
         }
-        
+
         em.getTransaction().begin();
         em.getTransaction().commit();
         em.close();
@@ -116,7 +116,7 @@ public class TestDerivedIdentity  extends SQLListenerTestCase {
                 assertTrue(name.startsWith("Rel"));
             }
         }
-        
+
         em.close();
     }
 }

@@ -30,18 +30,18 @@ import javax.persistence.Table;
 @Table(name="primary_entityE2")
 public class EntityE2 {
     @Id
-    @SequenceGenerator(name="entityE2_seq_gen_name", 
+    @SequenceGenerator(name="entityE2_seq_gen_name",
                        sequenceName="entityE2_seq_gen")
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, 
+    @GeneratedValue(strategy=GenerationType.SEQUENCE,
         generator="entityE2_seq_gen_name")
     private int id;
     @Column(name="e_name")
     private String name;
-    
+
     public EntityE2(String name) {
         this.name = name;
     }
-    
+
     /**
      * @return the id
      */

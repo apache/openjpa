@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.rop;
 
@@ -31,7 +31,7 @@ import org.apache.openjpa.lib.util.Localizer;
 @SuppressWarnings("serial")
 public abstract class AbstractResultList<E> implements ResultList<E> {
     private transient Object _userObject;
-    
+
     private static final Localizer _loc = Localizer.forPackage
         (AbstractResultList.class);
 
@@ -84,13 +84,13 @@ public abstract class AbstractResultList<E> implements ResultList<E> {
         if (isClosed())
             throw new NoSuchElementException(_loc.get("closed").getMessage());
     }
-    
+
     public final Object getUserObject() {
         return _userObject;
     }
-    
+
     public final void setUserObject(Object opaque) {
         _userObject = opaque;
     }
-    
+
 }

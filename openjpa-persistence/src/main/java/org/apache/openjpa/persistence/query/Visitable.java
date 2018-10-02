@@ -14,16 +14,16 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 import java.io.Serializable;
 
 /**
- * An element of query that is convertible to a JPQL String given a aliasing 
+ * An element of query that is convertible to a JPQL String given a aliasing
  * scheme. QueryDefinition visits each of its element and translates them.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -32,17 +32,17 @@ public interface Visitable extends Serializable {
 	 * Get a JPQL fragment as used in WHERE clause.
 	 */
 	String asExpression(AliasContext ctx);
-	
+
 	/**
 	 * Gets the string representation in SELECT projection.
 	 */
 	String asProjection(AliasContext ctx);
-	
+
 	/**
 	 * Gets the string representation in FROM clause.
 	 */
 	String asJoinable(AliasContext ctx);
-	
+
 	/**
 	 * Gets the hint to be used while creating alias.
 	 */

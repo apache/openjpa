@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -33,7 +33,7 @@ public class ObOcEntity {
     @Id
     @GeneratedValue
     private int id;
-    
+
     @OrderBy("ASC")
     @OrderColumn(name="myCol")
     @ElementCollection
@@ -53,5 +53,5 @@ public class ObOcEntity {
 
     public List<Integer> getIntList() {
         return intList;
-    }    
+    }
 }

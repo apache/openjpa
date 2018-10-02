@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     EntityF entityF;
-    
+
     @Override
     public void setUp() throws Exception {
 
@@ -63,28 +63,28 @@ public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
         entityF.addDelimCollectionMap("www", "xxx");
         entityF.addDelimCollectionMap("yyy", "zzz");
     }
-    
+
     public void testCreateF() {
         createEntityF();
-        
+
         em.getTransaction().begin();
         em.persist(entityF);
         em.getTransaction().commit();
-        
+
         runQueries();
-        
+
     }
-    
+
     // Run a second time to re-create a situation that initially caused a problem when running this
     // test consecutive times.
     public void testCreateF2() {
         createEntityF();
-        
+
         em.getTransaction().begin();
         em.persist(entityF);
         em.getTransaction().commit();
     }
-    
+
     private void runQueries() {
         em.clear();
         queryOnEntityOnly();
@@ -93,7 +93,7 @@ public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
         em.clear();
         queryCollection();
     }
-    
+
     private void queryOnEntityOnly() {
         String query =
             "SELECT DISTINCT f " +
@@ -102,7 +102,7 @@ public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
         List<EntityF> results = (List<EntityF>)q.getResultList();
         assertEquals(1,results.size());
     }
-    
+
     private void queryOnColumnValue() {
         String query =
             "SELECT DISTINCT f " +
@@ -112,7 +112,7 @@ public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
         List<EntityF> results = (List<EntityF>)q.getResultList();
         assertEquals(1,results.size());
     }
-    
+
     private void queryCollection() {
         String query =
             "SELECT DISTINCT f " +

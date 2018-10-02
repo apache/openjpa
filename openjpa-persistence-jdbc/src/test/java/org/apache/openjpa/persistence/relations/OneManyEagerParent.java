@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -40,23 +40,23 @@ public class OneManyEagerParent {
 
     @OneToMany(mappedBy="parent", fetch=FetchType.EAGER)
     @OrderBy("name ASC")
-    private List<OneManyLazyChild> lazychildren = 
+    private List<OneManyLazyChild> lazychildren =
         new ArrayList<OneManyLazyChild>();
 
     @OneToMany(mappedBy="parent", fetch=FetchType.EAGER)
     @OrderBy("name ASC")
-    private List<OneManyEagerChild> eagerchildren = 
+    private List<OneManyEagerChild> eagerchildren =
         new ArrayList<OneManyEagerChild>();
 
     @Version
     private Integer optLock;
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
-    public List<OneManyLazyChild> getLazyChildren() { 
-        return lazychildren; 
+    public List<OneManyLazyChild> getLazyChildren() {
+        return lazychildren;
     }
 
     public void addLazyChild(OneManyLazyChild child) {
@@ -64,8 +64,8 @@ public class OneManyEagerParent {
         lazychildren.add(child);
     }
 
-    public List<OneManyEagerChild> getEagerChildren() { 
-        return eagerchildren; 
+    public List<OneManyEagerChild> getEagerChildren() {
+        return eagerchildren;
     }
 
     public void addEagerChild(OneManyEagerChild child) {
@@ -73,11 +73,11 @@ public class OneManyEagerParent {
         eagerchildren.add(child);
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 }

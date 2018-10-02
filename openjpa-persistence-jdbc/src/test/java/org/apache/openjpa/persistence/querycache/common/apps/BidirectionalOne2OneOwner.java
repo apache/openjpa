@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.querycache.common.apps;
@@ -25,16 +25,16 @@ import javax.persistence.*;
  * A persistent entity that owns bidirectional single-valued relationship.
  * A bidirectional relationship has only an owning side, which is this receiver.
  * Given the following relationship between Entity A and Entity B:
- *   Entity A refers to a single instance of Entity B 
- *   Entity B refers to a single instance of Entity A 
- * If Entity B qualifies its relation to the Entity A with mappedBy 
- * annotation qualifier then Entity B is called owned and Entity A is called 
+ *   Entity A refers to a single instance of Entity B
+ *   Entity B refers to a single instance of Entity A
+ * If Entity B qualifies its relation to the Entity A with mappedBy
+ * annotation qualifier then Entity B is called owned and Entity A is called
  * owner with respect to the above relationship.
- * 
+ *
  * Used to test identical application behavior with or without DataCache.
- * 
+ *
  * @see BidirectionalOne2OneOwned
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -42,12 +42,12 @@ import javax.persistence.*;
 public class BidirectionalOne2OneOwner {
 	@Id
 	private long id;
-	
+
 	private String name;
-	
+
 	@OneToOne
 	private BidirectionalOne2OneOwned owned;
-	
+
 	@Version
 	private int version;
 
@@ -74,11 +74,11 @@ public class BidirectionalOne2OneOwner {
 	public void setOwned(BidirectionalOne2OneOwned owned) {
 		this.owned = owned;
 	}
-	
+
 	public int getVersion() {
 		return version;
 	}
-	
+
 	public String toString() {
 		return this.getClass().getSimpleName() + ":" + id + ":" + name;
 	}

@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta.tableperclass;
 
@@ -37,9 +37,9 @@ import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 public class TestUnionPlaceholderTypes
     extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-    
+
     /** Creates a new instance of TestUnionPlaceholderTypes */
-    public TestUnionPlaceholderTypes(String name) 
+    public TestUnionPlaceholderTypes(String name)
     {
     	super(name);
     }
@@ -110,5 +110,5 @@ public class TestUnionPlaceholderTypes
             assertNotSQL("UNION");
         broker.close();
     }
-    
+
 }

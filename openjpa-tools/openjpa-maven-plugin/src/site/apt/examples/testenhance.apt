@@ -11,14 +11,14 @@ Test Enhance
 
   The following build configuration shows how to enhance JPA entities
   which are needed for testing only.
-  
-  The {{{../test-enhance-mojo.html}openjpa:test-enhance}} mojo will typically be 
+
+  The {{{../test-enhance-mojo.html}openjpa:test-enhance}} mojo will typically be
   called in the <<<process-test-classes>>> phase.
 
   Please note that the tmpClassLoader defaults to <<<false>>> to make
   sure that classes in depending artifacts (like enums in interfaces)
-  can be parsed by the PCEnhancer.  
-  
+  can be parsed by the PCEnhancer.
+
 -------------------
 <project>
   [...]
@@ -37,7 +37,7 @@ Test Enhance
               <goal>test-enhance</goal>
             </goals>
           </execution>
-        </executions> 
+        </executions>
       </plugin>
       [...]
     </plugins>
@@ -46,4 +46,3 @@ Test Enhance
   [...]
 </project>
 -------------------
- 

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -129,10 +129,10 @@ public class SQLStoreQuery
         }
 
         public int getOperation(StoreQuery q) {
-           return _select ? OP_SELECT : 
+           return _select ? OP_SELECT :
                 (q.getContext().getCandidateType() != null
                         || q.getContext().getResultType() != null
-                        || q.getContext().getResultMappingName() != null 
+                        || q.getContext().getResultMappingName() != null
                         || q.getContext().getResultMappingScope() != null)
                         ? OP_SELECT : OP_UPDATE;
         }
@@ -144,7 +144,7 @@ public class SQLStoreQuery
 
             List paramList = new ArrayList(Arrays.asList(params));
             SQLBuffer buf = new SQLBuffer(dict).append(sql);
-            
+
             // we need to make sure we have an active store connection
             store.getContext().beginStore();
             Connection conn = store.getConnection();
@@ -157,15 +157,15 @@ public class SQLStoreQuery
                     stmnt = prepareCall(conn, buf);
                 else
                     stmnt = prepareStatement(conn, buf);
-                
+
                 buf.setParameters(paramList);
                 if (stmnt != null)
                     buf.setParameters(stmnt);
 
                 dict.setTimeouts(stmnt, fetch, true);
-                
-                int count = executeUpdate(store, conn, stmnt, buf);  
-              
+
+                int count = executeUpdate(store, conn, stmnt, buf);
+
                 return count;
             } catch (SQLException se) {
                 throw SQLExceptions.getStore(se, dict);
@@ -212,13 +212,13 @@ public class SQLStoreQuery
                     stmnt = prepareCall(conn, buf, fetch, -1, -1);
 
                 int index = 0;
-                for (Iterator i = paramList.iterator(); i.hasNext() && 
+                for (Iterator i = paramList.iterator(); i.hasNext() &&
                     stmnt != null;)
                     dict.setUnknown(stmnt, ++index, i.next(), null);
 
                 dict.setTimeouts(stmnt, fetch, false);
                 ResultSet rs = executeQuery(store, conn, stmnt, buf, paramList);
-                ResultSetResult res = stmnt != null ? 
+                ResultSetResult res = stmnt != null ?
                     new ResultSetResult(conn, stmnt, rs, store) :
                     new ResultSetResult(conn, rs, dict);
                 if (_resultMapping != null)
@@ -250,22 +250,22 @@ public class SQLStoreQuery
         public boolean isPacking(StoreQuery q) {
             return q.getContext().getCandidateType() == null;
         }
-        
+
         /**
-         * This method is to provide override for non-JDBC or JDBC-like 
+         * This method is to provide override for non-JDBC or JDBC-like
          * implementation of preparing call statement.
          */
         protected PreparedStatement prepareCall(Connection conn, SQLBuffer buf)
             throws SQLException {
-            return buf.prepareCall(conn);            
+            return buf.prepareCall(conn);
         }
-        
+
         /**
-         * This method is to provide override for non-JDBC or JDBC-like 
+         * This method is to provide override for non-JDBC or JDBC-like
          * implementation of executing update.
          */
-        protected int executeUpdate(JDBCStore store, Connection conn, 
-            PreparedStatement stmnt, SQLBuffer buf) 
+        protected int executeUpdate(JDBCStore store, Connection conn,
+            PreparedStatement stmnt, SQLBuffer buf)
             throws SQLException {
             int count = 0;
             if (_call && stmnt.execute() == false) {
@@ -277,38 +277,38 @@ public class SQLStoreQuery
             }
             return count;
         }
-        
+
         /**
-         * This method is to provide override for non-JDBC or JDBC-like 
+         * This method is to provide override for non-JDBC or JDBC-like
          * implementation of preparing call statement.
          */
         protected PreparedStatement prepareCall(Connection conn, SQLBuffer buf,
             JDBCFetchConfiguration fetch, int rsType, int rsConcur)
             throws SQLException {
-            return buf.prepareCall(conn, fetch, rsType, rsConcur);  
+            return buf.prepareCall(conn, fetch, rsType, rsConcur);
         }
 
         /**
-         * This method is to provide override for non-JDBC or JDBC-like 
+         * This method is to provide override for non-JDBC or JDBC-like
          * implementation of preparing statement.
          */
-        protected PreparedStatement prepareStatement(Connection conn, 
+        protected PreparedStatement prepareStatement(Connection conn,
             SQLBuffer buf) throws SQLException {
             return buf.prepareStatement(conn);
         }
-        
+
         /**
-         * This method is to provide override for non-JDBC or JDBC-like 
+         * This method is to provide override for non-JDBC or JDBC-like
          * implementation of preparing statement.
          */
-        protected PreparedStatement prepareStatement(Connection conn, 
+        protected PreparedStatement prepareStatement(Connection conn,
             SQLBuffer buf, JDBCFetchConfiguration fetch, int rsType,
             int rsConcur) throws SQLException {
             return buf.prepareStatement(conn, fetch, rsType, rsConcur);
         }
-        
+
         /**
-         * This method is to provide override for non-JDBC or JDBC-like 
+         * This method is to provide override for non-JDBC or JDBC-like
          * implementation of executing query.
          */
         protected ResultSet executeQuery(JDBCStore store, Connection conn,
@@ -316,17 +316,17 @@ public class SQLStoreQuery
             throws SQLException {
             return stmnt.executeQuery();
         }
-        
+
         /**
          * The given query is parsed to find the parameter tokens of the form
          * <code>?n</code> which is different than <code>?</code> tokens in
          * actual SQL parameter tokens. These <code>?n</code> style tokens
-         * are replaced in the query string by <code>?</code> tokens. 
-         * 
-         * During the token parsing, the ordering of the tokens is recorded. 
+         * are replaced in the query string by <code>?</code> tokens.
+         *
+         * During the token parsing, the ordering of the tokens is recorded.
          * The given userParam must contain parameter keys as Integer and
-         * the same Integers must appear in the tokens. 
-         * 
+         * the same Integers must appear in the tokens.
+         *
          */
         public Object[] toParameterArray(StoreQuery q, Map userParams) {
             if (userParams == null || userParams.isEmpty())
@@ -338,12 +338,12 @@ public class SQLStoreQuery
             } catch (IOException ex) {
                 throw new UserException(ex.getLocalizedMessage());
             }
-            
+
             Object[] result = new Object[paramOrder.size()];
             int idx = 0;
             for (Integer key : paramOrder) {
-                if (!userParams.containsKey(key)) 
-                    throw new UserException(_loc.get("uparam-missing", 
+                if (!userParams.containsKey(key))
+                    throw new UserException(_loc.get("uparam-missing",
                         key, sql, userParams));
                 result[idx++] = userParams.get(key);
             }
@@ -352,7 +352,7 @@ public class SQLStoreQuery
             return result;
         }
     }
-    
+
     /**
      * Utility method to substitute '?num' for parameters in the given SQL
      * statement, and fill-in the order of the parameter tokens
@@ -399,10 +399,10 @@ public class SQLStoreQuery
 //                        // StreamTokenizer can not differentiate the last quoted token as in ^.*'.*$ and ^.*',*'$
 //                        // need to check the last quote ends with "'" and process accordingly.
 //                        if(endsWithQuote) {
-//                            buf.append('\'');                        	
+//                            buf.append('\'');
 //                        } else if (tok.nextToken() != StreamTokenizer.TT_EOF) {
 //                        	tok.pushBack();
-//                            buf.append('\'');                        	
+//                            buf.append('\'');
 //                        }
                         break;
                     default:

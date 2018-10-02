@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.inheritance.abstractjoinedappid;
 
@@ -35,14 +35,14 @@ public class TestAbstractJoinedAppId
     extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(Superclass.class, Subclass.class, RelationOwner.class, 
+        setUp(Superclass.class, Subclass.class, RelationOwner.class,
             DROP_TABLES);
 
         Subclass s = new Subclass();
         s.setId(99);
         s.setAttr1("supattr");
         s.setAttr2("subattr");
-    
+
         RelationOwner ro = new RelationOwner();
         ro.setId(1);
         ro.setSupers(Arrays.asList(new Superclass[] { s }));
@@ -75,7 +75,7 @@ public class TestAbstractJoinedAppId
         assertNotNull(ro);
 
         Collection supers = ro.getSupers();
-        assertEquals(1, supers.size());        
+        assertEquals(1, supers.size());
         Superclass s = (Superclass) supers.iterator().next();
         assertTrue(s instanceof Subclass);
         assertEquals(new Integer(99), s.getId());

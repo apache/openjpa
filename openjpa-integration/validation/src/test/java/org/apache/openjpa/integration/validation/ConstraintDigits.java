@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -36,7 +36,7 @@ public class ConstraintDigits implements Serializable {
 
     @Transient
     private static final long serialVersionUID = 1L;
-    
+
     @Transient
     private static final BigDecimal SIX_DIGITS = new BigDecimal("666666.666666");
 
@@ -57,8 +57,8 @@ public class ConstraintDigits implements Serializable {
     @Basic
     private BigDecimal fiveDigits;  // @Digits(5,5) constraint is on the getter
 
-    
-    /* 
+
+    /*
      * Some helper methods to create the entities to test with
      */
     public static ConstraintDigits createInvalidTwoDigits() {
@@ -91,7 +91,7 @@ public class ConstraintDigits implements Serializable {
         return c;
     }
 
-    
+
     /*
      * Main entity code
      */
@@ -122,11 +122,11 @@ public class ConstraintDigits implements Serializable {
     public void setFiveDigits(BigDecimal d) {
         fiveDigits = d;
     }
-    
+
     public void setFiveDigits(String s) {
         fiveDigits = toBigDecimal(s);
     }
-    
+
 
     private BigDecimal toBigDecimal(String s) {
         try {

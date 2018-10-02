@@ -28,9 +28,9 @@ public class TestXmlDelimIdSeqGen extends SQLListenerTestCase {
     JDBCConfiguration conf;
     DBDictionary dict;
     boolean supportsNativeSequence = false;
-    
+
     EntityB entityB;
-    
+
     @Override
     public void setUp() throws Exception {
         setSupportedDatabases(
@@ -38,20 +38,20 @@ public class TestXmlDelimIdSeqGen extends SQLListenerTestCase {
         if (isTestsDisabled()) {
             return;
         }
-        
+
         super.setUp(org.apache.openjpa.persistence.delimited.identifiers.xml.EntityB.class, DROP_TABLES);
         assertNotNull(emf);
-        
+
         conf = (JDBCConfiguration) emf.getConfiguration();
         dict = conf.getDBDictionaryInstance();
         supportsNativeSequence = dict.nextSequenceQuery != null;
-        
+
         if (supportsNativeSequence) {
             em = emf.createEntityManager();
             assertNotNull(em);
         }
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
@@ -66,22 +66,22 @@ public class TestXmlDelimIdSeqGen extends SQLListenerTestCase {
     @Override
     protected String getPersistenceUnitName() {
         return "delimited-identifiers-seq-gen-xml";
-    }    
-    
+    }
+
     public void createEntityB() {
         entityB = new EntityB("b name");
     }
-    
+
     public void testSeqGen() {
         if (!supportsNativeSequence) {
             return;
         }
         createEntityB();
-        
+
         em.getTransaction().begin();
         em.persist(entityB);
         em.getTransaction().commit();
-        
+
         int genId = entityB.getId();
         em.clear();
         em.getTransaction().begin();

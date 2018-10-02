@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.query;
 
 /**
  * Denotes AVG() on a given Expression.
- *  
+ *
  * @author Pinaki Poddar
  *
  */

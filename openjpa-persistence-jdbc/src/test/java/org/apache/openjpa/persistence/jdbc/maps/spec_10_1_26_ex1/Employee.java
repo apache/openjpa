@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex1;
 
@@ -25,23 +25,23 @@ import javax.persistence.*;
 public class Employee {
     @Id
     int empId;
-    
+
     @ManyToOne
     @JoinColumn(name="dept_id")
     Department dept;
-    
+
     public int getEmpId() {
         return empId;
     }
-    
+
     public void setEmpId(int empId) {
         this.empId = empId;
     }
-    
+
     public Department getDepartment() {
         return dept;
     }
-    
+
     public void setDepartment(Department department) {
         this.dept = department;
     }

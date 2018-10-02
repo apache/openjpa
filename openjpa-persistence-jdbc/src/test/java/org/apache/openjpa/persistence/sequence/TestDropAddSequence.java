@@ -26,11 +26,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests the drop then add schema action for SynchronizeMappings when a
- * native sequence suffixed with "_seq" is in use.  This test only runs when 
+ * native sequence suffixed with "_seq" is in use.  This test only runs when
  * the configured database supports native sequences.
  */
 public class TestDropAddSequence extends SingleEMFTestCase {
-    
+
     @Override
     public void setUp() throws Exception {
 
@@ -57,28 +57,28 @@ public class TestDropAddSequence extends SingleEMFTestCase {
         return "TestDropAddSequence";
     }
 
-    
+
     /**
-     * Verifies a new EMF can be created when the runtime forward mapping tool 
+     * Verifies a new EMF can be created when the runtime forward mapping tool
      * is enabled with drop then add schema action when an entity contains a
      * named native sequence suffixed with "_seq".
      */
     public void testDropAddSequence() {
-        
+
         if (!supportsSequences(emf)) {
             return;
         }
-        
+
         Object[] props = new Object[] { "openjpa.jdbc.SynchronizeMappings",
             "buildSchema(SchemaAction='drop,add')" };
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("TestDropAddSequence",props);
-        
+
         OpenJPAEntityManager em = oemf.createEntityManager();
-        
+
         em.close();
         oemf.close();
     }
-    
+
     private boolean supportsSequences(OpenJPAEntityManagerFactorySPI oemf) {
         if (oemf == null) {
             return false;

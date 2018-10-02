@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -108,7 +108,7 @@ class Extension
             argState = _arg.initialize(sel, ctx, JOIN_REL);
         Joins j1 = (targetState == null) ? null : targetState.joins;
         Joins j2 = (argState == null) ? null : argState.joins;
-        return new ExtensionExpState(sel.and(j1, j2), targetState, 
+        return new ExtensionExpState(sel.and(j1, j2), targetState,
             argState);
     }
 
@@ -129,12 +129,12 @@ class Extension
         }
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         ExtensionExpState estate = (ExtensionExpState) state;
         if (_target != null)
@@ -147,7 +147,7 @@ class Extension
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
@@ -159,13 +159,13 @@ class Extension
         return buf;
     }
 
-    public Object load(ExpContext ctx, ExpState state, Result res) 
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         ExtensionExpState estate = (ExtensionExpState) state;
         if (_target != null)
@@ -178,7 +178,7 @@ class Extension
         return 1;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         ExtensionExpState estate = (ExtensionExpState) state;
         FilterValue target = (_target == null) ? null
@@ -215,7 +215,7 @@ class Extension
         return initialize(sel, ctx, 0);
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         calculateValue(sel, ctx, state, null, null);
         appendTo(sel, ctx, state, sql, 0);

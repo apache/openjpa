@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -40,8 +40,8 @@ public class TestArrayFieldsInDataCache
     private Object internalOid;
 
     public void setUp() {
-        setUp("openjpa.DataCache", "true", 
-            "openjpa.RemoteCommitProvider", "sjvm", 
+        setUp("openjpa.DataCache", "true",
+            "openjpa.RemoteCommitProvider", "sjvm",
             AllFieldTypes.class);
 
         EntityManager em = emf.createEntityManager();

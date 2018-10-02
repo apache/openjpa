@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -40,7 +40,7 @@ class Args
     public Args(Value val1, Value val2) {
         this(new Value[]{val1, val2});
     }
-    
+
     public Args(Value...values) {
         if (values == null) {
            return;

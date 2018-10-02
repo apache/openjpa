@@ -33,11 +33,11 @@ import static javax.persistence.AccessType.PROPERTY;
 @Entity(name="DFMPA")
 @Access(value=FIELD)
 @NamedQueries( {
-    @NamedQuery(name="DFMPA.query", 
-        query="SELECT df FROM DFMPA df WHERE " + 
+    @NamedQuery(name="DFMPA.query",
+        query="SELECT df FROM DFMPA df WHERE " +
         "df.id = :id AND df.stringField = :strVal"),
-    @NamedQuery(name="DFMPA.badQuery", 
-        query="SELECT p FROM DFMPA p WHERE " + 
+    @NamedQuery(name="DFMPA.badQuery",
+        query="SELECT p FROM DFMPA p WHERE " +
         "p.id = :id AND p.strField = :strVal") } )
 public class DefFieldMixedPropAccess {
 
@@ -47,7 +47,7 @@ public class DefFieldMixedPropAccess {
 
     @Version
     private int version;
-    
+
     @Transient
     private String strField;
 
@@ -74,8 +74,8 @@ public class DefFieldMixedPropAccess {
     @Access(value=PROPERTY)
     public String getStringField() {
         return getStrField();
-    }  
-    
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof DefFieldMixedPropAccess) {
             DefFieldMixedPropAccess fa = (DefFieldMixedPropAccess)obj;

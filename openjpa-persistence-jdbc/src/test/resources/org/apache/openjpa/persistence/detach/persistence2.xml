@@ -23,20 +23,20 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
     http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 
-    <!-- 
-         This is the new PU for 2.0, which takes the default 2.0 
+    <!--
+         This is the new PU for 2.0, which takes the default 2.0
          behavior of removing $proxy for default DetachedStateField=transient
     -->
     <persistence-unit name="NoProxy2New">
         <class>org.apache.openjpa.persistence.detach.Entity20</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>			
+        <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)" />
         </properties>
     </persistence-unit>
 
-    <!-- 
+    <!--
          This is the original PU from 1.0, but running as a 2.0 app
          with the new Compatibility flag set to use the old 1.0 behavior,
          which is to not remove $proxy after calling EM.clear()
@@ -44,7 +44,7 @@
     <persistence-unit name="NoProxy2Compat">
         <class>org.apache.openjpa.persistence.detach.Entity20</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>			
+        <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)" />
             <property name="openjpa.Compatibility"

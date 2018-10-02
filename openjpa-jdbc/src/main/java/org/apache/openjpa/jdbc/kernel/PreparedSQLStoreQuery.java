@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -44,7 +44,7 @@ import org.apache.openjpa.util.InternalException;
 
 /**
  * A executor for Prepared SQL Query.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -54,12 +54,12 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
     public PreparedSQLStoreQuery(JDBCStore store) {
         super(store);
     }
-    
+
     public Executor newDataStoreExecutor(ClassMetaData meta,
         boolean subclasses) {
         return new PreparedSQLExecutor(this, meta);
     }
-    
+
     public boolean setQuery(Object query) {
         if (query instanceof PreparedQueryImpl == false) {
             throw new InternalException(query.getClass() + " not recognized");
@@ -67,7 +67,7 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
         _cached = (PreparedQueryImpl)query;
         return true;
     }
-    
+
     PreparedQueryImpl getPreparedQuery() {
         return _cached;
     }
@@ -80,16 +80,16 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
     public static class PreparedSQLExecutor extends AbstractExpressionExecutor {
         private final ClassMetaData _meta;
         private final PreparedSQLStoreQuery _query;
-        
+
         public PreparedSQLExecutor(PreparedSQLStoreQuery q, ClassMetaData candidate) {
             _meta = candidate;
             _query = q;
         }
-        
+
         public QueryExpressions[] getQueryExpressions() {
             return _query.getPreparedQuery().getQueryExpressions();
         }
-        
+
         public Class[] getProjectionTypes(StoreQuery q) {
             return _query.getPreparedQuery().getProjectionTypes();
         }
@@ -116,17 +116,17 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
                 dict.setTimeouts(stmnt, fetch, false);
 
                 ResultSet rs = stmnt.executeQuery();
-                
+
                 SelectImpl cachedSelect = pq.getSelect();
                 Result res = cachedSelect.getEagerResult(conn, stmnt, rs, store, fetch, false, null);
-                
+
                 if (getQueryExpressions()[0].projections.length > 0) {
                     ExpContext ctx = new ExpContext(store, params, fetch);
                     QueryExpressionsState state = (QueryExpressionsState)getQueryExpressions()[0].state;
-                    rop = new PreparedProjectionResultObjectProvider(cachedSelect, getQueryExpressions(), 
+                    rop = new PreparedProjectionResultObjectProvider(cachedSelect, getQueryExpressions(),
                             new QueryExpressionsState[]{state}, ctx, res);
                 } else if (q.getContext().getCandidateType() != null) {
-                    rop = new PreparedResultObjectProvider(cachedSelect, 
+                    rop = new PreparedResultObjectProvider(cachedSelect,
                         (ClassMapping) _meta, store, fetch, res);
                 } else {
                     rop = new SQLProjectionResultObjectProvider(store, fetch,
@@ -143,13 +143,13 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
                 rop = new RangeResultObjectProvider(rop, range.start,range.end);
             return rop;
         }
-        
+
         /**
-         * Convert given userParams to an array whose ordering matches as 
+         * Convert given userParams to an array whose ordering matches as
          * per expected during executeXXX() methods.
          * The given userParams is already re-parameterized, so this method have
          * to merely copy the given Map values.
-         * 
+         *
          * @see PreparedQueryImpl#reparametrize(Map, org.apache.openjpa.kernel.Broker)
          */
         public synchronized Object[] toParameterArray(StoreQuery q, Map userParams) {

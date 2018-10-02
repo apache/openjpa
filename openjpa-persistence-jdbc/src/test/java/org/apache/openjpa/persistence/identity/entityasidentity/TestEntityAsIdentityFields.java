@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity.entityasidentity;
 
@@ -26,40 +26,40 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestEntityAsIdentityFields extends SingleEMFTestCase {    
+public class TestEntityAsIdentityFields extends SingleEMFTestCase {
     public void setUp() {
         setUp( CLEAR_TABLES,
                 Account.class, AccountGroup.class, Person.class);
     }
-    
+
     /**
      * Tests for the NullPointerException in MappingInfo.mergeJoinColumn reported in OpenJPA-1141.
-     * 
+     *
      */
     public void testEntityAsIdentityField001() {
         EntityManager em = null;
         em = emf.createEntityManager();
-        
+
         Query query = em.createQuery("SELECT ag from AccountGroup ag");
         List resultList = query.getResultList();
-        
+
         em.close();
     }
-    
+
     /**
      * Test EntityManager persist() and find() with entities with entity relationships as
      * part of their identity.  Clears persistence context between entity create and find.
-     * 
+     *
      */
     public void testEntityAsIdentityField002A() {
         EntityManager em = null;
-        
+
         try {
             em = emf.createEntityManager();
-            
+
             // Create population
             createPopulation(em);
-            
+
             // Clear persistence context, fetch from database
             em.clear();
             AccountId aId = new AccountId();
@@ -78,21 +78,21 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
             }
         }
     }
-    
+
     /**
      * Test EntityManager persist() and find() with entities with entity relationships as
      * part of their identity.  Does not clear persistence context between entity create and find.
-     * 
+     *
      */
     public void testEntityAsIdentityField002B() {
         EntityManager em = null;
-        
+
         try {
             em = emf.createEntityManager();
-            
+
             // Create population
             createPopulation(em);
-            
+
             // Fetch from database
             AccountId aId = new AccountId();
             aId.setAccountId(1);
@@ -110,23 +110,23 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
             }
         }
     }
-    
+
     /**
      * Test EntityManager persist() and find() with entities with entity relationships as
      * part of their identity.  Uses different EntityManagers for create and find.
-     * 
+     *
      */
     public void testEntityAsIdentityField002C() {
         EntityManager em = null;
         EntityManager emPop = null;
-        
+
         try {
             emPop = emf.createEntityManager();
             em = emf.createEntityManager();
-            
+
             // Create population
             createPopulation(emPop);
-            
+
             // Clear persistence context, fetch from database
             em.clear();
             AccountId aId = new AccountId();
@@ -151,22 +151,22 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
             }
         }
     }
-    
+
     /**
      * Test a query with a where clause that crosses through the identity relationship.
      * Clear persistence context before performing the query.
-     * 
+     *
      */
     public void testEntityAsIdentityField003A() {
         EntityManager em = null;
-        
+
         try {
             em = emf.createEntityManager();
-            
+
             // Create population
             createPopulation(em);
             em.clear();
-            
+
             Query query = em.createQuery("SELECT a FROM Account a WHERE a.accountHolder.id > 5");
             List resultList = query.getResultList();
             assertEquals(5, resultList.size());
@@ -180,25 +180,25 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
             }
         }
     }
-    
+
     /**
      * Test a query with a where clause that crosses through the identity relationship.
      * Use a separate EntityManager to populate the database, and a separate EntityManager
      * to perform the query
-     * 
+     *
      */
     public void testEntityAsIdentityField004A() {
         EntityManager em = null;
         EntityManager emPop = null;
-        
+
         try {
             emPop = emf.createEntityManager();
             em = emf.createEntityManager();
-            
+
             // Create population
             createPopulation(emPop);
             em.clear();
-            
+
             Query query = em.createQuery("SELECT a FROM Account a WHERE a.accountHolder.id > 5");
             List resultList = query.getResultList();
             assertEquals(5, resultList.size());
@@ -218,39 +218,39 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
             }
         }
     }
-    
+
     /**
      * Database population
-     * 
+     *
      */
     private void createPopulation(EntityManager em) {
         em.getTransaction().begin();
-        
+
         AccountGroup ag = new AccountGroup();
         ag.setId(1);
         Set<Account> agAccountSet = ag.getAccountSet();
         em.persist(ag);
-        
+
         for (int index = 1; index <= 10; index++) {
             Person peep = new Person();
             peep.setId(index);
             peep.setFirstName("John");
             peep.setLastName("Doe");
-            
+
             Account account = new Account();
             account.setAccountId(index);
             account.setAccountHolder(peep);
             account.setGroupId((index / 5) + 1);
-            
+
             account.setBalanceInCents(0);
             account.setBalanceInDollars(index * 1000);
-                       
+
             em.persist(peep);
             em.persist(account);
-            
+
             agAccountSet.add(account);
-        }    
-        
+        }
+
         em.getTransaction().commit();
     }
 }

@@ -62,7 +62,7 @@ public class RelationRelationMapTableFieldStrategy
     }
 
     public void selectValue(Select sel, ClassMapping val,
-        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch, 
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         Joins joins) {
         sel.select(val, field.getElementMapping().getSelectSubclasses(),
             store, fetch, JDBCFetchConfiguration.EAGER_NONE, joins);
@@ -90,7 +90,7 @@ public class RelationRelationMapTableFieldStrategy
                 } else {
                     joinFK = field.getJoinForeignKey();
                 }
-                
+
                 sel.whereForeignKey(joinFK,
                     sm.getObjectId(), field.getDefiningMapping(), store);
 
@@ -123,7 +123,7 @@ public class RelationRelationMapTableFieldStrategy
                         getSelectSubclasses(), store, fetch, eagerMode, null);
                     sel.whereForeignKey(field.getElementMapping().getForeignKey(),
                         sm.getObjectId(), field.getElementMapping().getDeclaredTypeMapping(), store);
-                    
+
                 } else {
                     sel.whereForeignKey(field.getJoinForeignKey(),
                         sm.getObjectId(), field.getDefiningMapping(), store);
@@ -203,10 +203,10 @@ public class RelationRelationMapTableFieldStrategy
         FieldMapping mapped = field.getMappedByMapping();
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         DBIdentifier keyName = null;
-        if (field.isUni1ToMFK() || (!field.isBiMTo1JT() && mapped != null)) { 
+        if (field.isUni1ToMFK() || (!field.isBiMTo1JT() && mapped != null)) {
             handleMappedByForeignKey(adapt);
             keyName = dict.getValidColumnName(DBIdentifier.newColumn("vkey"), field.getTable());
-        } else if (field.isBiMTo1JT() || mapped == null) { 
+        } else if (field.isBiMTo1JT() || mapped == null) {
             field.mapJoin(adapt, true);
             mapTypeJoin(val, DBIdentifier.newColumn("value"), adapt);
             keyName = dict.getValidColumnName(DBIdentifier.newColumn("key"), field.getTable());
@@ -239,12 +239,12 @@ public class RelationRelationMapTableFieldStrategy
         insert(sm, rm, (Map) sm.fetchObject(field.getIndex()), store);
     }
 
-    private void insert(OpenJPAStateManager sm, RowManager rm, Map map, 
+    private void insert(OpenJPAStateManager sm, RowManager rm, Map map,
         JDBCStore store)
         throws SQLException {
         if (map == null || map.isEmpty())
             return;
-        
+
         if (!field.isBiMTo1JT() && field.getMappedBy() != null)
             return;
 
@@ -272,7 +272,7 @@ public class RelationRelationMapTableFieldStrategy
                 val.setForeignKey(row, valsm);
             }
             key.setForeignKey(row, keysm);
-            
+
             // so far, we populated the key/value of each
             // map element owned by the entity.
             // In the case of ToMany, and both sides
@@ -290,7 +290,7 @@ public class RelationRelationMapTableFieldStrategy
         throws SQLException {
         if (field.getMappedBy() != null && !field.isBiMTo1JT())
             return;
-        
+
         Map map = (Map) sm.fetchObject(field.getIndex());
         ChangeTracker ct = null;
         if (map instanceof Proxy) {
@@ -376,7 +376,7 @@ public class RelationRelationMapTableFieldStrategy
                     Object pc = itr.next();
                     if (field.isUni1ToMFK()){
                         updateSetNull(sm, rm, pc);
-                    } else { 
+                    } else {
                         keysm = RelationStrategies.getStateManager(pc, ctx);
                         key.whereForeignKey(delRow, keysm);
                         rm.flushSecondaryRow(delRow);
@@ -487,7 +487,7 @@ public class RelationRelationMapTableFieldStrategy
                 key.getForeignKey(clss[0]), clss[0], key.getSelectSubclasses(),
                 false, false);
         return joins.joinRelation(_keyRelationName,
-            key.getForeignKey(clss[0]), clss[0], key.getSelectSubclasses(), 
+            key.getForeignKey(clss[0]), clss[0], key.getSelectSubclasses(),
             false, false);
     }
 
@@ -500,17 +500,17 @@ public class RelationRelationMapTableFieldStrategy
         return RelationStrategies.toDataStoreValue(field.getKeyMapping(),
             val, store);
     }
-    
+
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if (field.isUni1ToMFK()) {
             Map mapObj = (Map)sm.fetchObject(field.getIndex());
             updateSetNull(sm, store, rm, mapObj.keySet());
             return;
-        }    
+        }
         super.delete(sm, store, rm);
     }
-    
+
     private void updateSetNull(OpenJPAStateManager sm, JDBCStore store, RowManager rm,
         Set rem) throws SQLException {
         for (Iterator itr = rem.iterator(); itr.hasNext();) {
@@ -518,8 +518,8 @@ public class RelationRelationMapTableFieldStrategy
             updateSetNull(sm, rm, mkey);
         }
     }
-    
-    private void updateSetNull(OpenJPAStateManager sm, RowManager rm, Object mkey) 
+
+    private void updateSetNull(OpenJPAStateManager sm, RowManager rm, Object mkey)
         throws SQLException {
         StoreContext ctx = sm.getContext();
         ValueMapping key = field.getKeyMapping();

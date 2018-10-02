@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -270,7 +270,7 @@ public interface ExpressionFactory {
      * of which may itself be an argument list.
      */
     public Arguments newArgumentList(Value arg1, Value arg2);
-    
+
     /**
      * Return a function argument list consisting of the given values, any
      * of which may itself be an argument list.
@@ -489,12 +489,12 @@ public interface ExpressionFactory {
      * a {@link Number}, {@link String}, or {@link Boolean} instance.
      */
     public Literal newTypeLiteral(Object val, int parseType);
-    
+
     /**
      * Return a value representing the given datastore function with the given arguments.
      */
     public Value newFunction(String functionName, Class<?> resultType, Value... args);
-    
+
     /**
      * Return true if the Value is a Type expression and the Type uses joined table strategy.
      */

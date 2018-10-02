@@ -22,7 +22,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
@@ -50,7 +50,7 @@ public class TestUnknownSubclass  extends JDBCTestCase {
     /** Creates a new instance of TestUnknownSubclass */
     public TestUnknownSubclass() {
     }
- 
+
     public TestUnknownSubclass(String name) {
         super(name);
     }
@@ -63,8 +63,8 @@ public class TestUnknownSubclass  extends JDBCTestCase {
 
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
-        
-        
+
+
         JDBCConfiguration conf =
             (JDBCConfiguration) ((OpenJPAEntityManagerSPI) kem)
             .getConfiguration();
@@ -110,14 +110,14 @@ public class TestUnknownSubclass  extends JDBCTestCase {
 
         // assertNotRegistered (childName);
 
-        EntityManager em= currentEntityManager();            
+        EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 
-        
+
         startTx(em);
         // c = UnknownSubclassChild.class;
 
-        //FIXME jthomas conversion incomplete 
+        //FIXME jthomas conversion incomplete
         /*
         assertSize(1, kem.createExtent(UnknownSubclassParent.class, false));
         assertSize(1, kem.newQuery(
@@ -128,10 +128,10 @@ public class TestUnknownSubclass  extends JDBCTestCase {
             UnknownSubclassParent.class, true), ""));
         */
         endTx(em);
-        
+
         em.close();
         kem.close();
     }
-    
-    
+
+
 }

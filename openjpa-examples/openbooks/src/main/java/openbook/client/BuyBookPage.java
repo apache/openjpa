@@ -53,22 +53,22 @@ import openbook.server.QueryDecorator;
 import org.apache.openjpa.lib.jdbc.SQLFormatter;
 
 /**
- * A visual page coordinates the following functions of {@link OpenBookService} : 
+ * A visual page coordinates the following functions of {@link OpenBookService} :
  * <li>query for books
  * <li>choose one or more of the selected books
  * <li>add them to Shopping Cart
  * <li>place a purchase order of the books in the shopping cart.
  * <p>
- * Each interaction with the underlying service occurs in a background i.e. 
+ * Each interaction with the underlying service occurs in a background i.e.
  * a <em>non</em>-AWT event dispatching thread. The background threads are
  * used via {@link SwingWorker} and hence each persistence operation is
  * can be potentially handled by a different JPA persistence context.
- * This threading model not only adheres to the good practice of responsive graphical 
- * user interface design, it exercises the <em>remote</em> nature of JPA service 
+ * This threading model not only adheres to the good practice of responsive graphical
+ * user interface design, it exercises the <em>remote</em> nature of JPA service
  * (even within this single process Swing application) where every operation
  * on a persistence context results into a set of <em>detached</em> instances
- * to the remote client.  
- * 
+ * to the remote client.
+ *
  * @author Pinaki Poddar
  */
 @SuppressWarnings("serial")
@@ -79,10 +79,10 @@ public final class BuyBookPage extends JPanel {
     private final BuyPanel          _buyPanel;
     private final SelectBookPanel   _selectPanel;
     private final ShoppingCartPanel _cartPanel;
-    
+
     /**
      * A Page with 2x2 Grid of panels each for one of the specific action.
-     * 
+     *
      * @param service the OpenBooks service handle.
      */
     public BuyBookPage(OpenBookService service, Customer customer) {
@@ -102,7 +102,7 @@ public final class BuyBookPage extends JPanel {
         add(_cartPanel);
         add(_selectPanel);
         add(_buyPanel);
-        
+
         _selectPanel._selectedBooks.getTable()
             .getSelectionModel()
             .addListSelectionListener(_buyPanel);
@@ -112,16 +112,16 @@ public final class BuyBookPage extends JPanel {
      * A form like panel displays the different fields to search for books.
      * Zero or more form fields can be filled in. Though the service level
      * contract does not mandate how to form the exact query from the form
-     * field values, the actual implementation demonstrates how dynamic 
+     * field values, the actual implementation demonstrates how dynamic
      * query construction introduced via Criteria Query API in JPA 2.0
      * can aid in such common user scenarios.
      * <br>
      * The object level query is displayed to demonstrate the ability of
      * OpenJPA to express a dynamic Criteria Query is a human-readable,
      * JPQL-like query string.
-     * 
+     *
      * @author Pinaki Poddar
-     * 
+     *
      */
     class SearchPanel extends JPanel implements ActionListener {
         private final JTextField _title       = new JTextField("", 20);
@@ -130,7 +130,7 @@ public final class BuyBookPage extends JPanel {
         private final JTextField _minPrice    = new JTextField("", 6);
         private final JTextArea  _queryView   = new JTextArea();
         private final SQLFormatter _formatter = new SQLFormatter();
-        
+
         SearchPanel(String title) {
             super(true);
             setBorder(BorderFactory.createTitledBorder(title));
@@ -159,7 +159,7 @@ public final class BuyBookPage extends JPanel {
                                           .addComponent(_minPrice)
                                           .addComponent(toLabel)
                                           .addComponent(_maxPrice)));
-            
+
             GroupLayout.SequentialGroup vGroup = layout.createSequentialGroup();
             vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
                     .addComponent(titleLabel)
@@ -173,7 +173,7 @@ public final class BuyBookPage extends JPanel {
                     .addComponent(_minPrice)
                     .addComponent(toLabel)
                     .addComponent(_maxPrice));
-            
+
             layout.setHorizontalGroup(hGroup);
             layout.setVerticalGroup(vGroup);
 
@@ -182,19 +182,19 @@ public final class BuyBookPage extends JPanel {
             ShowCodeAction showCode = Demo.getInstance().new ShowCodeAction();
             showCode.setPage("Dynamic Query", "server/OpenBookServiceImpl.java.html#buildQuery");
             JButton viewCodeButton = new JButton(showCode);
-            
+
             JPanel buttonPanel = new JPanel();
             buttonPanel.add(Box.createHorizontalGlue());
             buttonPanel.add(searchButton);
             buttonPanel.add(Box.createHorizontalGlue());
             buttonPanel.add(viewCodeButton);
-            
+
             BoxLayout box = new BoxLayout(this, BoxLayout.Y_AXIS);
             setLayout(box);
             add(panel);
             add(Box.createVerticalGlue());
             add(buttonPanel);
-            
+
             _queryView.setBorder(BorderFactory.createTitledBorder("Criteria Query as CQL"));
             _queryView.setWrapStyleWord(true);
             _queryView.setEditable(false);
@@ -202,10 +202,10 @@ public final class BuyBookPage extends JPanel {
             add(_queryView);
             searchButton.addActionListener(this);
         }
-        
+
         /**
          * Execute a query and displays the result onto {@linkplain SelectBookPanel}.
-         * 
+         *
          * The query is executed in a background, non-AWT thread.
          */
         public void actionPerformed(ActionEvent e) {
@@ -213,12 +213,12 @@ public final class BuyBookPage extends JPanel {
                 private String queryString;
                 @Override
                 protected List<Book> doInBackground() throws Exception {
-                    queryString = _service.getQuery(_title.getText(), 
-                            asDouble(_minPrice), asDouble(_maxPrice), 
+                    queryString = _service.getQuery(_title.getText(),
+                            asDouble(_minPrice), asDouble(_maxPrice),
                             _author.getText());
-                    return _service.select(_title.getText(), 
-                            asDouble(_minPrice), asDouble(_maxPrice), 
-                            _author.getText(), 
+                    return _service.select(_title.getText(),
+                            asDouble(_minPrice), asDouble(_maxPrice),
+                            _author.getText(),
                             (QueryDecorator[])null);
                 }
 
@@ -255,27 +255,27 @@ public final class BuyBookPage extends JPanel {
 
     /**
      * A panel to display the selected books in a tabular format.
-     * 
+     *
      * @author Pinaki Poddar
-     * 
+     *
      */
     class SelectBookPanel extends JPanel {
         private final JLabel _bookCount;
         private final EntityTableView<Book> _selectedBooks;
-        
+
         SelectBookPanel(String title) {
             setLayout(new BorderLayout());
             setBorder(BorderFactory.createTitledBorder(title));
 
             _selectedBooks = new EntityTableView<Book>(Book.class,
-                    EntityDataModel.BASIC_ATTR | EntityDataModel.ROW_COUNT, 
+                    EntityDataModel.BASIC_ATTR | EntityDataModel.ROW_COUNT,
                     _service.getUnit());
             _bookCount = new JLabel();
-    
+
             add(_bookCount, BorderLayout.NORTH);
             add(_selectedBooks, BorderLayout.CENTER);
         }
-        
+
         void updateDataModel(List<Book> books) {
             _bookCount.setText(books.size() + " Book selected");
             _selectedBooks.getDataModel().updateData(books);
@@ -285,9 +285,9 @@ public final class BuyBookPage extends JPanel {
     /**
      * A panel to display the details of a single book and a button to add the
      * book to cart. Listens to the selection in the selected books.
-     * 
+     *
      * @author Pinaki Poddar
-     * 
+     *
      */
     class BuyPanel extends JPanel implements ListSelectionListener {
         JLabel _bookTitle;
@@ -297,13 +297,13 @@ public final class BuyBookPage extends JPanel {
         JButton _addToCart;
         JSpinner _quantity;
         JPanel _quantityPanel;
-        
+
         public BuyPanel(String title) {
             super(true);
 
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setBorder(BorderFactory.createTitledBorder(title));
-            
+
             JPanel descPanel = new JPanel();
             descPanel.setLayout(new BoxLayout(descPanel, BoxLayout.Y_AXIS));
             _bookTitle   = new JLabel();
@@ -324,9 +324,9 @@ public final class BuyBookPage extends JPanel {
             _quantityPanel.add(_quantity);
             _quantityPanel.setVisible(false);
             add(_quantityPanel);
-            
+
             add(Box.createVerticalGlue());
-            
+
             JPanel buttonPanel = new JPanel();
             buttonPanel.add(Box.createHorizontalGlue());
             _addToCart = new JButton("Add to Cart", Images.CART);
@@ -338,7 +338,7 @@ public final class BuyBookPage extends JPanel {
             _addToCart.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    _cartPanel.addBook((Book)_addToCart.getClientProperty("Book"), 
+                    _cartPanel.addBook((Book)_addToCart.getClientProperty("Book"),
                             (Integer)_quantity.getValue());
                 }
             });
@@ -380,23 +380,23 @@ public final class BuyBookPage extends JPanel {
 
     /**
      * A panel to display the shopping cart.
-     * 
+     *
      * @author Pinaki Poddar
-     * 
+     *
      */
     class ShoppingCartPanel extends JPanel implements ActionListener {
         private static final int MAX_ITEMS = 10;
         private final ShoppingCart _cart;
         private final JButton _placeOrder;
         private final JLabel[] _items = new JLabel[MAX_ITEMS];
-        
+
         public ShoppingCartPanel(String title) {
             _cart = _customer.newCart();
             setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
             setBorder(BorderFactory.createTitledBorder(title));
             _placeOrder = new JButton("Place Order", Images.START);
             _placeOrder.setHorizontalTextPosition(SwingConstants.LEADING);
-            
+
             _placeOrder.setEnabled(false);
             for (int i = 0; i < MAX_ITEMS; i++) {
                 _items[i] = new JLabel("");
@@ -410,7 +410,7 @@ public final class BuyBookPage extends JPanel {
             add(buttonPanel);
             _placeOrder.addActionListener(this);
         }
-        
+
         /**
          * Add the given book to the cart. Updates the display.
          */
@@ -418,7 +418,7 @@ public final class BuyBookPage extends JPanel {
             _cart.addItem(book, quantity);
             updateDisplay();
         }
-        
+
         void updateDisplay() {
             Map<Book, Integer> items = _cart.getItems();
             int i = 0;
@@ -431,7 +431,7 @@ public final class BuyBookPage extends JPanel {
             }
             _placeOrder.setEnabled(items.size()>0);
             super.repaint();
-        }       
+        }
 
         @Override
         public void actionPerformed(ActionEvent e) {

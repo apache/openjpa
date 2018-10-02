@@ -27,7 +27,7 @@ public class XMLOrderedManyToManyEntity implements IOrderedEntity, java.io.Seria
 
     private List<INameEntity> entities;
 
-    
+
     public int getId() {
         return id;
     }
@@ -50,7 +50,7 @@ public class XMLOrderedManyToManyEntity implements IOrderedEntity, java.io.Seria
         }
         entities.add(entity);
     }
-    
+
     public INameEntity removeEntity(int location) {
         INameEntity rtnVal = null;
         if( entities != null) {
@@ -58,7 +58,7 @@ public class XMLOrderedManyToManyEntity implements IOrderedEntity, java.io.Seria
         }
         return rtnVal;
     }
-    
+
     public void insertEntity(int location, INameEntity entity) {
         if( entities == null) {
             entities = new ArrayList<INameEntity>();

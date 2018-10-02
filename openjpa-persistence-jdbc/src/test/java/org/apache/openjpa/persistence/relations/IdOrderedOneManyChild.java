@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -40,35 +40,35 @@ public class IdOrderedOneManyChild {
     @Version
     private int optLock;
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
-    public void setId(long id) { 
-        this.id = id; 
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public IdOrderedOneManyParent getExplicitParent() { 
-        return explicitParent; 
+    public IdOrderedOneManyParent getExplicitParent() {
+        return explicitParent;
     }
 
-    public void setExplicitParent(IdOrderedOneManyParent explicitParent) { 
-        this.explicitParent = explicitParent; 
+    public void setExplicitParent(IdOrderedOneManyParent explicitParent) {
+        this.explicitParent = explicitParent;
     }
 
-    public IdOrderedOneManyParent getImplicitParent() { 
-        return implicitParent; 
+    public IdOrderedOneManyParent getImplicitParent() {
+        return implicitParent;
     }
 
-    public void setImplicitParent(IdOrderedOneManyParent implicitParent) { 
-        this.implicitParent = implicitParent; 
+    public void setImplicitParent(IdOrderedOneManyParent implicitParent) {
+        this.implicitParent = implicitParent;
     }
 }

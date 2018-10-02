@@ -23,30 +23,30 @@ public class XMLEmbedPropAccess {
     String fName;
     String lName;
 
-    public XMLEmbedPropAccess() {        
+    public XMLEmbedPropAccess() {
     }
-    
+
     public XMLEmbedPropAccess(String fn, String ln) {
         setFirstName(fn);
         setLastName(ln);
     }
-    
+
     public String getFirstName() {
         return fName;
     }
-    
+
     public void setFirstName(String fname) {
-        fName = fname;        
+        fName = fname;
     }
-    
+
     public String getLastName() {
         return lName;
     }
-    
+
     public void setLastName(String lname) {
         lName = lname;
-    }    
-    
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLEmbedPropAccess) {
             XMLEmbedPropAccess ps = (XMLEmbedPropAccess)obj;

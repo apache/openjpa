@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -73,8 +73,8 @@ public class PostgresDictionary
 
     private Method dbcpGetDelegate;
     private Method connectionUnwrap;
-    
-    protected Set<String> _timestampTypes = new HashSet<String>(); 
+
+    protected Set<String> _timestampTypes = new HashSet<String>();
 
 
     /**
@@ -112,10 +112,10 @@ public class PostgresDictionary
      * method.
      */
     public boolean supportsSetFetchSize = true;
-    
+
     /**
-     * Statement used to determine whether a sequence is owned.  Owned 
-     * sequences are managed by the database and are considered system 
+     * Statement used to determine whether a sequence is owned.  Owned
+     * sequences are managed by the database and are considered system
      * sequences.
      * parm 1: '<table_name.schema_name>'
      * parm 2: '<column_name>'
@@ -189,20 +189,20 @@ public class PostgresDictionary
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
         invalidColumnWordSet.addAll(Arrays.asList(new String[] {
-            "ALL", "AND", "ANY", "AS", "ASC", "AUTHORIZATION", "BETWEEN", 
+            "ALL", "AND", "ANY", "AS", "ASC", "AUTHORIZATION", "BETWEEN",
             "BINARY", "BOTH", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN",
             "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_TIME",
-            "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", 
+            "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE",
             "DESC", "DISTINCT", "DO", "ELSE", "END", "END", "EXCEPT", "FALSE",
             "FOR", "FOREIGN", "FROM", "FULL", "GRANT", "GROUP", "HAVING", "IN",
             "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN",
-            "LEADING", "LEFT", "LIKE", "NATURAL", "NOT", "NOTNULL", "NULL", 
+            "LEADING", "LEFT", "LIKE", "NATURAL", "NOT", "NOTNULL", "NULL",
             "ON", "ONLY", "OR", "ORDER", "OUTER", "OVERLAPS", "PRIMARY",
             "REFERENCES", "RIGHT", "SELECT", "SESSION_USER", "SOME", "TABLE",
-            "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", 
+            "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER",
             "USING", "VERBOSE", "WHEN", "WHERE",
         }));
-        
+
         _timestampTypes.add("ABSTIME");
         _timestampTypes.add("TIMESTAMP");
         _timestampTypes.add(timestampTypeName.toUpperCase(Locale.ENGLISH)); // handle user configured timestamp types.
@@ -361,12 +361,12 @@ public class PostgresDictionary
         boolean targetSchema) {
         return isSystemSequence(name, schema, targetSchema, null);
     }
-    
+
     public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
         boolean targetSchema, Connection conn) {
         if (super.isSystemSequence(name, schema, targetSchema))
             return true;
-        
+
         if (isOwnedSequence(name, schema, conn)) {
             return true;
         }
@@ -375,13 +375,13 @@ public class PostgresDictionary
 
     /**
      * Uses the native Postgres function pg_get_serial_sequence to determine whether
-     * a sequence is owned by the database.  Column types such as bigserial use a 
+     * a sequence is owned by the database.  Column types such as bigserial use a
      * system assigned sequence generator of the format: table_column_seq
-     * 
+     *
      * @link http://www.postgresql.org/docs/current/static/functions-info.html
      */
     public boolean isOwnedSequence(DBIdentifier name, DBIdentifier schema, Connection conn) {
-        
+
         String strName = DBIdentifier.isNull(name) ? "" : name.getName();
         // basic check for SEQ suffix.  not SEQ, not an owned sequence
         if (strName == null || !strName.toUpperCase(Locale.ENGLISH).endsWith("_SEQ"))
@@ -391,14 +391,14 @@ public class PostgresDictionary
         if (conn == null) {
             return isOwnedSequence(strName);
         }
-        
-        // Build permutations of table, column pairs from the provided 
-        // sequence name.  If any of them are determined owned, assume the 
+
+        // Build permutations of table, column pairs from the provided
+        // sequence name.  If any of them are determined owned, assume the
         // sequence is owned.  This is not perfect, but considerably better than
         // considering all sequences suffixed with _seq are db owned.
         String[][] namePairs = buildNames(strName);
-        
-        if(namePairs != null) { // unable to parse strName. 
+
+        if(namePairs != null) { // unable to parse strName.
             try {
                 for (int i = 0; i < namePairs.length; i++) {
                     if (queryOwnership(conn, namePairs[i], schema)) {
@@ -410,18 +410,18 @@ public class PostgresDictionary
                     log.warn(_loc.get("psql-owned-seq-warning"), t);
                 return isOwnedSequence(strName);
             }
-        } else { 
-            if(log.isTraceEnabled()) { 
+        } else {
+            if(log.isTraceEnabled()) {
                 log.trace(String.format("Unable to query ownership for sequence %s using the connection. " +
-                		"Falling back to simpler detection based on the name", 
+                		"Falling back to simpler detection based on the name",
                     name.getName()));
             }
-            
+
             return isOwnedSequence(strName);
         }
         return false;
     }
-    
+
     private boolean queryOwnership(Connection conn, String[] namePair,
         DBIdentifier schema) throws Throwable {
         PreparedStatement ps = null;
@@ -430,7 +430,7 @@ public class PostgresDictionary
             ps = prepareStatement(conn, isOwnedSequenceSQL);
             String tblName = "";
             if (!DBIdentifier.isEmpty(schema)) {
-                tblName = schema.getName() + getIdentifierDelimiter();  
+                tblName = schema.getName() + getIdentifierDelimiter();
             }
             tblName += namePair[0];
             ps.setString(1, tblName);
@@ -474,8 +474,8 @@ public class PostgresDictionary
     }
 
     /**
-     * Owned sequences are of the form <table>_<col>_seq. Table and column 
-     * names can contain underscores so permutations of these names must be 
+     * Owned sequences are of the form <table>_<col>_seq. Table and column
+     * names can contain underscores so permutations of these names must be
      * produced for ownership verification.
      * @param strName
      * @return If strName cannot be split into three or more parts null will be returned.
@@ -485,10 +485,10 @@ public class PostgresDictionary
         // split the sequence name into components
         // owned sequences are of the form <table>_<col>_seq
         String[] parts = Normalizer.splitName(strName, "_");
-        
+
         if (parts == null || parts.length < 3) {
-            if(log.isTraceEnabled()) { 
-                log.trace(String.format("Unable to parse sequences from %s. Found %s parts. Returning null", 
+            if(log.isTraceEnabled()) {
+                log.trace(String.format("Unable to parse sequences from %s. Found %s parts. Returning null",
                     strName, parts == null ? 0 : parts.length));
             }
             return null;
@@ -581,7 +581,7 @@ public class PostgresDictionary
         }
     }
 
-    public void insertBlobForStreamingLoad(Row row, Column col, 
+    public void insertBlobForStreamingLoad(Row row, Column col,
         JDBCStore store, Object ob, Select sel) throws SQLException {
         if (row.getAction() == Row.ACTION_INSERT) {
             insertPostgresBlob(row, col, store, ob);
@@ -616,13 +616,13 @@ public class PostgresDictionary
             row.setInt(col, -1);
         }
     }
-    
+
     private void updatePostgresBlob(Row row, Column col, JDBCStore store,
         Object ob, Select sel) throws SQLException {
         JDBCFetchConfiguration fetch = store.getFetchConfiguration();
         SQLBuffer sql = sel.toSelect(true, fetch);
         ResultSet res = null;
-        DelegatingConnection conn = 
+        DelegatingConnection conn =
             (DelegatingConnection) store.getConnection();
         PreparedStatement stmnt = null;
         try {
@@ -672,7 +672,7 @@ public class PostgresDictionary
         }
 
     }
-    
+
     public void updateBlob(Select sel, JDBCStore store, InputStream is)
         throws SQLException {
         //Do nothing
@@ -682,7 +682,7 @@ public class PostgresDictionary
         JDBCFetchConfiguration fetch = store.getFetchConfiguration();
         SQLBuffer sql = sel.toSelect(true, fetch);
         ResultSet res = null;
-        DelegatingConnection conn = 
+        DelegatingConnection conn =
             (DelegatingConnection) store.getConnection();
         PreparedStatement stmnt = null;
         try {
@@ -714,7 +714,7 @@ public class PostgresDictionary
      */
     public void connectedConfiguration(Connection conn) throws SQLException {
         super.connectedConfiguration(conn);
-        
+
         DatabaseMetaData metaData = conn.getMetaData();
         int maj = 0;
         int min = 0;
@@ -734,7 +734,7 @@ public class PostgresDictionary
                     log.warn(e.toString(),e);
             }
         }
-        
+
         if ((maj >= 9 || (maj == 8 && min >= 3))) {
             supportsXMLColumn = true;
         }
@@ -744,7 +744,7 @@ public class PostgresDictionary
             searchStringEscape = "\\\\";
         }
     }
- 
+
     /**
      * If column is an XML column, PostgreSQL requires that its value is set
      * by using {@link PreparedStatement#setObject(int, Object, int)}
@@ -757,16 +757,16 @@ public class PostgresDictionary
         else
             super.setClobString(stmnt, idx, val, col);
     }
-    
+
     /**
      * Override the getOjbect() method to handle the case where the latest
      * Postgres JDBC driver returns a org.postgresql.util.PGobject instead of a
      * java.sql.Timestamp
-     * 
+     *
      * @param rs
      * @param column
      * @param map
-     * 
+     *
      * @exception SQLException
      */
     public Object getObject(ResultSet rs, int column, Map map)
@@ -796,7 +796,7 @@ public class PostgresDictionary
 
     /**
      * Append XML comparison.
-     * 
+     *
      * @param buf
      *            the SQL buffer to write the comparison
      * @param op
@@ -823,10 +823,10 @@ public class PostgresDictionary
         else
             rhs.appendTo(buf);
     }
-    
+
     /**
      * Append XML column value so that it can be used in comparisons.
-     * 
+     *
      * @param buf
      *            the SQL buffer to write the value
      * @param val
@@ -884,7 +884,7 @@ public class PostgresDictionary
 
     /**
      * Get the delegated connection from the given DBCP connection.
-     * 
+     *
      * @param conn must be a DBCP connection
      * @return connection the DBCP connection delegates to
      */
@@ -902,13 +902,13 @@ public class PostgresDictionary
                 Method setAccessToUnderlyingConnectionAllowed = poolingDataSource
                         .getMethod("setAccessToUnderlyingConnectionAllowed",
                                 boolean.class);
-                
+
                 Field this$0 = conn.getClass().getDeclaredField("this$0");
                 this$0.setAccessible(true);
                 Object poolingDataSourceObj = this$0.get(conn);
                 setAccessToUnderlyingConnectionAllowed.invoke(poolingDataSourceObj,
                         true);
-                
+
                 dbcpGetDelegate = dbcpConnectionClass.getMethod("getInnermostDelegate");
             }
             delegate = (Connection) dbcpGetDelegate.invoke(conn);
@@ -924,9 +924,9 @@ public class PostgresDictionary
     /**
      * Get (unwrap) the delegated connection from the given connection.
      * Use reflection to attempt to unwrap a connection.
-     * Note: This is a JDBC 4 operation, so it requires a Java 6 environment 
+     * Note: This is a JDBC 4 operation, so it requires a Java 6 environment
      * with a JDBC 4 driver or data source to have any chance of success.
-     * 
+     *
      * @param conn a delegating connection
      * @param connectionClass the expected type of delegated connection
      * @return connection the given connection delegates to

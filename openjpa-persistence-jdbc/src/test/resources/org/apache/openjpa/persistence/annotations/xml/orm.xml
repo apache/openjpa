@@ -18,9 +18,9 @@
  under the License.
 -->
 
-<!-- A pair of entities are defined with metadata-complete attribute set to 
+<!-- A pair of entities are defined with metadata-complete attribute set to
      true and false respectively. Both entities carry identical annotation.
-     
+
 -->
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -37,7 +37,7 @@
       </basic>
     </attributes>
   </entity>
-  
+
   <entity class="org.apache.openjpa.persistence.annotations.xml.EntityB" metadata-complete="false">
     <named-query name="EntityB.SelectAll">
     	<query>SELECT b FROM EntityB b</query>

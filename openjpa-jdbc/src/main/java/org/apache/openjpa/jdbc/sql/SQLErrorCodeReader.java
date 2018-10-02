@@ -43,14 +43,14 @@ import org.w3c.dom.NodeList;
 /**
  * Parses XML content of SQL Error State codes to populate error codes for
  * a given Database Dictionary.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class SQLErrorCodeReader {
 	private Log log = null;
 	public static final String ERROR_CODE_DELIMITER = ",";
-	public static final Map<String, Integer> storeErrorTypes = 
+	public static final Map<String, Integer> storeErrorTypes =
 		new HashMap<String, Integer>();
 	static {
 		storeErrorTypes.put("lock", StoreException.LOCK);
@@ -62,10 +62,10 @@ public class SQLErrorCodeReader {
 				StoreException.REFERENTIAL_INTEGRITY);
 		storeErrorTypes.put("query", StoreException.QUERY);
 	}
-	
-	private static final Localizer _loc = 
+
+	private static final Localizer _loc =
 		Localizer.forPackage(SQLErrorCodeReader.class);
-	
+
 	public List<String> getDictionaries(InputStream in) {
 		List<String> result = new ArrayList<String>();
 		DocumentBuilder builder = XMLFactory.getDOMParser(false, false);
@@ -98,7 +98,7 @@ public class SQLErrorCodeReader {
 	/**
      * Parses given stream of XML content for error codes of the given database
      * dictionary name. Populates the given dictionary with the error codes.
-	 * 
+	 *
 	 */
 	public void parse(InputStream in, String dictName, DBDictionary dict) {
 		if (in == null || dict == null)
@@ -113,7 +113,7 @@ public class SQLErrorCodeReader {
 				Node node = nodes.item(i);
 				NamedNodeMap attrs = node.getAttributes();
 				Node dictionary = attrs.getNamedItem("class");
-				if (dictionary != null 
+				if (dictionary != null
                         && dictionary.getNodeValue().equals(dictName)) {
 					readErrorCodes(node, dict);
 				}

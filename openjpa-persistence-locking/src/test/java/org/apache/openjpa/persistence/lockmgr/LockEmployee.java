@@ -31,11 +31,11 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Version;
 
 @NamedQueries( {
-    @NamedQuery(name = "findEmployeeById", 
+    @NamedQuery(name = "findEmployeeById",
         query = "SELECT c FROM LockEmployee c WHERE c.id = :id"),
-    @NamedQuery(name = "findEmployeeByIdWithLock", 
+    @NamedQuery(name = "findEmployeeByIdWithLock",
         query = "SELECT c FROM LockEmployee c WHERE c.id = :id", lockMode = LockModeType.PESSIMISTIC_WRITE),
-    @NamedQuery(name = "findEmployeeByIdWithNoLock", 
+    @NamedQuery(name = "findEmployeeByIdWithNoLock",
         query = "SELECT c FROM LockEmployee c WHERE c.id = :id", lockMode = LockModeType.NONE) })
 @Entity
 public class LockEmployee implements Externalizable {

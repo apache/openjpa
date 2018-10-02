@@ -29,7 +29,7 @@ public class MidClass3 extends BaseClass6 {
     public String getMidClass2Name() {
         return midClass3Name;
     }
-    
+
     public String toString() {
         return super.toString() + ";midClass3Name=" + midClass3Name;
     }

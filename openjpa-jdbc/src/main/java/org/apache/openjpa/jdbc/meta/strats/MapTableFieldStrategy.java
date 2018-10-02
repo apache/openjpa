@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -112,13 +112,13 @@ public abstract class MapTableFieldStrategy
             throw new MetaDataException(_loc.get("mapped-by-key", field));
 
         // Non-default mapping Uni-/OneToMany/ForeignKey allows schema components
-        if (field.isUni1ToMFK())  
+        if (field.isUni1ToMFK())
             return;
         if (field.isBiMTo1JT())
             field.setBi1MJoinTableInfo();
         field.getValueInfo().assertNoSchemaComponents(field, !adapt);
     }
-    
+
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getAllRows(field.getTable(), Row.ACTION_DELETE);
@@ -189,7 +189,7 @@ public abstract class MapTableFieldStrategy
     protected ClassMapping[] getIndependentElementMappings(boolean traverse) {
         return ClassMapping.EMPTY_MAPPINGS;
     }
-    
+
     protected void handleMappedByForeignKey(boolean adapt){
         boolean criteria = field.getValueInfo().getUseClassCriteria();
         // check for named inverse
@@ -249,7 +249,7 @@ public abstract class MapTableFieldStrategy
                 RelationStrategies.mapRelationToUnmappedPC(val, "value", adapt);
 
             val.mapConstraints("value", adapt);
-            
+
             return;
         }
 /*
@@ -269,7 +269,7 @@ public abstract class MapTableFieldStrategy
             field.getMappingInfo().setTableName(null);
             field.getMappingInfo().setColumns(null);
         }
-*/        
+*/
     }
 
     protected boolean isTypeUnjoinedSubclass(ValueMapping mapped) {
@@ -285,7 +285,7 @@ public abstract class MapTableFieldStrategy
             throws SQLException {
         ClassMapping meta = (ClassMapping)valsm.getMetaData();
         FieldMapping fm = getFieldMapping(meta);
-        if (fm == null) 
+        if (fm == null)
             return false;
         Map mapObj = (Map)valsm.fetchObject(fm.getIndex());
         Collection<Map.Entry> entrySets = mapObj.entrySet();
@@ -293,38 +293,38 @@ public abstract class MapTableFieldStrategy
         for (Map.Entry entry : entrySets) {
             Object value = entry.getValue();
             if (obj instanceof ReflectingPersistenceCapable)
-               obj = ((ReflectingPersistenceCapable)obj).getManagedInstance(); 
+               obj = ((ReflectingPersistenceCapable)obj).getManagedInstance();
             if (value == obj) {
                 Row newRow = (Row) ((RowImpl)row).clone();
                 Object keyObj = entry.getKey();
                 Strategy strat = fm.getStrategy();
                 if (strat instanceof HandlerRelationMapTableFieldStrategy) {
-                    HandlerRelationMapTableFieldStrategy hrStrat = 
+                    HandlerRelationMapTableFieldStrategy hrStrat =
                         (HandlerRelationMapTableFieldStrategy) strat;
                     hrStrat.setKey(keyObj, store, newRow);
                 } else if (keyObj instanceof PersistenceCapable) {
-                    OpenJPAStateManager keysm = 
+                    OpenJPAStateManager keysm =
                         RelationStrategies.getStateManager(entry.getKey(), ctx);
                     ValueMapping key = fm.getKeyMapping();
-                    if (keysm != null) 
+                    if (keysm != null)
                         key.setForeignKey(newRow, keysm);
                     else
                         key.setForeignKey(newRow, null);
-                } 
+                }
                 rm.flushSecondaryRow(newRow);
                 found = true;
             }
         }
         if (found)
             return true;
-        return false;        
+        return false;
     }
 
     private FieldMapping getFieldMapping(ClassMapping meta) {
         FieldMapping[] fields = meta.getFieldMappings();
         for (int i = 0; i < fields.length; i++) {
             ValueMapping val = fields[i].getValueMapping();
-            if (fields[i].getMappedByMetaData() == field && 
+            if (fields[i].getMappedByMetaData() == field &&
                     val.getDeclaredTypeCode() == JavaTypes.MAP)
                 return fields[i];
         }

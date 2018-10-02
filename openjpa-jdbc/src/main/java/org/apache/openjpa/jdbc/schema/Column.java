@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -85,7 +85,7 @@ public class Column
     private boolean _XML = false;
     private boolean _isUni1MFK = false;
     private Set<Constraint> _constraints = new HashSet<Constraint>();
-    
+
     /**
      * Default constructor.
      */
@@ -217,7 +217,7 @@ public class Column
     public void resetTableName(String name) {
         _tableName = DBIdentifier.newTable(name);
     }
-    
+
     public void resetTableIdentifier(DBIdentifier table) {
         _tableName = table == null ? DBIdentifier.NULL : table;
     }
@@ -261,7 +261,7 @@ public class Column
         return _name == null ? DBIdentifier.NULL : _name;
     }
 
-    
+
     /**
      * Set the column's name. You can only call this method on columns
      * whose table object is not set.
@@ -289,7 +289,7 @@ public class Column
     public DBIdentifier getFullDBIdentifier() {
         return getQualifiedPath().getIdentifier();
     }
-    
+
     public QualifiedDBIdentifier getQualifiedPath() {
         if (_fullPath  == null) {
             _fullPath = QualifiedDBIdentifier.newPath(getTableIdentifier(), getIdentifier() );
@@ -861,7 +861,7 @@ public class Column
             addConstraint(c);
         }
     }
-    
+
     /**
      * Whether this column is of XML type.
      */
@@ -895,8 +895,8 @@ public class Column
     public void setComment(String comment) {
         _comment = comment;
     }
-    
-    /** 
+
+    /**
      *  Affirms if this instance represents an implicit relation. For example, a
      *  relation expressed as the value of primary key of the related class and
 	 *  not as object reference.
@@ -906,70 +906,70 @@ public class Column
     public boolean isImplicitRelation() {
     	return _implicitRelation;
     }
-    
+
     /**
      * Sets a marker to imply a logical relation that can not have any physical
      * manifest in the database. For example, a relation expressed as the value
      * of primary key of the related class and not as object reference.
      * Populated from @ForeignKey(implicit=true) annotation.
      * The mutator can only transit from false to true but not vice versa.
-     * 
+     *
      * @since 1.3.0
      */
     public void setImplicitRelation(boolean flag) {
     	_implicitRelation |= flag;
     }
-    
+
     /**
-     * Sets a marker to indicate that this instance represents a uni-directional 
-     * one to many relation using the foreign key strategy. This non-default 
-     * mapping of uni-directional one-to-many is supported in JPA 2.0.  
-     * 
+     * Sets a marker to indicate that this instance represents a uni-directional
+     * one to many relation using the foreign key strategy. This non-default
+     * mapping of uni-directional one-to-many is supported in JPA 2.0.
+     *
      * @since 2.0
      */
     public boolean isUni1MFK() {
         return _isUni1MFK;
     }
-    
-    /** 
+
+    /**
      *  Affirms if this instance represents a uni-directional one to many relation
-     *  using the foreign key strategy. This non-default mapping of uni-directional 
-     *  one-to-many is supported in JPA 2.0.  
+     *  using the foreign key strategy. This non-default mapping of uni-directional
+     *  one-to-many is supported in JPA 2.0.
      *
      * @since 2.0
      */
     public void setUni1MFK(boolean isUni1MFK) {
         _isUni1MFK = isUni1MFK;
     }
-    
+
     /**
      * Adds the given constraint to this column.
      */
     public void addConstraint(Constraint c) {
         _constraints.add(c);
     }
-    
+
     /**
      * Removes the given constraint from this column.
      */
     public void removeConstraint(Constraint c) {
         _constraints.remove(c);
     }
-    
+
     /**
      * Affirms if this column has any constraint of given type.
      */
     public boolean hasConstraint(Class<? extends Constraint> type) {
         return !getConstraints(type).isEmpty();
     }
-    
+
     /**
      * Gets all constrains attached this column.
      */
     public Set<Constraint> getConstraints() {
         return _constraints;
     }
-    
+
     /**
      * Gets all constrains of the given type attached to this column.
      */
@@ -982,25 +982,25 @@ public class Column
         }
         return result;
     }
-    
+
     /**
      * Affirms if any unique constraint is attached to this column.
      */
     public boolean isUniqueConstraint() {
         return hasConstraint(Unique.class);
     }
-    
+
     /**
      * Affirms if any index constraint is attached to this column.
      */
     public boolean isIndex() {
         return hasConstraint(Index.class);
     }
-    
+
     /**
      * Affirms if any foreign key constraint is attached to this column.
      */
     public boolean isForeignKey() {
         return hasConstraint(ForeignKey.class);
-    }  
+    }
 }

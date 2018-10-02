@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util.svn;
 
@@ -29,9 +29,9 @@ public class SVNUtils {
     /**
      * A public worker method that takes the output from running the svnversion command and parses the trailing integer
      * version out.
-     * 
+     *
      * For example: 959691:959709M would return 959709
-     * 
+     *
      * @param svninfo
      * @return The formatted int version, or -1 if svninfo is null or unparsable.
      */

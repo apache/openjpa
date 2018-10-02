@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.cache.jpa;
@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /*
  * When shared-cache-mode is set to ALL, all entities will be cached no matter
- * what is DataCache Types/ExcludedTypes setting. The other DataCache 
+ * what is DataCache Types/ExcludedTypes setting. The other DataCache
  * config settings like CacheSize will be used to config the data cache.
  */
 public class TestCacheModeAllDataCacheTrue extends TestCacheModeAll {

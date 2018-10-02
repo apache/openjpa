@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
  package org.apache.openjpa.persistence.blob;
 
@@ -94,7 +94,7 @@ public class TestBlobs extends SingleEMFTestCase {
         assertTrue(ids.contains(_nullLobId));
         assertFalse(ids.contains(_nullBlobId));
         assertFalse(ids.contains(_nullBothId));
-        
+
         em.close();
     }
 
@@ -108,7 +108,7 @@ public class TestBlobs extends SingleEMFTestCase {
         assertFalse(ids.contains(_nullLobId));
         assertTrue(ids.contains(_nullBlobId));
         assertTrue(ids.contains(_nullBothId));
-        
+
         em.close();
     }
 
@@ -122,7 +122,7 @@ public class TestBlobs extends SingleEMFTestCase {
         assertFalse(ids.contains(_nullLobId));
         assertTrue(ids.contains(_nullBlobId));
         assertFalse(ids.contains(_nullBothId));
-        
+
         em.close();
     }
 
@@ -136,7 +136,7 @@ public class TestBlobs extends SingleEMFTestCase {
         assertTrue(ids.contains(_nullLobId));
         assertFalse(ids.contains(_nullBlobId));
         assertTrue(ids.contains(_nullBothId));
-        
+
         em.close();
     }
 }

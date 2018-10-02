@@ -14,22 +14,22 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
 import java.io.Serializable;
 
 /** Denotes a composite identity combining a String and Integer field.
- * 
+ *
  * @author <A HREF="mailto:pinaki.poddar@gmail.com>Pinaki Poddar</A>
  *
  */
 public class CompositeId implements Serializable {
 	public Integer id;
 	public String  name;
-	
-	public CompositeId () 
+
+	public CompositeId ()
 	{
 	}
 
@@ -65,24 +65,24 @@ public class CompositeId implements Serializable {
 	{
 		this.name = name;
 	}
-	
-	public String toString() 
+
+	public String toString()
 	{
 		return id + ":" + name;
 	}
-	
+
 	@Override
 	public boolean equals (Object other)
 	{
 		if (other instanceof CompositeId==false)
 			return false;
-		
+
 		CompositeId that = (CompositeId) other;
 		return id.equals(that.id) && name.equals(that.name);
 	}
-	
+
 	@Override
-	public int hashCode () 
+	public int hashCode ()
 	{
 		return id.hashCode()+name.hashCode();
 	}

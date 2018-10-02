@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex1;
 
@@ -29,7 +29,7 @@ public class PhoneNumber {
 
     @ManyToMany(mappedBy="phones")
     Map<Division, Employee> emps = new HashMap<Division, Employee>();
-    
+
     @OneToOne(mappedBy="phone")
     Division division;
 
@@ -63,7 +63,7 @@ public class PhoneNumber {
 
     public boolean equals(Object o) {
         PhoneNumber p = (PhoneNumber) o;
-        Map<Division, Employee> map = p.getEmployees(); 
+        Map<Division, Employee> map = p.getEmployees();
         if (map.size() != emps.size())
             return false;
         Collection<Map.Entry<Division, Employee>> entries =

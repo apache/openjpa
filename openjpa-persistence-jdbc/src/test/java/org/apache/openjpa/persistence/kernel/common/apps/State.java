@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel.common.apps;
 
@@ -38,7 +38,7 @@ import org.apache.openjpa.persistence.kernel.TestIndirectRecursion;
 /**
  * Represents a graph node.
  * Used in testing {@linkplain TestIndirectRecursion}.
- * 
+ *
  * @author Pinaki Poddar
  *
  */

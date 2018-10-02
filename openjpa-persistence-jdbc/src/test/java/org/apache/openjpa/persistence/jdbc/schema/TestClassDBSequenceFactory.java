@@ -24,7 +24,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
@@ -45,29 +45,29 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestClassDBSequenceFactory
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-    
-    
+
+
     /** Creates a new instance of TestClassDBSequenceFactory */
     public TestClassDBSequenceFactory() {
     }
-    
+
     public TestClassDBSequenceFactory(String test) {
         super(test);
     }
-    
+
     public void setUp() {
        deleteAll(SeqE.class);
     }
-    
+
     boolean supportsPessimisticLocking() {
         OpenJPAConfiguration conf = getConfiguration();
         return conf instanceof JDBCConfiguration
                 && ((JDBCConfiguration) conf).getDBDictionaryInstance().
                 supportsSelectForUpdate;
     }
-    
+
     public void testVirtualSuperclass() {
-        
+
         OpenJPAEntityManagerFactory pmf =(OpenJPAEntityManagerFactory)
                 getEmf(getProps());
         OpenJPAEntityManager pm =
@@ -82,9 +82,9 @@ public class TestClassDBSequenceFactory
         pm.close();
         pmf.close();
     }
-    
+
     public void testIgnoreVirtualSuperclass() {
-        
+
         Map props=new HashMap();
         props.put("TableName", "JDO_CLASS_SEQUENCE");
         props.put("IgnoreVirtual", "true");
@@ -102,11 +102,11 @@ public class TestClassDBSequenceFactory
         if (next2 != next + 1)
             return; // valid.
         assertTrue(((Number) gen.getIncrement()).longValue() != next2 + 1);
-        
+
         pm.close();
         pmf.close();
     }
-    
+
     /**
      * Based on reported bug case.
      */
@@ -117,14 +117,14 @@ public class TestClassDBSequenceFactory
         pm.persist(pc);
         endTx(pm);;
         long id1 = pc.getId();
-        
+
         pc = new PerClassTestObject3();
         startTx(pm);;
         pm.persist(pc);
         long id2 = pc.getId();
         endTx(pm);;
         pm.close();
-        
+
         pc = new PerClassTestObject3();
         pm = (OpenJPAEntityManager)currentEntityManager();
         startTx(pm);;
@@ -132,11 +132,11 @@ public class TestClassDBSequenceFactory
         endTx(pm);;
         long id3 = pc.getId();
         pm.close();
-        
+
         assertEquals(id1 + 1, id2);
         assertEquals(id2 + 1, id3);
     }
-    
+
     /**
      * Tests that all sequence numbers are unique and in order.
      * Will fail for dbs without pessimistic locking.
@@ -145,31 +145,31 @@ public class TestClassDBSequenceFactory
     throws Exception {
         if (!(supportsPessimisticLocking()))
             return;
-        
+
         Set set = new HashSet();
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         Broker broker = getBrokerFactory().newBroker();
-        
-        
+
+
         UpdateThread t1 = new UpdateThread(set, broker);
         UpdateThread t2 = new UpdateThread(set, broker);
-        
+
         t1.start();
         t2.start();
         t1.join();
         t2.join();
-        
+
         if (t1.error != null)
             throw t1.error;
         if (t2.error != null)
             throw t2.error;
-        
+
         assertEquals(102, set.size());
     }
-    
+
     public void testSequenceGenerator() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        
+
         // make sure the sequence generator creates separate
         // instances.
         for (int i = 0; i < 100; i++) {
@@ -178,12 +178,12 @@ public class TestClassDBSequenceFactory
                     next()).longValue() + 1,
                     ((Number) pm.getIdentitySequence(SeqD.class).
                     getIncrement()).longValue());
-             
+
              */
         }
         // make sure the sequence generate is not the same as is
         // used elsewhere
-        
+
         for (int j = 0; j < 100; j++) {
             //FIXME
             /*
@@ -193,7 +193,7 @@ public class TestClassDBSequenceFactory
              */
         }
     }
-    
+
     public static void main(String[] args) {
         //main();
     }
@@ -202,21 +202,21 @@ public class TestClassDBSequenceFactory
         props.put("openjpa.Sequence", "db-class(TableName=JDO_CLASS_SEQUENCE");
         return props;
     }
-    
-    
-    
+
+
+
     private static class UpdateThread
             extends Thread {
-        
+
         private Set _set = null;
         private Broker _broker = null;
         public Exception error = null;
-        
+
         public UpdateThread(Set set, Broker broker) {
             _set = set;
             _broker = broker;
         }
-        
+
         public void run() {
             try {
                 ClassMapping mapping =

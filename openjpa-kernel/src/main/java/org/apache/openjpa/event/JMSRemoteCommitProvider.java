@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.event;
 
@@ -65,7 +65,7 @@ public class JMSRemoteCommitProvider
     private TopicSession _session;
     private TopicPublisher _publisher;
     private ClassLoader _appClassLoader;
-    
+
     /**
      * Sets the JMS Topic name. Defaults to
      * <code>topic/OpenJPACommitProviderTopic</code>.
@@ -176,7 +176,7 @@ public class JMSRemoteCommitProvider
             // create a subscriber.
             TopicSubscriber s = _session.createSubscriber(topic, null,
                 /* noLocal: */ true);
-            
+
             MessageListener l = getMessageListener();
             s.setMessageListener(l);
             _connection.start();
@@ -206,7 +206,7 @@ public class JMSRemoteCommitProvider
                             _topicName, m.getClass().getName()));
                     return;
                 }
-                
+
                 ClassLoader saveCls = Thread.currentThread()
                     .getContextClassLoader();
                 try {

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -39,16 +39,16 @@ public class LineItem {
 	private Order order;
 
     private int quantity;
-    
+
     private double cost;
-    
+
     @ManyToOne (fetch=FetchType.EAGER)
     Product product;
-     
+
     public long getId() {
         return id;
     }
-	
+
     public Order getOrder() {
         return order;
     }
@@ -88,5 +88,5 @@ public class LineItem {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-	
+
 }

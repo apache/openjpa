@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -22,15 +22,15 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * An abstract expression acts as a factory for concrete unary or binary 
+ * An abstract expression acts as a factory for concrete unary or binary
  * expressions such as ABS() or PLUS().
- * 
+ *
  * @author Pinaki Poddar
  *
  */
-abstract class ExpressionImpl extends AbstractVisitable 
+abstract class ExpressionImpl extends AbstractVisitable
    implements Expression, Visitable {
-	
+
 	public Expression abs() {
 		return new AbsExpression(this);
 	}
@@ -414,12 +414,12 @@ abstract class ExpressionImpl extends AbstractVisitable
 	}
 
 	public Predicate like(String pattern, PredicateOperand escapeChar) {
-        return new LikeExpression(this, new ConstantExpression(pattern), 
+        return new LikeExpression(this, new ConstantExpression(pattern),
 			escapeChar);
 	}
 
 	public Predicate like(String pattern, char escChar) {
-        return new LikeExpression(this, new ConstantExpression(pattern), 
+        return new LikeExpression(this, new ConstantExpression(pattern),
 			escChar);
 	}
 
@@ -454,7 +454,7 @@ abstract class ExpressionImpl extends AbstractVisitable
 	public Predicate notEqual(Enum<?> e) {
 		return new NotEqualExpression(this, new ConstantExpression(e));
 	}
-	
+
 	//
 	// Visitable/Selectable implementation
 	//

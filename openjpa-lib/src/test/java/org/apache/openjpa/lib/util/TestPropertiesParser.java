@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -115,7 +115,7 @@ public class TestPropertiesParser extends TestCase {
 
         p.put("new-key", "new value");
         p.put("foo", "barbar");
-        assertRoundTrip("foo: barbar" + LS + "baz: val" + LS 
+        assertRoundTrip("foo: barbar" + LS + "baz: val" + LS
             + "new-key: new value" + LS, p);
     }
 
@@ -127,8 +127,8 @@ public class TestPropertiesParser extends TestCase {
     public void testLineTypes() throws IOException {
         StringBuffer buf = new StringBuffer();
         buf.append("   !comment" + LS + " \t  " + LS + "name = no" + LS + "    "
-            + "#morec\tomm\\" + LS + "ents" + LS + LS + "  dog=no\\cat   " + LS 
-            + "burps    :" + LS + "test=" + LS + "date today" + LS + LS + LS 
+            + "#morec\tomm\\" + LS + "ents" + LS + LS + "  dog=no\\cat   " + LS
+            + "burps    :" + LS + "test=" + LS + "date today" + LS + LS + LS
             + "long\\" + LS + "   value=tryin \\" + LS + " "
             + "gto" + LS + "4:vier" + LS + "vier     :4");
         Properties p = toProperties(buf.toString());
@@ -158,7 +158,7 @@ public class TestPropertiesParser extends TestCase {
         throws Throwable {
         List valueList = new ArrayList(Arrays.asList(new String[]{
             "xxyy", "xx\\yy", "xx" + LS + "yy", "xx\\nyy", "xx\tyy", "xx\\tyy",
-            "xx\ryy", "xx\\ryy", "xx\fyy", "xx\\fyy", "xx\r" + LS + "\\\t\r\t" 
+            "xx\ryy", "xx\\ryy", "xx\fyy", "xx\\fyy", "xx\r" + LS + "\\\t\r\t"
             + LS + "yy",
             "xx\\r" + LS + "\\\t\\r\t\\nyy",
             "xx\r" + LS + "\\\\\\\\\\\\\\\\\\\\\\\\\\\t\r\t" + LS + "yy",
@@ -253,20 +253,20 @@ public class TestPropertiesParser extends TestCase {
         ((FormatPreservingProperties) p2).setAddWhitespaceAfterDelimiter(false);
 
         String[] values =
-            new String[] { 
-                "x", 
-                "x" + LS + "y", 
-                "x\\ny", 
-                "x\ty", 
+            new String[] {
+                "x",
+                "x" + LS + "y",
+                "x\\ny",
+                "x\ty",
                 "x\\ty",
-                "x\fy", 
-                "x\\fy", 
-                "x\ry", 
-                "x\\ry", 
+                "x\fy",
+                "x\\fy",
+                "x\ry",
+                "x\\ry",
                 "C:\\Foo Bar\\Baz",
                 randomString(5).replace('a', '\\'),
                 randomString(500).replace('a', '\\'),
-                randomString(5000).replace('a', '\\'), 
+                randomString(5000).replace('a', '\\'),
                 };
 
         for (int i = 0; i < values.length; i++) {

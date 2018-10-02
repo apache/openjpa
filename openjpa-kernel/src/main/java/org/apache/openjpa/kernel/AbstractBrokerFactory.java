@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -83,7 +83,7 @@ public abstract class AbstractBrokerFactory
     private static final Localizer _loc = Localizer.forPackage(AbstractBrokerFactory.class);
 
     // static mapping of configurations to pooled broker factories
-    private static final Map<Object,AbstractBrokerFactory> _pool = 
+    private static final Map<Object,AbstractBrokerFactory> _pool =
        Collections.synchronizedMap(new HashMap<Object,AbstractBrokerFactory>());
 
     // configuration
@@ -97,7 +97,7 @@ public abstract class AbstractBrokerFactory
     private final ReentrantLock _lock = new ReentrantLock();
 
     // maps global transactions to associated brokers
-    private transient ConcurrentHashMap<Object,Collection<Broker>> 
+    private transient ConcurrentHashMap<Object,Collection<Broker>>
         _transactional = new ConcurrentHashMap<Object,Collection<Broker>>();
 
     // weak-ref tracking of open brokers
@@ -117,8 +117,8 @@ public abstract class AbstractBrokerFactory
 
     // key under which this instance can be stored in the broker pool
     // and later identified
-    private Object _poolKey;   
-    
+    private Object _poolKey;
+
     /**
      * Return an internal factory pool key for the given configuration.
      *
@@ -181,7 +181,7 @@ public abstract class AbstractBrokerFactory
     public Broker newBroker(String user, String pass, boolean managed, int connRetainMode) {
         return newBroker(user, pass, managed, connRetainMode, true);
     }
-    
+
     public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting) {
         return newBroker(user, pass, managed, connRetainMode, findExisting, "", "");
     }
@@ -190,15 +190,15 @@ public abstract class AbstractBrokerFactory
         String cf1Name, String cf2Name) {
         try {
             assertOpen();
-            
+
             if(StringUtil.isNotEmpty(cf1Name)) {
                 // If the cfName has been set on the broker try looking up now.
-                try { 
+                try {
                     _conf.getConnectionFactory();
                 }
-                catch(UserException ue) { 
-                     // try setting the broker's CF into the configuration. 
-                    _conf.setConnectionFactoryName(cf1Name); 
+                catch(UserException ue) {
+                     // try setting the broker's CF into the configuration.
+                    _conf.setConnectionFactoryName(cf1Name);
                 }
             }
             makeReadOnly();
@@ -223,7 +223,7 @@ public abstract class AbstractBrokerFactory
     void initializeBroker(boolean managed, int connRetainMode, Broker broker, boolean fromDeserialization) {
         assertOpen();
         makeReadOnly();
-        
+
         DelegatingStoreManager dsm = createDelegatingStoreManager();
 
         ((BrokerImpl) broker).initialize(this, dsm, managed, connRetainMode, fromDeserialization);
@@ -471,14 +471,14 @@ public abstract class AbstractBrokerFactory
         // reset these transient fields to empty values
         _transactional = new ConcurrentHashMap<Object,Collection<Broker>>();
         _brokers = newBrokerSet();
-        
+
         // turn off logging while de-serializing BrokerFactory
         String saveLogConfig = _conf.getLog();
         _conf.setLog("none");
         makeReadOnly();
         // re-enable any logging which was in effect
-        _conf.setLog(saveLogConfig);  
-        
+        _conf.setLog(saveLogConfig);
+
         return this;
     }
 
@@ -750,14 +750,14 @@ public abstract class AbstractBrokerFactory
             // be active on multiple concurrent threads.
             Object txKey = mr.getTransactionKey();
             Collection<Broker> brokers = _transactional.get(txKey);
-            
+
             if (brokers == null) {
                 brokers = new ArrayList<Broker>(2);
                 _transactional.put(txKey, brokers);
                 trans.registerSynchronization(new RemoveTransactionSync(txKey));
             }
             brokers.add(broker);
-            
+
             return true;
         } catch (OpenJPAException ke) {
             throw ke;
@@ -824,14 +824,14 @@ public abstract class AbstractBrokerFactory
             _transactional.remove (_trans);
 		}
 	}
-    
+
     /**
      * Method insures that deserialized EMF has this reference re-instantiated
      */
     private Collection<ClassLoader> getPcClassLoaders() {
        if (_pcClassLoaders == null)
          _pcClassLoaders = new ConcurrentReferenceHashSet<ClassLoader>(ReferenceStrength.WEAK);
-          
+
        return _pcClassLoaders;
     }
 
@@ -841,13 +841,13 @@ public abstract class AbstractBrokerFactory
      * If a DataCache has been enabled a DataCacheStoreManager will be returned.
      * </P>
      * <P>
-     * If no DataCache is in use an ROPStoreManager will be returned. 
+     * If no DataCache is in use an ROPStoreManager will be returned.
      * </P>
-     * 
+     *
      * @return A delegating store manager suitable for the current
      *         configuration.
      */
-    protected DelegatingStoreManager createDelegatingStoreManager() { 
+    protected DelegatingStoreManager createDelegatingStoreManager() {
         // decorate the store manager for data caching and custom
         // result object providers; always make sure it's a delegating
         // store manager, because it's easier for users to deal with
@@ -858,12 +858,12 @@ public abstract class AbstractBrokerFactory
             dsm = new DataCacheStoreManager(sm);
         }
         dsm = new ROPStoreManager((dsm == null) ? sm : dsm);
-        
+
         return dsm;
     }
-    
+
     /**
-     * This method is invoked AFTER a BrokerFactory has been instantiated. 
+     * This method is invoked AFTER a BrokerFactory has been instantiated.
      */
     public void postCreationCallback() {
     	Auditor auditor = _conf.getAuditorInstance();

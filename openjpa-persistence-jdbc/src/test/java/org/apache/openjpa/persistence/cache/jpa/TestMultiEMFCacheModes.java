@@ -45,27 +45,27 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
     }
 
     /**
-     * Verifies that the data cache us updated via a em.refresh operation when 
+     * Verifies that the data cache us updated via a em.refresh operation when
      * javax.persistence.cache.storeMode = CacheStoreMode.REFRESH and the
      * entity is updated in the database.
      */
     public void testCacheRefreshModeRefresh() {
 
         EntityManager em = emf.createEntityManager();
-        
+
         // Create a new cacheable entity
         CacheableEntity ce = createEntity(em);
         int ceid = ce.getId();
 
         // Clear the L1
         em.clear();
-        
+
         // Clear the L2 cache
         Cache cache = emf.getCache();
         cache.evictAll();
         assertFalse(cache.contains(CacheableEntity.class, ceid));
 
-        // Find the entity, reloading it into the L2 
+        // Find the entity, reloading it into the L2
         em.getTransaction().begin();
         ce = em.find(CacheableEntity.class, ceid);
         assertTrue(em.contains(ce));
@@ -82,7 +82,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
             "openjpa.LockManager", "mixed",
             "openjpa.ConnectionFactoryProperties", "PrintParameters=true");
         EntityManager em2 = emf2.createEntityManager();
-        
+
         // Find + lock, then update the entity and commit
         em2.getTransaction().begin();
         CacheableEntity ce2 = em2.find(CacheableEntity.class, ceid, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
@@ -91,7 +91,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
         em2.close();
         emf2.close();
 
-        // Refresh the entity - this will load the entity into the L1 and with storeMode=REFRESH, 
+        // Refresh the entity - this will load the entity into the L1 and with storeMode=REFRESH,
         // should also refresh it in the L2
         java.util.Map<String, Object> cacheStoreModeMap = new java.util.HashMap<String, Object>();
         cacheStoreModeMap.put("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
@@ -102,7 +102,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
 
         // Verify loading from the L1
         ce = em.find(CacheableEntity.class, ceid);
-        
+
         // Verify the entity was updated
         verifyUpdatedEntity(ce, ceid);
 
@@ -114,7 +114,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
 
         // Reload the entity from the L2
         ce = em.find(CacheableEntity.class, ceid);
-        
+
         // Verify the entity in the L2 was updated
         verifyUpdatedEntity(ce, ceid);
 
@@ -122,8 +122,8 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
     }
 
     /**
-     * Verifies that the data cache us updated via a em.refresh operation when 
-     * javax.persistence.cache.storeMode = CacheStoreMode.REFRESH and the 
+     * Verifies that the data cache us updated via a em.refresh operation when
+     * javax.persistence.cache.storeMode = CacheStoreMode.REFRESH and the
      * record is removed from the database.
      */
     public void testCacheRefreshModeRefreshDelete() {
@@ -139,7 +139,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
         cache.evictAll();
         assertFalse(cache.contains(CacheableEntity.class, ceid));
 
-        // Find the entity, reloading it into the L2 
+        // Find the entity, reloading it into the L2
         em.getTransaction().begin();
         ce = em.find(CacheableEntity.class, ceid);
         assertTrue(em.contains(ce));

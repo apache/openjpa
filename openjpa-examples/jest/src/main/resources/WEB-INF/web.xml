@@ -18,11 +18,11 @@
  under the License.
 -->
 
-<web-app version="2.4" 
-         xmlns="http://java.sun.com/xml/ns/j2ee" 
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<web-app version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-  <display-name>Demo Application with JEST Servlet</display-name>  
+  <display-name>Demo Application with JEST Servlet</display-name>
   <welcome-file-list>
 		<welcome-file>index.html</welcome-file>
   </welcome-file-list>
@@ -30,19 +30,19 @@
     An example of deploying a simple web application with JEST servlet.
     This descriptor specifies the Demo Application servlet as well as JEST servlet.
   </description>
-  
+
    	<servlet>
-   		<description> 
+   		<description>
    		This is the Demo Application Servlet.
    		The servlet is mapped to URL pattern /app/* so this servlet can be accessed as
-   		                  http://host:port/demo/app/ 
+   		                  http://host:port/demo/app/
    		where "demo" is the name of the deployed web application.
-   		                  
-   		Assume that the Demo Application Servlet is using a persistence unit named 
+
+   		Assume that the Demo Application Servlet is using a persistence unit named
    		'jestdemo'. The JEST Servlet will require the persistence unit name to
-   		browse the Demo Application.                  
+   		browse the Demo Application.
    		</description>
-   		
+
 		<servlet-name>demo</servlet-name>
 		<servlet-class>demo.SimpleApp</servlet-class>
 	</servlet>
@@ -50,18 +50,18 @@
 		<servlet-name>demo</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
-  
+
     <!-- Deployment descriptor for JESTServlet.                                           -->
   	<servlet>
   		<description>
-  		This is the JEST servlet. 
+  		This is the JEST servlet.
   		JEST Servlet needs to know the name of the persistence unit used by the Demo Application.
   		The unit name is specified by mandatory "persistence.unit" parameter during initialization.
-  		
+
   		The JEST servlet is mapped to URL pattern /jest/* in servlet mapping section. So to access
   		JEST servlet, use the following URI
   		    http://host:port/demo/jest/
-  		Notice the trailing forward slash character is significant.     
+  		Notice the trailing forward slash character is significant.
   		</description>
 		<servlet-name>jest</servlet-name>
 		<servlet-class>org.apache.openjpa.persistence.jest.JESTServlet</servlet-class>
@@ -78,5 +78,5 @@
 		<servlet-name>jest</servlet-name>
 		<url-pattern>/jest/*</url-pattern>
 	</servlet-mapping>
-  
+
 </web-app>

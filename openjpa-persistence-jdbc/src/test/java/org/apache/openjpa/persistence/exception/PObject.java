@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.exception;
 
@@ -26,7 +26,7 @@ import javax.persistence.Version;
 /**
  * A Simple entity for testing. Has a version field for testing optimistic
  * concurrent usage.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -38,15 +38,15 @@ public class PObject {
 	private String name;
 	@Version
 	private int version;
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -54,7 +54,7 @@ public class PObject {
 	public long getId() {
 		return id;
 	}
-	
+
 	public int getVersion() {
 		return version;
 	}

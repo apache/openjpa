@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 
 
 /**
- * Entity used to test MappedSuperClass which does not have IdClass. 
- * 
+ * Entity used to test MappedSuperClass which does not have IdClass.
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-873">OPENJPA-873</A>
- *  
+ *
  * @author pioneer_ip@yahoo.com
  * @author Fay Wang
  *

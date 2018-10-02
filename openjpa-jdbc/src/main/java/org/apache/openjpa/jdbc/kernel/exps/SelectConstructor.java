@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -67,11 +67,11 @@ public class SelectConstructor
     /**
      * Evaluate the expression, returning a new select and filling in any
      * associated expression state. Use {@link #select} to then select the data.
-     * 
+     *
      * @param ctx fill with execution context
      * @param state will be filled with expression state
      */
-    public Select evaluate(ExpContext ctx, Select parent, String alias, 
+    public Select evaluate(ExpContext ctx, Select parent, String alias,
         QueryExpressions exps, QueryExpressionsState state) {
         // already know that this query is equivalent to an extent?
         Select sel;
@@ -90,7 +90,7 @@ public class SelectConstructor
         // no ordering or projections, we return null to signify that this
         // query should be treated like an extent
         Select inner = sel.getFromSelect();
-        SQLBuffer where = buildWhere((inner != null) ? inner : sel, ctx, 
+        SQLBuffer where = buildWhere((inner != null) ? inner : sel, ctx,
             state.filter, exps.filter);
         if (where == null && exps.projections.length == 0
             && exps.ordering.length == 0
@@ -118,7 +118,7 @@ public class SelectConstructor
         }
         for (int i = 0; i < exps.grouping.length; i++)
             ((Val) exps.grouping[i]).groupBy(sel, ctx, state.grouping[i]);
-        
+
         if (exps.projections.length == 1) {
             Val val = (Val) exps.projections[0];
             if (val instanceof Count && ((Count)val).isCountDistinctMultiCols()) {
@@ -129,7 +129,7 @@ public class SelectConstructor
                 sel.setExpectedResultCount(0, true);
                 sel = newSel;
             }
-        }        
+        }
         return sel;
     }
 
@@ -192,7 +192,7 @@ public class SelectConstructor
                 boolean agg = exps.isAggregate();
                 boolean candidate = ProjectionExpressionVisitor.
                     hasCandidateProjections(exps.projections);
-                if (agg || (candidate 
+                if (agg || (candidate
                     && (exps.distinct & exps.DISTINCT_TRUE) == 0)) {
                     DBDictionary dict = ctx.store.getDBDictionary();
                     dict.assertSupport(dict.supportsSubselect,
@@ -206,10 +206,10 @@ public class SelectConstructor
                     sel.setFromSelect(inner);
 
                 // auto-distincting happens to get unique candidate instances
-                // back; don't auto-distinct if the user isn't selecting 
+                // back; don't auto-distinct if the user isn't selecting
                 // candidate data
-                } else if (!candidate 
-                    && (exps.distinct & exps.DISTINCT_TRUE) == 0) 
+                } else if (!candidate
+                    && (exps.distinct & exps.DISTINCT_TRUE) == 0)
                     sel.setDistinct(false);
             }
         }
@@ -219,7 +219,7 @@ public class SelectConstructor
     /**
      * Initialize all expressions.
      */
-    private void initialize(Select sel, ExpContext ctx, QueryExpressions exps, 
+    private void initialize(Select sel, ExpContext ctx, QueryExpressions exps,
         QueryExpressionsState state) {
         Map contains = null;
         if (HasContainsExpressionVisitor.hasContains(exps.filter)
@@ -248,9 +248,9 @@ public class SelectConstructor
                 if (!ctx.store.getDBDictionary().supportsParameterInSelect && resultVal instanceof Lit) {
                     ((Lit)resultVal).setRaw(true);
                 }
-                // have to join through to related type for pc object 
+                // have to join through to related type for pc object
                 // projections; this ensures that we have all our joins cached
-                state.projections[i] = resultVal.initialize(sel, ctx, 
+                state.projections[i] = resultVal.initialize(sel, ctx,
                     Val.JOIN_REL | Val.FORCE_OUTER);
                 if (exps.projections.length > 1 && resultVal instanceof Count) {
                     if (((Count)resultVal).isCountDistinctMultiCols())
@@ -279,17 +279,17 @@ public class SelectConstructor
             Val orderVal;
             for (int i = 0; i < exps.ordering.length; i++) {
                 orderVal = (Val) exps.ordering[i];
-                if (contains(orderVal, exps.grouping)) 
+                if (contains(orderVal, exps.grouping))
                     state.ordering[i] = orderVal.initialize(sel, ctx, Val.JOIN_REL);
                 else
                     state.ordering[i] = orderVal.initialize(sel, ctx, 0);
-                    
+
                 joins = sel.and(joins, state.ordering[i].joins);
             }
         }
         sel.where(joins);
     }
-    
+
     private boolean contains(Val orderVal, Value[] grouping) {
         for (int i = 0; i < grouping.length; i++) {
             Val groupVal = (Val) grouping[i];
@@ -302,7 +302,7 @@ public class SelectConstructor
     /**
      * Create the where sql.
      */
-    private SQLBuffer buildWhere(Select sel, ExpContext ctx, ExpState state, 
+    private SQLBuffer buildWhere(Select sel, ExpContext ctx, ExpState state,
         Expression filter) {
         // create where buffer
         SQLBuffer where = new SQLBuffer(ctx.store.getDBDictionary());
@@ -350,7 +350,7 @@ public class SelectConstructor
                     if (sel.getParent() != null)
                         throw new UnsupportedException(_loc.get("count-distinct-multi-col-subselect-unsupported"));
                 }
-            }            
+            }
 
             // if we have an inner select, we need to select the candidate
             // class' pk columns to guarantee unique instances
@@ -371,10 +371,10 @@ public class SelectConstructor
                     val.select(sel, ctx, state.projections[i], pks);
             }
 
-            // make sure having columns are selected since it is required by 
+            // make sure having columns are selected since it is required by
             // some DBs.  put them last so they don't affect result processing
             if (exps.having != null && inner != null)
-                ((Exp) exps.having).selectColumns(inner, ctx, state.having, 
+                ((Exp) exps.having).selectColumns(inner, ctx, state.having,
                     true);
         }
 
@@ -391,7 +391,7 @@ public class SelectConstructor
         // this isn't a projection or a subq then they will already be added
         if (exps.projections.length > 0 || sel.getParent() != null) {
             ctx.store.loadSubclasses(mapping);
-            mapping.getDiscriminator().addClassConditions((inner != null) 
+            mapping.getDiscriminator().addClassConditions((inner != null)
                 ? inner : sel, subclasses, joins);
         }
     }
@@ -418,7 +418,7 @@ public class SelectConstructor
         public void enter(Value val) {
             if (!_candidate) {
                 _candidate = (_level == 0 && val instanceof Constant)
-                    || (val instanceof PCPath 
+                    || (val instanceof PCPath
                     && !((PCPath) val).isVariablePath());
             }
             _level++;

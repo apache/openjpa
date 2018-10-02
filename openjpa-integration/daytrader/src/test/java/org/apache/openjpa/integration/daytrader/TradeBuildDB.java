@@ -26,37 +26,37 @@ import org.apache.openjpa.lib.log.Log;
 // import org.apache.geronimo.samples.daytrader.util.*;
 
 /**
- * TradeBuildDB uses operations provided by the TradeApplication to 
- *   (a) create the Database tables 
- *   (b) populate a DayTrader database without creating the tables. 
+ * TradeBuildDB uses operations provided by the TradeApplication to
+ *   (a) create the Database tables
+ *   (b) populate a DayTrader database without creating the tables.
  * Specifically, a new DayTrader User population is created using
- * UserIDs of the form "uid:xxx" where xxx is a sequential number 
+ * UserIDs of the form "uid:xxx" where xxx is a sequential number
  * (e.g. uid:0, uid:1, etc.). New stocks are also created of the form "s:xxx",
  * again where xxx represents sequential numbers (e.g. s:1, s:2, etc.)
  */
 public class TradeBuildDB {
 
     private TradeAction trade = null;
-    
+
     /**
-     * Re-create the DayTrader db tables and populate them OR just populate a 
+     * Re-create the DayTrader db tables and populate them OR just populate a
      * DayTrader DB, logging to the provided output stream
      */
     public TradeBuildDB(Log log, TradeAction trade) throws Exception {
         this.trade = trade;
         // update config
-        
+
         // always use TradeJPADirect mode
 
         // removed - createDBTables
 
         // removed - Attempt to delete all of the Trade users and Trade Quotes first
-        
+
     }
 
     public void setup(int quotes, int users) {
         createQuotes(quotes);
-        createAccounts(users);        
+        createAccounts(users);
     }
     private void createQuotes(int quotes) {
         int errorCount = 0;
@@ -77,7 +77,7 @@ public class TradeBuildDB {
         }
 
     }
-    
+
     private void createAccounts(int users) {
         TradeConfig.log.info("TradeBuildDB.createAccounts(" + users + ")");
         for (int i = 0; i < users; i++) {
@@ -90,7 +90,7 @@ public class TradeBuildDB {
             if (i == 0) {
                 initialBalance = 1000000; // uid:0 starts with a cool million.
             }
-            
+
             AccountDataBean accountData = trade.register(userID, "xxx", fullname, address,
                 email, creditcard, new BigDecimal(initialBalance));
 

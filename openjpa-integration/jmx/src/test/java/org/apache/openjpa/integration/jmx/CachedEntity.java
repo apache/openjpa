@@ -29,7 +29,7 @@ public class CachedEntity {
 
     @Id
     private int id;
-    
+
     @Basic
     private String name;
 

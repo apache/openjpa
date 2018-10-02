@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.delimited.identifiers.xml;
 public class EntityI2 {
     private int id;
     private String name;
-    
+
     private EntityI3 eI3;
-    
+
     public EntityI2() {}
-    
+
     public EntityI2(int id) {
         this.id = id;
     }

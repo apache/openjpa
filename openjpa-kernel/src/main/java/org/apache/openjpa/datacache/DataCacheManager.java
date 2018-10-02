@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -25,14 +25,14 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.conf.ObjectValue;
 
 /**
- * Manages the system's data and query caches. You can retrieve the data cache manager from the 
+ * Manages the system's data and query caches. You can retrieve the data cache manager from the
  * {@link OpenJPAConfiguration#getDataCacheManagerInstance()}.
  * <br>
  * Manages zero or more individual {@link DataCache caches} or partitions. Each individual partition
  * is identified by a string-based identifier.
- *  
+ *
  * Decides eligibility to cache for managed types.
- * 
+ *
  *
  * @author Abe White
  * @author Patrick Linskey
@@ -79,23 +79,23 @@ public interface DataCacheManager {
      * Return the runnable which schedules evictions.
      */
     public ClearableScheduler getClearableScheduler();
-    
+
     /**
      * Select the cache where the given managed proxy instance should be cached.
-     * This decision <em>may</em> override the cache returned by 
+     * This decision <em>may</em> override the cache returned by
      * {@link CacheDistributionPolicy#selectCache(OpenJPAStateManager, Object) policy}
-     * as specified by the user.  
-     *  
+     * as specified by the user.
+     *
      * @param sm the managed proxy instance
      * @return the cache that will store the state of the given managed instance.
-     * 
+     *
      * @since 2.0.0
      */
     public DataCache selectCache(final OpenJPAStateManager sm);
-    
+
     /**
-     * Return the user-specific policy that <em>suggests</em> the cache where a managed entity state is stored.  
-     * 
+     * Return the user-specific policy that <em>suggests</em> the cache where a managed entity state is stored.
+     *
      * @since 2.0.0
      */
     public CacheDistributionPolicy getDistributionPolicy();
@@ -104,7 +104,7 @@ public interface DataCacheManager {
      * Close all caches.
      */
     public void close();
-    
+
     /**
      * Stop caching the type matching the provided class name.
      */

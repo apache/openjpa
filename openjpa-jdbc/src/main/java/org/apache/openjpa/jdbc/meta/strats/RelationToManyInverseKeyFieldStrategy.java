@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -96,11 +96,11 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         ClassMapping owner = field.getDefiningMapping();
         while (fk.getPrimaryKeyTable() != owner.getTable()) {
             joins = owner.joinSuperclass(joins, false);
-            owner = owner.getJoinablePCSuperclassMapping(); 
+            owner = owner.getJoinablePCSuperclassMapping();
             if (owner == null)
                 throw new InternalException();
         }
-        return joins.joinRelation(field.getName(), fk, elem, 
+        return joins.joinRelation(field.getName(), fk, elem,
             vm.getSelectSubclasses(), true, true);
     }
 
@@ -115,7 +115,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         FieldMapping mapped = field.getMappedByMapping();
 
         // JPA 2.0 allows non-default mapping: Uni-/1-M/@JoinColumn ==> foreign key strategy
-        // Bi-/1-M/@JoinColumn should result in exception 
+        // Bi-/1-M/@JoinColumn should result in exception
         if (!isNonDefaultMappingAllowed || mapped != null) {
             field.getValueInfo().assertNoSchemaComponents(field, !adapt);
         }
@@ -133,7 +133,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         boolean criteria = vinfo.getUseClassCriteria();
         if (mapped != null) {
             mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
-            if (!(mapped.getStrategy() instanceof RelationFieldStrategy 
+            if (!(mapped.getStrategy() instanceof RelationFieldStrategy
                || mapped.getHandler() instanceof UntypedPCValueHandler))
                 throw new MetaDataException(_loc.get("not-inv-relation",
                     field, mapped));
@@ -146,9 +146,9 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             elem.setUseClassCriteria(criteria);
 
             ForeignKey fk = mapped.getForeignKey();
-            /** Foreign key may be null if declared type of the mapped field is 
+            /** Foreign key may be null if declared type of the mapped field is
              * abstract and under table-per-class inheritance strategy will have
-             * no mapped table.  
+             * no mapped table.
              */
             if (fk != null) {
             	field.setOrderColumn(finfo.getOrderColumn(field,
@@ -156,8 +156,8 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             	field.setOrderColumnIO(finfo.getColumnIO());
             }
             return;
-        } else { 
-            if (field.getValueInfo().getColumns().size() > 0 && 
+        } else {
+            if (field.getValueInfo().getColumns().size() > 0 &&
                 field.getAccessType() == FieldMetaData.ONE_TO_MANY) {
                 _uni1MFK = true;
             }
@@ -276,7 +276,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             containsPK= cols[i].isPrimaryKey();
         }
 
-        if (!elem.getUseClassCriteria() && io.isAnyUpdatable(fk, true) && !containsPK) { 
+        if (!elem.getUseClassCriteria() && io.isAnyUpdatable(fk, true) && !containsPK) {
             assertInversable();
             Row row = rm.getAllRows(fk.getTable(), Row.ACTION_UPDATE);
             row.setForeignKey(fk, io, null);
@@ -368,7 +368,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         if (clss.length != 1)
             throw RelationStrategies.unjoinable(elem);
         if (forceOuter)
-            return joins.outerJoinRelation(field.getName(), 
+            return joins.outerJoinRelation(field.getName(),
                 elem.getForeignKey(clss[0]), clss[0],
                 elem.getSelectSubclasses(), true, true);
         return joins.joinRelation(field.getName(), elem.getForeignKey(clss[0]),

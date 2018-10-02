@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -26,7 +26,7 @@ import java.io.Serializable;
  * @author Abe White
  * @since 0.4.0
  */
-public abstract class StrategyInstaller 
+public abstract class StrategyInstaller
     implements Serializable {
 
     protected final MappingRepository repos;

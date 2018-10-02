@@ -29,7 +29,7 @@ import javax.persistence.SequenceGenerator;
 
 /*
  * An entity which has a sequence where the sequence defines a schema,
- * as such the schema in the sequence annotation should take precedence over 
+ * as such the schema in the sequence annotation should take precedence over
  * the persistence-unit-default schema (see pudefaults-orm.xml file).
  */
 @Entity
@@ -38,7 +38,7 @@ public class PUSchemaInSequenceMappingEntity implements Serializable {
     private static final long serialVersionUID = 2472845479260320080L;
 
     @Id
-    @SequenceGenerator(name = "Seq_4SequenceMappingSchema", sequenceName = "SeqName_4SequenceMappingSchema", 
+    @SequenceGenerator(name = "Seq_4SequenceMappingSchema", sequenceName = "SeqName_4SequenceMappingSchema",
                        schema = "schemaInSequenceAnnotation")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Seq_4SequenceMappingSchema")
     @Column(name = "ID")

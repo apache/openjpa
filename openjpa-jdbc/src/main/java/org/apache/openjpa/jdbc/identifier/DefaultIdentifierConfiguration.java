@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.identifier;
 
@@ -34,7 +34,7 @@ public class DefaultIdentifierConfiguration implements IdentifierConfiguration {
     public DefaultIdentifierConfiguration() {
         normalizingRules.put(IdentifierRule.DEFAULT_RULE, normalizingRule);
     }
-    
+
     public boolean delimitAll() {
         return false;
     }
@@ -79,7 +79,7 @@ public class DefaultIdentifierConfiguration implements IdentifierConfiguration {
     public boolean getSupportsDelimitedIdentifiers() {
         return true;
     }
-    
+
     public String getConversionKey() {
         return conversionKey;
     }

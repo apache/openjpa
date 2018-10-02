@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -23,22 +23,22 @@ import java.util.*;
 
 @Embeddable
 public class ContactInfo {
-    @ManyToMany 
+    @ManyToMany
     @JoinTable(name="EMP_PHONE",
         joinColumns = @JoinColumn(name="Emp_ID", referencedColumnName="EmpId"),
         inverseJoinColumns=
             @JoinColumn(name="PHONE_ID", referencedColumnName="Number")
-        
+
     )
     // Bidirectional
     List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
-    
+
     public List<PhoneNumber> getPhoneNumbers() {
         return phoneNumbers;
     }
-    
+
     public void addPhoneNumber(PhoneNumber phoneNumber) {
         phoneNumbers.add(phoneNumber);
     }
-  
+
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -112,7 +112,7 @@ public class Schema
             throw new IllegalStateException();
         _name = DBIdentifier.trimToNull(name);
     }
-    
+
     /**
      * Return the schema's tables.
      */
@@ -147,7 +147,7 @@ public class Schema
     public Table addTable(String name) {
         return addTable(DBIdentifier.newTable(name));
     }
-    
+
     public Table addTable(DBIdentifier name) {
         SchemaGroup group = getSchemaGroup();
         Table tab;
@@ -164,7 +164,7 @@ public class Schema
         _tables = null;
         return tab;
     }
-    
+
 
     /**
      * Add a table with a shortened (i.e., validated) name to the schema
@@ -253,7 +253,7 @@ public class Schema
     public Sequence getSequence(DBIdentifier name) {
         if (DBIdentifier.isNull(name) || _seqMap == null)
             return null;
-        
+
         DBIdentifier sName = DBIdentifier.toUpper(name);
         Sequence seq = (Sequence) _seqMap.get(sName);
         return seq;
@@ -277,7 +277,7 @@ public class Schema
             seq = new Sequence(name, this);
         if (_seqMap == null)
             _seqMap = new TreeMap<DBIdentifier, Sequence>();
-        
+
         DBIdentifier sName = DBIdentifier.toUpper(name);
         _seqMap.put(sName, seq);
         _seqs = null;

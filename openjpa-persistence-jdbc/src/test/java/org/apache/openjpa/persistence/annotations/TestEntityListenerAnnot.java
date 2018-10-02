@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.annotations;
 
@@ -62,8 +62,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 	public void testPostPersist()
 	{
-		OpenJPAEntityManager em = null;	
-	  try{	
+		OpenJPAEntityManager em = null;
+	  try{
 		em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
@@ -78,7 +78,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		assertEquals("namevalidator", store.getClist().get(0));
 		assertEquals("longnamevalidatorprr", store.getClist().get(1));
 		assertEquals("employeepop", store.getClist().get(2));
-        assertEquals("We expected 'gen#" +  emp.getCheck() + " : " 
+        assertEquals("We expected 'gen#" +  emp.getCheck() + " : "
                 + emp.getCheck() + "'. However, we got '"
                 + store.getClist().get(3) + "'", "gen#" + emp.getCheck(),
                 store.getClist().get(3));
@@ -245,9 +245,9 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 //	{
 //      OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 //		startTx(em);
-//		
+//
 //		Employee emp = new Employee(-1, "failure");
-//		
+//
 //		try
 //		{
 //          //persisting an entity with an invalid id throws an exception
@@ -256,7 +256,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 //          fail("Should have failed..persisting an entity with invalid id");
 //		}
 //		catch(RuntimeException e)
-//		{			
+//		{
 //			assertFalse(em.isPersistent(emp));
 //          assertTrue("transaction was not marked for rollback",
 //                  em.getRollbackOnly());
@@ -273,7 +273,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 //			if(em.getRollbackOnly() == true)
 //				endEm(em);
 //		}
-//		
+//
 //		if(em.isActive())
 //			endEm(em);
 //	}

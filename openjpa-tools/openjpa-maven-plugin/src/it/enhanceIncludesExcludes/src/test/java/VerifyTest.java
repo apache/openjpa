@@ -27,7 +27,7 @@ import enhance.include.TestEntityB;
 import foo.TestEntityC;
 
 public class VerifyTest {
-    
+
     @Test
     public void testTestEntityBIsEnhanced() {
         if (!PersistenceCapable.class.isAssignableFrom(TestEntityB.class)) {

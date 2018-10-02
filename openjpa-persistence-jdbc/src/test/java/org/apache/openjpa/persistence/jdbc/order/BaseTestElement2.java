@@ -14,24 +14,24 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
 public class BaseTestElement2 {
 
   private int id;
-  
-  private String name;
-  
 
-  public BaseTestElement2() {        
+  private String name;
+
+
+  public BaseTestElement2() {
   }
-  
+
   public BaseTestElement2(String name) {
       this.name = name;
   }
-  
+
   public void setName(String name) {
       this.name = name;
   }
@@ -47,12 +47,12 @@ public class BaseTestElement2 {
   public int getId() {
       return id;
   }
-  
+
   public boolean equals(Object obj) {
       if (obj instanceof BaseTestElement2) {
           BaseTestElement2 bte = (BaseTestElement2)obj;
           return getId() == bte.getId() &&
-             bte.getName().equalsIgnoreCase(bte.getName());                
+             bte.getName().equalsIgnoreCase(bte.getName());
       }
       return false;
   }

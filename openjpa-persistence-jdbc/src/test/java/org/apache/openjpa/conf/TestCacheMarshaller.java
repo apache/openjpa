@@ -31,7 +31,7 @@ public class TestCacheMarshaller
             "default(Id=" + getClass().getName() + ", ValidationPolicy="
                 + OpenJPAVersionAndConfigurationTypeValidationPolicy.class
                     .getName()
-                + ", InputURL=file:target/test-classes/" 
+                + ", InputURL=file:target/test-classes/"
                 + getClass().getName() + ".ser"
                 + ", OutputFile=target/test-classes/"
                 + getClass().getName() + ".ser)"
@@ -68,7 +68,7 @@ public class TestCacheMarshaller
         cm.store(o);
         assertEquals(o, cm.load());
     }
-    
+
     public void testendConfiguration() {
         ((CacheMarshallerImpl)cm).setInputURL(null);
         ((CacheMarshallerImpl)cm)

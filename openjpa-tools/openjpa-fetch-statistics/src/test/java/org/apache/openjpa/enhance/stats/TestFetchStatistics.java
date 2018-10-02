@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.enhance.stats;
@@ -35,7 +35,7 @@ public class TestFetchStatistics extends TestCase {
 
     /**
      * Create the test case
-     * 
+     *
      * @param testName
      *            name of the test case
      */
@@ -61,7 +61,7 @@ public class TestFetchStatistics extends TestCase {
 
     public void testFieldAccess() {
         FetchStatsCollector.clear();
-        
+
         AEntity aEntity = new AEntity(1, "t", "d", null);
 
 
@@ -88,7 +88,7 @@ public class TestFetchStatistics extends TestCase {
 
     public void testPropertyFieldMixedAccess() {
         FetchStatsCollector.clear();
-        
+
         BEntity b = new BEntity(2, "t2", "d2");
 
         Set<String> res = FetchStatsCollector.getStatistics();
@@ -114,7 +114,7 @@ public class TestFetchStatistics extends TestCase {
 
         assertTrue(res.contains("org.apache.openjpa.enhance.stats.BEntity.name"));
         assertTrue(res.contains("org.apache.openjpa.enhance.stats.BEntity.desc"));
-        
+
         e.getName();
         e.getCustomDesc();
 
@@ -139,21 +139,21 @@ public class TestFetchStatistics extends TestCase {
 
     public void testPropertyAccessThroughInheritance() {
         FetchStatsCollector.clear();
-        
+
         ChildEntity cEntity = new ChildEntity(1, "t1", "d1", "cn1");
-        
+
         Set<String> res = FetchStatsCollector.getStatistics();
-        
+
         assertTrue(res.contains("org.apache.openjpa.enhance.stats.ChildEntity.childName"));
         assertTrue(res.contains("org.apache.openjpa.enhance.stats.BEntity.name"));
         assertTrue(res.contains("org.apache.openjpa.enhance.stats.BEntity.desc"));
-        
+
         // touch fields
         cEntity.getChildName();
         cEntity.getName();
         cEntity.getCustomDesc();
-        
-        
+
+
         res = FetchStatsCollector.getStatistics();
 
         assertFalse(res.contains("org.apache.openjpa.enhance.stats.ChildEntity.childName"));

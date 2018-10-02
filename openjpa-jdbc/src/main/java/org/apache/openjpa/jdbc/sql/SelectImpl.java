@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -171,14 +171,14 @@ public class SelectImpl
     private ClassMapping _tpcMeta = null;
     private List _joinedTables = null;
     private List _exJoinedTables = null;
-    
+
     public ClassMapping getTablePerClassMeta() {
         return _tpcMeta;
     }
     public void setTablePerClassMeta(ClassMapping meta) {
         _tpcMeta = meta;
     }
-    
+
     public void setJoinedTableClassMeta(List meta) {
         _joinedTables = meta;
     }
@@ -186,7 +186,7 @@ public class SelectImpl
     public List getJoinedTableClassMeta() {
         return _joinedTables;
     }
-    
+
     public void setExcludedJoinedTableClassMeta(List meta) {
         _exJoinedTables = meta;
     }
@@ -194,8 +194,8 @@ public class SelectImpl
     public List getExcludedJoinedTableClassMeta() {
         return _exJoinedTables;
     }
-    
-     
+
+
     /**
      * Helper method to return the proper table alias for the given alias index.
      */
@@ -256,7 +256,7 @@ public class SelectImpl
         _full = _dict.toSelect(this, forUpdate, fetch);
         return _full;
     }
-    
+
     public SQLBuffer getSQL() {
         return _full;
     }
@@ -317,7 +317,7 @@ public class SelectImpl
         _expectedResultCount = expectedResultCount;
         if (force)
             _flags |= FORCE_COUNT;
-        else 
+        else
             _flags &= ~FORCE_COUNT;
     }
 
@@ -357,14 +357,14 @@ public class SelectImpl
         try {
             SQLBuffer sql = toSelectCount();
             conn = store.getNewConnection();
-            stmnt = prepareStatement(conn, sql, null, 
-                ResultSet.TYPE_FORWARD_ONLY, 
+            stmnt = prepareStatement(conn, sql, null,
+                ResultSet.TYPE_FORWARD_ONLY,
                 ResultSet.CONCUR_READ_ONLY, false);
             _dict.setQueryTimeout(stmnt,
                     store.getFetchConfiguration().getQueryTimeout());
             rs = executeQuery(conn, stmnt, sql, false, store);
             int count =  getCount(rs);
-             
+
             return _dict.applyRange(this, count);
         } finally {
             if (rs != null)
@@ -396,7 +396,7 @@ public class SelectImpl
      * Execute this select in the context of the given store manager. The
      * context is passed in separately for profiling purposes.
      */
-    protected Result execute(StoreContext ctx, JDBCStore store, 
+    protected Result execute(StoreContext ctx, JDBCStore store,
         JDBCFetchConfiguration fetch, int lockLevel)
         throws SQLException {
         boolean forUpdate = false;
@@ -415,13 +415,13 @@ public class SelectImpl
         PreparedStatement stmnt = null;
         ResultSet rs = null;
         try {
-            if (isLRS) 
-                stmnt = prepareStatement(conn, sql, fetch, rsType, -1, true); 
+            if (isLRS)
+                stmnt = prepareStatement(conn, sql, fetch, rsType, -1, true);
             else
                 stmnt = prepareStatement(conn, sql, null, rsType, -1, false);
-            
+
             _dict.setTimeouts(stmnt, fetch, forUpdate);
-            
+
             rs = executeQuery(conn, stmnt, sql, isLRS, store);
         } catch (SQLException se) {
             // clean up statement
@@ -470,62 +470,62 @@ public class SelectImpl
 
 
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of preparing statement.
      */
-    protected PreparedStatement prepareStatement(Connection conn, 
-        SQLBuffer sql, JDBCFetchConfiguration fetch, int rsType, 
+    protected PreparedStatement prepareStatement(Connection conn,
+        SQLBuffer sql, JDBCFetchConfiguration fetch, int rsType,
         int rsConcur, boolean isLRS) throws SQLException {
         if (fetch == null)
             return sql.prepareStatement(conn, rsType, rsConcur);
         else
             return sql.prepareStatement(conn, fetch, rsType, -1);
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of preparing statement.
      */
-    public PreparedStatement prepareStatement(Connection conn, 
+    public PreparedStatement prepareStatement(Connection conn,
         String sql) throws SQLException {
         return conn.prepareStatement(sql);
-    }    
-    
+    }
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of executing query.
      */
-    protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt, 
+    protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt,
         SQLBuffer sql, boolean isLRS, JDBCStore store) throws SQLException {
         return stmnt.executeQuery();
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of executing query.
      */
-    public ResultSet executeQuery(Connection conn, PreparedStatement stmnt, 
-        String sql, JDBCStore store, Object[] params, Column[] cols) 
+    public ResultSet executeQuery(Connection conn, PreparedStatement stmnt,
+        String sql, JDBCStore store, Object[] params, Column[] cols)
         throws SQLException {
         return stmnt.executeQuery();
     }
 
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of getting count from the result set.
      */
     protected int getCount(ResultSet rs) throws SQLException {
         rs.next();
         return rs.getInt(1);
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of executing eager selects.
      */
-    public Result getEagerResult(Connection conn, 
-        PreparedStatement stmnt, ResultSet rs, JDBCStore store, 
-        JDBCFetchConfiguration fetch, boolean forUpdate, SQLBuffer sql) 
+    public Result getEagerResult(Connection conn,
+        PreparedStatement stmnt, ResultSet rs, JDBCStore store,
+        JDBCFetchConfiguration fetch, boolean forUpdate, SQLBuffer sql)
         throws SQLException {
         SelectResult res = new SelectResult(conn, stmnt, rs, _dict);
         res.setSelect(this);
@@ -588,27 +588,27 @@ public class SelectImpl
                 _joinSyntax = _parent._joinSyntax;
         }
     }
-    
+
     public void setHasSubselect(boolean hasSub) {
         _hasSub = hasSub;
     }
-    
+
     public boolean getHasSubselect() {
-        return _hasSub;    
+        return _hasSub;
     }
-    
+
     public Map getAliases() {
         return _aliases;
     }
-    
+
     public void removeAlias(Object key) {
         _aliases.remove(key);
     }
-    
+
     public Map getTables() {
         return _tables;
     }
-    
+
     public void removeTable(Object key) {
         _tables.remove(key);
     }
@@ -684,7 +684,7 @@ public class SelectImpl
             j = (Join) itr.next();
             if (j.getRelationTarget() != null) {
                 j.getRelationTarget().getDiscriminator().addClassConditions
-                    (this, j.getSubclasses() == SUBS_JOINABLE, 
+                    (this, j.getSubclasses() == SUBS_JOINABLE,
                     j.getRelationJoins());
                 j.setRelation(null, 0, null);
             }
@@ -767,7 +767,7 @@ public class SelectImpl
     private String getColumnAlias(String col, Table table, PathJoins pj) {
         return getTableAlias(table, pj).append(_dict.getNamingUtil().toDBName(col)).toString();
     }
-    
+
     private StringBuilder getTableAlias(Table table, PathJoins pj) {
         StringBuilder buf = new StringBuilder();
         if (_from != null) {
@@ -1381,7 +1381,7 @@ public class SelectImpl
 
         // only bother to pack pk values into array if app id
         Object[] pks = null;
-        boolean relationId = RelationStrategies.isRelationId(fromCols); 
+        boolean relationId = RelationStrategies.isRelationId(fromCols);
         if (!relationId && mapping.getIdentityType() == ClassMapping.ID_APPLICATION)
             pks = ApplicationIds.toPKValues(oid, mapping);
 
@@ -1580,7 +1580,7 @@ public class SelectImpl
             groupByAppend(getColumnAlias(cols[i], pj));
         }
     }
-    
+
     private void groupByAppend(String sql) {
         if (_grouped == null || !_grouped.contains(sql)) {
             if (_grouping == null) {
@@ -1604,12 +1604,12 @@ public class SelectImpl
         // we implement this by putting ourselves into grouping mode, where
         // all select invocations are re-routed to group-by invocations instead.
         // this allows us to utilize the same select APIs of the store manager
-        // and all the mapping strategies, rather than having to create 
+        // and all the mapping strategies, rather than having to create
         // equivalent APIs and duplicate logic for grouping
         boolean wasGrouping = isGrouping();
         _flags |= GROUPING;
         try {
-            select(mapping, subclasses, store, fetch, 
+            select(mapping, subclasses, store, fetch,
                 EagerFetchModes.EAGER_NONE, joins);
         } finally {
             if (!wasGrouping)
@@ -2065,7 +2065,7 @@ public class SelectImpl
         Integer i = null;
         SelectImpl sel = this;
         String alias = _schemaAlias;
-        if (isPathInThisContext(pj) || table.isAssociation())          
+        if (isPathInThisContext(pj) || table.isAssociation())
             alias = null;
 
         // find the context where this alias is defined
@@ -2074,13 +2074,13 @@ public class SelectImpl
         if (ctx != null)
             sel = (SelectImpl) ctx.getSelect();
 
-        if (!create) 
+        if (!create)
             i = sel.findAlias(table, key);  // find in parent and in myself
         else
             i = sel.getAlias(table, key); // find in myself
         if (i != null)
             return i;
-        
+
         if (create) { // create here
             i = sel.createAlias(table, key);
         } else if (ctx != null && ctx != ctx()) { // create in other select
@@ -2093,18 +2093,18 @@ public class SelectImpl
     private boolean isPathInThisContext(PathJoins pj) {
         // currCtx is set from Action, it is reset to null after the PCPath initialization
         Context currCtx = pj == null ? null : ((PathJoinsImpl)pj).context;
-        
-        // lastCtx is set to currCtx after the SelectJoins.join. pj.lastCtx and pj.path string are 
+
+        // lastCtx is set to currCtx after the SelectJoins.join. pj.lastCtx and pj.path string are
         // the last snapshot of pj. They will be used together for later table alias resolution in
-        // the getColumnAlias(). 
+        // the getColumnAlias().
         Context lastCtx = pj == null ? null : ((PathJoinsImpl)pj).lastContext;
         Context thisCtx = currCtx == null ? lastCtx : currCtx;
         String corrVar = pj == null ? null : pj.getCorrelatedVariable();
-        
-        return (pj != null && pj.path() != null && 
+
+        return (pj != null && pj.path() != null &&
             (corrVar == null || (thisCtx != null && ctx() == thisCtx)));
     }
- 
+
     private Integer getAlias(Table table, Object key) {
         Integer alias = null;
         if (_aliases != null)
@@ -2116,7 +2116,7 @@ public class SelectImpl
         Integer i = ctx().nextAlias();
 //        System.out.println("\t"+
 //                ((_parent != null) ? "Sub" :"") +
-//                "Query created alias: "+ 
+//                "Query created alias: "+
 //                i.intValue()+ " "+ key);
         recordTableAlias(table, key, i);
         return i.intValue();
@@ -2154,10 +2154,10 @@ public class SelectImpl
         _tables.put(alias, tableString);
     }
 
-    
+
     /**
      * Calculate total number of aliases.
-     * 
+     *
      * From 1.2.x
      */
     private int aliasSize(boolean fromParent, SelectImpl fromSub) {
@@ -2171,7 +2171,7 @@ public class SelectImpl
         }
         return aliases;
     }
-    
+
     public String toString() {
         return toSelect(false, null).getSQL();
     }
@@ -2195,7 +2195,7 @@ public class SelectImpl
     public StringBuilder path() {
         return null;
     }
-    
+
     public String getPathStr() {
         return null;
     }
@@ -2229,13 +2229,13 @@ public class SelectImpl
 
     public Joins joinRelation(String name, ForeignKey fk, ClassMapping target,
         int subs, boolean inverse, boolean toMany) {
-        return new SelectJoins(this).joinRelation(name, fk, target, subs, 
+        return new SelectJoins(this).joinRelation(name, fk, target, subs,
             inverse, toMany);
     }
 
-    public Joins outerJoinRelation(String name, ForeignKey fk, 
+    public Joins outerJoinRelation(String name, ForeignKey fk,
         ClassMapping target, int subs, boolean inverse, boolean toMany) {
-        return new SelectJoins(this).outerJoinRelation(name, fk, target, subs, 
+        return new SelectJoins(this).outerJoinRelation(name, fk, target, subs,
             inverse, toMany);
     }
 
@@ -2262,7 +2262,7 @@ public class SelectImpl
      */
     private static class Placeholder {
     }
-    
+
     public SelectImpl clone(Context ctx) {
         SelectImpl sel = (SelectImpl) _conf.getSQLFactoryInstance().newSelect();
         sel._ctx = ctx;
@@ -2306,7 +2306,7 @@ public class SelectImpl
         public String toString() {
             return _path + "|" + _key;
         }
-        
+
         Object getKey() {
             return _key;
         }
@@ -2573,7 +2573,7 @@ public class SelectImpl
         public StringBuilder path() {
             return null;
         }
-        
+
         public String getPathStr() {
             return null;
         }
@@ -2605,9 +2605,9 @@ public class SelectImpl
             return this;
         }
 
-        public Joins joinRelation(String name, ForeignKey fk, 
+        public Joins joinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
-            return new PathJoinsImpl().joinRelation(name, fk, target, subs, 
+            return new PathJoinsImpl().joinRelation(name, fk, target, subs,
                 inverse, toMany);
         }
 
@@ -2643,7 +2643,7 @@ public class SelectImpl
 
         public void moveJoinsToParent() {
         }
-        
+
         private static final class CachedColumnAliasKey {
             private final Column col;
             private final PathJoins pjs;
@@ -2739,12 +2739,12 @@ public class SelectImpl
         public String getVariable() {
             return var;
         }
-        
+
         public Joins setCorrelatedVariable(String var) {
             this.correlatedVar = var;
             return this;
         }
-        
+
         public String getCorrelatedVariable() {
             return correlatedVar;
         }
@@ -2781,7 +2781,7 @@ public class SelectImpl
             return this;
         }
 
-        public Joins joinRelation(String name, ForeignKey fk, 
+        public Joins joinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             append(name);
             append(var);
@@ -2806,7 +2806,7 @@ public class SelectImpl
                 pathStr = null;
             }
         }
-        
+
         public String getPathStr() {
             if (pathStr == null) {
                 pathStr = path.toString();
@@ -2827,7 +2827,7 @@ public class SelectImpl
      * Joins implementation.
      */
     private static class SelectJoins
-        extends PathJoinsImpl 
+        extends PathJoinsImpl
         implements Cloneable {
 
         private final SelectImpl _sel;
@@ -2920,14 +2920,14 @@ public class SelectImpl
             // until we get past the local table
             String var = this.var;
             this.var = null;
-            Context ctx = context; 
-            context = null; 
+            Context ctx = context;
+            context = null;
 
             int alias1 = _sel.getTableIndex(localTable, this, true);
             this.append(var);
             this.append(correlatedVar);
-            context = ctx; 
-            
+            context = ctx;
+
             int alias2 = _sel.getTableIndex(foreignTable, this, true);
             Join j = new Join(localTable, alias1, foreignTable, alias2,
                 null, false);
@@ -2951,7 +2951,7 @@ public class SelectImpl
             return join(null, fk, null, -1, inverse, toMany, true);
         }
 
-        public Joins joinRelation(String name, ForeignKey fk, 
+        public Joins joinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             return join(name, fk, target, subs, inverse, toMany, false);
         }
@@ -2967,8 +2967,8 @@ public class SelectImpl
             // until we get past the local table
             String var = this.var;
             this.var = null;
-            Context ctx = context; 
-            context = null; 
+            Context ctx = context;
+            context = null;
 
             // get first table alias before updating path; if there is a from
             // select then we shouldn't actually create a join object, since
@@ -2989,8 +2989,8 @@ public class SelectImpl
             this.append(var);
             if (var == null)
                 this.append(correlatedVar);
-            context = ctx; 
-            
+            context = ctx;
+
             if (toMany) {
                 _sel._flags |= IMPLICIT_DISTINCT;
                 _sel._flags |= TO_MANY;
@@ -2999,7 +2999,7 @@ public class SelectImpl
 
             if (createJoin) {
                 boolean createIndex = true;
-                Table table2 = (inverse) ? fk.getTable() 
+                Table table2 = (inverse) ? fk.getTable()
                     : fk.getPrimaryKeyTable();
                 boolean created = false;
                 int alias2 = -1;
@@ -3007,10 +3007,10 @@ public class SelectImpl
                     alias2 = _sel.getTableIndex(table2, this, false);
                     if (alias2 == -1)
                         createIndex = true;
-                    else 
+                    else
                         created = true;
                 }
-                else if (context == _sel.ctx()) 
+                else if (context == _sel.ctx())
                    createIndex = true;
                 else if (correlatedVar != null)
                     createIndex = false;
@@ -3021,7 +3021,7 @@ public class SelectImpl
 
                 if (_joins == null)
                     _joins = new JoinSet();
-                if (_joins.add(j) && (subs == Select.SUBS_JOINABLE 
+                if (_joins.add(j) && (subs == Select.SUBS_JOINABLE
                     || subs == Select.SUBS_NONE))
                     j.setRelation(target, subs, clone(_sel));
 
@@ -3052,7 +3052,7 @@ public class SelectImpl
                 if (alias == j.getIndex2())
                     found2 = true;
             }
-                
+
             if (found1 && found2)
                 return;
             else if (!found1 && !found2) {
@@ -3095,14 +3095,14 @@ public class SelectImpl
                 if (alias == join.getIndex2())
                     found2 = true;
             }
-                
+
             if (found1 && found2) {
                 // this is my join, add join
-                if (parent._joins == null) 
+                if (parent._joins == null)
                     parent._joins = new SelectJoins(parent);
                 SelectJoins p = parent._joins;
                 if (p.joins() == null)
-                    p.setJoins(new JoinSet());                
+                    p.setJoins(new JoinSet());
                 p.joins().add(join);
             }
             else if (parent._parent != null)
@@ -3124,12 +3124,12 @@ public class SelectImpl
             return super.toString() + " (" + _outer + "): " + _joins;
         }
     }
-    
+
     protected Selects newSelects() {
         return new Selects();
     }
-    
-    public DBDictionary getDictionary() { 
+
+    public DBDictionary getDictionary() {
         return _dict;
     }
 
@@ -3256,7 +3256,7 @@ public class SelectImpl
                     Object alias = _aliases.get(id);
                     if (id instanceof Column && ((Column) id).isXML())
                         alias = alias + _dict.getStringVal;
-                        
+
                     String as = null;
                     if (inner) {
                         if (alias instanceof String)
@@ -3333,7 +3333,7 @@ public class SelectImpl
             return this;
         return new SelectJoins(this).setCorrelatedVariable(var);
     }
-    
+
     public Joins setJoinContext(Context ctx) {
         if (ctx == null)
             return this;
@@ -3390,7 +3390,7 @@ interface PathJoins
      * The select owner of this join
      */
     public Select getSelect();
-    
+
     public String getPathStr();
 }
 

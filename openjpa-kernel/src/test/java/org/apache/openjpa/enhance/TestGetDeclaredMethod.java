@@ -64,7 +64,7 @@ public class TestGetDeclaredMethod extends TestCase {
         assertEquals(String.class, Reflection.mostDerived(meths.get(0),
             meths.get(1)).getReturnType());
     }
-    
+
     interface Iface {
         Object getObject();
     }

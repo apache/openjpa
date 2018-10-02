@@ -27,7 +27,7 @@ import javax.persistence.OneToMany;
 /**
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-1536">OPENJPA-1536</A>
- *  
+ *
  * @author Jody Grassel
  * @author Fay Wang
  *
@@ -41,7 +41,7 @@ public class Manager extends FTEmployee {
     public List<Employee> getManagesList() {
         return managesList;
     }
-    
+
     public String toString() {
         String str = super.toString();
         return "Manager " + str;

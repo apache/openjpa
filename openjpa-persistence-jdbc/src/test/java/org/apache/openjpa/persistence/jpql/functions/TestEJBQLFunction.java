@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
@@ -35,13 +35,13 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 public class TestEJBQLFunction extends AbstractTestCase {
 
     private int userid1, userid2, userid3, userid4, userid5, userid6;
-    
+
     /**
-     * Some databases trim the whitespace from a string upon insert. Store Shannon's name for 
+     * Some databases trim the whitespace from a string upon insert. Store Shannon's name for
      * asserts later in the testcase.
      */
     private String expectedShannonName = "Shannon ";
-    
+
     public TestEJBQLFunction(String name) {
         super(name, "jpqlclausescactusapp");
     }
@@ -80,10 +80,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
         userid6 = user6.getUserid();
 
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
-        if(dict instanceof SybaseDictionary) { 
+        if(dict instanceof SybaseDictionary) {
             expectedShannonName="Shannon";
         }
-        
+
         endTx(em);
         endEm(em);
     }
@@ -128,7 +128,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
             "CONCAT('CAD', SUBSTRING(e.name, LOCATE('e', e.name, 5))) " +
             "WHERE e.name='XYZeeth'";
         result = em.createQuery(query).executeUpdate();
-    
+
         assertEquals("the result is not 1", 1, result);
 
         user = em.find(CompUser.class, userid1);
@@ -510,5 +510,5 @@ public class TestEJBQLFunction extends AbstractTestCase {
         }
         return user;
     }
-    
+
 }

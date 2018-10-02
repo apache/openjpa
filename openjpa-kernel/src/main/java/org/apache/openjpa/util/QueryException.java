@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -51,7 +51,7 @@ public class QueryException
     public int getSubtype() {
         return QUERY;
     }
-    
+
     /**
      * The number of milliseconds to wait for a query to complete.
      */

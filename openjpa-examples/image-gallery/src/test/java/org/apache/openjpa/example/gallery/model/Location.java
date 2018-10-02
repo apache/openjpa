@@ -33,16 +33,16 @@ public class Location {
 
     @NotNull(message="City must be specified.")
     private String city;
-    
+
     private String street;
-    
+
     private String state;
 
     @NotNull(message="Country must be specified.")
     @Size(message="Country must be 50 characters or less.", max=50)
     @Column(length=50)
     private String country;
-    
+
     @Size(message="Zip code must be 10 characters or less.", max=10)
     @Pattern(message="Zip code must be 5 digits or use the 5+4 format.",
         regexp="^\\d{5}(([\\-]|[\\+])\\d{4})?$")

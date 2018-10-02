@@ -34,7 +34,7 @@ public class TestCascadeOneToManyMerge extends SingleEMFTestCase {
      * em.merge() on the instance of Toybox. The merge should cascade across the inverse relationship, adding both
      * entities to the persistence context. The reference to Toy by the owning side of the relationship should be
      * updated to point to the managed instance (Toy' because of the merge op).
-     * 
+     *
      */
     public void testOneToManyCascadeMergeSingleEntity() {
         EntityManager em = emf.createEntityManager();
@@ -88,7 +88,7 @@ public class TestCascadeOneToManyMerge extends SingleEMFTestCase {
      * em.merge() on the instance of Toybox. The merge should cascade across the inverse relationship, adding all
      * entities to the persistence context. The reference to the Toys by the owning side of the relationship should be
      * updated to point to the managed instance (Toy' because of the merge op).
-     * 
+     *
      */
     public void testOneToManyCascadeMergeDoubleEntity() {
         EntityManager em = emf.createEntityManager();
@@ -132,7 +132,7 @@ public class TestCascadeOneToManyMerge extends SingleEMFTestCase {
                 .contains(toy2Find));
             assertTrue("Assert that Toy(id=1) references the managed ToyBox(id=1).",
                 toy1Find.getToybox() == toyboxFind);
-            assertTrue("Assert that Toy(id=2) references the managed ToyBox(id=1).", 
+            assertTrue("Assert that Toy(id=2) references the managed ToyBox(id=1).",
                 toy2Find.getToybox() == toyboxFind);
 
             em.clear();

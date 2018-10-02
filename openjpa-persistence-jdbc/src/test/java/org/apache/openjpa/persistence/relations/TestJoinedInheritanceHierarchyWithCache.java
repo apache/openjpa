@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -31,14 +31,14 @@ public class TestJoinedInheritanceHierarchyWithCache
     extends SingleEMFTestCase {
 
     public void setUp() {
-    	super.setUp(CLEAR_TABLES, InheritanceHierarchyConcrete.class, 
+    	super.setUp(CLEAR_TABLES, InheritanceHierarchyConcrete.class,
     			InheritanceHierarchyAbstract.class, FlushDataCacheObject.class,
     			"openjpa.DataCache", "true(CacheSize=1, SoftReferenceSize=0)",
     			"openjpa.RemoteCommitProvider", "sjvm");
     }
 
     public void testCacheSqlGeneration() throws PersistenceException {
-    	
+
 		InheritanceHierarchyConcrete parent = new InheritanceHierarchyConcrete();
 		InheritanceHierarchyConcrete child = new InheritanceHierarchyConcrete();
 		parent.setValue(42);
@@ -48,13 +48,13 @@ public class TestJoinedInheritanceHierarchyWithCache
 		parent.setChildren(children);
 		child.setParent(parent);
 
-    	
+
     	OpenJPAEntityManager em = emf.createEntityManager();
     	em.getTransaction().begin();
 		em.persist(parent);
     	em.getTransaction().commit();
     	em.close();
-    	
+
     	long id = parent.getId();
 
     	em = emf.createEntityManager();
@@ -64,7 +64,7 @@ public class TestJoinedInheritanceHierarchyWithCache
     			"SELECT p FROM InheritanceHierarchyConcrete p WHERE p.id=" + id
     			).getResultList().get(0);
     	em.close();
-    	
+
     	em = emf.createEntityManager();
     	em.getFetchPlan().removeFetchGroup(FetchGroup.NAME_DEFAULT)
     		.addFetchGroup("nothing").addFetchGroup("value");

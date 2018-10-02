@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query.sqlresultmapping;
 
@@ -66,13 +66,13 @@ public class TestSQLResultSetMapping extends SingleEMFTestCase {
 
     /*
      * Prior to OPENJPA-2651, this test would result in the following exception:
-     * 
+     *
      * PersistenceException: Column '0' not found.
-     *   FailedObject: 
+     *   FailedObject:
      *   org.apache.openjpa.persistence.query.sqlresultmapping.CrtOperacaoEntity-500006164 [java.lang.String]
      *        at org.apache.openjpa.jdbc.sql.DBDictionary.narrow(DBDictionary.java:4998)
      *   .....
-     *   Caused by: java.sql.SQLException: Column '0' not found.         
+     *   Caused by: java.sql.SQLException: Column '0' not found.
      */
     public void testMappingNoException() {
 
@@ -86,15 +86,15 @@ public class TestSQLResultSetMapping extends SingleEMFTestCase {
 
         assertEquals(res.size(), 1);
         assertEquals(500006164, res.get(0).getId());
-        assertEquals(25384, res.get(0).getCrtOperacaoByOperacaoRecepcaoServCent().getId());        
-        assertEquals(Timestamp.valueOf("2014-12-16 15:24:54.0"), 
+        assertEquals(25384, res.get(0).getCrtOperacaoByOperacaoRecepcaoServCent().getId());
+        assertEquals(Timestamp.valueOf("2014-12-16 15:24:54.0"),
             res.get(0).getCrtOperacaoByOperacaoRecepcaoServCent().getDataHora());
 
         em.close();
     }
 
     /*
-     * Prior to OPENJPA-2651, this test would result in the wrong id provided in the 
+     * Prior to OPENJPA-2651, this test would result in the wrong id provided in the
      * CrtOperacaoEntity.  Specifically, the ID in CrtOperacaoEntity would contain
      * '500006164', which is the ID for the CrtRequisicaoEntity.
      */
@@ -116,11 +116,11 @@ public class TestSQLResultSetMapping extends SingleEMFTestCase {
 
         Query query = em.createNativeQuery(sql, "MyResultMapping");
         List<CrtRequisicaoChequePersEntity> res = query.getResultList();
-        
+
         assertEquals(res.size(), 1);
         assertEquals(500006164, res.get(0).getId());
         assertEquals(25384, res.get(0).getCrtOperacaoByOperacaoRecepcaoServCent().getId());
-        assertEquals(Timestamp.valueOf("2014-12-16 15:24:54.0"), 
+        assertEquals(Timestamp.valueOf("2014-12-16 15:24:54.0"),
             res.get(0).getCrtOperacaoByOperacaoRecepcaoServCent().getDataHora());
 
         em.close();

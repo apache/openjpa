@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -23,10 +23,10 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class Bicycle {
-    
+
     @Column(name="bike_brand")
     private String brand;
-    
+
     @Column(name="bike_model")
     private String model;
 
@@ -53,7 +53,7 @@ public class Bicycle {
     public String getModel() {
         return model;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof Bicycle) {
             Bicycle bike = (Bicycle)obj;

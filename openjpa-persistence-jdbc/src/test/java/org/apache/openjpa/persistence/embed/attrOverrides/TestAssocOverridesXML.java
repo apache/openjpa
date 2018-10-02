@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
-public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{ 
+public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
 
     protected List<String> _sql = new ArrayList<String>();
 
@@ -45,9 +45,9 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
 
         _sql.clear();
         HashMap<String, Object> props = new HashMap<String, Object>();
-        props.put("openjpa.jdbc.JDBCListeners", 
+        props.put("openjpa.jdbc.JDBCListeners",
             new JDBCListener[] { new SQLListener() });
-        OpenJPAEntityManagerFactorySPI emf1 = 
+        OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("AssocOverPU",
             "org/apache/openjpa/persistence/embed/" +
@@ -63,7 +63,7 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
         meb.setName("XMLAssocOverEntityBM21");
         List<XMLAssocOverEntityA> eaList1 = new ArrayList<XMLAssocOverEntityA>();
         eaList1.add(ea);
-        List<XMLAssocOverEntityA> eaList2 = new ArrayList<XMLAssocOverEntityA>();        
+        List<XMLAssocOverEntityA> eaList2 = new ArrayList<XMLAssocOverEntityA>();
         eaList2.add(ea);
         eb.setEaList(eaList1);
         meb.setEaList(eaList2);
@@ -73,7 +73,7 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
         List<XMLAssocOverEmbed> embList = new ArrayList<XMLAssocOverEmbed>();
         embList.add(emb);
         ea.setEmbA(embList);
-        
+
         em.getTransaction().begin();
         em.persist(ea);
         em.getTransaction().commit();
@@ -81,11 +81,11 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
         try {
             assertSQLFragnments(_sql, "CREATE TABLE XML_EMBALIST .*" +
                 " .*emba_entb.*emba_mentb");
-        
+
             assertSQLFragnments(_sql, "CREATE TABLE XML_EMBAMAP_3 .*" +
-                " .*key_emba_entb.*key_emba_mentb" + 
+                " .*key_emba_entb.*key_emba_mentb" +
                 " .*value_emba_entb.*value_emba_mentb");
-        } 
+        }
         finally {
             try {
                 if (emf1 != null)
@@ -100,7 +100,7 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
     void assertSQLFragnments(List<String> list, String... keys) {
         if (SQLSniffer.matches(list, keys))
             return;
-        fail("None of the following " + list.size() + " SQL \r\n" + 
+        fail("None of the following " + list.size() + " SQL \r\n" +
                 toString(list) + "\r\n contains all keys \r\n"
                 + toString(Arrays.asList(keys)));
     }
@@ -111,12 +111,12 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
             buf.append(s).append("\r\n");
         return buf.toString();
     }
-    
+
     /**
-     * Closes a specific entity manager factory and cleans up 
+     * Closes a specific entity manager factory and cleans up
      * associated tables.
      */
-    private void cleanupEMF(OpenJPAEntityManagerFactorySPI emf1) 
+    private void cleanupEMF(OpenJPAEntityManagerFactorySPI emf1)
       throws Exception {
 
         if (emf1 == null)
@@ -132,7 +132,7 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
         } finally {
             closeEMF(emf1);
         }
-    }    
+    }
 
     public class SQLListener
         extends AbstractJDBCListener {

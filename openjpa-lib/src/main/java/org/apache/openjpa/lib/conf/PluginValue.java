@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -105,7 +105,7 @@ public class PluginValue extends ObjectValue {
     public Object instantiate(Class<?> type, Configuration conf, boolean fatal)
     {
         Object obj = newInstance(_name, type, conf, fatal);
-        
+
         // ensure plugin value is compatible with plugin type
         if (obj != null && !type.isAssignableFrom(obj.getClass())) {
             Log log = (conf == null || type.equals(LogFactory.class)) ? null : conf.getConfigurationLog();
@@ -118,7 +118,7 @@ public class PluginValue extends ObjectValue {
             }
             return null;
         }
-        
+
         Configurations.configureInstance(obj, conf, _props,
             (fatal) ? getProperty() : null);
         if (_singleton)
@@ -127,8 +127,8 @@ public class PluginValue extends ObjectValue {
     }
 
     private String getIncompatiblePluginMessage(Object obj, Class<?> type) {
-		return _loc.get("incompatible-plugin", 
-            new Object[]{ _name, 
+		return _loc.get("incompatible-plugin",
+            new Object[]{ _name,
                           obj == null ? null : obj.getClass().getName(),
                           type == null ? null : type.getName()
                           }).toString();
@@ -144,7 +144,7 @@ public class PluginValue extends ObjectValue {
             set(obj, true);
         return obj;
     }
-    
+
 
     public void set(Object obj, boolean derived) {
         if (!_singleton)

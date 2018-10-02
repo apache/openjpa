@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
@@ -49,36 +49,36 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 public class TestSQLQueries
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-     
-    
+
+
     /** Creates a new instance of TestSQLQueries */
-    public TestSQLQueries(String name) 
+    public TestSQLQueries(String name)
     {
     	super(name);
     }
-    
-    public TestSQLQueries() 
+
+    public TestSQLQueries()
     {}
-    
+
     private String _tableName = null;
     private String _fullTableName = null;
     private String _pkColName = null;
     private String _intColName = null;
     private String _stringColName = null;
     private String _relColName = null;
-    
+
     public void setUp() {
        deleteAll(RuntimeTest1.class);
-        
+
         RuntimeTest1 pc1 = new RuntimeTest1("1", 1);
         RuntimeTest1 pc2 = new RuntimeTest1("2", 2);
         pc1.setSelfOneOne(pc2);
-        
+
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);;
         pm.persist(pc1);
         endTx(pm);;
-        
+
         JDBCConfiguration conf =
             (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pm)
             .getConfiguration();
@@ -86,7 +86,7 @@ public class TestSQLQueries
         MappingRepository repos = conf.getMappingRepositoryInstance();
         ClassMapping mapping = repos.getMapping(RuntimeTest1.class,
                 pm.getClassLoader(), true);
-        
+
         _tableName = mapping.getTable().getName();
         _fullTableName = dict.getFullName(mapping.getTable(), false);
         _pkColName = mapping.getTable().getPrimaryKey().
@@ -97,10 +97,10 @@ public class TestSQLQueries
                 getColumns()[0].getName();
         _relColName = mapping.getFieldMapping("selfOneOne").
                 getColumns()[0].getName();
-        
+
         pm.close();
     }
-    
+
     public void testStarQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -115,14 +115,14 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     public void testCompiledQuery()
     throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " order by " + _intColName);
         q.setResultClass(RuntimeTest1.class);
-        
+
         //FIXME jthomas
         //q = pm.createQuery(roundtrips(q, false));
         Iterator itr = ((Collection) q.getCandidateCollection()).iterator();
@@ -134,14 +134,14 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     public void testCompiledLanguageQuery()
     throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " order by " + _intColName);
         q.setResultClass(RuntimeTest1.class);
-        
+
         //FIXME jthomas
         //q = pm.createQuery("javax.jdo.query.SQL", roundtrips(q, false));
         Iterator itr = ((Collection) q.getCandidateCollection()).iterator();
@@ -153,7 +153,7 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     public void testTableStarQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -169,7 +169,7 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     public void testColumnQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -186,7 +186,7 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     public void testJoinQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -201,7 +201,7 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     public void testParameters() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -216,7 +216,7 @@ public class TestSQLQueries
         assertFalse(itr.hasNext());
          */
         q.closeAll();
-        
+
         Map params = new HashMap();
         params.put(new Integer(1), "foo");
         params.put(new Integer(2), new Integer(2));
@@ -229,7 +229,7 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     public void testOnlySelectedFieldsLoaded() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -253,7 +253,7 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     public void testSingleColumnClasslessQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -266,7 +266,7 @@ public class TestSQLQueries
         assertEquals("2", itr.next());
         assertFalse(itr.hasNext());
         q.closeAll();
-        
+
         q.setResultClass(Object[].class);
         itr = ((Collection) q.getCandidateCollection()).iterator();
         assertTrue(itr.hasNext());
@@ -279,10 +279,10 @@ public class TestSQLQueries
         assertEquals("2", vals[0]);
         assertFalse(itr.hasNext());
         q.closeAll();
-        
+
         pm.close();
     }
-    
+
     public void testMultiColumnClasslessQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -303,7 +303,7 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     public void testResultClass() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -327,7 +327,7 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     public void testClasslessProjection() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -349,7 +349,7 @@ public class TestSQLQueries
         q.closeAll();
         pm.close();
     }
-    
+
     /**
      * Manual test to see if a relation will be eagerly loaded when SQL
      * containing enough information is run. This is not run as part of
@@ -359,44 +359,44 @@ public class TestSQLQueries
     public void relationLoadedTest() {
        deleteAll(AttachD.class);
        deleteAll(AttachA.class);
-        
+
         AttachD d = new AttachD();
         AttachA a = new AttachA();
         d.setA(a);
-        
+
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getTransaction().begin();
         pm.persist(d);
         pm.getTransaction().commit();
         pm.close();
-        
+
         JDBCConfiguration conf =
             (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pm)
             .getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         MappingRepository repos = conf.getMappingRepositoryInstance();
-        
+
         ClassMapping mappingA = repos.getMapping(AttachD.class,
                 pm.getClassLoader(), true);
         String tableNameA = mappingA.getTable().getName();
         String fullTableNameA = dict.getFullName(mappingA.getTable(), false);
         String relColNameA = mappingA.getFieldMapping("a").
                 getColumns()[0].getName();
-        
+
         ClassMapping mappingD = repos.getMapping(AttachA.class,
                 pm.getClassLoader(), true);
         String tableNameD = mappingD.getTable().getName();
         String fullTableNameD = dict.getFullName(mappingD.getTable(), false);
         String pkColNameD = mappingD.getTable().getPrimaryKey().
                 getColumns()[0].getName();
-        
+
         pm = (OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select t0.*, t1.* from "
                 + fullTableNameA + " t0, "
                 + fullTableNameD + " t1 "
                 + "where t0." + relColNameA + " = t1." + pkColNameD);
-        
+
         // even the exact same SQL that Kodo generates will not
         // eagerly load the relation
         /*
@@ -406,46 +406,46 @@ public class TestSQLQueries
               + "t1.CSTR, t0.DDBL, t0.DINT, t0.DSTR "
               + "FROM ATTACHD t0 LEFT OUTER JOIN ATTACHA t1 ON t0.A = t1.ID");
          */
-        
+
         q.setResultClass(AttachD.class);
         Iterator itr = ((Collection) q.getCandidateCollection()).iterator();
         assertTrue(itr.hasNext());
-        
+
         d = (AttachD) itr.next();
         // d.getDstr ();
-        
+
         OpenJPAStateManager sm = getStateManager(d, pm);
         assertTrue(sm.getLoaded().
                 get(sm.getMetaData().getField("a").getIndex()));
         assertNotNull(d.getA());
         assertFalse(itr.hasNext());
-        
+
         q.closeAll();
         pm.close();
     }
-    
+
     public static class Holder {
-        
+
         public RuntimeTest1 pc;
         public int I;
         public String S;
-        
+
         public void setRuntimeTest1(RuntimeTest1 pc) {
             this.pc = pc;
         }
     }
-    
+
     public static void main(String[] args)
     throws Exception {
         // main ();
-        
+
         new TestSQLQueries().relationLoadedTest();
     }
-    
+
     private static Object roundtrips(Object orig, boolean validateEquality)
     throws IOException, ClassNotFoundException {
         assertNotNull(orig);
-        
+
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(bout);
         out.writeObject(orig);
@@ -453,13 +453,13 @@ public class TestSQLQueries
                 bout.toByteArray());
         ObjectInputStream in = new ObjectInputStream(bin);
         Object result = in.readObject();
-        
+
         if (validateEquality) {
             assertEquals(orig.hashCode(), result.hashCode());
             assertEquals(orig, result);
         }
-        
+
         return result;
     }
-    
+
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -241,13 +241,13 @@ public interface JDBCFetchConfiguration
      * @since 1.0.3
      */
     public JDBCFetchConfiguration addFetchInnerJoins(Collection<String> fields);
-    
+
     /**
      * Affirms if foreign key for a relation field will be pre-fetched as part of the owning object irrespective of
      * whether the field is included in the default fetch group of this fetch configuration. <br>
      * By default, foreign key for a relation field is pre-fetched as part of the owning object <em>only</em> if the
      * field in included in the default fetch group of this fetch configuration.
-     * 
+     *
      * @since 2.2.0
      */
     public boolean getIgnoreDfgForFkSelect();
@@ -257,7 +257,7 @@ public interface JDBCFetchConfiguration
      * whether the field is included in the default fetch group of this fetch configuration. <br>
      * By default, foreign key for a relation field is pre-fetched as part of the owning object <em>only</em> if the
      * field in included in the default fetch group of this fetch configuration.
-     * 
+     *
      * @since 2.2.0
      */
     public void setIgnoreDfgForFkSelect(boolean b);

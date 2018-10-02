@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -160,7 +160,7 @@ public interface ValueMetaData
      * Add embedded metadata for this value with the given access type
      */
     public ClassMetaData addEmbeddedMetaData(int access);
-    
+
     /**
      * Cascade behavior for delete operation. Only applies to
      * persistence-capable values. Options are:<br />
@@ -227,7 +227,7 @@ public interface ValueMetaData
      * @see #getCascadeAttach
      */
     public void setCascadeAttach(int cascade);
-    
+
     /**
      * Cascade behavior for detach operation. Only applies to
      * persistence-capable values. Options are:<br />

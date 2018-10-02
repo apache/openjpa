@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -34,9 +34,9 @@ import org.apache.openjpa.util.OpenJPAId;
  * distribution policy only for root instances i.e. the instances that are
  * explicit argument to persist() call. The cascaded instances are assigned the
  * same slice to honor collocation constraint.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class DistributedBrokerImpl extends FinalizingBrokerImpl implements DistributedBroker {
@@ -91,8 +91,8 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl implements Distr
         }
         if (!SliceImplHelper.isSliceAssigned(sm)) {
             if (info == null) {
-                info = replicated 
-                     ? SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this) 
+                info = replicated
+                     ? SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this)
                      : _rootSlice != null ? new SliceInfo(_rootSlice) : null;
             }
             if (info != null)
@@ -100,7 +100,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl implements Distr
         }
         return sm;
     }
-    
+
     @Override
     protected void setStateManager(Object id, StateManagerImpl sm, int status) {
         try {
@@ -110,7 +110,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl implements Distr
                 // ignore
             }
         }
-    }    
+    }
 
     @Override
     public boolean endOperation() {
@@ -148,7 +148,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl implements Distr
     @Override
     public void beginStore() {
     }
-    
+
     @Override
     protected void flush(int reason) {
     	setStatusFlag(2 << 8);
@@ -165,7 +165,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl implements Distr
             FinderTargetPolicy policy = _conf.getFinderTargetPolicyInstance();
             if (policy != null) {
                 if (oid instanceof OpenJPAId) {
-                    String[] targets = policy.getTargets(((OpenJPAId) oid).getType(), 
+                    String[] targets = policy.getTargets(((OpenJPAId) oid).getType(),
                             ((OpenJPAId) oid).getIdObject(),
                             _conf.getActiveSliceNames(), this);
                     fetch.setTargets(targets);

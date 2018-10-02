@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -28,7 +28,7 @@ public class TestChainEntities extends SingleEMFTestCase {
 	 * Set this magical number to 3 or less to avoid the error.
 	 */
 	private static final int MAGICAL_NUMBER = 50;
-	
+
 	long aid;
 
 	public void setUp () {
@@ -49,7 +49,7 @@ public class TestChainEntities extends SingleEMFTestCase {
 	public void testChainEntities () {
 		chainUpdate ();
 	}
-	
+
 	protected void chainUpdate () {
 		// Get A
 		ChainEntityA a = getA ();
@@ -86,7 +86,7 @@ public class TestChainEntities extends SingleEMFTestCase {
 
 	/**
 	 * Get created ChainEntityA using aid field.
-	 * 
+	 *
 	 * @return
 	 */
 	protected ChainEntityA getA () {
@@ -98,7 +98,7 @@ public class TestChainEntities extends SingleEMFTestCase {
 
 	/**
 	 * Print the object graph of given ChainEntityA to System.out
-	 * 
+	 *
 	 * @param testA
 	 */
 	protected void dump (ChainEntityA testA) {

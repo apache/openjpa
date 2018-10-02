@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.meta;
 
@@ -63,7 +63,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     private static final Localizer _loc = Localizer.forPackage
         (XMLMetaDataParser.class);
     private static boolean _schemaBug;
-    
+
     private static final String OPENJPA_NAMESPACE = "http://openjpa.apache.org/ns/orm";
     protected int _extendedNamespace = 0;
     protected int _openjpaNamespace = 0;
@@ -109,9 +109,9 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     private int _ignore = Integer.MAX_VALUE;
 
     private boolean _parsing = false;
-    
+
     private boolean _overrideContextClassloader = true;
-    
+
     public boolean getOverrideContextClassloader() {
         return _overrideContextClassloader;
     }
@@ -371,31 +371,31 @@ public abstract class XMLMetaDataParser extends DefaultHandler
                 _log.trace(_loc.get("parser-schema-bug"));
             schemaSource = null;
         }
-        boolean validating = _validating && (getDocType() != null 
+        boolean validating = _validating && (getDocType() != null
             || schemaSource != null);
 
         // parse the metadata with a SAX parser
         try {
             setParsing(true);
             _sourceName = sourceName;
-            
+
             SAXParser parser = null;
             boolean overrideCL = _overrideContextClassloader;
             ClassLoader oldLoader = null;
-            ClassLoader newLoader = null;           
-            
+            ClassLoader newLoader = null;
+
             try {
                 if (overrideCL == true) {
                     oldLoader =
                         (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
                     newLoader = XMLMetaDataParser.class.getClassLoader();
                     AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(newLoader));
-                    
+
                     if (_log != null && _log.isTraceEnabled()) {
                         _log.trace(_loc.get("override-contextclassloader-begin", oldLoader, newLoader));
-                    }                   
+                    }
                 }
-                
+
                 parser = XMLFactory.getSAXParser(validating, true);
                 Object schema = null;
                 if (validating) {
@@ -511,7 +511,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             _extendedNamespace = (_extendedNamespace > 0) ? _extendedNamespace - 1 : 0;
             _openjpaNamespace = (_openjpaNamespace > 0) ? _openjpaNamespace - 1 : 0;
         }
-        
+
         _text = null;
         if (_comments != null)
             _comments.clear();

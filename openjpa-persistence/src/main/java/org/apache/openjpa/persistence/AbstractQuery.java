@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -67,7 +67,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
 
     /**
      * Gets a map of values of each parameter indexed by their <em>original</em> key.
-     * 
+     *
      * @return an empty map if no parameter is declared for this query. The unbound parameters has a value of null which
      *         is indistinguishable from the value being bound to null.
      */
@@ -108,12 +108,12 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
 
     /**
      * Binds the parameter identified by the given position to the given value. The parameter are bound to a value in
-     * the context of this query. The same parameter may be bound to a different value in the context of another 
+     * the context of this query. The same parameter may be bound to a different value in the context of another
      * query. <br>
      * For non-native queries, the given position must be a valid position in the declared parameters. <br>
      * As native queries may not be parsed and hence their declared parameters may not be known, setting an positional
      * parameter has the side-effect of a positional parameter being declared.
-     * 
+     *
      * @param position
      *            positive, integer position of the parameter
      * @param value
@@ -250,7 +250,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
 
     /**
      * Gets the value of all the named parameters.
-     * 
+     *
      * If a parameter has been declared but not bound to a value then the value is null and hence is indistinguishable
      * from the value being actually null.
      */
@@ -290,7 +290,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
 
     /**
      * Get the parameter of the given name and type.
-     * 
+     *
      * @throws IllegalArgumentException
      *             if the parameter of the specified name does not exist or is not assignable to the type
      * @throws IllegalStateException
@@ -305,7 +305,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
 
     /**
      * Get the positional parameter with the given position and type.
-     * 
+     *
      * @throws IllegalArgumentException
      *             if the parameter with the specified position does not exist or is not assignable to the type
      * @throws IllegalStateException
@@ -323,7 +323,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
 
     /**
      * Return the value bound to the parameter.
-     * 
+     *
      * @param param
      *            parameter object
      * @return parameter value
@@ -368,7 +368,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Get the parameter object corresponding to the declared parameter of the given name. This method is not required
      * to be supported for native queries.
-     * 
+     *
      * @throws IllegalArgumentException
      *             if the parameter of the specified name does not exist
      * @throws IllegalStateException
@@ -394,7 +394,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Get the positional parameter with the given position. The parameter may just have been declared and not bound to
      * a value.
-     * 
+     *
      * @param position
      *            specified in the user query.
      * @return parameter object
@@ -414,11 +414,11 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
 
     /**
      * Return the value bound to the parameter.
-     * 
+     *
      * @param name
      *            name of the parameter
      * @return parameter value
-     * 
+     *
      * @throws IllegalStateException
      *             if this parameter has not been bound
      */
@@ -428,11 +428,11 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
 
     /**
      * Return the value bound to the parameter.
-     * 
+     *
      * @param pos
      *            position of the parameter
      * @return parameter value
-     * 
+     *
      * @throws IllegalStateException
      *             if this parameter has not been bound
      */
@@ -462,7 +462,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Gets the declared parameter keys in the given query. This information is only available after the query has been
      * parsed. As native language queries are not parsed, this information is not available for them.
-     * 
+     *
      * @return set of parameter identifiers in a parsed query
      */
     public Set<?> getDeclaredParameterKeys() {
@@ -481,12 +481,12 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Gets the parameter instances declared in this query. All parameter keys are of the same type. It is not allowed
      * to mix keys of different type such as named and positional keys.
-     * 
+     *
      * For string-based queries, the parser supplies the information about the declared parameters as a LinkedMap of
      * expected parameter value type indexed by parameter identifier. For non string-based queries that a facade itself
      * may construct (e.g. CriteriaQuery), the parameters must be declared by the caller. This receiver constructs
      * concrete Parameter instances from the given parameter identifiers.
-     * 
+     *
      * @return a Map where the key represents the original identifier of the parameter (can be a String, Integer or a
      *         ParameterExpression itself) and the value is the concrete Parameter instance either constructed as a
      *         result of this call or supplied by declaring the parameter explicitly via
@@ -531,7 +531,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Declares the given parameter for this query. Used by non-string based queries that are constructed by the facade
      * itself rather than OpenJPA parsing the query to detect the declared parameters.
-     * 
+     *
      * @param key
      *            this is the key to identify the parameter later in the context of this query. Valid key types are
      *            Integer, String or ParameterExpression itself.
@@ -598,7 +598,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
 
     /**
      * Convert the given value to match the given parameter type, if possible.
-     * 
+     *
      * @param param
      *            a query parameter
      * @param v

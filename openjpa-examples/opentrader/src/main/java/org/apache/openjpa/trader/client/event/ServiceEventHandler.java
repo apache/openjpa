@@ -22,8 +22,8 @@ import com.google.gwt.event.shared.EventHandler;
 
 /**
  * The contract to handle {@link ServiceEvent service events}.
- * 
- * 
+ *
+ *
  * @author Pinaki Poddar
  *
  */
@@ -32,15 +32,15 @@ public interface ServiceEventHandler {
     public interface AddTradableHandler extends EventHandler {
         public void onTradableAdded(ServiceEvent.TradableAdded event);
     }
-    
+
     public static interface AddTradeHandler extends EventHandler {
         public void onTradeCommitted(ServiceEvent.TradeCommitted event);
     }
-    
+
     public static interface RemoveTradableHandler extends EventHandler {
         public void onTradableRemoved(ServiceEvent.TradableRemoved event);
     }
-    
+
     public static interface UpdateStockHandler extends EventHandler {
         public void onStockUpdated(ServiceEvent.StockUpdated event);
     }

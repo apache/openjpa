@@ -30,30 +30,30 @@ import com.google.gwt.user.client.ui.PopupPanel;
  * A non-modal, pop-up message box.
  * <br>
  * CSS Styles:
- * <LI>messageBox 
+ * <LI>messageBox
  * <LI>messageBox-content
- * <LI>messageBox-caption 
+ * <LI>messageBox-caption
  * <LI>
- * The 
+ * The
  * @author Pinaki Poddar
  *
  */
 public class MessageBox extends PopupPanel {
     private static MessageBox _popup = new MessageBox();
-    
+
     private final HTML header;
     private final Label message;
     private MessageBox() {
         super(false, true);
         setAnimationEnabled(true);
-        
+
         DockPanel panel = new DockPanel();
         panel.setStyleName("messageBox");
         panel.setHorizontalAlignment(DockPanel.ALIGN_CENTER);
 
         header = new HTML();
         header.addStyleName("messageBox-caption");
-        
+
         Button close = new Button("OK");
         close.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -62,21 +62,21 @@ public class MessageBox extends PopupPanel {
         });
         close.setEnabled(true);
         close.setFocus(true);
-        
+
         message  = new Label();
         message.addStyleName("messageBox-content");
-        
+
         panel.add(header, DockPanel.NORTH);
         panel.add(close, DockPanel.SOUTH);
         panel.add(message, DockPanel.CENTER);
-        
+
         setWidget(panel);
     }
-    
+
     public static void alert(String message) {
         alert("Alert", message);
     }
-    
+
     public static void alert(String header, String message) {
         _popup.header.setText(message);
         _popup.message.setText(message);

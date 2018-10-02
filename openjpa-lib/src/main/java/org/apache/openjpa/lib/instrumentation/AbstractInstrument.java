@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.instrumentation;
 
@@ -24,7 +24,7 @@ package org.apache.openjpa.lib.instrumentation;
  * own specialized functionality.
  */
 public abstract class AbstractInstrument implements Instrument {
-    
+
     private boolean _started = false;
     private InstrumentationProvider _provider;
     private Object _context;
@@ -33,23 +33,23 @@ public abstract class AbstractInstrument implements Instrument {
     public Object getContext() {
         return _context;
     }
-    
+
     public void setContext(Object context) {
         _context = context;
     }
-    
+
     public String getOptions() {
         return _options;
     }
-    
+
     public void setOptions(String options) {
         _options = options;
     }
-    
+
     public boolean isStarted() {
         return _started;
     }
-    
+
     public void setStarted(boolean started) {
         _started = started;
     }
@@ -58,15 +58,15 @@ public abstract class AbstractInstrument implements Instrument {
         stop();
         start();
     }
-        
+
     public void setProvider(InstrumentationProvider provider) {
         _provider = provider;
     }
-    
+
     public InstrumentationProvider getProvider() {
         return _provider;
     }
-    
+
     public InstrumentationLevel getLevel() {
         return InstrumentationLevel.MANUAL;
     }

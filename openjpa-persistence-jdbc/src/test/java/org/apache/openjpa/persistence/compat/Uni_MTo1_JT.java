@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -38,31 +38,31 @@ public class Uni_MTo1_JT {
           @JoinColumn(name="C_ID", referencedColumnName="ID")
     )
     private EntityC entityC;
-    
-    public long getId() { 
-        return id; 
+
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public EntityC getEntityC() { 
-        return entityC; 
+    public EntityC getEntityC() {
+        return entityC;
     }
 
-    public void setEntityC(EntityC entityC) { 
-        this.entityC = entityC; 
+    public void setEntityC(EntityC entityC) {
+        this.entityC = entityC;
     }
 
     public int hashCode() {
         return name.hashCode() + (int)id;
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof Uni_MTo1_JT)) return false;
         Uni_MTo1_JT c = (Uni_MTo1_JT)o;

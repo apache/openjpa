@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="jpa_overview_em">
     <title>
@@ -30,7 +30,7 @@
         <imageobject>
             <!-- PNG image data, 283 x 391 (see README) -->
             <imagedata fileref="img/entitymanager.png" width="189px"/>
-            
+
         </imageobject>
     </mediaobject>
     <para>
@@ -38,13 +38,13 @@ The diagram above presents an overview of the <classname>EntityManager
 </classname> interface. For a complete treatment of the <classname>
 EntityManager</classname> API, see the
 <ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/EntityManager.html">
-Javadoc</ulink> documentation. Methods whose parameter signatures consist of 
+Javadoc</ulink> documentation. Methods whose parameter signatures consist of
 an ellipsis (...) are overloaded to take multiple parameter types.
     </para>
     <note>
         <para>
 OpenJPA extends the standard <classname>EntityManager</classname> interface with
-the 
+the
 <ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>org.apache.openjpa.persistence.OpenJPAEntityManager</classname>
 </ulink> interface to provide additional functionality.
@@ -507,7 +507,7 @@ APIs presented in this section.
             <imageobject>
                 <!-- PNG image data, 445 x 337 (see README) -->
                 <imagedata fileref="img/jpa-state-transitions.png" width="297px"/>
-                
+
             </imageobject>
         </mediaobject>
     </section>
@@ -1052,7 +1052,7 @@ cannot concurrently read or write the entity.
             <listitem>
                 <para>
 <literal>PESSIMISTIC_FORCE_INCREMENT</literal>: Pessimistic locking. Other transactions
-cannot concurrently read or write the entity. 
+cannot concurrently read or write the entity.
 When a transaction is committed, the entity's version column
 will be incremented even if the entity's state did not change in the transaction.
                 </para>

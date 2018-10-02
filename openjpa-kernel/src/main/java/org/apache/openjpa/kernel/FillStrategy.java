@@ -31,21 +31,21 @@ import org.apache.openjpa.lib.util.Localizer;
  * A strategy to fill data into a {@link ResultShape}.
  * <BR>
  * Available strategy implementations can fill by invoking constructor, setting array elements, direct assignment,
- * invoking put(key,value)-style method on Map or factory-constructed instance. 
- * 
+ * invoking put(key,value)-style method on Map or factory-constructed instance.
+ *
  * @author Pinaki Poddar
- * 
+ *
  * @since 2.0.0
  *
  */
 public interface FillStrategy<T> {
     static final Localizer _loc = Localizer.forPackage(FillStrategy.class);
-    
+
     T fill(Object[] data, Class<?>[] types, String[] aliases);
-    
-    
+
+
     /**
-     * Fills an array of given type. 
+     * Fills an array of given type.
      *
      * @param <T> must be an array type.
      */
@@ -56,29 +56,29 @@ public interface FillStrategy<T> {
                 throw new IllegalArgumentException(_loc.get("fill-bad-array", arrayCls).getMessage());
             this.cls = arrayCls.getComponentType();
         }
-        
+
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             Object array = java.lang.reflect.Array.newInstance(cls, values.length);
             System.arraycopy(values, 0, array, 0, values.length);
             return (T)array;
         }
     }
-    
+
     /**
-     * Construct and populate an instance by invoking the put method 
+     * Construct and populate an instance by invoking the put method
      * with each alias as key and element of the given array of values.
-     * 
+     *
      * The instance is a created by the no-argument constructor of the declaring class of the given method.
      */
     public static class Map<T> implements FillStrategy<T> {
         private final Method putMethod;
-        
+
         public Map(Method put) {
             if (put == null || put.getParameterTypes().length != 2)
                 throw new IllegalArgumentException(_loc.get("fill-bad-put", put).getMessage());
             putMethod = put;
         }
-        
+
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             int i = 0;
             try {
@@ -87,32 +87,32 @@ public interface FillStrategy<T> {
                     putMethod.invoke(map, aliases[i], values[i]);
                 return (T)map;
             } catch (InvocationTargetException t) {
-                throw new RuntimeException(_loc.get("fill-map-error", putMethod, aliases[i], values[i]).getMessage(), 
+                throw new RuntimeException(_loc.get("fill-map-error", putMethod, aliases[i], values[i]).getMessage(),
                     t.getTargetException());
             } catch (Exception e) {
-                throw new RuntimeException(_loc.get("fill-map-error", putMethod, aliases[i], values[i]).getMessage(), 
+                throw new RuntimeException(_loc.get("fill-map-error", putMethod, aliases[i], values[i]).getMessage(),
                         e);
             }
         }
-        
+
     }
-    
+
     /**
      * Construct and populate an instance by the given constructor and arguments.
      */
     public static class NewInstance<T> implements FillStrategy<T> {
         private Constructor<? extends T> cons;
         private Class<T> cls;
-        
+
         public NewInstance(Constructor<? extends T> cons) {
             this.cons = cons;
         }
-        
+
         public NewInstance(Class<T> cls) {
             this.cls = cls;
         }
-        
-        
+
+
         /**
          * Finds a constructor of the given class with given argument types.
          */
@@ -138,7 +138,7 @@ public interface FillStrategy<T> {
             }
             throw new RuntimeException(_loc.get("fill-ctor-none", cls, Arrays.toString(types)).getMessage());
         }
-        
+
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             if (cons == null) {
                 cons = findConstructor(cls, types);
@@ -149,13 +149,13 @@ public interface FillStrategy<T> {
                 }
                 return cons.newInstance(values);
             } catch (Exception e) {
-                throw new RuntimeException(_loc.get("fill-ctor-error", cons, Arrays.toString(values), 
+                throw new RuntimeException(_loc.get("fill-ctor-error", cons, Arrays.toString(values),
                         Arrays.toString(types)).getMessage(), e);
             }
         }
-        
+
     }
-    
+
     /**
      * Create and populate a bean by invoking setter methods identified by alias name with each array
      * element value as argument.
@@ -163,11 +163,11 @@ public interface FillStrategy<T> {
     public static class Bean<T> implements FillStrategy<T> {
         private final Class<T> cls;
         private Method[] setters;
-        
+
         public Bean(Class<T> cls) {
             this.cls = cls;
         }
-    
+
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             int i = 0;
             try {
@@ -185,18 +185,18 @@ public interface FillStrategy<T> {
                 }
                 return bean;
             } catch (InvocationTargetException t) {
-                throw new RuntimeException(_loc.get("fill-bean-error", setters[i], values[i], types[i]).getMessage(), 
+                throw new RuntimeException(_loc.get("fill-bean-error", setters[i], values[i], types[i]).getMessage(),
                         t.getTargetException());
             } catch (Exception e) {
-                throw new RuntimeException(_loc.get("fill-bean-error", setters[i], values[i], types[i]).getMessage(), 
+                throw new RuntimeException(_loc.get("fill-bean-error", setters[i], values[i], types[i]).getMessage(),
                         e);
             }
         }
     }
-    
-    
+
+
     /**
-     * Populate an instance by simply assigning the 0-th element of the input values.  
+     * Populate an instance by simply assigning the 0-th element of the input values.
      */
     public static class Assign<T> implements FillStrategy<T> {
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
@@ -208,17 +208,17 @@ public interface FillStrategy<T> {
             }
         }
     }
-    
+
     /**
      * Populate an instance created by given factory using a given put(key,value) method.
      * If the first argument of the given put method is integer then fill the values
-     * by index else fill the values with alias key.  
+     * by index else fill the values with alias key.
      */
     public static class Factory<T> implements FillStrategy<T> {
         final ObjectFactory<T> factory;
         final Method putMethod;
         final boolean isArray;
-        
+
         public Factory(ObjectFactory<T> factory, Method put) {
             this.factory = factory;
             this.putMethod = put;
@@ -227,7 +227,7 @@ public interface FillStrategy<T> {
             Class<?> keyType = putMethod.getParameterTypes()[0];
             this.isArray = keyType == int.class || keyType == Integer.class;
         }
-        
+
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             int i = 0;
             Object key = null;
@@ -239,10 +239,10 @@ public interface FillStrategy<T> {
                 }
                 return result;
             } catch (InvocationTargetException t) {
-                throw new RuntimeException(_loc.get("fill-factory-error", new Object[]{putMethod, key, values[i], 
+                throw new RuntimeException(_loc.get("fill-factory-error", new Object[]{putMethod, key, values[i],
                         types[i]}).getMessage(), t.getTargetException());
             } catch (Exception e) {
-                throw new RuntimeException(_loc.get("fill-factory-error", new Object[]{putMethod, key, values[i], 
+                throw new RuntimeException(_loc.get("fill-factory-error", new Object[]{putMethod, key, values[i],
                         types[i]}).getMessage(), e);
             }
         }

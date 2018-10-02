@@ -36,18 +36,18 @@ import javax.swing.plaf.FontUIResource;
 
 /**
  * Assorted utility methods.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
 public class SwingHelper {
     /**
      * Position the given component at the center of the given parent component or physical screen.
-     * 
+     *
      * @param c the component to be positioned
      * @param parent the component whose center will match the center of the given component.
      * If null, the given component will match the screen center.
-     * 
+     *
      */
     public static void position(Component c, Component parent) {
         Dimension d = c.getPreferredSize();
@@ -61,9 +61,9 @@ public class SwingHelper {
             c.setLocation(p.x + pw/2 - d.width/2, p.y + ph/2 - d.height/2);
         }
     }
-    
+
     private static int[] factors = {1000, 1000, 1000, 1000, 60, 60, 24};
-    
+
     public static String getTimeString(long value, TimeUnit unit) {
         if (value <= 0)
             return "";
@@ -75,13 +75,13 @@ public class SwingHelper {
             next = units[i+1];
             factor = factors[i+1];
             long nextValue = value/factor;
-            if (nextValue > 0) 
-                return getTimeString(value/factor, next) + " " + getTimeString(value%factor, unit); 
-        } 
-        
+            if (nextValue > 0)
+                return getTimeString(value/factor, next) + " " + getTimeString(value%factor, unit);
+        }
+
         return value + toString(unit);
     }
-    
+
     public static String toString(TimeUnit unit) {
         switch (unit) {
         case HOURS:
@@ -98,7 +98,7 @@ public class SwingHelper {
         }
         return "";
     }
-    
+
     public static void print(Component c, String format, File output) {
         try {
             Robot robot = new Robot();
@@ -113,7 +113,7 @@ public class SwingHelper {
             e.printStackTrace();
         }
     }
-    
+
     public static AbstractButton getSelectedButton(ButtonGroup group) {
         Enumeration<AbstractButton> buttons = group.getElements();
         while (buttons.hasMoreElements()) {
@@ -124,7 +124,7 @@ public class SwingHelper {
         }
         return null;
     }
-    
+
     public static void setLookAndFeel(int fontSize) throws Exception {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         UIDefaults defaults = UIManager.getDefaults();
@@ -138,7 +138,7 @@ public class SwingHelper {
             }
         }
      }
-    
+
 
 
 }

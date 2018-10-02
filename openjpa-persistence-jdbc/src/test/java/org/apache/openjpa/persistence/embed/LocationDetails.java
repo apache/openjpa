@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -23,24 +23,24 @@ import javax.persistence.*;
 @Embeddable
 public class LocationDetails {
     int officeNumber;
-    
-    @OneToOne 
+
+    @OneToOne
     ParkingSpot parkingSpot;
-    
+
     public int getOfficeNumber() {
         return officeNumber;
     }
-    
+
     public void setOfficeNumber(int officeNumber) {
         this.officeNumber = officeNumber;
     }
-    
+
     public ParkingSpot getParkingSpot() {
         return parkingSpot;
     }
-    
+
     public void setParkingSpot(ParkingSpot parkingSpot) {
         this.parkingSpot = parkingSpot;
     }
-    
+
 }

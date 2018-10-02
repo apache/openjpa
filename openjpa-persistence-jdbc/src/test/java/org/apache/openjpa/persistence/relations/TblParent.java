@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -33,15 +33,15 @@ public class TblParent {
 	@Id
 	@Column(name = "PARENT_ID")
 	private Integer parentId;
-	
+
 	@OneToMany(mappedBy="tblParent",fetch = FetchType.LAZY,cascade = {
 		CascadeType.PERSIST,CascadeType.MERGE })
-	private Collection<TblChild> tblChildren = new ArrayList<TblChild>();	
-	
+	private Collection<TblChild> tblChildren = new ArrayList<TblChild>();
+
 	public Integer getParentId() {
 		return parentId;
 	}
-	
+
 	public void setParentId(Integer parentId) {
 		this.parentId = parentId;
 	}
@@ -49,12 +49,12 @@ public class TblParent {
 	public Collection<TblChild> getTblChildren() {
 		return tblChildren;
 	}
-	
+
 	public void setTblChildren(Collection<TblChild> tblChildren) {
 		this.tblChildren = tblChildren;
 	}
-	
+
 	public void addTblChild(TblChild tblChild) {
 		tblChildren.add(tblChild);
-	} 
+	}
 }

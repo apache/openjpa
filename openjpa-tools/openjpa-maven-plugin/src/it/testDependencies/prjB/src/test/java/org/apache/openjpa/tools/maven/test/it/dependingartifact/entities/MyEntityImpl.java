@@ -16,7 +16,7 @@ package org.apache.openjpa.tools.maven.test.it.dependingartifact.entities;
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 
@@ -28,7 +28,7 @@ import org.apache.openjpa.tools.maven.test.it.dependingartifact.MyEntityInterfac
 
 /**
  * This class implements an interface and references to an enum of that interface.
- * This causes the PCEnhancer of OpenJPA-1.2.1 to demand the interface on  
+ * This causes the PCEnhancer of OpenJPA-1.2.1 to demand the interface on
  * the classpath.
  */
 @Entity
@@ -37,10 +37,10 @@ public class MyEntityImpl implements MyEntityInterface {
     @Id
     @GeneratedValue
     private int id;
-    
+
     private MessageChannel messageChannel;
-    
-    
+
+
     public int getId() {
         return id;
     }
@@ -49,12 +49,12 @@ public class MyEntityImpl implements MyEntityInterface {
         this.id = id;
     }
 
-    public MessageChannel getMessageChannel() 
+    public MessageChannel getMessageChannel()
     {
         return messageChannel;
     }
 
-    public void setMessageChannel( MessageChannel messageChannel ) 
+    public void setMessageChannel( MessageChannel messageChannel )
     {
         this.messageChannel = messageChannel;
     }

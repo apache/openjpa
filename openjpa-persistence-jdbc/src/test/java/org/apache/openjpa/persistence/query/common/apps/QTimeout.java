@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query.common.apps;
 
@@ -33,17 +33,17 @@ import javax.persistence.Version;
 @Entity
 @Table(name = "qtimeout")
 @NamedNativeQueries({
-@NamedNativeQuery(name = "NoHintList", 
+@NamedNativeQuery(name = "NoHintList",
     query = "select id from qtimeout where mod(DELAY(2,id),2)=0"),
-@NamedNativeQuery(name = "NoHintSingle", 
+@NamedNativeQuery(name = "NoHintSingle",
     query = "select id from qtimeout where mod(DELAY(2,id),2)=1"),
-@NamedNativeQuery(name = "Hint0msec", 
-    query = "select id from qtimeout where mod(DELAY(2,id),2)=0", 
-    hints = { @QueryHint(name = "javax.persistence.query.timeout", 
+@NamedNativeQuery(name = "Hint0msec",
+    query = "select id from qtimeout where mod(DELAY(2,id),2)=0",
+    hints = { @QueryHint(name = "javax.persistence.query.timeout",
         value = "0") }),
-@NamedNativeQuery(name = "Hint1000msec", 
-    query = "select id from qtimeout where mod(DELAY(2,id),2)=0", 
-    hints = { @QueryHint(name = "javax.persistence.query.timeout", 
+@NamedNativeQuery(name = "Hint1000msec",
+    query = "select id from qtimeout where mod(DELAY(2,id),2)=0",
+    hints = { @QueryHint(name = "javax.persistence.query.timeout",
         value = "1000") })
 })
 public class QTimeout implements Serializable {

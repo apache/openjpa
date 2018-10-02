@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="ref_guide_conf">
     <title>
@@ -320,7 +320,7 @@ plugin with a max size of 1000 and a remote host of <literal>cacheserver
 </literal>.
         </para>
 <programlisting>
-&lt;property name="openjpa.DataCache" 
+&lt;property name="openjpa.DataCache"
     value="com.xyz.MyDataCache(CacheSize=1000, RemoteHost=cacheserver)"/&gt;
 </programlisting>
         <para>
@@ -372,7 +372,7 @@ true(CacheSize=1000)
 
         <para>
 The remainder of this chapter reviews the set of configuration properties
-OpenJPA recognizes. 
+OpenJPA recognizes.
         </para>
     </section>
     <section id="ref_guide_conf_openjpa">
@@ -394,13 +394,13 @@ majority of developers can omit them. The following properties apply to any
 OpenJPA back-end, though the given descriptions are tailored to OpenJPA's
 default JDBC store.
         </para>
-        
+
         <para>
-A few of the properties recognized by OpenJPA have been standardized in JPA 2.0 
+A few of the properties recognized by OpenJPA have been standardized in JPA 2.0
 specification using equivalent names. These properties can be specified either
 by the JPA standard key or equivalent OpenJPA key. Specifying the same key once
-as JPA standard key and again as equivalent OpenJPA key in the same configuration, 
-however, is not allowed. The following table lists these standard JPA properties 
+as JPA standard key and again as equivalent OpenJPA key in the same configuration,
+however, is not allowed. The following table lists these standard JPA properties
 and their OpenJPA equivalent.
         </para>
     <table tocentry="1">
@@ -436,9 +436,9 @@ and their OpenJPA equivalent.
            </tbody>
         </tgroup>
     </table>
-        
-        
-        
+
+
+
         <!--
         <section id="openjpa.AggregateListeners">
             <title>
@@ -575,19 +575,19 @@ AutoDetach</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A comma-separated list of events
-when managed instances will be automatically detached. When using the OpenJPA EntityManager this defaults to 
+when managed instances will be automatically detached. When using the OpenJPA EntityManager this defaults to
 <literal>close</literal>, and <literal>rollback</literal> per the JPA spec. If you need to change this setting, you
 need to set it directly on an instantiated EntityManager.
             </para>
-            
+
             <para>
 <literal>none</literal> option is exclusive. It can not be specified with any other option.
 <literal>none</literal> option implies that managed objects will not be detached from the persistence context,
 the second-class object fields such as collections or date will <emphasis>not</emphasis> be proxied unlike normal
 circumstances. This option is relevant for specific use cases where the user application would not refer to the
-managed objects after the transaction and/or the context ends e.g. typical batch insertion scenario.  
+managed objects after the transaction and/or the context ends e.g. typical batch insertion scenario.
             </para>
-            
+
         </section>
         <section id="openjpa.BrokerFactory">
             <title>
@@ -700,10 +700,10 @@ properties related to callbacks. The plug-in supports two boolean properties:
    </para>
    <itemizedlist>
    	<listitem>
-   		<para><literal>PostPersistCallbackImmediate</literal>: whether the 
+   		<para><literal>PostPersistCallbackImmediate</literal>: whether the
    		post-persist callback is invoked as soon as a new instance
-        is managed. The default is <literal>false</literal>, implies that 
-        the post-persist callback is invoked after the instance been committed 
+        is managed. The default is <literal>false</literal>, implies that
+        the post-persist callback is invoked after the instance been committed
         or flushed to the datastore.
         </para>
    	</listitem>
@@ -1813,7 +1813,7 @@ memory and speed optimization over time.
         </section>
         <section id="openjpa.DynamicEnhancementAgent">
             <title>openjpa.DynamicEnhancementAgent</title>
-            <para> 
+            <para>
                 <emphasis role="bold">Property name: </emphasis>
                 <literal>openjpa.DynamicEnhancementAgent</literal>
             </para>
@@ -1828,18 +1828,18 @@ memory and speed optimization over time.
             <para>
                 <emphasis role="bold">Default: </emphasis>
                 <literal>true</literal>
-                
+
             </para>
             <para>
                 <emphasis role="bold">Description:</emphasis>
                 The DynamicEnhancementAgent property controls whether or not
-                OpenJPA will attempt to dynamically load the PCEnhancer 
+                OpenJPA will attempt to dynamically load the PCEnhancer
                 javaagent.
             </para>
             <para>
-                See the reference guide for more information 
+                See the reference guide for more information
                 <xref linkend="ref_guide_pc_enhance_dynamic"/>
-            </para>            
+            </para>
         </section>
         <section id="openjpa.FetchBatchSize">
             <title>
@@ -1881,7 +1881,7 @@ once when scrolling through a result set. The fetch size can also be set at
 runtime. See <xref linkend="ref_guide_dbsetup_lrs"/> for details.
             </para>
         </section>
-<!-- start -->     
+<!-- start -->
 <section id="openjpa.EncryptionProvider">
             <title>
                 openjpa.EncryptionProvider
@@ -1921,7 +1921,7 @@ encryption. See <xref linkend="ref_guide_encryption"/> for details.
             </para>
         </section>
 
-<!-- end -->        
+<!-- end -->
         <section id="openjpa.FetchGroups">
             <title>
                 openjpa.FetchGroups
@@ -2115,7 +2115,7 @@ or flush before running it against the datastore.
             more-unique value available in the current environment.
             </para>
         </section>
-        
+
         <section id="openjpa.InitializeEagerly">
             <title>
                 openjpa.InitializeEagerly
@@ -2156,9 +2156,9 @@ InitializeEagerly</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Controls whether initialization
-is eager or lazy. Eager initialization imply all persistent classes, their 
+is eager or lazy. Eager initialization imply all persistent classes, their
 mapping information, database connectivity and all other resources specified in
-the configuration of a persistence unit will be initialized when a persistent 
+the configuration of a persistence unit will be initialized when a persistent
 unit is constructed. The default behavior is
 lazy i.e. persistent classes, database and other resources are initialized only
 when the application refers to a resource for the first time.
@@ -2209,7 +2209,7 @@ Instrumentation</literal>
 specific instruments to enable. See <xref linkend="ref_guide_instrumentation"/> for details.
             </para>
         </section>
-        
+
         <section id="openjpa.InverseManager">
             <title>
                 openjpa.InverseManager
@@ -2300,7 +2300,7 @@ LockManager</literal>
 <xref linkend="ref_guide_conf_plugins"/>) describing a
 <ulink url="../../apidocs/org/apache/openjpa/kernel/LockManager.html"><classname>
 org.apache.openjpa.kernel.LockManager</classname></ulink> to use for acquiring
-locks on persistent instances during transactions.  See 
+locks on persistent instances during transactions.  See
 <xref linkend="ref_guide_locking_lockmgr"/> for more information.
             </para>
         </section>
@@ -2594,9 +2594,9 @@ retrieve metadata for your persistent classes. See
 <xref linkend="ref_guide_meta_repository"/> for details.
             </para>
         </section>
-        
+
         <!-- end -->
-        
+
         <section id="openjpa.Multithreaded">
             <title>
                 openjpa.Multithreaded
@@ -2717,14 +2717,14 @@ applicable for entities using simple id classes (via @IdClass or XML equivalent)
 have public setters, provide a public constructor with exact matching parameter types, and
 perform direct assignments to id class fields within the constructor. If these conditions
 are met, OpenJPA will use a public constructor during internal id copy operations instead
-of less optimal reflection. Optimization of id copy occurs during the enhancement phase.  
+of less optimal reflection. Optimization of id copy occurs during the enhancement phase.
 If the enhancer determines optimization cannot occur, it will fallback to the normal behavior.
 A side effect of enabling this property is that an id class constructor will be called by
 the provider during runtime operations.  If there is logic in the constructor in addition
 to field initialization, (parameter verification, for example) that logic will also be
 executed during the operation, which could result in a change in runtime behavior.
             </para>
-        </section>        
+        </section>
         <section id="openjpa.OrphanedKeyAction">
             <title>
                 openjpa.OrphanedKeyAction
@@ -2983,16 +2983,16 @@ implementation to use for caching of queries loaded from the data store. See
 <literal>openjpa.QueryCompilationCache</literal>
 			</para>
 			<para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis> 
+<emphasis role="bold">Resource adaptor config-property:</emphasis>
 <literal>QueryCompilationCache</literal>
 			</para>
 			<para>
 <emphasis role="bold">Default:</emphasis> <literal>true</literal>.
 			</para>
 			<para>
-<emphasis role="bold">Description:</emphasis> A plugin string (see 
-<xref linkend="ref_guide_conf_plugins"/>) describing the 
-<classname>java.util.Map</classname> to use for caching of data used during 
+<emphasis role="bold">Description:</emphasis> A plugin string (see
+<xref linkend="ref_guide_conf_plugins"/>) describing the
+<classname>java.util.Map</classname> to use for caching of data used during
 query compilation.  See <xref linkend="ref_guide_cache_querycomp"/> for details.
 			</para>
 		</section>
@@ -3212,7 +3212,7 @@ serious problems.
         </section>
         <section id="openjpa.RuntimeUnenhancedClasses">
             <title>openjpa.RuntimeUnenhancedClasses</title>
-            <para> 
+            <para>
                 <emphasis role="bold">Property name: </emphasis>
                 <literal>openjpa.RuntimeUnenhancedClasses</literal>
             </para>
@@ -3227,36 +3227,36 @@ serious problems.
             <para>
                 <emphasis role="bold">Default: </emphasis>
                 <literal>unsupported</literal>
-                
+
             </para>
             <para>
                 <emphasis role="bold">Possible values:</emphasis>
-                <literal>supported</literal>, 
-                <literal>unsupported</literal>, 
+                <literal>supported</literal>,
+                <literal>unsupported</literal>,
                 <literal>warn</literal>
             </para>
             <para>
                 <emphasis role="bold">Description:</emphasis>
-                The RuntimeUnenhancedClasses property controls how OpenJPA 
-                handles classes that have not been enhanced by the PCEnhancer 
-                tool or automatically by a javaagent. If RuntimeUnenhancedClasses is 
-                set to <literal>supported</literal> OpenJPA will automatically 
-                create subclasses for unenhanced entity classes. If set to 
-                <literal>unsupported</literal> OpenJPA will not create subclasses 
-                for unenhanced entity classes and will throw an exception when 
-                they are detected. If set to <literal>warn</literal> OpenJPA 
-                will not create subclasses for unenhanced entity classes 
-                but will log a warning message.  
+                The RuntimeUnenhancedClasses property controls how OpenJPA
+                handles classes that have not been enhanced by the PCEnhancer
+                tool or automatically by a javaagent. If RuntimeUnenhancedClasses is
+                set to <literal>supported</literal> OpenJPA will automatically
+                create subclasses for unenhanced entity classes. If set to
+                <literal>unsupported</literal> OpenJPA will not create subclasses
+                for unenhanced entity classes and will throw an exception when
+                they are detected. If set to <literal>warn</literal> OpenJPA
+                will not create subclasses for unenhanced entity classes
+                but will log a warning message.
             </para>
             <para>
                 This function is often useful for rapid prototyping but is not
                 <emphasis role="italic">generally</emphasis>
-                recommended for use in production. Please consult the reference guide 
-                before changing the default value. 
+                recommended for use in production. Please consult the reference guide
+                before changing the default value.
             </para>
             <para>
-                See the reference guide section on unenhanced types for more 
-                information 
+                See the reference guide section on unenhanced types for more
+                information
                 <xref linkend="ref_guide_pc_enhance_unenhanced_types"/>
             </para>
         </section>
@@ -3288,8 +3288,8 @@ SavepointManager
 <emphasis role="bold">Description:</emphasis> A plugin string (see
 <xref linkend="ref_guide_conf_plugins"/>) describing a
 <ulink url="../../apidocs/org/apache/openjpa/kernel/SavepointManager.html">
-<classname>org.apache.openjpa.kernel.SavepointManager</classname></ulink> to 
-use for managing transaction savepoints. See 
+<classname>org.apache.openjpa.kernel.SavepointManager</classname></ulink> to
+use for managing transaction savepoints. See
 <xref linkend="ref_guide_savepoints"/> for details.
             </para>
         </section>
@@ -3356,15 +3356,15 @@ Specification</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A formatted string describing the Specification
-to use for the default configuration options. The format of the Specifcation string is 
+to use for the default configuration options. The format of the Specifcation string is
 <literal>name [major.[minor]]</literal> where <literal>name</literal> denotes the name of the
 Specification such as <literal>JPA</literal> or <literal>JDO</literal>, <literal>major</literal>
 denotes the major integral version number of the Specification and <literal>minor</literal>
-denotes a minor version which can be an arbitrary string.  
+denotes a minor version which can be an arbitrary string.
 See <xref linkend="ref_guide_spec_compatibility"/> for more information.
             </para>
         </section>
-        
+
         <section id="openjpa.TransactionMode">
             <title>
                 openjpa.TransactionMode
@@ -3667,7 +3667,7 @@ the
 implementation to use to wrap JDBC Driver classes with javax.sql.DataSource
 instances.  The <classname>org.apache.openjpa.jdbc.schema.AutoDriverDataSource</classname> implementation is the default and will select either the DBCPDriverDataSource or SimpleDriverDataSource based on if Apache Commons DBCP is available
 on the classpath.
-The <classname>org.apache.openjpa.jdbc.schema.DBCPDriverDataSource</classname> implementation requires Apache Commons DBCP to be available on the classpath and uses <classname>org.apache.commons.dbcp.BasicDataSource</classname> to provide connection pooling.  
+The <classname>org.apache.openjpa.jdbc.schema.DBCPDriverDataSource</classname> implementation requires Apache Commons DBCP to be available on the classpath and uses <classname>org.apache.commons.dbcp.BasicDataSource</classname> to provide connection pooling.
             </para>
         </section>
         <section id="openjpa.jdbc.EagerFetchMode">
@@ -3931,7 +3931,7 @@ MappingFactory</literal>
 store and retrieve object-relational mapping information for your persistent
 classes. See <xref linkend="ref_guide_mapping_factory"/> for details.
             </para>
-            
+
         </section>
         <section id="openjpa.jdbc.QuerySQLCache">
             <title>
@@ -3955,16 +3955,16 @@ classes. See <xref linkend="ref_guide_mapping_factory"/> for details.
 <literal>openjpa.jdbc.QuerySQLCache</literal>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis> 
+<emphasis role="bold">Resource adaptor config-property:</emphasis>
 <literal>QuerySQLCache</literal>
             </para>
             <para>
 <emphasis role="bold">Default:</emphasis> <literal>true</literal>.
             </para>
             <para>
-<emphasis role="bold">Description:</emphasis> A plugin string (see 
-<xref linkend="ref_guide_conf_plugins"/>) describing the options to cache and 
-reuse SQL statements generated for JPQL queries. 
+<emphasis role="bold">Description:</emphasis> A plugin string (see
+<xref linkend="ref_guide_conf_plugins"/>) describing the options to cache and
+reuse SQL statements generated for JPQL queries.
 See <xref linkend="ref_guide_cache_querysql"/> for details.
             </para>
         </section>
@@ -4372,20 +4372,20 @@ implementation is
 
             </para>
         </section>
-        
+
         <section id="ref_guide_spec_compatibility">
         <title>Compatibility with Specification</title>
         <para>
 The default behavior of certain OpenJPA API methods can evolve to align with the behaviors
 defined in JPA specification. To maintain backward compatibility, OpenJPA allows configuration
 options such that while the default behavior changes to align with current JPA specification, the
-previous behaviors can always be emulated. 
+previous behaviors can always be emulated.
 		</para>
 		<para>
 For example, JPA 2.0 specification
 introduces a new API <literal>void EntityManager.detach(Object entity)</literal> that detaches
 the given entity from the current persistence context. OpenJPA has provided similar
-feature via <literal>&lt;T&gt; T OpenJPAEntityManager.detach(T entity)</literal> prior to JPA 2.0. 
+feature via <literal>&lt;T&gt; T OpenJPAEntityManager.detach(T entity)</literal> prior to JPA 2.0.
 OpenJPA <literal>detach()</literal>, however, has different default behavior than what JPA 2.0
 specification mandates. Firstly, OpenJPA creates a copy of the given entity as a detached instance
 and returns it, whereas JPA 2.0 behavior requires the same given entity instance be detached.
@@ -4394,7 +4394,7 @@ OpenJPA <literal>detach()</literal> method, prior to JPA 2.0, does not remove th
 from the persistence context as a copy is returned. Thirdly, OpenJPA will flush before
 detaching a dirty instance so that the detached instance can later be merged, whereas
 JPA 2.0 <literal>detach()</literal> semantics does not require a dirty instance be flushed
-before detach.        
+before detach.
 		</para>
 		<para>
 A user application running with OpenJPA that is compliant to a specific version of JPA specification
@@ -4405,8 +4405,8 @@ compliant to JPA 2.0 specification.  The configuration can also be set to a diff
 For example, <literal>openjpa.Specification="JPA 1.0"</literal> configuration setting will emulate
 default OpenJPA behavior as it were for JPA specification version 1.0. Setting
 <literal>openjpa.Specification</literal> is a shorthand for more fine-grained control available via
-<literal>openjpa.Compatibility</literal>.    
-  
+<literal>openjpa.Compatibility</literal>.
+
 		</para>
         </section>
     </section>

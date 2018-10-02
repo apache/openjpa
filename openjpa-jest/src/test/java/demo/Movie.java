@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package demo;
@@ -49,38 +49,38 @@ public class Movie {
     private int year;
     @OneToMany(fetch=FetchType.EAGER)
     private Set<Actor> actors;
-    
+
     protected Movie() {
-        
+
     }
-    
+
     public Movie(String id, String title, int year) {
         super();
         this.id = id;
         this.title = title;
         this.year = year;
     }
-    
+
     public String getId() {
         return id;
     }
-    
+
     public String getTitle() {
         return title;
     }
-    
+
     public void addActor(Actor a) {
         if (actors == null)
             actors = new HashSet<Actor>();
         actors.add(a);
     }
-    
+
     public Set<Actor> getActors() {
         return actors;
     }
-    
+
     public int getYear() {
         return year;
     }
-    
+
 }

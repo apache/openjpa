@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -113,7 +113,7 @@ public class VC {
 			VCId id = (VCId) obj;
 			return (this.getVcId() == id.getVcId() ||
                 (this.getVcId() == null &&
-                this.getVcId().equals(id.getVcId()))) && 
+                this.getVcId().equals(id.getVcId()))) &&
 			    (this.getVcs() == id.getVcs() ||
                 (this.getVcs() == null && this
 				.getVcs().equals(id.getVcs())));

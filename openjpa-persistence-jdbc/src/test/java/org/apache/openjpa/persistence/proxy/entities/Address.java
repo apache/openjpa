@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -26,7 +26,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name="ADDRESS_ANNUITY")
 @Embeddable
-public class Address implements IAddress {	
+public class Address implements IAddress {
 	private static final long serialVersionUID = -2017682230659955349L;
 	private String line1;
 	private String line2;
@@ -34,7 +34,7 @@ public class Address implements IAddress {
 	private String state;
 	private String zipCode;
 	private String country;
-	
+
 	@Column(name="CITY")
 	public String getCity() {
 		return city;
@@ -52,7 +52,7 @@ public class Address implements IAddress {
 	@Column(name="LINE1")
 	public String getLine1() {
 		return line1;
-	}	
+	}
 	public void setLine1(String line1) {
 		this.line1 = line1;
 	}

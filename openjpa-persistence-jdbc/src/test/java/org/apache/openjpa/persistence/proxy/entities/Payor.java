@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -24,10 +24,10 @@ import javax.persistence.Entity;
 
 @Entity
 @AttributeOverride(name="lastUpdateDate", column=@Column(name="LAST_UPDATE_TS"))
-public class Payor extends AnnuityPersistebleObject implements IPayor {	
+public class Payor extends AnnuityPersistebleObject implements IPayor {
 	private static final long serialVersionUID = 3462390122289537362L;
-	private String name;	
-	
+	private String name;
+
 	@Column(name="NAME")
 	public String getName() {
 		return this.name;

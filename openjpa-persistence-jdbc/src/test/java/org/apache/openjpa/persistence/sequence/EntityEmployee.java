@@ -36,11 +36,11 @@ import javax.persistence.Table;
 public class EntityEmployee implements Serializable {
 
     private static final long serialVersionUID = 2961572787273807912L;
-    
+
     @Id
     @SequenceGenerator(name="SeqEmployee", sequenceName="test_native_sequence")
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SeqEmployee")
-    private int id; 
+    private int id;
     private String firstName;
     private String lastName;
     private float salary;
@@ -79,7 +79,7 @@ public class EntityEmployee implements Serializable {
 
     @Override
     public String toString() {
-        return "EntityEmployee: Employee id: " + getId() + 
+        return "EntityEmployee: Employee id: " + getId() +
                " firstName: " + getFirstName() +
                " lastName: " + getLastName() +
                " salary: " + getSalary();

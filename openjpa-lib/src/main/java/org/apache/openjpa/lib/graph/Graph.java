@@ -37,7 +37,7 @@ public class Graph {
     /**
      * Map each node to list of edges from that node.
      * Using a LinkedHashMap to ensure order of iterator processing.
-     */ 
+     */
     private final Map<Object, Collection<Edge>> _nodes = new LinkedHashMap<Object, Collection<Edge>>();
 
     /**
@@ -108,7 +108,7 @@ public class Graph {
         if(edges == null ) {
             edges = Collections.emptyList();
         }
-        return edges; 
+        return edges;
     }
 
     /**

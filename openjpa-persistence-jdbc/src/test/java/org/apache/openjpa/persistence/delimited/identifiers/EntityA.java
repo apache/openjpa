@@ -41,7 +41,7 @@ import javax.persistence.UniqueConstraint;
 @Table(name="primary entityA", schema="delim id2")
 @SecondaryTable(name="secondary EntityA", schema="delim id2",
     uniqueConstraints=
-        @UniqueConstraint(name="sec unq", 
+        @UniqueConstraint(name="sec unq",
             columnNames={"secondary name"}))
 public class EntityA {
     @TableGenerator(name = "id_gen", table = "id gen", schema = "delim id2",
@@ -51,37 +51,37 @@ public class EntityA {
     private int id;
     @Column(name="primary name", columnDefinition="VARCHAR")
     private String name;
-    
+
     @Column(name="secondary name", table="secondary EntityA")
     private String secName;
-    
+
     @ElementCollection
     // CollectionTable with default name generation
     @CollectionTable
     private Set<String> collectionSet = new HashSet<String>();
-    
+
     @ElementCollection
     @OrderColumn(name="order col")
     @CollectionTable(name="delim set", schema="delim id2")
     private Set<String> collectionDelimSet = new HashSet<String>();
-    
+
     @ElementCollection
     // MapKeyColumn with default name generation
     @MapKeyColumn
     private Map<String, String> collectionMap = new HashMap<String, String>();
-    
+
     @ElementCollection
     @MapKeyColumn(name="map key", columnDefinition="varchar(20)", table="m ktbl")
-    private Map<String, String> delimCollectionMap = 
+    private Map<String, String> delimCollectionMap =
         new HashMap<String, String>();
-    
+
     public EntityA(){
     }
-    
+
     public EntityA(int id, String name) {
         this.name=name;
     }
-    
+
     /**
      * @return the id
      */
@@ -134,7 +134,7 @@ public class EntityA {
     public void setCollectionSet(Set<String> collectionSet) {
         this.collectionSet = collectionSet;
     }
-    
+
     /**
      * Add an item to the collectionSet
      * @param item
@@ -150,7 +150,7 @@ public class EntityA {
     public void setCollectionDelimSet(Set<String> collectionDelimSet) {
         this.collectionDelimSet = collectionDelimSet;
     }
-    
+
     public void addCollectionDelimSet(String item) {
         this.collectionDelimSet.add(item);
     }
@@ -168,7 +168,7 @@ public class EntityA {
     public void setDelimCollectionMap(Map<String, String> delimCollectionMap) {
         this.delimCollectionMap = delimCollectionMap;
     }
-    
+
     public void addDelimCollectionMap(String key, String value) {
         this.delimCollectionMap.put(key, value);
     }

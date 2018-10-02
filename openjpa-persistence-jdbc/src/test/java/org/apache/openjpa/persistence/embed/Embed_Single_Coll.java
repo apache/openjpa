@@ -26,10 +26,10 @@ import javax.persistence.TemporalType;
 
 /* This test was created to test OJ-1793 */
 
-@Embeddable 
+@Embeddable
 public class Embed_Single_Coll {
 
-	@Temporal(TemporalType.DATE)	
+	@Temporal(TemporalType.DATE)
 	private Date date;
 
 	public Date getDate() {
@@ -64,5 +64,5 @@ public class Embed_Single_Coll {
 			return false;
 		return true;
 	}
-	
+
 }

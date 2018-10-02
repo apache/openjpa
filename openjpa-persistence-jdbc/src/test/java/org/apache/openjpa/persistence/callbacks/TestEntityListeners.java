@@ -26,7 +26,7 @@ public class TestEntityListeners extends SingleEMFTestCase {
     private static final int ENTITY_LISTENER_ENTITY = 1;
     private static final int GLOBAL_LISTENER_ENTITY = 2;
     private static final int DUPLICATE_LISTENER_ENTITY = 3;
-    
+
     public void setUp() {
         setUp(CLEAR_TABLES);
         ListenerImpl.prePersistCount = 0;
@@ -50,9 +50,9 @@ public class TestEntityListeners extends SingleEMFTestCase {
     public void testGlobalListeners() {
         helper(GLOBAL_LISTENER_ENTITY);
     }
-    
+
     public void testDuplicateListeners() {
-        super.setUp(CLEAR_TABLES, DuplicateListenerEntity.class, 
+        super.setUp(CLEAR_TABLES, DuplicateListenerEntity.class,
             "openjpa.Callbacks", "AllowsDuplicateListener=false");
         assertFalse(emf.getConfiguration().getCallbackOptionsInstance()
             .getAllowsDuplicateListener());
@@ -74,7 +74,7 @@ public class TestEntityListeners extends SingleEMFTestCase {
             case DUPLICATE_LISTENER_ENTITY:
                 o = new DuplicateListenerEntity();
                 break;
-                
+
             }
             em.persist(o);
 
@@ -98,7 +98,7 @@ public class TestEntityListeners extends SingleEMFTestCase {
             case DUPLICATE_LISTENER_ENTITY:
                 o = em.find(DuplicateListenerEntity.class, id);
                 break;
-                
+
             }
             assertNotNull(o);
             assertStatus(1, 1, 0, 0, 0, 0, 1);

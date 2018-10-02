@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -120,7 +120,7 @@ public class TestManyOneAsId
         assertNull(child.getSelfRel());
     }
 
-    private void assertDataStoreRelations(OpenJPAEntityManager em, 
+    private void assertDataStoreRelations(OpenJPAEntityManager em,
         DataStoreManyOneIdOwner dsparent) {
         assertEquals("dsparent", dsparent.getName());
         DataStoreBasicEntity dsid1 = dsparent.getId();
@@ -134,12 +134,12 @@ public class TestManyOneAsId
         DataStoreBasicEntity dsid2 = dschild.getId();
         assertNotNull(dsid2);
         assertEquals("dsid2", dsid2.getName());
-        assertTrue(dsid2 == em.find(DataStoreBasicEntity.class, 
+        assertTrue(dsid2 == em.find(DataStoreBasicEntity.class,
             em.getObjectId(dsid2)));
         assertNull(dschild.getSelfRel());
     }
 
-    private void assertCompoundRelations(OpenJPAEntityManager em, 
+    private void assertCompoundRelations(OpenJPAEntityManager em,
         ManyOneCompoundIdOwner cparent) {
         assertEquals("cparent", cparent.getName());
         BasicEntity id1 = cparent.getEntityId();
@@ -155,7 +155,7 @@ public class TestManyOneAsId
         assertEquals("id2", id2.getName());
         assertTrue(id2 == em.find(BasicEntity.class, id2.getId()));
         assertNull(cchild.getSelfRel());
-        ManyOneCompoundIdOwnerId oid = (ManyOneCompoundIdOwnerId) 
+        ManyOneCompoundIdOwnerId oid = (ManyOneCompoundIdOwnerId)
             em.getObjectId(cparent);
         assertEquals(id, oid.entityId);
     }
@@ -170,7 +170,7 @@ public class TestManyOneAsId
 
     public void testRetrieveWithDataStoreManyOneId() {
         EntityManager em = emf.createEntityManager();
-        DataStoreManyOneIdOwner dsparent = 
+        DataStoreManyOneIdOwner dsparent =
             em.find(DataStoreManyOneIdOwner.class, dsid);
         assertNotNull(dsparent);
         assertDataStoreRelations((OpenJPAEntityManager) em, dsparent);
@@ -182,7 +182,7 @@ public class TestManyOneAsId
         ManyOneCompoundIdOwnerId oid = new ManyOneCompoundIdOwnerId();
         oid.entityId = id;
         oid.longId = cid;
-        ManyOneCompoundIdOwner cparent = 
+        ManyOneCompoundIdOwner cparent =
             em.find(ManyOneCompoundIdOwner.class, oid);
         assertNotNull(cparent);
         assertCompoundRelations((OpenJPAEntityManager) em, cparent);
@@ -196,7 +196,7 @@ public class TestManyOneAsId
         assertNotNull(parent.getSelfRel());
         em.getTransaction().begin();
         try {
-            parent.setId(parent.getSelfRel().getId()); 
+            parent.setId(parent.getSelfRel().getId());
             em.getTransaction().commit();
             fail("Successfully changed id relation.");
         } catch (Exception e) {
@@ -250,7 +250,7 @@ public class TestManyOneAsId
         em.close();
 
         em = emf.createEntityManager();
-        DataStoreManyOneIdOwner dsparent = 
+        DataStoreManyOneIdOwner dsparent =
             em.find(DataStoreManyOneIdOwner.class, dsid);
         assertNotNull(dsparent);
         em.getTransaction().begin();
@@ -283,8 +283,8 @@ public class TestManyOneAsId
         em = emf.createEntityManager();
         ManyOneCompoundIdOwnerId oid = new ManyOneCompoundIdOwnerId();
         oid.entityId = id;
-        oid.longId = cid; 
-        ManyOneCompoundIdOwner cparent = em.find(ManyOneCompoundIdOwner.class, 
+        oid.longId = cid;
+        ManyOneCompoundIdOwner cparent = em.find(ManyOneCompoundIdOwner.class,
             oid);
         assertNotNull(cparent);
         em.getTransaction().begin();
@@ -330,7 +330,7 @@ public class TestManyOneAsId
         Query q = em.createQuery("select e from DataStoreManyOneIdOwner e "
             + "where e.id = :id");
         q.setParameter("id", dsid1);
-        DataStoreManyOneIdOwner dspc = (DataStoreManyOneIdOwner) 
+        DataStoreManyOneIdOwner dspc = (DataStoreManyOneIdOwner)
             q.getSingleResult();
         assertNotNull(dspc);
         assertEquals("dsparent", dspc.getName());

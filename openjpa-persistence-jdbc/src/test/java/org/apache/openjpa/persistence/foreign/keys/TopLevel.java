@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.foreign.keys;
 
@@ -27,12 +27,12 @@ import javax.persistence.Id;
 
 @Entity
 public class TopLevel implements Serializable {
-    
+
     private static final long serialVersionUID = -4677719724853263855L;
 
     @Id
     private long id;
-    
+
     @ElementCollection
     private Collection<ContainsMultSimpleEntity> contMultSEColl;
 

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -43,7 +43,7 @@ public abstract class AbstractStoreQuery
     implements StoreQuery {
 
     protected QueryContext ctx = null;
-   
+
     public QueryContext getContext() {
         return ctx;
     }
@@ -163,11 +163,11 @@ public abstract class AbstractStoreQuery
         public QueryExpressions[] getQueryExpressions() {
             return null;
         }
-        
+
         public ResultShape<?> getResultShape(StoreQuery q) {
             return null;
         }
-        
+
         public void getRange(StoreQuery q, Object[] params, Range range) {
         }
 
@@ -207,7 +207,7 @@ public abstract class AbstractStoreQuery
         public boolean isAggregate(StoreQuery q) {
             return false;
         }
-        
+
         public boolean isDistinct(StoreQuery q) {
             return false;
         }
@@ -219,7 +219,7 @@ public abstract class AbstractStoreQuery
         public OrderedMap<Object,Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return EMPTY_ORDERED_PARAMS;
         }
-        
+
         public LinkedMap getParameterTypes(StoreQuery q) {
             LinkedMap result = new LinkedMap();
             result.putAll(getOrderedParameterTypes(q));

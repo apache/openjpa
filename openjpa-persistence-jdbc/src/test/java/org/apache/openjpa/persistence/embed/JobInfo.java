@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -22,24 +22,24 @@ import javax.persistence.*;
 
 @Embeddable
 public class JobInfo {
-    
+
     String jobDescription;
-    
-    @ManyToOne 
+
+    @ManyToOne
     ProgramManager pm; // Bidirectional
-    
+
     public void setJobDescription(String jobDescription) {
         this.jobDescription = jobDescription;
     }
-    
+
     public String getJobDescription() {
         return jobDescription;
     }
- 
+
     public void setProgramManager(ProgramManager pm) {
         this.pm = pm;
     }
-    
+
     public ProgramManager getProgramManager() {
         return pm;
     }

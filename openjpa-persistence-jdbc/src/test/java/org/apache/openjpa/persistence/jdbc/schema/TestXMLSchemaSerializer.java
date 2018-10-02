@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
@@ -40,17 +40,17 @@ import org.apache.openjpa.jdbc.schema.XMLSchemaSerializer;
 
 
 public class TestXMLSchemaSerializer extends TestXMLSchemaParser{
-    
-    
+
+
     /** Creates a new instance of TestXMLSchemaSerializer */
     public TestXMLSchemaSerializer() {
     }
-    
-    
+
+
     public TestXMLSchemaSerializer(String test) {
         super(test);
     }
-    
+
     protected SchemaGroup getSchemaGroup()
     throws Exception {
         // parse in the schema group, then serialize it to a buffer, then
@@ -59,17 +59,17 @@ public class TestXMLSchemaSerializer extends TestXMLSchemaParser{
         SchemaGroup group = parseSchemaGroup();
         SchemaSerializer ser = new XMLSchemaSerializer(this.conf);
         ser.addAll(group);
-        
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ser.serialize(new OutputStreamWriter(out), ser.PRETTY);
         byte[] bytes = out.toByteArray();
-        
+
         SchemaParser parser = new XMLSchemaParser(this.conf);
         parser.parse(new InputStreamReader
                 (new ByteArrayInputStream(bytes)), "bytes");
         return parser.getSchemaGroup();
     }
-    
+
     public static void main(String[] args) {
         //   main(TestXMLSchemaSerializer.class);
     }

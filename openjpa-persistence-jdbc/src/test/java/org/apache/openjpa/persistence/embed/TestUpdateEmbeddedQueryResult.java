@@ -28,12 +28,12 @@ import org.apache.openjpa.persistence.RollbackException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
-   
+
     public int ID = 1;
 
     public void setUp() {
         setUp(Embed.class,
-            Embed_Embed.class, 
+            Embed_Embed.class,
             EntityA_Embed_Embed.class,
             BaseEntity.class, Address.class, Geocode.class,
             DROP_TABLES);
@@ -50,7 +50,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
         g.setLatitude(1.0f);
         g.setLongtitude(2.0f);
         a.setGeocode(g);
-        em.getTransaction().begin();        
+        em.getTransaction().begin();
         em.persist(a);
         em.getTransaction().commit();
 
@@ -62,7 +62,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
         Address a1 = list.get(0);
 
         assertEquals(a1.getGeocode().getLatitude(),1.0f);
-        
+
         Long id = a1.getId();
 
         g = new Geocode();
@@ -150,7 +150,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
     }
 
     /*
-     * 
+     *
      */
     public void testBulkUpdateEmbeddedField() {
         EntityManager em = emf.createEntityManager();

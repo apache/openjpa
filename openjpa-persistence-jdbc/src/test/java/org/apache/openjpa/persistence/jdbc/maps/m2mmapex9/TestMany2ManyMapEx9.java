@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex9;
 
@@ -73,14 +73,14 @@ public class TestMany2ManyMapEx9 extends SQLListenerTestCase {
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
-    
+
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
-    public void setCandidate(Query q, Class clz) 
+    public void setCandidate(Query q, Class clz)
         throws Exception {
-        org.apache.openjpa.persistence.QueryImpl q1 = 
+        org.apache.openjpa.persistence.QueryImpl q1 =
             (org.apache.openjpa.persistence.QueryImpl) q;
         org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
         org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
@@ -95,7 +95,7 @@ public class TestMany2ManyMapEx9 extends SQLListenerTestCase {
         String query = "select KEY(e) from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
         Query q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, PhoneNumber.class);
         List rs = q.getResultList();
         FullName d = (FullName) rs.get(0);
@@ -103,7 +103,7 @@ public class TestMany2ManyMapEx9 extends SQLListenerTestCase {
         query = "select KEY(p) from Employee e, " +
             " in (e.phones) p";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Employee.class);
         rs = q.getResultList();
         FullPhoneName k = (FullPhoneName) rs.get(0);
@@ -112,7 +112,7 @@ public class TestMany2ManyMapEx9 extends SQLListenerTestCase {
         query = "select ENTRY(e) from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
@@ -143,7 +143,7 @@ public class TestMany2ManyMapEx9 extends SQLListenerTestCase {
     public Employee createEmployee(EntityManager em, int id) {
         Employee e = new Employee();
         e.setEmpId(id);
-        for (int i = 0; i < numPhoneNumbersPerEmployee; i++) { 
+        for (int i = 0; i < numPhoneNumbersPerEmployee; i++) {
             FullPhoneName name1 = new FullPhoneName("f1" + id + i,
                     "l1" + id + i);
             PhoneNumber phoneNumber = new PhoneNumber();
@@ -218,7 +218,7 @@ public class TestMany2ManyMapEx9 extends SQLListenerTestCase {
         checkEmpMap(es0, es);
     }
 
-    public void checkPhoneMap(Map<FullPhoneName, PhoneNumber> es0, 
+    public void checkPhoneMap(Map<FullPhoneName, PhoneNumber> es0,
         Map<FullPhoneName, PhoneNumber> es) throws Exception {
         Collection<Map.Entry<FullPhoneName, PhoneNumber>> entrySets0 =
             es0.entrySet();
@@ -227,7 +227,7 @@ public class TestMany2ManyMapEx9 extends SQLListenerTestCase {
             PhoneNumber p0 = entry0.getValue();
             PhoneNumber p = es.get(key0);
             if (!p0.equals(p))
-                throw new Exception("Assertion Failure");            
+                throw new Exception("Assertion Failure");
         }
     }
 

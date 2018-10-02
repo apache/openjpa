@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -27,32 +27,32 @@ import java.util.ArrayList;
 @Entity
 @Table(name="TODR")
 public class Order {
-	@Id 
+	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	 int oid;
-	
+
 	 double amount;
 	 boolean delivered;
-	 
+
 	@ManyToOne (fetch=FetchType.EAGER)
 	 Customer customer;
-	
+
 	@OneToMany (fetch=FetchType.EAGER , mappedBy="order")
 	 Collection<OrderItem> lineitems = new ArrayList<OrderItem>();
 	@Version
 	long version;
-	
+
     Timestamp orderTs;
 
     public Order(){}
-	
+
 	public Order(  double amt, boolean delivered, Customer c){
 		amount=amt;
 		this.delivered=delivered;
 		customer=c;
 		if (c!=null) c.getOrders().add(this);
 	}
-	
+
 	public double getAmount() {
 		return amount;
 	}
@@ -74,7 +74,7 @@ public class Order {
 	public int getOid() {
 		return oid;
 	}
-	
+
 	public String toString(){
         return "Order:" + oid + " amount:" + amount
             + " delivered:" + delivered
@@ -88,11 +88,11 @@ public class Order {
 	public void setLineitems(Collection<OrderItem> lineitems) {
 		this.lineitems = lineitems;
 	}
-    
+
     public Timestamp getOrderTs() {
         return orderTs;
     }
-    
+
     public void setOrderTs(Timestamp orderTs) {
         this.orderTs = orderTs;
     }

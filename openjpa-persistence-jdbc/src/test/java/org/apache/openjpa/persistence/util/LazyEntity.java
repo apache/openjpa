@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.util;
 
@@ -36,11 +36,11 @@ public class LazyEntity {
 
     @Id
     private int id;
-    
+
     @Basic(fetch=FetchType.LAZY)
     private String name;
-    
-    @Embedded    
+
+    @Embedded
     private LazyEmbed lazyEmbed;
 
     @ElementCollection(fetch=FetchType.LAZY)
@@ -48,10 +48,10 @@ public class LazyEntity {
 
     @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     private List<RelEntity> relEntities;
-    
+
     @OneToOne(fetch=FetchType.LAZY)
     private RelEntity relEntity;
-    
+
     @Transient
     private String transField;
 

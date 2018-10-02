@@ -28,7 +28,7 @@ public class TextStyles {
         KEYS = ctx.addAttribute(KEYS, StyleConstants.Bold, true);
         KEYS = ctx.addAttribute(KEYS, StyleConstants.FontSize, 14);
         KEYS = ctx.addAttribute(KEYS, StyleConstants.FontFamily, "Courier");
-        
+
         Color indianRed = new Color(205, 92, 92);
         VALUES = ctx.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, indianRed);
         VALUES = ctx.addAttribute(VALUES, StyleConstants.Bold, true);

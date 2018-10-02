@@ -25,23 +25,23 @@ import javax.persistence.Version;
 
 /**
  * An abstract base entity class with auto-generated identty and version field.
- * Used for testing special case of table-per-class inheritance strategy when 
- * the root of persistent inheritance hierarchy is abstract and itself 
+ * Used for testing special case of table-per-class inheritance strategy when
+ * the root of persistent inheritance hierarchy is abstract and itself
  * derives from an abstract MappedSuperClass (i.e. this class).
- * 
+ *
  * For a more detailed description of the domain model to which this receiver
  * belongs
  * @see TestTablePerClassInheritanceWithAbstractRoot
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @MappedSuperclass
 public abstract class BaseEntity {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	@Version
 	private long version;
 

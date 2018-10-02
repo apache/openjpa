@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -36,7 +36,7 @@ public abstract class AbstractProductDerivation
         return null;
     }
 
-    public void validate() 
+    public void validate()
         throws Exception {
     }
 
@@ -51,7 +51,7 @@ public abstract class AbstractProductDerivation
     }
 
     public ConfigurationProvider load(String resource, String anchor,
-        ClassLoader loader) 
+        ClassLoader loader)
         throws Exception {
         return null;
     }
@@ -84,10 +84,10 @@ public abstract class AbstractProductDerivation
     public boolean afterSpecificationSet(Configuration conf) {
         return false;
     }
-    
+
     public void beforeConfigurationClose(Configuration conf) {
     }
-        
+
     public Set<String> getSupportedQueryHints() {
         return Collections.EMPTY_SET;
     }

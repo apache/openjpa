@@ -27,8 +27,8 @@ import javax.persistence.Table;
 
 
 /**
- * Entity with very long table and column names 
- * 
+ * Entity with very long table and column names
+ *
  * @author Tim McConnell
  * @since 2.0.0
  */
@@ -96,7 +96,7 @@ public class EntityVeryLongNames implements Serializable {
 
     @Override
     public String toString() {
-        return "EntityVeryLongNames: id: " + getId() + 
+        return "EntityVeryLongNames: id: " + getId() +
                " firstName: " + getFirstName() +
                " lastName: " + getLastName();
     }
@@ -145,5 +145,5 @@ public class EntityVeryLongNames implements Serializable {
             return false;
         }
         return true;
-    } 
+    }
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -89,7 +89,7 @@ public class SybaseDictionary
      * value, false is in accordance with SQL92.
      */
     public boolean ignoreNumericTruncation = false;
-    
+
     public SybaseDictionary() {
         platform = "Sybase";
         schemaCase = SCHEMA_CASE_PRESERVE;
@@ -127,7 +127,7 @@ public class SybaseDictionary
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "ARITH_OVERFLOW", "BREAK", "BROWSE", "BULK", "CHAR_CONVERT",
             "CHECKPOINT", "CLUSTERED", "COMPUTE", "CONFIRM", "CONTROLROW",
-            "DATABASE", "DBCC", "DETERMINISTIC", "DISK DISTINCT", "DUMMY", 
+            "DATABASE", "DBCC", "DETERMINISTIC", "DISK DISTINCT", "DUMMY",
             "DUMP", "ENDTRAN", "ERRLVL", "ERRORDATA", "ERROREXIT", "EXCLUSIVE",
             "EXIT", "EXP_ROW_SIZE", "FILLFACTOR", "FUNC", "FUNCTION",
             "HOLDLOCK", "IDENTITY_GAP", "IDENTITY_INSERT", "IDENTITY_START",
@@ -145,8 +145,8 @@ public class SybaseDictionary
             "TRAN", "TRIGGER", "TRUNCATE", "TSEQUAL", "UNPARTITION", "USE",
             "USER_OPTION", "WAITFOR", "WHILE", "WRITETEXT",
         }));
-        
-        // Sybase does not allow reserved words to be used as column names. 
+
+        // Sybase does not allow reserved words to be used as column names.
         invalidColumnWordSet.addAll(reservedWordSet);
 
         // Sybase does not support foreign key delete/update action NULL,
@@ -157,7 +157,7 @@ public class SybaseDictionary
         supportsNullUpdateAction = false;
         supportsDefaultUpdateAction = false;
         supportsCascadeUpdateAction = false;
-        
+
         fixedSizeTypeNameSet.remove("NUMERIC");
     }
 
@@ -194,7 +194,7 @@ public class SybaseDictionary
             append(" (");
 
         Column[] cols = table.getColumns();
-        
+
         boolean hasIdentity = false;
 
         for (int i = 0; i < cols.length; i++) {
@@ -207,11 +207,11 @@ public class SybaseDictionary
             if(cols[i].getIdentifier().getName().equals(identityColumnName)) {
                 hasIdentity=true;
                 // column type may be lost when recreating - reset to NUMERIC
-                if(cols[i].getType() != Types.NUMERIC) { // should check if compatible 
+                if(cols[i].getType() != Types.NUMERIC) { // should check if compatible
                     cols[i].setType(Types.NUMERIC);
                 }
             }
-            
+
             buf.append(i == 0 ? "" : ", ");
             buf.append(getDeclareColumnSQL(cols[i], false));
         }
@@ -302,46 +302,46 @@ public class SybaseDictionary
         throws SQLException {
         conn = super.decorate(conn);
         Connection savedConn = conn;
-        
-//        if(ignoreConnectionSetup) { 
-//            if(conn instanceof DelegatingConnection) { 
+
+//        if(ignoreConnectionSetup) {
+//            if(conn instanceof DelegatingConnection) {
 //                conn = ((DelegatingConnection)conn).getInnermostDelegate();
 //            }
 //        }
-        
-        // In order for Sybase to raise the truncation exception when the 
-        // string length is greater than the column length for Char, VarChar, 
-        // Binary, VarBinary, the "set string_rtruncation on" must be executed. 
+
+        // In order for Sybase to raise the truncation exception when the
+        // string length is greater than the column length for Char, VarChar,
+        // Binary, VarBinary, the "set string_rtruncation on" must be executed.
         // This setting is effective for the duration of current connection.
         if (setStringRightTruncationOn) {
-            PreparedStatement stmnt = prepareStatement(conn, RIGHT_TRUNCATION_ON_SQL);        
+            PreparedStatement stmnt = prepareStatement(conn, RIGHT_TRUNCATION_ON_SQL);
             stmnt.execute();
             stmnt.close();
         }
-        
+
         // By default, Sybase will fail to insert or update if a numeric
         // truncation occurs as a result of, for example, loss of decimal
-        // precision.  This setting specifies that the operation should not 
+        // precision.  This setting specifies that the operation should not
         // fail if a numeric truncation occurs.
         if (ignoreNumericTruncation) {
-            PreparedStatement stmnt = prepareStatement(conn, NUMERIC_TRUNCATION_OFF_SQL);        
+            PreparedStatement stmnt = prepareStatement(conn, NUMERIC_TRUNCATION_OFF_SQL);
             stmnt.execute();
-            stmnt.close();            
+            stmnt.close();
         }
-        
-        
+
+
         return new SybaseConnection(savedConn);
     }
-    
+
     /**
      * Helper method obtains a string value from a given column in a ResultSet. Strings provided are column names,
      * jdbcName will be tried first if an SQLException occurs we'll try the sybase name.
      */
     protected String getStringFromResultSet(ResultSet rs, String jdbcName, String sybaseName) throws SQLException {
-        try { 
+        try {
             return rs.getString(jdbcName);
         }
-        catch(SQLException sqle) { 
+        catch(SQLException sqle) {
             // if the generic JDBC identifier isn't found an SQLException will be thrown
             // try the Sybase specific id
             return rs.getString(sybaseName);
@@ -352,7 +352,7 @@ public class SybaseDictionary
      * jdbcName will be tried first if an SQLException occurs we'll try the sybase name.
      */
     protected boolean getBooleanFromResultSet(ResultSet rs, String jdbcName, String sybaseName) throws SQLException {
-        try { 
+        try {
             return rs.getBoolean(jdbcName);
         }
         catch(SQLException sqle) {
@@ -396,7 +396,7 @@ public class SybaseDictionary
         idx.setUnique(!getBooleanFromResultSet(idxMeta, "NON_UNIQUE", "non_unique"));
         return idx;
     }
-    
+
     public boolean isFatalException(int subtype, SQLException ex) {
         if (subtype == StoreException.LOCK) {
             SQLException next = ex.getNextException();
@@ -404,7 +404,7 @@ public class SybaseDictionary
                 return false; // query timeout
             }
         }
-        return super.isFatalException(subtype, ex); 
+        return super.isFatalException(subtype, ex);
     }
 
     /**
@@ -447,7 +447,7 @@ public class SybaseDictionary
             }
         }
     }
-    
+
     @Override
     public String getIsNullSQL(String colAlias, int colType)  {
         switch(colType) {
@@ -457,11 +457,11 @@ public class SybaseDictionary
         }
         return super.getIsNullSQL(colAlias, colType);
     }
-    
+
     @Override
-    public String getIsNotNullSQL(String colAlias, int colType) { 
-        switch(colType) { 
-            case Types.BLOB: 
+    public String getIsNotNullSQL(String colAlias, int colType) {
+        switch(colType) {
+            case Types.BLOB:
             case Types.CLOB:
                 return String.format("datalength(%s) != 0", colAlias);
         }
@@ -470,7 +470,7 @@ public class SybaseDictionary
 
     @Override
     public String getIdentityColumnName() {
-        return identityColumnName;       
+        return identityColumnName;
     }
 
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,

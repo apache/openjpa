@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -26,28 +26,28 @@ import java.util.*;
 @Table(name="PhoneEmbedTest")
 
 public class PhoneNumber {
-    @Id 
+    @Id
     int number;
-    
+
     @ManyToMany(mappedBy="contactInfo.phoneNumbers")
     Collection<Employee> employees = new ArrayList<Employee>();
-    
+
     public int getNumber() {
         return number;
     }
-    
+
     public void setNumber(int number) {
         this.number = number;
     }
-    
+
     public Collection<Employee> getEmployees() {
         return employees;
     }
-    
+
     public void addEmployees(Employee employee) {
         employees.add(employee);
     }
-    
-    
-    
+
+
+
 }

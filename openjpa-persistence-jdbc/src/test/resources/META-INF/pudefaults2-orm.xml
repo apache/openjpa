@@ -25,5 +25,5 @@
   			sequence-name="SeqName_4SequenceMappingSchema" schema="schemaInSequenceMapping">
   		</sequence-generator>
 	</entity>
-	 
+
 </entity-mappings>

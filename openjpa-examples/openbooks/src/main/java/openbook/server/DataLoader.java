@@ -19,18 +19,18 @@ import openbook.util.PropertyHelper;
 
 /**
  * Cleans and loads a new OpenBooks database.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class DataLoader {
-    
+
     /**
      * Load data.
-     * 
+     *
      * @param args 0-th argument is the name of persistence unit
      *             1-st argument is the path to the data file
-     *             
+     *
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {

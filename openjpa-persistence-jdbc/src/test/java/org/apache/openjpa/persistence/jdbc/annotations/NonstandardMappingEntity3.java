@@ -37,7 +37,7 @@ import javax.persistence.Table;
 public class NonstandardMappingEntity3 {
     @Id
     private long id;
-    
+
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(name="EmbedVal3s")
     private List<EmbedValue3> embedVal3s = new ArrayList<EmbedValue3>();
@@ -45,27 +45,27 @@ public class NonstandardMappingEntity3 {
     @Embedded
     private EmbedValue3 embedVal3;
 
-    public long getId() { 
-        return id; 
-    }
-    
-    public void setId(long id) { 
-        this.id = id; 
-    }
-   
-    public List<EmbedValue3> getEmbedVal3s() { 
-        return embedVal3s; 
-    }
-    
-    public void setEmbedVal3s(List<EmbedValue3> embedVal3s) { 
-        this.embedVal3s = embedVal3s; 
+    public long getId() {
+        return id;
     }
 
-    public EmbedValue3 getEmbedVal3() { 
-        return embedVal3; 
+    public void setId(long id) {
+        this.id = id;
     }
-    
-    public void setEmbedVal3(EmbedValue3 embedVal3) { 
-        this.embedVal3 = embedVal3; 
+
+    public List<EmbedValue3> getEmbedVal3s() {
+        return embedVal3s;
+    }
+
+    public void setEmbedVal3s(List<EmbedValue3> embedVal3s) {
+        this.embedVal3s = embedVal3s;
+    }
+
+    public EmbedValue3 getEmbedVal3() {
+        return embedVal3;
+    }
+
+    public void setEmbedVal3(EmbedValue3 embedVal3) {
+        this.embedVal3 = embedVal3;
     }
 }

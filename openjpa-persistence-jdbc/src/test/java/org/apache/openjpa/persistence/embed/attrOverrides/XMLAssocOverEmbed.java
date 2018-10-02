@@ -19,13 +19,13 @@
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
 public class XMLAssocOverEmbed {
-    
+
     private String name;
-    
+
     private XMLAssocOverEntityB eb;
 
     private XMLAssocOverEntityB meb;
-    
+
     public void setName(String name) {
         this.name = name;
     }

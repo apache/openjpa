@@ -14,13 +14,13 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
  * Denotes TRIM(e1,x) Expression.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -29,23 +29,23 @@ public class TrimExpression extends UnaryOperatorExpression {
 	private final TrimSpec _trimSpec;
 	private static final String DEFAULT_TRIM_CHAR = "' '";
 	private static final String DEFAULT_TRIM_SPEC = EMPTY;
-	
+
 	public TrimExpression(Expression op, char ch, TrimSpec spec) {
 		super(op, UnaryFunctionalOperator.TRIM);
 		_trimChar = new ConstantExpression(ch);
 		_trimSpec     = spec;
 	}
-	
+
 	public TrimExpression(Expression op, Expression ch, TrimSpec spec) {
 		super(op, UnaryFunctionalOperator.TRIM);
 		_trimChar = ch;
 		_trimSpec = spec;
 	}
-	
+
 	public String asExpression(AliasContext ctx) {
-		String trimChar = _trimChar == null ? DEFAULT_TRIM_CHAR 
+		String trimChar = _trimChar == null ? DEFAULT_TRIM_CHAR
 			: ((Visitable)_trimChar).asExpression(ctx);
-		String trimSpec = _trimSpec == null ? DEFAULT_TRIM_SPEC : 
+		String trimSpec = _trimSpec == null ? DEFAULT_TRIM_SPEC :
 			_trimSpec.toString();
 		return _op.toString()
 		       + OPEN_BRACE

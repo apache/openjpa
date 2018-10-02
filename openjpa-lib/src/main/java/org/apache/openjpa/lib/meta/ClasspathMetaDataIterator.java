@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.meta;
 
@@ -51,7 +51,7 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
     public ClasspathMetaDataIterator(String[] dirs, MetaDataFilter filter)
         throws IOException {
         Properties props = AccessController.doPrivileged(
-            J2DoPrivHelper.getPropertiesAction()); 
+            J2DoPrivHelper.getPropertiesAction());
         String path = props.getProperty("java.class.path");
         String[] tokens = StringUtil.split(path,
             props.getProperty("path.separator"), 0);

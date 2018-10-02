@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Java Persistence API object-relational mapping file schema -->
-<xsd:schema targetNamespace="http://java.sun.com/xml/ns/persistence/orm" 
-  xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-  elementFormDefault="qualified" 
-  attributeFormDefault="unqualified" 
+<xsd:schema targetNamespace="http://java.sun.com/xml/ns/persistence/orm"
+  xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified"
   version="1.0">
 
   <xsd:annotation>
@@ -60,10 +60,10 @@
   <xsd:annotation>
      <xsd:documentation><![CDATA[
 
-       This is the XML Schema for the persistence object-relational 
+       This is the XML Schema for the persistence object-relational
        mapping file.
-       The file may be named "META-INF/orm.xml" in the persistence 
-       archive or it may be named some other name which would be 
+       The file may be named "META-INF/orm.xml" in the persistence
+       archive or it may be named some other name which would be
        used to locate the file as resource on the classpath.
 
      ]]></xsd:documentation>
@@ -90,7 +90,7 @@
         1. The persistence-unit-metadata element contains metadata
         for the entire persistence unit. It is undefined if this element
         occurs in multiple mapping files within the same persistence unit.
-        
+
         2. The package, schema, catalog and access elements apply to all of
         the entity, mapped-superclass and embeddable elements defined in
         the same file in which they occur.
@@ -99,9 +99,9 @@
         named-native-query and sql-result-set-mapping elements are global
         to the persistence unit. It is undefined to have more than one
         sequence-generator or table-generator of the same name in the same
-        or different mapping files in a persistence unit. It is also 
+        or different mapping files in a persistence unit. It is also
         undefined to have more than one named-query or named-native-query
-        of the same name in the same or different mapping files in a 
+        of the same name in the same or different mapping files in a
         persistence unit.
 
         4. The entity, mapped-superclass and embeddable elements each define
@@ -114,7 +114,7 @@
       <xsd:sequence>
         <xsd:element name="description" type="xsd:string"
                      minOccurs="0"/>
-        <xsd:element name="persistence-unit-metadata" 
+        <xsd:element name="persistence-unit-metadata"
                      type="orm:persistence-unit-metadata"
                      minOccurs="0"/>
         <xsd:element name="package" type="xsd:string"
@@ -127,23 +127,23 @@
                      minOccurs="0"/>
         <xsd:element name="sequence-generator" type="orm:sequence-generator"
                      minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="table-generator" type="orm:table-generator" 
+        <xsd:element name="table-generator" type="orm:table-generator"
                      minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="named-query" type="orm:named-query" 
+        <xsd:element name="named-query" type="orm:named-query"
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="named-native-query" type="orm:named-native-query"
                      minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="sql-result-set-mapping" 
-                     type="orm:sql-result-set-mapping" 
+        <xsd:element name="sql-result-set-mapping"
+                     type="orm:sql-result-set-mapping"
                      minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="mapped-superclass" type="orm:mapped-superclass" 
+        <xsd:element name="mapped-superclass" type="orm:mapped-superclass"
                      minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="entity" type="orm:entity" 
+        <xsd:element name="entity" type="orm:entity"
                      minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="embeddable" type="orm:embeddable" 
+        <xsd:element name="embeddable" type="orm:embeddable"
                      minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
-      <xsd:attribute name="version" type="orm:versionType" 
+      <xsd:attribute name="version" type="orm:versionType"
                      fixed="1.0" use="required"/>
     </xsd:complexType>
   </xsd:element>
@@ -154,11 +154,11 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        Metadata that applies to the persistence unit and not just to 
-        the mapping file in which it is contained. 
+        Metadata that applies to the persistence unit and not just to
+        the mapping file in which it is contained.
 
-        If the xml-mapping-metadata-complete element is specified then 
-        the complete set of mapping metadata for the persistence unit 
+        If the xml-mapping-metadata-complete element is specified then
+        the complete set of mapping metadata for the persistence unit
         is contained in the XML mapping files for the persistence unit.
 
       </xsd:documentation>
@@ -166,7 +166,7 @@
     <xsd:sequence>
       <xsd:element name="xml-mapping-metadata-complete" type="orm:emptyType"
                    minOccurs="0"/>
-      <xsd:element name="persistence-unit-defaults" 
+      <xsd:element name="persistence-unit-defaults"
                    type="orm:persistence-unit-defaults"
                    minOccurs="0"/>
     </xsd:sequence>
@@ -178,10 +178,10 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        These defaults are applied to the persistence unit as a whole 
-        unless they are overridden by local annotation or XML 
-        element settings. 
-        
+        These defaults are applied to the persistence unit as a whole
+        unless they are overridden by local annotation or XML
+        element settings.
+
         schema - Used as the schema for all tables or secondary tables
             that apply to the persistence unit
         catalog - Used as the catalog for all tables or secondary tables
@@ -190,8 +190,8 @@
             the persistence unit
         cascade-persist - Adds cascade-persist to the set of cascade options
             in entity relationships of the persistence unit
-        entity-listeners - List of default entity listeners to be invoked 
-            on each entity in the persistence unit. 
+        entity-listeners - List of default entity listeners to be invoked
+            on each entity in the persistence unit.
 
       </xsd:documentation>
     </xsd:annotation>
@@ -202,7 +202,7 @@
                      minOccurs="0"/>
         <xsd:element name="access" type="orm:access-type"
                      minOccurs="0"/>
-        <xsd:element name="cascade-persist" type="orm:emptyType" 
+        <xsd:element name="cascade-persist" type="orm:emptyType"
                      minOccurs="0"/>
         <xsd:element name="entity-listeners" type="orm:entity-listeners"
                      minOccurs="0"/>
@@ -217,10 +217,10 @@
 
         Defines the settings and mappings for an entity. Is allowed to be
         sparsely populated and used in conjunction with the annotations.
-        Alternatively, the metadata-complete attribute can be used to 
+        Alternatively, the metadata-complete attribute can be used to
         indicate that no annotations on the entity class (and its fields
-        or properties) are to be processed. If this is the case then 
-        the defaulting rules for the entity and its subelements will 
+        or properties) are to be processed. If this is the case then
+        the defaulting rules for the entity and its subelements will
         be recursively applied.
 
         @Target(TYPE) @Retention(RUNTIME)
@@ -232,48 +232,48 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
-      <xsd:element name="table" type="orm:table" 
+      <xsd:element name="table" type="orm:table"
                    minOccurs="0"/>
-      <xsd:element name="secondary-table" type="orm:secondary-table" 
+      <xsd:element name="secondary-table" type="orm:secondary-table"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="primary-key-join-column" 
-                   type="orm:primary-key-join-column" 
+      <xsd:element name="primary-key-join-column"
+                   type="orm:primary-key-join-column"
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
       <xsd:element name="inheritance" type="orm:inheritance" minOccurs="0"/>
-      <xsd:element name="discriminator-value" type="orm:discriminator-value" 
+      <xsd:element name="discriminator-value" type="orm:discriminator-value"
                    minOccurs="0"/>
-      <xsd:element name="discriminator-column" 
-                   type="orm:discriminator-column" 
+      <xsd:element name="discriminator-column"
+                   type="orm:discriminator-column"
                    minOccurs="0"/>
-      <xsd:element name="sequence-generator" type="orm:sequence-generator" 
+      <xsd:element name="sequence-generator" type="orm:sequence-generator"
                    minOccurs="0"/>
-      <xsd:element name="table-generator" type="orm:table-generator" 
+      <xsd:element name="table-generator" type="orm:table-generator"
                    minOccurs="0"/>
-      <xsd:element name="named-query" type="orm:named-query" 
+      <xsd:element name="named-query" type="orm:named-query"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="named-native-query" type="orm:named-native-query" 
+      <xsd:element name="named-native-query" type="orm:named-native-query"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="sql-result-set-mapping" 
-                   type="orm:sql-result-set-mapping" 
+      <xsd:element name="sql-result-set-mapping"
+                   type="orm:sql-result-set-mapping"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="exclude-default-listeners" type="orm:emptyType" 
+      <xsd:element name="exclude-default-listeners" type="orm:emptyType"
                    minOccurs="0"/>
-      <xsd:element name="exclude-superclass-listeners" type="orm:emptyType" 
+      <xsd:element name="exclude-superclass-listeners" type="orm:emptyType"
                    minOccurs="0"/>
-      <xsd:element name="entity-listeners" type="orm:entity-listeners" 
+      <xsd:element name="entity-listeners" type="orm:entity-listeners"
                    minOccurs="0"/>
       <xsd:element name="pre-persist" type="orm:pre-persist" minOccurs="0"/>
-      <xsd:element name="post-persist" type="orm:post-persist" 
+      <xsd:element name="post-persist" type="orm:post-persist"
                    minOccurs="0"/>
       <xsd:element name="pre-remove" type="orm:pre-remove" minOccurs="0"/>
       <xsd:element name="post-remove" type="orm:post-remove" minOccurs="0"/>
       <xsd:element name="pre-update" type="orm:pre-update" minOccurs="0"/>
       <xsd:element name="post-update" type="orm:post-update" minOccurs="0"/>
       <xsd:element name="post-load" type="orm:post-load" minOccurs="0"/>
-      <xsd:element name="attribute-override" type="orm:attribute-override" 
+      <xsd:element name="attribute-override" type="orm:attribute-override"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="association-override" 
+      <xsd:element name="association-override"
                    type="orm:association-override"
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
@@ -300,9 +300,9 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>
-        <xsd:element name="id" type="orm:id" 
+        <xsd:element name="id" type="orm:id"
                      minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="embedded-id" type="orm:embedded-id" 
+        <xsd:element name="embedded-id" type="orm:embedded-id"
                      minOccurs="0"/>
       </xsd:choice>
       <xsd:element name="basic" type="orm:basic"
@@ -315,7 +315,7 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="one-to-one" type="orm:one-to-one"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="many-to-many" type="orm:many-to-many" 
+      <xsd:element name="many-to-many" type="orm:many-to-many"
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="embedded" type="orm:embedded"
                    minOccurs="0" maxOccurs="unbounded"/>
@@ -355,7 +355,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="entity-listener" type="orm:entity-listener" 
+      <xsd:element name="entity-listener" type="orm:entity-listener"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -373,7 +373,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="pre-persist" type="orm:pre-persist" minOccurs="0"/>
-      <xsd:element name="post-persist" type="orm:post-persist" 
+      <xsd:element name="post-persist" type="orm:post-persist"
                    minOccurs="0"/>
       <xsd:element name="pre-remove" type="orm:pre-remove" minOccurs="0"/>
       <xsd:element name="post-remove" type="orm:post-remove" minOccurs="0"/>
@@ -488,7 +488,7 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        @Target({}) @Retention(RUNTIME) 
+        @Target({}) @Retention(RUNTIME)
         public @interface QueryHint {
           String name();
           String value();
@@ -517,7 +517,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="query" type="xsd:string"/>
-      <xsd:element name="hint" type="orm:query-hint" 
+      <xsd:element name="hint" type="orm:query-hint"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -542,7 +542,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="query" type="xsd:string"/>
-      <xsd:element name="hint" type="orm:query-hint" 
+      <xsd:element name="hint" type="orm:query-hint"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -566,9 +566,9 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="entity-result" type="orm:entity-result" 
+      <xsd:element name="entity-result" type="orm:entity-result"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="column-result" type="orm:column-result" 
+      <xsd:element name="column-result" type="orm:column-result"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -590,7 +590,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="field-result" type="orm:field-result" 
+      <xsd:element name="field-result" type="orm:field-result"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="entity-class" type="xsd:string" use="required"/>
@@ -648,7 +648,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
+      <xsd:element name="unique-constraint" type="orm:unique-constraint"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
@@ -674,10 +674,10 @@
        </xsd:documentation>
      </xsd:annotation>
      <xsd:sequence>
-       <xsd:element name="primary-key-join-column" 
-                    type="orm:primary-key-join-column" 
+       <xsd:element name="primary-key-join-column"
+                    type="orm:primary-key-join-column"
                     minOccurs="0" maxOccurs="unbounded"/>
-       <xsd:element name="unique-constraint" type="orm:unique-constraint" 
+       <xsd:element name="unique-constraint" type="orm:unique-constraint"
                     minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -699,7 +699,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="column-name" type="xsd:string" 
+      <xsd:element name="column-name" type="xsd:string"
                    maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -855,13 +855,13 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="column" type="orm:column" 
+      <xsd:element name="column" type="orm:column"
                    minOccurs="0"/>
       <xsd:element name="generated-value" type="orm:generated-value"
                    minOccurs="0"/>
-      <xsd:element name="temporal" type="orm:temporal" 
+      <xsd:element name="temporal" type="orm:temporal"
                    minOccurs="0"/>
-      <xsd:element name="table-generator" type="orm:table-generator" 
+      <xsd:element name="table-generator" type="orm:table-generator"
                    minOccurs="0"/>
       <xsd:element name="sequence-generator" type="orm:sequence-generator"
                    minOccurs="0"/>
@@ -881,7 +881,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="attribute-override" type="orm:attribute-override" 
+      <xsd:element name="attribute-override" type="orm:attribute-override"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -1064,13 +1064,13 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:choice>       
-        <xsd:element name="join-column" type="orm:join-column" 
+      <xsd:choice>
+        <xsd:element name="join-column" type="orm:join-column"
                      minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="join-table" type="orm:join-table" 
+        <xsd:element name="join-table" type="orm:join-table"
                      minOccurs="0"/>
-      </xsd:choice>       
-      <xsd:element name="cascade" type="orm:cascade-type" 
+      </xsd:choice>
+      <xsd:element name="cascade" type="orm:cascade-type"
                    minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -1122,15 +1122,15 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>
-        <xsd:element name="primary-key-join-column" 
-                     type="orm:primary-key-join-column" 
+        <xsd:element name="primary-key-join-column"
+                     type="orm:primary-key-join-column"
                      minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="join-column" type="orm:join-column" 
+        <xsd:element name="join-column" type="orm:join-column"
                      minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="join-table" type="orm:join-table" 
+        <xsd:element name="join-table" type="orm:join-table"
                      minOccurs="0"/>
       </xsd:choice>
-      <xsd:element name="cascade" type="orm:cascade-type" 
+      <xsd:element name="cascade" type="orm:cascade-type"
                    minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -1157,17 +1157,17 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="order-by" type="orm:order-by" 
+      <xsd:element name="order-by" type="orm:order-by"
                    minOccurs="0"/>
-      <xsd:element name="map-key" type="orm:map-key" 
+      <xsd:element name="map-key" type="orm:map-key"
                    minOccurs="0"/>
-      <xsd:choice>       
-        <xsd:element name="join-table" type="orm:join-table" 
+      <xsd:choice>
+        <xsd:element name="join-table" type="orm:join-table"
                      minOccurs="0"/>
-        <xsd:element name="join-column" type="orm:join-column" 
+        <xsd:element name="join-column" type="orm:join-column"
                      minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:choice>       
-      <xsd:element name="cascade" type="orm:cascade-type" 
+      </xsd:choice>
+      <xsd:element name="cascade" type="orm:cascade-type"
                    minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -1195,11 +1195,11 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="join-column" type="orm:join-column" 
+      <xsd:element name="join-column" type="orm:join-column"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="inverse-join-column" type="orm:join-column" 
+      <xsd:element name="inverse-join-column" type="orm:join-column"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
+      <xsd:element name="unique-constraint" type="orm:unique-constraint"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
@@ -1224,13 +1224,13 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="order-by" type="orm:order-by" 
+      <xsd:element name="order-by" type="orm:order-by"
                    minOccurs="0"/>
-      <xsd:element name="map-key" type="orm:map-key" 
+      <xsd:element name="map-key" type="orm:map-key"
                    minOccurs="0"/>
-      <xsd:element name="join-table" type="orm:join-table" 
+      <xsd:element name="join-table" type="orm:join-table"
                    minOccurs="0"/>
-      <xsd:element name="cascade" type="orm:cascade-type" 
+      <xsd:element name="cascade" type="orm:cascade-type"
                    minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -1404,11 +1404,11 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        Defines the settings and mappings for embeddable objects. Is 
-        allowed to be sparsely populated and used in conjunction with 
-        the annotations. Alternatively, the metadata-complete attribute 
-        can be used to indicate that no annotations are to be processed 
-        in the class. If this is the case then the defaulting rules will 
+        Defines the settings and mappings for embeddable objects. Is
+        allowed to be sparsely populated and used in conjunction with
+        the annotations. Alternatively, the metadata-complete attribute
+        can be used to indicate that no annotations are to be processed
+        in the class. If this is the case then the defaulting rules will
         be recursively applied.
 
         @Target({TYPE}) @Retention(RUNTIME)
@@ -1418,7 +1418,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
-      <xsd:element name="attributes" type="orm:embeddable-attributes" 
+      <xsd:element name="attributes" type="orm:embeddable-attributes"
                    minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
@@ -1430,9 +1430,9 @@
 
   <xsd:complexType name="embeddable-attributes">
     <xsd:sequence>
-      <xsd:element name="basic" type="orm:basic" 
+      <xsd:element name="basic" type="orm:basic"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="transient" type="orm:transient" 
+      <xsd:element name="transient" type="orm:transient"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -1449,7 +1449,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="attribute-override" type="orm:attribute-override" 
+      <xsd:element name="attribute-override" type="orm:attribute-override"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -1461,11 +1461,11 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        Defines the settings and mappings for a mapped superclass. Is 
-        allowed to be sparsely populated and used in conjunction with 
-        the annotations. Alternatively, the metadata-complete attribute 
-        can be used to indicate that no annotations are to be processed 
-        If this is the case then the defaulting rules will be recursively 
+        Defines the settings and mappings for a mapped superclass. Is
+        allowed to be sparsely populated and used in conjunction with
+        the annotations. Alternatively, the metadata-complete attribute
+        can be used to indicate that no annotations are to be processed
+        If this is the case then the defaulting rules will be recursively
         applied.
 
         @Target(TYPE) @Retention(RUNTIME)
@@ -1476,14 +1476,14 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
-      <xsd:element name="exclude-default-listeners" type="orm:emptyType" 
+      <xsd:element name="exclude-default-listeners" type="orm:emptyType"
                    minOccurs="0"/>
-      <xsd:element name="exclude-superclass-listeners" type="orm:emptyType" 
+      <xsd:element name="exclude-superclass-listeners" type="orm:emptyType"
                    minOccurs="0"/>
-      <xsd:element name="entity-listeners" type="orm:entity-listeners" 
+      <xsd:element name="entity-listeners" type="orm:entity-listeners"
                    minOccurs="0"/>
       <xsd:element name="pre-persist" type="orm:pre-persist" minOccurs="0"/>
-      <xsd:element name="post-persist" type="orm:post-persist" 
+      <xsd:element name="post-persist" type="orm:post-persist"
                    minOccurs="0"/>
       <xsd:element name="pre-remove" type="orm:pre-remove" minOccurs="0"/>
       <xsd:element name="post-remove" type="orm:post-remove" minOccurs="0"/>
@@ -1542,7 +1542,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
+      <xsd:element name="unique-constraint" type="orm:unique-constraint"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>

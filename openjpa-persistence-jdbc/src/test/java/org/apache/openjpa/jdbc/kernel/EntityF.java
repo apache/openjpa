@@ -27,7 +27,7 @@ public class EntityF  {
 
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="entityF")
 	private List<EntityG> listG;
-	
+
 	public List<EntityG> getListG() {
 		return listG;
 	}

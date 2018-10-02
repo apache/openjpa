@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -90,9 +90,9 @@ public interface StoreQuery
      * Create a new compilation for this query. May be null.
      */
     public Object newCompilation();
-    
+
     /**
-     * Get the current compilation for this query. If it is null, do not create. 
+     * Get the current compilation for this query. If it is null, do not create.
      */
     public Object getCompilation();
 
@@ -171,7 +171,7 @@ public interface StoreQuery
      */
     public boolean supportsParameterDeclarations();
 
-    public Object evaluate(Object value, Object ob, Object[] params, 
+    public Object evaluate(Object value, Object ob, Object[] params,
         OpenJPAStateManager sm);
 
     /**
@@ -240,7 +240,7 @@ public interface StoreQuery
         public void validate(StoreQuery q);
 
         /**
-         * Mutate the given range to set any range information stored in 
+         * Mutate the given range to set any range information stored in
          * the query string and/or parameters.
          */
         public void getRange(StoreQuery q, Object[] params, Range range);
@@ -308,7 +308,7 @@ public interface StoreQuery
          * Return true if the compiled query is an aggregate.
          */
         public boolean isAggregate(StoreQuery q);
-        
+
         public boolean isDistinct(StoreQuery q);
 
         /**
@@ -322,27 +322,27 @@ public interface StoreQuery
          * order in which they were declared or used.
          */
         public OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q);
-        
+
         /**
          * Return a map of parameter names to types. The returned
          * {@link Map#entrySet}'s {@link Iterator} must return values in the
          * order in which they were declared or used.<br>
-         * 
+         *
          * <B>Warning</B>: Deprecated. Use {@linkplain #getOrderedParameterTypes(StoreQuery)} instead.
          */
         @Deprecated
         public LinkedMap getParameterTypes(StoreQuery q);
-        
+
         /**
          * Return an array from the given user parameter values.
-         * The array ordering is same as what this executor expects for its 
+         * The array ordering is same as what this executor expects for its
          * executeXXX() methods as its Object[] parameters.
          * If the given userParams is null or empty return an empty array
          * rather than null.
-         * 
+         *
          * @return array with parameter values ordered in the same way as this
          * receiver's executeXXX() method expects.
-         * 
+         *
          * @since 2.0.0
          */
         public Object[] toParameterArray(StoreQuery q, Map<?,?> userParams);
@@ -351,7 +351,7 @@ public interface StoreQuery
          * Returns the result class, if any.
          */
         public Class<?> getResultClass(StoreQuery q);
-        
+
         public ResultShape<?> getResultShape(StoreQuery q);
 
         /**
@@ -359,11 +359,11 @@ public interface StoreQuery
          * {@link Constant}s, in cases where this query is for a bulk update.
 	 	 */
 		public Map<FieldMetaData,Value> getUpdates (StoreQuery q);
-		
+
         /**
          * Return the parsed query expressions for our candidate types.
          * The expressions are available only after query has been parsed.
-         * 
+         *
          * @since 2.0.0
          */
 		public QueryExpressions[] getQueryExpressions();

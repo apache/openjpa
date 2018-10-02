@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.audit;
 
@@ -32,7 +32,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * <br>
  * The user implementation of this interface is configurable via
  * standard OpenJPA plug-in configuration framework.
- * 
+ *
  * @author Pinaki Poddar
  * @since 2.2.0
  */
@@ -40,7 +40,7 @@ public interface Auditor extends Configurable, Closeable {
 	/**
 	 * OpenJPA runtime will invoke this method with the given parameters
 	 * within a transaction.
-	 * 
+	 *
 	 * @param broker the active persistence context.
 	 * @param newObjects the set of auditable objects being created. Can be empty, but never null.
 	 * @param updates the set of auditable objects being updated. Can be empty, but never null.
@@ -48,7 +48,7 @@ public interface Auditor extends Configurable, Closeable {
 	 */
 	public void audit(Broker broker, Collection<Audited> newObjects, Collection<Audited> updates,
 			Collection<Audited> deletes);
-	
+
 	/**
 	 * Affirm if the transaction be rolled back if {@link #audit(Broker, Collection, Collection, Collection) audit}
 	 * operation fails with an exception.

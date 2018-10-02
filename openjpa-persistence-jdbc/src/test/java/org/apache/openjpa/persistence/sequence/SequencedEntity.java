@@ -38,7 +38,7 @@ public class SequencedEntity {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SeqEntity2")
     @SequenceGenerator(name="SeqEntity2", sequenceName="SEQENTITY_TBL_gval1_seq", allocationSize = 1)
     private int gval1;
-    
+
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SeqEntity3")
     @SequenceGenerator(name="SeqEntity3", sequenceName="SEQENTITY_TBL_g_val2_seq", allocationSize = 1)
     @Column(name="g_val2")

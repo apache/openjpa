@@ -27,17 +27,17 @@ import javax.persistence.Table;
 public class EntityE {
     @Id
     private long id;
-    
+
     private String name;
 
     public EntityE() {
     }
-    
+
     public EntityE(long id, String name) {
         this.id = id;
         this.name = name;
     }
-    
+
     public long getId() {
         return id;
     }

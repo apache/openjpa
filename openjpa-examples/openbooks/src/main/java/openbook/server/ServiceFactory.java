@@ -22,23 +22,23 @@ import javax.persistence.PersistenceContextType;
 
 /**
  * A container of persistence units. Typically a JEE container will create, manage and inject
- * the persistence units to the user artifacts.  
- * 
+ * the persistence units to the user artifacts.
+ *
  * @author Pinaki Poddar
  *
  */
 public class ServiceFactory {
     private static final Map<String, OpenBookService> _services = new HashMap<String, OpenBookService>();
-    
+
     public synchronized static OpenBookService getService(String unit) {
         return getService(unit, null);
     }
-    
+
     /**
      * Creates a persistence unit of given name configured with the given
-     * name-value parameters. 
-     * 
-     * @param unit name of the persistence unit. A <code>META-INF/persistence.xml</code> must be 
+     * name-value parameters.
+     *
+     * @param unit name of the persistence unit. A <code>META-INF/persistence.xml</code> must be
      * available with the same unit name in the classpath.
      */
     public synchronized static OpenBookService getService(String unit, Map<String,Object> config) {

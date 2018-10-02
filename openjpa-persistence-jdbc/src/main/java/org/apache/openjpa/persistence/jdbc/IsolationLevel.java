@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -83,7 +83,7 @@ public enum IsolationLevel implements OpenJPAEnum<IsolationLevel>{
     public int toKernelConstant() {
         return getConnectionConstant();
     }
-    
+
     public static int toKernelConstantFromString(String s) {
         for (IsolationLevel level : IsolationLevel.values()) {
             for (String name : level._names) {
@@ -93,11 +93,11 @@ public enum IsolationLevel implements OpenJPAEnum<IsolationLevel>{
         }
         throw new IllegalArgumentException(s + " is not a valid name for " + IsolationLevel.class.getName());
     }
-    
+
     public int convertToKernelConstant(String s) {
         return IsolationLevel.toKernelConstantFromString(s);
     }
-    
+
     public int convertToKernelConstant(int i) {
         return IsolationLevel.fromConnectionConstant(i).toKernelConstant();
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jpql.version.type;
 
@@ -27,15 +27,15 @@ import javax.persistence.Query;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Verifies that the version field is of the proper java type 
+ * Verifies that the version field is of the proper java type
  * when returned from a query. See OPENJPA-2435.
  */
 public class TestVersionFieldType extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(CLEAR_TABLES, LongVersionEntity.class, 
+        setUp(CLEAR_TABLES, LongVersionEntity.class,
             ShortVersionEntity.class, PrimativeLongVersionEntity.class,
-            PrimativeShortVersionEntity.class, TimestampVersionEntity.class, 
+            PrimativeShortVersionEntity.class, TimestampVersionEntity.class,
             BaseEntity.class, ChildVersionEntity.class);
         createTestData();
     }
@@ -58,11 +58,11 @@ public class TestVersionFieldType extends SingleEMFTestCase {
 
         for (Object[] objects : objectList) {
             assertNotNull("Version should not be null.", objects[1]);
-            assertTrue("Type should be " + expectedClsType.getName() + 
+            assertTrue("Type should be " + expectedClsType.getName() +
                 ".  But it is " + objects[1].getClass(),
                 objects[1].getClass() == expectedClsType);
         }
-        
+
         em.close();
     }
 

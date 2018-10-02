@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.query;
 
 /**
  * Denotes ABS() operation on a given expression.
- * 
+ *
  * @author Pinaki Poddar
  *
  */

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.delayed.llist;
 
@@ -36,21 +36,21 @@ public class Account implements IAccount {
 
     public Account() {
     }
-    
+
     public Account(String name, IUserIdentity uid) {
         setName(name);
         setUserIdent(uid);
     }
-    
+
     @Id
     @GeneratedValue
     @Column(name="ACCT_ID")
     private int id;
-    
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="UID_ID")
     private UserIdentity userIdent;
-    
+
     private String name;
 
     public void setId(int id) {

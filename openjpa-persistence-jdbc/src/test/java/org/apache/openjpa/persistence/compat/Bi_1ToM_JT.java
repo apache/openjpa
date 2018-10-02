@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -35,31 +35,31 @@ public class Bi_1ToM_JT {
 
     @OneToMany(mappedBy="bi1mjt", fetch=FetchType.EAGER)
     private List<EntityC_B1MJT> entityCs = null;
-    
-    public long getId() { 
-        return bid; 
+
+    public long getId() {
+        return bid;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public List<EntityC_B1MJT> getEntityCs() { 
-        return entityCs; 
+    public List<EntityC_B1MJT> getEntityCs() {
+        return entityCs;
     }
 
-    public void setEntityCs(List<EntityC_B1MJT> entityCs) { 
-        this.entityCs = entityCs; 
+    public void setEntityCs(List<EntityC_B1MJT> entityCs) {
+        this.entityCs = entityCs;
     }
 
     public int hashCode() {
         return name.hashCode();
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof Bi_1ToM_JT)) return false;
         Bi_1ToM_JT b = (Bi_1ToM_JT)o;

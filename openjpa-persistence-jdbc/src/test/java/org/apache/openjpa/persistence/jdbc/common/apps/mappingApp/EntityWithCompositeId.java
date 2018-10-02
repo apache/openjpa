@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
@@ -27,14 +27,14 @@ public class EntityWithCompositeId {
 	private Integer id;   // this must match the field in CompositeId
 	private String  name; // this must match the field in CompositeId
 	private String  value;
-	
+
 	public EntityWithCompositeId() {
 		super();
 	}
-	
+
 	@Id
 	@Column(name="ID")
-	public Integer getId () 
+	public Integer getId ()
 	{
 		return id;
 	}
@@ -44,23 +44,23 @@ public class EntityWithCompositeId {
 	public String getName () {
 		return name;
 	}
-	
-	
+
+
 	@Column(name="VALUE")
-	public String getValue () 
+	public String getValue ()
 	{
 		return value;
 	}
-	
+
 	public void setId (Integer id) {
 		this.id = id;
 	}
-	
-	public void setName (String name) 
+
+	public void setName (String name)
 	{
 		this.name = name;
 	}
-	
+
 	public void setValue (String value)
 	{
 		this.value = value;

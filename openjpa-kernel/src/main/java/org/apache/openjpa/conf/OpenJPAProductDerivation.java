@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.conf;
 
@@ -22,7 +22,7 @@ import org.apache.openjpa.lib.conf.ProductDerivation;
 import java.util.Map;
 
 /**
- * Adds datastore based extension to ProductDerivation.  
+ * Adds datastore based extension to ProductDerivation.
  *
  * @since 0.4.1
  * @author Pinaki Poddar
@@ -36,7 +36,7 @@ public interface OpenJPAProductDerivation extends ProductDerivation {
 
     /**
      * Load default alias options into the given map.  Each entry maps an
-     * alias to a broker factory class name.  Replace anything previously 
+     * alias to a broker factory class name.  Replace anything previously
      * under the desired keys.
      */
     public void putBrokerFactoryAliases(Map<String, String> aliases);

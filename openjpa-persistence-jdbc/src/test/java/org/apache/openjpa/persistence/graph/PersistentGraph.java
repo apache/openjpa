@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.graph;
 
@@ -28,13 +28,13 @@ import javax.persistence.MappedSuperclass;
  * Persistent Graph is a marker for persistent version of a {@link Graph}.
  * <br>
  * A persistent graph does not declare how the persistent state of the graph is captured and hence is abstract.
- * But Persistent Graph is unique to be persistent in a JPA sense, because JPA does <em>not</em> represent 
+ * But Persistent Graph is unique to be persistent in a JPA sense, because JPA does <em>not</em> represent
  * container instances such as {@link java.util.Set} or {@link java.util.List} as <em>first class</em> type --
  * i.e. their instances do not carry a persistent identity. But declaring a graph as persistent type amounts
- * to represent the graph as a first class persistent type with its own persistent identity.  
+ * to represent the graph as a first class persistent type with its own persistent identity.
  * <br>
  * Persistent Graph defines a auto-generated persistent identity.
- * 
+ *
  * @author Pinaki Poddar
  *
  * @param <E> type of element.
@@ -42,11 +42,11 @@ import javax.persistence.MappedSuperclass;
 @SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class PersistentGraph<E> extends AbstractGraph<E> implements Serializable {
-    
+
     @Id
     @GeneratedValue
     private long id;
-    
+
     public final long getId() {
         return id;
     }

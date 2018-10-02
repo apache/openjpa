@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.exception;
 
@@ -112,7 +112,7 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
     public void testDefaultPrintParameters() {
         queryCachePrintParametersLogic(null);
     }
-    
+
     public void testPrintParametersTrue() {
         queryCachePrintParametersLogic(true);
     }
@@ -120,7 +120,7 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
     public void testPrintParametersFalse() {
         queryCachePrintParametersLogic(false);
     }
-    
+
     private void queryCachePrintParametersLogic(Boolean printParameters){
         Object[] props = null;
         if (printParameters == null) {
@@ -140,12 +140,12 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
         em.createQuery(queryStr).setParameter("id", Integer.MIN_VALUE).getResultList();
         boolean expected = (printParameters == null) ? false : printParameters.booleanValue();
         boolean actual = false;
-        
+
         // Look through all trace messages for the ID before doing asserts
         for (String s : messages) {
             actual |= s.contains(ID);
         }
-        
+
         assertEquals(expected, actual);
     }
 
@@ -167,7 +167,7 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
             protected void log(short type, String message, Throwable t) {
                 messages.add(message);
             }
-            
+
             @Override
             public void error(Object message) {
                 messages.add(message.toString());

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation;
 
@@ -41,7 +41,7 @@ public interface InstrumentationManager extends Closeable {
     public void initialize(OpenJPAConfiguration conf, PluginListValue providers);
 
     /**
-     * Manage a given provider.  This will plug the instruments managed by the 
+     * Manage a given provider.  This will plug the instruments managed by the
      * the provider into the life cycle of the manager
      * @param provider the instrumentation provider
      */

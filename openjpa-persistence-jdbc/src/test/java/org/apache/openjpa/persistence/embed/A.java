@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -31,15 +31,15 @@ public class A implements java.io.Serializable {
 
     @Id
     protected String id;
-    
+
     String name;
-    
+
     int value;
 
     @ElementCollection
     protected Set<Embed> embeds = new HashSet();
 
-    @CollectionTable(name = "collectionTemporalOrderColumnTable", 
+    @CollectionTable(name = "collectionTemporalOrderColumnTable",
             joinColumns = @JoinColumn(name = "parent_id"))
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "value")
@@ -50,27 +50,27 @@ public class A implements java.io.Serializable {
     public String getId() {
         return id;
     }
-    
+
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public int getValue() {
         return value;
     }
-    
+
     public void setValue(int value) {
         this.value = value;
     }
-    
+
     public Set<Embed> getEmbeds() {
         return embeds;
     }
@@ -78,7 +78,7 @@ public class A implements java.io.Serializable {
     public void setEmbeds(Set<Embed> embeds) {
         this.embeds = embeds;
     }
-    
+
     public Collection<Date> getCollectionDate() {
         return collectionDate;
     }
@@ -86,6 +86,6 @@ public class A implements java.io.Serializable {
     public void setCollectionDate(Collection<Date> collectionDate) {
         this.collectionDate = collectionDate;
     }
-    
-}    
-   
+
+}
+

@@ -36,51 +36,51 @@ import javax.persistence.TemporalType;
 @Entity
 @Table( name = "ORDER_TABLE" )
 public class Order {
-      @Id 
+      @Id
       @Column( name = "ID", nullable = false )
-      private Long id; 
+      private Long id;
 
       @Column( name = "ENTRY_DATE", nullable = false )
       @Temporal(TemporalType.TIMESTAMP)
       private Date orderEntry;
-      
+
       // When using a List, things fails...using a Set all works fine.
       @OneToMany( fetch = FetchType.EAGER, cascade = CascadeType.ALL )
       @JoinColumn( name = "ORDER_ID", referencedColumnName = "ID" )
       private List<LineItem> items;
-      
+
       public Order() {
           orderEntry = new Date( System.currentTimeMillis() );
           items = new ArrayList<LineItem>();
       }
-      
+
       public Order( long id ) {
           this();
           this.id = id;
       }
-      
+
       public Long getId() {
           return id;
       }
-        
+
       public void setId(Long id) {
         this.id = id;
       }
-        
+
       public Date getOrderEntry() {
           return orderEntry;
       }
-        
+
     public void setOrderEntry(Date orderEntry) {
         this.orderEntry = orderEntry;
     }
-    
+
     public void addItem( LineItem item ) {
         items.add(item);
         item.setOrderId(id);
         item.setItemId((long)items.size() );
     }
-    
+
     public List<LineItem> getItems() {
         return items;
     }

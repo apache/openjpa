@@ -37,11 +37,11 @@ public class EntityA_Coll_Embed_EmbedXml implements Serializable {
     Integer id;
 
     String name;
-    
+
     int age;
 
     protected List<Embed_EmbedXml> embeds = new ArrayList<Embed_EmbedXml>();
-    
+
     public int getAge() {
         return age;
     }
@@ -69,7 +69,7 @@ public class EntityA_Coll_Embed_EmbedXml implements Serializable {
     public List<Embed_EmbedXml> getEmbeds() {
         return embeds;
     }
-    
+
     public void addEmbed(Embed_EmbedXml embed) {
         embeds.add(embed);
     }

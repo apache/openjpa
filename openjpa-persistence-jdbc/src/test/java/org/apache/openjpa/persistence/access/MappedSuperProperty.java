@@ -30,9 +30,9 @@ import javax.persistence.MappedSuperclass;
 public class MappedSuperProperty {
 
     private int id;
-    
+
     private String name;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -52,7 +52,7 @@ public class MappedSuperProperty {
     public String getName() {
         return name;
     }
-        
+
     public boolean equals(Object obj) {
         if (obj instanceof MappedSuperProperty) {
             MappedSuperProperty ps = (MappedSuperProperty)obj;

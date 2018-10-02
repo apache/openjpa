@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -35,23 +35,23 @@ public class Game {
 
     @Id
     @GeneratedValue(generator="uuid-type4-hex")
-    private String id;    
-    
+    private String id;
+
     @ManyToMany
     @OrderColumn(name="playerOrder")
     private List<Player> playedIn;
-    
+
     @ElementCollection
     @OrderColumn(name="dateOrder")
     private List<java.sql.Date> rainDates;
-    
+
     @ElementCollection
     @OrderColumn(name="inningOrder")
     private Collection<Inning> innings;
-    
+
     public Game() {
     }
-    
+
     public void setId(String id) {
         this.id = id;
     }
@@ -59,7 +59,7 @@ public class Game {
     public String getId() {
         return id;
     }
-    
+
     public void setPlayedIn(List<Player> playedIn) {
         this.playedIn = playedIn;
     }
@@ -67,7 +67,7 @@ public class Game {
     public List<Player> getPlayedIn() {
         return playedIn;
     }
- 
+
     public boolean equals(Object obj) {
         if (obj instanceof Game) {
             Game game = (Game)obj;

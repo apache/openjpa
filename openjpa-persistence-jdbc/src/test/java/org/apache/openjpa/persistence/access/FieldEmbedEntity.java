@@ -31,12 +31,12 @@ import javax.persistence.NamedQuery;
 @Entity
 @Access(AccessType.FIELD)
 @NamedQueries( {
-    @NamedQuery(name="FieldEmbedEntity.query", 
-        query="SELECT fs FROM FieldEmbedEntity fs WHERE " + 
+    @NamedQuery(name="FieldEmbedEntity.query",
+        query="SELECT fs FROM FieldEmbedEntity fs WHERE " +
         "fs.id = :id AND fs.name = :name AND fs.epa.firstName = :firstName " +
         "AND fs.epa.lastName = :lastName"),
-    @NamedQuery(name="FieldEmbedEntity.badQuery", 
-        query="SELECT fs FROM FieldEmbedEntity fs WHERE " + 
+    @NamedQuery(name="FieldEmbedEntity.badQuery",
+        query="SELECT fs FROM FieldEmbedEntity fs WHERE " +
         "fs.id = :id AND fs.name = :name AND fs.epa.fName = :firstName " +
         "AND fs.epa.lName = :lastName") } )
 public class FieldEmbedEntity {
@@ -44,13 +44,13 @@ public class FieldEmbedEntity {
     @Id
     @GeneratedValue
     private int id;
-    
+
     @Basic
     private String name;
 
     @Embedded
     private EmbedPropAccess epa;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -66,7 +66,7 @@ public class FieldEmbedEntity {
     public String getName() {
         return name;
     }
-    
+
     public EmbedPropAccess getEPA() {
         return epa;
     }

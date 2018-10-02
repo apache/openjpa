@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance;
 
@@ -529,7 +529,7 @@ public class PCDataGenerator
         FieldMetaData[] fmds = meta.getFields();
         Collection<Instruction> jumps = new LinkedList<Instruction>();
         Collection<Instruction> jumps2;
-		
+
         int local = code.getNextLocalsIndex();
         code.constant().setNull();
         code.astore().setLocal(local);
@@ -562,7 +562,7 @@ public class PCDataGenerator
             code.constant().setValue(fmds[i].getIndex());
             code.invokevirtual().setMethod(ClassMetaData.class,
                 "getField", FieldMetaData.class, new Class[]{int.class});
-            code.invokeinterface().setMethod (FetchConfiguration.class, 
+            code.invokeinterface().setMethod (FetchConfiguration.class,
                 "requiresFetch", int.class, new Class[]{FieldMetaData.class});
             code.constant().setValue(FetchConfiguration.FETCH_NONE);
             jumps2.add(code.ificmpeq());
@@ -715,7 +715,7 @@ public class PCDataGenerator
             code.aload().setParam(1 + offset);
             code.aload().setParam(2 + offset);
             code.invokevirtual().setMethod(bc.getName(), "toField",
-                Object.class.getName(), toStrings(new Class[]{ 
+                Object.class.getName(), toStrings(new Class[]{
                 OpenJPAStateManager.class, FieldMetaData.class,
                 Object.class, FetchConfiguration.class, Object.class }));
             code.invokeinterface().setMethod(OpenJPAStateManager.class,

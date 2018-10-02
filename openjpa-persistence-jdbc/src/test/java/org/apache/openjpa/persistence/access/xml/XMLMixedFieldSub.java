@@ -23,9 +23,9 @@ import java.util.Date;
 public class XMLMixedFieldSub extends XMLMixedMappedSuper {
 
     private String myField;
-    
+
     private Date crtDate;
-    
+
     public Date getCreateDate() {
         return crtDate;
     }
@@ -33,7 +33,7 @@ public class XMLMixedFieldSub extends XMLMixedMappedSuper {
     public void setCreateDate(Date date) {
         crtDate = date;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLMixedFieldSub) {
             XMLMixedFieldSub ps = (XMLMixedFieldSub)obj;

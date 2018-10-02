@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.event;
 
@@ -30,7 +30,7 @@ import org.apache.openjpa.lib.util.Closeable;
  *  Usage:
  * <code><pre> import org.apache.openjpa.event.*;
  * import org.apache.openjpa.conf.*;
- * 
+ *
  * {@link org.apache.openjpa.conf.OpenJPAConfiguration} conf =
  *         factory.getConfiguraiton ();
  *  RemoteCommitListener l = new RemoteCommitListener () {
@@ -40,7 +40,7 @@ import org.apache.openjpa.lib.util.Closeable;
  *  public void close () { } };
  *  conf.getRemoteCommitEventManager ().addListener (l);
  * </pre></code>
- * 
+ *
  *
  * @author Patrick Linskey
  * @since 0.2.5.0

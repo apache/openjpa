@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -35,16 +35,16 @@ public class XMLFieldMetaData implements XMLMetaData {
     private int _decCode = JavaTypes.OBJECT;
     private Class _type = Object.class;
     private int _code = JavaTypes.OBJECT;
-    private int _xmltype;    
+    private int _xmltype;
 
-    public XMLFieldMetaData() {        
+    public XMLFieldMetaData() {
     }
-    
+
     public XMLFieldMetaData(Class type, String name) {
         setType(type);
         _name = name;
     }
-    
+
     public Class getType() {
         return (_type == null) ? _decType : _type;
     }
@@ -63,57 +63,57 @@ public class XMLFieldMetaData implements XMLMetaData {
     public void setTypeCode(int code) {
         _code = code;
     }
-    
+
     public void setName(String name) {
         _name = name;
     }
-    
+
     public String getName() {
         return _name;
     }
-    
+
     public void setXmlname(String name) {
         _xmlname = name;
     }
-    
+
     public String getXmlname() {
         return _xmlname;
     }
-    
+
     public void setXmlnamespace(String name) {
         // avoid JAXB XML bind default name
         if (!Objects.equals(defaultName, name))
             _xmlnamespace = name;
     }
-    
+
     public String getXmlnamespace() {
         return _xmlnamespace;
     }
-    
+
     public void setXmltype(int type) {
         _xmltype = type;
     }
-    
+
     public int getXmltype() {
         return _xmltype;
     }
-    
+
     public boolean isXmlRootElement() {
         return false;
     }
-    
+
     public boolean isXmlElement() {
         return _xmltype == ELEMENT;
     }
-    
+
     public boolean isXmlAttribute() {
         return _xmltype == ATTRIBUTE;
     }
-    
+
     public XMLMetaData getFieldMapping(String name) {
         return null;
     }
-    
+
     public void setXmlRootElement(boolean isXmlRootElement) {
     }
 

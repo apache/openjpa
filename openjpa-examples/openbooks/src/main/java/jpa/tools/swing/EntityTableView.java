@@ -38,7 +38,7 @@ import jpa.tools.swing.EntityTable.InstanceCellRenderer;
 
 /**
  * An entity table view consists of a JTable and optionally another table for many-valued associations.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -46,16 +46,16 @@ import jpa.tools.swing.EntityTable.InstanceCellRenderer;
 public class EntityTableView<T> extends JPanel implements ListSelectionListener {
     private EntityTable<T> _table;
     private JTextArea _details;
-    
+
     public EntityTableView(Class<T> cls, int styleBits, EntityManagerFactory unit) {
         this(cls, (List<T>)Collections.EMPTY_LIST, styleBits, unit);
     }
-    
+
     public EntityTableView(Class<T> cls, List<T> data, int styleBits, EntityManagerFactory unit) {
         super(true);
         _table   = new EntityTable<T>(cls, data, styleBits, unit);
         _table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
+
         if ((styleBits & EntityDataModel.PLURAL_ATTR) != 0) {
             _table.getSelectionModel().addListSelectionListener(this);
             _details = new JTextArea("Click many-valued columns for display");
@@ -65,23 +65,23 @@ public class EntityTableView<T> extends JPanel implements ListSelectionListener 
         }
         setBorder(BorderFactory.createTitledBorder(_table.getModel().getRowCount() + " " +
                 unit.getMetamodel().entity(cls).getName()));
-        
+
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
-        add(new JScrollPane(_table, 
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+        add(new JScrollPane(_table,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS));
         if (_details != null)
             add(_details);
     }
-    
+
     public EntityTable<T> getTable() {
         return _table;
     }
-    
+
     public EntityDataModel<T> getDataModel() {
         return (EntityDataModel<T>)_table.getModel();
     }
-    
+
     public void updateTitle(String txt) {
         Border border = getBorder();
         if (border instanceof TitledBorder) {
@@ -108,15 +108,15 @@ public class EntityTableView<T> extends JPanel implements ListSelectionListener 
             showDetails(attr, val);
         }
     }
-    
+
     private void showDetails(Attribute<?,?> attr, Object val) {
         _details.setText(null);
         ManagedType<?> owner = attr.getDeclaringType();
-        String title = (owner instanceof EntityType) 
+        String title = (owner instanceof EntityType)
                      ? ((EntityType<?>)owner).getName() + "." + attr.getName()
-                     : owner.getJavaType().getSimpleName() + "." + attr.getName(); 
+                     : owner.getJavaType().getSimpleName() + "." + attr.getName();
         TitledBorder border = (TitledBorder)_details.getBorder();
-        
+
         if (val == null) {
             border.setTitle(title + " (null)");
         } else {

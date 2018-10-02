@@ -23,37 +23,37 @@ public class Embed_EmbedXml {
     protected int intVal1;
     protected int intVal2;
     protected int intVal3;
-    
+
     protected EmbedXml embed;
-    
+
     public int getIntVal1() {
         return intVal1;
     }
-    
+
     public void setIntVal1(int intVal1) {
         this.intVal1 = intVal1;
     }
-    
+
     public int getIntVal2() {
         return intVal2;
     }
-    
+
     public void setIntVal2(int intVal2) {
         this.intVal2 = intVal2;
     }
-    
+
     public int getIntVal3() {
         return intVal3;
     }
-    
+
     public void setIntVal3(int intVal3) {
         this.intVal3 = intVal3;
     }
-        
+
     public EmbedXml getEmbed() {
         return embed;
     }
- 
+
     public void setEmbed(EmbedXml embed) {
         this.embed = embed;
     }

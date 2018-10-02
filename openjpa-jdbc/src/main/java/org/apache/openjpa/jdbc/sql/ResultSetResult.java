@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -355,7 +355,7 @@ public class ResultSetResult
         int metaTypeCode, Object arg, Joins joins) throws SQLException {
         return getLOBStreamInternal(store, obj, joins);
     }
-    
+
     protected Object getObjectInternal(Object obj, int metaTypeCode,
         Object arg, Joins joins)
         throws SQLException {
@@ -365,7 +365,7 @@ public class ResultSetResult
         boolean isClob = (obj instanceof Column) ? ((Column) obj).getType() == Types.CLOB && !((Column) obj).isXML()
                 : false;
         obj = translate(obj, joins);
-        
+
         Object val = null;
         switch (metaTypeCode) {
             case JavaTypes.BOOLEAN:
@@ -517,7 +517,7 @@ public class ResultSetResult
             return 0;
         }
     }
-  
+
     protected InputStream getLOBStreamInternal(JDBCStore store, Object obj,
         Joins joins) throws SQLException {
         return _dict.getLOBStream(store, _rs, ((Number) obj).intValue());

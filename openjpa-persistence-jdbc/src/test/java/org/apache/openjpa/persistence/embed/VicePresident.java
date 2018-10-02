@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -25,35 +25,35 @@ import javax.persistence.*;
 public class VicePresident {
     @Id
     int id;
-    
+
     String name;
-  
+
     @ManyToOne
     Company1 co;
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Company1 getCompany() {
         return co;
     }
-    
+
     public void setCompany(Company1 co) {
         this.co = co;
     }
-    
-    
+
+
 }

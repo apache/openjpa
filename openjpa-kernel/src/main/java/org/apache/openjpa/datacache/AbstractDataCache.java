@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -61,7 +61,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     private static final BitSet EMPTY_BITSET = new BitSet(0);
 
     private static final Localizer s_loc = Localizer.forPackage(AbstractDataCache.class);
-    
+
 
     /**
      * The configuration set by the system.
@@ -79,7 +79,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     protected Set<String> _includedTypes = new HashSet<String>();
     protected Set<String> _excludedTypes = new HashSet<String>();
     protected boolean _evictOnBulkUpdate = true;
-    
+
     public String getName() {
         return _name;
     }
@@ -103,7 +103,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public void setEvictionSchedule(String s) {
         _schedule = s;
     }
-    
+
     public void initialize(DataCacheManager manager) {
         if (_schedule != null && !"".equals(_schedule)) {
             ClearableScheduler scheduler = manager.getClearableScheduler();
@@ -401,7 +401,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
      */
     protected abstract DataCachePCData putInternal(Object oid,
             DataCachePCData pc);
-    
+
     /**
      * Add all of the given objects to the cache.
      */
@@ -458,9 +458,9 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
      * Unpin an object from the cache.
      */
     protected abstract boolean unpinInternal(Object oid);
-    
+
     /**
-     * 
+     *
      */
     public DataCache getPartition(String name, boolean create) {
         if (Objects.equals(_name, name))
@@ -469,16 +469,16 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     }
 
     /**
-     * 
+     *
      */
     public Set<String> getPartitionNames() {
         return Collections.emptySet();
     }
-    
+
     public boolean isPartitioned() {
         return false;
     }
-    
+
      public CacheStatistics getStatistics() {
     	return _stats;
     }
@@ -510,7 +510,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
                 log.warn(s_loc.get("exp-listener-ex"), e);
 		}
 	}
-    
+
     public Set<String> getTypes() {
         return _includedTypes;
     }
@@ -548,11 +548,11 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public DataCache selectCache(OpenJPAStateManager sm) {
         return this;
     }
-    
+
     public boolean getEvictOnBulkUpdate(){
         return _evictOnBulkUpdate;
     }
-    
+
     public void setEvictOnBulkUpdate(boolean b){
         _evictOnBulkUpdate = b;
     }

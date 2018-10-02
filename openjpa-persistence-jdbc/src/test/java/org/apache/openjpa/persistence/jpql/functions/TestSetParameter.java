@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
@@ -30,10 +30,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Tests ordering of parameters as set by the parser and the ordering implicitly
  * assumed by the runtime are consistent.
- * 
- * The examples use JPQL queries such that the parser generates parameters  
+ *
+ * The examples use JPQL queries such that the parser generates parameters
  * in a different order from their order of appearance in the query string.
- *   
+ *
  * @author Pinaki Poddar
  *
  */
@@ -43,9 +43,9 @@ public class TestSetParameter extends SingleEMFTestCase {
     private static int ORIGINAL_AGE     = 62;
     private static String UPDATED_NAME  = "Obama";
     private static int UPDATED_AGE      = 29;
-    
+
     public void setUp() {
-        super.setUp(CLEAR_TABLES, CompUser.class, MaleUser.class, 
+        super.setUp(CLEAR_TABLES, CompUser.class, MaleUser.class,
             FemaleUser.class, Address.class);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -64,7 +64,7 @@ public class TestSetParameter extends SingleEMFTestCase {
         em.getTransaction().begin();
         String query = "UPDATE CompUser e set e.name= ?1, e.age = ?2 "
             + "WHERE e.userid = ?3";
-  
+
         int count = em.createQuery(query).
             setParameter(1, UPDATED_NAME).
             setParameter(2, UPDATED_AGE).
@@ -76,13 +76,13 @@ public class TestSetParameter extends SingleEMFTestCase {
         em.close();
         verifyUpdate();
     }
-    
+
     public void testSetPositionalParameterInNonIntutiveOrder() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String query = "UPDATE CompUser e set e.name= ?2, e.age = ?1 "
             + "WHERE e.userid = ?3";
-  
+
         int count = em.createQuery(query).
             setParameter(2, UPDATED_NAME).
             setParameter(1, UPDATED_AGE).
@@ -95,13 +95,13 @@ public class TestSetParameter extends SingleEMFTestCase {
         verifyUpdate();
     }
 
-    
+
     public void testSetNamedParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String query = "UPDATE CompUser e set e.name= :name, e.age = :age "
             + "WHERE e.userid = :id";
-  
+
         int count = em.createQuery(query).
             setParameter("name", UPDATED_NAME).
             setParameter("age", UPDATED_AGE).
@@ -111,10 +111,10 @@ public class TestSetParameter extends SingleEMFTestCase {
         assertEquals(1, count);
 
         em.close();
-        
+
         verifyUpdate();
     }
-    
+
     public void testNativeSQL() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -129,7 +129,7 @@ public class TestSetParameter extends SingleEMFTestCase {
         em.getTransaction().commit();
         assertEquals(1, count);
     }
-    
+
     public void testMissingFirstPositionalParameter() {
         EntityManager em = emf.createEntityManager();
         String query = "UPDATE CompUser e set e.name= ?2, e.age = ?4 " + "WHERE e.userid = ?3";
@@ -140,8 +140,8 @@ public class TestSetParameter extends SingleEMFTestCase {
             // expected
         }
         em.close();
-    }   
-    
+    }
+
     public void testMixedParameterTypesParameter() {
         EntityManager em = emf.createEntityManager();
         String query = "UPDATE CompUser e set e.name= :name, e.age = ?1 " + "WHERE e.userid = ?3";
@@ -153,7 +153,7 @@ public class TestSetParameter extends SingleEMFTestCase {
         }
         em.close();
     }
-    
+
     public CompUser createUser(String name, String cName, int age,
         boolean isMale) {
         CompUser user = null;
@@ -173,7 +173,7 @@ public class TestSetParameter extends SingleEMFTestCase {
         user.setAddress(addr);
         return user;
     }
-    
+
     void verifyUpdate() {
         EntityManager em = emf.createEntityManager();
         CompUser user = em.find(CompUser.class, userid);

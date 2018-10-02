@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.meta;
 
@@ -98,7 +98,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         int depth = currentDepth();
         if (depth == 0)
             return true;
-        
+
         if (StringUtil.contains(name, ':')) {
             int index = name.indexOf(':');
             name = name.substring(index + 1);
@@ -112,7 +112,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
                     return true;
                 }
                 return startClassElement(name, attrs);
-                    
+
             }
             if (depth == getPackageElementDepth()
                 && isPackageElementName(name))
@@ -138,7 +138,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         int depth = currentDepth();
         if (depth == 0)
             return;
-        
+
         if (StringUtil.contains(name, ':')) {
             int index = name.indexOf(':');
             name = name.substring(index + 1);
@@ -226,12 +226,12 @@ public class CFMetaDataParser extends XMLMetaDataParser {
                 _class = _package + "." + _class;
         }
     }
-    
+
     protected boolean startExtendedClass(String elem, Attributes attrs)
         throws SAXException {
         return false;
     }
-    
+
     protected void endExtendedClass(String elem) throws SAXException {
     }
 

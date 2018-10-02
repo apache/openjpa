@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -77,7 +77,7 @@ public class TestQueryLock extends BaseQueryTest {
         Root<Entity1> customer = cq.from(Entity1.class);
         Query q = em.createQuery(cq);
 
-        try {            
+        try {
             q.setLockMode(LockModeType.NONE);
             assertEquals("Verify NONE after set", LockModeType.NONE, q.getLockMode());
         } catch (Exception e) {

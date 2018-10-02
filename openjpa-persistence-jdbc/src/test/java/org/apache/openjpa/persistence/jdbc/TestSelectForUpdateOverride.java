@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -75,13 +75,13 @@ public class TestSelectForUpdateOverride
                     assertContainsSQL(" optimize for 1 row"
                         + " FOR READ ONLY WITH RS USE AND KEEP EXCLUSIVE LOCKS"
                         );
-                }    
+                }
                 else {
-                    fail("OpenJPA currently only supports per-query isolation " 
+                    fail("OpenJPA currently only supports per-query isolation "
                         + "level configuration on the following databases: "
                         + "DB2");
                 }
-            }    
+            }
         } finally {
             em.getTransaction().rollback();
             em.close();

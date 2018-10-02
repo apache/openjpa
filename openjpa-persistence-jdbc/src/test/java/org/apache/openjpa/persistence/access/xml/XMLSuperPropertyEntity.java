@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.access.xml;
 public class XMLSuperPropertyEntity {
 
     private int id;
-    
+
     private String name;
 
     public void setId(int id) {
@@ -39,7 +39,7 @@ public class XMLSuperPropertyEntity {
     public String getName() {
         return name;
     }
-        
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLSuperPropertyEntity) {
             XMLSuperPropertyEntity sfe = (XMLSuperPropertyEntity)obj;

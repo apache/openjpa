@@ -26,7 +26,7 @@ import javax.persistence.ManyToOne;
  * An offer to sell a financial instrument.
  * The only mutable state of an offer is its expiration.
  * But that state is also mutable only once and is not reversible.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -40,18 +40,18 @@ public class Ask  extends Tradable {
      */
     @ManyToOne(cascade={CascadeType.MERGE,CascadeType.DETACH},optional=false)
     private Trader seller;
-    
+
     /**
-     * A no-arg constructor to comply to both GWT compiler and OpenJPA 
+     * A no-arg constructor to comply to both GWT compiler and OpenJPA
      * bytecode enhancer.
      */
     protected Ask() {
         super();
     }
-    
+
     /**
      * Real constructor populates the essential properties.
-     * 
+     *
      * @param trader the trader who made this offer. Must not be null.
      * @param stock the underlying instrument. Must not be null.
      * @param price the offered price to sell. Must be positive.
@@ -66,14 +66,14 @@ public class Ask  extends Tradable {
 
     /**
      * Gets the trader who made this offer to sell.
-     * 
+     *
      * @return the trader who made this offer. Never null.
      */
     public Trader getSeller() {
         return seller;
     }
-    
+
     public double getGain() {
-        return (getPrice() - getStock().getMarketPrice())*getVolume(); 
+        return (getPrice() - getStock().getMarketPrice())*getVolume();
     }
 }

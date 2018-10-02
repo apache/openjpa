@@ -84,7 +84,7 @@ public class Order {
     public void setShop(Shop shop) {
         this.shop = shop;
     }
-    
+
     public String toPrettyString() {
         return String.format("Order: %s date=%s filled=%s",getId(), getDate(), isFilled());
     }

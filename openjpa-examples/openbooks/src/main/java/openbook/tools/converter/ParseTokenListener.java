@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package openbook.tools.converter;
 
@@ -29,11 +29,11 @@ import org.antlr.runtime.debug.BlankDebugEventListener;
 
 /**
  * A token processor to render the ANTLR tokens.
- * 
+ *
  * This token processor is notified as ANTLR parses every token.
- * This processor controls a {@linkplain TokenRenderer renderer} 
+ * This processor controls a {@linkplain TokenRenderer renderer}
  * that renders the token.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -43,26 +43,26 @@ public class ParseTokenListener extends BlankDebugEventListener {
     private int decision;
     private TokenRenderer _renderer;
     private PrintStream _stream;
-    
+
     /**
      * By default, uses a {@linkplain PlainTokenRenderer}.
      */
     ParseTokenListener() {
         this(new PlainTokenRenderer());
     }
-    
+
     /**
      * Uses the given renderer and outputs to System output.
-     * 
+     *
      * @param renderer a renderer to render the tokens.
      */
     ParseTokenListener(TokenRenderer renderer) {
         this(renderer, System.out);
     }
-    
+
     /**
      * Uses the given renderer and given outputs stream.
-     * 
+     *
      * @param renderer a renderer to render the tokens.
      * @param stream a output stream where the rendered strings are streamed.
      */
@@ -70,18 +70,18 @@ public class ParseTokenListener extends BlankDebugEventListener {
         _renderer = renderer;
         _stream = stream;
     }
-    
+
     @Override
     public void enterDecision(int d) {
-        backtracking += 1; 
+        backtracking += 1;
         decision = d;
-    } 
-    
-    @Override
-    public void exitDecision(int i) { 
-         backtracking -= 1; 
     }
-    
+
+    @Override
+    public void exitDecision(int i) {
+         backtracking -= 1;
+    }
+
     /**
      * A regular token is delegated to the renderer for a string representation
      * and the resultant string is sent to the output stream.
@@ -92,14 +92,14 @@ public class ParseTokenListener extends BlankDebugEventListener {
         changeLine(token.getLine());
         _stream.print(_renderer.render(decision, token));
     }
-    
+
     /**
      * Hidden tokens are tokens that are not processed at lexical processing
      * stage. The  most important hidden token for rendering are the tokens
      * that represent multi-line or single line comments. The multi-line
      * comments must be broken into individual lines for line numbering to
      * remain consistent.
-     *  
+     *
      */
     @Override
     public void consumeHiddenToken(Token token) {
@@ -115,15 +115,15 @@ public class ParseTokenListener extends BlankDebugEventListener {
                 i++;
             }
         } else {
-            changeLine(token.getLine()); 
+            changeLine(token.getLine());
             _stream.print(_renderer.render(decision, token));
         }
     }
-    
+
     /**
      * If the given line is different than the current line, then asks the
      * renderer to end the current line and start a new line. Otherwise, does nothing.
-     * 
+     *
      * @param newline
      */
     void changeLine(int newline) {

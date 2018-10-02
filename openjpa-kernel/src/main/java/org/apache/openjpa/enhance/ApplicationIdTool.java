@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance;
 
@@ -384,7 +384,7 @@ public class ApplicationIdTool {
                 closeParen().append(";").append(" }").endl();
         code.tab(2).append("catch").openParen(true).
                 append("Exception e").closeParen().append(" {}").endl();
-        
+
         code.closeBrace(2);
 
         // field declarations
@@ -547,7 +547,7 @@ public class ApplicationIdTool {
      * Return the getters and setters for all primary key fields.
      */
     private String getProperties() {
-        if (AccessCode.isExplicit(_meta.getAccessType()) 
+        if (AccessCode.isExplicit(_meta.getAccessType())
          && AccessCode.isField(_meta.getAccessType()))
             return "";
 
@@ -629,15 +629,15 @@ public class ApplicationIdTool {
         code.openParen(true).append("String str").closeParen();
         code.openBrace(2).endl();
 
-        // if we have any Object-type fields, die immediately 
+        // if we have any Object-type fields, die immediately
         for (int i = 0; i < _fields.length; i++) {
             if (_fields[i].getObjectIdFieldType() != Object.class)
                 continue;
             code.tab(2).append("throw new UnsupportedOperationException").
                 parens().append(";").endl();
-            code.closeBrace(2); 
+            code.closeBrace(2);
             return code.toString();
-        } 
+        }
 
         if (toke != null) {
             code.tab(2).append(toke).append(" toke = ");
@@ -1426,10 +1426,10 @@ public class ApplicationIdTool {
 
         // first try with regular class loader
         ClassLoader loader = AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(context)); 
+            J2DoPrivHelper.getClassLoaderAction(context));
         if (loader == null)
             loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction()); 
+                J2DoPrivHelper.getContextClassLoaderAction());
         try {
             return Class.forName(name, false, loader);
         } catch (Throwable t) {

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.event;
 
@@ -26,10 +26,10 @@ import javax.persistence.Version;
 public class AnEntity {
 	@Id
 	private int id;
-	
-	@Version 
+
+	@Version
 	private int version;
-	
+
 	public int getVersion() {
         return version;
     }
@@ -39,7 +39,7 @@ public class AnEntity {
     }
 
     private String name;
-	
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -55,7 +55,7 @@ public class AnEntity {
 	public String getName() {
 		return name;
 	}
-	
+
 	public String toString(){
 		return "id = " + id + ", name = " + name;
 	}

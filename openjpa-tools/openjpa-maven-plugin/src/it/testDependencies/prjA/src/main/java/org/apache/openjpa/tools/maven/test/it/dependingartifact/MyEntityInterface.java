@@ -15,17 +15,17 @@ package org.apache.openjpa.tools.maven.test.it.dependingartifact;
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 
 /**
- * Sample interface which contains an enum 
+ * Sample interface which contains an enum
  */
-public interface MyEntityInterface 
+public interface MyEntityInterface
 {
 
-    public static enum MessageChannel 
+    public static enum MessageChannel
     {
         /** short message */
         SMS,

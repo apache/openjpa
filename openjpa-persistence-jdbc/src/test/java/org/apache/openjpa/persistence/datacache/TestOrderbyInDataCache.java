@@ -32,8 +32,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestOrderbyInDataCache extends SingleEMFTestCase {
 	private long pid;
     public void setUp() {
-        setUp("openjpa.DataCache", "true", 
-            "openjpa.RemoteCommitProvider", "sjvm", 
+        setUp("openjpa.DataCache", "true",
+            "openjpa.RemoteCommitProvider", "sjvm",
             OrderedOneManyParent.class,
             OrderedOneManyChild.class, CLEAR_TABLES);
 
@@ -50,7 +50,7 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
             child.setParent(prt);
             prt.getChildren().add(child);
             em.persist(child);
-        }        
+        }
         em.getTransaction().commit();
         pid = prt.getId();
         em.close();
@@ -68,10 +68,10 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
         for (int i = 1; i < 4; i++) {
             assertEquals("child" + (i + 1), prt.getChildren().
                 get(i-1).getName());
-        }   
+        }
         em.close();
     }
-    
+
     public void testInsertChild() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -84,7 +84,7 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
         em.persist(child);
         em.getTransaction().commit();
         em.close();
-        
+
         //obtain object in new persistence context
         em = emf.createEntityManager();
         prt = em.find(OrderedOneManyParent.class, pid);
@@ -93,10 +93,10 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
         for (int i = 1; i < 5; i++) {
             assertEquals("child" + i, prt.getChildren().
                 get(i-1).getName());
-        }          
+        }
         em.close();
     }
-    
+
     public void testUpdateChildName() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -110,7 +110,7 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
         for (int i = 1; i < 4; i++) {
             assertEquals("child" + i, prt.getChildren().
                 get(i-1).getName());
-        }          
-        em.close();    	
+        }
+        em.close();
     }
 }

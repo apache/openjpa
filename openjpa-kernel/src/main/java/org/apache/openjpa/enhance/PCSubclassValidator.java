@@ -168,13 +168,13 @@ public class PCSubclassValidator {
             // ### doesn't use the field.
         }
     }
-    
+
     private Method getBackingMember(FieldMetaData fmd) {
     	Member back = fmd.getBackingMember();
     	if (Method.class.isInstance(back))
     		return (Method)back;
-    	
-    	Method getter = Reflection.findGetter(meta.getDescribedType(), 
+
+    	Method getter = Reflection.findGetter(meta.getDescribedType(),
     			fmd.getName(), false);
     	if (getter != null)
     		fmd.backingMember(getter);

@@ -95,7 +95,7 @@ public class SimpleCase extends Val {
         return c1;
     }
 
-    public void setImplicitType(Class type) {       
+    public void setImplicitType(Class type) {
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

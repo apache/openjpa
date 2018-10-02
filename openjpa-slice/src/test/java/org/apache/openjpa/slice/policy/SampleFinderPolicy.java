@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.policy;
 
@@ -28,7 +28,7 @@ import org.apache.openjpa.slice.Person;
 
 /**
  * A sample policy to target slices based on a persistent type and a given identifier.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -36,12 +36,12 @@ public class SampleFinderPolicy implements FinderTargetPolicy {
 
 	@Override
 	public String[] getTargets(Class<?> cls, Object oid, List<String> slices, Object context) {
-		
+
         if (cls == PObject.class || cls == Person.class) {
             int id = ((Long)oid).intValue();
             return new String[]{slices.get(id%2)};
         }
-        
+
         if (cls == Car.class) {
         	String vin = (String)oid;
         	char firstChar = Character.toLowerCase(vin.charAt(0));

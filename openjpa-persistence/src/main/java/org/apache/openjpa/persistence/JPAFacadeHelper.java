@@ -312,7 +312,7 @@ public class JPAFacadeHelper {
         return Arrays.asList(toOpenJPAObjectIds(meta, oids.toArray()));
     }
 
-    
+
     /**
      * Translate from a OpenJPA identity class to a native one.
      */

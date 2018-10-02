@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.meta.common.apps;
 
@@ -109,7 +109,7 @@ public class MetaTest7 {
     public void setIntegerLongStatus(MetaTest7IntegerLongStatus status) {
         this.integerLongStatus = status;
     }
-    
+
     static class MetaTest7IntegerIntegerStatus {
 
         public Integer getName() {

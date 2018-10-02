@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.audit;
 
@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * A test for audit facility.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -43,7 +43,7 @@ public class TestAudit extends TestCase {
 	private static Object oid;
 
 	EntityManager em;
-	
+
     public void setUp() {
     	if (emf == null) {
     		emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory("audit"));
@@ -56,7 +56,7 @@ public class TestAudit extends TestCase {
     		em = emf.createEntityManager();
     	}
     }
-    
+
     private Object createManagedObject() {
     	em.getTransaction().begin();
     	X x = new X();
@@ -64,28 +64,28 @@ public class TestAudit extends TestCase {
     	x.setPrice(100);
     	em.persist(x);
     	em.getTransaction().commit();
-    	
+
     	return emf.getPersistenceUnitUtil().getIdentifier(x);
     }
-    
+
     private void clearAuditedEntries() {
     	em.getTransaction().begin();
     	em.createQuery("delete from AuditedEntry a").executeUpdate();
     	em.getTransaction().commit();
     }
-    
+
     public void testAuditorIsConfigured() {
     	assertNotNull(auditor);
     }
-    
+
     public void testIsEntityAuditable() {
     	assertNotNull(X.class.getAnnotation(Auditable.class));
     }
-    
+
     public void testNewInstancesAreAudited() {
     	X x = em.find(X.class, oid);
     	assertNotNull(x);
-    	
+
     	AuditedEntry entry = findLastAuditedEntry(AuditableOperation.CREATE);
 
     	assertNotNull(entry);
@@ -94,46 +94,46 @@ public class TestAudit extends TestCase {
     	assertEquals(X.class, entry.getAudited().getClass());
     	assertTrue(entry.getUpdatedFields().isEmpty());
     }
-    
+
     public void testUpdateOutsideTransactionAreAudited() {
     	X x = em.find(X.class, oid);
     	assertNotNull(x);
-    	
+
     	x.setName("Updated Object outside transaction");
-    	
+
     	em.getTransaction().begin();
     	x = em.merge(x);
     	em.getTransaction().commit();
-    	
+
     	AuditedEntry entry = findLastAuditedEntry(AuditableOperation.UPDATE);
-   	
+
     	assertNotNull(entry);
     	assertEquals(x, entry.getAudited());
     	assertEquals(AuditableOperation.UPDATE, entry.getOperation());
     	assertTrue(entry.getUpdatedFields().contains("name"));
     	assertFalse(entry.getUpdatedFields().contains("price"));
     }
-    
+
     public void testUpdateInsideTransactionAreAudited() {
     	X x = em.find(X.class, oid);
     	assertNotNull(x);
-    	
-    	
+
+
     	em.getTransaction().begin();
     	x.setPrice(x.getPrice()+100);
     	x = em.merge(x);
     	em.getTransaction().commit();
-    	
+
     	AuditedEntry entry = findLastAuditedEntry(AuditableOperation.UPDATE);
-    	
-    	
+
+
     	assertNotNull(entry);
     	assertEquals(x, entry.getAudited());
     	assertEquals(AuditableOperation.UPDATE, entry.getOperation());
     	assertFalse(entry.getUpdatedFields().contains("name"));
     	assertTrue(entry.getUpdatedFields().contains("price"));
     }
-    
+
     public void testAuditDoesNotLeakMemory() {
     	int N = 1000;
     	EntityManager em = emf.createEntityManager();
@@ -147,7 +147,7 @@ public class TestAudit extends TestCase {
 		System.err.println("Extra memory with auditor " + pct);
     	assertTrue(pct < 10.0);
     }
-    
+
     private long insert(int N, EntityManager em) {
     	assertTrue(ensureGarbageCollection());
     	long m1 = Runtime.getRuntime().freeMemory();
@@ -161,14 +161,14 @@ public class TestAudit extends TestCase {
     	assertTrue(ensureGarbageCollection());
     	long m2 = Runtime.getRuntime().freeMemory();
     	long mused = m1-m2;
-    	
+
     	return mused;
     }
-    
+
     /**
      * Finds the latest audit entry of the given operation type.
      * The <em>latest</em> is determined by a sort on identifier which is assumed to be monotonically ascending.
-     *  
+     *
      */
     AuditedEntry findLastAuditedEntry(AuditableOperation op) {
         List<AuditedEntry> entry =
@@ -176,7 +176,7 @@ public class TestAudit extends TestCase {
                 .setMaxResults(1).setParameter("op", op).getResultList();
         return entry.get(0);
     }
-    
+
 	public boolean ensureGarbageCollection() {
 		ReferenceQueue<Object> detector = new ReferenceQueue<Object>();
 		Object marker = new Object();
@@ -186,7 +186,7 @@ public class TestAudit extends TestCase {
 		try {
 			return detector.remove() == ref;
 		} catch (InterruptedException e) {
-			
+
 		}
 		return false;
 	}

@@ -21,9 +21,9 @@ import java.util.Iterator;
 import java.io.IOException;
 
 /**
- * TradeScenarioServlet emulates a population of web users by generating a specific Trade operation 
- * for a randomly chosen user on each access to the URL. Test this servlet by clicking Trade Scenario 
- * and hit "Reload" on your browser to step through a Trade Scenario. To benchmark using this URL aim 
+ * TradeScenarioServlet emulates a population of web users by generating a specific Trade operation
+ * for a randomly chosen user on each access to the URL. Test this servlet by clicking Trade Scenario
+ * and hit "Reload" on your browser to step through a Trade Scenario. To benchmark using this URL aim
  * your favorite web load generator (such as AKStress) at the Trade Scenario URL and fire away.
  */
 public class TradeScenario {
@@ -33,11 +33,11 @@ public class TradeScenario {
     public TradeScenario(TradeAction tAction) {
         this.tAction = tAction;
     }
-    
+
     /**
      * Perform the following 15 tasks for the given userID:
      *     login, home, account, update, home, portfolio, sell, buy, home, portfolio, sell, buy, home, account, logout
-     *     
+     *
      * @param userID
      */
     public boolean performUserTasks(String userID) {
@@ -47,7 +47,7 @@ public class TradeScenario {
         if (TradeConfig.log.isTraceEnabled()) {
             TradeConfig.log.trace("TradeScenario.performUserTasks(" + userID + ")");
         }
-        
+
         try {
             // login
             log(sb, performTask("l", userID));
@@ -85,16 +85,16 @@ public class TradeScenario {
             }
         } catch (Exception e) {
             TradeConfig.log.error("TradeScenario.performUserTasks(" + userID + ") failed", e);
-        }            
+        }
         return brc;
     }
-    
-   /** 
+
+   /**
 	* Main service method for TradeScenarioServlet
 	*
 	* @param request Object that encapsulates the request to the servlet
 	* @param response Object that encapsulates the response from the servlet
-	*/    
+	*/
 	public String performTask(String scenarioAction, String userID) throws IOException {
         StringBuilder sb = new StringBuilder(256);
 	    String results = "";
@@ -111,7 +111,7 @@ public class TradeScenario {
 			{ //null;
 				try
 				{
-					log(sb, "TradeScenario.performTask() scenarioAction=" + scenarioAction + ", userID=" + userID); 
+					log(sb, "TradeScenario.performTask() scenarioAction=" + scenarioAction + ", userID=" + userID);
 				}
 				catch (Exception e)
 				{
@@ -130,12 +130,12 @@ public class TradeScenario {
             TradeConfig.incrementScenarioCount();
 		} else if (action == ' ') {
 			//action is not specified perform a random operation according to current mix
-			// Tell getScenarioAction if we are an original user or a registered user 
+			// Tell getScenarioAction if we are an original user or a registered user
 			// -- sellDeficits should only be compensated for with original users.
 			action = TradeConfig.getScenarioAction(
 				userID.startsWith(TradeConfig.newUserPrefix));
 		}
-		
+
 		switch (action) {
 				case 'q' : //quote
 				    tAction.doQuotes(sb, userID, TradeConfig.rndSymbols());
@@ -161,7 +161,7 @@ public class TradeScenario {
 					// login is successful if the userID is written to the HTTP session
 					if (!brc) {
 						log(sb, "TradeScenario login failed. Reset DB between runs.");
-					} 
+					}
 					break;
 				case 'o' : //logout
 				    tAction.doLogout(sb, userID);
@@ -188,10 +188,10 @@ public class TradeScenario {
 					int numHoldings = holdings.size();
 					if (numHoldings > 0)
 					{
-						//sell first available security out of holding 						
+						//sell first available security out of holding
 						Iterator it = holdings.iterator();
 						boolean foundHoldingToSell = false;
-						while (it.hasNext()) 
+						while (it.hasNext())
 						{
 							HoldingDataBean holdingData = (HoldingDataBean) it.next();
 							if ( !(holdingData.getPurchaseDate().equals(new java.util.Date(0)))  )
@@ -199,7 +199,7 @@ public class TradeScenario {
 								Integer holdingID = holdingData.getHoldingID();
 								tAction.doSell(sb, userID, holdingID);
 								foundHoldingToSell = true;
-								break;	
+								break;
 							}
 						}
 						if (foundHoldingToSell) break;

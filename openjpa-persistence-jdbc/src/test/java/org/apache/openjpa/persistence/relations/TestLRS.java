@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -44,12 +44,12 @@ public class TestLRS
         setUp(LrsEntityA.class, LrsEntityB.class, LRSEntity.class, BasicEntity.class, CLEAR_TABLES,
             "openjpa.Compatibility", "default(copyOnDetach=true," +
             		"cascadeWithDetach=true)");
-        
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
         LRSEntity lrs = new LRSEntity();
-        lrs.setName("lrs"); 
+        lrs.setName("lrs");
         for (int i = 1; i <= 3; i++) {
             BasicEntity basic = new BasicEntity();
             basic.setName("basic" + i);
@@ -85,7 +85,7 @@ public class TestLRS
         OpenJPAEntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
         assertLRS(lrs, "lrs");
-        lrs = em.detachCopy(lrs); 
+        lrs = em.detachCopy(lrs);
         assertEquals("lrs", lrs.getName());
         assertNull(lrs.getLRSList());
         em.close();
@@ -102,7 +102,7 @@ public class TestLRS
         em.persist(b);
         em.getTransaction().commit();
         em.clear();
-        
+
         LrsEntityA a1 = em.find(LrsEntityA.class, a.getId());
         assertEquals(1, a1.getEntitybs().size());
     }
@@ -131,7 +131,7 @@ public class TestLRS
         em.close();
     }
 
-    
+
     public static void main(String[] args) {
         TestRunner.run(TestLRS.class);
     }

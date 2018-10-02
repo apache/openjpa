@@ -31,31 +31,31 @@ import javax.persistence.Transient;
 @Entity
 @Access(AccessType.PROPERTY)
 @NamedQueries( {
-    @NamedQuery(name="PropMixedEntity.query", 
-        query="SELECT fs FROM PropMixedEntity fs WHERE " + 
+    @NamedQuery(name="PropMixedEntity.query",
+        query="SELECT fs FROM PropMixedEntity fs WHERE " +
         "fs.idval = :id AND fs.name = :name AND " +
         "fs.ema.firstName = :firstName " +
-        "AND fs.ema.lastName = :lastName AND " + 
+        "AND fs.ema.lastName = :lastName AND " +
         "fs.ema.mName = :middleName"),
-    @NamedQuery(name="PropMixedEntity.badQuery", 
-        query="SELECT fs FROM PropMixedEntity fs WHERE " + 
+    @NamedQuery(name="PropMixedEntity.badQuery",
+        query="SELECT fs FROM PropMixedEntity fs WHERE " +
         "fs.idval = :id AND fs.name = :name AND " +
         "fs.ema.firstName = :firstName AND " +
-        "fs.ema.lastName = :lastName AND " + 
+        "fs.ema.lastName = :lastName AND " +
         "fs.ema.middleName = :middleName") })
 public class PropMixedEntity {
-    
+
     @Id
     @GeneratedValue
     @Access(AccessType.FIELD)
     private int idval;
-    
+
     private String myName;
 
     @Access(AccessType.FIELD)
     @Embedded
     private EmbedMixedAccess ema;
-    
+
     public void setId(int id) {
         this.idval = id;
     }
@@ -86,7 +86,7 @@ public class PropMixedEntity {
     public boolean equals(Object obj) {
         if (obj instanceof PropMixedEntity) {
             PropMixedEntity ps = (PropMixedEntity)obj;
-            return getEmbedProp().equals(ps.getEmbedProp()) 
+            return getEmbedProp().equals(ps.getEmbedProp())
                 && getId() == ps.getId() &&
                 getName().equals(ps.getName());
         }

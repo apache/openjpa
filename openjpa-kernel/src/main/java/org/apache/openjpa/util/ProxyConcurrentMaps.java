@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -32,7 +32,7 @@ public class ProxyConcurrentMaps extends ProxyMaps {
         dirty(map, false);
         return map.containsKey(key);
     }
-    
+
     /**
      * Call after invoking {@link Map#remove(key, value) } on super.
      *
@@ -40,7 +40,7 @@ public class ProxyConcurrentMaps extends ProxyMaps {
      * @param before the return value from {@link #beforeRemove}
      * @return the value to return from {@link Map#remove}
      */
-    public static boolean afterRemove(ProxyMap map, Object key, Object value, boolean ret, 
+    public static boolean afterRemove(ProxyMap map, Object key, Object value, boolean ret,
         boolean before) {
         if (before) {
             if (map.getChangeTracker() != null) {
@@ -48,7 +48,7 @@ public class ProxyConcurrentMaps extends ProxyMaps {
             }
             removed(map, key, true);
             removed(map, ret, false);
-        } 
+        }
         return ret;
     }
 }

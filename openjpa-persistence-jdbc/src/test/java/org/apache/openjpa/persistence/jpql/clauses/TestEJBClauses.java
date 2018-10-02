@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jpql.clauses;
 
@@ -166,10 +166,10 @@ public class TestEJBClauses extends AbstractTestCase {
             "FROM Student s WHERE" +
             " s.department.name = 'CompSci1'";
         // Changes related to OPENJPA-485 allows this query to pass.
-        // The query is not kosher as it does navigate through a 
+        // The query is not kosher as it does navigate through a
         // collection-valued-path-expression (s.department.name) where
-        // department is a Collection. 
-        // But we allow this because of the convenience of the query expression 
+        // department is a Collection.
+        // But we allow this because of the convenience of the query expression
         List ls = em.createQuery(failure).getResultList();
         assertFalse(ls.isEmpty());
         endEm(em);

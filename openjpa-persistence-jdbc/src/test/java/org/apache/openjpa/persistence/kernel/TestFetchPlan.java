@@ -22,7 +22,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -214,7 +214,7 @@ public class TestFetchPlan extends BaseKernelTest {
         if (fd != 0)
             pm.getFetchPlan().setMaxFetchDepth(fd);
 
-//        String filter = "_name == " + quoted(getDirectoryName(rd));        
+//        String filter = "_name == " + quoted(getDirectoryName(rd));
 //        OpenJPAQuery query = pm.createNativeQuery(filter,PCDirectory.class);
 //        List result = (List) query.getResultList();
 
@@ -495,12 +495,12 @@ public class TestFetchPlan extends BaseKernelTest {
 //        OpenJPAEntityManagerFactory pmf =
 //            (OpenJPAEntityManagerFactory) getEmf();
 //        OpenJPAConfiguration conf=pmf.getConfiguration();
-//        
+//
 //        Class.forName(pmf.getConfiguration().getConnection2DriverName());
 //        String url=conf.getConnection2URL();
 //        String user=conf.getConnection2UserName();
 //        String pass=conf.getConnection2Password();
-//        
+//
 //        Connection con = DriverManager.getConnection(
 //                url,
 //                user,

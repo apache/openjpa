@@ -36,11 +36,11 @@ import javax.persistence.Table;
 public class EntityPerson implements Serializable {
 
     private static final long serialVersionUID = 3772049669261731520L;
-    
+
     @Id
     @SequenceGenerator(name="SeqPerson", sequenceName="test_native_sequence")
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SeqPerson")
-    private int id; 
+    private int id;
     private String firstName;
     private String lastName;
 
@@ -79,7 +79,7 @@ public class EntityPerson implements Serializable {
 
     @Override
     public String toString() {
-        return "EntityPerson: Person id: " + getId() + 
+        return "EntityPerson: Person id: " + getId() +
                " firstName: " + getFirstName() +
                " lastName: " + getLastName();
     }
@@ -128,5 +128,5 @@ public class EntityPerson implements Serializable {
             return false;
         }
         return true;
-    } 
+    }
 }

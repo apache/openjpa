@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
@@ -33,7 +33,7 @@ public class Store1 extends Party1 implements java.io.Serializable {
     private String StoreName;
     private String StoreDescription;
 
-    @ManyToOne( fetch = FetchType.LAZY,  cascade = CascadeType.ALL, 
+    @ManyToOne( fetch = FetchType.LAZY,  cascade = CascadeType.ALL,
             targetEntity=Site1.class)
     private Site1 site;
 
@@ -60,5 +60,5 @@ public class Store1 extends Party1 implements java.io.Serializable {
 
     public String getStoreDescription(){
         return this.StoreDescription;
-    } 
+    }
 }

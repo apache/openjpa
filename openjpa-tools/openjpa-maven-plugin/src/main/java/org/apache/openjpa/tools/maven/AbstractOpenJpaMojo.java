@@ -38,10 +38,10 @@ import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Base class for  OpenJPA maven tasks.
- * 
+ *
  * @version $Id$
  */
-public abstract class AbstractOpenJpaMojo extends AbstractMojo 
+public abstract class AbstractOpenJpaMojo extends AbstractMojo
 {
     /**
      * The working directory for putting persistence.xml and
@@ -55,7 +55,7 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      */
     @Parameter(property="openjpa.classes", defaultValue="${project.build.outputDirectory}", required=true)
     protected File classes;
-    
+
     /**
      * Comma separated list of includes to scan searchDir to pass to the jobs.
      * This may be used to restrict the OpenJPA tasks to e.g. a single package which
@@ -100,12 +100,12 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * <p>This setting can be used to override any openjpa.ConnectionDriverName set in the
      * persistence.xml. It can also be used if the persistence.xml contains no connection
      * information at all.<P>
-     * 
+     *
      * Sample:
      * <pre>
      * &lt;connectionDriverName&gt;com.mchange.v2.c3p0.ComboPooledDataSource&lt;/connectionDriverName&gt;
      * </pre>
-     * 
+     *
      * This is most times used in conjunction with {@link #connectionProperties}.
      */
     @Parameter
@@ -116,7 +116,7 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
 
     /**
      * <p>Used to define the credentials or any other connection properties.</p>
-     * 
+     *
      * Sample:
      * <pre>
      * &lt;connectionProperties&gt;
@@ -134,11 +134,11 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      */
     @Parameter
     private String connectionProperties;
-    
+
     /** the string used for passing information about the connectionProperties */
     protected static final String OPTION_CONNECTION_PROPERTIES = "ConnectionProperties";
 
-    
+
     /**
      * List of all class path elements that will be searched for the
      * <code>persistence-enabled</code> classes and resources expected by
@@ -146,14 +146,14 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      */
     @Parameter(defaultValue="${project.compileClasspathElements}", required=true, readonly=true)
     protected List<String> compileClasspathElements;
-    
+
     /**
      * Setting this parameter to <code>true</code> will force
      * the execution of this mojo, even if it would get skipped usually.
      */
     @Parameter(property="forceOpenJpaExecution", defaultValue="false", required=true)
-    private boolean forceMojoExecution; 
-    
+    private boolean forceMojoExecution;
+
     /**
      * The Maven Project Object
      */
@@ -162,10 +162,10 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
 
     /** the properties option is used for passing information about the persistence.xml file location */
     protected static final String OPTION_PROPERTIES_FILE = "propertiesFile";
-    
-    /** 
-     * The properties option is used for passing information about the persistence.xml 
-     * classpath resource and the default unit 
+
+    /**
+     * The properties option is used for passing information about the persistence.xml
+     * classpath resource and the default unit
      */
     protected static final String OPTION_PROPERTIES = "properties";
 
@@ -179,7 +179,7 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
     /**
      * default ct
      */
-    public AbstractOpenJpaMojo() 
+    public AbstractOpenJpaMojo()
     {
         super();
     }
@@ -190,24 +190,24 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      */
     protected File getEntityClasses()
     {
-        return classes; 
+        return classes;
     }
-    
+
     /**
      * This function retrieves the injected classpath elements for the current mojo.
      * @return List of classpath elements for the compile phase
      */
-    protected List<String> getClasspathElements() 
+    protected List<String> getClasspathElements()
     {
         return compileClasspathElements;
     }
-    
+
     /**
      * Get the options for the various OpenJPA tools.
      * @return populated Options
      */
     protected abstract Options getOptions() throws MojoExecutionException;
-    
+
     /**
      * <p>Determine if the mojo execution should get skipped.</p>
      * This is the case if:
@@ -216,26 +216,26 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      *   <li>if the mojo gets executed on a project with packaging type 'pom' and
      *       {@link #forceMojoExecution} is <code>false</code></li>
      * </ul>
-     * 
+     *
      * @return <code>true</code> if the mojo execution should be skipped.
      */
-    protected boolean skipMojo() 
+    protected boolean skipMojo()
     {
         if ( skip )
         {
             getLog().info( "Skip sql execution" );
             return true;
         }
-        
+
         if ( !forceMojoExecution && project != null && "pom".equals( project.getPackaging() ) )
         {
             getLog().info( "Skipping sql execution for project with packaging type 'pom'" );
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * This function will usually get called by {@link #getOptions()}
      * @return the Options filled with the initial values
@@ -352,15 +352,15 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
     /**
      * This will prepare the current ClassLoader and add all jars and local
      * classpaths (e.g. target/classes) needed by the OpenJPA task.
-     * 
+     *
      * @throws MojoExecutionException on any error inside the mojo
      */
-    protected void extendRealmClasspath() 
-        throws MojoExecutionException 
-    { 
+    protected void extendRealmClasspath()
+        throws MojoExecutionException
+    {
         List<URL> urls = new ArrayList<URL>();
 
-        for(String fileName: getClasspathElements()) { 
+        for(String fileName: getClasspathElements()) {
             File pathElem = new File(fileName);
             try
             {
@@ -380,19 +380,19 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
         // set the new ClassLoader as default for this Thread
         Thread.currentThread().setContextClassLoader( jpaRealm );
     }
-    
+
     /**
      * Locates and returns a list of class files found under specified class
      * directory.
-     * 
+     *
      * @return list of class files.
      * @throws MojoExecutionException if there was an error scanning class file
      *             resources.
      */
-    protected List<File> findEntityClassFiles() throws MojoExecutionException 
+    protected List<File> findEntityClassFiles() throws MojoExecutionException
     {
         List<File> files = new ArrayList<File>();
-    
+
         try
         {
             files = (List<File>) FileUtils.getFiles( getEntityClasses(), includes, excludes );
@@ -410,13 +410,13 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * @param files List of files
      * @return the paths of the given files as String[]
      */
-    protected String[] getFilePaths( List<File> files ) 
+    protected String[] getFilePaths( List<File> files )
     {
         String[] args = new String[ files.size() ];
         for ( int i = 0; i < files.size(); i++ )
         {
             File file = files.get( i );
-    
+
             args[ i ] = file.getAbsolutePath();
         }
         return args;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex4;
 
@@ -33,17 +33,17 @@ public class Office {
     String name;
     @Embedded
     Address address;
-    
+
     @ManyToOne
     Division division;
-    
+
     public Office() {
     }
-    
+
     public Office(int id) {
         this.id = id;
     }
-    
+
     public Address getAddress() {
         return this.address;
     }
@@ -90,5 +90,5 @@ public class Office {
         ret = ret * 31 + name.hashCode();
         ret = ret *31 + id;
         return ret;
-    }        
+    }
 }

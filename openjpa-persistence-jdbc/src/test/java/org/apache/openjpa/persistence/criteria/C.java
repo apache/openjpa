@@ -33,18 +33,18 @@ import javax.persistence.OneToMany;
 public class C {
     @Id
     private long id;
-    
+
     private String name;
-    
+
     @OneToMany(mappedBy="c")
     private Set<D> set;
-    
+
     @OneToMany(mappedBy="c")
     private List<D> list;
-    
+
     @OneToMany(mappedBy="c")
     private Collection<D> coll;
-    
+
     @ManyToMany
     private Map<Integer, D> map;
 }

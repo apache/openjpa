@@ -37,7 +37,7 @@ public class TestJPAValidation extends junit.framework.TestCase {
      * and pre-persist lifecycle events.
      */
     public void testValidation() {
-        EntityManagerFactory emf = 
+        EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("BeanValidation");
         EntityManager em = emf.createEntityManager();
 
@@ -54,7 +54,7 @@ public class TestJPAValidation extends junit.framework.TestCase {
         img.setFileName("Winter_01.gif");
         loadImage(img);
         img.setLocation(loc);
-        
+
         // *** PERSIST ***
         try {
             em.getTransaction().begin();
@@ -77,7 +77,7 @@ public class TestJPAValidation extends junit.framework.TestCase {
         // *** UPDATE ***
         try {
             em.getTransaction().begin();
-            // Modify the file name to a non-matching file name 
+            // Modify the file name to a non-matching file name
             // and commit to trigger an update
             System.out.println("Modifying file name to use an extension that does not");
             System.out.println("match the file type.  This will cause a CVE.");
@@ -90,7 +90,7 @@ public class TestJPAValidation extends junit.framework.TestCase {
             System.out.println("Update failed as expected");
             handleConstraintViolation(cve);
         }
-        // The update failure caused img to be detached. It must be merged back 
+        // The update failure caused img to be detached. It must be merged back
         // into the persistence context.
         img = em.merge(img);
 
@@ -131,10 +131,10 @@ public class TestJPAValidation extends junit.framework.TestCase {
       }
     }
 
-    // Mock image loading utility...  simply loads the GIF89a header to satisfy the 
+    // Mock image loading utility...  simply loads the GIF89a header to satisfy the
     // constraint validator.
     private static void loadImage(Image img) {
         img.setData(new byte[] { 'G', 'I', 'F', '8', '9', 'a' });
     }
-    
+
 }

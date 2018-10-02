@@ -24,7 +24,7 @@ import javax.persistence.Id;
 
 @Entity
 public class PropEntity extends MappedCallbackSup {
-    
+
     private int id;
     private String name;
 

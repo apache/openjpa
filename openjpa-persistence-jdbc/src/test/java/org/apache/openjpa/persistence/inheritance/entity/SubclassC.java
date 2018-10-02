@@ -34,9 +34,9 @@ public class SubclassC extends MappedSuper {
     public String getClassAName() {
         return classCName;
     }
-    
+
     public String toString() {
         return super.toString() + ";classCName=" + classCName;
     }
-    
+
 }

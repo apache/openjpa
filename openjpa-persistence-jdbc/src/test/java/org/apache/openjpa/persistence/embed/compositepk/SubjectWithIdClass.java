@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.compositepk;
 
@@ -40,13 +40,13 @@ public class SubjectWithIdClass implements Serializable {
     @Id
     @Column(name = "CODE_SUBJECTTYPE")
     private String subjectTypeCode;
-    
+
 	public SubjectWithIdClass() {
 	}
 
     public void setSubjectNummer(Integer subjectNummer) {
         this.subjectNummer = subjectNummer;
-        
+
     }
 
     public Integer getSubjectNummer() {
@@ -55,7 +55,7 @@ public class SubjectWithIdClass implements Serializable {
 
     public void setSubjectTypeCode(String subjectTypeCode) {
         this.subjectTypeCode = subjectTypeCode;
-        
+
     }
 
     public String getSubjectTypeCode() {

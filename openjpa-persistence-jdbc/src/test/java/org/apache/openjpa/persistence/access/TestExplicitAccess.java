@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestExplicitAccess extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(CLEAR_TABLES, 
+        setUp(CLEAR_TABLES,
             PropAccess.class, FieldAccess.class,
             DefFieldMixedPropAccess.class , DefPropMixedFieldAccess.class,
             AbstractMappedSuperField.class, PropertySub.class,
@@ -52,12 +52,12 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             PropMixedEntity.class, EmbedMixedAccess.class,
             MixedNestedEmbedEntity.class, EmbedInnerProp.class,
             EmbedOuterField.class, MixedMultEmbedEntity.class,
-            FieldAccessPropStratsEntity.class, 
+            FieldAccessPropStratsEntity.class,
             PropAccessFieldStratsEntity.class,
             EmbedId.class, MenuItem.class, Ingredient.class, Quantity.class);
     }
 
-    
+
     /**
      * Validates the use of field level access on an
      * entity, mappedsuperclass, and embeddable at the
@@ -66,16 +66,16 @@ public class TestExplicitAccess extends SingleEMFTestCase {
     public void testClassSpecifiedFieldAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         FieldAccess fa = new FieldAccess();
-        // Set the persistent field through a misnamed setter         
+        // Set the persistent field through a misnamed setter
         fa.setStringField("FieldAccess");
-        
+
         em.getTransaction().begin();
         em.persist(fa);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the field name to verify that
         // field access is in use.
@@ -84,7 +84,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry.setParameter("strVal", "FieldAccess");
         FieldAccess fa2 = (FieldAccess)qry.getSingleResult();
         assertEquals(fa.getId(), fa2.getId());
-        
+
         em.close();
     }
 
@@ -96,16 +96,16 @@ public class TestExplicitAccess extends SingleEMFTestCase {
     public void testClassSpecifiedPropertyAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         PropAccess pa = new PropAccess();
-        // Set the persistent field through a misnamed setter         
+        // Set the persistent field through a misnamed setter
         pa.setStrProp("PropertyAccess");
-        
+
         em.getTransaction().begin();
         em.persist(pa);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the field name to verify that
         // field access is in use.
@@ -116,35 +116,35 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         assertEquals(pa, pa2);
         em.close();
     }
-    
+
     /**
-     * Validates the use of explicit field access on an entity, 
+     * Validates the use of explicit field access on an entity,
      * mappedsuperclass, and embeddable with property access
      * defined at the class level and field access defined
-     * on specific methods. 
-     */    
+     * on specific methods.
+     */
     public void testClassSpecifiedMixedSinglePCFieldAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         DefFieldMixedPropAccess dfmpa = new DefFieldMixedPropAccess();
         // Call non-PC setter
         dfmpa.setStrField("NonPCSetter");
         // Call setter with property access
         dfmpa.setStringField("DFMPA");
-        
+
         em.getTransaction().begin();
         em.persist(dfmpa);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent property was set using the setter
         // above, but this query will use the property name to verify that
         // propety access is in use.
         Query qry = em.createNamedQuery("DFMPA.query");
         qry.setParameter("id", dfmpa.getId());
         qry.setParameter("strVal", "DFMPA");
-        DefFieldMixedPropAccess dfmpa2 = 
+        DefFieldMixedPropAccess dfmpa2 =
             (DefFieldMixedPropAccess)qry.getSingleResult();
         assertEquals(dfmpa, dfmpa2);
         assertEquals(dfmpa2.getStringField(), "DFMPA");
@@ -164,33 +164,33 @@ public class TestExplicitAccess extends SingleEMFTestCase {
 
         em.close();
     }
-    
+
     /**
-     * Validates the use of explicit property access on an entity, 
+     * Validates the use of explicit property access on an entity,
      * mappedsuperclass, and embeddable with field access
      * defined at the class level and property access defined
-     * on specific methods. 
-     */    
+     * on specific methods.
+     */
     public void testClassSpecifiedMixedSinglePCPropertyAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         DefPropMixedFieldAccess dpmfa = new DefPropMixedFieldAccess();
         // Call setter with underlying field access
         dpmfa.setStrProp("DPMFA");
-        
+
         em.getTransaction().begin();
         em.persist(dpmfa);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the property name to verify that
         // propety access is in use.
         Query qry = em.createNamedQuery("DPMFA.query");
         qry.setParameter("id", dpmfa.getId());
         qry.setParameter("strVal", "DPMFA");
-        DefPropMixedFieldAccess dpmfa2 = 
+        DefPropMixedFieldAccess dpmfa2 =
             (DefPropMixedFieldAccess)qry.getSingleResult();
         assertEquals(dpmfa, dpmfa2);
         assertEquals(dpmfa2.getStrProp(), "DPMFA");
@@ -210,26 +210,26 @@ public class TestExplicitAccess extends SingleEMFTestCase {
 
         em.close();
     }
-    
+
     /**
      * Validates that a mapped superclass using field access and an entity
      * subclass using property access get mapped properly.
      */
     public void testAbstractMappedSuperField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         PropertySub ps = new PropertySub();
         // Call super setter with underlying field access
         ps.setName("AbsMappedSuperName");
         // Call base setter with property access
         Date now = new Date();
         ps.setCreateDate(now);
-        
+
         em.getTransaction().begin();
         em.persist(ps);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the property name to verify that
         // propety access is in use.
@@ -237,7 +237,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry.setParameter("id", ps.getId());
         qry.setParameter("name", "AbsMappedSuperName");
         qry.setParameter("crtDate", now);
-        PropertySub ps2 = 
+        PropertySub ps2 =
             (PropertySub)qry.getSingleResult();
         assertEquals(ps, ps2);
         assertEquals(ps2.getName(), "AbsMappedSuperName");
@@ -266,19 +266,19 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      */
     public void testAbstractMappedSuperProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         FieldSub fs = new FieldSub();
         // Call super setter with underlying field access
         fs.setName("AbsMappedSuperName");
         // Call base setter with property access
         Date now = new Date();
         fs.setCreateDate(now);
-        
+
         em.getTransaction().begin();
         em.persist(fs);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the property name to verify that
         // propety access is in use.
@@ -286,7 +286,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry.setParameter("id", fs.getId());
         qry.setParameter("name", "AbsMappedSuperName");
         qry.setParameter("crtDate", now);
-        FieldSub fs2 = 
+        FieldSub fs2 =
             (FieldSub)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "AbsMappedSuperName");
@@ -310,25 +310,25 @@ public class TestExplicitAccess extends SingleEMFTestCase {
     }
 
     /**
-     * Validates that an mapped superclass using field access and an 
+     * Validates that an mapped superclass using field access and an
      * entity subclass using property access get mapped properly.
-     * The subclass uses a storage field in the superclass. 
+     * The subclass uses a storage field in the superclass.
      */
     public void testMappedSuperField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         PropertySub2 ps = new PropertySub2();
         // Call super setter with underlying field access
         ps.setName("MappedSuperName");
         // Call base setter with property access
         Date now = new Date();
         ps.setCreateDate(now);
-        
+
         em.getTransaction().begin();
         em.persist(ps);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the property name to verify that
         // propety access is in use.
@@ -336,7 +336,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry.setParameter("id", ps.getId());
         qry.setParameter("name", "MappedSuperName");
         qry.setParameter("crtDate", now);
-        PropertySub2 ps2 = 
+        PropertySub2 ps2 =
             (PropertySub2)qry.getSingleResult();
         assertEquals(ps, ps2);
         assertEquals(ps2.getName(), "MappedSuperName");
@@ -356,29 +356,29 @@ public class TestExplicitAccess extends SingleEMFTestCase {
                     "[createDate, id, name]");
         }
 
-        em.close();        
+        em.close();
     }
 
     /**
-     * Validates that an mapped superclass using field access and an 
+     * Validates that an mapped superclass using field access and an
      * entity subclass using property access get mapped properly.
-     * The subclass uses a storage field in the superclass. 
+     * The subclass uses a storage field in the superclass.
      */
     public void testMappedSuperProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         FieldSub2 fs = new FieldSub2();
         // Call super setter with underlying field access
         fs.setName("MappedSuperName");
         // Call base setter with property access
         Date now = new Date();
         fs.setCreateDate(now);
-        
+
         em.getTransaction().begin();
         em.persist(fs);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the property name to verify that
         // propety access is in use.
@@ -386,7 +386,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry.setParameter("id", fs.getId());
         qry.setParameter("name", "MappedSuperName");
         qry.setParameter("crtDate", now);
-        FieldSub2 fs2 = 
+        FieldSub2 fs2 =
             (FieldSub2)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "MappedSuperName");
@@ -406,17 +406,17 @@ public class TestExplicitAccess extends SingleEMFTestCase {
                     "[crtDate, id, name]");
         }
 
-        em.close();        
+        em.close();
     }
 
     /**
-     * Validates that a mix of access types can be used within multiple 
-     * persistent classes within an inheritance hierarchy that uses 
+     * Validates that a mix of access types can be used within multiple
+     * persistent classes within an inheritance hierarchy that uses
      * MappedSuperclass.
      */
     public void testMixedMappedSuper() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         MixedFieldSub fs = new MixedFieldSub();
         // Call super setter with underlying field access
         fs.setName("MixedMappedSuperName");
@@ -424,12 +424,12 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         // Call base setter with property access
         Date now = new Date();
         fs.setCreateDate(now);
-        
+
         em.getTransaction().begin();
         em.persist(fs);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the property name to verify that
         // propety access is in use.
@@ -438,7 +438,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry.setParameter("name", "MixedMappedSuperName");
         qry.setParameter("crtDate", now);
         qry.setParameter("myField", "MyFieldName");
-        MixedFieldSub fs2 = 
+        MixedFieldSub fs2 =
             (MixedFieldSub)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "MixedMappedSuperName");
@@ -458,10 +458,10 @@ public class TestExplicitAccess extends SingleEMFTestCase {
                     "[createDate, mid, myField, name]");
         }
 
-        em.close();        
-        
+        em.close();
+
     }
-    
+
     /**
      * Validates that a mix of access types can be used within
      * an inheritance hierarchy which uses default Entity inheritance.
@@ -469,7 +469,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      */
     public void testEntityFieldDefaultInheritance() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         FieldSub3 fs = new FieldSub3();
         // Call super setter with underlying field access
         fs.setName("EntitySuperName");
@@ -479,13 +479,13 @@ public class TestExplicitAccess extends SingleEMFTestCase {
 
         SuperPropertyEntity spe = new SuperPropertyEntity();
         spe.setName("SuperPropertyEntity");
-        
+
         em.getTransaction().begin();
         em.persist(fs);
         em.persist(spe);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the property name to verify that
         // propety access is in use.
@@ -493,7 +493,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry.setParameter("id", fs.getId());
         qry.setParameter("name", "EntitySuperName");
         qry.setParameter("crtDate", now);
-        FieldSub3 fs2 = 
+        FieldSub3 fs2 =
             (FieldSub3)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "EntitySuperName");
@@ -516,7 +516,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry = em.createNamedQuery("SuperPropertyEntity.query");
         qry.setParameter("id", spe.getId());
         qry.setParameter("name", "SuperPropertyEntity");
-        SuperPropertyEntity spe2 = 
+        SuperPropertyEntity spe2 =
             (SuperPropertyEntity)qry.getSingleResult();
         assertEquals(spe, spe2);
         assertEquals(spe2.getName(), "SuperPropertyEntity");
@@ -536,9 +536,9 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                     "No field named \"crtDate\" in \"SuperPropertyEntity\"",
                     "[id, name]");
-        }        
-        
-        em.close();        
+        }
+
+        em.close();
     }
 
     /**
@@ -548,7 +548,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      */
     public void testEntityPropertyDefaultInheritance() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         PropertySub3 ps = new PropertySub3();
         // Call super setter with underlying field access
         ps.setName("EntitySuperName");
@@ -558,13 +558,13 @@ public class TestExplicitAccess extends SingleEMFTestCase {
 
         SuperFieldEntity sfe = new SuperFieldEntity();
         sfe.setName("SuperFieldEntity");
-        
+
         em.getTransaction().begin();
         em.persist(ps);
         em.persist(sfe);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the property name to verify that
         // propety access is in use.
@@ -572,7 +572,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry.setParameter("id", ps.getId());
         qry.setParameter("name", "EntitySuperName");
         qry.setParameter("crtDate", now);
-        PropertySub3 ps2 = 
+        PropertySub3 ps2 =
             (PropertySub3)qry.getSingleResult();
         assertEquals(ps, ps2);
         assertEquals(ps2.getName(), "EntitySuperName");
@@ -595,7 +595,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry = em.createNamedQuery("SuperFieldEntity.query");
         qry.setParameter("id", sfe.getId());
         qry.setParameter("name", "SuperFieldEntity");
-        SuperFieldEntity sfe2 = 
+        SuperFieldEntity sfe2 =
             (SuperFieldEntity)qry.getSingleResult();
         assertEquals(sfe2, sfe2);
         assertEquals(sfe2.getName(), "SuperFieldEntity");
@@ -615,8 +615,8 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                     "No field named \"crtDate\" in \"SuperFieldEntity\"",
                     "[id, name]");
-        }        
-        em.close();        
+        }
+        em.close();
     }
 
     /**
@@ -625,21 +625,21 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      */
     public void testEmbeddablesField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         EmbedFieldAccess efa = new EmbedFieldAccess();
         efa.setFirstName("J");
         efa.setLastName("Tolkien");
-        
+
         PropEmbedEntity pe = new PropEmbedEntity();
         pe.setName("PropEmbedEntity");
         pe.setEmbedProp(efa);
-        
+
         em.getTransaction().begin();
         em.persist(pe);
         em.getTransaction().commit();
-        
+
         em.clear();
-        
+
         Query qry = em.createNamedQuery("PropEmbedEntity.query");
         qry.setParameter("id", pe.getId());
         qry.setParameter("name", "PropEmbedEntity");
@@ -672,21 +672,21 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      */
     public void testEmbeddablesProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         EmbedPropAccess epa = new EmbedPropAccess();
         epa.setFirstName("Walt");
         epa.setLastName("Whitman");
-        
+
         FieldEmbedEntity fe = new FieldEmbedEntity();
         fe.setName("FieldEmbedEntity");
         fe.setEPA(epa);
-        
+
         em.getTransaction().begin();
         em.persist(fe);
         em.getTransaction().commit();
-        
+
         em.clear();
-        
+
         Query qry = em.createNamedQuery("FieldEmbedEntity.query");
         qry.setParameter("id", fe.getId());
         qry.setParameter("name", "FieldEmbedEntity");
@@ -719,22 +719,22 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      */
     public void testMixedEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         EmbedMixedAccess ema = new EmbedMixedAccess();
         ema.setFirstName("J");
         ema.setLastName("Tolkien");
         ema.setMiddleName("R");
-        
+
         PropMixedEntity pm = new PropMixedEntity();
         pm.setName("PropMixedEntity");
         pm.setEmbedProp(ema);
-        
+
         em.getTransaction().begin();
         em.persist(pm);
         em.getTransaction().commit();
-        
+
         em.clear();
-        
+
         Query qry = em.createNamedQuery("PropMixedEntity.query");
         qry.setParameter("id", pm.getId());
         qry.setParameter("name", "PropMixedEntity");
@@ -769,29 +769,29 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      */
     public void testNestedEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         EmbedInnerProp eip = new EmbedInnerProp();
         eip.setInnerName("Inner");
         EmbedOuterField eof = new EmbedOuterField();
         eof.setOuterName("Outer");
         eip.setOuterField(eof);
-                
+
         MixedNestedEmbedEntity pm = new MixedNestedEmbedEntity();
         pm.setName("MixedNestedEmbedEntity");
         pm.setEmbedProp(eip);
-        
+
         em.getTransaction().begin();
         em.persist(pm);
         em.getTransaction().commit();
-        
+
         em.clear();
-        
+
         Query qry = em.createNamedQuery("MixedNestedEmbedEntity.query");
         qry.setParameter("id", pm.getId());
         qry.setParameter("name", "MixedNestedEmbedEntity");
         qry.setParameter("innerName", "Inner");
         qry.setParameter("outerName", "Outer");
-        MixedNestedEmbedEntity pm2 = 
+        MixedNestedEmbedEntity pm2 =
             (MixedNestedEmbedEntity)qry.getSingleResult();
         assertEquals(pm, pm2);
         assertEquals(eip, pm2.getEmbedProp());
@@ -819,26 +819,26 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      */
     public void testMultipleEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         EmbedFieldAccess efa = new EmbedFieldAccess();
         efa.setFirstName("First");
         efa.setLastName("Last");
-        
+
         EmbedPropAccess epa = new EmbedPropAccess();
         epa.setFirstName("fname");
         epa.setLastName("lname");
-                
+
         MixedMultEmbedEntity pm = new MixedMultEmbedEntity();
         pm.setName("MixedMultEmbedEntity");
         pm.setEmbedProp(epa);
         pm.setEmbedField(efa);
-        
+
         em.getTransaction().begin();
         em.persist(pm);
         em.getTransaction().commit();
-        
+
         em.clear();
-        
+
         Query qry = em.createNamedQuery("MixedMultEmbedEntity.query");
         qry.setParameter("id", pm.getId());
         qry.setParameter("name", "MixedMultEmbedEntity");
@@ -846,7 +846,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry.setParameter("lastName", "lname");
         qry.setParameter("fName", "First");
         qry.setParameter("lName", "Last");
-        MixedMultEmbedEntity pm2 = 
+        MixedMultEmbedEntity pm2 =
             (MixedMultEmbedEntity)qry.getSingleResult();
         assertEquals(pm, pm2);
         assertEquals(epa, pm2.getEmbedProp());
@@ -891,58 +891,58 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         PropAccessFieldStratsEntity pa = new PropAccessFieldStratsEntity();
-        
+
         // Load all persistent fields
         EmbedId eid = new EmbedId();
         eid.setId(new Random().nextInt());
-        eid.setCode("IdCode");        
+        eid.setCode("IdCode");
         pa.setEmbedId(eid); // embedded id
-        
+
         Collection<EmbedPropAccess> elc = new ArrayList<EmbedPropAccess>();
         EmbedPropAccess epa1 = new EmbedPropAccess("Abe", "Lincoln");
         EmbedPropAccess epa2 = new EmbedPropAccess("John", "Kennedy");
         elc.add(epa1);
-        elc.add(epa2);                
+        elc.add(epa2);
         pa.setElementCollection(elc); // element collection of embeddables
-        
+
         EmbedFieldAccess efa = new EmbedFieldAccess();
         efa.setFirstName("The");
         efa.setLastName("President");
         pa.setEmbedField(efa); // embedded
-        
+
         pa.setName("PropAccessFieldStratsEntity");  // basic
-        
+
         PropAccess propa = new PropAccess();
         propa.setStrProp("PropAccess");
         pa.setManyToOne(propa); // many to one
-        
+
         Collection<FieldAccess> fac = new ArrayList<FieldAccess>();
         FieldAccess fa = new FieldAccess();
         fa.setStrField("FieldAccess");
         fac.add(fa);
         pa.setOneToMany(fac); // one to many
-        
+
         PropAccess pa2 = new PropAccess();
         pa2.setStrProp("PropAccess2");
         pa.setOneToOne(pa2); // one to one
-       
+
         em.getTransaction().begin();
         em.persist(pa);
         em.getTransaction().commit();
-        
+
         em.clear();
         // Verify list of persistent fields
-        PropAccessFieldStratsEntity newpa = 
+        PropAccessFieldStratsEntity newpa =
             em.find(PropAccessFieldStratsEntity.class, eid);
         assertNotNull(newpa);
         // simple key validation
         assertEquals(newpa.getEmbedId(), eid);
 
         // Verify the persistent member names
-        MetaDataRepository mdr = 
+        MetaDataRepository mdr =
             em.getConfiguration().getMetaDataRepositoryInstance();
-        
-        ClassMetaData cmd = mdr.getMetaData(PropAccessFieldStratsEntity.class, 
+
+        ClassMetaData cmd = mdr.getMetaData(PropAccessFieldStratsEntity.class,
             null, true);
         // Assert expected persistent fields and properties were created
         assertNotNull(cmd.getField("embedId"));
@@ -957,10 +957,10 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         // Name has a matching getter/setter.  Make sure the access type
         // is field & not property
         assertNotNull(cmd.getField("name"));
-        assertTrue((cmd.getField("name").getAccessType() & AccessCode.FIELD) == 
+        assertTrue((cmd.getField("name").getAccessType() & AccessCode.FIELD) ==
             AccessCode.FIELD);
 
-        // Assert mappings were not created for fields or properties which 
+        // Assert mappings were not created for fields or properties which
         // should not be persistent
         assertNull(cmd.getField("eid"));
         assertNull(cmd.getField("elementCollection"));
@@ -970,7 +970,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         assertNull(cmd.getField("oneToMany"));
         assertNull(cmd.getField("oneToOne"));
         assertNull(cmd.getField("manyToMany"));
-        
+
         em.close();
     }
 
@@ -983,58 +983,58 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         FieldAccessPropStratsEntity fa = new FieldAccessPropStratsEntity();
-        
+
         // Load all persistent fields
         EmbedId eid = new EmbedId();
         eid.setId(new Random().nextInt());
-        eid.setCode("IdCode");        
+        eid.setCode("IdCode");
         fa.setEmbedId(eid); // embedded id
-        
+
         Collection<EmbedPropAccess> elc = new ArrayList<EmbedPropAccess>();
         EmbedPropAccess epa1 = new EmbedPropAccess("George", "Washington");
         EmbedPropAccess epa2 = new EmbedPropAccess("James", "Carter");
         elc.add(epa1);
-        elc.add(epa2);                
+        elc.add(epa2);
         fa.setElementCollection(elc); // element collection of embeddables
-        
+
         EmbedFieldAccess efa = new EmbedFieldAccess();
         efa.setFirstName("The");
         efa.setLastName("President");
         fa.setEmbedField(efa); // embedded
-        
+
         fa.setName("FieldAccessPropStratsEntity");  // basic
-        
+
         PropAccess propa = new PropAccess();
         propa.setStrProp("PropAccess");
         fa.setManyToOne(propa); // many to one
-        
+
         Collection<FieldAccess> fac = new ArrayList<FieldAccess>();
         FieldAccess fae = new FieldAccess();
         fae.setStrField("FieldAccess");
         fac.add(fae);
         fa.setOneToMany(fac); // one to many
-        
+
         PropAccess pa = new PropAccess();
         pa.setStrProp("PropAccess");
         fa.setOneToOne(pa); // one to one
-       
+
         em.getTransaction().begin();
         em.persist(fa);
         em.getTransaction().commit();
-        
+
         em.clear();
         // Verify list of persistent fields
-        FieldAccessPropStratsEntity newpa = 
+        FieldAccessPropStratsEntity newpa =
             em.find(FieldAccessPropStratsEntity.class, eid);
         assertNotNull(newpa);
         // simple key validation
         assertEquals(newpa.getEmbedId(), eid);
 
         // Verify the persistent member names
-        MetaDataRepository mdr = 
+        MetaDataRepository mdr =
             em.getConfiguration().getMetaDataRepositoryInstance();
-        
-        ClassMetaData cmd = mdr.getMetaData(FieldAccessPropStratsEntity.class, 
+
+        ClassMetaData cmd = mdr.getMetaData(FieldAccessPropStratsEntity.class,
             null, true);
         // Assert expected persistent fields and properties were created
         assertNotNull(cmd.getField("eid"));
@@ -1052,7 +1052,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         assertTrue((cmd.getField("name").getAccessType() & AccessCode.PROPERTY)
             == AccessCode.PROPERTY);
 
-        // Assert mappings were not created for fields or properties which 
+        // Assert mappings were not created for fields or properties which
         // should not be persistent
         assertNull(cmd.getField("embedId"));
         assertNull(cmd.getField("m2one"));
@@ -1062,29 +1062,29 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         assertNull(cmd.getField("embed"));
         assertNull(cmd.getField("ver"));
         assertNull(cmd.getField("m2m"));
-        
+
         em.close();
     }
 
     /**
      * Verifies the use of a map of embeddables containing a nested
-     * mixed access embeddable. 
+     * mixed access embeddable.
      */
     public void testMapWithNestedEmbeddable() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         MenuItem mi = new MenuItem();
         mi.setName("PB & J Sandwich");
-        
+
         Map<String, Ingredient> ingredients = new HashMap<String, Ingredient>();
         mi.setIngredients(ingredients);
-        
+
         Ingredient i1 = new Ingredient("Peanut Butter");
         i1.setDescription("Edible brown paste, made from peanuts");
         Quantity q1 = new Quantity(1.0, "Tbsp");
         i1.setQuantity(q1);
         ingredients.put("Peanut Butter", i1);
-        
+
         Ingredient i2 = new Ingredient("Jelly");
         i2.setDescription("Sweet gel, made from fruit");
         Quantity q2 = new Quantity(1.5, "Tbsp");
@@ -1101,9 +1101,9 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         em.persist(mi);
         em.getTransaction().commit();
         em.clear();
-        
+
         MenuItem mi2 = em.find(MenuItem.class, mi.getId());
-        
+
         assertEquals(mi2.getId(), mi.getId());
         Map<String, Ingredient> ing2 = mi2.getIngredients();
         assertTrue(ing2.containsKey("Peanut Butter"));
@@ -1123,10 +1123,10 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         assertEquals("Slice", q.getUnitOfMeasure());
 
         em.remove(mi2);
-        
+
         em.close();
     }
-    
+
     /*
      * Simple method to verify if an exception is of the correct type and
      * that it contains the expected message fragments.

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -48,7 +48,7 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 
 /**
  * The abstract base class for all commands available to JEST.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -62,48 +62,48 @@ abstract class AbstractCommand implements JESTCommand {
     private Map<String, String> _args = new HashMap<String, String>();
     private Map<String, String> _margs = new HashMap<String, String>();
     protected final JPAServletContext _ctx;
-    
-    private static PrototypeFactory<Format,ObjectFormatter<?>> _formatterFactory = 
+
+    private static PrototypeFactory<Format,ObjectFormatter<?>> _formatterFactory =
         new PrototypeFactory<Format,ObjectFormatter<?>>();
     protected static Localizer _loc = Localizer.forPackage(AbstractCommand.class);
-    
+
     static {
         _formatterFactory.register(Format.xml,  XMLFormatter.class);
         _formatterFactory.register(Format.json, JSONObjectFormatter.class);
     }
-    
+
     protected AbstractCommand(JPAServletContext ctx) {
         _ctx = ctx;
     }
-    
+
     public JPAServletContext getExecutionContext() {
         return _ctx;
     }
-    
+
     public String getMandatoryArgument(String key) {
         return get(key, _margs);
     }
-    
+
     public String getArgument(String key) {
         return get(key, _args);
     }
-    
+
     public boolean hasArgument(String key) {
         return has(key, _args);
     }
-    
+
     public Map<String, String> getArguments() {
         return _args;
     }
-    
+
     public String getQualifier(String key) {
         return get(key, _qualifiers);
     }
-    
+
     public boolean hasQualifier(String key) {
         return has(key, _qualifiers);
     }
-    
+
     protected boolean isBooleanQualifier(String key) {
         if (hasQualifier(key)) {
             Object value = getQualifier(key);
@@ -111,11 +111,11 @@ abstract class AbstractCommand implements JESTCommand {
         }
         return false;
     }
-    
+
     public Map<String, String> getQualifiers() {
         return _qualifiers;
     }
-    
+
     /**
      * Parses HTTP Request for the qualifier and argument of a command.
      * <br>
@@ -125,7 +125,7 @@ abstract class AbstractCommand implements JESTCommand {
      * Each request parameter key-value pair is an argument. A concrete command may specify mandatory
      * arguments (e.g. <code>type</code> must be mandatory argument for <code>find</code> command,
      * or <code>q</code> for <code>query</code>. The mandatory arguments, if any, are <em>not</em> captured
-     * in the argument list. 
+     * in the argument list.
      * <br>
      * The qualifiers and arguments are immutable after parse.
      */
@@ -146,10 +146,10 @@ abstract class AbstractCommand implements JESTCommand {
             }
         }
         _qualifiers = Collections.unmodifiableMap(_qualifiers);
-        
+
         Enumeration<?> names = request.getParameterNames();
         Collection<String> mandatoryArgs = getMandatoryArguments();
-        
+
         while (names.hasMoreElements()) {
             String key = names.nextElement().toString();
             if (key.startsWith("dojo.")) continue;
@@ -157,50 +157,50 @@ abstract class AbstractCommand implements JESTCommand {
         }
         _args = Collections.unmodifiableMap(_args);
         _margs = Collections.unmodifiableMap(_margs);
-        
+
         validate();
     }
-    
+
     /**
      * Gets the mandatory arguments.
-     * 
+     *
      * @return empty list by default.
      */
     protected Collection<String> getMandatoryArguments() {
         return EMPTY_LIST;
     }
-    
+
     /**
      * Gets the minimum number of arguments excluding the mandatory arguments.
-     * 
+     *
      * @return zero by default.
      */
     protected int getMinimumArguments() {
         return 0;
     }
-    
+
     /**
      * Gets the maximum number of arguments excluding the mandatory arguments.
-     * 
+     *
      * @return Integer.MAX_VALUE by default.
      */
     protected int getMaximumArguments() {
         return Integer.MAX_VALUE;
     }
-    
+
     protected Format getDefaultFormat() {
         return Format.xml;
     }
-    
+
     /**
      * Gets the valid qualifiers.
-     * 
+     *
      * @return empty list by default.
      */
     protected Collection<String> getValidQualifiers() {
         return EMPTY_LIST;
     }
-    
+
     /**
      * Called post-parse to validate this command has requisite qualifiers and arguments.
      */
@@ -216,32 +216,32 @@ abstract class AbstractCommand implements JESTCommand {
         Collection<String> mandatoryArgs = getMandatoryArguments();
         for (String key : mandatoryArgs) {
             if (request.getParameter(key) == null) {
-                throw new ProcessingException(_ctx, _loc.get("parse-missing-mandatory-argument", this, key,  
+                throw new ProcessingException(_ctx, _loc.get("parse-missing-mandatory-argument", this, key,
                     request.getParameterMap().keySet()), HTTP_BAD_REQUEST);
             }
         }
         if (_args.size() < getMinimumArguments()) {
-            throw new ProcessingException(_ctx, _loc.get("parse-less-argument", this, _args.keySet(),  
+            throw new ProcessingException(_ctx, _loc.get("parse-less-argument", this, _args.keySet(),
                 getMinimumArguments()), HTTP_BAD_REQUEST);
         }
         if (_args.size() > getMaximumArguments()) {
-            throw new ProcessingException(_ctx, _loc.get("parse-less-argument", this, _args.keySet(),  
+            throw new ProcessingException(_ctx, _loc.get("parse-less-argument", this, _args.keySet(),
                 getMinimumArguments()), HTTP_BAD_REQUEST);
         }
     }
-    
+
     private String get(String key, Map<String,String> map) {
         return map.get(key);
     }
-    
+
     private String put(String key, String value, Map<String,String> map) {
         return map.put(key, value);
     }
-    
+
     private boolean has(String key, Map<String,String> map) {
         return map.containsKey(key);
     }
-    
+
     public ObjectFormatter<?> getObjectFormatter() {
         if (_formatter == null) {
             String rformat = getQualifier(QUALIFIER_FORMAT);
@@ -252,13 +252,13 @@ abstract class AbstractCommand implements JESTCommand {
                 try {
                     format = Format.valueOf(rformat);
                 } catch (Exception e) {
-                    throw new ProcessingException(_ctx, _loc.get("format-not-supported", new Object[]{format, 
+                    throw new ProcessingException(_ctx, _loc.get("format-not-supported", new Object[]{format,
                         _ctx.getRequest().getPathInfo(), _formatterFactory.getRegisteredKeys()}), HTTP_BAD_REQUEST);
                 }
             }
             _formatter = _formatterFactory.newInstance(format);
             if (_formatter == null) {
-                throw new ProcessingException(_ctx, _loc.get("format-not-supported", new Object[]{format, 
+                throw new ProcessingException(_ctx, _loc.get("format-not-supported", new Object[]{format,
                     _ctx.getRequest().getPathInfo(), _formatterFactory.getRegisteredKeys()}), HTTP_BAD_REQUEST);
             }
         }
@@ -273,7 +273,7 @@ abstract class AbstractCommand implements JESTCommand {
         }
         return null;
     }
-    
+
     protected List<OpenJPAStateManager> toStateManager(Collection<?> objects) {
         List<OpenJPAStateManager> sms = new ArrayList<OpenJPAStateManager>();
         for (Object o : objects) {
@@ -282,7 +282,7 @@ abstract class AbstractCommand implements JESTCommand {
         }
         return sms;
     }
-    
+
     protected void pushFetchPlan(Object target) {
         if (!hasQualifier(QUALIFIER_PLAN))
             return;
@@ -294,7 +294,7 @@ abstract class AbstractCommand implements JESTCommand {
         } else if (target instanceof OpenJPAQuery) {
             broker.setCachePreparedQuery(false);
         }
-        
+
         String[] plans = getQualifier(QUALIFIER_PLAN).split(",");
         for (String p : plans) {
             p = p.trim();
@@ -305,7 +305,7 @@ abstract class AbstractCommand implements JESTCommand {
             }
         }
     }
-    
+
     protected void popFetchPlan(boolean finder) {
         if (!hasQualifier(QUALIFIER_PLAN))
             return;
@@ -318,11 +318,11 @@ abstract class AbstractCommand implements JESTCommand {
         }
     }
 
-    protected void debug(HttpServletRequest request, HttpServletResponse response, JPAServletContext ctx) 
+    protected void debug(HttpServletRequest request, HttpServletResponse response, JPAServletContext ctx)
         throws IOException {
         response.setContentType(Constants.MIME_TYPE_PLAIN);
         PrintWriter writer = response.getWriter();
-        
+
         writer.println("URI             = [" + request.getRequestURI() + "]");
         writer.println("URL             = [" + request.getRequestURL() + "]");
         writer.println("Servlet Path    = [" + request.getServletPath() + "]"); // this is one we need
@@ -345,5 +345,5 @@ abstract class AbstractCommand implements JESTCommand {
             i++;
         }
     }
-    
+
 }

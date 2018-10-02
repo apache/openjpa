@@ -27,21 +27,21 @@ import javax.persistence.Transient;
 @Embeddable
 @Access(AccessType.FIELD)
 public class Ingredient {
-    
+
     private String name;
-    
+
     private String description;
 
     @Transient
     private Quantity qty;
-    
-    public Ingredient() {        
+
+    public Ingredient() {
     }
-    
+
     public Ingredient(String ingName) {
         setName(ingName);
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }

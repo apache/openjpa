@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -83,7 +83,7 @@ public class Trim
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         ExpState valueState =  _val.initialize(sel, ctx, 0);
         ExpState charState = _trimChar.initialize(sel, ctx, 0);
-        return new TrimExpState(sel.and(valueState.joins, charState.joins), 
+        return new TrimExpState(sel.and(valueState.joins, charState.joins),
             valueState, charState);
     }
 
@@ -96,7 +96,7 @@ public class Trim
         public final ExpState valueState;
         public final ExpState charState;
 
-        public TrimExpState(Joins joins, ExpState valueState, 
+        public TrimExpState(Joins joins, ExpState valueState,
             ExpState charState) {
             super(joins);
             this.valueState = valueState;
@@ -104,12 +104,12 @@ public class Trim
         }
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         TrimExpState tstate = (TrimExpState) state;
         _val.selectColumns(sel, ctx, tstate.valueState, true);
@@ -120,7 +120,7 @@ public class Trim
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
@@ -138,7 +138,7 @@ public class Trim
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         TrimExpState tstate = (TrimExpState) state;
         _val.calculateValue(sel, ctx, tstate.valueState, null, null);
@@ -149,7 +149,7 @@ public class Trim
         return 1;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         DBDictionary dict = ctx.store.getDBDictionary();
         String func;
@@ -162,9 +162,9 @@ public class Trim
         } else {
             func = dict.trimTrailingFunction;
             dict.assertSupport(func != null, "TrimTrailingFunction");
-        }        
+        }
         func = dict.getCastFunction(_val, func);
-        
+
         int fromPart = func.indexOf("{0}");
         int charPart = func.indexOf("{1}");
         if (charPart == -1)
@@ -180,7 +180,7 @@ public class Trim
         sql.append(part1);
         if (fromPart < charPart)
             _val.appendTo(sel, ctx, tstate.valueState, sql, 0);
-        else 
+        else
             _trimChar.appendTo(sel, ctx, tstate.charState, sql, 0);
         sql.append(part2);
 
@@ -195,7 +195,7 @@ public class Trim
             // where to specify the trim char (denoted by "{1}"),
             // we do not have the ability to trim off non-whitespace
             // characters; throw an exception when we attempt to do so
-            if (!(_trimChar instanceof Const) || String.valueOf(((Const) 
+            if (!(_trimChar instanceof Const) || String.valueOf(((Const)
                 _trimChar).getValue(ctx,tstate.charState)).trim().length() != 0)
                 dict.assertSupport(false, "TrimNonWhitespaceCharacters");
         }

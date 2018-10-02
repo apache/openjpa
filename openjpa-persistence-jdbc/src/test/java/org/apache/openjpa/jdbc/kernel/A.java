@@ -34,10 +34,10 @@ public class A {
 
     @Column(name = "NAME")
     private String name;
-    
+
     @Column(name = "AGE")
     private int age;
-    
+
     @PersistentMap(keyType = String.class,
         elementType = String.class)
     @ContainerTable(name="JPA_A_MAPS_C",
@@ -49,7 +49,7 @@ public class A {
     public A() {
     }
 
-    
+
     public int getId() {
         return id;
     }
@@ -58,7 +58,7 @@ public class A {
         this.id = id;
     }
 
-    
+
     public String getName() {
         return name;
     }
@@ -66,7 +66,7 @@ public class A {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public int getAge() {
         return age;
     }
@@ -74,7 +74,7 @@ public class A {
     public void setAge(int age) {
         this.age = age;
     }
-    
+
     public Map<String,String> getMap() {
         return this.map;
     }

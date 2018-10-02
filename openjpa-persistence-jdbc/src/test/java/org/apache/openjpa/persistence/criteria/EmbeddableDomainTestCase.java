@@ -108,7 +108,7 @@ public abstract class EmbeddableDomainTestCase extends AbstractCriteriaTestCase 
             emf = null;
         }
     }
-    
+
     protected OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         return emf;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -41,7 +41,7 @@ public abstract class Value implements Cloneable {
     private static final String[] EMPTY_ALIASES = new String[0];
     private static final Localizer s_loc = Localizer.forPackage(Value.class);
     public static final String INVISIBLE = "******";
-    
+
     private String prop = null;
     private String loadKey = null;
     private String def = null;
@@ -55,7 +55,7 @@ public abstract class Value implements Cloneable {
     private Set<String> otherNames = null;
     private boolean _hidden  = false;
     private boolean _private = false;
-    
+
     /**
      * Default constructor.
      */
@@ -86,11 +86,11 @@ public abstract class Value implements Cloneable {
     public void setProperty(String prop) {
         this.prop = prop;
     }
-    
+
     /**
      * Adds a moniker that is equivalent to the original property key used
-     * during construction. 
-     * 
+     * during construction.
+     *
      * @since 2.0.0
      */
     public void addEquivalentKey(String other) {
@@ -98,44 +98,44 @@ public abstract class Value implements Cloneable {
             otherNames = new HashSet<String>();
         otherNames.add(other);
     }
-    
+
     /**
      * Gets the unmodifiable view of the equivalent keys or an empty set if
-     * no equivalent key has been added. 
-     * 
+     * no equivalent key has been added.
+     *
      * @since 2.0.0
      */
     public Set<String> getEquivalentKeys() {
-        return otherNames == null ? Collections.EMPTY_SET 
+        return otherNames == null ? Collections.EMPTY_SET
             : Collections.unmodifiableSet(otherNames);
     }
-    
+
     /**
-     * Gets unmodifiable view of all the property keys set on this receiver.  
-     * The 0-th element in the returned list is always the same as the original 
-     * key returned by {@link #getProperty()} method. 
-     * 
+     * Gets unmodifiable view of all the property keys set on this receiver.
+     * The 0-th element in the returned list is always the same as the original
+     * key returned by {@link #getProperty()} method.
+     *
      * @since 2.0.0
      */
     public List<String> getPropertyKeys() {
-        List<String> result = new ArrayList<String>(1 + 
+        List<String> result = new ArrayList<String>(1 +
             (otherNames ==null ? 0 : otherNames.size()));
         result.add(getProperty());
         if (otherNames != null)
             result.addAll(otherNames);
         return Collections.unmodifiableList(result);
     }
-    
+
     /**
      * Affirms if the given key matches the property (or any of its equivalent).
-     * 
+     *
      * @since 2.0.0
      */
     public boolean matches(String p) {
-        return getProperty().equals(p) || 
+        return getProperty().equals(p) ||
           (otherNames != null && otherNames.contains(p));
     }
-    
+
     /**
      * The key under which this value was loaded, or null.
      */
@@ -144,13 +144,13 @@ public abstract class Value implements Cloneable {
     }
 
     /**
-     * Sets key under which this value was loaded. 
+     * Sets key under which this value was loaded.
      * @exception if called with a non-null key which is different from an
-     * already loaded key. 
+     * already loaded key.
      */
     public void setLoadKey(String key) {
-        if (this.loadKey != null && key != null && !this.loadKey.equals(key)) 
-            throw new ParseException(s_loc.get("multiple-load-key", 
+        if (this.loadKey != null && key != null && !this.loadKey.equals(key))
+            throw new ParseException(s_loc.get("multiple-load-key",
                 loadKey, key));
         loadKey = key;
     }
@@ -348,7 +348,7 @@ public abstract class Value implements Cloneable {
      * (as designated by <code>originalString</code> being null), then the
      * value is remembered as <em>original</em>. This original value is used
      * for equality and hashCode computation if this Value is
-     * {@link #isDynamic() dynamic}. 
+     * {@link #isDynamic() dynamic}.
      *
      */
     public void setString(String val) {
@@ -373,8 +373,8 @@ public abstract class Value implements Cloneable {
      * (as designated by <code>originalString</code> being null), then the
      * value is remembered as <em>original</em>. This original value is used
      * for equality and hashCode computation if this Value is
-     * {@link #isDynamic() dynamic}. 
-     * 
+     * {@link #isDynamic() dynamic}.
+     *
      */
     public void setObject(Object obj) {
         // if setting to null set as string to get defaults into play
@@ -393,19 +393,19 @@ public abstract class Value implements Cloneable {
             }
         }
     }
-    
+
     /**
-     * Gets the original value. Original value denotes the Stringified form of 
-     * this Value, from which it has been set, if ever. If this Value has never 
-     * been set to a non-default value, then returns the default value, which 
-     * itself can be null. 
-     * 
+     * Gets the original value. Original value denotes the Stringified form of
+     * this Value, from which it has been set, if ever. If this Value has never
+     * been set to a non-default value, then returns the default value, which
+     * itself can be null.
+     *
      * @since 1.1.0
      */
     public String getOriginalValue() {
     	return (originalValue == null) ? getDefault() : originalValue;
     }
-    
+
     boolean isDefault(Object val) {
     	return val != null && val.toString().equals(getDefault());
     }
@@ -447,7 +447,7 @@ public abstract class Value implements Cloneable {
     		listeners = new ArrayList<ValueListener>();
         listeners.add(listener);
     }
-    
+
     public void removeListener(ValueListener listener) {
     	if (listener == null)
     		return;
@@ -458,18 +458,18 @@ public abstract class Value implements Cloneable {
      * Subclasses should call this method when their internal value changes.
      */
     public void valueChanged() {
-        if (listeners == null) 
+        if (listeners == null)
         	return;
         for (ValueListener listener : listeners) {
         	listener.valueChanged(this);
         }
     }
-    
+
     /**
      * Asserts if this receiver can be changed.
      * Subclasses <em>must</em> invoke this method before changing its
      * internal state.
-     * 
+     *
      * This receiver can not be changed if all of the following is true
      * <LI>this receiver is not dynamic
      * <LI>ValueListener attached to this receiver is a Configuration
@@ -481,7 +481,7 @@ public abstract class Value implements Cloneable {
         		this.getProperty()).toString());
        	}
     }
-    
+
     boolean containsReadOnlyConfigurationAsListener() {
     	if (listeners == null)
     		return false;
@@ -492,32 +492,32 @@ public abstract class Value implements Cloneable {
     	}
     	return false;
     }
-    
+
     /**
-     * Sets if this receiver can be mutated even when the configuration it 
+     * Sets if this receiver can be mutated even when the configuration it
      * belongs to has been {@link Configuration#isReadOnly() frozen}.
-     *  
+     *
      * @since 1.1.0
      */
     public void setDynamic(boolean flag) {
     	isDynamic = flag;
     }
-    
+
     /**
-     * Affirms if this receiver can be mutated even when the configuration it 
+     * Affirms if this receiver can be mutated even when the configuration it
      * belongs to has been {@link Configuration#isReadOnly() frozen}.
-     *  
+     *
      * @since 1.1.0
      */
     public boolean isDynamic() {
-    	return isDynamic; 
+    	return isDynamic;
     }
 
     /**
-     * Use {@link #getOriginalValue() original value} instead of 
-     * {@link #getString() current value} because they are one and the same 
+     * Use {@link #getOriginalValue() original value} instead of
+     * {@link #getString() current value} because they are one and the same
      * for non-dynamic Values and ensures that modifying dynamic Values do not
-     * impact equality or hashCode contract.   
+     * impact equality or hashCode contract.
      */
     public int hashCode() {
         String str = (isDynamic()) ? getOriginalValue() : getString();
@@ -527,10 +527,10 @@ public abstract class Value implements Cloneable {
     }
 
     /**
-     * Use {@link #getOriginalValue() original value} instead of 
-     * {@link #getString() current value} because they are one and the same 
+     * Use {@link #getOriginalValue() original value} instead of
+     * {@link #getString() current value} because they are one and the same
      * for non-dynamic Values and ensures that modifying dynamic Values do not
-     * impact equality or hashCode contract.   
+     * impact equality or hashCode contract.
      */
     public boolean equals(Object other) {
         if (other == this)
@@ -569,7 +569,7 @@ public abstract class Value implements Cloneable {
     public void hide() {
         _hidden = true;
     }
-    
+
     /**
      * Affirms if this Value is used for internal purpose only and not exposed as a supported property.
      * @see Configuration#getPropertyKeys()
@@ -584,12 +584,12 @@ public abstract class Value implements Cloneable {
     public void makePrivate() {
         _private = true;
     }
-    
+
     /**
      * Get the actual data stored in this value.
      */
     public abstract Object get();
-    
+
     public String toString() {
         return getProperty()+ ":" + get() + "[" + getValueType().getName() + "]";
     }

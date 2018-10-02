@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.jdbc;
 
@@ -145,7 +145,7 @@ public class DelegatingDataSource implements DataSource, Closeable {
         else
             return null;
     }
-    
+
     private boolean setBeanProperty(Object target, String method, Object val) {
         try {
             Method setter = target.getClass().getMethod(method, new Class[]{String.class});
@@ -155,9 +155,9 @@ public class DelegatingDataSource implements DataSource, Closeable {
             return false;
         }
     }
-    
+
     // Java 7 methods follow
-    
+
     public Logger getParentLogger() throws SQLFeatureNotSupportedException{
         return _ds.getParentLogger();
     }

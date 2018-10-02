@@ -32,12 +32,12 @@ public class PostLoadListenerEntity {
     private long id;
 
     private String value;
-    
+
     // those fields are important for the test since
-    // OpenJPA will load the full Table at once if you remove them  
+    // OpenJPA will load the full Table at once if you remove them
     private String value2;
 
-        
+
     public long getId() {
         return id;
     }

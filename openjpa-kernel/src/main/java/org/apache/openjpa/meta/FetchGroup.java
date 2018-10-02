@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -34,14 +34,14 @@ import org.apache.openjpa.util.MetaDataException;
 
 /**
  * Captures fetch group meta-data.
- *  
+ *
  * Fetch Group is identified and referred by its immutable name.
  * Fetch Group can nest other groups. The nested group reference is the name of the nested group.
- * 
- * Defines two <em>standard</em> fetch group named <tt>default</tt> and <tt>all</tt>. 
+ *
+ * Defines two <em>standard</em> fetch group named <tt>default</tt> and <tt>all</tt>.
  */
 @SuppressWarnings("serial")
-public class FetchGroup 
+public class FetchGroup
     implements Serializable {
 
     /**
@@ -74,7 +74,7 @@ public class FetchGroup
      */
     static final FetchGroup ALL = new FetchGroup(NAME_ALL, false);
 
-    private static final FieldMetaData[] EMPTY_FIELD_ARRAY = {}; 
+    private static final FieldMetaData[] EMPTY_FIELD_ARRAY = {};
     private static final Localizer _loc = Localizer.forPackage(FetchGroup.class);
 
     private final String        _name;
@@ -120,7 +120,7 @@ public class FetchGroup
         	this._containedBy = new HashSet<String>(fg._containedBy);
         }
         if (fg._depths != null) {
-            for (Map.Entry<FieldMetaData,Number> entry : fg._depths.entrySet()) { 
+            for (Map.Entry<FieldMetaData,Number> entry : fg._depths.entrySet()) {
                 setRecursionDepth(entry.getKey(), entry.getValue().intValue());
             }
         }
@@ -152,7 +152,7 @@ public class FetchGroup
 
     /**
      * Affirms if given fetch group is included by this receiver.  Includes
-     * superclass definition of fetch group and optionally other included 
+     * superclass definition of fetch group and optionally other included
      * groups.
      *
      * @param recurse if true then recursively checks within the included
@@ -184,16 +184,16 @@ public class FetchGroup
         }
         return false;
     }
-    
+
     /**
      * Adds this receiver as one of the included fetch groups of the given
-     * parent. 
+     * parent.
      * The parent fetch group will include this receiver as a side-effect of
      * this call.
-     * 
+     *
      * @see #includes(String, boolean)
-     * @see #addDeclaredInclude(String) 
-     * 
+     * @see #addDeclaredInclude(String)
+     *
      * @return true if given parent is a new addition. false othrwise.
      * @since 1.1.0
      */
@@ -203,11 +203,11 @@ public class FetchGroup
     		_containedBy = new HashSet<String>();
     	return _containedBy.add(parent.getName());
     }
-    
+
     /**
      * Gets the name of the fetch groups in which this receiver has been
      * included.
-     * 
+     *
      * @see #addContainedBy(FetchGroup)
      * @since 1.1.0
      */
@@ -233,7 +233,7 @@ public class FetchGroup
         if (_readOnly)
             throw new UnsupportedOperationException();
         if (depth < -1)
-            throw new MetaDataException(_loc.get("invalid-fg-depth", _name, fm, 
+            throw new MetaDataException(_loc.get("invalid-fg-depth", _name, fm,
                 depth));
         if (_depths == null)
             _depths = new HashMap<FieldMetaData, Number>();
@@ -250,7 +250,7 @@ public class FetchGroup
     }
 
     /**
-     * Return the recursion depth declared for the given field, or 
+     * Return the recursion depth declared for the given field, or
      * 0 if none.
      */
     public int getDeclaredRecursionDepth(FieldMetaData fm) {
@@ -261,7 +261,7 @@ public class FetchGroup
     /**
      * Helper to find recursion depth recursively in our includes.
      */
-    private Number findRecursionDepth(FieldMetaData fm) { 
+    private Number findRecursionDepth(FieldMetaData fm) {
         Number depth = (_depths == null) ? null : _depths.get(fm);
         if (depth != null)
             return depth;
@@ -298,7 +298,7 @@ public class FetchGroup
         if (_depths == null)
             return EMPTY_FIELD_ARRAY;
          return _depths.keySet().toArray(new FieldMetaData[_depths.size()]);
-    } 
+    }
 
     /**
      * Whether loading this fetch group causes a post-load callback on the
@@ -339,7 +339,7 @@ public class FetchGroup
     }
 
     /**
-     * Whether the post-load value is declared for this group.  
+     * Whether the post-load value is declared for this group.
      */
     public boolean isPostLoadExplicit() {
         return _postLoad != null;
@@ -364,7 +364,7 @@ public class FetchGroup
                 throw new MetaDataException(_loc.get("cyclic-fg", this, name));
         }
     }
-    
+
     /**
      * Affirms equality if the other has the same name and declaring type.
      */

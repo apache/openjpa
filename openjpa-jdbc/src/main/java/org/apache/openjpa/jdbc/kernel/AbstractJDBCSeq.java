@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -110,7 +110,7 @@ public abstract class AbstractJDBCSeq
     protected abstract Object nextInternal(JDBCStore store,
         ClassMapping mapping)
         throws Exception;
-    
+
     /**
      * Return the {@link JDBCConfiguration} for this sequence.
      */
@@ -144,13 +144,13 @@ public abstract class AbstractJDBCSeq
     /**
      * <P>Return the connection to use based on the type of sequence. This
      * connection will automatically be closed; do not close it.</P>
-     * 
-     * @return If the sequence type is <code>TYPE_TRANSACTIONAL</code> or 
+     *
+     * @return If the sequence type is <code>TYPE_TRANSACTIONAL</code> or
      * <code>TYPE_CONTIGUOUS</code> the connection from the {@link StoreManager}
-     * will be returned. 
-     * 
+     * will be returned.
+     *
      * <P>Otherwise a new connection will be obtained using DataSource2 from the
-     * current configuration. In this case autocommit is set to false prior to 
+     * current configuration. In this case autocommit is set to false prior to
      * returning the connection.</P>
      */
     protected Connection getConnection(JDBCStore store)
@@ -173,19 +173,19 @@ public abstract class AbstractJDBCSeq
      * Close the current connection. If the sequence is
      * <code>TYPE_TRANSACTIONAL</code> or <code>TYPE_CONTIGUOUS</code>
      * we will decrement the ref count. Otherwise the connection will be
-     * committed and then closed. 
+     * committed and then closed.
      */
     protected void closeConnection(Connection conn) {
         if (conn == null)
             return;
         if (type == TYPE_TRANSACTIONAL || type == TYPE_CONTIGUOUS) {
             // The seq is part of the business transaction however we need
-            // to decrement the ref count so that the connection may be 
+            // to decrement the ref count so that the connection may be
             // closed appropriately.
-          	try { 
+          	try {
            		conn.close();
            	}
-           	catch(SQLException se) { 
+           	catch(SQLException se) {
            		throw SQLExceptions.getStore(se);
            	}
             return;
@@ -200,13 +200,13 @@ public abstract class AbstractJDBCSeq
             }
         }
     }
-    
+
     /**
-     * Detect whether or not OpenJPA should suspend the transaction in 
+     * Detect whether or not OpenJPA should suspend the transaction in
      * a managed environment.
      */
     protected boolean suspendInJTA() {
-        return getConfiguration().isConnectionFactoryModeManaged() && 
+        return getConfiguration().isConnectionFactoryModeManaged() &&
             getConfiguration().getConnectionFactory2() == null;
     }
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -64,7 +64,7 @@ public class Table
     private Index[] _idxs = null;
     private Unique[] _unqs = null;
     private String _comment = null;
-    private int _lineNum = 0;  
+    private int _lineNum = 0;
     private int _colNum = 0;
     private boolean _isAssociation = false;
     private QualifiedDBIdentifier _fullPath = null;
@@ -167,7 +167,7 @@ public class Table
     public String getName() {
         return getIdentifier().getName();
     }
-    
+
     public DBIdentifier getIdentifier() {
         return _name == null ? DBIdentifier.NULL : _name;
     }
@@ -183,9 +183,9 @@ public class Table
     }
 
     /**
-     * Set the name of the table. This method can only be called on tables which are not part of a schema. 
-     * @param name The name of the table. 
-     * @throws IllegalStateException if {@link #getSchema()} does not return null. 
+     * Set the name of the table. This method can only be called on tables which are not part of a schema.
+     * @param name The name of the table.
+     * @throws IllegalStateException if {@link #getSchema()} does not return null.
      */
     public void setIdentifier(DBIdentifier name) {
         if (getSchema() != null)
@@ -202,14 +202,14 @@ public class Table
     public String getFullName() {
         return getFullIdentifier().getName();
     }
-    
+
     public QualifiedDBIdentifier getQualifiedPath() {
         if (_fullPath  == null) {
             _fullPath = QualifiedDBIdentifier.newPath(_schemaName, _name );
         }
         return _fullPath;
     }
-    
+
     public DBIdentifier getFullIdentifier() {
         return getQualifiedPath().getIdentifier();
     }
@@ -307,10 +307,10 @@ public class Table
         if (_colMap == null) {
             return new String[0];
         }
-        DBIdentifier[] sNames = (DBIdentifier[])_colMap.keySet().toArray(new DBIdentifier[_colMap.size()]); 
+        DBIdentifier[] sNames = (DBIdentifier[])_colMap.keySet().toArray(new DBIdentifier[_colMap.size()]);
         return DBIdentifier.toStringArray(sNames);
     }
-    
+
     /**
      * Return the column with the given name, or null if none.
      * @deprecated
@@ -328,10 +328,10 @@ public class Table
     public Column getColumn(DBIdentifier name, boolean create) {
         return getColumn(name);
     }
-    
+
     /**
-     * Affirms if this table contains the column of the given name without any 
-     * side-effect. 
+     * Affirms if this table contains the column of the given name without any
+     * side-effect.
      * @see Table#getColumn(String) can have side-effect of creating a column
      * for dynamic table implementation.
      * @deprecated
@@ -339,14 +339,14 @@ public class Table
     public boolean containsColumn(String name) {
         return containsColumn(DBIdentifier.newColumn(name), null);
     }
-    
+
     public boolean containsColumn(DBIdentifier name) {
         return containsColumn(name, null);
     }
 
     /**
-     * Affirms if this table contains the column of the given name without any 
-     * side-effect. 
+     * Affirms if this table contains the column of the given name without any
+     * side-effect.
      * @param dict the current database dictionary or null.
      * @see Table#getColumn(String) can have side-effect of creating a column
      * for dynamic table implementation.
@@ -376,9 +376,9 @@ public class Table
         Collection<Column> coll = _colMap.values();
         for (Column column : coll) {
             if (column.getIdentifier().equals(sName))
-                return true; 
+                return true;
         }
-        
+
         return false;
     }
 
@@ -703,7 +703,7 @@ public class Table
     public Index getIndex(DBIdentifier name) {
         if (name == null || _idxMap == null)
             return null;
-        
+
         DBIdentifier sName = DBIdentifier.toUpper(name);
         return (Index) _idxMap.get(sName);
     }
@@ -913,7 +913,7 @@ public class Table
     public void setComment(String comment) {
         _comment = comment;
     }
-    
+
     public int getLineNumber() {
         return _lineNum;
     }

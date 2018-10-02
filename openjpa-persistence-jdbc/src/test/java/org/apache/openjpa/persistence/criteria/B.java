@@ -26,6 +26,6 @@ import javax.persistence.Id;
 public class B {
     @Id
     private long id;
-    
+
     private int age;
 }

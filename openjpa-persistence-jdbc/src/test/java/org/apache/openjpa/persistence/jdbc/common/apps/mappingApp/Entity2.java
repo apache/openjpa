@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
@@ -28,8 +28,8 @@ import javax.persistence.Id;
 
 //@Entity(name="entity2ExplicitName")
 //@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-/**FIX-ME 
- * 
+/**FIX-ME
+ *
  * It should complain if i uncomment the above strategies...but it does
  */
 @Entity

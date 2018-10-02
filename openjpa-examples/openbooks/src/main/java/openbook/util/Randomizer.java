@@ -29,7 +29,7 @@ import java.util.Set;
 
 /**
  * A set of static utility functions for simulating pseudo-randomness.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -44,16 +44,16 @@ public class Randomizer {
     public static boolean probability(double p) {
         return rng.nextDouble() < p;
     }
-    
+
     /**
      * Picks a random number between 0 (inclusive) and N (exclusive).
      */
     public static int random(int n) {
         return rng.nextInt(n);
     }
-    
+
     /**
-     * Picks a uniformly distributed random integer within the given range. 
+     * Picks a uniformly distributed random integer within the given range.
      */
     public static int random(int min, int max) {
         return min + rng.nextInt(max-min);
@@ -61,9 +61,9 @@ public class Randomizer {
     public static double random(double min, double max) {
         return min + rng.nextDouble()*(max-min);
     }
-    
+
     /**
-     * Generates a random alphanumeric String with each segment separated by a dash. 
+     * Generates a random alphanumeric String with each segment separated by a dash.
      */
     public static String randomString(int...segments) {
         StringBuilder tmp = new StringBuilder();
@@ -74,7 +74,7 @@ public class Randomizer {
         }
         return tmp.toString();
     }
-    
+
     /**
      * Picks a random element from the given list.
      */
@@ -85,7 +85,7 @@ public class Randomizer {
             return list.get(0);
         return list.get(random(list.size()));
     }
-    
+
     /**
      * Selects n elements randomly from the given list.
      */

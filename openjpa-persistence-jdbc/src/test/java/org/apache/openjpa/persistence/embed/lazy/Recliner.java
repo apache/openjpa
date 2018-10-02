@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.lazy;
 
@@ -32,17 +32,17 @@ import org.apache.openjpa.persistence.Persistent;
 @Entity
 @Table(name="REC_TABLE")
 public class Recliner {
-    
+
     @EmbeddedId
     private ReclinerId id;
 
     @Enumerated(EnumType.STRING)
     @Column(name="REC_STYLE")
     private Style style;
-    
+
     @Embedded  // Lazy fetch set via xml mapping
     private Guy guy;
-    
+
     @Persistent(fetch=FetchType.LAZY, embedded=true)
     private BeverageHolder holder;
 

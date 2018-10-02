@@ -45,7 +45,7 @@ import javax.persistence.Version;
             , query="SELECT c FROM LSE1xmLf c WHERE c.firstName LIKE :firstName"
             , lockMode=LockModeType.PESSIMISTIC_WRITE
             , hints={@QueryHint(name="javax.persistence.lock.scope",value="EXTENDED")}
-            ) 
+            )
         }
     )
 
@@ -59,7 +59,7 @@ public class LSE1xmLf implements Externalizable {
     private int version;
 
     private String firstName;
-    
+
     @OneToMany // (cascade=CascadeType.ALL) (mappedBy="ownerOne")
     private Collection<LSE1xmRt> uniRight = new HashSet<LSE1xmRt>();
 
@@ -74,11 +74,11 @@ public class LSE1xmLf implements Externalizable {
     public String getFirstName() {
         return firstName;
     }
-    
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    
+
     public Collection<LSE1xmRt> getUniRight() {
         return uniRight;
     }
@@ -90,7 +90,7 @@ public class LSE1xmLf implements Externalizable {
     public void addUnitRight(LSE1xmRt uniRight) {
         this.uniRight.add(uniRight);
     }
-    
+
     public int getVersion() {
         return version;
     }

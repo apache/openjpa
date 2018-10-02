@@ -31,52 +31,52 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Tests that update query can set single-valued association field to non-null
  * or null values.
- * 
- * Originally reported in 
+ *
+ * Originally reported in
  * <A HRE="http://issues.apache.org/jira/browse/OPENJPA-533>OPENJPA-533</A>
- *  
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 	private static boolean MUST_BE_NULL = true;
-	
+
 	@Override
 	public void setUp() throws Exception {
 		super.setUp(CLEAR_TABLES, Application.class, Applicant.class);
 	}
-	
+
 	public void testUpdateSingleValuedAssociationToNullViaParameter() {
 		createApplicationWithNonNullApplicant();
 		assertUserNullity(!MUST_BE_NULL);
-		
+
 		String jpql = "UPDATE Application a SET a.user = :user";
 		updateByQuery(jpql, "user", null);
-		
+
 		assertUserNullity(MUST_BE_NULL);
 	}
-	
+
 	public void testUpdateSingleValuedAssociationToNullViaLiteral() {
 		createApplicationWithNonNullApplicant();
 		assertUserNullity(!MUST_BE_NULL);
-		
+
 		String jpql = "UPDATE Application a SET a.user = NULL";
 		updateByQuery(jpql);
-		
+
 		assertUserNullity(MUST_BE_NULL);
 	}
-	
+
 	public void testUpdateSingleValuedAssociationToNonNullViaParameter() {
 		Application pc = createApplicationWithNullApplicant();
 		assertNull(pc.getUser());
-		
+
 		String jpql = "UPDATE Application a SET a.user = :user";
 		Applicant newUser = createApplicant();
 		updateByQuery(jpql, "user", newUser);
-		
+
 		assertUserNullity(!MUST_BE_NULL);
 	}
-	
+
 	void assertUserNullity(boolean shouldBeNull) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -92,7 +92,7 @@ public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 		}
 		em.getTransaction().rollback();
 	}
-	
+
 	Application createApplicationWithNonNullApplicant() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -105,7 +105,7 @@ public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 		em.getTransaction().commit();
 		return app;
 	}
-	
+
 	Application createApplicationWithNullApplicant() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -114,7 +114,7 @@ public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 		em.getTransaction().commit();
 		return app;
 	}
-	
+
 	Applicant createApplicant() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -124,7 +124,7 @@ public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 		em.getTransaction().commit();
 		return user;
 	}
-	
+
 	public void updateByQuery(String jpql, Object...params) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();

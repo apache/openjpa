@@ -67,38 +67,38 @@ public class AccountDataBean implements Serializable {
             valueColumnName="KEYVAL",
             pkColumnValue="account",
             allocationSize=1000)
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="accountIdGen")
     @Column(name = "ACCOUNTID", nullable = false)
     private Integer accountID;              /* accountID */
-    
+
     @Column(name = "LOGINCOUNT", nullable = false)
     private int loginCount;                 /* loginCount */
-    
+
     @Column(name = "LOGOUTCOUNT", nullable = false)
     private int logoutCount;                /* logoutCount */
-    
+
     @Column(name = "LASTLOGIN")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastLogin;                 /* lastLogin Date */
-    
+
     @Column(name = "CREATIONDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;              /* creationDate */
-    
+
     @Column(name = "BALANCE", precision=12, scale=2)
     private BigDecimal balance;             /* balance */
-    
+
      @Column(name = "OPENBALANCE", precision=12, scale=2)
     private BigDecimal openBalance;         /* open balance */
-    
+
     @OneToMany(mappedBy = "account", fetch=FetchType.LAZY)
     private Collection<OrderDataBean> orders;
-    
+
     @OneToMany(mappedBy = "account", fetch=FetchType.LAZY)
     private Collection<HoldingDataBean> holdings;
-    
+
     @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="PROFILE_USERID")
     private AccountProfileDataBean profile;
@@ -264,7 +264,7 @@ public class AccountDataBean implements Serializable {
     public void setOrders(Collection<OrderDataBean> orders) {
         this.orders = orders;
     }
-    
+
     public Collection<HoldingDataBean> getHoldings() {
         return holdings;
     }
@@ -288,7 +288,7 @@ public class AccountDataBean implements Serializable {
                     ((profile == null) ? "null AccountProfile" :
                             "\n\tIncorrect password-->" + profile.getUserID() + ":" + profile.getPassword());
             throw new RuntimeException(error);
-            
+
         }
 
         setLastLogin(new Timestamp(System.currentTimeMillis()));

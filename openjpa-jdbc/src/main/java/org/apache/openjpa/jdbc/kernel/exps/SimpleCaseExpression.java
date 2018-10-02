@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -107,9 +107,9 @@ public class SimpleCaseExpression
 
     private static class SimpleCaseExpState
         extends ExpState {
-        
+
         public ExpState[] states;
-        
+
         public SimpleCaseExpState(Joins joins, ExpState[] states) {
             super(joins);
             this.states = states;
@@ -150,7 +150,7 @@ public class SimpleCaseExpression
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         SimpleCaseExpState cstate = (SimpleCaseExpState) state;
-        
+
         _caseOperand.selectColumns(sel, ctx, cstate.states[0], pks);
         for (int i = 0; i < _exp.length; i++)
             _exp[i].selectColumns(sel, ctx, cstate.states[i+1], pks);
@@ -221,7 +221,7 @@ public class SimpleCaseExpression
     }
 
     public void setImplicitType(Class type) {
-        _cast = type;        
+        _cast = type;
     }
 
     public void setMetaData(ClassMetaData meta) {
@@ -230,15 +230,15 @@ public class SimpleCaseExpression
     public void setOtherPath(Value other) {
         this.other = other;
     }
-    
+
     public Value getOtherPath() {
         return other;
     }
-    
+
     public void setOtherState(ExpState otherState) {
         this.otherState = otherState;
     }
-    
+
     public ExpState getOtherState() {
         return otherState;
     }

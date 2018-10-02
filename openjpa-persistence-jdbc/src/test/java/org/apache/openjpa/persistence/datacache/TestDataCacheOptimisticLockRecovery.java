@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -69,11 +69,11 @@ public class TestDataCacheOptimisticLockRecovery
         em.close();
     }
 
-    public void testOptimisticLockRecovery() 
+    public void testOptimisticLockRecovery()
         throws SQLException {
 
         EntityManager em;
-        
+
         // 1. get the oplock value for the instance after commit and
         // get a read lock to ensure that we check for the optimistic
         // lock column at tx commit.
@@ -102,7 +102,7 @@ public class TestDataCacheOptimisticLockRecovery
         ps.setInt(2, pk);
         assertEquals(1, ps.executeUpdate());
         c.commit();
-        
+
         // 3. commit the transaction, catching the expected oplock
         // exception
         try {
@@ -145,23 +145,23 @@ public class TestDataCacheOptimisticLockRecovery
         }
         em.close();
     }
-    
+
     public void testExpectedOptimisticLockException() {
         EntityManager em;
-        
+
         // 1. start a new tx
         em = emf.createEntityManager();
         em.getTransaction().begin();
         em.lock(em.find(OptimisticLockInstance.class, pk), LockModeType.READ);
-        
+
         // 2. start another tx, and cause a version increment
         EntityManager em2 = emf.createEntityManager();
         em2.getTransaction().begin();
-        em2.lock(em2.find(OptimisticLockInstance.class, pk), 
+        em2.lock(em2.find(OptimisticLockInstance.class, pk),
             LockModeType.WRITE);
         em2.getTransaction().commit();
         em2.close();
-        
+
         // 3. try to commit. this should fail, as this is a regular optimistic
         // lock failure situation.
         try {

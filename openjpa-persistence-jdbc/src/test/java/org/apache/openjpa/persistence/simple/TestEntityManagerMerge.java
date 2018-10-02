@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.simple;
 
@@ -44,37 +44,37 @@ public class TestEntityManagerMerge
         testObject.setStringField("new test object");
         persist(testObject);
         assertTrue("testObject not found in pc", em.contains(testObject));
-        
+
         // Modify this object...
         testObject.setStringField("updated test object");
 
         // Attempt to merge this updated object into the PC.  Should be ignored.
         AllFieldTypes mergedObject = em.merge(testObject);
-        assertTrue("mergedObject and testObject are not equal", 
+        assertTrue("mergedObject and testObject are not equal",
                 mergedObject.equals(testObject));
-        assertTrue("mergedObject and testObject are not ==", 
+        assertTrue("mergedObject and testObject are not ==",
                 mergedObject == testObject);
         assertTrue("testObject not found in pc", em.contains(testObject));
         assertTrue("mergedObject not found in pc", em.contains(mergedObject));
-        
+
         // And, once again...
         testObject.setStringField("yet another update");
         AllFieldTypes mergedObject2 = em.merge(testObject);
-        assertTrue("mergedObject2 and testObject are not equal", 
+        assertTrue("mergedObject2 and testObject are not equal",
                 mergedObject2.equals(testObject));
-        assertTrue("mergedObject2 and testObject are not ==", 
+        assertTrue("mergedObject2 and testObject are not ==",
                 mergedObject2 == testObject);
         assertTrue("testObject not found in pc", em.contains(testObject));
         assertTrue("mergedObject2 not found in pc", em.contains(mergedObject2));
-        
+
         // Rollback
         rollback();
-  
+
     }
-    
+
     /**
      * This test verifies that persisting a new entity which matches an existing
-     * row in the database succeeds. 
+     * row in the database succeeds.
      */
     public void testMergeExistingEntity() {
         Person p = new Person();
@@ -104,10 +104,10 @@ public class TestEntityManagerMerge
 
         assertNotNull(p);
         assertEquals("Jane", p.getForename());
-        
+
         em.close();
     }
-    
+
     public static void main(String[] args) {
         TestRunner.run(TestEntityManagerMerge.class);
     }

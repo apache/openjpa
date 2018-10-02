@@ -22,7 +22,7 @@ public class TestMultiColumnVersionXML extends TestMultiColumnVersion {
     public void setUp() {
         super.setUp();
     }
-    
+
     protected String getPersistenceUnitName() {
         return "version-columns-xml";
     }

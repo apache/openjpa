@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -508,7 +508,7 @@ public interface OpenJPAEntityManager
      * <P> Evict the given object.</P>
      * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
      * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
-     * affects objects which are managed and unmodified. 
+     * affects objects which are managed and unmodified.
      * </P>
      * @param pc A persistent class which will be evicted
      */
@@ -518,7 +518,7 @@ public interface OpenJPAEntityManager
      * <P>Evict the given objects.</P>
      * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
      * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
-     * affects objects which are managed and unmodified. 
+     * affects objects which are managed and unmodified.
      * </P>
      * @param pcs The persistent classes which will be evicted
      */
@@ -528,9 +528,9 @@ public interface OpenJPAEntityManager
      * <P>Evict the given objects.</P>
      * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
      * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
-     * affects objects which are managed and unmodified. 
+     * affects objects which are managed and unmodified.
      * </P>
-     * @param pcs A collection of persistent classes which will be evicted. 
+     * @param pcs A collection of persistent classes which will be evicted.
      */
     public void evictAll(Collection pcs);
 
@@ -538,7 +538,7 @@ public interface OpenJPAEntityManager
      * <P>Evict all clean objects.</P>
      * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
      * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
-     * affects objects which are managed and unmodified. 
+     * affects objects which are managed and unmodified.
      * </P>
      */
     public void evictAll();
@@ -548,9 +548,9 @@ public interface OpenJPAEntityManager
      * instances in the extent of the given class (including subclasses).</P>
      * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
      * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
-     * affects objects which are managed and unmodified. 
+     * affects objects which are managed and unmodified.
      * </P>
-     * @param cls All clean instances of this class will be evicted. 
+     * @param cls All clean instances of this class will be evicted.
      */
     public void evictAll(Class cls);
 
@@ -559,9 +559,9 @@ public interface OpenJPAEntityManager
      * instances in the given {@link Extent}.</P>
      * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
      * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
-     * affects objects which are managed and unmodified. 
+     * affects objects which are managed and unmodified.
      * </P>
-     * @param extent Extend which contains the persistent classes to evict. 
+     * @param extent Extend which contains the persistent classes to evict.
      */
     public void evictAll(Extent extent);
 
@@ -572,13 +572,13 @@ public interface OpenJPAEntityManager
      *
      * @param pc the instance to detach
      * @return the detached instance
-     * 
+     *
      * @since 2.0.0
-     * 
-     * Note: This method provides the same contract as the detach method with 
-     * signature: public <T> T detach(T pc) available in the 1.x release of 
+     *
+     * Note: This method provides the same contract as the detach method with
+     * signature: public <T> T detach(T pc) available in the 1.x release of
      * OpenJPA. The JPA 2.0 specification defined a method with an incompatible
-     * signature and different semantics.  The specification defined method 
+     * signature and different semantics.  The specification defined method
      * trumped the existing method.
      */
     public <T> T detachCopy(T pc);
@@ -703,10 +703,10 @@ public interface OpenJPAEntityManager
      * Create a new query in the given language.
      */
     public OpenJPAQuery createQuery(String language, String query);
-    
+
     /**
      * Create an executable query from a dynamically defined query.
-     * 
+     *
      * @since 2.0.0
      */
     public OpenJPAQuery createDynamicQuery(QueryDefinition dynamic);
@@ -1173,17 +1173,17 @@ public interface OpenJPAEntityManager
      * instead: <code>em.getTransaction().getRollbackOnly()</code>
      */
     public boolean getRollbackOnly();
-    
+
     /**
-     * Gets the QueryBuilder with OpenJPA-extended capabilities. 
-     * 
+     * Gets the QueryBuilder with OpenJPA-extended capabilities.
+     *
      * @since 2.0.0
      */
     public OpenJPACriteriaBuilder getCriteriaBuilder();
-    
+
     /**
      * Get the properties supported by this runtime.
-     * 
+     *
      * @since 2.0.0
     */
     public Set<String> getSupportedProperties();

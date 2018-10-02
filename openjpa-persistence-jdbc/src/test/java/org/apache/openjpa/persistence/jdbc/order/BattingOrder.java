@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -35,23 +35,23 @@ public class BattingOrder {
     @Id
     @GeneratedValue
     int id;
-    
+
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @OrderColumn
     private List<Player> batters;
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @OrderColumn(name="pinch_order")    
+    @OrderColumn(name="pinch_order")
     private List<Player> pinch_hitters;
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @OrderColumn(insertable=true, updatable=false)
     private List<Player> fixedBatters;
-    
+
     @ElementCollection
     @OrderColumn(insertable=false)
     private List<String> titles;
-    
+
     public void setBatters(List<Player> batters) {
         this.batters = batters;
     }
@@ -82,5 +82,5 @@ public class BattingOrder {
 
     public List<String> getTitles() {
         return titles;
-    }   
+    }
 }

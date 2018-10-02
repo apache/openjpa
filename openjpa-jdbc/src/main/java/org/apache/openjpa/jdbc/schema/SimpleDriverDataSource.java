@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -51,7 +51,7 @@ public class SimpleDriverDataSource
     private Properties _connectionFactoryProperties;
     private Driver _driver;
     private ClassLoader _classLoader;
-    
+
     protected static Localizer _loc = Localizer.forPackage(SimpleDriverDataSource.class);
     protected static Localizer _eloc = Localizer.forPackage(DelegatingDataSource.class);
 
@@ -79,7 +79,7 @@ public class SimpleDriverDataSource
     public Connection getConnection(Properties props) throws SQLException {
         return getSimpleConnection(props);
     }
-    
+
     protected Connection getSimpleConnection(Properties props) throws SQLException {
 		Properties conProps = new Properties();
 		if (props != null) {
@@ -178,7 +178,7 @@ public class SimpleDriverDataSource
         if (_driver != null)
             return _driver;
 
-        try { 
+        try {
             _driver = DriverManager.getDriver(_connectionURL);
             if (_driver != null)
                 return _driver;
@@ -210,7 +210,7 @@ public class SimpleDriverDataSource
             throw new StoreException(e);
         }
     }
-    
+
 
     // java.sql.Wrapper implementation (JDBC 4)
     public boolean isWrapperFor(Class<?> iface) {

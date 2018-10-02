@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -54,7 +54,7 @@ class EqualTypeExpression
         return sub;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
             SQLBuffer buf) {
         Val val1 = getValue1();
         Val val2 = getValue2();
@@ -66,7 +66,7 @@ class EqualTypeExpression
         super.appendTo(sel, ctx, state, buf);
     }
 
-    public void appendTo(Select sel, ExpContext ctx, BinaryOpExpState bstate, 
+    public void appendTo(Select sel, ExpContext ctx, BinaryOpExpState bstate,
         SQLBuffer buf, boolean val1Null, boolean val2Null) {
         if (val1Null && val2Null)
             buf.append("1 = 1");
@@ -86,23 +86,23 @@ class EqualTypeExpression
         } else {
             Val val1 = getValue1();
             Val val2 = getValue2();
-            if (val1.length(sel, ctx, bstate.state1) == 1 
+            if (val1.length(sel, ctx, bstate.state1) == 1
                 && val2.length(sel, ctx, bstate.state2) == 1) {
                 ClassMapping sub = getSubClassMapping(val1, val2, ctx);
                 if (ctx.isVerticalStrat) {
                     processVerticalTypeAppend(sel, val1, val2, ctx, buf);
                     return;
                 }
-                    
+
                 String op = "=";
-                if (sel.getTablePerClassMeta() != null && sub != sel.getTablePerClassMeta()) 
+                if (sel.getTablePerClassMeta() != null && sub != sel.getTablePerClassMeta())
                     op = "<>";
 
                 ctx.store.getDBDictionary().comparison(buf, op,
                     new FilterValueImpl(sel, ctx, bstate.state1, val1),
                     new FilterValueImpl(sel, ctx, bstate.state2, val2));
             } else {
-                int len = java.lang.Math.min(val1.length(sel, ctx, 
+                int len = java.lang.Math.min(val1.length(sel, ctx,
                     bstate.state1), val2.length(sel, ctx, bstate.state2));
                 for (int i = 0; i < len; i++) {
                     if (i > 0)
@@ -115,8 +115,8 @@ class EqualTypeExpression
             }
         }
     }
-    
-    void processVerticalTypeAppend(Select sel, Val val1, Val val2, ExpContext ctx,  
+
+    void processVerticalTypeAppend(Select sel, Val val1, Val val2, ExpContext ctx,
         SQLBuffer buf) {
         ClassMapping sub = getSubClassMapping(val1, val2, ctx);
         List selectFrom = sel.getJoinedTableClassMeta();
@@ -129,7 +129,7 @@ class EqualTypeExpression
         if (sub.isVerticalStrategy()) {
             ClassMetaData[] subs = cm1.getPCSubclassMetaDatas();
             for (int i = 0; i < subs.length; i++) {
-                if (!Modifier.isAbstract(subs[i].getDescribedType().getModifiers()) && subs[i] == sub 
+                if (!Modifier.isAbstract(subs[i].getDescribedType().getModifiers()) && subs[i] == sub
                     && !selectFrom.contains(subs[i]))
                     selectFrom.add(subs[i]);
             }

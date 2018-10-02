@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -89,7 +89,7 @@ public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
             em.close();
         }
     }
-    
+
     public void testUpdateNoEvict(){
         OpenJPAEntityManagerFactorySPI emf = createNamedEMF(getPersistenceUnitName(), noEvictProps);
         Cache cache = emf.getCache();
@@ -132,7 +132,7 @@ public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
             assertTrue(cache.contains(CachedEntityStatistics.class, e.getId()));
 
             em.clear();
-            
+
             CachedEntityStatistics postUpdate = em.find(CachedEntityStatistics.class, e.getId());
             assertNotNull(postUpdate);
 
@@ -140,7 +140,7 @@ public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
             em.close();
         }
     }
-    
+
     private CachedEntityStatistics createEntity(EntityManager em) {
         em.getTransaction().begin();
         CachedEntityStatistics e = new CachedEntityStatistics();

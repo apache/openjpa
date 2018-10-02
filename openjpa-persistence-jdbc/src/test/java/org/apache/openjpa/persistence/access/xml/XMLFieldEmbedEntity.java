@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.access.xml;
 public class XMLFieldEmbedEntity {
 
     private int id;
-    
+
     private String name;
 
     private XMLEmbedPropAccess epa;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -41,7 +41,7 @@ public class XMLFieldEmbedEntity {
     public String getName() {
         return name;
     }
-    
+
     public XMLEmbedPropAccess getEPA() {
         return epa;
     }

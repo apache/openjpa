@@ -27,15 +27,15 @@ import javax.persistence.Embeddable;
 public class EmbedOuterField {
 
     private String outName;
-        
+
     public String getOuterName() {
         return outName;
     }
-    
+
     public void setOuterName(String outerName) {
         outName = outerName;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof EmbedOuterField) {
             EmbedOuterField ps = (EmbedOuterField)obj;

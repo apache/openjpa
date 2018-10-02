@@ -24,7 +24,7 @@ import javax.persistence.Id;
 /**
  * A simple entity for a complex test.
  * This entity is used to test complex parameterization and reparametrization of Prepared Queries.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -35,8 +35,8 @@ public class OrderJPA {
     int CustomerId;
     int DistrictId;
     int WarehouseId;
-    
-    
+
+
     public long getOrderId() {
         return OrderId;
     }

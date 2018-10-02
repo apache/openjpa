@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -149,7 +149,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     private static final int FLAG_TRANS_ENDING = 2 << 11;
 
     private static final Object[] EMPTY_OBJECTS = new Object[0];
-    
+
     private String _connectionFactoryName = "";
     private String _connectionFactory2Name = "";
 
@@ -243,7 +243,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     private boolean _suppressBatchOLELogging = false;
     private boolean _allowReferenceToSiblingContext = false;
     private boolean _postLoadOnMerge = false;
-    
+
     // status
     private int _flags = 0;
 
@@ -261,36 +261,36 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     private int _lifeCallbackMode = 0;
 
     private transient DetachManagerLite _dmLite;
-    
+
     private transient boolean _initializeWasInvoked = false;
     private transient boolean _fromWriteBehindCallback = false;
     private LinkedList<FetchConfiguration> _fcs;
-    
+
     // Set of supported property keys. The keys in this set correspond to bean-style setter methods
     // that can be set by reflection. The keys are not qualified by any prefix.
     private static Set<String> _supportedPropertyNames;
     static {
         _supportedPropertyNames = new HashSet<String>();
         _supportedPropertyNames.addAll(Arrays.asList(new String[] {
-                "AutoClear", 
-                "AutoDetach", 
-                "CacheFinderQuery", 
-                "CachePreparedQuery", 
-                "DetachedNew", 
-                "DetachState", 
-                "EvictFromDataCache", 
-                "IgnoreChanges", 
-                "LifecycleListenerCallbackMode", 
-                "Multithreaded", 
-                "NontransactionalRead", 
-                "NontransactionalWrite", 
-                "Optimistic", 
+                "AutoClear",
+                "AutoDetach",
+                "CacheFinderQuery",
+                "CachePreparedQuery",
+                "DetachedNew",
+                "DetachState",
+                "EvictFromDataCache",
+                "IgnoreChanges",
+                "LifecycleListenerCallbackMode",
+                "Multithreaded",
+                "NontransactionalRead",
+                "NontransactionalWrite",
+                "Optimistic",
                 "PopulateDataCache",
-                "RestoreState", 
+                "RestoreState",
                 "RetainState",
                 }));
     }
-    
+
     private boolean _printParameters = false;
     private static final String PRINT_PARAMETERS_CONFIG_STR = "PrintParameters";
 
@@ -325,7 +325,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         boolean fromDeserialization) {
         initialize(factory, sm, managed, connMode, fromDeserialization, false);
     }
-    
+
     public void initialize(AbstractBrokerFactory factory,
         DelegatingStoreManager sm, boolean managed, int connMode,
         boolean fromDeserialization, boolean fromWriteBehindCallback) {
@@ -345,7 +345,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         // Force creation of a new operating set
         _operatingDirty = true;
         initializeOperatingSet();
-        
+
         _connRetainMode = connMode;
         _managed = managed;
         if (managed)
@@ -381,7 +381,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             _fc = _store.newFetchConfiguration();
             _fc.setContext(this);
         }
-        
+
         _instm = _conf.getInstrumentationManagerInstance();
         if (_instm != null) {
             _instm.start(InstrumentationLevel.BROKER, this);
@@ -408,7 +408,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             _operating = MapBackedSet.mapBackedSet(new IdentityHashMap<Object, Object>());
         }
     }
-    
+
     /**
      * Gets the unmodifiable set of instances being operated.
      */
@@ -651,7 +651,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
          else
              _autoDetach &= ~detachFlag;
     }
- 
+
     public int getDetachState() {
         return _detachState;
     }
@@ -731,9 +731,9 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
     /**
      * Get current configuration property values used by this instance.
-     * This values are combination of the current configuration values 
+     * This values are combination of the current configuration values
      * overwritten by values maintained by this instance such as
-     * Optimistic flag. 
+     * Optimistic flag.
      */
     public Map<String, Object> getProperties() {
         Map<String, Object> props = _conf.toProperties(true);
@@ -742,11 +742,11 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         }
         return props;
     }
-    
+
     /**
      * Gets the property names that can be used to corresponding setter methods of this receiver
      * to set its value.
-     */    
+     */
     public Set<String> getSupportedProperties() {
         Set<String> keys = _conf.getPropertyKeys();
         for (String s : _supportedPropertyNames)
@@ -815,7 +815,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             exs = _lifeEventManager.fireEvent(src, related, meta, eventType);
         } finally {
             unlock();
-        } 
+        }
         handleCallbackExceptions(exs, _lifeCallbackMode);
         return true;
     }
@@ -829,7 +829,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
         OpenJPAException ce;
         if (exceps.length == 1) {
-            // If the exception is already a wrapped exception throw the 
+            // If the exception is already a wrapped exception throw the
             // exception instead of wrapping it with a callback exception
             if (exceps[0] instanceof WrappedException)
                 throw (WrappedException)exceps[0];
@@ -870,7 +870,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             endOperation();
         }
     }
-    
+
     public Collection<Object> getTransactionListeners() {
         return _transEventManager.getListeners();
     }
@@ -905,7 +905,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     public void setSuppressBatchOLELogging(boolean b) {
         _suppressBatchOLELogging = b;
     }
-    
+
     /**
      * Return whether this Broker will generate verbose optimistic lock exceptions when batching
      * operations.
@@ -963,7 +963,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                         sm.transactional();
                     boolean loaded;
                     try {
-                        loaded = sm.load(fetch, StateManagerImpl.LOAD_FGS, 
+                        loaded = sm.load(fetch, StateManagerImpl.LOAD_FGS,
                             exclude, edata, false);
                     } catch (ObjectNotFoundException onfe) {
                         if ((flags & OID_NODELETED) != 0
@@ -1188,11 +1188,11 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         }
     }
 
-    public boolean isLoading(Object o) { 
+    public boolean isLoading(Object o) {
         if(_loading == null ) {
-            return false; 
+            return false;
         }
-        return _loading.containsKey(o); 
+        return _loading.containsKey(o);
     }
 
     private boolean hasFlushed() {
@@ -1281,16 +1281,16 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                     return new StateManagerId((String) val);
                 return _store.newDataStoreId(val, meta);
             case ClassMetaData.ID_APPLICATION:
-                if (ImplHelper.isAssignable(meta.getObjectIdType(), 
+                if (ImplHelper.isAssignable(meta.getObjectIdType(),
                     val.getClass())) {
-                    if (!meta.isOpenJPAIdentity() 
+                    if (!meta.isOpenJPAIdentity()
                         && meta.isObjectIdTypeShared())
                         return new ObjectId(cls, val);
                     return val;
                 }
 
                 // stringified app id?
-                if (val instanceof String 
+                if (val instanceof String
                     && !_conf.getCompatibilityInstance().
                         getStrictIdentityValues()
                     && !Modifier.isAbstract(cls.getModifiers()))
@@ -1480,7 +1480,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                             types.addAll(up);
                             queryCache.onTypesChanged(new TypesChangedEvent(this, types));
                         }
-                    } 
+                    }
                     _store.commit();
                 }
             } else {
@@ -1832,19 +1832,19 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             endOperation();
         }
     }
-    
+
     /**
      * Sets the given flag to the status.
-     * 
+     *
      * @since 2.3.0
      */
     protected void setStatusFlag(int flag) {
     	_flags |= flag;
     }
-    
+
     /**
      * Clears the given flag from the status.
-     * 
+     *
      * @since 2.3.0
      */
     protected void clearStatusFlag(int flag) {
@@ -2070,7 +2070,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             _flags &= ~FLAG_TRANS_ENDING;
 
             // event manager nulled if freed broker
-            if (_transEventManager != null 
+            if (_transEventManager != null
                 && _transEventManager.hasEndListeners()) {
                 fireTransactionEvent(new TransactionEvent(this,
                     status == Status.STATUS_COMMITTED
@@ -2157,7 +2157,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 for (StateManagerImpl state: statesMarkedForDelete) {
                     deleteDeref(state);
                 }
-                
+
                 flushAdditions(transactional, reason);
             }
 
@@ -2176,7 +2176,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                     mobjs = new ManagedObjectCollection(transactional);
                     if (reason == FLUSH_COMMIT
                         && _transEventManager.hasEndListeners()) {
-                        fireTransactionEvent(new TransactionEvent(this, 
+                        fireTransactionEvent(new TransactionEvent(this,
                             TransactionEvent.BEFORE_COMMIT, mobjs,
                             _persistedClss, _updatedClss, _deletedClss));
 
@@ -2185,7 +2185,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                     }
 
                     if (flush && _transEventManager.hasFlushListeners()) {
-                        fireTransactionEvent(new TransactionEvent(this, 
+                        fireTransactionEvent(new TransactionEvent(this,
                             TransactionEvent.BEFORE_FLUSH, mobjs,
                             _persistedClss, _updatedClss, _deletedClss));
                         flushAdditions(transactional, reason);
@@ -2234,9 +2234,9 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
                         sm.afterFlush(reason);
                         if (reason == FLUSH_INC) {
-                            // if not about to clear trans cache for commit 
+                            // if not about to clear trans cache for commit
                             // anyway, re-cache dirty objects with default soft
-                            // refs; we don't need hard refs now that the 
+                            // refs; we don't need hard refs now that the
                             // changes have been flushed
                             sm.proxyFields(true, false);
                             _transCache.flushed(sm);
@@ -2366,12 +2366,12 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         }
         if (opt)
             return new OptimisticException(t);
-        
+
         Object failedObject = null;
         if (t[0] instanceof OpenJPAException){
         	failedObject = ((OpenJPAException)t[0]).getFailedObject();
         }
-        
+
         return new StoreException(_loc.get("rolled-back")).
             setNestedThrowables(t).setFatal(true).setFailedObject(failedObject);
     }
@@ -2409,7 +2409,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             mobjs = new ManagedObjectCollection(transStates);
             int eventType = (rollback) ? TransactionEvent.AFTER_ROLLBACK
                 : TransactionEvent.AFTER_COMMIT;
-            fireTransactionEvent(new TransactionEvent(this, eventType, mobjs, 
+            fireTransactionEvent(new TransactionEvent(this, eventType, mobjs,
                 _persistedClss, _updatedClss, _deletedClss));
         }
 
@@ -2450,7 +2450,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                     sm.rollback();
                 } else {
                     if (sm.getPCState() == PCState.PNEWDELETED || sm.getPCState() == PCState.PDELETED) {
-                        fireLifecycleEvent(sm.getPersistenceCapable(), null, sm.getMetaData(), 
+                        fireLifecycleEvent(sm.getPersistenceCapable(), null, sm.getMetaData(),
                             LifecycleEvent.AFTER_DELETE_PERFORMED);
                     }
                     sm.commit();
@@ -2509,7 +2509,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
      * Persist the given objects.  Indicate whether this was an explicit persist
      * (PNEW) or a provisonal persist (PNEWPROVISIONAL).
      */
-    public void persistAll(Collection objs, boolean explicit, 
+    public void persistAll(Collection objs, boolean explicit,
         OpCallbacks call) {
         if (objs.isEmpty())
             return;
@@ -2529,7 +2529,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 }
                 catch (RuntimeException re) {
                     throw new GeneralException(re);
-                } 
+                }
             }
         } finally {
             endOperation();
@@ -2616,7 +2616,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         }
     }
 
-    private OpenJPAStateManager persistInternal(Object obj, Object id, boolean explicit, OpCallbacks call, 
+    private OpenJPAStateManager persistInternal(Object obj, Object id, boolean explicit, OpCallbacks call,
         boolean fireEvent) {
         StateManagerImpl sm = getStateManagerImpl(obj, true);
         if (!operatingAdd(obj)) {
@@ -2815,7 +2815,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             if ((action & OpCallbacks.ACT_CASCADE) != 0) {
                 if (!sm.isEmbedded() || !sm.getDereferencedEmbedDependent()) {
                     if (ValidatingLifecycleEventManager.class.isAssignableFrom(_lifeEventManager.getClass())) {
-                        ValidatingLifecycleEventManager _validatingLCEventManager = 
+                        ValidatingLifecycleEventManager _validatingLCEventManager =
                             (ValidatingLifecycleEventManager) _lifeEventManager;
                         boolean saved = _validatingLCEventManager.setValidationEnabled(false);
                         try {
@@ -2997,7 +2997,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             endOperation();
         }
     }
-    
+
     public void refreshAll(Collection objs, OpCallbacks call) {
         if (objs == null || objs.isEmpty())
             return;
@@ -3006,7 +3006,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         try {
             assertNontransactionalRead();
 
-            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) 
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();)
                 gatherCascadeRefresh(itr.next(), call);
             if (_operating.isEmpty())
             	return;
@@ -3085,7 +3085,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                         continue;
 
                     if (sm != null) {
-                        if (sm.isDetached()) 
+                        if (sm.isDetached())
                             throw newDetachedException(obj, "refresh");
                         else if (sm.beforeRefresh(true)) {
                         	if (load == null)
@@ -3120,7 +3120,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
                     try {
                         sm.afterRefresh();
-                        sm.load(_fc, StateManagerImpl.LOAD_FGS, null, null, 
+                        sm.load(_fc, StateManagerImpl.LOAD_FGS, null, null,
                             false);
                     } catch (OpenJPAException ke) {
                         exceps = add(exceps, ke);
@@ -3179,8 +3179,8 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             throw new GeneralException(re);
         }
     }
-    
-    
+
+
     public void retrieveAll(Collection objs, boolean dfgOnly,
         OpCallbacks call) {
         if (objs == null || objs.isEmpty())
@@ -3460,7 +3460,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             if (!sm.isPersistent())
                 itr.remove();
             else if (!sm.getMetaData().isDetachable()) {
-                sm.release(true); 
+                sm.release(true);
                 itr.remove();
             }
         }
@@ -3472,11 +3472,11 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         // Make sure ALL entities are detached, even new ones that are loaded
         // during the detach processing
         boolean origCascade = _compat.getCascadeWithDetach();
-        _compat.setCascadeWithDetach(true);        
+        _compat.setCascadeWithDetach(true);
         try {
             new DetachManager(this, true, call)
                 .detachAll(new ManagedObjectCollection(states));
-        } 
+        }
         finally {
             _compat.setCascadeWithDetach(origCascade);
         }
@@ -3487,8 +3487,8 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         _cache = new ManagedCache(this);
         // TODO : should I call clear on old cache first? perhaps a memory leak?
         Collection<StateManagerImpl> states = old.copy();
-        
-        // Clear out all persistence context caches.        
+
+        // Clear out all persistence context caches.
         if (_transCache != null) {
             _transCache.clear();
         }
@@ -4100,7 +4100,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
      */
     protected Collection<StateManagerImpl> getTransactionalStates() {
         if (!hasTransactionalObjects()) {
-            // return a new empty set. Entities may be added by TransactionListeners 
+            // return a new empty set. Entities may be added by TransactionListeners
             return new LinkedHashSet<StateManagerImpl>();
         }
         return _transCache.copy();
@@ -4484,7 +4484,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     ///////////////////
 
     public void lock() {
-        if (_lock != null) 
+        if (_lock != null)
             _lock.lock();
     }
 
@@ -4492,7 +4492,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         if (_lock != null)
             _lock.unlock();
     }
-    
+
     ////////////////////
     // State management
     ////////////////////
@@ -4507,7 +4507,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         // 1.5 doesn't initialize classes without a true Class.forName
         if (!PCRegistry.isRegistered(cls)) {
             try {
-                Class.forName(cls.getName(), true, 
+                Class.forName(cls.getName(), true,
                     AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(cls)));
             } catch (Throwable t) {
@@ -4606,7 +4606,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
     /**
      * This method makes a best effort to determine if the provided object is detached.
-     * 
+     *
      * @param find
      *            - If true, as a last resort this method will check whether or not the provided object exists in the
      *            DB. If it is in the DB, the provided object is detached.
@@ -4631,7 +4631,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         Object oid = ApplicationIds.create(pc, meta);
         if (oid == null)
             return false;
-        
+
         return find(oid, null, EXCLUDE_ALL, null, 0) != null;
     }
 
@@ -4814,7 +4814,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         // StateManager deserialization
         _conf = factory.getConfiguration();
         _repo = _conf.getMetaDataRepositoryInstance();
-        
+
         in.defaultReadObject();
         factory.initializeBroker(_managed, _connRetainMode, this, true);
 
@@ -4832,7 +4832,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     /**
      * Whether or not this broker is in the midst of being serialized.
      *
-     * @since 1.1.0 
+     * @since 1.1.0
      */
     boolean isSerializing() {
         return _isSerializing;
@@ -4863,7 +4863,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
          */
         public Collection copy() {
             if (isEmpty()) {
-                // Transaction Listeners may add entities to the transaction. 
+                // Transaction Listeners may add entities to the transaction.
                 return new LinkedHashSet();
             }
 
@@ -5043,7 +5043,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 return true;
             if ((other == null) || (other.getClass() != this.getClass()))
                 return false;
-            
+
             StateManagerId sid = (StateManagerId) other;
             return _bhash == sid._bhash && _id == sid._id;
         }
@@ -5100,14 +5100,14 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
     /**
      * Assign the object id to the cache. Exception will be
-     * thrown if the id already exists in the cache. 
+     * thrown if the id already exists in the cache.
      */
-    protected void assignObjectId(Object cache, Object id, 
+    protected void assignObjectId(Object cache, Object id,
         StateManagerImpl sm) {
-        ((ManagedCache) cache).assignObjectId(id, sm); 
+        ((ManagedCache) cache).assignObjectId(id, sm);
     }
 
-    /** 
+    /**
      * This method makes sure we don't already have the instance cached
      */
     protected void checkForDuplicateId(Object id, Object obj, ClassMetaData meta) {
@@ -5120,17 +5120,17 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             throw new ObjectExistsException(_loc.get("cache-exists",
                 obj.getClass().getName(), id)).setFailedObject(obj);
     }
-    
+
     public boolean getCachePreparedQuery() {
         lock();
         try {
-            return _cachePreparedQuery 
+            return _cachePreparedQuery
                && _conf.getQuerySQLCacheInstance() != null;
         } finally {
             unlock();
         }
     }
-    
+
     public void setCachePreparedQuery(boolean flag) {
         lock();
         try {
@@ -5139,17 +5139,17 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             unlock();
         }
     }
-    
+
     public boolean getCacheFinderQuery() {
         lock();
         try {
-            return _cacheFinderQuery 
+            return _cacheFinderQuery
                && _conf.getFinderCacheInstance() != null;
         } finally {
             unlock();
         }
     }
-    
+
     public void setCacheFinderQuery(boolean flag) {
         lock();
         try {
@@ -5158,7 +5158,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             unlock();
         }
     }
-    
+
     public boolean isFromWriteBehindCallback() {
         return _fromWriteBehindCallback;
     }
@@ -5171,7 +5171,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     }
 
     /**
-     * Set the 'JTA' ConnectionFactoryName. Input will be trimmed to null before being stored. 
+     * Set the 'JTA' ConnectionFactoryName. Input will be trimmed to null before being stored.
      */
     public void setConnectionFactoryName(String connectionFactoryName) {
         this._connectionFactoryName = StringUtil.trimToNull(connectionFactoryName);
@@ -5185,15 +5185,15 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     }
 
     /**
-     * Set the 'NonJTA' ConnectionFactoryName. Input will be trimmed to null before being stored. 
+     * Set the 'NonJTA' ConnectionFactoryName. Input will be trimmed to null before being stored.
      */
     public void setConnectionFactory2Name(String connectionFactory2Name) {
         this._connectionFactory2Name = StringUtil.trimToNull(connectionFactory2Name);
     }
-    
+
     /**
      * Return the 'JTA' ConnectionFactory, looking it up from JNDI if needed.
-     * 
+     *
      * @return the JTA connection factory or null if connectionFactoryName is blank.
      */
     public Object getConnectionFactory() {
@@ -5204,13 +5204,13 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             return null;
         }
     }
-    
+
     /**
      * Return the 'NonJTA' ConnectionFactory, looking it up from JNDI if needed.
-     * 
+     *
      * @return the NonJTA connection factory or null if connectionFactoryName is blank.
      */
-    public Object getConnectionFactory2() { 
+    public Object getConnectionFactory2() {
         if(StringUtil.isNotBlank(_connectionFactory2Name)) {
             return  Configurations.lookup(_connectionFactory2Name, "openjpa.ConnectionFactory2", _log);
         }
@@ -5218,7 +5218,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             return null;
         }
     }
-    
+
     public boolean isCached(List<Object> oids) {
         BitSet loaded = new BitSet(oids.size());
         //check L1 cache first
@@ -5233,19 +5233,19 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         }
         return _store.isCached(oids, loaded);
     }
-    
+
     public boolean getAllowReferenceToSiblingContext() {
         return _allowReferenceToSiblingContext;
     }
-    
+
     public void setAllowReferenceToSiblingContext(boolean allow) {
         _allowReferenceToSiblingContext = allow;
     }
-    
+
     protected boolean isFlushing() {
         return ((_flags & FLAG_FLUSHING) != 0);
     }
-    
+
      public boolean getPostLoadOnMerge() {
          return _postLoadOnMerge;
      }
@@ -5253,7 +5253,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
      public void setPostLoadOnMerge(boolean allow) {
          _postLoadOnMerge = allow;
      }
-    
+
     /**
      * Asserts consistencey of given automatic detachment option value.
      */
@@ -5275,10 +5275,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
        }
        return Arrays.toString(result.toArray(new String[result.size()]));
     }
-    
+
     private boolean operatingAdd(Object o){
         _operatingDirty = true;
         return _operating.add(o);
     }
-    
+
 }

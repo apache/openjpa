@@ -21,9 +21,9 @@ package org.apache.openjpa.persistence.access.xml;
 public class XMLMappedSuperProperty {
 
     private int id;
-    
+
     private String name;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -39,7 +39,7 @@ public class XMLMappedSuperProperty {
     public String getName() {
         return name;
     }
-        
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLMappedSuperProperty) {
             XMLMappedSuperProperty ps = (XMLMappedSuperProperty)obj;

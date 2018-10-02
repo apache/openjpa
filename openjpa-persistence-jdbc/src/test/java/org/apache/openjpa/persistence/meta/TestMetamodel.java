@@ -50,24 +50,24 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests JPA 2.0 Metamodel.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestMetamodel extends SingleEMFTestCase {
     private static MetamodelImpl model;
-    
+
     public void setUp() {
         if (model == null) {
     	super.setUp(
     	        "openjpa.RuntimeUnenhancedClasses", "unsupported",
     	        "openjpa.DynamicEnhancementAgent", "false",
     			ImplicitFieldAccessMappedSuperclass.class,
-    	        ImplicitFieldAccessBase.class, 
+    	        ImplicitFieldAccessBase.class,
     	        ImplicitFieldAccessSubclass.class,
-    	        ExplicitFieldAccess.class, 
+    	        ExplicitFieldAccess.class,
     	        ExplicitPropertyAccess.class,
-    	        Embed0.class, 
+    	        Embed0.class,
     	        Embed1.class,
     	        OneOneParent.class,
     	        OneOneChild.class,
@@ -80,19 +80,19 @@ public class TestMetamodel extends SingleEMFTestCase {
         model = (MetamodelImpl)emf.getMetamodel();
         }
     }
-    
+
     public void testMetaModelForDomainClassesExist() {
         assertFalse(model.getEntities().isEmpty());
         assertFalse(model.getEmbeddables().isEmpty());
         assertFalse(model.getManagedTypes().isEmpty());
     }
-    
+
     public void testMetaClassFieldsArePopulated() {
         EntityType<ImplicitFieldAccessSubclass> m =  model.entity(ImplicitFieldAccessSubclass.class);
         assertNotNull(m);
         Class<?> mCls = m.getJavaType();
         assertSame(ImplicitFieldAccessSubclass.class, mCls);
-        
+
         Class<?> m2Cls = model.getRepository().getMetaModel(mCls, true);
         assertNotNull(m2Cls);
         try {
@@ -106,26 +106,26 @@ public class TestMetamodel extends SingleEMFTestCase {
             fail();
         }
     }
-    
+
     public void testDomainClassCategorizedInPersistentCategory() {
     	assertCategory(PersistenceType.MAPPED_SUPERCLASS, ImplicitFieldAccessMappedSuperclass.class);
     	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessBase.class);
     	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessSubclass.class);
     	assertCategory(PersistenceType.EMBEDDABLE, Embed0.class);
     	assertCategory(PersistenceType.EMBEDDABLE, Embed1.class);
-    	
+
         assertNotNull(model.entity(ImplicitFieldAccessBase.class));
-        assertNotNull(model.entity(ImplicitFieldAccessSubclass.class));      
+        assertNotNull(model.entity(ImplicitFieldAccessSubclass.class));
         assertNotNull(model.embeddable(Embed0.class));
         assertNotNull(model.embeddable(Embed1.class));
-        
+
         java.util.Set<ManagedType<?>> managedTypes = model.getManagedTypes();
         managedTypes.removeAll(model.getEmbeddables());
         managedTypes.removeAll(model.getEntities());
         assertNotNull(model.managedType(ImplicitFieldAccessMappedSuperclass.class));
         assertTrue(managedTypes.contains(model.managedType(ImplicitFieldAccessMappedSuperclass.class)));
     }
-    
+
     public void testGetAttributeByNameAndTypeFromMetaClass() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         assertNotNull(e0.getAttribute("f0"));
@@ -140,7 +140,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(ImplicitFieldAccessSubclass.class);
         assertNotNull(e1.getAttribute("f0"));
     }
-    
+
     public void testAttributeByDeclaration() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(ImplicitFieldAccessSubclass.class);
@@ -161,12 +161,12 @@ public class TestMetamodel extends SingleEMFTestCase {
             // good
         }
     }
-    
+
     public void testPCCollection() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
         CollectionAttribute<?,?> relColl = e0.getCollection("collectionRelation", ExplicitFieldAccess.class);
-        assertEquals(javax.persistence.metamodel.PluralAttribute.CollectionType.COLLECTION, 
+        assertEquals(javax.persistence.metamodel.PluralAttribute.CollectionType.COLLECTION,
                 relColl.getCollectionType());
         assertEquals(e0, relColl.getDeclaringType());
         assertEquals(r1, relColl.getElementType());
@@ -174,12 +174,12 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertEquals(BindableType.PLURAL_ATTRIBUTE, relColl.getBindableType());
         assertEquals(Attribute.PersistentAttributeType.ONE_TO_MANY, relColl.getPersistentAttributeType());
     }
-    
+
     public void testPCList() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
         ListAttribute<?, ?> relList = e0.getList("listRelation", ExplicitFieldAccess.class);
-        
+
         assertEquals(CollectionType.LIST, relList.getCollectionType());
         assertEquals(e0, relList.getDeclaringType());
         assertEquals(r1, relList.getElementType());
@@ -187,7 +187,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertEquals(BindableType.PLURAL_ATTRIBUTE, relList.getBindableType());
         assertEquals(PersistentAttributeType.ONE_TO_MANY, relList.getPersistentAttributeType());
     }
-    
+
     public void testPCSet() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
@@ -199,7 +199,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertEquals(BindableType.PLURAL_ATTRIBUTE, relSet.getBindableType());
         assertEquals(PersistentAttributeType.ONE_TO_MANY, relSet.getPersistentAttributeType());
     }
-    
+
     public void testDeclaredFields() {
         ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(ImplicitFieldAccessSubclass.class);
         java.util.Set<?> all = e1.getAttributes();
@@ -207,54 +207,54 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertTrue("All fields " + all + "\r\nDeclared fields " + decl + "\r\n"+
          "expecetd not all fields as declared", all.size() > decl.size());
     }
-    
+
     public void testNonExistentField() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(ImplicitFieldAccessSubclass.class);
         assertFails(e0, "xyz", false);
         assertFails(e1, "f0", true);
     }
-    
+
     /**
      * Test all attribute getters of ManagedType for valid inputs.
      */
     public void testAttributeGettersForValidInput() {
         IdentifiableType<ImplicitFieldAccessSubclass> subClass = model.entity(ImplicitFieldAccessSubclass.class);
         IdentifiableType<ImplicitFieldAccessBase> superClass = model.entity(ImplicitFieldAccessBase.class);
-        
+
         assertEquals(superClass, subClass.getSupertype());
-        
+
         assertNotNull(subClass.getAttribute("f0"));
         assertNotNull(superClass.getAttribute("f0"));
         assertNotNull(subClass.getAttribute("mapRelationKeyEmbedded"));
-        
+
         assertNotNull(subClass.getAttributes());
         assertNotNull(superClass.getAttributes());
         assertEquals(14, subClass.getAttributes().size());
         assertEquals(12, superClass.getAttributes().size());
-        
+
         assertNotNull(superClass.getCollection("collectionRelation"));
         assertNotNull(superClass.getCollection("collectionRelation", ExplicitFieldAccess.class));
-        
+
         assertNotNull(subClass.getPluralAttributes());
         assertNotNull(superClass.getPluralAttributes());
         assertEquals(6, subClass.getPluralAttributes().size());
         assertEquals(5, superClass.getPluralAttributes().size());
-        
+
         assertNotNull(subClass.getDeclaredAttribute("mapRelationKeyEmbedded"));
-        
+
         assertNotNull(subClass.getDeclaredAttributes());
         assertNotNull(superClass.getDeclaredAttributes());
         assertEquals(2, subClass.getDeclaredAttributes().size());
         assertEquals(9, superClass.getDeclaredAttributes().size());
-        
+
         assertNotNull(superClass.getDeclaredCollection("collectionRelation"));
-        
+
         assertNotNull(subClass.getDeclaredPluralAttributes());
         assertNotNull(superClass.getDeclaredPluralAttributes());
         assertEquals(1, subClass.getDeclaredPluralAttributes().size());
         assertEquals(5, superClass.getDeclaredPluralAttributes().size());
-        
+
         assertNotNull(superClass.getDeclaredList("listRelation"));
         assertNotNull(superClass.getDeclaredList("listRelation", ExplicitFieldAccess.class));
         assertNotNull(superClass.getDeclaredMap("mapRelationKeyBasic"));
@@ -264,8 +264,8 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertNotNull(superClass.getDeclaredSingularAttribute("one2oneRelation"));
         assertNotNull(superClass.getDeclaredSingularAttribute("one2oneRelation", ExplicitFieldAccess.class));
         assertNotNull(superClass.getDeclaredSingularAttributes());
-        
-        
+
+
         assertNotNull(subClass.getList("listRelation"));
         assertNotNull(subClass.getList("listRelation", ExplicitFieldAccess.class));
         assertNotNull(subClass.getMap("mapRelationKeyBasic"));
@@ -277,7 +277,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertNotNull(subClass.getSingularAttribute("one2oneRelation", ExplicitFieldAccess.class));
         assertNotNull(subClass.getSingularAttributes());
     }
-    
+
     public void testSimpleIdAttributes() {
         IdentifiableType<OneOneParent> entity = model.entity(OneOneParent.class);
         for (Attribute<? super OneOneParent,?> a : entity.getAttributes()) {
@@ -288,7 +288,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertTrue(entity.hasSingleIdAttribute());
         assertEquals(long.class, entity.getIdType().getJavaType());
     }
-    
+
     public void testVersionAttributes() {
         IdentifiableType<OneOneParent> entity = model.entity(OneOneParent.class);
         for (Attribute<? super OneOneParent,?> a : entity.getAttributes()) {
@@ -298,10 +298,10 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertNotNull(entity.getDeclaredVersion(Integer.class));
         assertTrue(entity.hasVersionAttribute());
     }
-    
+
     public void testIdClassAttributes() {
         IdentifiableType<Book> entity = model.entity(Book.class);
-        
+
         assertEquals(2, entity.getIdClassAttributes().size());
         assertNotNull(entity.getId(String.class));
         assertNotNull(entity.getId(Library.class));
@@ -316,13 +316,13 @@ public class TestMetamodel extends SingleEMFTestCase {
         SingularAttribute<ImplicitFieldAccessBase,?> pInt = e0.getDeclaredSingularAttribute("primitiveInt");
         assertEquals(PersistentAttributeType.BASIC, pInt.getPersistentAttributeType());
     }
-    
+
     public void testEmbeddedAttributeType() {
         ManagedType<Address> type = model.entity(Address.class);
         Attribute.PersistentAttributeType attr = type.getAttribute("geocode").getPersistentAttributeType();
         assertEquals(PersistentAttributeType.EMBEDDED, attr);
     }
-    
+
     public void testNotFoundErrorMessage() {
         IdentifiableType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         String name = "unknown";
@@ -333,19 +333,19 @@ public class TestMetamodel extends SingleEMFTestCase {
             e0.getClass().getMethod("getList",               new Class<?>[]{String.class}),
             e0.getClass().getMethod("getSet",                new Class<?>[]{String.class}),
             e0.getClass().getMethod("getSingularAttribute",  new Class<?>[]{String.class}),
-            
+
             e0.getClass().getMethod("getDeclaredAttribute",  new Class<?>[]{String.class}),
             e0.getClass().getMethod("getDeclaredCollection", new Class<?>[]{String.class}),
             e0.getClass().getMethod("getDeclaredList",       new Class<?>[]{String.class}),
             e0.getClass().getMethod("getDeclaredSet",        new Class<?>[]{String.class}),
             e0.getClass().getMethod("getDeclaredSingularAttribute", new Class<?>[]{String.class}),
-            
+
             e0.getClass().getMethod("getAttribute",          new Class<?>[]{String.class, Class.class}),
             e0.getClass().getMethod("getCollection",         new Class<?>[]{String.class, Class.class}),
             e0.getClass().getMethod("getList",               new Class<?>[]{String.class, Class.class}),
             e0.getClass().getMethod("getSet",                new Class<?>[]{String.class, Class.class}),
             e0.getClass().getMethod("getSingularAttribute",  new Class<?>[]{String.class, Class.class}),
-            
+
             e0.getClass().getMethod("getDeclaredAttribute",  new Class<?>[]{String.class, Class.class}),
             e0.getClass().getMethod("getDeclaredCollection", new Class<?>[]{String.class, Class.class}),
             e0.getClass().getMethod("getDeclaredList",       new Class<?>[]{String.class, Class.class}),
@@ -358,7 +358,7 @@ public class TestMetamodel extends SingleEMFTestCase {
             e0.getClass().getMethod("getDeclaredMap",  new Class<?>[]{String.class, Class.class, Class.class}),
           };
 //                 e0.getClass().getMethod("getDeclaredVersion", new Class<?>[]{Class.class}),
-        
+
         for (int i = 0; i < getters.length; i++) {
             Object[] args;
             if (i < 10) {
@@ -382,27 +382,27 @@ public class TestMetamodel extends SingleEMFTestCase {
             fail();
         }
     }
-    
+
     void assertFails(ManagedType<?> type, String name, boolean dec) {
         try {
-            Attribute<?,?> a = dec ? type.getDeclaredAttribute(name) 
+            Attribute<?,?> a = dec ? type.getDeclaredAttribute(name)
                 : type.getAttribute(name);
             fail("Expected to fail " + name + " on " + type);
         } catch (IllegalArgumentException e) {
             System.err.println("Expeceted:" + e);
         }
     }
-    
+
     PersistenceType categorize(Class<?> c) {
         AbstractManagedType<?> type = (AbstractManagedType<?>)model.getType(c);
         ClassMetaData meta = type.meta;
         return MetamodelImpl.getPersistenceType(meta);
     }
-    
+
     void assertCategory(PersistenceType category, Class<?> cls) {
     	assertEquals(cls.toString(), category, categorize(cls));
     }
-    
+
     Field getStaticField(Class<?> cls, String name) {
         try {
             Field[] fds = cls.getDeclaredFields();

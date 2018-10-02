@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.distinctjoin;
 
@@ -157,7 +157,7 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
             tran.commit();
             em.close();
         }
-        
+
         {
             msg = "Distinct"; // creates NO sub-query!
             log.info("\n\n" + msg);
@@ -171,7 +171,7 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
 
             em.close();
         }
-        
+
         {
             msg = "Join"; // creates NO sub-query!
             log.info("\n\n" + msg);
@@ -185,7 +185,7 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
 
             em.close();
         }
-        
+
         {
             msg = "Distinct inverse join"; // this one does sub-selects for LocalizedString and changeLog
             log.info("\n\n" + msg);
@@ -199,7 +199,7 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
 
             em.close();
         }
-        
+
         {
             msg = "Inverse join"; // this one does sub-selects for LocalizedString and changeLog
             log.info("\n\n" + msg);

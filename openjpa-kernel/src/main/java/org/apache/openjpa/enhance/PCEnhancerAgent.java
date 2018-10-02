@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance;
 
@@ -38,18 +38,18 @@ import org.apache.openjpa.util.ClassResolver;
  * or by redefining the classes on the fly. The agent is launched at JVM startup
  * from the command line:
  * </p>
- * 
+ *
  * <p>
  * <code>java -javaagent:openjpa.jar[=&lt;options&gt;]</code> The options string
  * should be formatted as a OpenJPA plugin, and may contain any properties
  * understood by the OpenJPA enhancer or any configuration properties. For
  * example:
  * </p>
- * 
+ *
  * <p>
  * <code>java -javaagent:openjpa.jar</code>
  * </p>
- * 
+ *
  * <p>
  * By default, if specified, the agent runs the OpenJPA enhancer on all classes
  * listed in the first persistence unit as they are loaded, and redefines all
@@ -59,11 +59,11 @@ import org.apache.openjpa.util.ClassResolver;
  * on pre-deployment or class-load enhancement, set the RuntimeRedefinition flag
  * to false.
  * </p>
- * 
+ *
  * <p>
  * <code>java -javaagent:openjpa.jar=ClassLoadEnhancement=false</code>
  * </p>
- * 
+ *
  * @author Abe White
  * @author Patrick Linskey
  */
@@ -83,7 +83,7 @@ public class PCEnhancerAgent {
     public static void disableDynamicAgent(){
         disableDynamicAgent=true;
     }
-    
+
     /**
      * @return True if the agent is loaded successfully
      */
@@ -94,9 +94,9 @@ public class PCEnhancerAgent {
             if (inst != null) {
                 premain("", inst);
                 return true;
-            } 
+            }
             // If we successfully get the Instrumentation, we will call premain
-            // where loadAttempted will be set to true. This case is the path 
+            // where loadAttempted will be set to true. This case is the path
             // where we were unable to get Instrumentation so we need to set the
             // loadAttempted flag to true. We do this so we will only run
             // through this code one time.

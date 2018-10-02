@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -39,7 +39,7 @@ class FilterValueImpl
     private final ExpState _state;
     private final Val _val;
 
-    public FilterValueImpl(Select sel, ExpContext ctx, ExpState state, 
+    public FilterValueImpl(Select sel, ExpContext ctx, ExpState state,
         Val val) {
         _sel = sel;
         _ctx = ctx;
@@ -84,7 +84,7 @@ class FilterValueImpl
     }
 
     public Object getSQLValue() {
-        return (isConstant()) ? ((Const) _val).getSQLValue(_sel, _ctx, _state) 
+        return (isConstant()) ? ((Const) _val).getSQLValue(_sel, _ctx, _state)
             : null;
     }
 
@@ -99,14 +99,14 @@ class FilterValueImpl
     public FieldMapping getFieldMapping() {
         return (isPath()) ? ((PCPath) _val).getFieldMapping(_state) : null;
     }
-    
+
     public PCPath getXPath() {
         if (isPath() && ((PCPath) _val).isXPath())
             return (PCPath) _val;
         else
             return null;
     }
-    
+
     public XMLMetaData getXmlMapping() {
         return (getXPath() == null) ? null : getXPath().getXmlMapping();
     }

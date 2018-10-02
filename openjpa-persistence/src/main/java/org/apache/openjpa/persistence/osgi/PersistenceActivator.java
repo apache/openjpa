@@ -53,11 +53,11 @@ public class PersistenceActivator implements BundleActivator {
         props.put(PERSISTENCE_PROVIDER_ARIES, OSGI_PERSISTENCE_PROVIDER);
         // The persistence service tracker in the geronimo spec api bundle examines
         // the property named "javax.persistence.PersistenceProvider" rather than
-        // the the property provided for Aries.  In order to properly track the OpenJPA 
+        // the the property provided for Aries.  In order to properly track the OpenJPA
         // provider, this property must be set upon service registration.
         props.put(PERSISTENCE_PROVIDER, OSGI_PERSISTENCE_PROVIDER);
         svcReg = ctx.registerService(PERSISTENCE_PROVIDER, provider, props);
-        
+
         OSGiManagedRuntime.registerServiceListener(ctx);
     }
 
@@ -65,9 +65,9 @@ public class PersistenceActivator implements BundleActivator {
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext ctx) throws Exception {
-        
+
         OSGiManagedRuntime.deregisterServiceListener(ctx);
-        
+
         if (svcReg != null) {
             svcReg.unregister();
             svcReg = null;

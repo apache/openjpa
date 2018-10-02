@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -35,7 +35,7 @@ public class BiOrderMappedByEntity  {
     @OneToMany(mappedBy="bo2mbEntity")
     @OrderColumn(name="bo2mEntities_ORDER")
     private List<BiOrderEntity> bo2mEntities;
-    
+
     public int getId() {
         return id;
     }
@@ -59,7 +59,7 @@ public class BiOrderMappedByEntity  {
         }
         bo2mEntities.add(name);
     }
-    
+
     public BiOrderEntity removeBo2mEntity(int location) {
         BiOrderEntity rtnVal = null;
         if( bo2mEntities != null) {
@@ -67,14 +67,14 @@ public class BiOrderMappedByEntity  {
         }
         return rtnVal;
     }
-    
+
     public void insertBo2mEntity(int location, BiOrderEntity name) {
         if( bo2mEntities == null) {
             bo2mEntities = new ArrayList<BiOrderEntity>();
         }
         bo2mEntities.add(location, name);
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof BiOrderMappedByEntity) {
             BiOrderMappedByEntity boe = (BiOrderMappedByEntity)obj;

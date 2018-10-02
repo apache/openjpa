@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.jdbc;
 
@@ -30,8 +30,8 @@ import org.apache.openjpa.util.InternalException;
 
 /**
  * Aggregates individual single query results from different databases.
- * 
- * @author Pinaki Poddar 
+ *
+ * @author Pinaki Poddar
  *
  */
 public class UniqueResultObjectProvider implements ResultObjectProvider {
@@ -40,22 +40,22 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
     private final QueryExpressions[] _exps;
     private Object _single;
     private boolean _opened;
-    
+
     private static final String COUNT = "Count";
     private static final String MAX   = "Max";
     private static final String MIN   = "Min";
     private static final String SUM   = "Sum";
-    
+
     private static final Localizer _loc =
         Localizer.forPackage(UniqueResultObjectProvider.class);
-    
-    public UniqueResultObjectProvider(ResultObjectProvider[] rops, 
+
+    public UniqueResultObjectProvider(ResultObjectProvider[] rops,
             StoreQuery q, QueryExpressions[] exps) {
         _rops = rops;
         _query = q;
         _exps = exps;
     }
-    
+
     public boolean absolute(int pos) throws Exception {
         return false;
     }
@@ -80,19 +80,19 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
         if (!_opened) {
             open();
         }
-            
+
         if (_single != null)
             return false;
-        
+
         Value[] values = _exps[0].projections;
-        Object[] single = new Object[values.length]; 
+        Object[] single = new Object[values.length];
         for (int i=0; i<values.length; i++) {
             Value v = values[i];
             boolean isAggregate = v.isAggregate();
-            
+
             String op = v.getClass().getSimpleName();
             for (ResultObjectProvider rop:_rops) {
-                if (i == 0) 
+                if (i == 0)
                 	rop.next();
                 Object[] row = (Object[]) rop.getResultObject();
                 if (isAggregate) {
@@ -117,7 +117,7 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
         _single = single;
         return true;
     }
-    
+
     Object count(Object current, Object other) {
         if (current == null)
             return other;
@@ -125,18 +125,18 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
         	return current;
         return ((Number)current).longValue() + ((Number)other).longValue();
     }
-    
+
     Object max(Object current, Object other) {
         if (current == null)
             return other;
         if (other == null)
         	return current;
         if (current instanceof Number) {
-        	return Math.max(((Number)current).doubleValue(), 
+        	return Math.max(((Number)current).doubleValue(),
                 ((Number)other).doubleValue());
         }
         if (current instanceof String) {
-        	return  ((String)current).compareTo((String)other) > 0 ? current : other; 
+        	return  ((String)current).compareTo((String)other) > 0 ? current : other;
         }
         if (current instanceof Date) {
         	return ((Date)current).compareTo((Date)other) > 0 ? current : other;
@@ -144,21 +144,21 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
         if (current instanceof Character) {
         	return ((Character)current).compareTo((Character)other) > 0 ? current : other;
         }
-        throw new UnsupportedOperationException(_loc.get("aggregate-unsupported-on-type", 
+        throw new UnsupportedOperationException(_loc.get("aggregate-unsupported-on-type",
         		"MAX()", (current == null ? other : current).getClass().getName()).toString());
     }
-    
+
     Object min(Object current, Object other) {
         if (current == null)
             return other;
         if (other == null)
         	return current;
         if (current instanceof Number) {
-	        return Math.min(((Number)current).doubleValue(), 
+	        return Math.min(((Number)current).doubleValue(),
 	                ((Number)other).doubleValue());
         }
         if (current instanceof String) {
-        	return ((String)current).compareTo((String)other) < 0 ? current : other; 
+        	return ((String)current).compareTo((String)other) < 0 ? current : other;
         }
         if (current instanceof Date) {
         	return ((Date)current).compareTo((Date)other) < 0 ? current : other;
@@ -166,10 +166,10 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
         if (current instanceof Character) {
         	return ((Character)current).compareTo((Character)other) < 0 ? current : other;
         }
-        throw new UnsupportedOperationException(_loc.get("aggregate-unsupported-on-type", 
+        throw new UnsupportedOperationException(_loc.get("aggregate-unsupported-on-type",
         		"MIN()", (current == null ? other : current).getClass().getName()).toString());
     }
-    
+
     Object sum(Object current, Object other) {
         if (current == null)
             return other;
@@ -179,10 +179,10 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
         	return (((Number)current).doubleValue() +
                 ((Number)other).doubleValue());
         }
-        throw new UnsupportedOperationException(_loc.get("aggregate-unsupported-on-type", 
+        throw new UnsupportedOperationException(_loc.get("aggregate-unsupported-on-type",
         		"SUM()", (current == null ? other : current).getClass().getName()).toString());
     }
-    
+
     public void open() throws Exception {
         for (ResultObjectProvider rop:_rops)
             rop.open();

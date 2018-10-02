@@ -44,13 +44,13 @@ public class EntityA_Coll_Embed_ToOne implements Serializable {
 
     @Column(length=30)
     String name;
-    
+
     @Basic(fetch=FetchType.LAZY)
     int age;
 
     //@PersistentCollection(elementEmbedded=true)
     //@ContainerTable
-    
+
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(name="EMBED1ToOneS2") // use default join column name
     @AttributeOverrides({
@@ -60,7 +60,7 @@ public class EntityA_Coll_Embed_ToOne implements Serializable {
     })
 
     protected Set<Embed_ToOne> embed1s = new HashSet<Embed_ToOne>();
-     
+
     public int getAge() {
         return age;
     }
@@ -88,7 +88,7 @@ public class EntityA_Coll_Embed_ToOne implements Serializable {
     public Set<Embed_ToOne> getEmbed1ToOnes() {
         return embed1s;
     }
-    
+
     public void addEmbed1ToOne(Embed_ToOne embed1) {
         embed1s.add(embed1);
     }

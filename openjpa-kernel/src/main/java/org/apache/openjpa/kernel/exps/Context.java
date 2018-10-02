@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -43,7 +43,7 @@ public class Context implements Serializable {
     private final Context parent;
     private List<Context> subsels = null;
     private Object select = null;
-    protected int aliasCount = -1; 
+    protected int aliasCount = -1;
     private Map<String,Value> variables = new HashMap<String,Value>();
     private Map<String,ClassMetaData> schemas =
         new HashMap<String,ClassMetaData>();
@@ -63,7 +63,7 @@ public class Context implements Serializable {
         this.select = subquery.getSelect();
         parent.addSubselContext(this);
     }
-    
+
     public ClassMetaData meta() {
         return meta;
     }
@@ -177,7 +177,7 @@ public class Context implements Serializable {
      * Given an alias and return its associated variable.
      */
     public Value getVariable(String alias) {
-        Value variable = alias == null ? null 
+        Value variable = alias == null ? null
             : variables.get(alias.toLowerCase());
         return variable;
     }

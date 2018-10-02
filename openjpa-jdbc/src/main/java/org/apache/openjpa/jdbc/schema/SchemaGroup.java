@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -97,7 +97,7 @@ public class SchemaGroup
     public Schema addSchema(String name) {
         return addSchema(DBIdentifier.newSchema(name));
     }
-    
+
     /**
      * Remove the given schema from the group.
      *
@@ -171,7 +171,7 @@ public class SchemaGroup
       public boolean isKnownTable(QualifiedDBIdentifier path) {
           return findTable(path) != null;
       }
-    
+
     /**
      * Find the equivalent of the given table in this schema group. The
      * given table that may have come from another schema group.
@@ -200,7 +200,7 @@ public class SchemaGroup
             Schema schema = getSchema(path.getSchemaName());
             if (schema != null)
                 return schema.getTable(path.getUnqualifiedName());
-            
+
         } else {
             Schema[] schemas = getSchemas();
             Table tab;
@@ -235,7 +235,7 @@ public class SchemaGroup
             return null;
         return findTable(inSchema, QualifiedDBIdentifier.getPath(name), defaultSchemaName);
     }
-    
+
     public Table findTable(Schema inSchema, QualifiedDBIdentifier path, DBIdentifier defaultSchemaName) {
         if (path == null)
             return null;
@@ -256,14 +256,14 @@ public class SchemaGroup
                 // We can't handle the case that one entity has schema name
                 // and other entity does not have schema name but both entities
                 // map to the same table.
-                boolean isDefaultSchema = DBIdentifier.isNull(inSchema.getIdentifier()) && 
-                    !DBIdentifier.isNull(defaultSchemaName) && 
+                boolean isDefaultSchema = DBIdentifier.isNull(inSchema.getIdentifier()) &&
+                    !DBIdentifier.isNull(defaultSchemaName) &&
                     DBIdentifier.equalsIgnoreCase(defaultSchemaName, schemas[i].getIdentifier());
-                boolean hasNoDefaultSchema = DBIdentifier.isNull(inSchema.getIdentifier()) && 
-                    DBIdentifier.isNull(defaultSchemaName); 
-                
+                boolean hasNoDefaultSchema = DBIdentifier.isNull(inSchema.getIdentifier()) &&
+                    DBIdentifier.isNull(defaultSchemaName);
+
                 if (tab != null &&
-                    (schemas[i] == inSchema || isDefaultSchema || hasNoDefaultSchema)) 
+                    (schemas[i] == inSchema || isDefaultSchema || hasNoDefaultSchema))
                     return tab;
 
             }
@@ -356,7 +356,7 @@ public class SchemaGroup
         return findSequence(inSchema, QualifiedDBIdentifier.getPath(DBIdentifier.newSequence(name)));
     }
 
-    
+
     public Sequence findSequence(Schema inSchema, QualifiedDBIdentifier path) {
         if (path == null)
             return null;

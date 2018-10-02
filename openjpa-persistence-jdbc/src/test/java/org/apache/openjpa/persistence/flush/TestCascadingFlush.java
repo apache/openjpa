@@ -220,7 +220,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
 
     public static void addClassPeriod(Course course) {
 
-        
+
         Assignment assignment = new Assignment();
         assignment.setAssignmentText("Read pages 442-645");
 

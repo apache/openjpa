@@ -25,13 +25,13 @@ import org.apache.openjpa.persistence.jdbc.Strategy;
 @Entity
 @Table(name="PERSON_STR")
 public class Person {
-	
+
 	private long idPerson;
-	
+
 	private String name;
 
 	private int age;
-		
+
 	private Address address;
 
 	public Person() {}

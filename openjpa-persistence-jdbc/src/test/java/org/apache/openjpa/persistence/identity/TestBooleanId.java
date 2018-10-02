@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity;
 
@@ -32,7 +32,7 @@ public class TestBooleanId extends SQLListenerTestCase {
     private EntityManager em;
     private BooleanIdEntity se;
     private CompoundBooleanIdEntity ce;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp(BooleanIdEntity.class,
@@ -40,28 +40,28 @@ public class TestBooleanId extends SQLListenerTestCase {
             DROP_TABLES);
         assertTrue(emf != null);
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         closeEM(em);
         super.tearDown();
     }
-    
+
     public void testSimpleBooleanIdEntity() {
         se = new BooleanIdEntity(true,"name");
-        
+
         em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(se);
         em.getTransaction().commit();
         assertEquals(true, se.getId());
         em.close();
-        
+
         em = emf.createEntityManager();
         se = em.find(BooleanIdEntity.class, true);
         assertNotNull(se);
     }
-    
+
     public void testCompoundIdEntity() {
         em = emf.createEntityManager();
         testCompoundIdEntity("string1", true, true);
@@ -72,7 +72,7 @@ public class TestBooleanId extends SQLListenerTestCase {
         createCompoundIdEntityWithoutBoolean("string3");
         em.close();
     }
-    
+
     private void testCompoundIdEntity(String stringId, boolean booleanId, boolean expectSuccess) {
         // create and persist the entity
         try {
@@ -88,7 +88,7 @@ public class TestBooleanId extends SQLListenerTestCase {
         }
         ce = null;
         em.clear();
-        
+
         if (expectSuccess) {
             // get the entity
             em.getTransaction().begin();
@@ -100,7 +100,7 @@ public class TestBooleanId extends SQLListenerTestCase {
             em.getTransaction().commit();
         }
     }
-    
+
     private void createCompoundIdEntityWithoutBoolean(String stringId) {
         // create and persist the entity
         em.getTransaction().begin();
@@ -110,7 +110,7 @@ public class TestBooleanId extends SQLListenerTestCase {
         em.getTransaction().commit();
         ce = null;
         em.clear();
-        
+
         // get the entity
         em.getTransaction().begin();
         CompoundBooleanId cpdId = new CompoundBooleanId();

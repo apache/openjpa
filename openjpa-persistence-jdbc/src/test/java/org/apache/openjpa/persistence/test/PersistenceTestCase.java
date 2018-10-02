@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.test;
 
@@ -48,13 +48,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /**
  * Base test class providing persistence utilities.
- * 
+ *
  * EntityManagerFactory created by this receiver is statically cached indexed
  * by a key which is a combination of the persistence unit name and the user
- * configuration. 
+ * configuration.
  * If a extended test does not want cached EntityManagerFactory
  * then it must specify FRESH_EMF as one of the arguments of #setUp(Object[]).
- * 
+ *
  * @deprecated use AbstractEMFCacheTestCase or AbstractPersistenceTestCase instead
  */
 public abstract class PersistenceTestCase
@@ -62,13 +62,13 @@ public abstract class PersistenceTestCase
     private static FixedMap _emfs = new FixedMap();
     public static final String FRESH_EMF = "Creates new EntityManagerFactory";
     public static final String RETAIN_DATA = "Retain data after test run";
-    private boolean retainDataOnTearDown; 
+    private boolean retainDataOnTearDown;
     protected boolean _fresh = false;
-    
+
     public static String ALLOW_FAILURE_LOG = "log";
     public static String ALLOW_FAILURE_IGNORE = "ignore";
     public static String ALLOW_FAILURE_SYS_PROP= "tests.openjpa.allowfailure";
-    
+
     private static String allowFailureConfig = System.getProperty(ALLOW_FAILURE_SYS_PROP, ALLOW_FAILURE_IGNORE);
     /**
      * Marker object you pass to {@link #setUp} to indicate that the
@@ -124,7 +124,7 @@ public abstract class PersistenceTestCase
         if (_fresh || oemf == null || !oemf.isOpen()) {
             Map config = new HashMap(System.getProperties());
             config.putAll(map);
-            oemf = (OpenJPAEntityManagerFactorySPI) 
+            oemf = (OpenJPAEntityManagerFactorySPI)
                 Persistence.createEntityManagerFactory(pu, config);
             if (oemf == null) {
                 throw new NullPointerException(
@@ -137,12 +137,12 @@ public abstract class PersistenceTestCase
         _fresh = false;
         return oemf;
     }
-    
-    protected Map<String,Object> getPropertiesMap(Object ... props) { 
+
+    protected Map<String,Object> getPropertiesMap(Object ... props) {
         Map<String, Object> map = new HashMap<String, Object>();
         List<Class<?>> types = new ArrayList<Class<?>>();
         boolean prop = false;
-        
+
         for (int i = 0; props != null && i < props.length; i++) {
             if (props[i] == FRESH_EMF) {
                 _fresh = true;
@@ -157,11 +157,11 @@ public abstract class PersistenceTestCase
                 prop = false;
             } else if (props[i] == CLEAR_TABLES) {
                 map.put("openjpa.jdbc.SynchronizeMappings",
-                    "buildSchema(ForeignKeys=true," 
+                    "buildSchema(ForeignKeys=true,"
                     + "SchemaAction='add,deleteTableContents')");
             } else if (props[i] == DROP_TABLES) {
                 map.put("openjpa.jdbc.SynchronizeMappings",
-                    "buildSchema(ForeignKeys=true," 
+                    "buildSchema(ForeignKeys=true,"
                     + "SchemaAction='drop,add')");
             } else if (props[i] instanceof Class) {
                 types.add((Class<?>) props[i]);
@@ -178,7 +178,7 @@ public abstract class PersistenceTestCase
                     buf.append(";");
                 buf.append(c.getName());
             }
-            String oldValue = map.containsKey("openjpa.MetaDataFactory") 
+            String oldValue = map.containsKey("openjpa.MetaDataFactory")
                 ? ","+map.get("openjpa.MetaDataFactory").toString() : "";
             map.put("openjpa.MetaDataFactory",
                 "jpa(Types=" + buf.toString() + oldValue + ")");
@@ -212,14 +212,14 @@ public abstract class PersistenceTestCase
     protected boolean closeEMF(EntityManagerFactory emf) {
         if (emf == null || !emf.isOpen())
             return false;
-        
+
         closeAllOpenEMs(emf);
         emf.close();
         return !emf.isOpen();
     }
 
     /**
-     * Closes all open entity managers after first rolling back any open 
+     * Closes all open entity managers after first rolling back any open
      * transactions.
      */
     protected void closeAllOpenEMs(EntityManagerFactory emf) {
@@ -273,13 +273,13 @@ public abstract class PersistenceTestCase
      * Delete all instances of the given types using bulk delete queries.
      * @param closeEMs TODO
      */
-    private void clear(EntityManagerFactory emf, boolean closeEMs, 
+    private void clear(EntityManagerFactory emf, boolean closeEMs,
             ClassMetaData... types) {
         if (emf == null || types.length == 0)
             return;
-        
-        // prevent deadlock by closing the open entity managers 
-        // and rolling back any open transactions 
+
+        // prevent deadlock by closing the open entity managers
+        // and rolling back any open transactions
         // before issuing delete statements on a new entity manager.
         if (closeEMs)
             closeAllOpenEMs(emf);
@@ -288,7 +288,7 @@ public abstract class PersistenceTestCase
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (ClassMetaData meta : types) {
-            if (!meta.isMapped() || meta.isEmbeddedOnly() 
+            if (!meta.isMapped() || meta.isEmbeddedOnly()
                 || Modifier.isAbstract(meta.getDescribedType().getModifiers())
                     && !isBaseManagedInterface(meta, types))
                 continue;
@@ -300,14 +300,14 @@ public abstract class PersistenceTestCase
     }
 
     /**
-     * Return the entity name for the given type.   
+     * Return the entity name for the given type.
      */
     protected String entityName(EntityManagerFactory emf, Class c) {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf, c);
         return (meta == null) ? null : meta.getTypeAlias();
     }
-    
-    
+
+
     /**
      * Determines if the class assocated with the provided metadata is
      * a managed interface and does not extend another managed interface.
@@ -316,9 +316,9 @@ public abstract class PersistenceTestCase
      * @return true if the cmd is for an interface and the interface does not
      * extend another managed interface
      */
-    private boolean isBaseManagedInterface(ClassMetaData meta, 
+    private boolean isBaseManagedInterface(ClassMetaData meta,
         ClassMetaData... types) {
-        
+
         if (Modifier.isInterface(meta.getDescribedType().getModifiers()) &&
             !isExtendedManagedInterface(meta, types))
             return true;
@@ -327,15 +327,15 @@ public abstract class PersistenceTestCase
 
     /**
      * Determines if the class assocated with the provided metadata is
-     * an interface and if it extends another managed interface. 
+     * an interface and if it extends another managed interface.
      * @param meta class metadata for the class to examine
      * @param types array of class meta data for persistent types
      * @return true if the cmd is for an interface and the interface extends
      * another managed interface
      */
-    private boolean isExtendedManagedInterface(ClassMetaData meta, 
+    private boolean isExtendedManagedInterface(ClassMetaData meta,
         ClassMetaData... types) {
-        
+
         if (!Modifier.isInterface(meta.getDescribedType().getModifiers()))
             return false;
 
@@ -346,7 +346,7 @@ public abstract class PersistenceTestCase
             for (ClassMetaData meta2 : types) {
                 if (ifaces[i].equals(meta2.getDescribedType()))
                     return true;
-            }            
+            }
         }
         return false;
     }
@@ -363,7 +363,7 @@ public abstract class PersistenceTestCase
     /**
      * Round-trip a serializable object to bytes.
      */
-    public static <T> T roundtrip(T o) 
+    public static <T> T roundtrip(T o)
         throws ClassNotFoundException, IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(bytes);
@@ -373,29 +373,29 @@ public abstract class PersistenceTestCase
             new ByteArrayInputStream(bytes.toByteArray()));
         return (T)in.readObject();
     }
-    
-    // ================================================ 
+
+    // ================================================
     // Utility methods for exception handling
     // ================================================
     /**
-     * Asserts that the given targetType is assignable from given actual 
+     * Asserts that the given targetType is assignable from given actual
      * Throwable.
      */
     protected void assertException(final Throwable actual, Class targetType) {
         assertException(actual, targetType, null);
     }
-    
+
     /**
-     * Asserts that the given targetType is assignable from given actual 
+     * Asserts that the given targetType is assignable from given actual
      * Throwable. Asserts that the nestedType is nested (possibly recursively)
      * within the given actual Throwable.
-     * 
+     *
      * @param actual is the actual throwable to be tested
      * @param targetType is expected type or super type of actual. If null, then
      * the check is omitted.
      * @param nestedTargetType is expected type of exception nested within
-     * actual. If null this search is omitted. 
-     * 
+     * actual. If null this search is omitted.
+     *
      */
     protected void assertException(final Throwable actual, Class targetType,
             Class nestedTargetType) {
@@ -428,16 +428,16 @@ public abstract class PersistenceTestCase
     }
 
     /**
-     * Asserts that the given targetType is assignable from given actual 
-     * Throwable and that the exception message contains the specified message 
+     * Asserts that the given targetType is assignable from given actual
+     * Throwable and that the exception message contains the specified message
      * or message fragments.
      */
-    protected void assertExceptionMessage(final Throwable actual, 
+    protected void assertExceptionMessage(final Throwable actual,
         Class targetType, String...messages) {
         assertException(actual, targetType, null);
         assertMessage(actual, messages);
     }
-    
+
     /**
      * Assert that each of given keys are present in the message of the given
      * Throwable.
@@ -450,25 +450,25 @@ public abstract class PersistenceTestCase
             assertTrue(key + " is not in " + message, message.contains(key));
         }
     }
-    
+
     public void printException(Throwable t) {
         printException(t, 2);
     }
-    
+
     public void printException(Throwable t, int tab) {
         if (t == null) return;
         for (int i=0; i<tab*4;i++) System.out.print(" ");
-        String sqlState = (t instanceof SQLException) ? 
-            "(SQLState=" + ((SQLException)t).getSQLState() + ":" 
+        String sqlState = (t instanceof SQLException) ?
+            "(SQLState=" + ((SQLException)t).getSQLState() + ":"
                 + t.getMessage() + ")" : "";
         System.out.println(t.getClass().getName() + sqlState);
-        if (t.getCause() == t) 
+        if (t.getCause() == t)
             return;
         printException(t.getCause(), tab+2);
     }
-    
+
     /**
-     * Overrides to allow tests annotated with @AllowFailure to fail. 
+     * Overrides to allow tests annotated with @AllowFailure to fail.
      * If the test is in error then the normal pathway is executed.
      */
     @Override
@@ -478,12 +478,12 @@ public abstract class PersistenceTestCase
         }
         runBare(getAllowFailure());
     }
-    
-    protected void runBare(AllowFailure allowFailureAnnotation) throws Throwable { 
+
+    protected void runBare(AllowFailure allowFailureAnnotation) throws Throwable {
         boolean allowFailureValue = allowFailureAnnotation == null ? false : allowFailureAnnotation.value();
-        
-        if(allowFailureValue) { 
-            if(ALLOW_FAILURE_IGNORE.equalsIgnoreCase(allowFailureConfig)){ 
+
+        if(allowFailureValue) {
+            if(ALLOW_FAILURE_IGNORE.equalsIgnoreCase(allowFailureConfig)){
                 return; // skip this test
             }
             else {
@@ -504,9 +504,9 @@ public abstract class PersistenceTestCase
             super.runBare();
         }
     }
-    
+
     /**
-     * Affirms if the test case or the test method is annotated with 
+     * Affirms if the test case or the test method is annotated with
      * @AllowFailure. Method level annotation has higher precedence than Class
      * level annotation.
      */
@@ -523,12 +523,12 @@ public abstract class PersistenceTestCase
         }
         return getClass().getAnnotation(AllowFailure.class);
     }
-    
+
     /**
      * Affirms if either this test has been annotated with @DatabasePlatform and
      * at least one of the specified driver is available in the classpath,
      * or no such annotation is used.
-     *   
+     *
      */
     protected boolean isRunsOnCurrentPlatform() {
         DatabasePlatform anno =
@@ -542,7 +542,7 @@ public abstract class PersistenceTestCase
             String[] drivers = value.split("\\,");
             for (String driver : drivers) {
                 try {
-                    Class.forName(driver.trim(), false, 
+                    Class.forName(driver.trim(), false,
                         Thread.currentThread().getContextClassLoader());
                     return true;
                 } catch (Throwable t) {
@@ -552,7 +552,7 @@ public abstract class PersistenceTestCase
         }
         return false;
     }
-    
+
     /**
      * Determines whether specified platform is the target database platform
      * in use by the test framework.
@@ -571,7 +571,7 @@ public abstract class PersistenceTestCase
     public String getPlatform() {
         return System.getProperty("platform", "derby");
     }
-    
+
     private static class FixedMap extends LinkedHashMap<EMFKey,
             OpenJPAEntityManagerFactorySPI> {
         public boolean removeEldestEntry(Map.Entry<EMFKey,
@@ -579,7 +579,7 @@ public abstract class PersistenceTestCase
             return this.size() > 2;
         }
     }
-    
+
     private static class EMFKey {
         final String unit;
         final Map config;
@@ -587,14 +587,14 @@ public abstract class PersistenceTestCase
             this.unit = unit;
             this.config = config;
         }
-        
+
         public int hashCode() {
             return (unit != null ? unit.hashCode() : 0) + config.hashCode();
         }
-        
+
         public boolean equals(Object other) {
             EMFKey that = (EMFKey)other;
-            return (unit != null ? unit.equals(that.unit) : that.unit == null) 
+            return (unit != null ? unit.equals(that.unit) : that.unit == null)
                 && config.equals(that.config);
         }
     }

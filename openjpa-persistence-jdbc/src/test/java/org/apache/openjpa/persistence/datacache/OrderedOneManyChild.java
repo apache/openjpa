@@ -31,29 +31,29 @@ public class OrderedOneManyChild {
 
     @ManyToOne
     private OrderedOneManyParent parent;
-    
-    public long getId() { 
-        return id; 
+
+    public long getId() {
+        return id;
     }
 
-    public void setId(long id) { 
-        this.id = id; 
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public OrderedOneManyParent getParent() { 
-        return parent; 
+    public OrderedOneManyParent getParent() {
+        return parent;
     }
 
-    public void setParent(OrderedOneManyParent parent) { 
-        this.parent = parent; 
+    public void setParent(OrderedOneManyParent parent) {
+        this.parent = parent;
     }
-    
+
 }

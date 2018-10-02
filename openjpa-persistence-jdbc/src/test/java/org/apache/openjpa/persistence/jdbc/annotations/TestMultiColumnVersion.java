@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests numeric version spanning multiple columns and those columns spanning
- * multiple tables. 
+ * multiple tables.
  *
  * @author Pinaki Poddar
  */
@@ -36,19 +36,19 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         setUp(MultiColumnVersionPC.class, MultiColumnSecondaryVersionPC.class,
         		CLEAR_TABLES);
     }
-    
+
     public void testVersionStrategyIsSet() {
     	assertStrategy(MultiColumnVersionPC.class);
     	assertStrategy(MultiColumnSecondaryVersionPC.class);
     }
-    
+
     public void assertStrategy(Class cls) {
     	ClassMapping mapping = getMapping(cls);
     	assertNotNull(mapping.getVersion());
-    	assertTrue(mapping.getVersion().getStrategy() 
+    	assertTrue(mapping.getVersion().getStrategy()
     		instanceof MultiColumnVersionStrategy);
     }
-    
+
     public void testVersionOnPersistAndUpdateForSingleTable() {
     	OpenJPAEntityManager em = emf.createEntityManager();
     	em.getTransaction().begin();
@@ -57,7 +57,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         em.persist(pc);
         em.getTransaction().commit();
         assertVersionEquals(new Number[]{1,1, 1.0f}, em.getVersion(pc));
-    	
+
     	em.getTransaction().begin();
     	pc.setName("updated");
     	em.merge(pc);
@@ -77,16 +77,16 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         em1.getTransaction().commit();
         em1.getTransaction().begin();
         Object oid = em1.getObjectId(pc1);
-        
-        
+
+
         MultiColumnVersionPC pc2 = em2.find(MultiColumnVersionPC.class, oid);
         assertVersionEquals(em1.getVersion(pc1), em2.getVersion(pc2));
-        
+
         pc1.setName("Updated in em1");
         pc2.setName("Updated in em2");
         em1.getTransaction().commit();
         em1.close();
-        
+
         try {
             em2.getTransaction().commit();
             fail("Optimistic fail");
@@ -107,17 +107,17 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         em1.getTransaction().commit();
         em1.getTransaction().begin();
         Object oid = em1.getObjectId(pc1);
-        
-        
+
+
         MultiColumnVersionPC pc2 = em2.find(MultiColumnVersionPC.class, oid);
         assertVersionEquals(em1.getVersion(pc1), em2.getVersion(pc2));
-        
+
         em1.getTransaction().commit();
         em1.close();
         em2.getTransaction().commit();
         em2.close();
     }
-    
+
     public void testVersionOnPersistAndUpdateForMultiTable() {
     	OpenJPAEntityManager em = emf.createEntityManager();
     	em.getTransaction().begin();
@@ -126,7 +126,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         em.persist(pc);
         em.getTransaction().commit();
         assertVersionEquals(new Number[]{1,1,1,1}, em.getVersion(pc));
-    	
+
     	em.getTransaction().begin();
     	pc.setName("updated");
     	em.merge(pc);
@@ -146,17 +146,17 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         em1.getTransaction().commit();
         em1.getTransaction().begin();
         Object oid = em1.getObjectId(pc1);
-        
-        
+
+
         MultiColumnSecondaryVersionPC pc2 =
             em2.find(MultiColumnSecondaryVersionPC.class, oid);
         assertVersionEquals(em1.getVersion(pc1), em2.getVersion(pc2));
-        
+
         pc1.setName("Updated in em1");
         pc2.setName("Updated in em2");
         em1.getTransaction().commit();
         em1.close();
-        
+
         try {
             em2.getTransaction().commit();
             fail("Optimistic fail");
@@ -177,12 +177,12 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         em1.getTransaction().commit();
         em1.getTransaction().begin();
         Object oid = em1.getObjectId(pc1);
-        
-        
+
+
     	MultiColumnSecondaryVersionPC pc2 =
     	    em2.find(MultiColumnSecondaryVersionPC.class, oid);
         assertVersionEquals(em1.getVersion(pc1), em2.getVersion(pc2));
-        
+
         em1.getTransaction().commit();
         em1.close();
         em2.getTransaction().commit();
@@ -198,10 +198,10 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     		Object v1 = Array.get(expected, i);
     		Object v2 = Array.get(actual, i);
     		// exact equality may fail on non-integral values
-    		assertTrue("element " + i + " mismatch. Expeceted: " + 
+    		assertTrue("element " + i + " mismatch. Expeceted: " +
        		    v1 + " actual: " + v2,
        		    Math.abs(((Number)v1).doubleValue()
-       		            - ((Number)v2).doubleValue()) 
+       		            - ((Number)v2).doubleValue())
        		    < 0.01);
     	}
     }

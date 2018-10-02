@@ -26,15 +26,15 @@ import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.LeafA;
 
 @Entity
 @DiscriminatorValue("B")
-public class PIdJTCDMSCLeafA 
+public class PIdJTCDMSCLeafA
 extends PIdJTCDMSCRootEntity implements LeafA {
     private String leafAData;
-    
-    public String getLeafAData() 
+
+    public String getLeafAData()
     {
         return leafAData;
     }
-    
+
     public void setLeafAData(String leafAData) {
         this.leafAData = leafAData;
     }

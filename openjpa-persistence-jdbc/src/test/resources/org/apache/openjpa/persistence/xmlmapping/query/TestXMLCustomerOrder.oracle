@@ -13,7 +13,7 @@
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 -- KIND, either express or implied.  See the License for the
 -- specific language governing permissions and limitations
--- under the License.    
+-- under the License.
 
 DELETE FROM TORDERXML t0
 SELECT t0.countryCode, t0.id, t0.version, t0.city, t0.state, t0.street, t0.zip, t0.name FROM TCUSTOMER t0

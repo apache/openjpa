@@ -37,7 +37,7 @@
             <id name="id">
                 <generated-value/>
             </id>
-            <one-to-many name="one2Melems">                
+            <one-to-many name="one2Melems">
                 <order-column name="one2MOrder" />
                 <cascade>
                     <cascade-all/>
@@ -45,16 +45,16 @@
             </one-to-many>
 
             <many-to-many name="m2melems">
-                <order-column name="m2morder" /> 
+                <order-column name="m2morder" />
                 <cascade>
                     <cascade-all/>
                 </cascade>
             </many-to-many>
-            
+
             <element-collection name="collelems">
                 <order-column />
             </element-collection>
-            
-        </attributes>    
+
+        </attributes>
     </entity>
 </entity-mappings>

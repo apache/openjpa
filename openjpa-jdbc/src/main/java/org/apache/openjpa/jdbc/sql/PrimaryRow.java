@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -191,9 +191,9 @@ public class PrimaryRow
     }
 
     /**
-     * If this is a delete, delay foreign keys to other deleted objects if the 
-     * key is restricted or cascade. If this is an update or insert, delay 
-     * foreign keys to other inserts if the key is not logical. If the foreign 
+     * If this is a delete, delay foreign keys to other deleted objects if the
+     * key is restricted or cascade. If this is an update or insert, delay
+     * foreign keys to other inserts if the key is not logical. If the foreign
      * key is to a new record and the columns are auto-inc, record it.
      */
     private boolean delayForeignKey(ForeignKey fk, OpenJPAStateManager sm,
@@ -355,7 +355,7 @@ public class PrimaryRow
         }
         super.setObject(col, val, metaType, overrideDefault);
     }
-    
+
     /**
      * Allow the given key column value to be updated if the old value is a default value
      * or the new value is default.
@@ -370,7 +370,7 @@ public class PrimaryRow
         return !(col.isPrimaryKey() || col.isRelationId() || col.isImplicitRelation() || col.isUni1MFK())
                || isDefaultValue(old) || isDefaultValue(cur);
     }
-    
+
     boolean isDefaultValue(Object val) {
         return val == null || val == NULL
                 || (val instanceof Number && ((Number)val).longValue() == 0);
@@ -465,7 +465,7 @@ public class PrimaryRow
                 _callbacks.length);
         }
     }
-    
+
     public String toString() {
     	StringBuilder buf = new StringBuilder();
     	buf.append("PrimaryRow[");

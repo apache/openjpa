@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.instrumentation;
 
@@ -33,7 +33,7 @@ public interface InstrumentationProvider {
      * Whether the instrumentation provider started
      * @return true if the provider is started
      */
-    public boolean isStarted();    
+    public boolean isStarted();
     /**
      * Starts the instrumentation provider
      */
@@ -49,16 +49,16 @@ public interface InstrumentationProvider {
      * @return the configuration associated with the provider
      */
     public Configuration getConfiguration();
-    
+
     /**
-     * Used to associate one or more instruments to a provider.  Instruments 
+     * Used to associate one or more instruments to a provider.  Instruments
      * are specified by class name or alias.  Multiple instruments must be
      * specified as a comma separated list.
-     * 
+     *
      * example:  DataCache,QueryCache,com.my.MyInstrument
-     *   where DataCache and QueryCache have aliases and com.my.MyInstrument is 
+     *   where DataCache and QueryCache have aliases and com.my.MyInstrument is
      *   a class implementing an Instrument.
-     * 
+     *
      * @param instruments  one or more instrument class names or aliases
      */
     public void setInstrument(String instruments);
@@ -68,44 +68,44 @@ public interface InstrumentationProvider {
      * this provider via setInstrument.
      */
     public String getInstrument();
- 
+
     /**
      * Sets configuration options for this provider
      * @param options
      */
     public void setOptions(String options);
-    
+
     /**
      * Gets configuration options for this provider
      * @param options
      */
     public String getOptions();
-    
+
     /**
      * Returns an string array of identifier to class name aliases for
      * instruments known to the instrumentation provider.  Example:
-     * 
+     *
      *  {"DataCache", "org.apache.openjpa.instrumentation.DataCacheInstrument",
      *   "QueryCache", "org.apache.openjpa.instrumentation.QueryCacheInstrument"}
      * @return a string array of identifier, class name pairs.
      */
     public String[] getInstrumentAliases();
-    
+
     /**
      * Adds an instrument to this providers list of managed instruments.  The
-     * instrument will participate in context-based lifecycle routines, 
+     * instrument will participate in context-based lifecycle routines,
      * depending on the instrumentation level.
      * @param instrument
      */
     public void addInstrument(Instrument instrument);
-    
+
     /**
      * Stops all instruments of the specified instrumentation level and context.
      * @param level instrumentation level
      * @param context  instrumentation context (factory, broker, config)
      */
     public void stopInstruments(InstrumentationLevel level, Object context);
-    
+
     /**
      * Starts all instruments of the specified instrumentation level and context.
      * @param level instrumentation level
@@ -115,14 +115,14 @@ public interface InstrumentationProvider {
 
     /**
      * Initializes an instrument within the provided context.
-     * @param instrument an instrument 
+     * @param instrument an instrument
      * @param context  instrumentation context (factory, broker, config)
      */
     public void initializeInstrument(Instrument instrument, Object context);
 
     /**
      * Initializes an instrument within the provided options and context.
-     * @param instrument an instrument 
+     * @param instrument an instrument
      * @param options configuration options to provide the instrument during initialization
      * @param context  instrumentation context (factory, broker, config)
      */
@@ -152,7 +152,7 @@ public interface InstrumentationProvider {
      * @param instrument this instrument to start
      */
     public void startInstrument(Instrument instrument);
-    
+
     /**
      * Stops an instrument
      * @param instrument the instrument to stop

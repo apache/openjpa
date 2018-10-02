@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
@@ -31,8 +31,8 @@ import javax.persistence.Table;
 
 /**
  * Demonstrate usage of a JoinTable for a bi-directional one-to-many mapping.
- * 
- * 
+ *
+ *
  * @author Pinaki Poddar
  *
  */
@@ -41,9 +41,9 @@ import javax.persistence.Table;
 public class Person {
 	@Id
 	private long ssn;
-	
+
 	private String name;
-	
+
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinTable(name="J_PERSON_ADDRESSES",
             joinColumns = @JoinColumn(name="PERSON_SSN",

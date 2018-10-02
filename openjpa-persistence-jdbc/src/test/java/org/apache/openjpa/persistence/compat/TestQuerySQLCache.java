@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -36,11 +36,11 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * <b>TestQuerySQLCache</b> is used to verify multiple permutations of openjpa.jdbc.QuerySQLCache settings that were 
+ * <b>TestQuerySQLCache</b> is used to verify multiple permutations of openjpa.jdbc.QuerySQLCache settings that were
  * valid in JPA 1.2 but may not be valid in JPA 2.0
  */
 public class TestQuerySQLCache extends SingleEMFTestCase {
-    
+
     final int nThreads = 5;
     final int nPeople = 100;
     final int nIterations = 10;
@@ -57,16 +57,16 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
     public void testBadCustomCacheSetting() {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" + Person.class.getName() + ")");
-        props.put("openjpa.jdbc.QuerySQLCache", 
+        props.put("openjpa.jdbc.QuerySQLCache",
                   "org.apache.openjpa.persistence.compatible.TestQuerySQLCache.BadCacheMap");
 
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
             emf1 = (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
                                                  cast(Persistence.createEntityManagerFactory("test", props));
-            // 
+            //
             // EMF creation must throw an exception because the cache implementation class will not be found
-            // 
+            //
             fail("EMF creation must throw an exception because the cache implementation class will not be found");
         }
         catch (Exception e) {
@@ -85,7 +85,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" + Person.class.getName() + ")");
         props.put("openjpa.jdbc.QuerySQLCache", "all");
-        runMultiEMCaching(props);        
+        runMultiEMCaching(props);
     }
 
 
@@ -115,9 +115,9 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
                                              cast(Persistence.createEntityManagerFactory("test", props));
         try {
             EntityManagerImpl em = (EntityManagerImpl)emf1.createEntityManager();
-    
+
             em.getTransaction().begin();
-    
+
             for (int i = 1; i < 3; i++) {
                 TblParent p = new TblParent();
                 p.setParentId(i);
@@ -127,12 +127,12 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
                 p.addTblChild(c);
                 em.persist(p);
                 em.persist(c);
-    
+
                 TblGrandChild gc = new TblGrandChild();
                 gc.setGrandChildId(i);
                 gc.setTblChild(c);
                 c.addTblGrandChild(gc);
-    
+
                 em.persist(p);
                 em.persist(c);
                 em.persist(gc);
@@ -140,7 +140,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
             em.flush();
             em.getTransaction().commit();
             em.clear();
-    
+
             for (int i = 1; i < 3; i++) {
                 TblParent p = em.find(TblParent.class, i);
                 int pid = p.getParentId();
@@ -172,11 +172,11 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
     private void runMultiEMCaching(Map props) {
         EntityManagerFactory emfac = Persistence.createEntityManagerFactory("test", props);
         try {
-            EntityManager em = emfac.createEntityManager();            
+            EntityManager em = emfac.createEntityManager();
 
-            // 
+            //
             // Create some entities
-            // 
+            //
             em.getTransaction().begin();
             for (int i = 0; i < nPeople; i++) {
                 Person p = new Person();
@@ -195,9 +195,9 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
                 newThreads[i].start();
             }
 
-            // 
+            //
             // Wait for the worker threads to complete
-            // 
+            //
             for (int i = 0; i < nThreads; i++) {
                 try {
                     newThreads[i].join();
@@ -205,19 +205,19 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
                 catch (InterruptedException e) {
                     this.fail("Caught Interrupted Exception: " + e);
                 }
-            }   
+            }
 
-            // 
+            //
             // Run through the state of all runnables to assert if any of them failed.
-            // 
+            //
             for (int i = 0; i < nThreads; i++) {
                 assertFalse(customer[i].hadFailures());
             }
 
-            // 
+            //
             // Clean up the entities used in this test
-            // 
-            em = emfac.createEntityManager();            
+            //
+            em = emfac.createEntityManager();
             em.getTransaction().begin();
             for (int i = 0; i < nPeople; i++) {
                 Person p = em.find(Person.class, i);
@@ -230,8 +230,8 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
             closeEMF(emfac);
         }
     }
-    
-    
+
+
     /*
      * Simple runnable to test finder in a tight loop.  Multiple instances of this runnable will run simultaneously
      */
@@ -258,7 +258,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
 
         public void run() {
             try {
-                EntityManager em = emf.createEntityManager();            
+                EntityManager em = emf.createEntityManager();
                 for (int j = 0; j < iterations; j++) {
 
                     for (int i = startId; i < endId; i++) {
@@ -269,9 +269,9 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
                             break;
                         }
                     }
-                    em.clear();  
+                    em.clear();
                 }
-                em.close();  
+                em.close();
             }
             catch (Exception e) {
                 failures = true;

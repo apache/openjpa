@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -138,7 +138,7 @@ public class ProxyManagerImpl
     public void setAssertAllowedType(boolean assertType) {
         _assertType = assertType;
     }
-    
+
     /**
      * Whether loading of collections should be delayed until an operation
      * is performed that requires them to be loaded.  This property only
@@ -148,7 +148,7 @@ public class ProxyManagerImpl
     public boolean getDelayCollectionLoading() {
         return _delayedCollectionLoading;
     }
-    
+
     /**
      * Whether loading of collections should be delayed until an operation
      * is performed that requires them to be loaded.  Defaults to false.
@@ -156,9 +156,9 @@ public class ProxyManagerImpl
     public void setDelayCollectionLoading(boolean delay) {
         _delayedCollectionLoading = delay;
     }
-       
+
     /**
-     * Return a mutable view of class names we know cannot be proxied  
+     * Return a mutable view of class names we know cannot be proxied
      * correctly by this manager.
      */
     public Collection getUnproxyable() {
@@ -220,11 +220,11 @@ public class ProxyManagerImpl
         return (Map) proxy.copy(orig);
     }
 
-    public Proxy newMapProxy(Class type, Class keyType, 
+    public Proxy newMapProxy(Class type, Class keyType,
         Class elementType, Comparator compare,boolean autoOff) {
         type = toProxyableMapType(type);
         ProxyMap proxy = getFactoryProxyMap(type);
-        return proxy.newInstance((_assertType) ? keyType : null, 
+        return proxy.newInstance((_assertType) ? keyType : null,
             (_assertType) ? elementType : null, compare, _trackChanges, autoOff);
     }
 
@@ -279,7 +279,7 @@ public class ProxyManagerImpl
         if (orig instanceof Calendar)
             return copyCalendar((Calendar) orig);
         ProxyBean proxy = getFactoryProxyBean(orig);
-        return (proxy == null) ? null : proxy.copy(orig); 
+        return (proxy == null) ? null : proxy.copy(orig);
     }
 
     public Proxy newCustomProxy(Object orig, boolean autoOff) {
@@ -291,17 +291,17 @@ public class ProxyManagerImpl
             return null;
         if (!isProxyable(orig.getClass()))
             return null;
-        
+
         if (orig instanceof Collection) {
-            Comparator comp = (orig instanceof SortedSet) 
+            Comparator comp = (orig instanceof SortedSet)
                 ? ((SortedSet) orig).comparator() : null;
-            Collection c = (Collection) newCollectionProxy(orig.getClass(), 
-                null, comp, autoOff); 
+            Collection c = (Collection) newCollectionProxy(orig.getClass(),
+                null, comp, autoOff);
             c.addAll((Collection) orig);
             return (Proxy) c;
         }
         if (orig instanceof Map) {
-            Comparator comp = (orig instanceof SortedMap) 
+            Comparator comp = (orig instanceof SortedMap)
                 ? ((SortedMap) orig).comparator() : null;
             Map m = (Map) newMapProxy(orig.getClass(), null, null, comp, autoOff);
             m.putAll((Map) orig);
@@ -362,13 +362,13 @@ public class ProxyManagerImpl
         Class concrete = (Class) concretes.get(intf);
         if (concrete != null)
             return concrete;
-        Class[] intfs = intf.getInterfaces();         
+        Class[] intfs = intf.getInterfaces();
         for (int i = 0; i < intfs.length; i++) {
             concrete = toConcreteType(intfs[i], concretes);
             if (concrete != null)
                 return concrete;
         }
-        return null; 
+        return null;
     }
 
     /**
@@ -485,7 +485,7 @@ public class ProxyManagerImpl
      * Return whether the given type is known to be unproxyable.
      */
     protected boolean isUnproxyable(Class type) {
-        for (; type != null && type != Object.class; 
+        for (; type != null && type != Object.class;
             type = type.getSuperclass()) {
             if (_unproxyable.contains(type.getName()))
                 return true;
@@ -511,7 +511,7 @@ public class ProxyManagerImpl
             return null;
         }
     }
-    
+
     protected Class<?> loadDelayedProxy(Class<?> type) {
         if (type.equals(java.util.ArrayList.class)) {
             return org.apache.openjpa.util.DelayedArrayListProxy.class;
@@ -565,19 +565,19 @@ public class ProxyManagerImpl
     /**
      * Generate the bytecode for a collection proxy for the given type.
      */
-    protected BCClass generateProxyCollectionBytecode(Class type, 
+    protected BCClass generateProxyCollectionBytecode(Class type,
         boolean runtime) {
         assertNotFinal(type);
-        Project project = new Project(); 
+        Project project = new Project();
         BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
             .loadProjectClassAction(project, getProxyClassName(type, runtime)));
         bc.setSuperclass(type);
         bc.declareInterface(ProxyCollection.class);
- 
+
         delegateConstructors(bc, type);
         addProxyMethods(bc, false);
         addProxyCollectionMethods(bc, type);
-        proxyRecognizedMethods(bc, type, ProxyCollections.class, 
+        proxyRecognizedMethods(bc, type, ProxyCollections.class,
             ProxyCollection.class);
         proxySetters(bc, type);
         addWriteReplaceMethod(bc, runtime);
@@ -585,7 +585,7 @@ public class ProxyManagerImpl
     }
 
     /**
-     * Return the name of the proxy class to generate for the given type.   
+     * Return the name of the proxy class to generate for the given type.
      */
     private static String getProxyClassName(Class type, boolean runtime) {
         String id = (runtime) ? "$" + nextProxyId() : "";
@@ -600,7 +600,7 @@ public class ProxyManagerImpl
         if (Modifier.isFinal(type.getModifiers()))
             throw new UnsupportedException(_loc.get("no-proxy-final", type));
     }
-    
+
     private static boolean isProxyable(Class<?> cls){
         int mod = cls.getModifiers();
         if(Modifier.isFinal(mod))
@@ -611,9 +611,9 @@ public class ProxyManagerImpl
         // we'd fix the code gen portion and place proxies in the same pacakge as the types being proxied.
         if(cls.getPackage().getName().equals("org.apache.openjpa.util"))
             return true;
-        
+
         return false;
-                    
+
     }
 
     /**
@@ -621,12 +621,12 @@ public class ProxyManagerImpl
      */
     protected BCClass generateProxyMapBytecode(Class type, boolean runtime) {
         assertNotFinal(type);
-        Project project = new Project(); 
+        Project project = new Project();
         BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
             .loadProjectClassAction(project, getProxyClassName(type, runtime)));
         bc.setSuperclass(type);
         bc.declareInterface(ProxyMap.class);
- 
+
         delegateConstructors(bc, type);
         addProxyMethods(bc, false);
         addProxyMapMethods(bc, type);
@@ -642,12 +642,12 @@ public class ProxyManagerImpl
      */
     protected BCClass generateProxyDateBytecode(Class type, boolean runtime) {
         assertNotFinal(type);
-        Project project = new Project(); 
+        Project project = new Project();
         BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
             .loadProjectClassAction(project, getProxyClassName(type, runtime)));
         bc.setSuperclass(type);
         bc.declareInterface(ProxyDate.class);
- 
+
         delegateConstructors(bc, type);
         addProxyMethods(bc, true);
         addProxyDateMethods(bc, type);
@@ -659,15 +659,15 @@ public class ProxyManagerImpl
     /**
      * Generate the bytecode for a calendar proxy for the given type.
      */
-    protected BCClass generateProxyCalendarBytecode(Class type, 
+    protected BCClass generateProxyCalendarBytecode(Class type,
         boolean runtime) {
         assertNotFinal(type);
-        Project project = new Project(); 
+        Project project = new Project();
         BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
             .loadProjectClassAction(project, getProxyClassName(type, runtime)));
         bc.setSuperclass(type);
         bc.declareInterface(ProxyCalendar.class);
- 
+
         delegateConstructors(bc, type);
         addProxyMethods(bc, true);
         addProxyCalendarMethods(bc, type);
@@ -692,17 +692,17 @@ public class ProxyManagerImpl
             Constructor[] cs = type.getConstructors();
             for (int i = 0; cons == null && i < cs.length; i++)
                if (cs[i].getParameterTypes().length == 0)
-                    cons = cs[i]; 
+                    cons = cs[i];
             if (cons == null)
                 return null;
         }
 
-        Project project = new Project(); 
+        Project project = new Project();
         BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
             .loadProjectClassAction(project, getProxyClassName(type, runtime)));
         bc.setSuperclass(type);
         bc.declareInterface(ProxyBean.class);
- 
+
         delegateConstructors(bc, type);
         addProxyMethods(bc, true);
         addProxyBeanMethods(bc, type, cons);
@@ -722,7 +722,7 @@ public class ProxyManagerImpl
         Code code;
         for (int i = 0; i < cons.length; i++) {
             params = cons[i].getParameterTypes();
-            m = bc.declareMethod("<init>", void.class, params); 
+            m = bc.declareMethod("<init>", void.class, params);
             m.makePublic();
 
             code = m.getCode(true);
@@ -781,7 +781,7 @@ public class ProxyManagerImpl
         code.calculateMaxStack();
         code.calculateMaxLocals();
 
-        /* 
+        /*
          * clone (return detached proxy object)
          * Note:  This method is only being provided to satisfy a quirk with
          * the IBM JDK -- while comparing Calendar objects, the clone() method
@@ -793,8 +793,8 @@ public class ProxyManagerImpl
         code = m.getCode(true);
         code.aload().setThis();
         code.invokespecial().setMethod(bc.getSuperclassType(), "clone",
-                Object.class, null);  
-        code.checkcast().setType(Proxy.class);  
+                Object.class, null);
+        code.checkcast().setType(Proxy.class);
         int other = code.getNextLocalsIndex();
         code.astore().setLocal(other);
         code.aload().setLocal(other);
@@ -806,7 +806,7 @@ public class ProxyManagerImpl
         code.areturn();
         code.calculateMaxStack();
         code.calculateMaxLocals();
-        
+
         if (changeTracker) {
             m = bc.declareMethod("getChangeTracker", ChangeTracker.class, null);
             m.makePublic();
@@ -823,10 +823,10 @@ public class ProxyManagerImpl
      */
     private void addProxyCollectionMethods(BCClass bc, Class type) {
         // change tracker
-        BCField changeTracker = bc.declareField("changeTracker", 
+        BCField changeTracker = bc.declareField("changeTracker",
             CollectionChangeTracker.class);
         changeTracker.setTransient(true);
-        BCMethod m = bc.declareMethod("getChangeTracker", ChangeTracker.class, 
+        BCMethod m = bc.declareMethod("getChangeTracker", ChangeTracker.class,
             null);
         m.makePublic();
         Code code = m.getCode(true);
@@ -840,7 +840,7 @@ public class ProxyManagerImpl
         Constructor cons = findCopyConstructor(type);
         if (cons == null && SortedSet.class.isAssignableFrom(type))
             cons = findComparatorConstructor(type);
-        Class[] params = (cons == null) ? new Class[0] 
+        Class[] params = (cons == null) ? new Class[0]
             : cons.getParameterTypes();
 
         m = bc.declareMethod("copy", Object.class, new Class[] {Object.class});
@@ -853,7 +853,7 @@ public class ProxyManagerImpl
             code.aload().setParam(0);
             if (params[0] == Comparator.class) {
                 code.checkcast().setType(SortedSet.class);
-                code.invokeinterface().setMethod(SortedSet.class, "comparator", 
+                code.invokeinterface().setMethod(SortedSet.class, "comparator",
                     Comparator.class, null);
             } else
                 code.checkcast().setType(params[0]);
@@ -863,7 +863,7 @@ public class ProxyManagerImpl
             code.dup();
             code.aload().setParam(0);
             code.checkcast().setType(Collection.class);
-            code.invokevirtual().setMethod(type, "addAll", boolean.class, 
+            code.invokevirtual().setMethod(type, "addAll", boolean.class,
                 new Class[] { Collection.class });
             code.pop();
         }
@@ -884,12 +884,12 @@ public class ProxyManagerImpl
         code.calculateMaxLocals();
 
         // new instance factory
-        m = bc.declareMethod("newInstance", ProxyCollection.class, 
+        m = bc.declareMethod("newInstance", ProxyCollection.class,
             new Class[] { Class.class, Comparator.class, boolean.class, boolean.class });
         m.makePublic();
         code = m.getCode(true);
 
-        code.anew().setType(bc); 
+        code.anew().setType(bc);
         code.dup();
         cons = findComparatorConstructor(type);
         params = (cons == null) ? new Class[0] : cons.getParameterTypes();
@@ -914,8 +914,8 @@ public class ProxyManagerImpl
         code.constant().setValue(allowsDuplicates(type));
         code.constant().setValue(isOrdered(type));
         code.aload().setParam(3);
-        code.invokespecial().setMethod(CollectionChangeTrackerImpl.class, 
-            "<init>", void.class, new Class[] { Collection.class, 
+        code.invokespecial().setMethod(CollectionChangeTrackerImpl.class,
+            "<init>", void.class, new Class[] { Collection.class,
             boolean.class, boolean.class, boolean.class });
         code.putfield().setField(changeTracker);
 
@@ -933,7 +933,7 @@ public class ProxyManagerImpl
     }
 
     /**
-     * Return whether the given collection type maintains an artificial 
+     * Return whether the given collection type maintains an artificial
      * ordering.
      */
     protected boolean isOrdered(Class type) {
@@ -946,10 +946,10 @@ public class ProxyManagerImpl
      */
     private void addProxyMapMethods(BCClass bc, Class type) {
         // change tracker
-        BCField changeTracker = bc.declareField("changeTracker", 
+        BCField changeTracker = bc.declareField("changeTracker",
             MapChangeTracker.class);
         changeTracker.setTransient(true);
-        BCMethod m = bc.declareMethod("getChangeTracker", ChangeTracker.class, 
+        BCMethod m = bc.declareMethod("getChangeTracker", ChangeTracker.class,
             null);
         m.makePublic();
         Code code = m.getCode(true);
@@ -963,7 +963,7 @@ public class ProxyManagerImpl
         Constructor cons = findCopyConstructor(type);
         if (cons == null && SortedMap.class.isAssignableFrom(type))
             cons = findComparatorConstructor(type);
-        Class[] params = (cons == null) ? new Class[0] 
+        Class[] params = (cons == null) ? new Class[0]
             : cons.getParameterTypes();
 
         m = bc.declareMethod("copy", Object.class, new Class[] {Object.class});
@@ -976,9 +976,9 @@ public class ProxyManagerImpl
             code.aload().setParam(0);
             if (params[0] == Comparator.class) {
                 code.checkcast().setType(SortedMap.class);
-                code.invokeinterface().setMethod(SortedMap.class, "comparator", 
+                code.invokeinterface().setMethod(SortedMap.class, "comparator",
                     Comparator.class, null);
-            } else 
+            } else
                 code.checkcast().setType(params[0]);
         }
         code.invokespecial().setMethod(type, "<init>", void.class, params);
@@ -986,7 +986,7 @@ public class ProxyManagerImpl
             code.dup();
             code.aload().setParam(0);
             code.checkcast().setType(Map.class);
-            code.invokevirtual().setMethod(type, "putAll", void.class, 
+            code.invokevirtual().setMethod(type, "putAll", void.class,
                 new Class[] { Map.class });
         }
         code.areturn();
@@ -1018,13 +1018,13 @@ public class ProxyManagerImpl
         code.calculateMaxLocals();
 
         // new instance factory
-        m = bc.declareMethod("newInstance", ProxyMap.class, 
-            new Class[] { Class.class, Class.class, Comparator.class, 
+        m = bc.declareMethod("newInstance", ProxyMap.class,
+            new Class[] { Class.class, Class.class, Comparator.class,
             boolean.class,boolean.class });
         m.makePublic();
         code = m.getCode(true);
 
-        code.anew().setType(bc); 
+        code.anew().setType(bc);
         code.dup();
         cons = findComparatorConstructor(type);
         params = (cons == null) ? new Class[0] : cons.getParameterTypes();
@@ -1050,7 +1050,7 @@ public class ProxyManagerImpl
         code.dup();
         code.aload().setLocal(ret);
         code.aload().setParam(4);
-        code.invokespecial().setMethod(MapChangeTrackerImpl.class, 
+        code.invokespecial().setMethod(MapChangeTrackerImpl.class,
             "<init>", void.class, new Class[] { Map.class, boolean.class });
         code.putfield().setField(changeTracker);
 
@@ -1064,9 +1064,9 @@ public class ProxyManagerImpl
      * Implement the methods in the {@link ProxyDate} interface.
      */
     private void addProxyDateMethods(BCClass bc, Class type) {
-        boolean hasDefaultCons = bc.getDeclaredMethod("<init>", 
+        boolean hasDefaultCons = bc.getDeclaredMethod("<init>",
             (Class[]) null) != null;
-        boolean hasMillisCons = bc.getDeclaredMethod("<init>", 
+        boolean hasMillisCons = bc.getDeclaredMethod("<init>",
             new Class[] { long.class }) != null;
         if (!hasDefaultCons && !hasMillisCons)
             throw new UnsupportedException(_loc.get("no-date-cons", type));
@@ -1084,7 +1084,7 @@ public class ProxyManagerImpl
             code.invokespecial().setMethod(type, "<init>", void.class,
                 new Class[] { long.class });
             code.vreturn();
-            code.calculateMaxStack();           
+            code.calculateMaxStack();
             code.calculateMaxLocals();
         }
 
@@ -1108,7 +1108,7 @@ public class ProxyManagerImpl
             if (params[0] == long.class) {
                 code.aload().setParam(0);
                 code.checkcast().setType(Date.class);
-                code.invokevirtual().setMethod(Date.class, "getTime", 
+                code.invokevirtual().setMethod(Date.class, "getTime",
                     long.class, null);
             } else {
                 code.aload().setParam(0);
@@ -1120,17 +1120,17 @@ public class ProxyManagerImpl
             code.dup();
             code.aload().setParam(0);
             code.checkcast().setType(Date.class);
-            code.invokevirtual().setMethod(Date.class, "getTime", long.class, 
+            code.invokevirtual().setMethod(Date.class, "getTime", long.class,
                 null);
             code.invokevirtual().setMethod(type, "setTime", void.class,
                 new Class[] { long.class });
         }
-        if ((params.length == 0 || params[0] == long.class) 
+        if ((params.length == 0 || params[0] == long.class)
             && Timestamp.class.isAssignableFrom(type)) {
             code.dup();
             code.aload().setParam(0);
             code.checkcast().setType(Timestamp.class);
-            code.invokevirtual().setMethod(Timestamp.class, "getNanos", 
+            code.invokevirtual().setMethod(Timestamp.class, "getNanos",
                 int.class, null);
             code.invokevirtual().setMethod(type, "setNanos", void.class,
                 new Class[] { int.class });
@@ -1140,10 +1140,10 @@ public class ProxyManagerImpl
         code.calculateMaxLocals();
 
         // new instance factory
-        m = bc.declareMethod("newInstance", ProxyDate.class, null); 
+        m = bc.declareMethod("newInstance", ProxyDate.class, null);
         m.makePublic();
         code = m.getCode(true);
-        code.anew().setType(bc); 
+        code.anew().setType(bc);
         code.dup();
         code.invokespecial().setMethod("<init>", void.class, null);
         code.areturn();
@@ -1157,10 +1157,10 @@ public class ProxyManagerImpl
     private void addProxyCalendarMethods(BCClass bc, Class type) {
         // calendar copy
         Constructor cons = findCopyConstructor(type);
-        Class[] params = (cons == null) ? new Class[0] 
+        Class[] params = (cons == null) ? new Class[0]
             : cons.getParameterTypes();
 
-        BCMethod m = bc.declareMethod("copy", Object.class, 
+        BCMethod m = bc.declareMethod("copy", Object.class,
             new Class[] {Object.class});
         m.makePublic();
         Code code = m.getCode(true);
@@ -1176,7 +1176,7 @@ public class ProxyManagerImpl
             code.dup();
             code.aload().setParam(0);
             code.checkcast().setType(Calendar.class);
-            code.invokevirtual().setMethod(Calendar.class, "getTimeInMillis", 
+            code.invokevirtual().setMethod(Calendar.class, "getTimeInMillis",
                 long.class, null);
             code.invokevirtual().setMethod(type, "setTimeInMillis", void.class,
                 new Class[] { long.class });
@@ -1184,7 +1184,7 @@ public class ProxyManagerImpl
             code.dup();
             code.aload().setParam(0);
             code.checkcast().setType(Calendar.class);
-            code.invokevirtual().setMethod(Calendar.class, "isLenient", 
+            code.invokevirtual().setMethod(Calendar.class, "isLenient",
                 boolean.class, null);
             code.invokevirtual().setMethod(type, "setLenient", void.class,
                 new Class[] { boolean.class });
@@ -1192,23 +1192,23 @@ public class ProxyManagerImpl
             code.dup();
             code.aload().setParam(0);
             code.checkcast().setType(Calendar.class);
-            code.invokevirtual().setMethod(Calendar.class, "getFirstDayOfWeek", 
+            code.invokevirtual().setMethod(Calendar.class, "getFirstDayOfWeek",
                 int.class, null);
-            code.invokevirtual().setMethod(type, "setFirstDayOfWeek", 
+            code.invokevirtual().setMethod(type, "setFirstDayOfWeek",
                 void.class, new Class[] { int.class });
 
             code.dup();
             code.aload().setParam(0);
             code.checkcast().setType(Calendar.class);
-            code.invokevirtual().setMethod(Calendar.class, 
+            code.invokevirtual().setMethod(Calendar.class,
                 "getMinimalDaysInFirstWeek", int.class, null);
-            code.invokevirtual().setMethod(type, "setMinimalDaysInFirstWeek", 
+            code.invokevirtual().setMethod(type, "setMinimalDaysInFirstWeek",
                 void.class, new Class[] { int.class });
 
             code.dup();
             code.aload().setParam(0);
             code.checkcast().setType(Calendar.class);
-            code.invokevirtual().setMethod(Calendar.class, "getTimeZone", 
+            code.invokevirtual().setMethod(Calendar.class, "getTimeZone",
                 TimeZone.class, null);
             code.invokevirtual().setMethod(type, "setTimeZone", void.class,
                 new Class[] { TimeZone.class });
@@ -1218,10 +1218,10 @@ public class ProxyManagerImpl
         code.calculateMaxLocals();
 
         // new instance factory
-        m = bc.declareMethod("newInstance", ProxyCalendar.class, null); 
+        m = bc.declareMethod("newInstance", ProxyCalendar.class, null);
         m.makePublic();
         code = m.getCode(true);
-        code.anew().setType(bc); 
+        code.anew().setType(bc);
         code.dup();
         code.invokespecial().setMethod("<init>", void.class, null);
         code.areturn();
@@ -1249,7 +1249,7 @@ public class ProxyManagerImpl
      */
     private void addProxyBeanMethods(BCClass bc, Class type, Constructor cons) {
         // bean copy
-        BCMethod m = bc.declareMethod("copy", Object.class, 
+        BCMethod m = bc.declareMethod("copy", Object.class,
             new Class[] { Object.class });
         m.makePublic();
         Code code = m.getCode(true);
@@ -1269,11 +1269,11 @@ public class ProxyManagerImpl
         code.calculateMaxLocals();
 
         // new instance factory
-        m = bc.declareMethod("newInstance", ProxyBean.class, 
-            new Class[] { Object.class }); 
+        m = bc.declareMethod("newInstance", ProxyBean.class,
+            new Class[] { Object.class });
         m.makePublic();
         code = m.getCode(true);
-        code.anew().setType(bc); 
+        code.anew().setType(bc);
         code.dup();
         if (params.length == 1) {
             code.aload().setParam(0);
@@ -1294,12 +1294,12 @@ public class ProxyManagerImpl
     private void copyProperties(Class type, Code code) {
         int copy = code.getNextLocalsIndex();
         code.astore().setLocal(copy);
-        
+
         Method[] meths = type.getMethods();
         Method getter;
         int mods;
         for (int i = 0; i < meths.length; i++) {
-            mods = meths[i].getModifiers(); 
+            mods = meths[i].getModifiers();
             if (!Modifier.isPublic(mods) || Modifier.isStatic(mods))
                 continue;
             if (!startsWith(meths[i].getName(), "set")
@@ -1333,10 +1333,10 @@ public class ProxyManagerImpl
             // Java 8 methods with a return type of KeySetView do not need to be proxied
             if (meths[i].getReturnType().getName().contains("KeySetView")) continue;
 
-            params = toHelperParameters(meths[i].getParameterTypes(), 
+            params = toHelperParameters(meths[i].getParameterTypes(),
                 proxyType);
 
-            // first check for overriding method 
+            // first check for overriding method
             try {
                 match = helper.getMethod(meths[i].getName(), params);
                 proxyOverrideMethod(bc, meths[i], match, params);
@@ -1350,7 +1350,7 @@ public class ProxyManagerImpl
             // exist
             match = null;
             try {
-                match = helper.getMethod("before" 
+                match = helper.getMethod("before"
                     + StringUtil.capitalize(meths[i].getName()), params);
             } catch (NoSuchMethodException nsme) {
             } catch (Exception e) {
@@ -1359,10 +1359,10 @@ public class ProxyManagerImpl
             after = null;
             afterParams = null;
             try {
-                afterParams = toHelperAfterParameters(params, 
-                    meths[i].getReturnType(), (match == null) 
+                afterParams = toHelperAfterParameters(params,
+                    meths[i].getReturnType(), (match == null)
                     ? void.class : match.getReturnType());
-                after = helper.getMethod("after" 
+                after = helper.getMethod("after"
                     + StringUtil.capitalize(meths[i].getName()), afterParams);
             } catch (NoSuchMethodException nsme) {
             } catch (Exception e) {
@@ -1376,16 +1376,16 @@ public class ProxyManagerImpl
 
     /**
      * Return the parameter types to the corresponding helper class method.
-     */ 
+     */
     private static Class[] toHelperParameters(Class[] cls, Class helper) {
         Class[] params = new Class[cls.length + 1];
         params[0] = helper;
-        System.arraycopy(cls, 0, params, 1, cls.length); 
+        System.arraycopy(cls, 0, params, 1, cls.length);
         return params;
     }
 
     /**
-     * Return the parameter types to the corresponding helper class "after"     
+     * Return the parameter types to the corresponding helper class "after"
      * method.
      */
     private static Class[] toHelperAfterParameters(Class[] cls, Class ret,
@@ -1409,7 +1409,7 @@ public class ProxyManagerImpl
 
     /**
      * Proxy setter methods of the given type.
-     * 
+     *
      * @return true if we find any setters, false otherwise
      */
     private boolean proxySetters(BCClass bc, Class type) {
@@ -1422,7 +1422,7 @@ public class ProxyManagerImpl
                 setters++;
                 proxySetter(bc, type, meths[i]);
             }
-        } 
+        }
         return setters > 0;
     }
 
@@ -1430,7 +1430,7 @@ public class ProxyManagerImpl
      * Proxy the given method with one that overrides it by calling into the
      * given helper.
      */
-    private void proxyOverrideMethod(BCClass bc, Method meth, 
+    private void proxyOverrideMethod(BCClass bc, Method meth,
         Method helper, Class[] params) {
         BCMethod m = bc.declareMethod(meth.getName(), meth.getReturnType(),
             meth.getParameterTypes());
@@ -1451,7 +1451,7 @@ public class ProxyManagerImpl
      * Proxy the given method with one that overrides it by calling into the
      * given helper.
      */
-    private void proxyBeforeAfterMethod(BCClass bc, Class type, Method meth, 
+    private void proxyBeforeAfterMethod(BCClass bc, Class type, Method meth,
         Method before, Class[] params, Method after, Class[] afterParams) {
         BCMethod m = bc.declareMethod(meth.getName(), meth.getReturnType(),
             meth.getParameterTypes());
@@ -1476,10 +1476,10 @@ public class ProxyManagerImpl
         code.aload().setThis();
         for (int i = 1; i < params.length; i++)
             code.xload().setParam(i - 1).setType(params[i]);
-        code.invokespecial().setMethod(type, meth.getName(), 
+        code.invokespecial().setMethod(type, meth.getName(),
             meth.getReturnType(), meth.getParameterTypes());
 
-        // invoke after 
+        // invoke after
         if (after != null) {
             int ret = -1;
             if (meth.getReturnType() != void.class) {
@@ -1522,7 +1522,7 @@ public class ProxyManagerImpl
         Class param = setter.getParameterTypes()[0];
         Method getter;
         try {
-            getter = type.getMethod("get" + name, (Class[]) null);   
+            getter = type.getMethod("get" + name, (Class[]) null);
             if (getter.getReturnType().isAssignableFrom(param)
                 || param.isAssignableFrom(getter.getReturnType()))
                 return getter;
@@ -1533,7 +1533,7 @@ public class ProxyManagerImpl
 
         if (param == boolean.class || param == Boolean.class) {
             try {
-                getter = type.getMethod("is" + name, (Class[]) null);   
+                getter = type.getMethod("is" + name, (Class[]) null);
                 if (getter.getReturnType().isAssignableFrom(param)
                     || param.isAssignableFrom(getter.getReturnType()))
                     return getter;
@@ -1550,7 +1550,7 @@ public class ProxyManagerImpl
      */
     private static boolean startsWith(String str, String token) {
         return str.startsWith(token)
-            && (str.length() == token.length() 
+            && (str.length() == token.length()
             || Character.isUpperCase(str.charAt(token.length())));
     }
 
@@ -1587,7 +1587,7 @@ public class ProxyManagerImpl
         Code code = m.getCode(true);
         code.aload().setThis();
         code.constant().setValue(!runtime);
-        code.invokestatic().setMethod(Proxies.class, "writeReplace", 
+        code.invokestatic().setMethod(Proxies.class, "writeReplace",
             Object.class, new Class[] { Proxy.class, boolean.class });
         code.areturn();
         code.calculateMaxLocals();
@@ -1626,7 +1626,7 @@ public class ProxyManagerImpl
                 matchParam = params[0];
             }
         }
-        return match; 
+        return match;
     }
 
     /**
@@ -1647,19 +1647,19 @@ public class ProxyManagerImpl
      * Usage: java org.apache.openjpa.util.proxy.ProxyManagerImpl [option]*
      * &lt;class name&gt;+<br />
      * Where the following options are recognized:
-     * <ul> 
+     * <ul>
      * <li><i>-utils/-u &lt;number&gt;</i>: Generate proxies for the standard
      * java.util collection, map, date, and calendar classes of the given Java
      * version.  Use 4 for Java 1.4, 5 for Java 5, etc.</li>
      * </ul>
      *
-     * The main method generates .class files for the proxies to the classes    
+     * The main method generates .class files for the proxies to the classes
      * given on the command line.  It writes the generated classes to beside the
-     * ProxyManagerImpl.class file if possible; otherwise it writes to the 
-     * current directory.  The proxy manager looks for these classes 
+     * ProxyManagerImpl.class file if possible; otherwise it writes to the
+     * current directory.  The proxy manager looks for these classes
      * before generating its own proxies at runtime.
      */
-    public static void main(String[] args) 
+    public static void main(String[] args)
         throws ClassNotFoundException, IOException {
         File dir = Files.getClassFile(ProxyManagerImpl.class);
         dir = (dir == null) ? new File(AccessController.doPrivileged(
@@ -1688,7 +1688,7 @@ public class ProxyManagerImpl
                 java.util.TreeMap.class.getName(),
                 java.util.TreeSet.class.getName(),
                 java.util.Vector.class.getName(),
-            })); 
+            }));
         }
         if (utils >= 5) {
             types.addAll(Arrays.asList(new String[] {
@@ -1697,7 +1697,7 @@ public class ProxyManagerImpl
                 "java.util.LinkedHashMap",
                 "java.util.LinkedHashSet",
                 "java.util.PriorityQueue",
-            })); 
+            }));
         }
 
         final ProxyManagerImpl mgr = new ProxyManagerImpl();
@@ -1715,9 +1715,9 @@ public class ProxyManagerImpl
             }
 
             if (Collection.class.isAssignableFrom(cls))
-                bc = mgr.generateProxyCollectionBytecode(cls, false);         
+                bc = mgr.generateProxyCollectionBytecode(cls, false);
             else if (Map.class.isAssignableFrom(cls))
-                bc = mgr.generateProxyMapBytecode(cls, false);         
+                bc = mgr.generateProxyMapBytecode(cls, false);
             else if (Date.class.isAssignableFrom(cls))
                 bc = mgr.generateProxyDateBytecode(cls, false);
             else if (Calendar.class.isAssignableFrom(cls))

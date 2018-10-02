@@ -26,11 +26,11 @@ import javax.persistence.Embeddable;
  * A LocalizedString is any text string combined with a language code. The
  * language codes are two lower-case characters according to ISO-639-1, e.g.
  * "de" = German, "en" = English.
- * 
+ *
  * The language may be null for strings like phone numbers.
- * 
+ *
  * @author Harald Wellmann
- * 
+ *
  */
 @Embeddable
 public class LocalizedString implements Serializable {

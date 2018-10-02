@@ -31,20 +31,20 @@ import javax.persistence.Transient;
 @Entity
 @Access(AccessType.PROPERTY)
 @NamedQueries( {
-    @NamedQuery(name="MixedMultEmbedEntity.query", 
-        query="SELECT fs FROM MixedMultEmbedEntity fs WHERE " + 
-        "fs.mid = :id AND fs.name = :name AND " + 
+    @NamedQuery(name="MixedMultEmbedEntity.query",
+        query="SELECT fs FROM MixedMultEmbedEntity fs WHERE " +
+        "fs.mid = :id AND fs.name = :name AND " +
         "fs.embedProp.firstName = :firstName AND " +
         "fs.embedProp.lastName = :lastName AND " +
         "fs.embedField.fName = :fName AND " +
         "fs.embedField.lName = :lName"),
-    @NamedQuery(name="MixedMultEmbedEntity.badQuery1", 
-        query="SELECT fs FROM MixedMultEmbedEntity fs WHERE " + 
-        "fs.mid = :id AND fs.name = :name AND " + 
+    @NamedQuery(name="MixedMultEmbedEntity.badQuery1",
+        query="SELECT fs FROM MixedMultEmbedEntity fs WHERE " +
+        "fs.mid = :id AND fs.name = :name AND " +
         "fs.epa = :epa"),
-    @NamedQuery(name="MixedMultEmbedEntity.badQuery2", 
-        query="SELECT fs FROM MixedMultEmbedEntity fs WHERE " + 
-        "fs.mid = :id AND fs.name = :name AND " + 
+    @NamedQuery(name="MixedMultEmbedEntity.badQuery2",
+        query="SELECT fs FROM MixedMultEmbedEntity fs WHERE " +
+        "fs.mid = :id AND fs.name = :name AND " +
         "fs.embedProp = :epa AND " +
         "fs.embedField.firstName = :firstName AND " +
         "fs.embedField.lName = :lastName") })
@@ -54,7 +54,7 @@ public class MixedMultEmbedEntity {
     @GeneratedValue
     @Access(AccessType.FIELD)
     private int mid;
-    
+
     private String name;
 
     private EmbedPropAccess epa;
@@ -77,7 +77,7 @@ public class MixedMultEmbedEntity {
     public String getName() {
         return name;
     }
-    
+
     @Embedded
     public EmbedPropAccess getEmbedProp() {
         return epa;

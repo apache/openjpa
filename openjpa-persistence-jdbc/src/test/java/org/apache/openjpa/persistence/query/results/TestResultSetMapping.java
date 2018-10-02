@@ -30,14 +30,14 @@ import org.apache.openjpa.persistence.criteria.results.ShipRate;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestResultSetMapping extends SQLListenerTestCase{
-    
+
     public void setUp() {
-        setUp(CLEAR_TABLES, ShipRate.class);        
+        setUp(CLEAR_TABLES, ShipRate.class);
     }
 
     public void testQuery () {
-        EntityManager em = emf.createEntityManager();         
-        try 
+        EntityManager em = emf.createEntityManager();
+        try
         {
             EntityTransaction tx = em.getTransaction();
             tx.begin();
@@ -45,20 +45,20 @@ public class TestResultSetMapping extends SQLListenerTestCase{
             em.persist(rate);
             tx.commit();
             em.close();
-            
-            em = emf.createEntityManager(); 
+
+            em = emf.createEntityManager();
             //Query query = em.createNativeQuery(sqlStatement, "ShipRateMapping");
             Query query = em.createNamedQuery("selectShipRateQuery");
-            
-            List<ShipRate> results = (List<ShipRate>)query.getResultList();    
+
+            List<ShipRate> results = (List<ShipRate>)query.getResultList();
             assertEquals(1, results.size());
-        } 
+        }
         catch(RuntimeException x)
         {
             x.printStackTrace();
             throw x;
         }
-        finally 
+        finally
         {
             em.close();
         }

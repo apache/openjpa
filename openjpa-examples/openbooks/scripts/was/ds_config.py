@@ -44,7 +44,7 @@ def getNodeId ():
 	if (len(nodeList) == 1):
 		node = nodeList[0]
 	#endIf
-   
+
 	return node
 #endDef
 
@@ -55,7 +55,7 @@ def getNodeId ():
 #-----------------------------------------------------------------
 def getServerId ():
 	serverList = AdminConfig.list("Server").split("\n")
-	
+
 	server = serverList[0]
 	return server
 #endDef
@@ -63,7 +63,7 @@ def getServerId ():
 def addDatasourceProperty (datasourceId, name, value):
     parms = ["-propertyName", name, "-propertyValue", value]
     AdminTask.setResourceProperty(datasourceId, parms)
-#endDef 
+#endDef
 
 # Set the default database provider to Derby
 DefaultProviderType="Derby"

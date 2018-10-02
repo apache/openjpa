@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -119,7 +119,7 @@ public class CollectionParam
         public ClassMapping[] mapping = null;
         public Discriminator[] disc = null;
         public Object discValue[] = null;
-        
+
         ParamExpState(Object params) {
             if (params instanceof Collection)
                 size = ((Collection) params).size();
@@ -136,9 +136,9 @@ public class CollectionParam
                 discValue[i] = null;
             }
         }
-    } 
+    }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
         ParamExpState pstate = (ParamExpState) state;
@@ -179,12 +179,12 @@ public class CollectionParam
         }
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         ParamExpState pstate = (ParamExpState) state;
         for (int i = 0; i < pstate.size; i++) {
             if (pstate.otherLength[i] > 1)
-                sql.appendValue(((Object[]) pstate.sqlValue[i])[index], 
+                sql.appendValue(((Object[]) pstate.sqlValue[i])[index],
                         pstate.getColumn(index), this);
             else if (pstate.cols != null)
                 sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index),

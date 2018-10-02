@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -371,10 +371,10 @@ class LRSProxyMap
             try {
 
                 if (!keyDerived)
-                    entry.key = _strat.loadKey(_sm, _store, _fetch, _res[0], 
+                    entry.key = _strat.loadKey(_sm, _store, _fetch, _res[0],
                         _joins[0]);
                 if (!valDerived)
-                    entry.val = _strat.loadValue(_sm, _store, _fetch, _res[1], 
+                    entry.val = _strat.loadValue(_sm, _store, _fetch, _res[1],
                         _joins[1]);
                 if (keyDerived)
                     entry.key = _strat.deriveKey(_store, entry.val);

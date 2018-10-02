@@ -23,7 +23,7 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
     http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 
-    <!-- 
+    <!--
          This is the original PU from 1.0, but running as a 2.0 app
     -->
     <persistence-unit name="Annuity2Compat">
@@ -39,7 +39,7 @@
         <class>org.apache.openjpa.persistence.proxy.entities.Person</class>
         <class>org.apache.openjpa.persistence.proxy.entities.Rider</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>			
+        <properties>
             <property name="openjpa.DetachState"
                 value="fgs(DetachedStateField=true)" />
             <property name="openjpa.jdbc.SynchronizeMappings"

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -170,7 +170,7 @@ public class MappingTool
             _mode = MODE_MAPPING;
 
         _loader = loader;
-        
+
         _dict = _conf.getDBDictionaryInstance();
     }
 
@@ -321,7 +321,7 @@ public class MappingTool
     public boolean getIgnoreErrors() {
         return _ignoreErrors;
     }
-    
+
     /**
      * If true, rollback will be performed before each DDL statement is executed. Defaults to true.
      */
@@ -435,7 +435,7 @@ public class MappingTool
                 DynamicSchemaFactory factory = new DynamicSchemaFactory();
                 factory.setConfiguration(_conf);
                 _schema = factory;
-            } else if (_readSchema 
+            } else if (_readSchema
                 || contains(_schemaActions,SchemaTool.ACTION_RETAIN)
                 || contains(_schemaActions,SchemaTool.ACTION_REFRESH)) {
                 _schema = (SchemaGroup) newSchemaTool(null).getDBSchemaGroup().
@@ -488,12 +488,12 @@ public class MappingTool
     public void record() {
         record(null);
     }
-    
+
     public void record(MappingTool.Flags flags) {
         MappingRepository repos = getRepository();
         MetaDataFactory io = repos.getMetaDataFactory();
         ClassMapping[] mappings;
-        
+
         if (!ACTION_DROP.equals(_action))
             mappings = repos.getMappings();
         else if (_dropMap != null)
@@ -748,7 +748,7 @@ public class MappingTool
         ClassMapping mapping = repos.getMapping(cls, null, false);
         if (mapping != null)
             return mapping;
-        if (!validate || cls.isInterface() 
+        if (!validate || cls.isInterface()
             || repos.getPersistenceAware(cls) != null)
             return null;
         throw new MetaDataException(_loc.get("no-meta", cls, cls.getClassLoader()));
@@ -874,8 +874,8 @@ public class MappingTool
     ////////
 
     /**
-     * Usage: java org.apache.openjpa.jdbc.meta.MappingTool [option]* 
-     * [-action/-a &lt;refresh | add | buildSchema | drop | validate | import 
+     * Usage: java org.apache.openjpa.jdbc.meta.MappingTool [option]*
+     * [-action/-a &lt;refresh | add | buildSchema | drop | validate | import
      * | export&gt;] &lt;class name | .java file | .class file | .jdo file&gt;*
      * Where the following options are recognized.
      * <ul>
@@ -973,7 +973,7 @@ public class MappingTool
      * <ul>
      * <li>Refresh the mappings for given package, without dropping any
      * schema components:<br />
-     * <code>java org.apache.openjpa.jdbc.meta.MappingTool 
+     * <code>java org.apache.openjpa.jdbc.meta.MappingTool
      *      mypackage.jdo</code></li>
      * <li>Refresh the mappings for all persistent classes in the classpath,
      * dropping any unused columns and even tables:<br />
@@ -1178,7 +1178,7 @@ public class MappingTool
             throw new InternalException(_loc.get("importexport-instantiate"),t);
         }
     }
-    
+
     private static boolean contains(String list, String key) {
     	return (list == null) ? false : list.indexOf(key) != -1;
     }

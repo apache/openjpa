@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 import javax.persistence.Entity;
@@ -28,46 +28,46 @@ import javax.persistence.OneToOne;
 public class EntityDInverseEager  {
 	@GeneratedValue
 	@Id private int id;
-    
+
     private String name;
-    
+
     private int loginCount;
-    
+
     private int logoutCount;
-    
+
     private String email;
-    
+
 
 	@OneToOne(fetch=FetchType.EAGER)
 	private EntityCInverseEager entityC = null;
-	
+
 	public EntityDInverseEager() {}
-	
-	public EntityDInverseEager(String name, String email, int loginCount, 
+
+	public EntityDInverseEager(String name, String email, int loginCount,
 	    int logoutCount) {
 	    this.name = name;
 	    this.email = email;
 	    this.loginCount = loginCount;
 	    this.logoutCount = logoutCount;
-    
+
 	}
-	
+
 	public EntityCInverseEager getC() {
 		return entityC;
 	}
-	
+
 	public void setC(EntityCInverseEager entityC) {
 		this.entityC = entityC;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
-	
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -75,7 +75,7 @@ public class EntityDInverseEager  {
     public String getEmail() {
         return email;
     }
-    
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -83,7 +83,7 @@ public class EntityDInverseEager  {
     public int getLoginCount() {
         return loginCount;
     }
-    
+
     public void setLoginCount(int loginCount) {
         this.loginCount = loginCount;
     }
@@ -91,7 +91,7 @@ public class EntityDInverseEager  {
     public int getLogoutCount() {
         return logoutCount;
     }
-    
+
     public void setLogoutCount(int logoutCount) {
         this.logoutCount = logoutCount;
     }}

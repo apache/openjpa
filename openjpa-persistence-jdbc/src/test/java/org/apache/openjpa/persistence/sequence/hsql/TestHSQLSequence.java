@@ -30,14 +30,14 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 /**
  * The test case demonstrates the expected return id sequence should be:
  * "1, 2, 3, 4, 5, ..." regardless of the HSQL database version being used.
- * 
+ *
  * In version 2.1.* onward, "SELECT NEXT VALUE ..." query returns two times the
  * sequence's "INCREMENT BY" value, for example: allocationSize=1 returns
  * "1, 2". The next call returns "3, 4". Therefore, the id sequence returned
  * (without "LIMIT 1") are: "1, 3, 5, 7, 9, ...". By the same token, using
  * allocationSize=2 returns "1, 2, 3, 4". The next call returns "5, 6, 7, 8".
  * The id sequence returned then (without "LIMIT 1") are: "1, 2, 5, 6, 9, ...".
- * 
+ *
  * For HSQL version 2.1.0 rc4 and beyond, the dictionary needs to append
  * "LIMIT 1" to the nextSequenceQuery field in HSQLDictionary.java to ensure
  * single value is returned in "SELECT NEXT VALUE ..." request. This forces HSQL

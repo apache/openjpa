@@ -30,12 +30,12 @@
         class=
         "org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess2">
         <named-query name="XMLDPMFA2.query">
-            <query>SELECT dp FROM XMLDPMFA2 dp WHERE 
+            <query>SELECT dp FROM XMLDPMFA2 dp WHERE
             dp.id = :id AND dp.strField = :strVal
             </query>
         </named-query>
         <named-query name="XMLDPMFA2.badQuery">
-            <query>SELECT p FROM XMLDPMFA2 p WHERE 
+            <query>SELECT p FROM XMLDPMFA2 p WHERE
             p.id = :id AND p.strProp = :strVal
             </query>
         </named-query>
@@ -43,15 +43,15 @@
             <id name="id">
                 <generated-value/>
             </id>
-            <basic name="strField" access="FIELD"/>            
+            <basic name="strField" access="FIELD"/>
             <version name="version"/>
             <transient name="strProp"/>
         </attributes>
     </entity>
-    <entity name="XMLPropAccess2" 
+    <entity name="XMLPropAccess2"
             class="org.apache.openjpa.persistence.access.xml.XMLPropAccess2">
         <named-query name="XMLPropAccess2.query">
-            <query>SELECT xpa FROM XMLPropAccess2 xpa WHERE 
+            <query>SELECT xpa FROM XMLPropAccess2 xpa WHERE
             xpa.id = :id AND xpa.strProp = :strVal
             </query>
         </named-query>
@@ -59,8 +59,8 @@
             <id name="id">
                 <generated-value/>
             </id>
-            <basic name="strProp"/>            
+            <basic name="strProp"/>
             <version name="version"/>
         </attributes>
-    </entity>    
+    </entity>
 </entity-mappings>

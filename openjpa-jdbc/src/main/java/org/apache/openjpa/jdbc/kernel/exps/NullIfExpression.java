@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -78,10 +78,10 @@ public class NullIfExpression
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf, int index) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
-        
+
         buf.append(" NULLIF("); // MySQL does not like space before bracket
 
         _val1.appendTo(sel, ctx, bstate.state1, buf, 0);
@@ -91,7 +91,7 @@ public class NullIfExpression
         buf.append(")");
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val1.selectColumns(sel, ctx, bstate.state1, true);
@@ -151,28 +151,28 @@ public class NullIfExpression
     }
 
     public void setImplicitType(Class type) {
-        _cast = type;        
+        _cast = type;
     }
 
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
-    
+
     public void setOtherPath(Value other) {
         this.other = other;
     }
-    
+
     public Value getOtherPath() {
         return other;
     }
-    
+
     public void setOtherState(ExpState otherState) {
         this.otherState = otherState;
     }
-    
+
     public ExpState getOtherState() {
         return otherState;
     }
-    
+
 }
 

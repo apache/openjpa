@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
@@ -39,22 +39,22 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 public class TestMultiDFG
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {    
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private Object boid;
-    
+
     public TestMultiDFG(String name) {
         super(name);
     }
-    
-    
+
+
     /** Creates a new instance of TestMultiDFG */
     public TestMultiDFG() {
     }
-    
+
     public void setUp() {
-        
+
        deleteAll(MultiB.class);
-        
+
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         EntityTransaction t = pm.getTransaction();
         t.begin();
@@ -64,30 +64,30 @@ public class TestMultiDFG
         boid = pm.getObjectId(b);
         pm.close();
     }
-    
+
     public void testDFG() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         MultiB b = (MultiB) pm.getObjectId(boid);
-        
+
         // check the non-dfg fields
         OpenJPAStateManager sm = getStateManager(b, pm);
         FieldMetaData fmd = sm.getMetaData().getField("bString");
         assertTrue("bString should not be loaded",
                 !sm.getLoaded().get(fmd.getIndex()));
-        
+
         fmd = sm.getMetaData().getField("bInt");
         assertTrue("bInt should not be loaded",
                 !sm.getLoaded().get(fmd.getIndex()));
-        
+
         System.out.println("### getting values");
         b.getBString();
-        
+
         System.out.println("### getting values again");
         b.getString0();
         b.getBString();
-        
+
         pm.close();
     }
-    
-    
+
+
 }

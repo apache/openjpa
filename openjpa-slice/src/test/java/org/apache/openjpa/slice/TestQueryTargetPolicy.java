@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -25,15 +25,15 @@ import javax.persistence.Query;
 
 /**
  * Tests query ordering.
- * 
- * @author Pinaki Poddar 
+ *
+ * @author Pinaki Poddar
  *
  */
 public class TestQueryTargetPolicy extends SliceTestCase {
 
     private int POBJECT_COUNT = 2;
     private int VALUE_MIN = 100;
-    
+
     protected String getPersistenceUnitName() {
         return "ordering";
     }
@@ -41,7 +41,7 @@ public class TestQueryTargetPolicy extends SliceTestCase {
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
                 Car.class, Manufacturer.class,
-                "openjpa.slice.QueryTargetPolicy", 
+                "openjpa.slice.QueryTargetPolicy",
                 "org.apache.openjpa.slice.policy.SampleQueryTargetPolicy",
         		CLEAR_TABLES);
         int count = count(PObject.class);
@@ -49,9 +49,9 @@ public class TestQueryTargetPolicy extends SliceTestCase {
             create(POBJECT_COUNT);
         }
     }
-    
-    
-    
+
+
+
     void create(int N) {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -77,13 +77,13 @@ public class TestQueryTargetPolicy extends SliceTestCase {
         em.persist(p2);
         assertEquals("Even", SlicePersistence.getSlice(p1));
         assertEquals("Odd", SlicePersistence.getSlice(p2));
-        
+
         em.getTransaction().commit();
     }
-    
+
     public static final String QueryPersonByName = "select p from Person p where p.name=:name";
     public static final String QueryPersonByNameSwap = "select q from Person q where q.name=:name";
-    
+
     public void testTargetSingleSlice() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -99,16 +99,16 @@ public class TestQueryTargetPolicy extends SliceTestCase {
         assertArrayEquals(new String[]{"Odd"}, targets2);
         assertTrue(result2.isEmpty());
     }
-    
+
     <T> void assertArrayEquals(T[] a, T[] b) {
         assertEquals(a.length, b.length);
         for (int i = 0; i < a.length; i++)
             assertEquals(a[i], b[i]);
     }
-    
-    
+
+
     /**
-     * Gets the slice names on which the given query is targeted. 
+     * Gets the slice names on which the given query is targeted.
      * @param q
      */
     public static String[] getTargetSlices(Query q) {
@@ -117,12 +117,12 @@ public class TestQueryTargetPolicy extends SliceTestCase {
          .getHint(SlicePersistence.HINT_TARGET);
         if (targets == null)
             return null;
-        if (targets instanceof String) 
+        if (targets instanceof String)
             return new String[]{targets.toString()};
         if (targets instanceof String[]) {
             return (String[])targets;
         }
         return null;
-    }    
-    
+    }
+
 }

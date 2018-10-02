@@ -28,11 +28,11 @@ import org.apache.openjpa.persistence.jdbc.VersionColumns;
 import org.apache.openjpa.persistence.jdbc.VersionStrategy;
 
 /**
- * Persistent entity for testing multiple column numeric version strategy as 
+ * Persistent entity for testing multiple column numeric version strategy as
  * set by @VersionColumns annotations.
- * 
+ *
  * The version columns can have numeric values of different types.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -40,7 +40,7 @@ import org.apache.openjpa.persistence.jdbc.VersionStrategy;
 @Table(name="MCV")
 @VersionStrategy("version-numbers")
 @VersionColumns({
-	@VersionColumn(name="v1"), 
+	@VersionColumn(name="v1"),
 	@VersionColumn(name="v2"),
     @VersionColumn(name="v3", columnDefinition="FLOAT", scale=3, precision=10)
 })
@@ -48,7 +48,7 @@ public class MultiColumnVersionPC {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private String name;
 
 	public long getId() {

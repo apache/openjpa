@@ -24,9 +24,9 @@ import javax.persistence.EntityTransaction;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /*
- * OPENJPA-2704: These tests expand on TestSchemaPUDefault to verify 
- * that a schema defined in an orm's persistence-unit-default is 
- * overriden by the "openjpa.jdbc.Schema" property .  
+ * OPENJPA-2704: These tests expand on TestSchemaPUDefault to verify
+ * that a schema defined in an orm's persistence-unit-default is
+ * overriden by the "openjpa.jdbc.Schema" property .
  */
 public class TestOpenJPASchemaPUDefault extends SQLListenerTestCase {
 

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.jdbc;
 
@@ -139,7 +139,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
                 JDBCEvent.BEFORE_CREATE_STATEMENT, null, null, null);
             Statement stmnt = null;
             try {
-                stmnt = new EventStatement(super.createStatement(false), 
+                stmnt = new EventStatement(super.createStatement(false),
                     EventConnection.this);
             } finally {
                 fireEvent(getDelegate(), JDBCEvent.AFTER_CREATE_STATEMENT,

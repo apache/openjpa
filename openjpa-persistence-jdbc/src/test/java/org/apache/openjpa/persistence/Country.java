@@ -25,7 +25,7 @@ public class Country {
     @Id
     @Column(name="COUNTRY_ID")
     private long id;
-    
+
     @Column(name="NAME")
     private String name;
 

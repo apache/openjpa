@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.conf;
 
@@ -156,7 +156,7 @@ public class MappingFactoryValue
         // if no mapping setting, return meta factory alone, assuming it handles
         // both metadata and mapping
         MetaDataFactory ret = null;
-        if(map == null ) { 
+        if(map == null ) {
             ret = meta;
         }
         else {
@@ -167,8 +167,8 @@ public class MappingFactoryValue
                 ret = new MetaDataPlusMappingFactory(meta, map);
             }
         }
-        
-        return ret; 
-        
+
+        return ret;
+
     }
 }

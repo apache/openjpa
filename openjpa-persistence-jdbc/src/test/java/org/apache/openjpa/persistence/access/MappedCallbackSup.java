@@ -23,12 +23,12 @@ import javax.persistence.PrePersist;
 
 /*
  * Mapped superclass which contains no persistent attributes, but contains
- * a callback. 
+ * a callback.
  */
 @MappedSuperclass
 public class MappedCallbackSup {
 
     @PrePersist
     public void prePersist() {
-    }    
+    }
 }

@@ -19,23 +19,23 @@
 package org.apache.openjpa.enhance.ids;
 
 public class HardwareId {
-    
+
     public static boolean[] usedConstructor = new boolean[2];
 
     private String serial;
-    
+
     private String model;
-    
+
     public HardwareId() {
     }
-    
+
     // Parms out of order
     public HardwareId(String model, String serial) {
         usedConstructor[0] = true;
         this.serial = serial;
         this.model = model;
     }
-    
+
     public HardwareId(String model,int serial) {
         usedConstructor[1] = true;
         this.model = model;
@@ -49,7 +49,7 @@ public class HardwareId {
     public String getModel() {
         return model;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof HardwareId) {
@@ -59,7 +59,7 @@ public class HardwareId {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return getSerial().hashCode() + getModel().hashCode();

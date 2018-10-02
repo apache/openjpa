@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -31,15 +31,15 @@ import javax.persistence.Table;
 @Table(name="ANNUITY_HOLDER")
 @AttributeOverride(name="lastUpdateDate", column=@Column(name="LAST_UPDATE_TS"))
 public class AnnuityHolder extends Person implements IAnnuityHolder{
-	private static final long serialVersionUID = 3307367871936336517L;	
+	private static final long serialVersionUID = 3307367871936336517L;
 	private AnnuityHolderCategory category;
-	
+
 	@Column(name="CATEGORY")
-	@Enumerated(EnumType.ORDINAL)	
+	@Enumerated(EnumType.ORDINAL)
 	public AnnuityHolderCategory getCategory() {
 		return this.category;
 	}
-	
+
 	public void setCategory(AnnuityHolderCategory category) {
 		this.category = category;
 	}

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.ee;
 
@@ -92,7 +92,7 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
                 forName("org.apache.openjpa.ee.RegistryManagedRuntime").
                     newInstance();
         } catch (Throwable t) {
-            // might be JTA version lower than 1.1, which doesn't have 
+            // might be JTA version lower than 1.1, which doesn't have
             // TransactionSynchronizationRegistry
         }
         REGISTRY = mr;
@@ -123,7 +123,7 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
             // In a WebSphere environment the thread's current classloader might
             // not have access to the WebSphere APIs. However the "runtime"
             // classloader will have access to them.
-            
+
             // Should not need a doPriv getting this class' classloader
             ClassLoader cl = AutomaticManagedRuntime.class.getClassLoader();
 
@@ -141,7 +141,7 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
 
     private Configuration _conf = null;
     private ManagedRuntime _runtime = null;
-    
+
     public TransactionManager getTransactionManager()
         throws Exception {
         if (_runtime != null)
@@ -285,14 +285,14 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
 
         return null;
     }
-    
+
     public Object getTransactionKey() throws Exception, SystemException {
-        if(_runtime == null) 
+        if(_runtime == null)
             getTransactionManager();
-        
+
         if(_runtime != null )
             return _runtime.getTransactionKey();
-        
+
         return null;
     }
 

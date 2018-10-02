@@ -59,37 +59,37 @@ public class QuoteDataBean implements Serializable {
     @Id
     @Column(name = "SYMBOL", nullable = false)
     private String symbol;          /* symbol */
-    
+
     @Column(name = "COMPANYNAME")
     private String companyName;     /* companyName */
-    
+
     @Column(name = "VOLUME", nullable = false)
     private double volume;          /* volume */
-    
+
     @Column(name = "PRICE")
     private BigDecimal price;       /* price */
-    
+
     @Column(name = "OPEN1")
     private BigDecimal open1;       /* open1 price */
-    
+
     @Column(name = "LOW")
     private BigDecimal low;         /* low price */
-    
+
     @Column(name = "HIGH")
     private BigDecimal high;        /* high price */
-    
+
     @Column(name = "CHANGE1", nullable = false)
     private double change1;         /* price change */
-    
+
     /* @OneToMany(mappedBy = "quote")
     private Collection<OrderDataBean> orders;
     */
-    
+
 //    @Version
 //    private Integer optLock;
 
     /* Accessor methods for relationship fields are not kept in the DataBean */
-    
+
     public QuoteDataBean() {
     }
 
@@ -222,7 +222,7 @@ public class QuoteDataBean implements Serializable {
         hash += (this.symbol != null ? this.symbol.hashCode() : 0);
         return hash;
     }
-    
+
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set

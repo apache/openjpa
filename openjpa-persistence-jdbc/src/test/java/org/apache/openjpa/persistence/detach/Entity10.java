@@ -35,12 +35,12 @@ public class Entity10 {
     private String name;
     @OneToMany(cascade=(CascadeType.ALL))
     private Collection<Entity8> collection;
-    
+
     private Collection<Integer> intCollection;
-    
+
     @ElementCollection
     private Collection<String> stringCollection;
-    
+
     public Entity10() {
         initialize();
     }
@@ -50,12 +50,12 @@ public class Entity10 {
         this.name = name;
         initialize();
     }
-    
+
     private void initialize() {
         intCollection = new ArrayList<Integer>();
         intCollection.add(new Integer(1));
         intCollection.add(new Integer(99));
-        
+
         stringCollection = new HashSet<String>();
         stringCollection.add(new String("xxx"));
         stringCollection.add(new String("yyy"));

@@ -44,7 +44,7 @@ public enum AutoDetachType {
 
     public static EnumSet<AutoDetachType> toEnumSet(int autoDetach) {
         EnumSet<AutoDetachType> types = EnumSet.noneOf(AutoDetachType.class);
-        if ((autoDetach & AutoDetach.DETACH_NONE) != 0) 
+        if ((autoDetach & AutoDetach.DETACH_NONE) != 0)
         	types.add(NONE);
         if ((autoDetach & AutoDetach.DETACH_CLOSE) != 0)
             types.add(CLOSE);

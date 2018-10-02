@@ -32,26 +32,26 @@ public class EntityB {
 
 	@Id
 	int id;
-	
+
 	@Column(length=30)
     @Basic(fetch=FetchType.LAZY)
 	String name;
-	
+
 	@OneToOne
 	EntityA entityA;
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
-	
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -59,11 +59,11 @@ public class EntityB {
     public EntityA getEntityA() {
         return entityA;
     }
-    
+
     public void setEntityA(EntityA entityA) {
         this.entityA = entityA;
     }
-    
+
 
 }
 

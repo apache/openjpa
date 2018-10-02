@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.common.apps;
 
@@ -29,7 +29,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -51,7 +51,7 @@ public class Shirt extends Textile implements Serializable {
     @OneToMany(cascade=CascadeType.ALL, mappedBy="shirt", fetch=FetchType.EAGER, orphanRemoval=true)
     Collection<Part> parts = new ArrayList<Part>();
 
-    
+
     public Collection<Part> getParts() {
         return parts;
     }

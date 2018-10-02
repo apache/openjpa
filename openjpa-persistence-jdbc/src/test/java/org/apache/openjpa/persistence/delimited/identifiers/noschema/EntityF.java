@@ -42,10 +42,10 @@ import javax.persistence.UniqueConstraint;
         @UniqueConstraint(columnNames={"\"nsf name\"", "nsf_nonDelimName"}))
 @SecondaryTable(name="\"nssecondary entityF\"",
     uniqueConstraints=
-        @UniqueConstraint(name="\"nssec unq\"", 
+        @UniqueConstraint(name="\"nssec unq\"",
             columnNames={"\"nssecondary name\""}))
 public class EntityF {
-    @TableGenerator(name = "f_id_gen", table = "\"nsf id gen\"", 
+    @TableGenerator(name = "f_id_gen", table = "\"nsf id gen\"",
         pkColumnName = "\"nsgen pk\"", valueColumnName = "\"nsgen value\"")
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "f_id_gen")
     @Id
@@ -58,33 +58,33 @@ public class EntityF {
     private String nonDelimName;
     @Column(name="\"nssecondary name\"", table="\"nssecondary entityF\"")
     private String secName;
-    
+
     @ElementCollection
     // CollectionTable with default name generation
     @CollectionTable
     private Set<String> nscs = new HashSet<String>();
-    
+
     @ElementCollection
     @CollectionTable(name="\"nsc DelSet\"")
     private Set<String> nscds = new HashSet<String>();
-    
+
     @ElementCollection
     // MapKeyColumn with default name generation
     @MapKeyColumn
     private Map<String, String> nscollMap = new HashMap<String, String>();
-    
+
     @ElementCollection
     // Note: Delimited column definition is not supported on some DBs, so
     // it is not delimited here
     // TODO: create a separate entity and conditionally run the test on a supported DB
     @MapKeyColumn(name="\"nsmap Key\"", columnDefinition="varchar(20)", table="\"nsd c map\"")
-    private Map<String, String> delimCollectionMap = 
+    private Map<String, String> delimCollectionMap =
         new HashMap<String, String>();
-    
+
     public EntityF(String name) {
         this.name = name;
     }
-    
+
     /**
      * @return the id
      */
@@ -151,7 +151,7 @@ public class EntityF {
     public void setCollectionSet(Set<String> collectionSet) {
         this.nscs = collectionSet;
     }
-    
+
     public void addCollectionSet(String item) {
         nscs.add(item);
     }
@@ -168,8 +168,8 @@ public class EntityF {
      */
     public void setCollectionDelimSet(Set<String> collectionDelimSet) {
         this.nscds = collectionDelimSet;
-    } 
-    
+    }
+
     public void addCollectionDelimSet(String item) {
         this.nscds.add(item);
     }
@@ -205,7 +205,7 @@ public class EntityF {
     public void setDelimCollectionMap(Map<String, String> delimCollectionMap) {
         this.delimCollectionMap = delimCollectionMap;
     }
-    
+
     public void addDelimCollectionMap(String key, String value) {
         delimCollectionMap.put(key, value);
     }

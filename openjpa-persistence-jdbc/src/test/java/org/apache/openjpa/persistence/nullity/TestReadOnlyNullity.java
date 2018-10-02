@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.nullity;
 
@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 /**
  * Testcase that verifies that null checking is omitted for "read only" fields.
  * An example use case is a Date field that is set by the database (although in
- * that case the field would be updateable=false and insertable=false).  
+ * that case the field would be updateable=false and insertable=false).
  */
 public class TestReadOnlyNullity extends AbstractNullityTestCase {
 
@@ -47,7 +47,7 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
 
     /**
      * Test that a non-insertable field may be set to null. This test is skipped
-     * for non-db2 databases. 
+     * for non-db2 databases.
      */
     public void testNonInsertableBlobDoesNotFail() {
         if (!skip) {
@@ -60,7 +60,7 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
 
     /**
      * Test that a non-updatable field may be set to null. This test is skipped
-     * for non-db2 databases. 
+     * for non-db2 databases.
      */
     public void testNonUpdatableBlobDoesNotFail() {
         if (!skip) {

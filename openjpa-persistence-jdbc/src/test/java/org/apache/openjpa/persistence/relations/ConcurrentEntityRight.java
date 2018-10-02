@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -30,16 +30,16 @@ import javax.persistence.OneToMany;
 public class ConcurrentEntityRight {
 	@Id
 	private int id;
-	
+
 	private String strData;
-	
-	@OneToMany(mappedBy="rightEntity", targetEntity=ConcurrentEntityLeft.class, 
+
+	@OneToMany(mappedBy="rightEntity", targetEntity=ConcurrentEntityLeft.class,
 			cascade={javax.persistence.CascadeType.ALL})
 	@MapKey(name="strData")
 	private Map<String, ConcurrentEntityLeft> leftEntityMap;
-	
+
 	public ConcurrentEntityRight() {
-		leftEntityMap = new ConcurrentHashMap<String, ConcurrentEntityLeft>();	
+		leftEntityMap = new ConcurrentHashMap<String, ConcurrentEntityLeft>();
 	}
 
 	public int getId() {

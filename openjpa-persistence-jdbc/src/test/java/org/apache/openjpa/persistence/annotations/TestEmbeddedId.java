@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.annotations;
 
@@ -91,7 +91,7 @@ public class TestEmbeddedId extends AnnotationTestCase
         e1.setValue("e1");
         EmbeddedIdEntity e2 = new EmbeddedIdEntity();
         e2.setValue("e2");
-        
+
         e2.setId(new EmbeddedIdClass());
         //Comment this since pk3 is auto-generated and assigning
         //it explicitly causes a rollback
@@ -134,7 +134,7 @@ public class TestEmbeddedId extends AnnotationTestCase
         endEm(em);
     }
 
-    public void testMutateEmbeddedIdFieldValueOfExisting() 
+    public void testMutateEmbeddedIdFieldValueOfExisting()
     {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);

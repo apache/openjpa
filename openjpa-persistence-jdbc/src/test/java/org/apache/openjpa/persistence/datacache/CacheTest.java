@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -170,7 +170,7 @@ public abstract class CacheTest extends AbstractTestCase {
          * OpenJPA does not seem to support plural configuration properties.  (Although it seems
          * that Kodo does...)  Until OpenJPA is updated to support this multiple configuration
          * setting, the following configuration item will be disabled...
-         * 
+         *
          * Specifically, this type of configuration is currently not allowed...
          * <property name="openjpa.DataCache" value="true, true(Name=xxx)"/>
          */
@@ -991,7 +991,7 @@ public abstract class CacheTest extends AbstractTestCase {
 
             // get starting time for sleep calculations below
             Date startTime = new Date();
-            
+
             CacheObjectE e = new CacheObjectE("e");
             em.persist(e);
 
@@ -1003,7 +1003,7 @@ public abstract class CacheTest extends AbstractTestCase {
 
             CacheObjectH h = new CacheObjectH("h");
             em.persist(h);
-            
+
             endTx(em);
 
             // get post-persist time for sleep calculations below
@@ -1037,7 +1037,7 @@ public abstract class CacheTest extends AbstractTestCase {
             long diff = (currentTime.getTime() - startTime.getTime());
             long diff2 = (currentTime.getTime() - persistTime.getTime());
             long sleep = 0;
-            
+
             getLog().info("CacheTest.timeoutsHelper() testing all are still in the cache, elapsed time="+diff);
             DataCache cache = cacheManager(factory).getDataCache(
                 DataCache.NAME_DEFAULT, false);
@@ -1050,7 +1050,7 @@ public abstract class CacheTest extends AbstractTestCase {
                 getLog().warn("CacheTest.timeoutsHelper() skipping checkCache(all, <500) because diff=" +
                     diff + " and diff2=" + diff2);
             }
-            
+
             // should cause h to be dropped (timeout=500)
             currentTime = new Date();
             diff = (currentTime.getTime() - startTime.getTime());
@@ -1239,7 +1239,7 @@ public abstract class CacheTest extends AbstractTestCase {
                 CacheMap map = ((ConcurrentDataCache) cache).getCacheMap();
                 map.setCacheSize(3);
                 map.setSoftReferenceSize(0);
-            } 
+            }
 
             startTx(em);
             CacheObjectH h = new CacheObjectH("h");
@@ -1291,13 +1291,13 @@ public abstract class CacheTest extends AbstractTestCase {
             }
             assertTrue("Could not kick queried objects out of cache",
                 attempts < 100);
-            
+
             /*
              * Not a valid test...  At least not with the current implementation...
-             * 
+             *
              * Just removing items from the DataCache (as done via the previous loop) is not sufficient
              * to remove the entries from the QueryCache.  Currently, this notification is done at the end
-             * of a transaction after inserts, updates, and deletes have been performed.  Then, the 
+             * of a transaction after inserts, updates, and deletes have been performed.  Then, the
              * updateCaches() method is invoked on the DataCacheStoreManager which will flow the request to
              * the QueryCache.  With no direct updates to the "Entities of interest", then there's nothing to
              * flow over to the QueryCache for cleanup.  Even putting the above loop within a transaction is

@@ -22,7 +22,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
     version="2.0">
-    
+
     <entity class="org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEntityA">
         <attributes>
             <id name="id">
@@ -54,7 +54,7 @@
             </element-collection>
         </attributes>
     </entity>
-    
+
     <entity class="org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEntityB">
         <attributes>
             <id name="id">
@@ -83,8 +83,8 @@
                 </cascade>
             </one-to-one>
         </attributes>
-    </embeddable>    
-    
+    </embeddable>
+
     <embeddable class="org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEmbedB">
         <attributes>
             <basic name="name"/>
@@ -99,6 +99,6 @@
                 </cascade>
             </one-to-one>
         </attributes>
-    </embeddable>    
-    
+    </embeddable>
+
 </entity-mappings>

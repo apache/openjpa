@@ -31,7 +31,7 @@ public class Invoice {
     private int id;
     @Id
     private String brandName;
-    
+
     private double price;
 
     @OneToMany(cascade={CascadeType.ALL})

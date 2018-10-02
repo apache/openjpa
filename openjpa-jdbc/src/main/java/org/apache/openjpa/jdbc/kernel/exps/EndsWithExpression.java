@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -55,7 +55,7 @@ class EndsWithExpression
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val1.calculateValue(sel, ctx, bstate.state1, _val2, bstate.state2);
@@ -71,7 +71,7 @@ class EndsWithExpression
             post = func.substring(idx + 3);
         }
 
-        if (_val1 instanceof Const && ((Const) _val1).getValue(ctx, 
+        if (_val1 instanceof Const && ((Const) _val1).getValue(ctx,
             bstate.state1) == null)
             buf.append("1 <> 1");
         else if (_val2 instanceof Const) {
@@ -94,9 +94,9 @@ class EndsWithExpression
             // if we can't use LIKE, we have to take the substring of the
             // first value and compare it to the second
             dict.assertSupport(pre != null, "StringLengthFunction");
-            dict.substring(buf, 
+            dict.substring(buf,
                 new FilterValueImpl(sel, ctx, bstate.state1, _val1),
-                new StringLengthDifferenceFilterValue(sel, ctx, bstate, pre, 
+                new StringLengthDifferenceFilterValue(sel, ctx, bstate, pre,
                     post), null);
             buf.append(" = ");
             _val2.appendTo(sel, ctx, bstate.state2, buf, 0);
@@ -105,7 +105,7 @@ class EndsWithExpression
         sel.append(buf, state.joins);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val1.selectColumns(sel, ctx, bstate.state1, true);
@@ -131,7 +131,7 @@ class EndsWithExpression
         private final String _pre;
         private final String _post;
 
-        public StringLengthDifferenceFilterValue(Select sel, ExpContext ctx, 
+        public StringLengthDifferenceFilterValue(Select sel, ExpContext ctx,
             BinaryOpExpState state, String pre, String post) {
             _sel = sel;
             _ctx = ctx;
@@ -195,11 +195,11 @@ class EndsWithExpression
         public FieldMapping getFieldMapping() {
             return null;
         }
-        
+
         public PCPath getXPath() {
             return null;
         }
-        
+
         public XMLMetaData getXmlMapping() {
             return null;
         }

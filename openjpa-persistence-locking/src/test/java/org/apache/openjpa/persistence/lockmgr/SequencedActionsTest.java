@@ -555,7 +555,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     break;
                 case Notify:
                 	// sleep and let other threads has a chance to wait,
-                	// otherwise this notify may trigger before the other 
+                	// otherwise this notify may trigger before the other
                 	// thread has a chance to wait.
                 	Thread.sleep(500);
                     int notifyThreadid = 0;
@@ -920,7 +920,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
             if (thisThread.assertError != null) {
                 throw thisThread.assertError;
             }
-//            Throwable firstThrowable = thisThread.throwable;            
+//            Throwable firstThrowable = thisThread.throwable;
 //            if (firstThrowable != null) {
 //                if( firstThrowable instanceof Error )
 //                    throw (Error)firstThrowable;

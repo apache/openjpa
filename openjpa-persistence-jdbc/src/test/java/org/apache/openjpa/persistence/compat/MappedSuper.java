@@ -35,13 +35,13 @@ public abstract class MappedSuper {
 
     @Version
 	private int version;
-	
+
     @Id
     private int id;
-    
-    @OneToOne(mappedBy="entityA") 
+
+    @OneToOne(mappedBy="entityA")
     EntityB entityB;
-    
+
 	public int getVersion() {
 		return version;
 	}
@@ -57,7 +57,7 @@ public abstract class MappedSuper {
 	public void setLastUpdateDate(Date lastUpdateDate) {
 		this.lastUpdateDate = lastUpdateDate;
 	}
-	
+
 	public int getId() {
 	    return id;
 	}
@@ -69,7 +69,7 @@ public abstract class MappedSuper {
     public EntityB getEntityB() {
         return entityB;
     }
-    
+
     public void setEntityB(EntityB entityB) {
         this.entityB = entityB;
     }

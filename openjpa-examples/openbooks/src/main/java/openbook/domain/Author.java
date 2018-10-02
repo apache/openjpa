@@ -31,7 +31,7 @@ import javax.persistence.Version;
  * <LI><b>Identity</b>:Generated value as identity.
  * <LI><b>Mapping</b>:Many-to-Many mapping to Books.
  * <LI><b>Version</b>: Yes.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -40,37 +40,37 @@ public class Author {
     @Id
     @GeneratedValue
     private long id;
-    
+
     private String name;
-    
+
     @ManyToMany(mappedBy="authors")
     private Set<Book> books;
-    
+
     @Version
     private int version;
-    
+
     public long getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Set<Book> getBooks() {
         return books;
     }
-    
+
     public void addBook(Book book) {
         if (books == null)
             books = new HashSet<Book>();
         books.add(book);
     }
-    
+
     public int getVersion() {
         return version;
     }

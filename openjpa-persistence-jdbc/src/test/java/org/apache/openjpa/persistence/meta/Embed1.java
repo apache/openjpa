@@ -26,7 +26,7 @@ import javax.persistence.OneToOne;
 
 /**
  * Domain class used by meta-model testing.
- * 
+ *
  * Uses explicit field based access.
  *
  * @author Pinaki Poddar
@@ -37,20 +37,20 @@ import javax.persistence.OneToOne;
 public class Embed1 {
 	private String f1;
 	private ImplicitFieldAccessBase entity0;
-	
-	
+
+
 	public String getF1() {
 		return f1;
 	}
 	public void setF1(String f1) {
 		this.f1 = f1;
 	}
-	
+
 	@OneToOne
 	public ImplicitFieldAccessBase getEntity0() {
 		return entity0;
 	}
-	
+
 	public void setEntity0(ImplicitFieldAccessBase entity0) {
 		this.entity0 = entity0;
 	}

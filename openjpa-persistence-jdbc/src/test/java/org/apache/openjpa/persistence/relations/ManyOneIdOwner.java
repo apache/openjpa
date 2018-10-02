@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -38,27 +38,27 @@ public class ManyOneIdOwner {
     @Version
     private Integer optLock;
 
-    public BasicEntity getId() { 
-        return id; 
+    public BasicEntity getId() {
+        return id;
     }
 
-    public void setId(BasicEntity id) { 
-        this.id = id; 
+    public void setId(BasicEntity id) {
+        this.id = id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public ManyOneIdOwner getSelfRel() { 
-        return selfRel; 
+    public ManyOneIdOwner getSelfRel() {
+        return selfRel;
     }
 
-    public void setSelfRel(ManyOneIdOwner selfRel) { 
-        this.selfRel = selfRel; 
+    public void setSelfRel(ManyOneIdOwner selfRel) {
+        this.selfRel = selfRel;
     }
 }

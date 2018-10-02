@@ -20,23 +20,23 @@
 <project name="ExecSQL" default="create-sql" basedir=".">
 
     <target name="create-sql">
-    
+
         <echo>Creating OpenJPA specific sql for JPA 2.0 TCK tests</echo>
         <!-- Use tsant force to change the working directory to @{dir}. -->
         <tsant dir="${tck.dir}/bin" buildfile="${basedir}/sql/create.openjpa.sql.xml" target="exec-sql"/>
         <echo>Create TCK specific database tables returned result=${tsant.result}</echo>
-        
+
     </target>
 
     <target name="exec-sql">
-    
+
         <echo>databaseName=${databaseName}</echo>
         <antcall target="init.${databaseName}"/>
-        
+
     </target>
 
     <target name="init.common">
-    
+
         <sql driver="${database.driver}"
              url="${database.url}"
              userid="${database.user}"
@@ -47,7 +47,7 @@
              onerror="continue" >
              <transaction src="../../../../sql/${databaseName}.sql"/>
         </sql>
-        
+
     </target>
 
     <target name="init.derby">

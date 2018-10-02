@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -40,54 +40,54 @@ import org.apache.openjpa.lib.util.StringDistance;
  * Manages query hint keys and handles their values on behalf of a owning
  * {@link QueryImpl}. Uses specific knowledge of hint keys declared in
  * different parts of the system.
- * 
+ *
  * This receiver collects hint keys from different parts of the system. The
  * keys are implicitly or explicitly declared by several different mechanics.
  * This receiver sets the values on behalf of a owning {@link QueryImpl}
  * based on the its specific knowledge of these keys.
- * 
- * The hint keys from following sources are collected and handled: 
- * 
+ *
+ * The hint keys from following sources are collected and handled:
+ *
  * 1. {@link org.apache.openjpa.kernel.QueryHints} interface declares hint keys
  *    as public static final fields. These fields are collected by reflection.
  *    The values are handled by invoking methods on the owning {@link QueryImpl}
- *    
- * 2. Some hint keys are collected from bean-style property names of {@link 
- *    JDBCFetchPlan} by {@link Reflection#getBeanStylePropertyNames(Class) 
- *    reflection} and prefixed with <code>openjpa.FetchPlan</code>. 
- *    Their values are used to set the corresponding property of {@link 
+ *
+ * 2. Some hint keys are collected from bean-style property names of {@link
+ *    JDBCFetchPlan} by {@link Reflection#getBeanStylePropertyNames(Class)
+ *    reflection} and prefixed with <code>openjpa.FetchPlan</code>.
+ *    Their values are used to set the corresponding property of {@link
  *    FetchPlan} via {@link #hintToSetter(FetchPlan, String, Object) reflection}
- *      
- * 3. Currently defined <code>javax.persistence.*</code> hint keys have  
- *    a equivalent counterpart to one of these FetchPlan keys. 
+ *
+ * 3. Currently defined <code>javax.persistence.*</code> hint keys have
+ *    a equivalent counterpart to one of these FetchPlan keys.
  *    The JPA keys are mapped to equivalent FetchPlan hint keys.
- *    
- * 4. Some keys directly invoke setters or add listeners to the owning 
- *    {@link QueryImpl}. These hint keys are statically declared in 
- *    this receiver itself. 
- *    
- * 5. ProductDerivation may introduce their own query hint keys via {@link 
- *    ProductDerivation#getSupportedQueryHints()}. Their values are set in the 
+ *
+ * 4. Some keys directly invoke setters or add listeners to the owning
+ *    {@link QueryImpl}. These hint keys are statically declared in
+ *    this receiver itself.
+ *
+ * 5. ProductDerivation may introduce their own query hint keys via {@link
+ *    ProductDerivation#getSupportedQueryHints()}. Their values are set in the
  *    {@link FetchConfiguration#setHint(String, Object)}
- *     
+ *
  *  A hint key is classified into one of the following three categories:
- *  
- *  1. Supported: A key is known to this receiver as collected from different 
- *     parts of the system. The value of a supported key is recorded and 
- *     available via {@link #getHints()} method. 
+ *
+ *  1. Supported: A key is known to this receiver as collected from different
+ *     parts of the system. The value of a supported key is recorded and
+ *     available via {@link #getHints()} method.
  *  2. Recognized: A key is not known to this receiver but has a prefix which
- *     is known to this receiver. The value of a recognized key is not recorded 
+ *     is known to this receiver. The value of a recognized key is not recorded
  *     but its value is available via {@link FetchConfiguration#getHint(String)}
- *  3. Unrecognized: A key is neither supported nor recognized. The value of a 
+ *  3. Unrecognized: A key is neither supported nor recognized. The value of a
  *     unrecognized key is neither recorded nor set anywhere.
- *  
+ *
  *  If an incompatible value is supplied for a supported key, a non-fatal
  *  {@link ArgumentException} is raised.
- *  
+ *
  * @author Pinaki Poddar
  *
  * @since 2.0.0
- * 
+ *
  */
 public class HintHandler  {
   protected final QueryImpl<?> owner;
@@ -100,16 +100,16 @@ public class HintHandler  {
     protected static final String PREFIX_FETCHPLAN = PREFIX_OPENJPA + "FetchPlan.";
     private Map<String, Object> _hints;
 
-    
+
     HintHandler(QueryImpl<?> impl) {
         super();
         owner = impl;
     }
-    
+
     /**
      * Record a key-value pair only only if the given key is supported.
-     * 
-     * @return FALSE if the key is unrecognized. 
+     *
+     * @return FALSE if the key is unrecognized.
      *         null (i.e. MAY BE) if the key is recognized, but not supported.
      *         TRUE if the key is supported.
      */
@@ -141,7 +141,7 @@ public class HintHandler  {
             plan.setHint(key, value);
             return;
         }
-        
+
         ClassLoader loader = owner.getDelegate().getBroker().getClassLoader();
         if (QueryHints.HINT_SUBCLASSES.equals(key)) {
             if (value instanceof String)
@@ -177,11 +177,11 @@ public class HintHandler  {
         } else if (QueryHints.HINT_USE_LITERAL_IN_SQL.equals(key)) {
             Boolean convertedValue = (Boolean)Filters.convert(value, Boolean.class);
             plan.setHint(key, convertedValue);
-        } else { // default 
+        } else { // default
             plan.setHint(key, value);
         }
     }
-    
+
     /**
      * Affirms if the given key starts with any of the known prefix.
      * @param key
@@ -196,8 +196,8 @@ public class HintHandler  {
         return false;
     }
 
-    
-    
+
+
 //    protected boolean hasPrecedent(String key) {
 //        boolean hasPrecedent = true;
 //        String[] list = precedenceMap.get(key);
@@ -205,7 +205,7 @@ public class HintHandler  {
 //            for (String hint : list) {
 //                if (hint.equals(key))
 //                    break;
-//                // stop if a higher precedence hint has already defined 
+//                // stop if a higher precedence hint has already defined
 //                if (getHints().containsKey(hint)) {
 //                    hasPrecedent = false;
 //                    break;
@@ -242,7 +242,7 @@ public class HintHandler  {
 //            throw new IllegalArgumentException(_loc.get("bad-lock-level", origValue).getMessage());
 //        return intValue;
 //    }
-    
+
     /**
      * Gets all the supported hint keys. The set of supported hint keys is
      * statically determined by collecting hint keys from the ProductDerivations.
@@ -250,7 +250,7 @@ public class HintHandler  {
     public Set<String> getSupportedHints() {
         return _supportedHints;
     }
-    
+
     /**
      * Gets all the recorded hint keys and their values.
      */

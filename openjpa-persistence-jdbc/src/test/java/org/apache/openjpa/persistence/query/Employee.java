@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -28,33 +28,33 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-@NamedQueries( { 
-    @NamedQuery(name = "Employee.findByName", 
+@NamedQueries( {
+    @NamedQuery(name = "Employee.findByName",
         query = "Select e from Employee e where e.name LIKE :name") ,
-    @NamedQuery(name = "Employee.findByNameEscaped", 
+    @NamedQuery(name = "Employee.findByNameEscaped",
         query = "Select e from Employee e where e.name LIKE :name ESCAPE '\\'")
     })
 @Entity
 @Table(name="SUBQ_EMPLOYEE")
 public class Employee {
 
-    @Id 
+    @Id
     private long empId;
     private String name;
-    
+
     private long someLong;
 
-    private int statusId; 
-    
+    private int statusId;
+
     @Temporal(TemporalType.DATE)
     private Date hireDate;
-    
+
     @Temporal(TemporalType.TIME)
     private Date hireTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date hireTimestamp;
-    
+
     public int getStatusId() {
         return statusId;
     }
@@ -90,7 +90,7 @@ public class Employee {
     public Date getHireDate() {
         return hireDate;
     }
-    
+
     public void setHireDate(Date hireDate) {
         this.hireDate = hireDate;
     }
@@ -98,17 +98,17 @@ public class Employee {
     public Date getHireTime() {
         return hireTime;
     }
-    
+
     public void setHireTime(Date hireTime) {
         this.hireTime = hireTime;
     }
-    
+
     public Date getHireTimestamp() {
         return hireTimestamp;
     }
-    
+
     public void setHireTimestamp(Date hireTimestamp) {
         this.hireTimestamp = hireTimestamp;
     }
-    
+
 }

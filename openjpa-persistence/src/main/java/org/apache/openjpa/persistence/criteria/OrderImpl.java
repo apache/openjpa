@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -23,27 +23,27 @@ import javax.persistence.criteria.Order;
 
 /**
  * Ordering clause of a criteria query.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 class OrderImpl implements Order, CriteriaExpression {
 	private boolean _ascending;
 	private final ExpressionImpl<?> e;
-	
+
 	public OrderImpl(Expression<?> e, boolean asc) {
 		this.e = (ExpressionImpl<?>) e;
 		_ascending = asc;
 	}
-	
+
 	public OrderImpl(Expression<?> e) {
 		this(e, true);
 	}
-	
+
 	public ExpressionImpl<?> getExpression() {
 		return e;
 	}
-	
+
 	public boolean isAscending() {
 		return _ascending;
 	}
@@ -52,23 +52,23 @@ class OrderImpl implements Order, CriteriaExpression {
 		_ascending = !_ascending;
 		return this;
 	}
-	
+
     public void acceptVisit(CriteriaExpressionVisitor visitor) {
         if (!visitor.isVisited(this)) {
             visitor.enter(this);
             visitor.exit(this);
         }
     }
-    
+
     public StringBuilder asValue(AliasContext q) {
         return (e.isAutoAliased() ? e.asValue(q) : new StringBuilder(e.getAlias()))
             .append(_ascending ? "" : " DESC");
     }
-    
+
     public StringBuilder asProjection(AliasContext q) {
         throw new IllegalStateException(this + " can not be rendered as projection");
     }
-    
+
     public StringBuilder asVariable(AliasContext q) {
         throw new IllegalStateException(this + " can not be rendered as variable");
     }

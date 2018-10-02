@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -25,27 +25,27 @@ import java.util.List;
 /**
  * Domain Object is a path expression over which query is evaluated.
  * Domain object acts as a proxy for a QueryDefinition via delegation.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
-public abstract class AbstractDomainObject extends AbstractPath 
+public abstract class AbstractDomainObject extends AbstractPath
 	implements DomainObject {
-	
-	protected AbstractDomainObject(QueryDefinitionImpl owner, 
+
+	protected AbstractDomainObject(QueryDefinitionImpl owner,
 		AbstractPath parent, PathOperator op, Object part2) {
 		super(owner, parent, op, part2);
 	}
 
 	/**
-	 * Adding a root adds a root domain to the owning query. 
+	 * Adding a root adds a root domain to the owning query.
 	 */
 	public DomainObject addRoot(Class cls) {
 		return _owner.addRoot(cls);
 	}
 
 	/**
-	 * Adding a query root adds a subquery to the owning query. 
+	 * Adding a query root adds a subquery to the owning query.
 	 */
 	public DomainObject addSubqueryRoot(PathExpression path) {
 		return _owner.addSubqueryRoot(path);
@@ -65,7 +65,7 @@ public abstract class AbstractDomainObject extends AbstractPath
 	public DomainObject join(String attr) {
         return _owner.addDomain(new JoinPath(this, PathOperator.INNER, attr));
 	}
-	
+
 	/**
 	 * Derives a path from this path by outer joining the given field.
 	 * Also the joined path becomes a domain of the owning query.
@@ -73,12 +73,12 @@ public abstract class AbstractDomainObject extends AbstractPath
 	public DomainObject leftJoin(String attr) {
         return _owner.addDomain(new JoinPath(this, PathOperator.OUTER, attr));
 	}
-	
+
 	/**
 	 * Derives a path from this path by fetch joining the given field.
 	 */
 	public FetchJoinObject joinFetch(String attr) {
-        return _owner.addDomain(new FetchPath(this, PathOperator.FETCH_INNER, 
+        return _owner.addDomain(new FetchPath(this, PathOperator.FETCH_INNER,
 			attr));
 	}
 
@@ -120,28 +120,28 @@ public abstract class AbstractDomainObject extends AbstractPath
 
 	/**
 	 * Derives this path as ALL(subquery) to its owning query.
-	 */	
+	 */
 	public Subquery all() {
 		return _owner.all();
 	}
 
 	/**
 	 * Adds this path as ANY(subquery) to its owning query.
-	 */	
+	 */
 	public Subquery any() {
 		return _owner.any();
 	}
-	
+
 	/**
 	 * Adds this path as SOME(subquery) to its owning query.
-	 */	
+	 */
 	public Subquery some() {
 		return _owner.some();
 	}
 
 	/**
 	 * Adds this path as EXISTS(subquery) to its owning query.
-	*/	
+	*/
 	public Predicate exists() {
 		return _owner.exists();
 	}

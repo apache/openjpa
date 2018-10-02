@@ -27,10 +27,10 @@ public class BaseClass6 {
 
     @Id
     private int id;
-        
+
     @Basic
     private String name;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -46,9 +46,9 @@ public class BaseClass6 {
     public String getName() {
         return name;
     }
-    
+
     public String toString() {
-        return "Id=" + id + 
+        return "Id=" + id +
                ";Name=" + name;
     }
 }

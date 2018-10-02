@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -64,7 +64,7 @@ public class TestUUIDGenerator extends TestCase {
     public void testUniqueMixedTypesHex() {
         Set seen = new HashSet();
         for (int i = 0; i < 10000; i++) {
-            int type = (i % 2 == 0) ? 
+            int type = (i % 2 == 0) ?
                 UUIDGenerator.TYPE4 : UUIDGenerator.TYPE1;
             assertTrue(seen.add(
                 UUIDGenerator.nextHex(type)));
@@ -79,7 +79,7 @@ public class TestUUIDGenerator extends TestCase {
             time = newTime;
         }
     }
-    
+
     public void testInitType1MultiThreaded() throws Exception {
         // This test method depends IP and RANDOM in UUIDGenerator to be null
         // and type1Initialized to be false. Using reflection to ensure that

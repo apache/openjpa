@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.conf;
 
@@ -29,7 +29,7 @@ public class CallbackOptions implements Serializable {
     private boolean _isPostPersistCallbackImmediate = false;
     private boolean _allowsMultipleMethodsForSameCallback = false;
     private boolean _allowsDuplicateListener = true;
-    
+
     /**
      * Affirms if the post-persist callback is invoked as soon as a new instance
      * is managed. The default is false, implies that the post-persist callback
@@ -39,7 +39,7 @@ public class CallbackOptions implements Serializable {
     public boolean getPostPersistCallbackImmediate() {
         return _isPostPersistCallbackImmediate;
     }
-    
+
     /**
      * Sets if the post-persist callback is invoked as soon as a new instance
      * is managed. The default is false, implies that the post-persist callback
@@ -48,35 +48,35 @@ public class CallbackOptions implements Serializable {
     public void setPostPersistCallbackImmediate(boolean flag) {
         _isPostPersistCallbackImmediate = flag;
     }
-    
-    /** 
-     * Flags if multiple methods of the same class can handle the same 
+
+    /**
+     * Flags if multiple methods of the same class can handle the same
      * callback event.
      * Defaults to false.
      */
     public boolean getAllowsMultipleMethodsForSameCallback() {
         return _allowsMultipleMethodsForSameCallback;
     }
-    
-    /** 
-     * Flags if multiple methods of the same class can handle the same 
+
+    /**
+     * Flags if multiple methods of the same class can handle the same
      * callback event.
      */
     public void setAllowsMultipleMethodsForSameCallback(boolean flag) {
         _allowsMultipleMethodsForSameCallback = flag;
     }
 
-    /** 
-     * Flags if duplicate listeners are allowed to handle the same 
+    /**
+     * Flags if duplicate listeners are allowed to handle the same
      * callback event.
      * Defaults to true.
      */
     public boolean getAllowsDuplicateListener() {
         return _allowsDuplicateListener;
     }
-    
-    /** 
-     * Flags if duplicate listeners are allowed to handle the same 
+
+    /**
+     * Flags if duplicate listeners are allowed to handle the same
      * callback event.
      */
     public void setAllowsDuplicateListener(boolean flag) {

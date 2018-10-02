@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util.concurrent;
 
@@ -31,7 +31,7 @@ import org.apache.openjpa.lib.util.EventManager;
 /**
  * Base event manager that handles adding/removing listeners
  * and firing events. Meant for high concurrency. This class is
- * reentrant-safe; listeners can be added and removed by other listeners when 
+ * reentrant-safe; listeners can be added and removed by other listeners when
  * they receive events. The changes will not be visible until the event fire
  * that initiated the recursive sequence of calls completes, however.
  *
@@ -135,7 +135,7 @@ public abstract class AbstractConcurrentEventManager
         throws Exception;
 
     /**
-     * Return a new concurrent container for listeners. Uses a 
+     * Return a new concurrent container for listeners. Uses a
      * {@link CopyOnWriteArrayList} by default.
      */
     protected Collection newListenerCollection() {

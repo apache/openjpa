@@ -32,16 +32,16 @@ import javax.persistence.NamedQuery;
 @Inheritance
 @Access(AccessType.PROPERTY)
 @NamedQueries( {
-    @NamedQuery(name="SuperPropertyEntity.query", 
-        query="SELECT sfe FROM SuperPropertyEntity sfe WHERE " + 
+    @NamedQuery(name="SuperPropertyEntity.query",
+        query="SELECT sfe FROM SuperPropertyEntity sfe WHERE " +
         "sfe.id = :id AND sfe.name = :name"),
-    @NamedQuery(name="SuperPropertyEntity.badQuery", 
-        query="SELECT sfe FROM SuperPropertyEntity sfe WHERE " + 
+    @NamedQuery(name="SuperPropertyEntity.badQuery",
+        query="SELECT sfe FROM SuperPropertyEntity sfe WHERE " +
         "sfe.id = :id AND sfe.name = :name AND sfe.crtDate = :crtDate") } )
 public class SuperPropertyEntity {
 
     private int id;
-    
+
     private String name;
 
     public void setId(int id) {
@@ -63,7 +63,7 @@ public class SuperPropertyEntity {
     public String getName() {
         return name;
     }
-        
+
     public boolean equals(Object obj) {
         if (obj instanceof SuperPropertyEntity) {
             SuperPropertyEntity sfe = (SuperPropertyEntity)obj;

@@ -20,7 +20,7 @@ package org.apache.openjpa.trader.domain;
 
 /**
  * Designates the business sector of a financial instrument.
- *  
+ *
  * @author Pinaki Poddar
  *
  */

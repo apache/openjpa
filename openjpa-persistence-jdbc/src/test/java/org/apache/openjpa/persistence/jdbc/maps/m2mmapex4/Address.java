@@ -14,33 +14,33 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex4;
 
 import javax.persistence.*;
 
-@Embeddable   
+@Embeddable
 public class Address {
 	private String street;
 	private String city;
 	private String state;
 	private String zip;
-	
+
 	public Address(){
 	}
-	
+
 	public Address(String street){
 		this.street=street;
 	}
-	
+
 	public Address(String street, String city, String state, String zip){
 		this.street=street;
 		this.city=city;
 		this.state=state;
 		this.zip=zip;
 	}
-	
+
 	public String toString(){
 		return street+" "+" "+city+","+state+" "+zip;
 	}
@@ -51,7 +51,7 @@ public class Address {
 	public void setStreet(String street) {
 		this.street = street;
 	}
-	
+
 	public String getCity() {
 		return city;
 	}

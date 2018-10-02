@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -24,15 +24,15 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestInitializeEagerly extends SingleEMFTestCase {
 
     public void setUp() throws Exception {
-        super.setUp(RuntimeTest1.class, 
-            "openjpa.InitializeEagerly", "true", 
+        super.setUp(RuntimeTest1.class,
+            "openjpa.InitializeEagerly", "true",
             "openjpa.BrokerFactory", DummyBrokerFactory.class.getName()
             );
     }
-    
-    // Smoke test to ensure that the EMF is created properly when using this property. 
+
+    // Smoke test to ensure that the EMF is created properly when using this property.
     public void test(){
         assertNotNull(emf);
     }
-       
+
 }

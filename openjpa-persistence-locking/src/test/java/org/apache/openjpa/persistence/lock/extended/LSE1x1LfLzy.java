@@ -44,7 +44,7 @@ import javax.persistence.Version;
             , query="SELECT c FROM LSE1x1LfLzy c WHERE c.firstName LIKE :firstName"
             , lockMode=LockModeType.PESSIMISTIC_WRITE
             , hints={@QueryHint(name="javax.persistence.lock.scope",value="EXTENDED")}
-            ) 
+            )
         }
     )
 
@@ -58,7 +58,7 @@ public class LSE1x1LfLzy implements Externalizable {
     private int version;
 
     private String firstName;
-    
+
     @OneToOne(fetch=FetchType.LAZY)
     private LSE1x1Rt uniRight;
 
@@ -73,11 +73,11 @@ public class LSE1x1LfLzy implements Externalizable {
     public String getFirstName() {
         return firstName;
     }
-    
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    
+
     public LSE1x1Rt getUniRight() {
         return uniRight;
     }
@@ -92,7 +92,7 @@ public class LSE1x1LfLzy implements Externalizable {
 
     public String toString() {
         return this.getClass().getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + "[id=" + getId()
-                + ", ver=" + getVersion() + ", firstName=" + firstName + "]" 
+                + ", ver=" + getVersion() + ", firstName=" + firstName + "]"
                 + " uniRight=" + getUniRight()
                 ;
     }

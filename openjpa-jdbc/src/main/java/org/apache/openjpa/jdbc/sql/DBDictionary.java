@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -148,7 +148,7 @@ public class DBDictionary
     public static final String CONS_NAME_BEFORE = "before";
     public static final String CONS_NAME_MID    = "mid";
     public static final String CONS_NAME_AFTER  = "after";
-    
+
     public int blobBufferSize = 50000;
     public int clobBufferSize = 50000;
 
@@ -167,7 +167,7 @@ public class DBDictionary
     protected static final int NAME_ANY      = DBIdentifierUtil.ANY;
     protected static final int NAME_TABLE    = DBIdentifierUtil.TABLE;
     protected static final int NAME_SEQUENCE = DBIdentifierUtil.SEQUENCE;
-    
+
     protected static final int UNLIMITED = -1;
     protected static final int NO_BATCH = 0;
 
@@ -266,9 +266,9 @@ public class DBDictionary
     public boolean supportsSimpleCaseExpression = true;
     public boolean supportsGeneralCaseExpression = true;
     public boolean useWildCardForCount = false;
-    
+
     /**
-     * Some Databases append whitespace after the schema name 
+     * Some Databases append whitespace after the schema name
      */
     public boolean trimSchemaName = false;
 
@@ -304,7 +304,7 @@ public class DBDictionary
     public int maxEmbeddedClobSize = -1;
     public int inClauseLimit = -1;
     public int datePrecision = MILLI;
-       
+
     /**
      * @deprecated Use 'dateMillisecondBehavior' instead.
      */
@@ -312,21 +312,21 @@ public class DBDictionary
     public boolean roundTimeToMillisec = true;
 
     /*
-     * This defines how the milliseconds of a Date field are handled 
+     * This defines how the milliseconds of a Date field are handled
      * when the Date is retrieved from the database, as follows:
-     * 
-     * ROUND: This is the default.  The 
-     * Date will be rounded to the nearest millisecond. 
-     * DROP: The milliseconds will be dropped, thus rounding is not 
-     * performed.  As an example, a date of '2010-01-01 12:00:00.687701' 
-     * stored in the database will become '2010-01-01 12:00:00.000' in 
+     *
+     * ROUND: This is the default.  The
+     * Date will be rounded to the nearest millisecond.
+     * DROP: The milliseconds will be dropped, thus rounding is not
+     * performed.  As an example, a date of '2010-01-01 12:00:00.687701'
+     * stored in the database will become '2010-01-01 12:00:00.000' in
      * the Date field of the entity.
-     * RETAIN: The milliseconds will not be rounded and retained.  As an 
+     * RETAIN: The milliseconds will not be rounded and retained.  As an
      * example, a date of '2010-01-01 12:00:00.687701' stored in the
-     * database will become '2010-01-01 12:00:00.687' in the Date field 
+     * database will become '2010-01-01 12:00:00.687' in the Date field
      * of the entity.
      */
-    public enum DateMillisecondBehaviors { DROP, ROUND, RETAIN };    
+    public enum DateMillisecondBehaviors { DROP, ROUND, RETAIN };
     private DateMillisecondBehaviors dateMillisecondBehavior;
 
     /**
@@ -381,7 +381,7 @@ public class DBDictionary
     public boolean supportsNullTableForGetImportedKeys = false;
     public boolean useGetBestRowIdentifierForPrimaryKeys = false;
     public boolean requiresAutoCommitForMetaData = false;
-    public boolean tableLengthIncludesSchema = false; 
+    public boolean tableLengthIncludesSchema = false;
 
     // auto-increment
     public int maxAutoAssignNameLength = 31;
@@ -395,26 +395,26 @@ public class DBDictionary
     public String sequenceNameSQL = null;
     // most native sequences can be run inside the business transaction
     public int nativeSequenceType= Seq.TYPE_CONTIGUOUS;
-    
+
     /**
-     * This variable was used in 2.1.x and prior releases to indicate that 
-     * OpenJPA should not use the CACHE clause when getting a native 
-     * sequence; instead the INCREMENT BY clause gets its value equal to the 
+     * This variable was used in 2.1.x and prior releases to indicate that
+     * OpenJPA should not use the CACHE clause when getting a native
+     * sequence; instead the INCREMENT BY clause gets its value equal to the
      * allocationSize property.  Post 2.1.x, code was added to allow
-     * said functionality by default (see OPENJPA-1376).  For forward 
+     * said functionality by default (see OPENJPA-1376).  For forward
      * compatibility, this variable should not be removed.
      */
     @Deprecated
-    public boolean useNativeSequenceCache = true;    
-    
+    public boolean useNativeSequenceCache = true;
+
     /**
      * If a user sets the previous variable (useNativeSequenceCache) to false, we should log a
      * warning indicating that the variable no longer has an effect due to the code changes
      * of OPENJPA-1376.  We only want to log the warning once per instance, thus this
-     * variable will be used to indicate if the warning should be printed or not.  
+     * variable will be used to indicate if the warning should be printed or not.
      */
     @Deprecated
-    private boolean logNativeSequenceCacheWarning = true;    
+    private boolean logNativeSequenceCacheWarning = true;
 
     protected JDBCConfiguration conf = null;
     protected Log log = null;
@@ -440,15 +440,15 @@ public class DBDictionary
     public String catalogSeparator = ".";
     protected String defaultSchemaName = null;
     private String conversionKey = null;
-       
+
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;
     private Map<String, IdentifierRule> namingRules = new HashMap<String, IdentifierRule>();
     private IdentifierRule defaultNamingRule = null;  // cached for performance
-    
+
     /**
      * If a native query begins with any of the values found here then it will
-     * be treated as a select statement.  
+     * be treated as a select statement.
      */
     protected final Set<String> selectWordSet = new HashSet<String>();
 
@@ -461,20 +461,20 @@ public class DBDictionary
     // 0  = no batch
     // any positive number = batch limit
     public int batchLimit = NO_BATCH;
-    
-    public final Map<Integer,Set<String>> sqlStateCodes = 
+
+    public final Map<Integer,Set<String>> sqlStateCodes =
         new HashMap<Integer, Set<String>>();
-                   
+
     protected ProxyManager _proxyManager;
-    
+
     public DBDictionary() {
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BIGINT", "BIT", "BLOB", "CLOB", "DATE", "DECIMAL", "DISTINCT",
-            "DOUBLE", "FLOAT", "INTEGER", "JAVA_OBJECT", "NULL", "NUMERIC", 
+            "DOUBLE", "FLOAT", "INTEGER", "JAVA_OBJECT", "NULL", "NUMERIC",
             "OTHER", "REAL", "REF", "SMALLINT", "STRUCT", "TIME", "TIMESTAMP",
             "TINYINT",
         }));
-        
+
         selectWordSet.add("SELECT");
     }
 
@@ -490,7 +490,7 @@ public class DBDictionary
             DatabaseMetaData metaData = null;
             try {
                 metaData = conn.getMetaData();
-                
+
                 databaseProductName    = nullSafe(metaData.getDatabaseProductName());
                 databaseProductVersion = nullSafe(metaData.getDatabaseProductVersion());
                 setMajorVersion(metaData.getDatabaseMajorVersion());
@@ -509,7 +509,7 @@ public class DBDictionary
                     log.trace(e.toString(), e);
             }
 
-            if (log.isTraceEnabled()) {                    
+            if (log.isTraceEnabled()) {
                 log.trace(DBDictionaryFactory.toString(metaData));
 
                 if (isJDBC3) {
@@ -522,7 +522,7 @@ public class DBDictionary
                     }
                 }
             }
-            
+
             // Configure the naming utility
             if (supportsDelimitedIdentifiers == null) // not explicitly set
                 configureNamingUtil(metaData);
@@ -539,7 +539,7 @@ public class DBDictionary
         }
         connected = true;
     }
-    
+
     private void configureNamingUtil(DatabaseMetaData metaData) {
         // Get the naming utility from the configuration
         setSupportsDelimitedIdentifiers(metaData);
@@ -547,7 +547,7 @@ public class DBDictionary
     }
 
     /**
-     * Configures the naming rules for this dictionary.  Subclasses should 
+     * Configures the naming rules for this dictionary.  Subclasses should
      * override this method, providing their own naming rules.
      */
     protected void configureNamingRules() {
@@ -665,7 +665,7 @@ public class DBDictionary
         int column) throws SQLException {
         return rs.getBinaryStream(column);
     }
-    
+
     /**
      * Convert the specified column of the SQL ResultSet to the proper
      * java type.
@@ -1026,7 +1026,7 @@ public class DBDictionary
     public void setBinaryStream(PreparedStatement stmnt, int idx,
         InputStream val, int length, Column col)
         throws SQLException {
-    	
+
     	//OPENJPA-2067: If the user has set the 'useJDBC4SetBinaryStream' property
     	//then lets use the JDBC 4.0 version of the setBinaryStream method.
 		if (useJDBC4SetBinaryStream) {
@@ -1143,7 +1143,7 @@ public class DBDictionary
         else if (col != null && col.getType() == Types.TIME)
             setTime(stmnt, idx, new Time(val.getTime()), null, col);
         else if (val instanceof Timestamp)
-            setTimestamp(stmnt, idx,(Timestamp) val, null, col);   
+            setTimestamp(stmnt, idx,(Timestamp) val, null, col);
         else
             setTimestamp(stmnt, idx, new Timestamp(val.getTime()), null, col);
     }
@@ -1297,9 +1297,9 @@ public class DBDictionary
     public void setTimestamp(PreparedStatement stmnt, int idx,
         Timestamp val, Calendar cal, Column col)
         throws SQLException {
-        
+
         val = StateManagerImpl.roundTimestamp(val, datePrecision);
-        
+
         if (cal == null)
             stmnt.setTimestamp(idx, val);
         else
@@ -1464,7 +1464,7 @@ public class DBDictionary
             setUnknown(stmt, idx, col, val);
         }
     }
-    
+
     /**
      * Set a completely unknown parameter into a prepared statement.
      */
@@ -1615,7 +1615,7 @@ public class DBDictionary
     /////////
     // Types
     /////////
-    
+
     /**
      * Return the preferred {@link Types} constant for the given
      * {@link JavaTypes} or {@link JavaSQLTypes} constant.
@@ -1628,16 +1628,16 @@ public class DBDictionary
      * Return the preferred {@link Types} constant for the given
      * {@link JavaTypes} or {@link JavaSQLTypes} constant.
      */
-    public int getJDBCType(int metaTypeCode, boolean lob, int precis, 
+    public int getJDBCType(int metaTypeCode, boolean lob, int precis,
         int scale, boolean xml) {
-        return getJDBCType(metaTypeCode, lob, precis, scale);        
+        return getJDBCType(metaTypeCode, lob, precis, scale);
     }
 
     /**
      * Return the preferred {@link Types} constant for the given
      * {@link JavaTypes} or {@link JavaSQLTypes} constant.
      */
-    public int getJDBCType(int metaTypeCode, boolean lob, int precis, 
+    public int getJDBCType(int metaTypeCode, boolean lob, int precis,
         int scale) {
         if (lob) {
             switch (metaTypeCode) {
@@ -1828,14 +1828,14 @@ public class DBDictionary
      * override this method to return the unaltered type name for columns of
      * those types (or add the type names to the
      * <code>fixedSizeTypeNameSet</code>).
-     * 
+     *
      * <P>Some databases support "type modifiers", for example the unsigned
-     * "modifier" in MySQL. In these cases the size should go between the type 
-     * and the "modifier", instead of after the modifier. For example 
-     * CREATE table FOO ( myint INT (10) UNSIGNED . . .) instead of 
+     * "modifier" in MySQL. In these cases the size should go between the type
+     * and the "modifier", instead of after the modifier. For example
+     * CREATE table FOO ( myint INT (10) UNSIGNED . . .) instead of
      * CREATE table FOO ( myint INT UNSIGNED (10) . . .).
-     * Type modifiers should be added to <code>typeModifierSet</code> in 
-     * subclasses. 
+     * Type modifiers should be added to <code>typeModifierSet</code> in
+     * subclasses.
      */
     protected String appendSize(Column col, String typeName) {
         if (fixedSizeTypeNameSet.contains(typeName.toUpperCase(Locale.ENGLISH)))
@@ -1857,14 +1857,14 @@ public class DBDictionary
     }
 
     /**
-     * Helper method that inserts a size clause for a given SQL type. 
-     * 
+     * Helper method that inserts a size clause for a given SQL type.
+     *
      * @param typeName  The SQL type e.g. INT
      * @param size      The size clause e.g. (10)
      * @return          The typeName + size clause. Usually the size clause will
-     *                  be appended to typeName. If the typeName contains a 
-     *                  marker : {0} or if typeName contains a modifier the 
-     *                  size clause will be inserted appropriately.   
+     *                  be appended to typeName. If the typeName contains a
+     *                  marker : {0} or if typeName contains a modifier the
+     *                  size clause will be inserted appropriately.
      */
     protected String insertSize(String typeName, String size) {
         if (StringUtil.isEmpty(size)) {
@@ -1874,7 +1874,7 @@ public class DBDictionary
             }
             return typeName;
         }
-        
+
         int idx = typeName.indexOf("{0}");
         if (idx != -1) {
             // replace '{0}' with size
@@ -1925,7 +1925,7 @@ public class DBDictionary
         else if (!StringUtil.isEmpty(syntax))
             throw new IllegalArgumentException(syntax);
     }
-    
+
     public boolean isImplicitJoin() {
         return false;
     }
@@ -2043,7 +2043,7 @@ public class DBDictionary
      * cases where a subselect is required and the database doesn't support
      * subselects), this method should return null.
      */
-    public SQLBuffer toDelete(ClassMapping mapping, Select sel, 
+    public SQLBuffer toDelete(ClassMapping mapping, Select sel,
         Object[] params) {
         return toBulkOperation(mapping, sel, null, params, null);
     }
@@ -2172,7 +2172,7 @@ public class DBDictionary
         }
         return sql;
     }
-    
+
     protected Collection<String> getSelectTableAliases(Select sel) {
         return sel.getTableAliases();
     }
@@ -2196,8 +2196,8 @@ public class DBDictionary
         }
         if (itr.hasNext())
           deleteTargets.append(", ");
-      }      
-      return deleteTargets;      
+      }
+      return deleteTargets;
     }
 
     protected void appendUpdates(Select sel, JDBCStore store, SQLBuffer sql,
@@ -2207,7 +2207,7 @@ public class DBDictionary
 
         // manually build up the SET clause for the UPDATE statement
         sql.append(" SET ");
-        ExpContext ctx = new ExpContext(store, params, 
+        ExpContext ctx = new ExpContext(store, params,
             store.getFetchConfiguration());
 
         // If the updates map contains any version fields, assume that the
@@ -2232,7 +2232,7 @@ public class DBDictionary
               sql.append(sel.getColumnAlias(col));
             } else {
               sql.append(toDBName(col.getIdentifier()));
-            }            
+            }
             sql.append(" = ");
 
             ExpState state = val.initialize(sel, ctx, 0);
@@ -2253,7 +2253,7 @@ public class DBDictionary
         if (augmentUpdates) {
             Path path = (Path) updateParams.keySet().iterator().next();
             FieldMapping fm = (FieldMapping) path.last();
-            
+
             ClassMapping meta = fm.getDefiningMapping();
             Map<Column,?> updates = meta.getVersion().getBulkUpdateValues();
             for (Map.Entry e : updates.entrySet()) {
@@ -2270,18 +2270,18 @@ public class DBDictionary
             }
         }
     }
-    
+
     /**
-     * Create SQL to delete the contents of the specified tables. 
-     * The default implementation drops all non-deferred RESTRICT foreign key 
-     * constraints involving the specified tables, issues DELETE statements 
-     * against the tables, and then adds the dropped constraints back in. 
-     * Databases with more optimal ways of deleting the contents of several 
+     * Create SQL to delete the contents of the specified tables.
+     * The default implementation drops all non-deferred RESTRICT foreign key
+     * constraints involving the specified tables, issues DELETE statements
+     * against the tables, and then adds the dropped constraints back in.
+     * Databases with more optimal ways of deleting the contents of several
      * tables should override this method.
      */
     public String[] getDeleteTableContentsSQL(Table[] tables,Connection conn) {
         Collection<String> sql = new ArrayList<String>();
-        
+
         // collect and drop non-deferred physical restrict constraints, and
         // collect the DELETE FROM statements
         Collection<String> deleteSQL = new ArrayList<String>(tables.length);
@@ -2290,29 +2290,29 @@ public class DBDictionary
         for (int i = 0; i < tables.length; i++) {
             ForeignKey[] fks = tables[i].getForeignKeys();
             for (int j = 0; j < fks.length; j++) {
-                if (!fks[j].isLogical() && !fks[j].isDeferred() 
+                if (!fks[j].isLogical() && !fks[j].isDeferred()
                     && fks[j].getDeleteAction() == ForeignKey.ACTION_RESTRICT)
                 restrictConstraints.add(fks[j]);
             }
-            
-            deleteSQL.add("DELETE FROM " + 
+
+            deleteSQL.add("DELETE FROM " +
                 toDBName(tables[i].getFullIdentifier()));
         }
-        
+
         for(ForeignKey fk : restrictConstraints) {
             String[] constraintSQL = getDropForeignKeySQL(fk,conn);
             sql.addAll(Arrays.asList(constraintSQL));
         }
-        
+
         // add the delete statements after all the constraint mutations
         sql.addAll(deleteSQL);
-        
+
         // add the deleted constraints back to the schema
         for (ForeignKey fk : restrictConstraints) {
             String[] constraintSQL = getAddForeignKeySQL(fk);
             sql.addAll(Arrays.asList(constraintSQL));
         }
-        
+
         return (String[]) sql.toArray(new String[sql.size()]);
     }
 
@@ -2364,7 +2364,7 @@ public class DBDictionary
                         SQLBuffer where = new SQLBuffer(this);
                         where.append("(").append(toTraditionalJoin(join)).append(")");
                         sel.where(where.getSQL());
-                    }                
+                    }
                 }
             }
         } else {
@@ -2376,8 +2376,8 @@ public class DBDictionary
                     continue;
 
                 if (join.isCorrelated())
-                    toCorrelatedJoin(sel, join, forUpdate, first);                    
-                else    
+                    toCorrelatedJoin(sel, join, forUpdate, first);
+                else
                     fromSQL.append(toSQL92Join(sel, join, forUpdate,
                         first));
                 first = false;
@@ -2410,7 +2410,7 @@ public class DBDictionary
         boolean skip = false;
         //if table1 in join is in the main query, table2 is in
         //subquery, and table2 participates in other joins
-        //in subquery, the join condition can only be placed in 
+        //in subquery, the join condition can only be placed in
         //the where clause in the subquery
         while (itr.hasNext()) {
             Join join1 = (Join) itr.next();
@@ -2424,14 +2424,14 @@ public class DBDictionary
                     SQLBuffer where = new SQLBuffer(this);
                     where.append("(").append(toTraditionalJoin(join)).append(")");
                     sel.where(where.getSQL());
-                }                
+                }
                 break;
             }
         }
         return skip;
     }
-    
-    
+
+
     /**
      * Return the FROM clause for a select that selects from a tmp table
      * created by an inner select.
@@ -2564,7 +2564,7 @@ public class DBDictionary
         else if (requiresConditionForCrossJoin &&
                 join.getType() == Join.TYPE_CROSS)
             buf.append(" ON (1 = 1)");
-        
+
         return buf;
     }
 
@@ -2619,7 +2619,7 @@ public class DBDictionary
             group, having, order, distinct, start, end,
             getForUpdateClause(fetch, forUpdate, null), subselect);
     }
-    
+
     public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
             SQLBuffer from, SQLBuffer where, SQLBuffer group,
             SQLBuffer having, SQLBuffer order,
@@ -2634,7 +2634,7 @@ public class DBDictionary
     /**
      * Combine the given components into a SELECT statement.
      */
-    protected SQLBuffer toSelect(SQLBuffer selects, 
+    protected SQLBuffer toSelect(SQLBuffer selects,
         JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
@@ -2663,13 +2663,13 @@ public class DBDictionary
     }
 
     /**
-     * Return true if the dictionary uses isolation level to compute the 
-     * returned getForUpdateClause() SQL clause.  
+     * Return true if the dictionary uses isolation level to compute the
+     * returned getForUpdateClause() SQL clause.
      */
     public boolean supportsIsolationForUpdate() {
         return false;
     }
-    
+
     /**
      * Return the "SELECT" operation clause, adding any available hints, etc.
      */
@@ -2687,7 +2687,7 @@ public class DBDictionary
         return toOperation(op, selects, from, where, group, having, order,
             distinct, start, end, forUpdateClause, false);
     }
-    
+
     /**
      * Return the SQL for the given selecting operation.
      */
@@ -2986,7 +2986,7 @@ public class DBDictionary
         boolean castrhs = false;
         Class lc = Filters.wrap(lhs.getType());
         Class rc = Filters.wrap(rhs.getType());
-        
+
         // special case of comparison of two boolean constants
         // because some databases do not like false = false or false = true
         // but all databases understand 1 = 0 or 0 <> 1 etc.
@@ -3073,20 +3073,20 @@ public class DBDictionary
         appendLength(buf, type);
         buf.append(post);
     }
-    
-    protected void appendLength(SQLBuffer buf, int type) {        
+
+    protected void appendLength(SQLBuffer buf, int type) {
     }
 
-    
+
     /**
      * add CAST for a function operator where operand is a param
      * @param func  function name
-     * @param val 
+     * @param val
      * @return updated func
      */
     public String addCastAsType(String func, Val val) {
         return null;
-    }    
+    }
 
 
     ///////////
@@ -3109,7 +3109,7 @@ public class DBDictionary
         }
         return column.getIdentifier();
     }
-    
+
     public String getColumnDBName(Column column) {
         return toDBName(getColumnIdentifier(column));
     }
@@ -3123,13 +3123,13 @@ public class DBDictionary
             return table.getIdentifier();
         return table.getFullIdentifier();
     }
-        
+
     public String getFullName(Table table, boolean logical) {
         if (!useSchemaName || DBIdentifier.isNull(table.getSchemaIdentifier()))
             return toDBName(table.getIdentifier());
         return toDBName(table.getFullIdentifier());
     }
-    
+
     /**
      * Returns the full name of the index, including the schema (delimited
      * by the result of {@link #catalogSeparator}).
@@ -3157,7 +3157,7 @@ public class DBDictionary
      * valid column names for the current DB. If the column name is invalid the
      * getValidColumnName method of the DB dictionary should be invoked to make
      * it valid.
-     * 
+     *
      * @see #getValidColumnName(org.apache.openjpa.jdbc.identifier.DBIdentifier, org.apache.openjpa.jdbc.schema.Table)
      */
     public final Set<String> getInvalidColumnWordSet() {
@@ -3172,7 +3172,7 @@ public class DBDictionary
     public String getValidTableName(String name, Schema schema) {
         return getValidTableName(DBIdentifier.newTable(name), schema).getName();
     }
-    
+
     /**
      * Make any necessary changes to the given table name to make it valid for
      * the current DB.
@@ -3219,7 +3219,7 @@ public class DBDictionary
 
     /**
      * Make any necessary changes to the given column name to make it valid
-     * for the current DB.  If checkForUniqueness is true, the column name will 
+     * for the current DB.  If checkForUniqueness is true, the column name will
      * be made unique for the specified table.
      * @deprecated
      */
@@ -3230,12 +3230,12 @@ public class DBDictionary
 
     /**
      * Make any necessary changes to the given column name to make it valid
-     * for the current DB.  If checkForUniqueness is true, the column name will 
+     * for the current DB.  If checkForUniqueness is true, the column name will
      * be made unique for the specified table.
      */
     public DBIdentifier getValidColumnName(DBIdentifier name, Table table,
         boolean checkForUniqueness) {
-        return getNamingUtil().getValidColumnIdentifier(name, table, maxColumnNameLength, 
+        return getNamingUtil().getValidColumnIdentifier(name, table, maxColumnNameLength,
             checkForUniqueness);
     }
 
@@ -3303,7 +3303,7 @@ public class DBDictionary
     public DBIdentifier getValidUniqueName(DBIdentifier name, Table table) {
         return namingUtil.getValidUniqueIdentifier(name, table, maxConstraintNameLength);
     }
-    
+
     /**
      * Shorten the specified name to the specified target name. This will
      * be done by first stripping out the vowels, and then removing
@@ -3375,11 +3375,11 @@ public class DBDictionary
      * Shortens the given name to the given maximum length, then checks that
      * it is not a reserved word. If it is reserved, appends a "0". If
      * the name conflicts with an existing schema component and uniqueness
-     * checking is enabled, the last character is replace with '0', then 
-     * '1', etc. 
-     * Note that the given max len may be 0 if the database metadata is 
+     * checking is enabled, the last character is replace with '0', then
+     * '1', etc.
+     * Note that the given max len may be 0 if the database metadata is
      * incomplete.
-     * 
+     *
      * Note: If the name is delimited, make sure the ending delimiter is
      * not stripped off.
      */
@@ -3393,11 +3393,11 @@ public class DBDictionary
      * Shortens the given name to the given maximum length, then checks that
      * it is not a reserved word. If it is reserved, appends a "0". If
      * the name conflicts with an existing schema component and uniqueness
-     * checking is enabled, the last character is replace with '0', then 
-     * '1', etc. 
-     * Note that the given max len may be 0 if the database metadata is 
+     * checking is enabled, the last character is replace with '0', then
+     * '1', etc.
+     * Note that the given max len may be 0 if the database metadata is
      * incomplete.
-     * 
+     *
      * Note: If the name is delimited, make sure the ending delimiter is
      * not stripped off.
      */
@@ -3414,7 +3414,7 @@ public class DBDictionary
     public String[] getCreateTableSQL(Table table, SchemaGroup group) {
         return getCreateTableSQL(table);
     }
-    
+
     /**
      * Return a series of SQL statements to create the given table, complete
      * with columns. Indexes and constraints will be created separately.
@@ -3470,7 +3470,7 @@ public class DBDictionary
         buf.append(")");
         return new String[]{ buf.toString() };
     }
-    
+
     public int getBatchFetchSize(int batchFetchSize) {
         return batchFetchSize;
     }
@@ -3506,7 +3506,7 @@ public class DBDictionary
     private String[] commonCreateAlterSequenceSQL(Sequence seq, boolean create) {
         if (nextSequenceQuery == null)
             return null;
-        
+
         //We need a place to detect if the user is setting the 'useNativeSequenceCache' property.
         //While in previous releases this property had meaning, it is no longer useful
         //given the code added via OPENJPA-1327.  As such, we need to warn user's the
@@ -3518,14 +3518,14 @@ public class DBDictionary
         if (!useNativeSequenceCache && logNativeSequenceCacheWarning){
             log.warn(_loc.get("sequence-cache-warning"));
             logNativeSequenceCacheWarning=false;
-        }        
+        }
 
         StringBuilder buf = new StringBuilder();
         buf.append(create ? "CREATE" : "ALTER").append(" SEQUENCE ");
-        
+
         //Strip off the schema and verify the sequence name is within the legal length, NOT
         //the schema name + sequence name.
-        checkNameLength(toDBName(seq.getFullIdentifier().getUnqualifiedName()), 
+        checkNameLength(toDBName(seq.getFullIdentifier().getUnqualifiedName()),
             maxTableNameLength, "long-seq-name");
         //Now use the full sequence name (schema + sequence name).
         String seqName = getFullName(seq);
@@ -3556,13 +3556,13 @@ public class DBDictionary
         buf.append("CREATE ");
         if (index.isUnique())
             buf.append("UNIQUE ");
-        
+
         DBIdentifier fullIdxName = index.getIdentifier();
         DBIdentifier unQualifiedName = fullIdxName.getUnqualifiedName();
-        checkNameLength(toDBName(unQualifiedName), maxIndexNameLength, 
+        checkNameLength(toDBName(unQualifiedName), maxIndexNameLength,
                 "long-index-name");
         String indexName = toDBName(fullIdxName);
-         
+
         buf.append("INDEX ").append(indexName);
         buf.append(" ON ").append(getFullName(index.getTable(), false));
         buf.append(" (").append(namingUtil.appendColumns(index.getColumns())).
@@ -3680,7 +3680,7 @@ public class DBDictionary
      */
     protected String getDeclareColumnSQL(Column col, boolean alter) {
         StringBuilder buf = new StringBuilder();
-        String columnName = checkNameLength(toDBName(col.getIdentifier()), maxColumnNameLength, 
+        String columnName = checkNameLength(toDBName(col.getIdentifier()), maxColumnNameLength,
                 "long-column-name");
         buf.append(columnName).append(" ");
         buf.append(getTypeName(col));
@@ -3874,7 +3874,7 @@ public class DBDictionary
         StringBuilder buf = new StringBuilder();
         if (!DBIdentifier.isNull(unq.getIdentifier())
             && CONS_NAME_BEFORE.equals(constraintNameMode))
-            buf.append("CONSTRAINT ").append(checkNameLength(toDBName(unq.getIdentifier()), 
+            buf.append("CONSTRAINT ").append(checkNameLength(toDBName(unq.getIdentifier()),
                 maxConstraintNameLength, "long-constraint-name")).append(" ");
         buf.append("UNIQUE ");
         if (!DBIdentifier.isNull(unq.getIdentifier()) && CONS_NAME_MID.equals(constraintNameMode))
@@ -3960,7 +3960,7 @@ public class DBDictionary
     public boolean isSystemIndex(String name, Table table) {
         return false;
     }
-    
+
     /**
      * This method is used to filter system indexes from database metadata.
      * Return true if the given index name represents a system index that
@@ -3987,7 +3987,7 @@ public class DBDictionary
      */
     public boolean isSystemSequence(String name, String schema,
         boolean targetSchema) {
-        return isSystemSequence(DBIdentifier.newSequence(name), 
+        return isSystemSequence(DBIdentifier.newSequence(name),
             DBIdentifier.newSchema(schema), targetSchema);
     }
 
@@ -4036,14 +4036,14 @@ public class DBDictionary
             DBIdentifier.newTable(tableName), conn);
     }
 
-    
+
     /**
      * Reflect on the schema to find tables matching the given name pattern.
      */
     public Table[] getTables(DatabaseMetaData meta, DBIdentifier sqlCatalog,
         DBIdentifier sqlSchemaName, DBIdentifier sqlTableName, Connection conn)
         throws SQLException {
-                
+
         String schemaName = DBIdentifier.isNull(sqlSchemaName) ? null : sqlSchemaName.getName();
         if (!supportsSchemaForGetTables)
             schemaName = null;
@@ -4094,7 +4094,7 @@ public class DBDictionary
         throws SQLException {
         return getSequences(meta, DBIdentifier.newCatalog(catalog), DBIdentifier.newSchema(schemaName),
             DBIdentifier.newSequence(sequenceName), conn);
-        
+
     }
 
     public Sequence[] getSequences(DatabaseMetaData meta, DBIdentifier catalog,
@@ -4104,7 +4104,7 @@ public class DBDictionary
         if (str == null)
             return new Sequence[0];
 
-        PreparedStatement stmnt = prepareStatement(conn, str);        
+        PreparedStatement stmnt = prepareStatement(conn, str);
         ResultSet rs = null;
         try {
             int idx = 1;
@@ -4114,14 +4114,14 @@ public class DBDictionary
                 stmnt.setString(idx++, sequenceName.getName());
             setQueryTimeout(stmnt, conf.getQueryTimeout());
             rs = executeQuery(conn, stmnt, str);
-            return getSequence(rs);            
+            return getSequence(rs);
          } finally {
             if (rs != null)
                 try {
                     rs.close();
                 } catch (SQLException se) {
                 }
-            if (stmnt != null)    
+            if (stmnt != null)
                 try {
                     stmnt.close();
                 } catch (SQLException se) {
@@ -4178,7 +4178,7 @@ public class DBDictionary
         throws SQLException {
         if (DBIdentifier.isNull(tableName) && !supportsNullTableForGetColumns)
             return null;
-        
+
         String sqlSchemaName = null;
         if (!DBIdentifier.isNull(schemaName)) {
             sqlSchemaName = schemaName.getName();
@@ -4364,7 +4364,7 @@ public class DBDictionary
         String schemaName, String tableName, boolean unique,
         boolean approx, Connection conn)
         throws SQLException {
-        return getIndexInfo(meta, DBIdentifier.newCatalog(catalog), 
+        return getIndexInfo(meta, DBIdentifier.newCatalog(catalog),
             DBIdentifier.newSchema(schemaName), DBIdentifier.newTable(tableName), unique,
             approx, conn);
     }
@@ -4440,12 +4440,12 @@ public class DBDictionary
      * @deprecated
      */
     public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
-        String schemaName, String tableName, Connection conn, boolean partialKeys) 
+        String schemaName, String tableName, Connection conn, boolean partialKeys)
         throws SQLException {
-        return getImportedKeys(meta, DBIdentifier.newCatalog(catalog), 
+        return getImportedKeys(meta, DBIdentifier.newCatalog(catalog),
             DBIdentifier.newSchema(schemaName), DBIdentifier.newTable(tableName), conn, partialKeys);
     }
-    
+
     /**
      * Reflect on the schema to return full foreign keys imported by the given
      * table pattern.
@@ -4491,13 +4491,13 @@ public class DBDictionary
             }
         }
     }
-    
+
     /**
      * Combines partial foreign keys into singular key
      */
     protected ForeignKey combineForeignKey(Map<FKMapKey, ForeignKey> fkMap,
         ForeignKey fk) {
-        
+
         FKMapKey fkmk = new FKMapKey(fk);
         ForeignKey baseKey = fkMap.get(fkmk);
         // Found the FK, add the additional column
@@ -4628,14 +4628,14 @@ public class DBDictionary
     public String convertSchemaCase(DBIdentifier objectName) {
         return toDBName(namingUtil.convertSchemaCase(objectName), false);
     }
-    
+
     /**
-     * Return DB specific schemaCase 
+     * Return DB specific schemaCase
      */
     public String getSchemaCase(){
         return schemaCase;
     }
-        
+
     /**
      * Prepared the connection for metadata operations.
      */
@@ -4682,8 +4682,8 @@ public class DBDictionary
         } finally {
             if (rs != null)
                 try { rs.close(); } catch (SQLException se) {}
-            if (stmnt != null)    
-                try { stmnt.close(); } catch (SQLException se) {} 
+            if (stmnt != null)
+                try { stmnt.close(); } catch (SQLException se) {}
         }
     }
 
@@ -4691,9 +4691,9 @@ public class DBDictionary
         return MessageFormat.format(query, new Object[]{
                 toDBName(col.getIdentifier()), getFullName(col.getTable(), false),
                 getGeneratedKeySequenceName(col),
-            });        
+            });
     }
-    
+
     /**
      * Return the sequence name used by databases for the given autoassigned
      * column. This is only used by databases that require an explicit name
@@ -4809,14 +4809,14 @@ public class DBDictionary
         // add fixed size type names set by the user
         if (fixedSizeTypeNames != null)
             fixedSizeTypeNameSet.addAll(Arrays.asList(StringUtil.split(fixedSizeTypeNames.toUpperCase(Locale.ENGLISH), ",", 0)));
-        
+
         // if user has unset sequence sql, null it out so we know sequences
         // aren't supported
         nextSequenceQuery = StringUtil.trimToNull(nextSequenceQuery);
-        
+
         if (selectWords != null)
             selectWordSet.addAll(Arrays.asList(StringUtil.split(selectWords.toUpperCase(Locale.ENGLISH), ",", 0)));
-        
+
         // initialize the error codes
         SQLErrorCodeReader codeReader = new SQLErrorCodeReader();
         String rsrc = "sql-error-state-codes.xml";
@@ -4831,7 +4831,7 @@ public class DBDictionary
         }
         codeReader.parse(stream, dictionaryClassName, this);
     }
-    
+
     public void addErrorCode(int errorType, String errorCode) {
         if (errorCode == null || errorCode.trim().length() == 0)
             return;
@@ -4844,27 +4844,27 @@ public class DBDictionary
             codes.add(errorCode.trim());
         }
     }
-    
+
     /**
      * FIXME - OPENJPA-957 - lockTimeout is a server-side function and
      * shouldn't be using client-side setQueryTimeout for lock timeouts.
-     * 
-     * This method is to provide override for non-JDBC or JDBC-like 
+     *
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of setting query and lock timeouts.
-     * 
+     *
      * @param stmnt
      * @param fetch - optional lock and query timeouts in milliseconds
      * @param forUpdate - true if we should also try setting a lock timeout
      * @throws SQLException
      */
-    public void setTimeouts(PreparedStatement stmnt, 
+    public void setTimeouts(PreparedStatement stmnt,
         JDBCFetchConfiguration fetch, boolean forUpdate) throws SQLException {
         if (supportsQueryTimeout) {
             int timeout = fetch.getQueryTimeout();
             if (forUpdate) {
-                // if this is a locking select and the lock timeout is greater 
+                // if this is a locking select and the lock timeout is greater
                 // than the configured query timeout, use the lock timeout
-                timeout = Math.max(fetch.getQueryTimeout(), 
+                timeout = Math.max(fetch.getQueryTimeout(),
                     fetch.getLockTimeout());
             }
             setQueryTimeout(stmnt, timeout);
@@ -4874,10 +4874,10 @@ public class DBDictionary
     /**
      * FIXME - OPENJPA-957 - lockTimeout is a server-side function and
      * shouldn't be using client-side setQueryTimeout for lock timeouts.
-     * 
-     * This method is to provide override for non-JDBC or JDBC-like 
+     *
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of setting query and lock timeouts.
-     * 
+     *
      * @param stmnt
      * @param conf - optional lock and query timeouts in milliseconds
      * @param forUpdate - true if we should also try setting a lock timeout
@@ -4890,7 +4890,7 @@ public class DBDictionary
             if (forUpdate) {
                 // if this is a locking select and the lock timeout is greater
                 // than the configured query timeout, use the lock timeout
-                timeout = Math.max(conf.getQueryTimeout(), 
+                timeout = Math.max(conf.getQueryTimeout(),
                     conf.getLockTimeout());
             }
             setQueryTimeout(stmnt, timeout);
@@ -4915,7 +4915,7 @@ public class DBDictionary
                 return;
             } else if (timeout > 0 && timeout < 1000) {
                 // round up to 1 sec
-                timeout = 1000; 
+                timeout = 1000;
                 if (log.isWarnEnabled())
                     log.warn(_loc.get("millis-query-timeout"));
             }
@@ -4931,7 +4931,7 @@ public class DBDictionary
      * @param timeout in milliseconds
      * @throws SQLException
      */
-    protected void setStatementQueryTimeout(PreparedStatement stmnt, 
+    protected void setStatementQueryTimeout(PreparedStatement stmnt,
         int timeout) throws SQLException {
         // JDBC uses seconds, so we'll do a simple round-down conversion here
         stmnt.setQueryTimeout(timeout / 1000);
@@ -5002,14 +5002,14 @@ public class DBDictionary
         return new StoreException(msg).setFailedObject(failed).
             setNestedThrowables(causes);
     }
-    
+
     /**
      * Gets the category of StoreException by matching the given SQLException's
      * error state code to the list of error codes supplied by the dictionary.
-     * 
+     *
      * @return a StoreException of {@link ExceptionInfo#GENERAL general} category
      * if the given SQL Exception can not be further categorized.
-     * 
+     *
      * @see #matchErrorState(Map, SQLException)
      */
     OpenJPAException narrow(String msg, SQLException ex, Object failed) {
@@ -5046,15 +5046,15 @@ public class DBDictionary
      * the given SQLException to the given Error States categorized by error types.
      * Dictionary subclass can override this method and extract
      * SQLException data to figure out if the exception is recoverable.
-     * 
+     *
      * @param errorStates classification of SQL error states by their specific nature. The keys of the
      * map represent one of the constants defined in {@link StoreException}. The value corresponding to
-     * a key represent the set of SQL Error States representing specific category of database error. 
+     * a key represent the set of SQL Error States representing specific category of database error.
      * This supplied map is sourced from <code>sql-error-state-codes.xml</xml> and filtered the
      * error states for the current database.
-     * 
+     *
      * @param ex original SQL Exception as raised by the database driver.
-     * 
+     *
      * @return A constant indicating the category of error as defined in {@link StoreException}.
      */
     protected int matchErrorState(Map<Integer,Set<String>> errorStates, SQLException ex) {
@@ -5065,22 +5065,22 @@ public class DBDictionary
         }
         return StoreException.GENERAL;
     }
-    
+
     /**
      * Determine if the given SQL Exception is fatal or recoverable (such as a timeout).
      * This implementation always returns true (i.e. all exceptions are fatal).
      * The current dictionary implementation can overwrite this method to mark certain
      * exception conditions as recoverable error.
 
-     * @param subtype A constant indicating the category of error as defined in {@link StoreException}. 
+     * @param subtype A constant indicating the category of error as defined in {@link StoreException}.
      * @param ex original SQL Exception as raised by the database driver.
-     * 
-     * @return false if the error is fatal. 
+     *
+     * @return false if the error is fatal.
      */
     public boolean isFatalException(int subtype, SQLException ex) {
         return true;
     }
-    
+
     /**
      * Closes the specified {@link DataSource} and releases any
      * resources associated with it.
@@ -5103,7 +5103,7 @@ public class DBDictionary
             this.bytes = bytes;
         }
     }
-    
+
     /**
      * Return version column name
      * @param column
@@ -5116,17 +5116,17 @@ public class DBDictionary
     public DBIdentifier getVersionColumn(Column column, DBIdentifier tableAlias) {
         return column.getIdentifier();
     }
-    
-    public void insertBlobForStreamingLoad(Row row, Column col, 
+
+    public void insertBlobForStreamingLoad(Row row, Column col,
         JDBCStore store, Object ob, Select sel) throws SQLException {
         if (ob != null) {
-            row.setBinaryStream(col, 
+            row.setBinaryStream(col,
                 new ByteArrayInputStream(new byte[0]), 0);
         } else {
             row.setNull(col);
         }
     }
-    
+
     public void insertClobForStreamingLoad(Row row, Column col, Object ob)
     throws SQLException {
         if (ob != null) {
@@ -5136,7 +5136,7 @@ public class DBDictionary
             row.setNull(col);
         }
     }
-    
+
     public void updateBlob(Select sel, JDBCStore store, InputStream is)
         throws SQLException {
         SQLBuffer sql = sel.toSelect(true, store.getFetchConfiguration());
@@ -5170,7 +5170,7 @@ public class DBDictionary
                 try { conn.close (); } catch (SQLException e) {}
         }
     }
-    
+
     public void updateClob(Select sel, JDBCStore store, Reader reader)
         throws SQLException {
         SQLBuffer sql = sel.toSelect(true, store.getFetchConfiguration());
@@ -5198,15 +5198,15 @@ public class DBDictionary
         } catch (IOException ioe) {
             throw new StoreException(ioe);
         } finally {
-            if (res != null) 
+            if (res != null)
                 try { res.close (); } catch (SQLException e) {}
-            if (stmnt != null) 
+            if (stmnt != null)
                 try { stmnt.close (); } catch (SQLException e) {}
-            if (conn != null) 
+            if (conn != null)
                 try { conn.close (); } catch (SQLException e) {}
-        }    
+        }
     }
-    
+
     protected long copy(InputStream in, OutputStream out) throws IOException {
         byte[] copyBuffer = new byte[blobBufferSize];
         long bytesCopied = 0;
@@ -5218,7 +5218,7 @@ public class DBDictionary
         }
         return bytesCopied;
     }
-    
+
     protected long copy(Reader reader, Writer writer) throws IOException {
         char[] copyBuffer = new char[clobBufferSize];
         long bytesCopied = 0;
@@ -5231,10 +5231,10 @@ public class DBDictionary
 
         return bytesCopied;
     }
-    
+
     /**
      * Attach CAST to the current function if necessary
-     * 
+     *
      * @param val operand value
      * @parma func the sql function statement
      * @return a String with the correct CAST function syntax
@@ -5246,7 +5246,7 @@ public class DBDictionary
     /**
      * Return the correct CAST function syntax.  This should be overriden by subclasses
      * that need access to the Column information.
-     * 
+     *
      * @param val operand of cast
      * @param func original string
      * @param col database column
@@ -5255,7 +5255,7 @@ public class DBDictionary
     public String getCastFunction(Val val, String func, Column col) {
         return getCastFunction (val, func);
     }
-    
+
     /**
      * Create an index if necessary for some database tables
      * @deprecated
@@ -5267,21 +5267,21 @@ public class DBDictionary
     public void createIndexIfNecessary(Schema schema, DBIdentifier table,
         Column pkColumn) {
     }
-    
+
     /**
      * Return the batchLimit
      */
     public int getBatchLimit(){
         return batchLimit;
     }
-    
+
     /**
      * Set the batchLimit value
      */
     public void setBatchLimit(int limit){
         batchLimit = limit;
     }
-    
+
     /**
      * Validate the batch process. In some cases, we can't batch the statements
      * due to some restrictions. For example, if the GeneratedType=IDENTITY,
@@ -5303,41 +5303,41 @@ public class DBDictionary
         }
         // go to each Dictionary to validate the batch capability
         if (!disableBatch)
-            disableBatch = validateDBSpecificBatchProcess(disableBatch, row, 
+            disableBatch = validateDBSpecificBatchProcess(disableBatch, row,
                 autoAssign, sm, cmd);
         return disableBatch;
     }
-    
+
     /**
-     * Allow each Dictionary to validate its own batch process. 
+     * Allow each Dictionary to validate its own batch process.
      */
-    public boolean validateDBSpecificBatchProcess (boolean disableBatch, 
-            RowImpl row, Column[] autoAssign, 
+    public boolean validateDBSpecificBatchProcess (boolean disableBatch,
+            RowImpl row, Column[] autoAssign,
             OpenJPAStateManager  sm, ClassMapping cmd ) {
         return disableBatch;
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of executing query.
      */
     protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt,
-            String sql 
+            String sql
         ) throws SQLException {
         return stmnt.executeQuery();
     }
-            
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of preparing statement.
      */
     protected PreparedStatement prepareStatement(Connection conn, String sql)
         throws SQLException {
         return conn.prepareStatement(sql);
-    }    
- 
+    }
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of getting sequence from the result set.
      */
     protected Sequence[] getSequence(ResultSet rs) throws SQLException {
@@ -5346,9 +5346,9 @@ public class DBDictionary
             seqList.add(newSequence(rs));
         return (Sequence[]) seqList.toArray(new Sequence[seqList.size()]);
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of getting key from the result set.
      */
     protected Object getKey (ResultSet rs, Column col) throws SQLException {
@@ -5357,24 +5357,24 @@ public class DBDictionary
         Object key = rs.getObject(1);
         if (key == null)
             log.warn(_loc.get("invalid-genkey", col));
-        return key;        
+        return key;
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of calculating value.
      */
-    protected void calculateValue(Val val, Select sel, ExpContext ctx, 
+    protected void calculateValue(Val val, Select sel, ExpContext ctx,
         ExpState state, Path path, ExpState pathState) {
         val.calculateValue(sel, ctx, state, (Val) path, pathState);
     }
 
     /**
-     * Determine whether the provided <code>sql</code> may be treated as a 
+     * Determine whether the provided <code>sql</code> may be treated as a
      * select statement on this database.
-     *  
-     * @param sql   A sql statement. 
-     * 
+     *
+     * @param sql   A sql statement.
+     *
      * @return true if <code>sql</code> represents a select statement.
      */
     public boolean isSelect(String sql) {
@@ -5406,22 +5406,22 @@ public class DBDictionary
     public int getBatchUpdateCount(PreparedStatement ps) throws SQLException {
         return 0;
     }
-    
-    public boolean getTrimSchemaName() { 
+
+    public boolean getTrimSchemaName() {
         return trimSchemaName;
     }
-    
-    public void setTrimSchemaName(boolean trimSchemaName) { 
-        this.trimSchemaName = trimSchemaName; 
+
+    public void setTrimSchemaName(boolean trimSchemaName) {
+        this.trimSchemaName = trimSchemaName;
     }
-    
+
     public void deleteStream(JDBCStore store, Select sel) throws SQLException {
         // Do nothing
     }
-    
+
     /**
      * Validate that the given name is not longer than given maximum length.
-     * If the given name is indeed longer then raises a UserException with the 
+     * If the given name is indeed longer then raises a UserException with the
      * given message key otherwise returns the same name.
      */
     final String checkNameLength(String name, int length, String msgKey) {
@@ -5430,11 +5430,11 @@ public class DBDictionary
         }
         return name;
     }
-    
+
     /**
      * Validate that the given name is not longer than given maximum length. Uses the unqualified name
      * from the supplied {@link DBIdentifier} by default..
-     * 
+     *
      * @param identifier The database identifier to check.
      * @param length    Max length for this type of identifier
      * @param msgKey    message identifier for the exception.
@@ -5449,20 +5449,20 @@ public class DBDictionary
     /**
      * Validate that the given name is not longer than given maximum length. Conditionally uses the unqualified name
      * from the supplied {@link DBIdentifier}.
-     * 
+     *
      * @param identifier The database identifier to check.
      * @param length    Max length for this type of identifier
      * @param msgKey    message identifier for the exception.
-     * @param qualified If true the qualified name of the DBIdentifier will be used. 
-     * 
+     * @param qualified If true the qualified name of the DBIdentifier will be used.
+     *
      * @throws {@link UserException} with the given message key if the given name is indeed longer.
      * @return the same name.
      */
     final String checkNameLength(DBIdentifier identifier, int length, String msgKey, boolean qualified) {
-        // always return the input name, 
+        // always return the input name,
         String name = toDBName(identifier);
         String compareName = qualified ? name : toDBName(identifier.getUnqualifiedName());
-        
+
         if (compareName.length() > length) {
             throw new UserException(_loc.get(msgKey, name, name.length(), length));
         }
@@ -5487,14 +5487,14 @@ public class DBDictionary
             }
         }
     }
-    
+
     /**
      * @return the supportsDelimitedIds
      */
     public boolean getSupportsDelimitedIdentifiers() {
         return (supportsDelimitedIdentifiers == null ? false : supportsDelimitedIdentifiers);
     }
-    
+
     /**
      * @param supportsDelimitedIds the supportsDelimitedIds to set
      */
@@ -5530,7 +5530,7 @@ public class DBDictionary
     public void setDelimitIdentifiers(boolean delimitIds) {
         delimitIdentifiers = delimitIds;
     }
-    
+
     /**
      * @return supportsXMLColumn
      */
@@ -5544,7 +5544,7 @@ public class DBDictionary
     public void setSupportsXMLColumn(boolean b) {
         supportsXMLColumn = b;
     }
-    
+
     /**
      * @return xmlTypeEncoding
      */
@@ -5559,7 +5559,7 @@ public class DBDictionary
         xmlTypeEncoding = encoding;
     }
 
-    public Log getLog() { 
+    public Log getLog() {
         return log;
     }
 
@@ -5582,7 +5582,7 @@ public class DBDictionary
     public String getIdentifierConcatenator() {
         return nameConcatenator;
     }
-    
+
     public String getTrailingDelimiter() {
         return trailingDelimiter;
     }
@@ -5620,7 +5620,7 @@ public class DBDictionary
     public DBIdentifierUtil getNamingUtil() {
         return namingUtil;
     }
-    
+
     public String getDelimitedCase() {
         return delimitedCase;
     }
@@ -5642,7 +5642,7 @@ public class DBDictionary
     public DBIdentifier fromDBName(String name, DBIdentifierType id) {
         return getNamingUtil().fromDBName(name, id);
     }
-    
+
     public void setDefaultSchemaName(String defaultSchemaName) {
         this.defaultSchemaName = defaultSchemaName;
     }
@@ -5650,7 +5650,7 @@ public class DBDictionary
     public String getDefaultSchemaName() {
         return defaultSchemaName;
     }
-    
+
     public String getConversionKey() {
         if (conversionKey == null) {
             conversionKey = getLeadingDelimiter() + getIdentifierDelimiter() +
@@ -5662,7 +5662,7 @@ public class DBDictionary
     /**
      * Return parameter marker for INSERT and UPDATE statements.
      * Usually it is <code>?</code> but some database-specific types might require customization.
-     * 
+     *
      * @param col column definition
      * @param val value to be inserted/updated
      * @return parameter marker
@@ -5672,23 +5672,23 @@ public class DBDictionary
     }
 
     public String getIsNullSQL(String colAlias, int colType)  {
-        return String.format("%s IS NULL", colAlias); 
+        return String.format("%s IS NULL", colAlias);
     }
-    
-    public String getIsNotNullSQL(String colAlias, int colType) { 
+
+    public String getIsNotNullSQL(String colAlias, int colType) {
         return String.format("%s IS NOT NULL", colAlias);
     }
-    
+
     public String getIdentityColumnName() {
-        return null;       
-    }    
-    
+        return null;
+    }
+
     /**
      * Default behavior is ROUND
      */
     public DateMillisecondBehaviors getMillisecondBehavior() {
-        // If the user hasn't configured this property, fall back 
-        // to looking at the old property in the mean time till 
+        // If the user hasn't configured this property, fall back
+        // to looking at the old property in the mean time till
         // we can get rid of it.
         if (dateMillisecondBehavior == null) {
             if (roundTimeToMillisec) {
@@ -5699,7 +5699,7 @@ public class DBDictionary
         }
         return dateMillisecondBehavior;
     }
- 
+
     public void setDateMillisecondBehavior(String str) {
         if (str != null) {
             // Tolerate different case
@@ -5744,47 +5744,47 @@ public class DBDictionary
 	protected boolean isUsingOrderBy(SQLBuffer sql) {
 		return sql != null && !sql.isEmpty();
 	}
-	
+
 	protected boolean versionEqualOrLaterThan(int maj, int min) {
     	return (major > maj) || (major == maj && minor >= min);
     }
-	
+
 	protected boolean versionEqualOrEarlierThan(int maj, int min) {
     	return (major < maj) || (major == maj && minor <= min);
     }
-    
+
 	protected boolean versionLaterThan(int maj) {
     	return (major > maj);
     }
-	
+
 	/**
 	 * Gets major version of the database server.
 	 */
 	public final int getMajorVersion() {
 		return major;
 	}
-	
+
 	/**
 	 * Sets major version of the database server.
 	 */
 	public void setMajorVersion(int maj) {
 		major = maj;
 	}
-	
+
 	/**
 	 * Gets minor version of the database server.
 	 */
 	public final int getMinorVersion() {
 		return major;
 	}
-	
+
 	/**
 	 * Sets minor version of the database server.
 	 */
 	public void setMinorVersion(int min) {
 		minor = min;
 	}
-	
+
     String nullSafe(String s) {
         return s == null ? "" : s;
     }

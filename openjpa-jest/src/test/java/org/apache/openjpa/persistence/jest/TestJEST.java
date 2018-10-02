@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -42,16 +42,16 @@ import com.meterware.servletunit.ServletUnitClient;
 
 /**
  * Tests JEST Servlet using <A href="http://httpunit.sourceforge.net/doc/servletunit-intro.html">ServletUnit</A>.
- * 
+ *
  * Sets up a class-level Servlet Runner (an in-process Servlet Engine).
- * 
+ *
  * Recognizes following JVM system property
  * <OL>
  * <LI><tt>jest.web.xml</tt> : web descriptor resource name looked up as a resource in the current
  * thread context. Defaults to <tt>WEB-INF/web.xml</tt>
  * <LI><tt>jest.base.uri</tt> : base uri for all request. Defaults to <tt>http://localhost/jest</tt>
- *  
- * 
+ *
+ *
  * @author Pinaki Poddar
  *
  */
@@ -62,7 +62,7 @@ public class TestJEST extends TestCase {
     private static String DEFAULT_BASE_URI = "http://localhost/jest";
     private static DocumentBuilder _xmlParser;
     private static XPathFactory _xpathFactory;
-    
+
     /**
      * Sets up a class-wide Servlet Engine.
      */
@@ -75,10 +75,10 @@ public class TestJEST extends TestCase {
             assertNotNull(resource + " not loadable at thread context classpath", wdesc);
             container = new ServletRunner(wdesc);
             assertNotNull("Servlet engine could not be started", container);
-            
+
             baseURI = System.getProperty("jest.base.uri", DEFAULT_BASE_URI);
             System.err.println("Base URI  " + baseURI);
-            
+
             _xmlParser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             _xpathFactory = XPathFactory.newInstance();
         }
@@ -86,11 +86,11 @@ public class TestJEST extends TestCase {
         HttpUnitOptions.setScriptingEnabled(false);
         HttpUnitOptions.setExceptionsThrownOnScriptError(false);
     }
-    
+
     public void testBadURL() throws Exception {
         assertError(HttpURLConnection.HTTP_NOT_FOUND, uri("some+bad+url"));
     }
-    
+
     public void testDomain() throws Exception {
         WebResponse response = getResponse(uri("domain"));
         assertNotNull(response);
@@ -103,7 +103,7 @@ public class TestJEST extends TestCase {
         NodeList entities = getNodes(doc, "/metamodel/entity");
         assertEquals(2, ((NodeList)entities).getLength());
     }
-    
+
     /**
      * Gets the response for the given URL.
      */
@@ -117,18 +117,18 @@ public class TestJEST extends TestCase {
         }
         return null;
     }
-    
+
     /**
      * Create a URI string for the given path with the base URI prepended.
      */
     protected String uri(String path) {
         return baseURI + '/' + path;
     }
-    
+
     /**
      * Asserts that the given URL generates the given error code.
      * @param error HTTP error code
-     * @param url URL string 
+     * @param url URL string
      */
     void assertError(int error, String url) throws Exception {
         ServletUnitClient client = container.newClient();
@@ -139,14 +139,14 @@ public class TestJEST extends TestCase {
             assertEquals("Unexpected HTTP Error code for " + url, error, e.getResponseCode());
         }
     }
-    
+
     NodeList getNodes(Document doc, String path) throws Exception {
         XPath xpath = _xpathFactory.newXPath();
         Object nodes = xpath.compile(path).evaluate(doc, XPathConstants.NODESET);
         assertTrue(nodes instanceof NodeList);
         return (NodeList)nodes;
     }
-    
+
     Node getNode(Document doc, String path) throws Exception {
         XPath xpath = _xpathFactory.newXPath();
         Object node = xpath.compile(path).evaluate(doc, XPathConstants.NODE);

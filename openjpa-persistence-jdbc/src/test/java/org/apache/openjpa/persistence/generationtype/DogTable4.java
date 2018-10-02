@@ -28,7 +28,7 @@ public class DogTable4 implements Serializable
 {
     @Id
     @TableGenerator(name = "Dog_Gen4", table = "ID_Gen4", schema="SCHEMA4G",
-            pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", 
+            pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL",
             pkColumnValue = "ID2", initialValue = 100, allocationSize = 10)
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Dog_Gen4")
     private int id2;

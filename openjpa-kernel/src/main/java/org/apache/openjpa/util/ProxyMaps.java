@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -31,7 +31,7 @@ import java.util.Set;
  *
  * @author Abe White
  */
-public class ProxyMaps 
+public class ProxyMaps
     extends Proxies {
 
     /**
@@ -53,7 +53,7 @@ public class ProxyMaps
     public static Set keySet(ProxyMap map) {
         ProxyEntrySet entries = (ProxyEntrySet) map.entrySet();
         entries.setView(ProxyEntrySet.VIEW_KEYS);
-        return entries; 
+        return entries;
     }
 
     /**
@@ -62,7 +62,7 @@ public class ProxyMaps
     public static Collection values(ProxyMap map) {
         ProxyEntrySet entries = (ProxyEntrySet) map.entrySet();
         entries.setView(ProxyEntrySet.VIEW_VALUES);
-        return entries; 
+        return entries;
     }
 
     /**
@@ -84,8 +84,8 @@ public class ProxyMaps
     /**
      * Call after invoking {@link Map#get} on super.
      * The potential change is tracked when the get method is called. This change
-     * will not translated to an update statement if the retrieved value 
-     * is not dirty. 
+     * will not translated to an update statement if the retrieved value
+     * is not dirty.
      *
      * @param ret the return value from the super's method
      * @param before the return value from {@link #beforeGet}
@@ -95,7 +95,7 @@ public class ProxyMaps
         Object ret, boolean before) {
         if (before) {
             if (map.getChangeTracker() != null)
-                ((MapChangeTracker) map.getChangeTracker()).changed(key, ret, 
+                ((MapChangeTracker) map.getChangeTracker()).changed(key, ret,
                     ret);
         }
         return ret;
@@ -123,7 +123,7 @@ public class ProxyMaps
         Object ret, boolean before) {
         if (before) {
             if (map.getChangeTracker() != null)
-                ((MapChangeTracker) map.getChangeTracker()).changed(key, ret, 
+                ((MapChangeTracker) map.getChangeTracker()).changed(key, ret,
                     value);
             removed(map, ret, false);
         } else if (map.getChangeTracker() != null)
@@ -134,7 +134,7 @@ public class ProxyMaps
     /**
      * Call before invoking {@link Properties#setProperty} on super.
      */
-    public static boolean beforeSetProperty(ProxyMap map, String key, 
+    public static boolean beforeSetProperty(ProxyMap map, String key,
         String value) {
         return beforePut(map, key, value);
     }
@@ -146,7 +146,7 @@ public class ProxyMaps
      * @param before the return value from {@link #beforeSetProperty}
      * @return the value to return from {@link Properties#setProperty}
      */
-    public static Object afterSetProperty(ProxyMap map, String key, 
+    public static Object afterSetProperty(ProxyMap map, String key,
         String value, Object ret, boolean before) {
         return afterPut(map, key, value, ret, before);
     }
@@ -191,21 +191,21 @@ public class ProxyMaps
      * @param before the return value from {@link #beforeRemove}
      * @return the value to return from {@link Map#remove}
      */
-    public static Object afterRemove(ProxyMap map, Object key, Object ret, 
+    public static Object afterRemove(ProxyMap map, Object key, Object ret,
         boolean before) {
         if (before) {
             if (map.getChangeTracker() != null)
                 ((MapChangeTracker) map.getChangeTracker()).removed(key, ret);
             removed(map, key, true);
             removed(map, ret, false);
-        } 
+        }
         return ret;
     }
 
     /**
      * Marker interface for a proxy entry set.
      */
-    public static interface ProxyEntrySet 
+    public static interface ProxyEntrySet
         extends Set {
 
         public static final int VIEW_KEYS = 0;
@@ -222,9 +222,9 @@ public class ProxyMaps
      * Dirtying proxy for map entry set.
      */
     private static class ProxyEntrySetImpl
-        extends AbstractSet 
+        extends AbstractSet
         implements ProxyEntrySet {
-        
+
         private final ProxyMap _map;
         private final Set _entries;
         private int _view = VIEW_ENTRIES;
@@ -234,7 +234,7 @@ public class ProxyMaps
          */
         public ProxyEntrySetImpl(ProxyMap map, Set entries) {
             _map = map;
-            _entries = entries; 
+            _entries = entries;
         }
 
         /**

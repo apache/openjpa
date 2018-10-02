@@ -67,7 +67,7 @@ public class HandlerRelationMapTableFieldStrategy
     }
 
     public void selectValue(Select sel, ClassMapping val,
-        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch, 
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         Joins joins) {
         sel.select(val, field.getElementMapping().getSelectSubclasses(),
             store, fetch, JDBCFetchConfiguration.EAGER_NONE, joins);
@@ -144,12 +144,12 @@ public class HandlerRelationMapTableFieldStrategy
         ValueMapping val = field.getElementMapping();
         if (val.getTypeCode() != JavaTypes.PC || val.isEmbeddedPC())
             throw new MetaDataException(_loc.get("not-relation", val));
-        
+
         FieldMapping mapped = field.getMappedByMapping();
-        if (field.isUni1ToMFK() || (!field.isBiMTo1JT() && mapped != null)) { 
+        if (field.isUni1ToMFK() || (!field.isBiMTo1JT() && mapped != null)) {
             // map to the owner table
             handleMappedByForeignKey(adapt);
-        } else if (field.isBiMTo1JT() || mapped == null) { 
+        } else if (field.isBiMTo1JT() || mapped == null) {
             // map to a separate table
             field.mapJoin(adapt, true);
             if (val.getTypeMapping().isMapped()) {
@@ -164,7 +164,7 @@ public class HandlerRelationMapTableFieldStrategy
         }
         _kio = new ColumnIO();
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
-        _kcols = HandlerStrategies.map(key, 
+        _kcols = HandlerStrategies.map(key,
             dict.getValidColumnName(DBIdentifier.newColumn("key"), field.getTable()).getName(), _kio, adapt);
 
         field.mapPrimaryKey(adapt);
@@ -185,7 +185,7 @@ public class HandlerRelationMapTableFieldStrategy
         throws SQLException {
         if (map == null || map.isEmpty())
             return;
-        
+
         if (!field.isBiMTo1JT() && field.getMappedBy() != null)
             return;
 
@@ -214,7 +214,7 @@ public class HandlerRelationMapTableFieldStrategy
             }
             HandlerStrategies.set(key, entry.getKey(), store, row, _kcols,
                     _kio, true);
-            
+
             // So far we populated the key/value of each
             // map element owned by the entity.
             // In the case of ToMany, and both sides
@@ -228,8 +228,8 @@ public class HandlerRelationMapTableFieldStrategy
             }
         }
     }
-    
-    public void setKey(Object keyObj, JDBCStore store, Row row) 
+
+    public void setKey(Object keyObj, JDBCStore store, Row row)
         throws SQLException {
         ValueMapping key = field.getKeyMapping();
         HandlerStrategies.set(key, keyObj, store, row, _kcols,
@@ -274,7 +274,7 @@ public class HandlerRelationMapTableFieldStrategy
                     Row.ACTION_UPDATE);
                 changeRow.whereForeignKey(field.getJoinForeignKey(), sm);
             }
-            
+
             for (Iterator itr = change.iterator(); itr.hasNext();) {
                 mkey = itr.next();
                 valsm = RelationStrategies.getStateManager(map.get(mkey), ctx);
@@ -286,7 +286,7 @@ public class HandlerRelationMapTableFieldStrategy
                 } else {
                     val.setForeignKey(changeRow, valsm);
                 }
-                
+
                 HandlerStrategies.where(key, mkey, store, changeRow, _kcols);
                 if (!field.isUni1ToMFK())
                     rm.flushSecondaryRow(changeRow);
@@ -316,7 +316,7 @@ public class HandlerRelationMapTableFieldStrategy
                     mkey = itr.next();
                     if (field.isUni1ToMFK()){
                         updateSetNull(sm, mkey, store, rm);
-                    } else { 
+                    } else {
                         HandlerStrategies.where(key, mkey, store, delRow,  _kcols);
                         rm.flushSecondaryRow(delRow);
                     }
@@ -345,7 +345,7 @@ public class HandlerRelationMapTableFieldStrategy
                 } else {
                     val.setForeignKey(addRow, valsm);
                 }
-                
+
                 HandlerStrategies.set(key, mkey, store, addRow, _kcols,
                     _kio, true);
                 if (!field.isUni1ToMFK())
@@ -363,7 +363,7 @@ public class HandlerRelationMapTableFieldStrategy
                     } else {
                         val.setForeignKey(addRow, valsm);
                     }
-                    
+
                     HandlerStrategies.set(key, mkey, store, addRow, _kcols,
                         _kio, true);
                     if (!field.isUni1ToMFK())
@@ -390,7 +390,7 @@ public class HandlerRelationMapTableFieldStrategy
                 fk, clss[0], val.getSelectSubclasses(),
                 false, false);
         return joins.joinRelation(field.getName(),
-                fk, clss[0], val.getSelectSubclasses(), 
+                fk, clss[0], val.getSelectSubclasses(),
             false, false);
     }
 
@@ -410,7 +410,7 @@ public class HandlerRelationMapTableFieldStrategy
         return HandlerStrategies.toDataStoreValue(field.getKeyMapping(), val,
             _kcols, store);
     }
-    
+
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if ((field.getMappedBy() != null && !field.isBiMTo1JT()))
@@ -419,11 +419,11 @@ public class HandlerRelationMapTableFieldStrategy
             Map mapObj = (Map)sm.fetchObject(field.getIndex());
             updateSetNull(sm, store, rm, mapObj.keySet());
             return;
-        }    
+        }
 
         super.delete(sm, store, rm);
     }
-    
+
     private void updateSetNull(OpenJPAStateManager sm, JDBCStore store, RowManager rm,
         Set rem) throws SQLException {
         for (Iterator itr = rem.iterator(); itr.hasNext();) {
@@ -432,7 +432,7 @@ public class HandlerRelationMapTableFieldStrategy
         }
     }
 
-    private void updateSetNull(OpenJPAStateManager sm, Object mkey, 
+    private void updateSetNull(OpenJPAStateManager sm, Object mkey,
         JDBCStore store, RowManager rm) throws SQLException {
         ValueMapping key = field.getKeyMapping();
         ValueMapping val = field.getElementMapping();

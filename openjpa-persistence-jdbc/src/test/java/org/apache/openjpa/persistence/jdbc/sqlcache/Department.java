@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
@@ -30,12 +30,12 @@ public class Department {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private String name;
-	
+
 	@ManyToOne
 	private Company company;
-	
+
 	@OneToMany
 	private Collection<Employee> employees = new HashSet<Employee>();
 
@@ -67,6 +67,6 @@ public class Department {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 
 }

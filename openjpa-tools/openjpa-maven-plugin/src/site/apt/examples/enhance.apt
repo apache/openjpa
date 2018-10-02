@@ -12,14 +12,14 @@ Enhance
   The following build configuration shows how to enhance JPA entities
   at compile time. Please consult the OpenJPA documentation for more
   details on compiletime enhancement versus runtime enhancement.
-  
-  The {{{../enhance-mojo.html}openjpa:enhance}} mojo will typically be 
+
+  The {{{../enhance-mojo.html}openjpa:enhance}} mojo will typically be
   called in the <<<process-classes>>> phase.
 
   Please note that the tmpClassLoader defaults to <<<false>>> to make
   sure that classes in depending artifacts (like enums in interfaces)
-  can be parsed by the PCEnhancer.  
-  
+  can be parsed by the PCEnhancer.
+
 -------------------
 <project>
   [...]
@@ -38,7 +38,7 @@ Enhance
               <goal>enhance</goal>
             </goals>
           </execution>
-        </executions> 
+        </executions>
       </plugin>
       [...]
     </plugins>
@@ -47,4 +47,3 @@ Enhance
   [...]
 </project>
 -------------------
- 

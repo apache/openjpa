@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="jpa_overview_pc">
     <title>
@@ -65,12 +65,12 @@ an entity by its persistent identity (covered later in this chapter), or use a
 An instance of an embeddable class, on the other hand, is only stored as part of
 a separate entity. Embeddable instances have no persistent identity, and are
 never returned directly from the <classname>EntityManager</classname> or from a
-<classname>Query</classname> unless the query uses a projection on owning class 
-to the embedded instance. For example, if <classname>Address</classname> is 
-embedded in <classname>Company</classname>, then 
-a query <classname>"SELECT a FROM Address a"</classname> will never return the 
-embedded <classname>Address</classname> of <classname>Company</classname>; 
-but a projection query such as 
+<classname>Query</classname> unless the query uses a projection on owning class
+to the embedded instance. For example, if <classname>Address</classname> is
+embedded in <classname>Company</classname>, then
+a query <classname>"SELECT a FROM Address a"</classname> will never return the
+embedded <classname>Address</classname> of <classname>Company</classname>;
+but a projection query such as
 <classname>"SELECT c.address FROM Company c"</classname> will.
     </para>
     <para>
@@ -122,7 +122,7 @@ public class Magazine {
         publisher.addMagazine(this);
         this.price = price;
     }
-    
+
     public void sell() {
         copiesSold++;
         publisher.addRevenue(price);
@@ -277,7 +277,7 @@ version field in JPA metadata.
             <para>
 The version field must be an integral type (<classname> int</classname>,
 <classname>Long</classname>, etc) or a <classname>
-java.sql.Timestamp</classname>. You should consider version fields immutable. 
+java.sql.Timestamp</classname>. You should consider version fields immutable.
 Changing the field value has undefined results.
             </para>
             <note>
@@ -438,7 +438,7 @@ java.lang.Byte</classname>, etc)
             </itemizedlist>
             <para>
 JPA also supports <classname>byte[]</classname>, <classname>Byte[]</classname>,
-<classname>char[]</classname>, and <classname>Character[]</classname> as 
+<classname>char[]</classname>, and <classname>Character[]</classname> as
 immutable types. That is, you can persist fields of these types,
 but you should not manipulate individual array indexes without resetting the
 array into the persistent field.
@@ -587,7 +587,7 @@ information on persisting serializable types.
                 <para>
 OpenJPA also supports arrays, <classname>java.lang.Number</classname>,
 <classname>java.util.Locale</classname>, all JDK 1.2 <classname>Set</classname>,
-<classname>List</classname>, and <classname>Map</classname> types, 
+<classname>List</classname>, and <classname>Map</classname> types,
 and many other mutable and immutable field types. OpenJPA also allows you to
 plug in support for custom types.
                 </para>
@@ -720,9 +720,9 @@ Timestamp</classname>s, or embeddable types.
             <para>
 OpenJPA supports entities as identity fields, as the Reference Guide discusses
 in <xref linkend="ref_guide_pc_oid_entitypk"/>.  For legacy schemas with binary
-primary key columns, OpenJPA also supports using identity fields of type 
-<classname>byte[]</classname>. When you use a <classname>byte[]</classname> 
-identity field, you must create an identity class.  Identity classes are 
+primary key columns, OpenJPA also supports using identity fields of type
+<classname>byte[]</classname>. When you use a <classname>byte[]</classname>
+identity field, you must create an identity class.  Identity classes are
 covered below.
             </para>
         </note>
@@ -880,7 +880,7 @@ public class Magazine {
 
         /**
          * Equality must be implemented in terms of identity field
-         * equality, and must use instanceof rather than comparing 
+         * equality, and must use instanceof rather than comparing
          * classes directly (some JPA implementations may subclass the
          * identity class).
          */
@@ -889,21 +889,21 @@ public class Magazine {
                 return true;
             if (!(other instanceof MagazineId))
                 return false;
-    
+
             MagazineId mi = (MagazineId) other;
             return (isbn == mi.isbn
                 || (isbn != null &amp;&amp; isbn.equals(mi.isbn)))
                 &amp;&amp; (title == mi.title
                 || (title != null &amp;&amp; title.equals(mi.title)));
         }
-     
+
         /**
          * Hashcode must also depend on identity values.
          */
         public int hashCode() {
             return ((isbn == null) ? 0 : isbn.hashCode())
                 ^ ((title == null) ? 0 : title.hashCode());
-        } 
+        }
 
         public String toString() {
             return isbn + ":" + title;
@@ -928,7 +928,7 @@ public class Magazine {
                     <imageobject>
                         <!-- PNG image data, 320 x 267 (see README) -->
                         <imagedata fileref="img/appid-hierarchy.png" width="213px"/>
-                        
+
                     </imageobject>
                 </mediaobject>
                 <para>
@@ -1212,7 +1212,7 @@ Below is an example of how to declare callback methods on persistent classes:
 @Entity
 public class Magazine {
 
-    @Transient 
+    @Transient
     private byte[][] data;
 
     @ManyToMany
@@ -1227,7 +1227,7 @@ public class Magazine {
 
     @PreDelete
     public void logMagazineDeletion() {
-        getLog().debug("deleting magazine containing" + photos.size() 
+        getLog().debug("deleting magazine containing" + photos.size()
             + " photos.");
     }
 }
@@ -1296,7 +1296,7 @@ public class MagazineLogger {
 
     @PreRemove
     public void logDeletion(Object pc) {
-        getLog().debug("Removing from circulation:" + 
+        getLog().debug("Removing from circulation:" +
             ((Magazine) pc).getTitle());
     }
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation.jmx;
 
@@ -35,12 +35,12 @@ import org.apache.openjpa.util.UserException;
  */
 public class DataCacheJMXInstrument extends AbstractDataCacheInstrument implements JMXInstrument,
     DataCacheJMXInstrumentMBean {
-    
+
     private static Localizer _loc = Localizer.forPackage(DataCacheJMXInstrument.class);
 
     private static final String MBEAN_TYPE = "DataCache";
     private ObjectName _objName = null;
-    
+
     @Override
     public String getName() {
         return MBEAN_TYPE;
@@ -57,7 +57,7 @@ public class DataCacheJMXInstrument extends AbstractDataCacheInstrument implemen
         if (getOptions() != null) {
             opts = Configurations.parseProperties(getOptions());
         }
-        
+
         String cacheName = opts.getProperty("name",null);
         OpenJPAConfiguration conf = (OpenJPAConfiguration)getProvider().getConfiguration();
         DataCacheManager dcm = conf.getDataCacheManagerInstance();
@@ -70,7 +70,7 @@ public class DataCacheJMXInstrument extends AbstractDataCacheInstrument implemen
         if (dc == null) {
             throw new UserException(_loc.get("data-cache-not-found"));
         }
-        
+
         setDataCache(dc);
         setDataCacheManager(dcm);
         setConfigId(conf.getId());
@@ -81,7 +81,7 @@ public class DataCacheJMXInstrument extends AbstractDataCacheInstrument implemen
         if (_objName != null) {
             return _objName;
         }
-        
+
         try {
             _objName = JMXProvider.createObjectName(this, null);
             return _objName;

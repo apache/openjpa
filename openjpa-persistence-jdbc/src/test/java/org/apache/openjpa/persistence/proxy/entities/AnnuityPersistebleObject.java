@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -33,7 +33,7 @@ public class AnnuityPersistebleObject implements JPAPersisteble {
 	private Date lastUpdateDate;
 	private Parameterizable<String, String> config = new StringParameterizable();
 	private int version;
-	
+
 	@Version
 	public int getVersion() {
 		return version;
@@ -51,7 +51,7 @@ public class AnnuityPersistebleObject implements JPAPersisteble {
 	public void setId(String id) {
 		this.id = id;
 	}
-		
+
 	public Date getLastUpdateDate() {
 		return lastUpdateDate;
 	}
@@ -68,7 +68,7 @@ public class AnnuityPersistebleObject implements JPAPersisteble {
 	public void setConfiguration(Parameterizable<String, String> config) {
 		this.config = config;
 	}
-	
+
 	@SuppressWarnings("unused")
 	@PrePersist
 	@PreUpdate

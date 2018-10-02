@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.property;
 
@@ -26,33 +26,33 @@ public class TestCompatAccessMods extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        setUp("openjpa.Compatibility", "PrivatePersistentProperties=true", 
+        setUp("openjpa.Compatibility", "PrivatePersistentProperties=true",
             DROP_TABLES, PrivAccessModsEntity.class);
     }
 
     /**
      * Verifies that with the PrivatePersistentProperties compatibility option
      * enabled, non-transient private properties are persistent.
-     * 
+     *
      * Note: PrivAccessModsEntity must also be enhanced with the compatibility
      * option set to true.  This is currently handled in the test suite by
      * a separate enhancement task for PrivAccessModsEntity.
      */
     public void testAccessMods() {
-        EntityManager em = emf.createEntityManager();            
-        
+        EntityManager em = emf.createEntityManager();
+
         PrivAccessModsEntity pame = new PrivAccessModsEntity();
-        
+
         // Set all properties
         pame.setPubString("Public");
         pame.setProtString("Protected");
-        pame.setPubPrivString("Private"); 
+        pame.setPubPrivString("Private");
         // Persist the entity.  All properties should be persisted.
         em.getTransaction().begin();
         em.persist(pame);
         em.getTransaction().commit();
         em.clear();
-        
+
         pame = em.find(PrivAccessModsEntity.class, pame.getId());
         assertNotNull(pame);
         assertEquals("Public", pame.getPubString());

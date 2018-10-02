@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -28,7 +28,7 @@ import org.w3c.dom.Element;
 
 /**
  * Formats error stack trace.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -47,15 +47,15 @@ class ExceptionFormatter extends XMLFormatter {
 
         errorHeader.setTextContent(header);
         errorMessage.appendChild(doc.createCDATASection(e.getMessage()));
-        
+
         StringWriter buf = new StringWriter();
         e.printStackTrace(new PrintWriter(buf, true));
         stackTrace.appendChild(doc.createCDATASection(buf.toString()));
-        
+
         root.appendChild(errorHeader);
         root.appendChild(errorMessage);
         root.appendChild(stackTrace);
-        
+
         return doc;
     }
 

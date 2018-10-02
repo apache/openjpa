@@ -59,7 +59,7 @@ public class TestDiscriminator
     public void testJoinedDiscriminatorWithColumn() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         MappingRepository repo = conf.getMappingRepositoryInstance();
-        ClassMapping cls = repo.getMapping(AnnoTest1.class, 
+        ClassMapping cls = repo.getMapping(AnnoTest1.class,
             null, true);
         assertTrue(cls.getDiscriminator().getStrategy()
             instanceof ValueMapDiscriminatorStrategy);

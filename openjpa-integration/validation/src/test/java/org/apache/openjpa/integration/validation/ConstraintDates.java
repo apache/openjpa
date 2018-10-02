@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -39,7 +39,7 @@ public class ConstraintDates implements Serializable {
 
     @Transient
     private static final long serialVersionUID = 1L;
-    
+
     // current time when class loaded
     @Transient
     private static final Date CURRENT_DATE = new Date();
@@ -65,8 +65,8 @@ public class ConstraintDates implements Serializable {
     @Basic
     private GregorianCalendar pastCalendar; // @Past constraint is on the getter
 
-    
-    /* 
+
+    /*
      * Some helper methods to create the entities to test with
      */
     public static ConstraintDates createInvalidFuture() {
@@ -99,7 +99,7 @@ public class ConstraintDates implements Serializable {
         return c;
     }
 
-    
+
     /*
      * Main entity code
      * Create a valid entity by default
@@ -120,7 +120,7 @@ public class ConstraintDates implements Serializable {
     }
 
     public void setFutureDate(Date d) {
-        futureDate = d;            
+        futureDate = d;
     }
 
     @Past

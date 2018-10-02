@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -63,7 +63,7 @@ public class StringValue extends Value {
     protected void setInternalString(String val) {
         set(val);
     }
-    
+
     protected void setInternalObject(Object obj) {
         if (obj instanceof String) {
             set((String) obj);

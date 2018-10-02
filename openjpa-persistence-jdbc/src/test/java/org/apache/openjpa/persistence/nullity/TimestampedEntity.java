@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.nullity;
 
@@ -31,7 +31,7 @@ import javax.persistence.Version;
  * fields are non-insertable and non-updatable respectively making them read
  * only in many situations. The fields should be ignored when persisting or
  * updating an entity (again respectively).
- * 
+ *
  * <P>
  * <b>The syntax used for the database to generate the date column is specific
  * to Derby and DB2. Any testcase which uses this entity must ensure that one of
@@ -47,18 +47,18 @@ public class TimestampedEntity {
     @Version
     private int version;
 
-    @Column(nullable = false, insertable = false, 
+    @Column(nullable = false, insertable = false,
         columnDefinition = "DATE default '2008-01-01'")
     private Date nonInsertableNonNullableDate;
 
-    @Column(nullable = false, updatable = false, 
+    @Column(nullable = false, updatable = false,
         columnDefinition = "DATE default '2008-01-01'")
     private Date nonUpdatableNonNullableDate;
 
-    public TimestampedEntity() { 
+    public TimestampedEntity() {
         setNonUpdatableNonNullableDate(new Date(52349606));
     }
-    
+
     public int getId() {
         return id;
     }

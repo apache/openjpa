@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.strategy.value;
 
@@ -28,13 +28,13 @@ import org.apache.openjpa.meta.JavaTypes;
 public class ValueStrategyHandler extends AbstractValueHandler {
 
 	private static final long serialVersionUID = 8371304701543038775L;
-	
+
 	private static final ValueStrategyHandler _instance = new ValueStrategyHandler();
-	
+
 	public static ValueStrategyHandler getInstance(){
 		return _instance;
 	}
-	
+
 	@Override
 	public Column[] map(ValueMapping arg0, String name, ColumnIO arg2,
 			boolean arg3) {
@@ -42,24 +42,24 @@ public class ValueStrategyHandler extends AbstractValueHandler {
 		Column col = new Column();
 		col.setName(name);
 		col.setJavaType(JavaTypes.STRING);
-		
+
 		return new Column[]{col};
 	}
-	
+
 	public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store){
-		
+
 		if(val == null){
 			return null;
 		}
-		
+
 		return val.toString();
 	}
-	
+
 	public Object toObjectValue(ValueMapping vm, Object val){
 		if(val == null){
 			return null;
 		}
-		
+
 		return val.toString();
 	}
 

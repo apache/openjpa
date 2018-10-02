@@ -31,15 +31,15 @@ public class EntityA extends MappedSuper {
 	@Column(length=30)
     @Basic(fetch=FetchType.LAZY)
 	String name;
-	
+
 
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 }
 

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.simple;
 
@@ -28,7 +28,7 @@ import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Simple test case to test the default values associated with the @Basic 
+ * Simple test case to test the default values associated with the @Basic
  * annotation.
  *
  * @author Kevin Sutter
@@ -44,7 +44,7 @@ public class TestBasicAnnotation
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes aft = new AllFieldTypes();
-        
+
         // Initialize a sampling of the types
         aft.setBigDecimalField(new BigDecimal(1));
         aft.setBooleanField(false);
@@ -58,17 +58,17 @@ public class TestBasicAnnotation
         aft.setStringField("aft");
         aft.setWByteLob(new Byte[1]);
         aft.setWDoubleField(new Double(1));
-        
+
         em.persist(aft);
         em.getTransaction().commit();
         em.clear();
-        
+
         AllFieldTypes aftQuery = (AllFieldTypes)em.createQuery
             ("select x from AllFieldTypes x where x.stringField = 'aft'").
             getSingleResult();
         em.clear();  // ensure detached
         assertFalse(em.contains(aftQuery));
-        
+
         // assert that the sampling of fields are not null
         assertNotNull(aftQuery.getBigDecimalField());
         assertNotNull(aftQuery.getBooleanField());
@@ -81,7 +81,7 @@ public class TestBasicAnnotation
         assertNotNull(aftQuery.getStringField());
         assertNotNull(aftQuery.getWByteLob());
         assertNotNull(aftQuery.getWDoubleField());
-        
+
         em.close();
     }
 

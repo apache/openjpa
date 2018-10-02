@@ -24,19 +24,19 @@ import java.math.BigDecimal;
 import javax.persistence.*;
 
 @Entity
-@SqlResultSetMapping(name="selectShipRateMapping", 
+@SqlResultSetMapping(name="selectShipRateMapping",
     entities=@EntityResult(entityClass=org.apache.openjpa.persistence.criteria.results.ShipRate.class,
-                           fields = {@FieldResult(name="shipRateId", column = "id"),  
+                           fields = {@FieldResult(name="shipRateId", column = "id"),
                             @FieldResult(name="billedAsWeight", column = "RBLWGT")}) )
-//Try to create a result set with different column name 
+//Try to create a result set with different column name
 //than the attribute name defined in the result entity
-@NamedNativeQuery(name = "selectShipRateQuery", 
-query = "SELECT shipRateId as id, billedAsWeight as RBLWGT from ShipRate", 
+@NamedNativeQuery(name = "selectShipRateQuery",
+query = "SELECT shipRateId as id, billedAsWeight as RBLWGT from ShipRate",
 resultSetMapping="selectShipRateMapping")
-public class ShipRate {    
+public class ShipRate {
     @Id
     long shipRateId;
-    
+
     public ShipRate(long shipRateId, BigDecimal billedAsWeight) {
         super();
         this.shipRateId = shipRateId;

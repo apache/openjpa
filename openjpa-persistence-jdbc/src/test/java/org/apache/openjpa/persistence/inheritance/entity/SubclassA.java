@@ -34,7 +34,7 @@ public class SubclassA extends BaseClass {
     public String getClassAName() {
         return classAName;
     }
-    
+
     public String toString() {
         return super.toString() + ";classAName=" + classAName;
     }

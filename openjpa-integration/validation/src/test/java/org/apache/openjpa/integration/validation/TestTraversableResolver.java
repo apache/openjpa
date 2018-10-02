@@ -41,13 +41,13 @@ import org.apache.openjpa.persistence.validation.TraversableResolverImpl;
 
 /**
  * Test the TraversableResolver methods
- * 
+ *
  * First run several testcases from a user perspective. These test the methods
  * indirectly:
  *    1) testLoadedTitle()
  *    2} testUnloaded()
  *    3) testCascading()
- * 
+ *
  * Then test the methods directly:
  *    1) testPages()
  *    2) testTitle
@@ -69,7 +69,7 @@ public class TestTraversableResolver extends TestCase {
     public void setUp() {
         createBook(1, "long title", 234);
     }
-    
+
     private void createEMF(String pu, String schemaAction) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,"
@@ -93,7 +93,7 @@ public class TestTraversableResolver extends TestCase {
             emf = null;
         }
     }
-    
+
     /**
      * By default, the title is not loaded. Make sure it gets loaded,
      * make a change in a different field, and commit. The isLoaded() method
@@ -119,11 +119,11 @@ public class TestTraversableResolver extends TestCase {
         }
         assertTrue(exceptionCaught);
     }
-    
+
     /**
      * By default, the title and publisher are not loaded. Make a change in a different field
      * and commit. The isLoaded() method of the TraversableResolver should return
-     * false for both of these. Therefore a validation should not be performed. 
+     * false for both of these. Therefore a validation should not be performed.
      * The commit should succeed with no exception.
      */
     public void testUnloaded() {
@@ -142,7 +142,7 @@ public class TestTraversableResolver extends TestCase {
         assertFalse(exceptionCaught);
         closeEMF();
     }
-    
+
     /**
      * By default, the publisher is not loaded. Make sure it gets loaded.
      * The isLoaded() and isCascadable() methods should both return true,
@@ -169,10 +169,10 @@ public class TestTraversableResolver extends TestCase {
         assertTrue(exceptionCaught);
         closeEMF();
     }
-    
+
     /**
      * Test the isReachable() and isCascadable() methods on the pages element of Book,
-     * which is eagerly fetched by default. 
+     * which is eagerly fetched by default.
      */
     public void testPages() {
         createEMF("validation-pu", "SchemaAction='add')");
@@ -189,7 +189,7 @@ public class TestTraversableResolver extends TestCase {
         em.getTransaction().commit();
         closeEMF();
     }
-    
+
     /**
      * Test the isReachable() method on the title.
      * It is configured with fetch=FetvhType.LAZY.
@@ -208,7 +208,7 @@ public class TestTraversableResolver extends TestCase {
         em.getTransaction().commit();
         closeEMF();
     }
-    
+
     private void createBook(int id, String title, int pages) {
         createEMF("non-validation-pu", "SchemaAction='drop,add')");
         em = emf.createEntityManager();

@@ -60,7 +60,7 @@ public class ElementEmbedValueHandler
         DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
         return map(vm, colName, io, adapt);
     }
-    
+
     public Column[] map(ValueMapping vm, DBIdentifier name, ColumnIO io,
         boolean adapt) {
         LinkedList cols = new LinkedList();

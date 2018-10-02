@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -40,7 +40,7 @@ public abstract class SingleEMFTestCase
      * this list to tell the test framework to delete all table contents
      * before running the tests.
      *
-     * @param props list of persistent types used in testing and/or 
+     * @param props list of persistent types used in testing and/or
      * configuration values in the form key,value,key,value...
      */
     protected void setUp(Object... props) {
@@ -67,7 +67,7 @@ public abstract class SingleEMFTestCase
             closeEMF(emf);
         }
     }
-    
+
     protected ClassMapping getMapping(String name) {
         return (ClassMapping) emf.getConfiguration()
                 .getMetaDataRepositoryInstance().getMetaData(name,

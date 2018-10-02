@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.external;
 
@@ -47,11 +47,11 @@ public class TestExternalValues extends SingleEMFTestCase {
         entity.setUseStreaming(true);
 
         em.persist(entity);
-        
+
         em.getTransaction().commit();
-        
+
         // Validate
-        
+
         Query q = em.createQuery("SELECT a from EntityA a");
         EntityA aPrime = (EntityA) q.getSingleResult();
         Assert.assertEquals("SMALL", aPrime.getS1());
@@ -81,7 +81,7 @@ public class TestExternalValues extends SingleEMFTestCase {
         Assert.assertEquals("LARGE", values[1]);
         Assert.assertEquals(Boolean.FALSE, values[2]);
         Assert.assertEquals("LARGE", values[3]);
-        
+
         em.close();
     }
 

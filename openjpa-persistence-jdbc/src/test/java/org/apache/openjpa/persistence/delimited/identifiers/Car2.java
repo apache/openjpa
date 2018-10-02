@@ -36,7 +36,7 @@ import javax.persistence.Table;
     },
     discriminatorColumn="discr col")},
     columns={@ColumnResult(name="model year")})
-    
+
 @Entity
 @Inheritance
 @DiscriminatorColumn(name="discr col", columnDefinition="VARCHAR(10)")
@@ -44,16 +44,16 @@ import javax.persistence.Table;
 public class Car2 {
     @Id
     private int id;
-    
+
     protected String model;
     protected String color;
 
     public Car2() {}
-    
+
     public Car2(int id) {
         this.id = id;
     }
-    
+
     /**
      * @return the id
      */

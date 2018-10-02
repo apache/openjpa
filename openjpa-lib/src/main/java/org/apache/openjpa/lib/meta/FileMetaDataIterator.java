@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.meta;
 
@@ -94,7 +94,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
                 metas.add(file);
             else {
                 File[] files = (File[]) AccessController
-                    .doPrivileged(J2DoPrivHelper.listFilesAction(file)); 
+                    .doPrivileged(J2DoPrivHelper.listFilesAction(file));
                 if (files != null)
                     for (int i = 0; i < files.length; i++)
                         scanned = scan(files[i], filter, rsrc, metas, scanned);
@@ -171,7 +171,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
                 if (len <= 0 || len > Integer.MAX_VALUE) {
                     // some JVMs don't return a proper length
                     ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                    byte[] buf = new byte[1024]; 
+                    byte[] buf = new byte[1024];
                     for (int r; (r = fin.read(buf)) != -1;)
                         bout.write(buf, 0, r);
                     content = bout.toByteArray();

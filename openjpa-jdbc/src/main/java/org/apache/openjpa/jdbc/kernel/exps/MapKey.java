@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -54,7 +54,7 @@ public class MapKey
         extends ExpState {
         public ExpState key;
         public ExpState val;
-    
+
         KeyExpState(ExpState key) {
             this.key = key;
         }
@@ -122,13 +122,13 @@ public class MapKey
     }
 
     public void setMetaData(ClassMetaData meta) {
-        _meta = meta;        
+        _meta = meta;
     }
 
-    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state,
         Object val) {
         KeyExpState estate = (KeyExpState) state;
-        return _key.toDataStoreValue(sel, ctx, 
+        return _key.toDataStoreValue(sel, ctx,
             estate.key, val);
     }
 }

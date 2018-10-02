@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -96,7 +96,7 @@ class GetMapValue
         public final ExpState mapState;
         public final ExpState keyState;
 
-        public GetMapValueExpState(Joins joins, ExpState mapState, 
+        public GetMapValueExpState(Joins joins, ExpState mapState,
             ExpState keyState) {
             super(joins);
             this.mapState = mapState;
@@ -104,14 +104,14 @@ class GetMapValue
         }
     }
 
-    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state,
         Object val) {
         GetMapValueExpState gstate = (GetMapValueExpState) state;
         return _map.toDataStoreValue(sel, ctx, gstate.mapState, val);
     }
 
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state).append(" AS ").append(_alias),
             this);
@@ -128,7 +128,7 @@ class GetMapValue
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(_alias, asc, false);
     }
@@ -146,7 +146,7 @@ class GetMapValue
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         GetMapValueExpState gstate = (GetMapValueExpState) state;
         _map.calculateValue(sel, ctx, gstate.mapState, null, null);
@@ -157,7 +157,7 @@ class GetMapValue
         return 1;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         if (!(_map instanceof PCPath))
             throw new UnsupportedOperationException();
@@ -191,7 +191,7 @@ class GetMapValue
         sql.append(" WHERE ");
 
         // add in the joins
-        ContainerFieldStrategy.appendUnaliasedJoin(sql, sel, null, 
+        ContainerFieldStrategy.appendUnaliasedJoin(sql, sel, null,
             ctx.store.getDBDictionary(), field, fk);
         sql.append(" AND ");
 

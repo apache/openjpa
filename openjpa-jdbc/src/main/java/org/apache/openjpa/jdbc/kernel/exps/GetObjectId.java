@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -91,7 +91,7 @@ class GetObjectId
         return state;
     }
 
-    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state,
         Object val) {
         // if datastore identity, try to convert to a long value
         ClassMapping mapping = _path.getClassMapping(state);
@@ -128,12 +128,12 @@ class GetObjectId
         return vals;
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         selectColumns(sel, ctx, state, true);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         _path.selectColumns(sel, ctx, state, true);
     }
@@ -142,7 +142,7 @@ class GetObjectId
         _path.groupBy(sel, ctx, state);
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         _path.orderBy(sel, ctx, state, asc);
     }
@@ -152,7 +152,7 @@ class GetObjectId
         return _path.load(ctx, state, res, true);
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         _path.calculateValue(sel, ctx, state, null, null);
     }
@@ -161,7 +161,7 @@ class GetObjectId
         return _path.length(sel, ctx, state);
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         _path.appendTo(sel, ctx, state, sql, index);
     }

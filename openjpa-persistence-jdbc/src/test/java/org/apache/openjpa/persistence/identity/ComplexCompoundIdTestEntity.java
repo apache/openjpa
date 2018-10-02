@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity;
 
@@ -30,7 +30,7 @@ import javax.persistence.Table;
 
 /**
  * JPA Entity with a compound Id of two fields, one simple and one an Entity.
- * 
+ *
  * @author Michael Vorburger
  */
 @Entity
@@ -43,7 +43,7 @@ public class ComplexCompoundIdTestEntity {
 	private Long id;
 
     @Id
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH }, 
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH },
             fetch = FetchType.LAZY, optional = true)
     @JoinColumn(nullable = true, name = "type_id")
 	private TypeEntity type;

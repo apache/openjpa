@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -38,23 +38,23 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public abstract class BaseKernelTest
         extends org.apache.openjpa.persistence.common.utils.AbstractTestCase
-{    
-    private static Map _sysprops = new HashMap();    
-    
+{
+    private static Map _sysprops = new HashMap();
+
     /** Creates a new instance of BaseKernelTest */
     public BaseKernelTest() {
     }
-    
+
     public BaseKernelTest(String name) {
         super(name, "kernelcactusapp");
     }
-    
+
     protected OpenJPAEntityManager getPM() {
         return currentEntityManager();
     }
-    
+
     protected OpenJPAEntityManager getPM(boolean optimistic,
-            boolean retainValues) 
+            boolean retainValues)
     {
         OpenJPAEntityManager em = currentEntityManager();
         em.setNontransactionalRead(true);
@@ -67,9 +67,9 @@ public abstract class BaseKernelTest
 
         return em;
     }
-    
+
     protected Object persist(Object ob) {
-        //FIXME  - this is just a workaround 
+        //FIXME  - this is just a workaround
         //  Broker broker = .getBrokerFactory().newBroker();
         Broker broker = JPAFacadeHelper.toBroker(currentEntityManager());
         broker.begin();
@@ -79,7 +79,7 @@ public abstract class BaseKernelTest
         broker.close();
         return id;
     }
-    
+
 
     protected Properties getProperties() {
         return getProperties(null);
@@ -192,5 +192,5 @@ public abstract class BaseKernelTest
 //                + "Query, or Extent, but got "
 //                + ob.getClass().getName());
 //    }
-    
+
 }

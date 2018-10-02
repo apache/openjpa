@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
@@ -30,27 +30,27 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.CacheMap;
 
 public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
-    private Class[] entityClassTypes = { Part.class, PartBase.class, 
+    private Class[] entityClassTypes = { Part.class, PartBase.class,
             PartComposite.class, Supplier.class, Usage.class};
-    
+
     protected boolean deleteData = false;
     protected boolean recreateData = true;
-    
+
     public void setUp(Object... props) {
         int arrLen = entityClassTypes.length + props.length;
         Object args[] = new Object[arrLen];
-        
+
         // Add the entity class types supported by this testing
         int idx = 0;
         for (Class clazz : entityClassTypes) {
             args[idx++] = clazz;
         }
-        
+
         // Add the property parameters passed in by the subclass
         for (Object obj : props) {
             args[idx++] = obj;
         }
-        
+
         // Invoke superclass' implementation of setUp()...
         super.setUp(args);
 
@@ -58,22 +58,22 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         if (checkSupportsIdentityGenerationType() && recreateData) {
             // deletes any data leftover data in the database due to the failed
             // last run of this testcase
-            deleteAllData(); 
+            deleteAllData();
             reCreateData();
         }
     }
-    
+
     public void tearDown() throws Exception {
         if (deleteData) {
             deleteAllData();
         }
         super.tearDown();
-    }    
-    
+    }
+
     /**
      * Populate the database with data that is consumable by the query cache
      * tests.
-     * 
+     *
      */
     protected void reCreateData() {
         EntityManager em = emf.createEntityManager();
@@ -106,7 +106,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
 
     /**
      * Remove all rows from the database.
-     * 
+     *
      */
     protected void deleteAllData() {
         EntityManager em = emf.createEntityManager();
@@ -121,10 +121,10 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
+
     /**
      * Populate the query cache with 35 entries.
-     * 
+     *
      */
     protected void loadQueryCache() {
         EntityManager em = emf.createEntityManager();
@@ -140,9 +140,9 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
     }
 
     /**
-     * Update an entity that is associated with the queries in the 
+     * Update an entity that is associated with the queries in the
      * query cache.
-     * 
+     *
      */
     protected void updateAnEntity() {
         EntityManager em = emf.createEntityManager();
@@ -160,48 +160,48 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
     }
 
     /**
-     * Fetches a reference to the EntityManagerFactory's query cache 
+     * Fetches a reference to the EntityManagerFactory's query cache
      * object.
-     * 
+     *
      */
     protected ConcurrentQueryCache getQueryCache() {
         OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
-        QueryResultCacheImpl scache = 
+        QueryResultCacheImpl scache =
             (QueryResultCacheImpl) oemf.getQueryResultCache();
 
         return (ConcurrentQueryCache) scache.getDelegate();
     }
 
     /**
-     * Returns the current size of the EntityManagerFactory's 
+     * Returns the current size of the EntityManagerFactory's
      * query cache.
-     * 
+     *
      */
     protected int queryCacheGet() {
         ConcurrentQueryCache dcache = getQueryCache();
         CacheMap map = dcache.getCacheMap();
         return map.size();
     }
-    
+
     /**
      * Returns true if the database supports GenerationType.IDENTITY column(s),
      * false if it does not.
-     * 
+     *
      */
     protected boolean checkSupportsIdentityGenerationType() {
         return (((JDBCConfiguration) emf.getConfiguration()).
                 getDBDictionaryInstance().supportsAutoAssign);
     }
-    
+
     /*
      * Common tests -- the following tests are common to any eviction policy
      * used by OpenJPA's query cache implementation.
-     * 
+     *
      */
-    
+
     /**
      * Tests the query cache eviction function with the following test logic:
-     * 
+     *
      * 1) Populate the query cache with the entries supplied by loadQueryCache()
      * 2) Sleep 20ms (to avoid race conditions with the Timestamp eviction
      *                policy.)
@@ -214,15 +214,15 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
      *    examine the query result list sizes from both a native query
      *    select invocation, and a JPA query invocation.  Because the
      *    query cache was dirtied by step #3, the JPA query should invoke
-     *    a fresh SELECT operation on the database.   
-     * 
+     *    a fresh SELECT operation on the database.
+     *
      */
     public void testEviction() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!checkSupportsIdentityGenerationType()) {
             return;
         }
-        
+
         loadQueryCache();
         try {
             Thread.sleep(20);
@@ -234,12 +234,12 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        String insert1 = 
+        String insert1 =
             "insert into Part(partno,parttype,name,cost,mass)" +
             " values(13,'PartBase','breakes',1000.0,100.0)";
         em.createNativeQuery(insert1).executeUpdate();
-        String insert2 = 
-            "insert into Supplier_Part(suppliers_sid,supplies_partno)" + 
+        String insert2 =
+            "insert into Supplier_Part(suppliers_sid,supplies_partno)" +
             " values(1,13)";
         em.createNativeQuery(insert2).executeUpdate();
 
@@ -265,7 +265,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
 
-        // The resultlist of nativelist and jpalist should be the same 
+        // The resultlist of nativelist and jpalist should be the same
         // in both eviction policies(dafault/timestamp)
         assertEquals(nativelistSize,jpalistSize);
 

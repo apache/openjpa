@@ -50,7 +50,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
                 MariaDBDictionary.class,
                 MySQLDictionary.class,
                 OracleDictionary.class,
-                SQLServerDictionary.class, 
+                SQLServerDictionary.class,
                 SybaseDictionary.class);
         if (isTestsDisabled()) {
             // getLog().trace("TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
@@ -180,7 +180,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
         Dog1 dog1x = em.find(Dog1.class, kem.getObjectId(dog1));
         // Derby can't guarantee the order of the generated value, therefore,
-        // we can't assert the id based on the order. For db2, we see the id 
+        // we can't assert the id based on the order. For db2, we see the id
         // value in the right order
         assertTrue(dog1x.getId2() == 1 || dog1x.getId2() == 2);
         assertEquals(dog1x.getName(), "helloDog1");
@@ -275,8 +275,8 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         dog4a.setName("helloDog8");
         dog4a.setPrice(25002);
         em.persist(dog4a);
-        em.getTransaction().commit();        
-        
+        em.getTransaction().commit();
+
         DogTable dog1x = em.find(DogTable.class, kem.getObjectId(dog1));
         assertTrue(dog1x.getId2() == 20 || dog1x.getId2() == 21);
         assertEquals(dog1x.getName(), "helloDog1");
@@ -287,7 +287,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         assertEquals(dog11.getName(), "helloDog2");
         dog11.setName("Dog2");
         dog11.setDomestic(true);
-        
+
         // update dog2
         DogTable2 dog2x = em.find(DogTable2.class, kem.getObjectId(dog2));
         assertTrue(dog2x.getId2() == 100 || dog2x.getId2() == 101);
@@ -373,7 +373,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
+
     public void testGeneratedIDENTITY() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
@@ -383,7 +383,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         Dog3 dog30 = new Dog3();
         dog30.setName("Dog30");
         em.persist(dog30);
-        
+
         Dog3 dog31 = new Dog3();
         dog31.setName("Dog31");
         em.persist(dog31);
@@ -402,7 +402,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         Dog4 dog40 = new Dog4();
         dog40.setName("Dog40");
         em.persist(dog40);
-        
+
         Dog4 dog41 = new Dog4();
         dog41.setName("Dog41");
         em.persist(dog41);
@@ -426,13 +426,13 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     private void createSchemas() {
         OpenJPAEntityManagerFactorySPI tempEmf = createEMF();
         DBDictionary dict = ((JDBCConfiguration) tempEmf.getConfiguration()).getDBDictionaryInstance();
-        
-        if (!(dict instanceof PostgresDictionary || dict instanceof H2Dictionary || 
+
+        if (!(dict instanceof PostgresDictionary || dict instanceof H2Dictionary ||
             dict instanceof SolidDBDictionary || dict instanceof HSQLDictionary)) {
             closeEMF(tempEmf);
             return;
         }
-        
+
         OpenJPAEntityManagerSPI em = tempEmf.createEntityManager();
         String[] schemas =
             { "SCHEMA1", "SCHEMA2", "SCHEMA3", "SCHEMA3G", "SCHEMA4G" };
@@ -442,7 +442,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
                 Query q = em.createNativeQuery("create schema " + schema);
                 q.executeUpdate();
                 em.getTransaction().commit();
-            } catch (PersistenceException e) {          
+            } catch (PersistenceException e) {
                 em.getTransaction().rollback();
             }
         }

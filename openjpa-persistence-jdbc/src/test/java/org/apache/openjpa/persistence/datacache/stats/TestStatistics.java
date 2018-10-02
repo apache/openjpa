@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache.stats;
 
@@ -76,9 +76,9 @@ public class TestStatistics extends SingleEMFTestCase {
 		}
 		em.getTransaction().commit();
 		em.clear();
-		
+
 //		print(stats);
-		
+
 		em.getTransaction().begin();
 		Query query = em.createQuery("select c from Customer c");
 		for (int i = 0; i < 10; i++) {
@@ -101,7 +101,7 @@ public class TestStatistics extends SingleEMFTestCase {
 		assertEquals(expected[1], stats.getHitCount());
 		assertEquals(expected[2], stats.getWriteCount());
 	}
-	
+
 	void print(CacheStatistics stats) {
 		// TODO log instead of printing to stderr.
 	}

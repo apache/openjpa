@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -40,10 +40,10 @@ public class Beneficiary {
 	private String lastName;
 
 	private String relationship;
-	
+
     private List<BeneContact> contacts;
 
-    private String id;  
+    private String id;
 
     @javax.persistence.Id
     public String getId() {
@@ -58,7 +58,7 @@ public class Beneficiary {
 	public String getAnnuityHolderId() {
 		return annuityHolderId;
 	}
-    
+
 	public void setAnnuityHolderId(String annuityHolderId) {
 		this.annuityHolderId = annuityHolderId;
 	}
@@ -67,7 +67,7 @@ public class Beneficiary {
 	public String getFirstName() {
 		return firstName;
 	}
-    
+
 	public void setFirstName(String first) {
 		this.firstName = first;
 	}
@@ -84,7 +84,7 @@ public class Beneficiary {
 	public String getRelationship() {
 		return relationship;
 	}
-    
+
 	public void setRelationship(String relationship) {
 		this.relationship = relationship;
 	}
@@ -93,7 +93,7 @@ public class Beneficiary {
 	public List<BeneContact> getContacts() {
 		return contacts;
 	}
-    
+
 	public void setContacts(List<BeneContact> contacts) {
 		this.contacts = contacts;
 	}

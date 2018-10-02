@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 import javax.persistence.*;
 
 /**
- * Entity used to test MappedSuperClass which does not have IdClass. 
- * 
+ * Entity used to test MappedSuperClass which does not have IdClass.
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-873">OPENJPA-873</A>
- *  
+ *
  * @author pioneer_ip@yahoo.com
  * @author Fay Wang
  *
@@ -40,7 +40,7 @@ public class ValuableItemDA extends CashBaseEntity {
     public void setCode(short code) {
         this.code = code;
     }
-    
+
     public short getCode() {
         return code;
     }

@@ -24,11 +24,11 @@ import java.util.Map;
 public class XMLAssocOverEntityA {
 
     private int id;
-    
+
     private List<XMLAssocOverEmbed> embaList;
-    
+
     private Map<XMLAssocOverEmbedB, XMLAssocOverEmbed> embaMap;
-    
+
 
     public void setEmbA(List<XMLAssocOverEmbed> embA) {
         this.embaList = embA;
@@ -52,5 +52,5 @@ public class XMLAssocOverEntityA {
 
     public int getId() {
         return id;
-    }    
+    }
 }

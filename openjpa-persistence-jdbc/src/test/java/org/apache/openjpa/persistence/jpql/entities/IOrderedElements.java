@@ -32,9 +32,9 @@ public interface IOrderedElements {
     public void setListElements(List<String> elements);
 
     public void addListElements(String element);
-    
+
     public String removeListElements(int location);
-    
+
     public void insertListElements(int location, String name);
 
     public String toString();

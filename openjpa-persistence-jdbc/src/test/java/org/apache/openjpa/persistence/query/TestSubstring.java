@@ -92,7 +92,7 @@ public class TestSubstring extends SingleEMTestCase {
             .setCandidateCollection(allEntities).getSingleResult();
         assertEquals("ar", inMemoryResult);
     }
-    
+
     public void testSubstringWithExpressionsInWhere() {
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
             "where substring(o.value, 1+1, 1+1) = 'ar'").getSingleResult());

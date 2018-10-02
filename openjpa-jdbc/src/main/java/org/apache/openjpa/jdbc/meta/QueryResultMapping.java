@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -56,8 +56,8 @@ public class QueryResultMapping
     private File _file = null;
     private Object _scope = null;
     private int _srcType = SRC_OTHER;
-    private int _lineNum = 0;  
-    private int _colNum = 0;  
+    private int _lineNum = 0;
+    private int _colNum = 0;
     private int _mode = MODE_QUERY;
     private Class<?> _class = null;
     private int _idx = 0;
@@ -228,7 +228,7 @@ public class QueryResultMapping
     public String getResourceName() {
         return (_class == null) ? _name : _class.getName() + ":" + _name;
     }
-    
+
     public int getLineNumber() {
         return _lineNum;
     }
@@ -257,9 +257,9 @@ public class QueryResultMapping
 
         private final Class<?> _candidate;
         private ClassMapping _candidateMap = null;
-        private Map<String, Object> _rawMappings = null; 
+        private Map<String, Object> _rawMappings = null;
         private Map<List<MetaDataContext>, ColumnMap> _mappings = null;
-        private Map<List<MetaDataContext>, FetchInfo> _eager = null; 
+        private Map<List<MetaDataContext>, FetchInfo> _eager = null;
         private FetchInfo _fetchInfo = null; // for top-level
         private Collection<String> _constructorParams = null;
 
@@ -378,7 +378,7 @@ public class QueryResultMapping
 
             resolve();
             if (path.isEmpty()) {
-                return _fetchInfo.excludes; 
+                return _fetchInfo.excludes;
             }
             if (_eager == null) {
                 return null;
@@ -398,7 +398,7 @@ public class QueryResultMapping
             _mappings = new HashMap<List<MetaDataContext>, ColumnMap>();
             _fetchInfo = new FetchInfo(getCandidateTypeMapping());
 
-            for(Map.Entry<String, Object>  entry : _rawMappings.entrySet()) { 
+            for(Map.Entry<String, Object>  entry : _rawMappings.entrySet()) {
                 resolveMapping(entry.getKey(), entry.getValue());
             }
         }
@@ -443,7 +443,7 @@ public class QueryResultMapping
                 Column[] cols = last.getColumns();
                 assertSingleColumn(cols, path);
                 Column col = cols[0];
-                
+
                 // special-case oid fields, since path lists supplied for
                 // them at runtime don't include the embedded fields
                 if (fm != null && fm.getDeclaredTypeCode() == JavaTypes.OID) {

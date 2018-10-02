@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -42,23 +42,23 @@ public class OneManyEagerChild {
     @Version
     private Integer optLock;
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public OneManyEagerParent getParent() { 
-        return parent; 
+    public OneManyEagerParent getParent() {
+        return parent;
     }
 
-    public void setParent(OneManyEagerParent parent) { 
-        this.parent = parent; 
+    public void setParent(OneManyEagerParent parent) {
+        this.parent = parent;
     }
 }

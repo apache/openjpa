@@ -25,33 +25,33 @@ import javax.persistence.*;
 public class VicePresident {
     @Id
     int id;
-    
+
     @Column(length=8)
     String name;
-  
+
     @ManyToOne
     Compny1 co;
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Compny1 getCompany() {
         return co;
     }
-    
+
     public void setCompany(Compny1 co) {
         this.co = co;
     }

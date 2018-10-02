@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -156,7 +156,7 @@ public interface OpenJPAStateManager
      * Create a new hollow proxy instance for the given field. In cases where
      * the field externalizes to an SCO but is declared something else, the
      * returned object may not implement {@link Proxy}. In all other cases,
-     * this method delegates to the system 
+     * this method delegates to the system
      * {@link org.apache.openjpa.util.ProxyManager}
      * with the correct field information. The returned proxy's owner is
      * unset so that modifications to the proxy will not be tracked while its
@@ -497,30 +497,30 @@ public interface OpenJPAStateManager
      * @since 0.3.1
      */
     public void setRemote (int field, Object value);
-    
+
     /**
      * Some field types (collection proxies) support delayed loading.  Delayed loading
-     * is a step beyond lazy loading.  Delayed load allows an instance of a field to be 
+     * is a step beyond lazy loading.  Delayed load allows an instance of a field to be
      * returned without actually loading it.
-     * 
+     *
      * @return true if the field is setup for delayed access
      */
     public boolean isDelayed(int field);
-    
+
     /**
      * Some field types (collection proxies) support delayed loading.  Delayed loading
-     * is a step beyond lazy loading.  Delayed load allows an instance of a field to be 
+     * is a step beyond lazy loading.  Delayed load allows an instance of a field to be
      * returned without actually loading it.
-     * 
+     *
      */
     public void setDelayed(int field, boolean delay);
-    
+
     /**
      * If a field was marked delayed in a previous load operation this method can be
      * used to load the field.
      */
     public void loadDelayedField(int field);
-    
+
     /**
      * Fetch an object field by index.
      */

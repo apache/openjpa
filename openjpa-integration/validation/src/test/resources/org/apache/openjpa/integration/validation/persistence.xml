@@ -7,20 +7,20 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="2.0">
-    
+
     <persistence-unit name="simple">
     	<class>org.apache.openjpa.integration.validation.SimpleEntity</class>
     </persistence-unit>
@@ -39,7 +39,7 @@
     	<class>org.apache.openjpa.integration.validation.SimpleEntity</class>
         <validation-mode>NONE</validation-mode>
     </persistence-unit>
-    
+
     <persistence-unit name="boolean-none-mode">
         <class>org.apache.openjpa.integration.validation.ConstraintBoolean</class>
         <validation-mode>NONE</validation-mode>
@@ -49,7 +49,7 @@
         <class>org.apache.openjpa.integration.validation.ConstraintBoolean</class>
         <validation-mode>CALLBACK</validation-mode>
     </persistence-unit>
-    
+
     <persistence-unit name="decimal-none-mode">
         <class>org.apache.openjpa.integration.validation.ConstraintDecimal</class>
         <validation-mode>NONE</validation-mode>
@@ -59,7 +59,7 @@
         <class>org.apache.openjpa.integration.validation.ConstraintDecimal</class>
         <validation-mode>CALLBACK</validation-mode>
     </persistence-unit>
-    
+
     <persistence-unit name="null-none-mode">
     	<class>org.apache.openjpa.integration.validation.ConstraintNull</class>
         <validation-mode>NONE</validation-mode>
@@ -84,27 +84,27 @@
         <class>org.apache.openjpa.integration.validation.DefGrpEntity</class>
         <validation-mode>CALLBACK</validation-mode>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
+            <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
-        </properties>        
+        </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="pre-remove-default-validation-group">
         <class>org.apache.openjpa.integration.validation.DefGrpEntity</class>
         <validation-mode>CALLBACK</validation-mode>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
+            <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
             <property name="javax.persistence.validation.group.pre-remove"
                 value="javax.validation.groups.Default"/>
-        </properties>        
+        </properties>
     </persistence-unit>
 
     <persistence-unit name="no-pre-persist-default-validation-group">
         <class>org.apache.openjpa.integration.validation.DefGrpEntity</class>
         <validation-mode>CALLBACK</validation-mode>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
+            <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
             <property name="javax.persistence.validation.group.pre-persist"
                 value=""/>
@@ -115,7 +115,7 @@
         <class>org.apache.openjpa.integration.validation.DefGrpEntity</class>
         <validation-mode>CALLBACK</validation-mode>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
+            <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
             <property name="javax.persistence.validation.group.pre-update"
                 value=""/>
@@ -126,7 +126,7 @@
         <class>org.apache.openjpa.integration.validation.NonDefGrpEntity</class>
         <validation-mode>CALLBACK</validation-mode>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
+            <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
             <property name="javax.persistence.validation.group.pre-persist"
                 value="org.apache.openjpa.integration.validation.ValGroup1"/>
@@ -141,7 +141,7 @@
         <class>org.apache.openjpa.integration.validation.MixedGrpEntity</class>
         <validation-mode>CALLBACK</validation-mode>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
+            <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
             <!-- Properties passed in via createEMF -->
         </properties>
@@ -151,7 +151,7 @@
         <class>org.apache.openjpa.integration.validation.MixedGrpEntity</class>
         <validation-mode>CALLBACK</validation-mode>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
+            <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
             <!--  OPENJPA-1685 Filter whitespace from group list -->
             <property name="javax.persistence.validation.group.pre-persist"
@@ -174,29 +174,29 @@
         <class>org.apache.openjpa.integration.validation.ConstraintDates</class>
         <class>org.apache.openjpa.integration.validation.ConstraintPattern</class>
         <class>org.apache.openjpa.integration.validation.Person</class>
-        <class>org.apache.openjpa.integration.validation.Address</class> 
+        <class>org.apache.openjpa.integration.validation.Address</class>
         <class>org.apache.openjpa.integration.validation.Book</class>
         <class>org.apache.openjpa.integration.validation.Publisher</class>
         <validation-mode>AUTO</validation-mode>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
+            <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="validation-pu">
-        <class>org.apache.openjpa.integration.validation.Book</class> 
-        <class>org.apache.openjpa.integration.validation.Publisher</class>      
+        <class>org.apache.openjpa.integration.validation.Book</class>
+        <class>org.apache.openjpa.integration.validation.Publisher</class>
         <validation-mode>AUTO</validation-mode>
     </persistence-unit>
-    
+
     <persistence-unit name="non-validation-pu">
-        <class>org.apache.openjpa.integration.validation.Book</class> 
-        <class>org.apache.openjpa.integration.validation.Publisher</class>         
+        <class>org.apache.openjpa.integration.validation.Book</class>
+        <class>org.apache.openjpa.integration.validation.Publisher</class>
         <validation-mode>NONE</validation-mode>
     </persistence-unit>
-    
-    
+
+
     <persistence-unit name="XMLConstraintPU">
         <description>Make sure the mapping file and class listings match the same PU
          in META-INF/ehn-persistence.xml</description>
@@ -205,11 +205,11 @@
         <class>org.apache.openjpa.integration.validation.XMLSuper</class>
         <validation-mode>AUTO</validation-mode>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
+            <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
         </properties>
     </persistence-unit>
-    
+
     <!-- ============================================================ -->
     <!-- Persistence unit for testing ConstraintViolation object      -->
     <persistence-unit name="ConstraintViolationTestPU">

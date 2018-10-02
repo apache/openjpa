@@ -39,13 +39,13 @@ public class EntityA_Coll_Embed_Embed implements Serializable {
 
     @Column(length=30)
     String name;
-    
+
     @Basic(fetch=FetchType.LAZY)
     int age;
 
     @ElementCollection
     protected List<Embed_Embed> embeds = new ArrayList<Embed_Embed>();
-    
+
     public int getAge() {
         return age;
     }
@@ -73,7 +73,7 @@ public class EntityA_Coll_Embed_Embed implements Serializable {
     public List<Embed_Embed> getEmbeds() {
         return embeds;
     }
-    
+
     public void setEmbeds(List<Embed_Embed> embeds) {
         this.embeds = embeds;
     }

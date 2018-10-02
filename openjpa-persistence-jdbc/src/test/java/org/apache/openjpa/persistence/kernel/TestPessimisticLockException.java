@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -38,7 +38,7 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
     public void setUp() throws Exception {
         super.setUp(PessimisticLockEntity.class);
     }
-    
+
     /*
      * This test has only been verified on DB2 and Oracle.
      */
@@ -116,7 +116,7 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
                     fail("Caught an unexepected exception: " + pe);
                 }
 
-                // Only one thread needs to sleep (don't care about synchronization of 'doSleep' at this 
+                // Only one thread needs to sleep (don't care about synchronization of 'doSleep' at this
                 // point - if both threads happen to get here at the same time we will test for that later.)
                 if (doSleep) {
                     doSleep = false;
@@ -133,20 +133,20 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
             }
         }
     }
-    
+
     /*
-     * This test verifies the correct number of SQL statements when using a pessimistic 
+     * This test verifies the correct number of SQL statements when using a pessimistic
      * lock (See JIRA OPENJPA-2449).  Prior to OPENJPA-2449, when requesting a pessimistic lock
-     * we would do a 'select' to get the entity, and turn around and do another select to get a 
+     * we would do a 'select' to get the entity, and turn around and do another select to get a
      * Pessimistic lock...in other words, we'd generate (on DB2) these two SQL statements for the refresh:
-     * 
+     *
      * SELECT t0.name FROM PessimisticLockEntity t0 WHERE t0.id = ?
      * SELECT t0.name FROM PessimisticLockEntity t0 WHERE t0.id = ?  FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS
-     *     
+     *
      * With the fix of OPENJPA-2449, we generate only one select, as follows:
-     * 
+     *
      * SELECT t0.name FROM PessimisticLockEntity t0 WHERE t0.id = ?  FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS
-     * 
+     *
      * Not only does this save an SQL, but more importantly, the few millisecond delay between the two selects
      * won't occur.....in a multi-threaded env this delay could cause another thread to get the lock over this
      * one when the refresh occurs at the same time.

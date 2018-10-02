@@ -180,8 +180,8 @@ public class HandlerCollectionTableFieldStrategy
             rm.flushSecondaryRow(row);
         }
     }
-    
-    private void getRelations(StateManagerImpl sm, Collection rels, 
+
+    private void getRelations(StateManagerImpl sm, Collection rels,
         StoreContext ctx) {
         FieldMetaData[] fields = sm.getMetaData().getFields();
         for (int i = 0; i < fields.length; i++) {
@@ -192,9 +192,9 @@ public class HandlerCollectionTableFieldStrategy
                     rels.add(esm);
                 else
                     getRelations(esm, rels, ctx);
-            }    
+            }
         }
-    }    
+    }
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {

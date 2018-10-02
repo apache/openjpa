@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -235,10 +235,10 @@ public class PCState
     }
 
     /**
-     * Return the state to transition to after making no longer provisional. 
+     * Return the state to transition to after making no longer provisional.
      * Returns the <code>this</code> pointer by default.
      */
-    PCState nonprovisional(StateManagerImpl context, boolean logical, 
+    PCState nonprovisional(StateManagerImpl context, boolean logical,
         OpCallbacks call) {
         return this;
     }
@@ -427,7 +427,7 @@ public class PCState
     }
 
     /**
-     * Whether this state requires a version check when being flushed, 
+     * Whether this state requires a version check when being flushed,
      * assuming the system is configured for version checks.
      */
     boolean isVersionCheckRequired(StateManagerImpl context) {

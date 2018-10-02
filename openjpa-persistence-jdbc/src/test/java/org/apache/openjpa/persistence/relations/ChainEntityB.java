@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -40,7 +40,7 @@ public class ChainEntityB {
 	@Version
 	private Integer optLock;
 
-	//cascade = CascadeType.ALL, 
+	//cascade = CascadeType.ALL,
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER,
 	        mappedBy = "chainEntityB")
 	protected Set<ChainEntityC> chainEntityCSet = null;

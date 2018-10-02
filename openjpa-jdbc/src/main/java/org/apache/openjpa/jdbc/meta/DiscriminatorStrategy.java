@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -70,9 +70,9 @@ public interface DiscriminatorStrategy
 
     /**
      * Return SQL to limit the classes selected as much as possible to the
-     * given base class, and optionally its subclasses. The select and joins 
+     * given base class, and optionally its subclasses. The select and joins
      * instances are supplied in order to get column aliases.
      */
-    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+    public SQLBuffer getClassConditions(Select sel, Joins joins,
         ClassMapping base, boolean subs);
 }

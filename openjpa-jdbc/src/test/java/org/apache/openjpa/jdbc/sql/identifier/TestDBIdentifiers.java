@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql.identifier;
 
@@ -56,20 +56,20 @@ public class TestDBIdentifiers extends TestCase {
     public void testTableOps() {
         DBIdentifier name = DBIdentifier.newTable("table");
         assertEquals("table", name.getName());
-        
+
         // Assert name is normalized using delimiters
         name = DBIdentifier.newTable("my table");
         assertEquals("\"my table\"", name.getName());
         // Assert name does not get split into multiple identifiers
         DBIdentifier[] names = QualifiedDBIdentifier.splitPath(name);
         assertTableEquals(names, null, "\"my table\"");
-        
+
         // Split a delimited schema qualified table name
         name = DBIdentifier.newTable("\"my.schema\".\"my.table\"");
         assertEquals("\"my.schema\".\"my.table\"", name.getName());
         names = QualifiedDBIdentifier.splitPath(name);
         assertTableEquals(names, "\"my.schema\"", "\"my.table\"");
-        
+
         // Split a non-delimited schema qualified table name
         name = DBIdentifier.newTable("my_schema.my_table");
         assertEquals("my_schema.my_table", name.getName());
@@ -83,7 +83,7 @@ public class TestDBIdentifiers extends TestCase {
         assertEquals("\"my schema\".\"my table\"", path.getName());
         assertEquals(tName.getName(), path.getBaseName());
         assertEquals(sName.getName(), path.getSchemaName().getName());
-        
+
         // Use Qualified Identifier to create a compound non-normalized schema and table name
         tName = DBIdentifier.newTable("my_table");
         sName = DBIdentifier.newSchema("my_schema");
@@ -91,12 +91,12 @@ public class TestDBIdentifiers extends TestCase {
         assertEquals("my_schema.my_table", path.getName());
         assertEquals(tName.getName(), path.getBaseName());
         assertEquals(sName.getName(), path.getSchemaName().getName());
-        
-        QualifiedDBIdentifier p1 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("schema"), 
+
+        QualifiedDBIdentifier p1 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("schema"),
             DBIdentifier.newTable("my table"));
-        QualifiedDBIdentifier p2 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("schema"), 
-            DBIdentifier.newTable("\"my table\""));        
-        QualifiedDBIdentifier p3 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("schema"), 
+        QualifiedDBIdentifier p2 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("schema"),
+            DBIdentifier.newTable("\"my table\""));
+        QualifiedDBIdentifier p3 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("schema"),
             DBIdentifier.newTable("my_table"));
         assertTrue(p1.equals(p2));
         assertFalse(p1.equals(p3));
@@ -104,33 +104,33 @@ public class TestDBIdentifiers extends TestCase {
         assertFalse(p1.equals(null));
         assertFalse(p1.equals(DBIdentifier.NULL));
     }
-    
+
     public void testColumnOps() {
-        
+
         DBIdentifier c0 = DBIdentifier.newColumn("\"col.1\"");
         assertEquals("\"col.1\"", c0.getName());
         assertTrue (c0 instanceof QualifiedDBIdentifier);
         assertEquals(c0.getType(), DBIdentifierType.COLUMN);
-        
+
         // Test 3 part column name with mixed delimiting
         DBIdentifier c1 = DBIdentifier.newColumn("column 1");
         DBIdentifier t1 = DBIdentifier.newTable("table");
         DBIdentifier s1 = DBIdentifier.newSchema("\"my schema\"");
-        
+
         DBIdentifier p1 = QualifiedDBIdentifier.newPath(s1, t1, c1);
         assertEquals("\"my schema\".table.\"column 1\"", p1.getName());
-        
+
         DBIdentifier c2 = DBIdentifier.newColumn("\"column_2\"");
         // Create a new table name without delimiters, but switch on the
         // delimit flag.  Otherwise, it will get parsed as a multi-part name.
         DBIdentifier t2 = DBIdentifier.newTable("table.2", true);
         DBIdentifier p2 = QualifiedDBIdentifier.newPath(t2, c2);
         assertEquals("\"table.2\".\"column_2\"", p2.getName());
-        
+
     }
-    
+
     public void testDBIdentifierOps() {
-        
+
         // Test truncate
         DBIdentifier n1 = DBIdentifier.newColumn("abcdefgh");
         n1 = DBIdentifier.truncate(n1,6);
@@ -150,7 +150,7 @@ public class TestDBIdentifiers extends TestCase {
         DBIdentifier n4 = DBIdentifier.newColumn("\"abcd efgh\"");
         n4 = DBIdentifier.append(n4, "i k");
         assertEquals("\"abcd efghi k\"", n4.getName());
-        
+
         // Test append with both names delimited
         DBIdentifier n5 = DBIdentifier.newColumn("\"abcd efgh\"");
         n5 = DBIdentifier.append(n5, "\"i k\"");
@@ -162,7 +162,7 @@ public class TestDBIdentifiers extends TestCase {
         assertFalse(cn1 == cn2);
         assertEquals(cn1.getName(), cn2.getName());
         assertEquals(cn1, cn2);
-        
+
         DBIdentifier tbl = DBIdentifier.newTable("tbl");
         DBIdentifier sch = DBIdentifier.newSchema("sch");
         QualifiedDBIdentifier path = QualifiedDBIdentifier.newPath(sch, tbl);
@@ -171,7 +171,7 @@ public class TestDBIdentifiers extends TestCase {
         assertEquals(sch, path.getSchemaName());
         assertEquals(tbl.getName(), path2.getBaseName());
         assertEquals(sch, path2.getSchemaName());
-        
+
         DBIdentifier tbl2 = DBIdentifier.newTable("tbl2");
         DBIdentifier sch2 = DBIdentifier.newSchema("sch2");
         DBIdentifier col = DBIdentifier.newColumn("col");
@@ -180,34 +180,34 @@ public class TestDBIdentifiers extends TestCase {
         assertEquals(col.getName(), cpath2.getBaseName());
         assertEquals(sch2, cpath2.getSchemaName());
         assertEquals(tbl2, cpath2.getObjectTableName());
-        
+
         // Test delimit operation on create
         DBIdentifier dName = DBIdentifier.newColumn("\"ITEMNAME\"", true);
         assertEquals("\"ITEMNAME\"", dName.getName());
-        
+
     }
-    
+
     public void testPathOps() {
-        
+
         // Test equals operator with case insensitive names
-        QualifiedDBIdentifier p1 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MyTable"), 
+        QualifiedDBIdentifier p1 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MyTable"),
             DBIdentifier.newColumn("mycol"));
-        QualifiedDBIdentifier p2 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MYTABLE"), 
+        QualifiedDBIdentifier p2 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MYTABLE"),
             DBIdentifier.newColumn("MYCOL"));
         assertTrue(QualifiedDBIdentifier.equal(p1, p1));
-        
+
         // Test equals operator with delimited, case sensitive names
-        QualifiedDBIdentifier p3 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("\"MyTable\""), 
+        QualifiedDBIdentifier p3 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("\"MyTable\""),
             DBIdentifier.newColumn("\"mycol\""));
-        QualifiedDBIdentifier p4 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MYTABLE"), 
+        QualifiedDBIdentifier p4 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MYTABLE"),
             DBIdentifier.newColumn("MYCOL"));
-        QualifiedDBIdentifier p5 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("\"MyTable\""), 
+        QualifiedDBIdentifier p5 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("\"MyTable\""),
             DBIdentifier.newColumn("\"mycol\""));
         assertFalse(QualifiedDBIdentifier.equal(p3, p4));
         assertTrue(QualifiedDBIdentifier.equal(p3, p5));
-        
+
         // Test setPath method
-        QualifiedDBIdentifier p6 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MyTable"), 
+        QualifiedDBIdentifier p6 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MyTable"),
             DBIdentifier.newColumn("mycol"));
         DBIdentifier n1 = DBIdentifier.newSchema("Schema_1");
         DBIdentifier n2 = DBIdentifier.newTable("Table_1");
@@ -215,7 +215,7 @@ public class TestDBIdentifiers extends TestCase {
         p6.setPath(n1);
         assertEquals("Schema_1", n1.getName());
         assertEquals(n1.getType(), DBIdentifierType.SCHEMA);
-        
+
         p6.setPath(n2);
         assertEquals("Table_1", n2.getName());
         assertEquals(n2.getType(), DBIdentifierType.TABLE);
@@ -225,31 +225,31 @@ public class TestDBIdentifiers extends TestCase {
         assertEquals(n3.getType(), DBIdentifierType.COLUMN);
 
         // Test isDelimited method
-        QualifiedDBIdentifier p7 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MyTable"), 
+        QualifiedDBIdentifier p7 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MyTable"),
             DBIdentifier.newColumn("mycol"));
         assertFalse(p7.isDelimited());
         // All identifiers not delimited
-        QualifiedDBIdentifier p8 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("My Table"), 
+        QualifiedDBIdentifier p8 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("My Table"),
             DBIdentifier.newColumn("mycol"));
         assertFalse(p8.isDelimited());
         // All identifiers delimited by default
-        QualifiedDBIdentifier p9 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("My Table"), 
+        QualifiedDBIdentifier p9 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("My Table"),
             DBIdentifier.newColumn("my col"));
         assertTrue(p9.isDelimited());
 
         // All identifiers specifically delimited
-        QualifiedDBIdentifier p10 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("\"MyTable\""), 
+        QualifiedDBIdentifier p10 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("\"MyTable\""),
             DBIdentifier.newColumn("\"my col\""));
         assertTrue(p10.isDelimited());
 
         // All identifiers specifically delimited sch + tbl + col
-        QualifiedDBIdentifier p11 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("\"MySchema\""), 
+        QualifiedDBIdentifier p11 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("\"MySchema\""),
             DBIdentifier.newTable("\"my tbl\""));
         assertTrue(p11.isDelimited());
 
         // Table identifier not delimited
-        QualifiedDBIdentifier p12 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("\"MySchema\""), 
-            DBIdentifier.newTable("mytbl"), 
+        QualifiedDBIdentifier p12 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("\"MySchema\""),
+            DBIdentifier.newTable("mytbl"),
             DBIdentifier.newColumn("\"my col\""));
         assertFalse(p12.isDelimited());
 
@@ -266,10 +266,10 @@ public class TestDBIdentifiers extends TestCase {
             idx++;
         } else {
             assertEquals(DBIdentifierType.TABLE, names[idx].getType());
-            String path = QualifiedDBIdentifier.join(DBIdentifier.newSchema(schema), 
+            String path = QualifiedDBIdentifier.join(DBIdentifier.newSchema(schema),
                 DBIdentifier.newTable(table));
             assertEquals(names[idx].getName(), path);
         }
     }
-    
+
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.conf;
 
@@ -32,29 +32,29 @@ import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Tests JPA 2.0 API methods {@link Query#getSupportedHints()} and 
- * {@link Query#getHints()}. 
- * 
+ * Tests JPA 2.0 API methods {@link Query#getSupportedHints()} and
+ * {@link Query#getHints()}.
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestQueryHints extends SingleEMFTestCase {
     EntityManager em;
     OpenJPAQuery<?> query;
-    
+
     public void setUp() {
        super.setUp((Object[])null);
        em = emf.createEntityManager();
        String sql = "select * from Person";
        query = OpenJPAPersistence.cast(em.createNativeQuery(sql));
     }
-    
+
     public void testSupportedHintsContainProductDerivationHints() {
         assertSupportedHint(OracleDictionary.SELECT_HINT, true);
         assertSupportedHint(MySQLDictionary.SELECT_HINT, true);
         assertSupportedHint(MariaDBDictionary.SELECT_HINT, true);
     }
-    
+
     public void testSupportedHintsContainFetchPlanHints() {
         assertSupportedHint("openjpa.FetchPlan.LockTimeout", true);
     }
@@ -62,26 +62,26 @@ public class TestQueryHints extends SingleEMFTestCase {
     public void testSupportedHintsIgnoresSomeFetchPlanBeanStyleProperty() {
         assertSupportedHint("openjpa.FetchPlan.QueryResultCache", false);
     }
-    
+
     public void testSupportedHintsContainQueryProperty() {
         assertSupportedHint("openjpa.Subclasses", true);
     }
-    
+
     public void testSupportedHintsContainKernelQueryHints() {
         assertSupportedHint(QueryHints.HINT_IGNORE_PREPARED_QUERY, true);
     }
-    
+
     public void testSupportedHintsContainJPAQueryHints() {
         assertSupportedHint("javax.persistence.query.timeout", true);
     }
-    
+
     public void testUnrecognizedKeyIsIgnored() {
         String unrecognizedKey = "acme.org.hint.SomeThingUnknown";
         query.setHint(unrecognizedKey, "xyz");
         assertFalse(query.getHints().containsKey(unrecognizedKey));
         assertNull(query.getFetchPlan().getDelegate().getHint(unrecognizedKey));
      }
-    
+
     public void testRecognizedKeyIsNotRecordedButAvailable() {
         String recognizedKey = "openjpa.some.derivation.hint";
         query.setHint(recognizedKey, "abc");
@@ -96,7 +96,7 @@ public class TestQueryHints extends SingleEMFTestCase {
         assertTrue(query.getHints().containsKey(supportedKey));
         assertEquals(42, query.getFetchPlan().getFetchBatchSize());
     }
-    
+
     public void testSupportedKeyWrongValue() {
         String supportedKey = "openjpa.FetchPlan.FetchBatchSize";
         short goodValue = (short)42;
@@ -104,7 +104,7 @@ public class TestQueryHints extends SingleEMFTestCase {
         query.setHint(supportedKey, goodValue);
         assertTrue(query.getHints().containsKey(supportedKey));
         assertEquals(goodValue, query.getFetchPlan().getFetchBatchSize());
-        
+
         try {
             query.setHint(supportedKey, badValue);
             fail("Expected to fail to set " + supportedKey + " hint to "
@@ -113,7 +113,7 @@ public class TestQueryHints extends SingleEMFTestCase {
             // good
         }
     }
-    
+
     public void testSupportedKeyIntegerValueConversion() {
         String supportedKey = "openjpa.hint.OptimizeResultCount";
         String goodValue = "57";
@@ -122,7 +122,7 @@ public class TestQueryHints extends SingleEMFTestCase {
         assertTrue(query.getHints().containsKey(supportedKey));
         assertEquals(57, query.getFetchPlan().getDelegate().getHint(
                 supportedKey));
-        
+
         try {
             query.setHint(supportedKey, badValue);
             fail("Expected to fail to set " + supportedKey + " hint to "
@@ -139,14 +139,14 @@ public class TestQueryHints extends SingleEMFTestCase {
         assertTrue(query.getHints().containsKey(supportedKey));
         assertEquals(true, query.getFetchPlan().getDelegate().getHint(
                 supportedKey));
-        
+
         goodValue = "false";
         query.setHint(supportedKey, goodValue);
         assertTrue(query.getHints().containsKey(supportedKey));
         assertEquals(false, query.getFetchPlan().getDelegate().getHint(
                 supportedKey));
     }
-    
+
     public void testJPAHintSetsFetchPlan() {
         query.setHint("javax.persistence.lock.timeout", 5671);
         query.setHint("javax.persistence.query.timeout", 7500);
@@ -162,7 +162,7 @@ public class TestQueryHints extends SingleEMFTestCase {
             // expected
         }
     }
-    
+
     public void testInvalidQueryTimeoutHint() {
         try {
             query.setHint("javax.persistence.query.timeout", -7500);
@@ -171,7 +171,7 @@ public class TestQueryHints extends SingleEMFTestCase {
             // expected
         }
     }
-    
+
     /**
      * Verifies a valid fetchplan isolation level hint can be set and retrieved.
      */
@@ -187,7 +187,7 @@ public class TestQueryHints extends SingleEMFTestCase {
     public void testInvalidFetchPlanIsolation() {
         query.setHint("openjpa.FetchPlan.TransactionIsolation", "SERIALIZABLE");
         assertFalse(query.getHints().containsKey("openjpa.FetchPlan.TransactionIsolation"));
-        assertNotEquals(IsolationLevel.SERIALIZABLE, ((JDBCFetchPlan)query.getFetchPlan()).getIsolation());        
+        assertNotEquals(IsolationLevel.SERIALIZABLE, ((JDBCFetchPlan)query.getFetchPlan()).getIsolation());
     }
 
     void assertSupportedHint(String hint, boolean contains) {
@@ -198,6 +198,6 @@ public class TestQueryHints extends SingleEMFTestCase {
             assertFalse("Unexpected supported hint [" + hint + "]",
                 query.getSupportedHints().contains(hint));
     }
-    
-    
+
+
 }

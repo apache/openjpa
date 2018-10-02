@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -40,10 +40,10 @@ public class Sequence
     private int _initial = 1;
     private int _increment = 1;
     private int _cache = 0;
-    private int _lineNum = 0;  
-    private int _colNum = 0;  
+    private int _lineNum = 0;
+    private int _colNum = 0;
     private QualifiedDBIdentifier _fullPath = null;
-    
+
     // keep track of source
     private File _source = null;
     private int _srcType = SRC_OTHER;
@@ -93,7 +93,7 @@ public class Sequence
     public String getSchemaName() {
         return getSchemaIdentifier().getName();
     }
-    
+
     public DBIdentifier getSchemaIdentifier() {
         return _schemaName == null ? DBIdentifier.NULL : _schemaName;
     }
@@ -241,7 +241,7 @@ public class Sequence
     public String toString() {
         return getFullIdentifier().getName();
     }
-    
+
     public int getLineNumber() {
         return _lineNum;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
@@ -31,16 +31,16 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests ORDER BY clause can work with TABLE_PER_CLASS strategy.
- *  
+ *
  * Further details can be found in
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-485">OPENJPA-485</A>
- * 
+ *
  * @author Pinaki Poddar
  *
  */
-public class TestOrderByQuery extends SingleEMFTestCase {   
+public class TestOrderByQuery extends SingleEMFTestCase {
     public void setUp() {
-    	super.setUp(DROP_TABLES, Game.class, IndoorGame.class, 
+    	super.setUp(DROP_TABLES, Game.class, IndoorGame.class,
     			Scrabble.class, Chess.class);
 		try {
 			createData();
@@ -48,7 +48,7 @@ public class TestOrderByQuery extends SingleEMFTestCase {
 			throw new RuntimeException(e);
 		}
     }
-    
+
 	void createData() throws Exception {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -63,66 +63,66 @@ public class TestOrderByQuery extends SingleEMFTestCase {
 		}
 		em.getTransaction().commit();
 	}
-    
+
     public void testOrderByAliasAscending() {
         String jpql = "SELECT p.name as name FROM Game p ORDER BY name ASC";
         EntityManager em = emf.createEntityManager();
-        
+
         List<String> names = em.createQuery(jpql).getResultList();
         assertOrdering(names.toArray(new String[names.size()]), true);
     }
-    
+
     public void testOrderByConcatAliasDescending() {
         String jpql = "SELECT CONCAT(p.name, '123') as cname " +
             "FROM Game p ORDER BY cname DESC";
         EntityManager em = emf.createEntityManager();
-        
+
         List<String> names = em.createQuery(jpql).getResultList();
         assertOrdering(names.toArray(new String[names.size()]), false);
     }
-    
+
     public void testOrderByAliasDescending() {
         String jpql = "SELECT p.name as name FROM Game p ORDER BY name DESC";
         EntityManager em = emf.createEntityManager();
-        
+
         List<String> names = em.createQuery(jpql).getResultList();
         assertOrdering(names.toArray(new String[names.size()]), false);
     }
-    
+
     public void testOrderByQueryAscending() {
     	String jpql = "SELECT p FROM Game p ORDER BY p.name ASC";
     	EntityManager em = emf.createEntityManager();
-    	
+
     	List<Game> persons = em.createQuery(jpql).getResultList();
     	assertOrdering(getNames(persons), true);
     }
-    
+
     public void testOrderByQueryDescending() {
     	String jpql = "SELECT p FROM Game p ORDER BY p.name DESC";
     	EntityManager em = emf.createEntityManager();
-    	
+
     	List<Game> persons = em.createQuery(jpql).getResultList();
     	assertOrdering(getNames(persons), false);
     }
-    
+
     public void testOrderByQueryProjectionAscending() {
     	String jpql = "SELECT p.name FROM Game p ORDER BY p.name ASC";
     	EntityManager em = emf.createEntityManager();
-    	
+
     	List<String> names = em.createQuery(jpql).getResultList();
     	assertOrdering(names.toArray(new String[names.size()]), true);
     }
-    
+
     public void testOrderByQueryProjectionDescending() {
     	String jpql = "SELECT p.name FROM Game p ORDER BY p.name DESC";
     	EntityManager em = emf.createEntityManager();
-    	
+
     	List<String> names = em.createQuery(jpql).getResultList();
     	assertOrdering(names.toArray(new String[names.size()]), false);
     }
-    
 
-    
+
+
     public String[] getNames(List<Game> persons) {
     	assertNotNull(persons);
     	String[] names = new String[persons.size()];

@@ -23,7 +23,7 @@ import java.util.Date;
 public class XMLPropertySub extends XMLAbstractMappedSuperField {
 
     private Date crtDate;
-    
+
     @Override
     public Date getCreateDate() {
         return crtDate;
@@ -33,7 +33,7 @@ public class XMLPropertySub extends XMLAbstractMappedSuperField {
     public void setCreateDate(Date date) {
         crtDate = date;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropertySub) {
             XMLPropertySub ps = (XMLPropertySub)obj;
@@ -44,5 +44,5 @@ public class XMLPropertySub extends XMLAbstractMappedSuperField {
         }
         return false;
     }
-    
+
 }

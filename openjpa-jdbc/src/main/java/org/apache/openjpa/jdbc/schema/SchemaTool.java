@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -161,7 +161,7 @@ public class SchemaTool {
             }
         }
     }
-    
+
     /**
      * The action supplied on construction.
      */
@@ -241,7 +241,7 @@ public class SchemaTool {
     public boolean getRollbackBeforeDDL() {
         return _rollbackBeforeDDL;
     }
-    
+
     /**
      * If true, rollback will be performed before each DDL statement is executed. Defaults to true.
      */
@@ -333,7 +333,7 @@ public class SchemaTool {
         else
             _writer = new PrintWriter(writer);
     }
-    
+
     public void setSQLTerminator(String t) {
     	_sqlTerminator = t;
     }
@@ -472,7 +472,7 @@ public class SchemaTool {
     /**
      * Issue DELETE statement against all known tables.
      */
-    protected void deleteTableContents() 
+    protected void deleteTableContents()
         throws SQLException {
         SchemaGroup group = getSchemaGroup();
         Schema[] schemas = group.getSchemas();
@@ -1155,10 +1155,10 @@ public class SchemaTool {
         throws SQLException {
         return createIndex(idx, table, null);
     }
-    
+
     public boolean createIndex(Index idx, Table table, Unique[] uniques)
         throws SQLException {
-        // Informix will automatically create a unique index for the 
+        // Informix will automatically create a unique index for the
         // primary key, so don't create another index again
 
         if (!_dict.needsToCreateIndex(idx,table,uniques))
@@ -1371,7 +1371,7 @@ public class SchemaTool {
                             } catch (Exception e) {
                             }
                         }
-                
+
                         statement = conn.createStatement();
                         statement.executeUpdate(sql[i]);
 
@@ -1480,7 +1480,7 @@ public class SchemaTool {
      * <code>false</code> to prevent writing the schema changes to the
      * current {@link SchemaFactory}.</li>
      * </ul>
-     *  Actions can be composed in a comma-separated list. The various actions 
+     *  Actions can be composed in a comma-separated list. The various actions
      *  are as follows.
      * <ul>
      * <li><i>add</i>: Bring the schema up-to-date with the latest
@@ -1503,7 +1503,7 @@ public class SchemaTool {
      * <code>file</code> option, or to stdout if no file is given.</li>
      * <li><i>dropDB</i>: Execute SQL to drop the current database. This
      * action implies <code>dropTables</code>.</li>
-     * <li><i>deleteTableContents</i>: Execute SQL to delete all rows from 
+     * <li><i>deleteTableContents</i>: Execute SQL to delete all rows from
      * all tables that OpenJPA knows about.</li>
      * <li><i>import</i>: Import the given XML schema definition into the
      * current {@link SchemaFactory}.</li>
@@ -1514,16 +1514,16 @@ public class SchemaTool {
      * <ul>
      * <li>Write a script to stdout to re-create the current database
      * schema:<br />
-     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool -f stdout 
+     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool -f stdout
      * -a createDB</code></li>
      * <li>Drop the current database schema:<br />
-     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool 
+     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool
      * -a dropDB</code></li>
      * <li>Refresh the schema and delete all records in all tables:<br />
-     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool 
+     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool
      * -a refresh,deleteTableContents</code></li>
      * <li>Create a schema based on an XML schema definition file:<br />
-     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool 
+     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool
      * myschema.xml</code></li>
      * </ul>
      */
@@ -1584,7 +1584,7 @@ public class SchemaTool {
 
         String[] actions = opts.removeProperty("action", "a", flags.action)
             .split(",");
-        
+
         // setup a configuration instance with cmd-line info
         Configurations.populateConfiguration(conf, opts);
 
@@ -1598,7 +1598,7 @@ public class SchemaTool {
             flags.action = actions[i];
             returnValue &= run(conf, args, flags, loader);
         }
-        
+
         return returnValue;
     }
 

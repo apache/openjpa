@@ -30,7 +30,7 @@ import org.apache.openjpa.lib.util.Options;
 
 /**
  * Executes the SQL generation via the OpenJPA MappingTool.
- * 
+ *
  * @version $Id$
  * @since 1.0
  */

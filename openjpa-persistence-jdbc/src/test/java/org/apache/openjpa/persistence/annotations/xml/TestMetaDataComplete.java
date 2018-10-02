@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.annotations.xml;
 
@@ -32,16 +32,16 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests metadata-complete tag switches off any annotation processing.
- * 
+ *
  * EntityA uses metadata-complete tag and hence all its annotated mapping info
  * must not be processed.
- * 
+ *
  * EntityB does not use metadata-complete tag and hence its mapping info should
  * be combination of annotation mapping info overwritten by xml description
  * mapping info.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class TestMetaDataComplete extends SingleEMFTestCase {
 	private static OpenJPAEntityManagerFactorySPI oemf;

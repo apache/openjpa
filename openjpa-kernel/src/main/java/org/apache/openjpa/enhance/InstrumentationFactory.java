@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance;
 
@@ -61,7 +61,7 @@ public class InstrumentationFactory {
      * This method is not synchronized because when the agent is loaded from
      * getInstrumentation() that method will cause agentmain(..) to be called.
      * Synchronizing this method would cause a deadlock.
-     * 
+     *
      * @param inst The instrumentation instance to be used by this factory.
      */
     public static void setInstrumentation(Instrumentation inst) {
@@ -78,7 +78,7 @@ public class InstrumentationFactory {
 
     /**
      * @param log OpenJPA log.
-     * @return null if Instrumentation can not be obtained, or if any 
+     * @return null if Instrumentation can not be obtained, or if any
      * Exceptions are encountered.
      */
     public static synchronized Instrumentation getInstrumentation(final Log log) {
@@ -99,7 +99,7 @@ public class InstrumentationFactory {
 
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             public Object run() {
-                // Dynamic agent enhancement should only occur when the OpenJPA library is 
+                // Dynamic agent enhancement should only occur when the OpenJPA library is
                 // loaded using the system class loader.  Otherwise, the OpenJPA
                 // library may get loaded by separate, disjunct loaders, leading to linkage issues.
                 try {
@@ -110,12 +110,12 @@ public class InstrumentationFactory {
                 } catch (Throwable t) {
                     return null;
                 }
-                JavaVendors vendor = JavaVendors.getCurrentVendor();                
+                JavaVendors vendor = JavaVendors.getCurrentVendor();
                 File toolsJar = null;
                 // When running on IBM, the attach api classes are packaged in vm.jar which is a part
                 // of the default vm classpath.
                 if (vendor.isIBM() == false) {
-                    // If we can't find the tools.jar and we're not on IBM we can't load the agent. 
+                    // If we can't find the tools.jar and we're not on IBM we can't load the agent.
                     toolsJar = findToolsJar(log);
                     if (toolsJar == null) {
                         return null;
@@ -134,7 +134,7 @@ public class InstrumentationFactory {
                 return null;
             }// end run()
         });
-        // If the load(...) agent call was successful, this variable will no 
+        // If the load(...) agent call was successful, this variable will no
         // longer be null.
         return _inst;
     }//end getInstrumentation()
@@ -151,7 +151,7 @@ public class InstrumentationFactory {
     /**
      * Create a new jar file for the sole purpose of specifying an Agent-Class
      * to load into the JVM.
-     * 
+     *
      * @return absolute path to the new jar file.
      */
     private static String createAgentJar() throws IOException {
@@ -178,7 +178,7 @@ public class InstrumentationFactory {
     /**
      * This private worker method attempts to find [java_home]/lib/tools.jar.
      * Note: The tools.jar is a part of the SDK, it is not present in the JRE.
-     * 
+     *
      * @return If tools.jar can be found, a File representing tools.jar. <BR>
      *         If tools.jar cannot be found, null.
      */
@@ -232,7 +232,7 @@ public class InstrumentationFactory {
      * META-INF/manifest.mf file. Under normal circumstances the path should
      * point to the OpenJPA jar. If running in a development environment a
      * temporary jar file will be created.
-     * 
+     *
      * @return absolute path to the agent jar or null if anything unexpected
      * happens.
      */
@@ -242,13 +242,13 @@ public class InstrumentationFactory {
         // jar *should* be the same location as our agent.
         CodeSource cs =
             InstrumentationFactory.class.getProtectionDomain().getCodeSource();
-        if (cs != null) {   
+        if (cs != null) {
             URL loc = cs.getLocation();
             if(loc!=null){
                 agentJarFile = new File(loc.getFile());
             }
         }
-        
+
         // Determine whether the File that this class was loaded from has this
         // class defined as the Agent-Class.
         boolean createJar = false;
@@ -257,9 +257,9 @@ public class InstrumentationFactory {
             createJar = true;
         }else if(validateAgentJarManifest(agentJarFile, log, _name) == false){
             // We have an agentJarFile, but this class isn't the Agent-Class.
-            createJar=true;           
+            createJar=true;
         }
-        
+
         String agentJar;
         if (createJar == true) {
             // This can happen when running in eclipse as an OpenJPA
@@ -286,8 +286,8 @@ public class InstrumentationFactory {
     }//end getAgentJar
 
     /**
-     * Attach and load an agent class. 
-     * 
+     * Attach and load an agent class.
+     *
      * @param log Log used if the agent cannot be loaded.
      * @param agentJar absolute path to the agent jar.
      * @param vmClass VirtualMachine.class from tools.jar.
@@ -330,13 +330,13 @@ public class InstrumentationFactory {
 
     /**
      * If <b>ibm</b> is false, this private method will create a new URLClassLoader and attempt to load the
-     * com.sun.tools.attach.VirtualMachine class from the provided toolsJar file. 
-     * 
+     * com.sun.tools.attach.VirtualMachine class from the provided toolsJar file.
+     *
      * <p>
-     * If <b>ibm</b> is true, this private method will ignore the toolsJar parameter and load the 
-     * com.ibm.tools.attach.VirtualMachine class. 
-     * 
-     * 
+     * If <b>ibm</b> is true, this private method will ignore the toolsJar parameter and load the
+     * com.ibm.tools.attach.VirtualMachine class.
+     *
+     *
      * @return The AttachAPI VirtualMachine class <br>
      *         or null if something unexpected happened.
      */
@@ -360,7 +360,7 @@ public class InstrumentationFactory {
     /**
      * This private worker method will validate that the provided agentClassName
      * is defined as the Agent-Class in the manifest file from the provided jar.
-     * 
+     *
      * @param agentJarFile
      *            non-null agent jar file.
      * @param log
@@ -389,5 +389,5 @@ public class InstrumentationFactory {
             }
         }
         return false;
-    }// end validateAgentJarManifest   
+    }// end validateAgentJarManifest
 }

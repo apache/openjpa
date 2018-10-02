@@ -14,22 +14,22 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 import javax.persistence.*;
 
 @Embeddable
 public class Embed {
-    
+
     public Embed() {
-        
+
     }
-    
+
     public Embed(String symbol) {
         this.symbol=symbol;
     }
-    
+
     private String symbol;
 
     public String getSymbol() {
@@ -39,6 +39,6 @@ public class Embed {
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
-    
+
 }
 

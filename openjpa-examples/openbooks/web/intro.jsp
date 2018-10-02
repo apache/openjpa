@@ -1,4 +1,4 @@
-<%-- 
+<%--
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
 --%>
 
 <%@include file="header.jsp"%>
@@ -33,39 +33,39 @@ such as <br>
 <LI>Change the status of pending orders </LI>
 </OL>
 
-Each of these actions invokes a  service that queries or transacts against a database. 
-This database interaction takes place via Java Persistence API (JPA). 
+Each of these actions invokes a  service that queries or transacts against a database.
+This database interaction takes place via Java Persistence API (JPA).
 OpenBooks is designed to work with <em>any</em> JPA 2.0 compliant provider.
 Currently OpenBooks is deployed with <A HREF="http://openjpa.apache.org" target="_blank">
 OpenJPA 2.0</A> as its JPA provider.
 <br>
-As you navigate through the pages, you can browse through the <em>actual</em> code in parallel. 
-For example, when you hit the <b>Enter</b> button in this page, this is the 
+As you navigate through the pages, you can browse through the <em>actual</em> code in parallel.
+For example, when you hit the <b>Enter</b> button in this page, this is the
 <a HREF="generated-html/openbook/server/OpenBookServiceImpl.java.html#login" type="popup">
 corresponding Java code</a> executed on the server side.
-<br>   
+<br>
 </div>
 
 
 <div id="content" style="width: 600px; display: block">
-<% 
+<%
     Object service = session.getAttribute(KEY_SERVICE);
-    
+
     if (service == null) {
 %>
 <A name="login"></A>
       <form method="get" action="<%= PAGE_LOGIN %>">
-        Your Name :<br> 
-        <input type="text" 
-               name="<%= KEY_USER %>" 
-               size="40"> 
-        <p> 
-        <input type="image" 
-               src="images/login.gif" 
+        Your Name :<br>
+        <input type="text"
+               name="<%= KEY_USER %>"
+               size="40">
+        <p>
+        <input type="image"
+               src="images/login.gif"
                width="111px" height="22px" border="0">
       </form>
 <%
-    } else { 
+    } else {
 %>
      You have already signed in, <%= session.getAttribute(KEY_USER) %>.
 <%

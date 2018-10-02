@@ -48,7 +48,7 @@ public class TestEmbeddableSuperclass
 
     public void testSuperclassEmbeddedOnly() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
-            getMappingRepositoryInstance().getMapping(EmbeddableSuper.class, 
+            getMappingRepositoryInstance().getMapping(EmbeddableSuper.class,
             null, true);
         assertTrue(cls.isEmbeddedOnly());
         assertEquals(NoneClassStrategy.getInstance(), cls.getStrategy());

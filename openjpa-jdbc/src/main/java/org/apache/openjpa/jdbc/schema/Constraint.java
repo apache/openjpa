@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -108,7 +108,7 @@ public abstract class Constraint
           _fullPath = null;
       }
 
-    
+
     /**
      * Return the column table's schema name.
      * @deprecated
@@ -170,7 +170,7 @@ public abstract class Constraint
     public String getName() {
         return getIdentifier().getName();
     }
-    
+
     public DBIdentifier getIdentifier() {
         return _name == null ? DBIdentifier.NULL : _name;
     }
@@ -210,8 +210,8 @@ public abstract class Constraint
     public DBIdentifier getFullIdentifier() {
         return getQualifiedPath().getIdentifier();
     }
-    
-    
+
+
     /**
      * Return whether this constraint is a logical constraint only; i.e.
      * if it does not exist in the database.

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -524,7 +524,7 @@ public class InMemoryExpressionFactory
     public Arguments newArgumentList(Value val1, Value val2) {
         return new Args(val1, val2);
     }
-    
+
     public Arguments newArgumentList(Value... values) {
         return new Args(values);
     }
@@ -662,7 +662,7 @@ public class InMemoryExpressionFactory
     public Value getKey(Value val) {
         throw new UnsupportedException("not implemented yet");
     }
-    
+
     public Value getObjectId(Value val) {
         return new GetObjectId((Val) val);
     }
@@ -795,7 +795,7 @@ public class InMemoryExpressionFactory
     public Value newFunction(String functionName, Class<?> resultType, Value... args) {
         throw new AbstractMethodError();
     }
-    
+
     public boolean isVerticalType(Value val) {
         return false;
     }

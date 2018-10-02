@@ -23,7 +23,7 @@ import java.util.Date;
 public abstract class XMLAbstractMappedSuperProperty {
 
     private int id;
-    
+
     private String name;
 
     public void setId(int id) {
@@ -41,11 +41,11 @@ public abstract class XMLAbstractMappedSuperProperty {
     public String getName() {
         return name;
     }
-    
+
     abstract public Date getCreateDate();
-    
-    abstract public void setCreateDate(Date date);    
-    
+
+    abstract public void setCreateDate(Date date);
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLAbstractMappedSuperProperty) {
             XMLAbstractMappedSuperProperty ps =

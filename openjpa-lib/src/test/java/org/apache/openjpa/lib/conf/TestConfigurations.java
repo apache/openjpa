@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -87,7 +87,7 @@ public class TestConfigurations extends AbstractTestCase {
     }
 
     public void testCombinePlugins() {
-        assertPluginsCombined("jpa", null, 
+        assertPluginsCombined("jpa", null,
             null, null,
             "jpa", null);
         assertPluginsCombined("jpa", null,
@@ -101,29 +101,29 @@ public class TestConfigurations extends AbstractTestCase {
             "jpa", null);
         assertPluginsCombined("jdo", new String[] { "foo", "bar" },
             "jpa", new String[] { "biz", "baz" },
-            "jpa", new String[] { "biz", "baz" }); 
+            "jpa", new String[] { "biz", "baz" });
         assertPluginsCombined("jdo", new String[] { "foo", "bar" },
             null, new String[] { "biz", "baz" },
-            "jdo", new String[] { "foo", "bar", "biz", "baz" }); 
+            "jdo", new String[] { "foo", "bar", "biz", "baz" });
         assertPluginsCombined(null, new String[] { "foo", "bar" },
             null, new String[] { "biz", "baz" },
-            null, new String[] { "foo", "bar", "biz", "baz" }); 
+            null, new String[] { "foo", "bar", "biz", "baz" });
         assertPluginsCombined(null, new String[] { "foo", "bar" },
             "jpa", new String[] { "biz", "baz" },
-            "jpa", new String[] { "foo", "bar", "biz", "baz" }); 
+            "jpa", new String[] { "foo", "bar", "biz", "baz" });
         assertPluginsCombined("jpa", new String[] { "foo", "bar" },
             "jpa", new String[] { "biz", "baz" },
-            "jpa", new String[] { "foo", "bar", "biz", "baz" }); 
+            "jpa", new String[] { "foo", "bar", "biz", "baz" });
         assertPluginsCombined("jpa", new String[] { "foo", "bar" },
             "jpa", new String[] { "foo", "baz" },
-            "jpa", new String[] { "foo", "baz" }); 
+            "jpa", new String[] { "foo", "baz" });
     }
 
     private void assertPluginsCombined(String cls1, String[] props1,
         String cls2, String[] props2, String expCls, String[] expProps) {
-        String plugin1 = Configurations.getPlugin(cls1, 
+        String plugin1 = Configurations.getPlugin(cls1,
             Configurations.serializeProperties(toProperties(props1)));
-        String plugin2 = Configurations.getPlugin(cls2, 
+        String plugin2 = Configurations.getPlugin(cls2,
             Configurations.serializeProperties(toProperties(props2)));
 
         String res = Configurations.combinePlugins(plugin1, plugin2);

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -196,7 +196,7 @@ abstract class MaxEmbeddedLobFieldStrategy
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode) {
-        if (sel.isDistinct() || 
+        if (sel.isDistinct() ||
             eagerMode == JDBCFetchConfiguration.EAGER_NONE)
             return -1;
         sel.select(field.getColumns()[0], field.join(sel));
@@ -256,6 +256,6 @@ abstract class MaxEmbeddedLobFieldStrategy
         Object prevValue)
         throws SQLException {
     }
-    
+
     protected abstract Object getValue(OpenJPAStateManager sm);
 }

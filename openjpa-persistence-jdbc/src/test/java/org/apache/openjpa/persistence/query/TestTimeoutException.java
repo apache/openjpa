@@ -34,7 +34,7 @@ import org.apache.openjpa.util.OpenJPAException;
 
 /**
  * Tests that correct timeout exceptions are being thrown depending on whether it is a query or a lock operation.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -60,7 +60,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
             return;
         super.setUp(entityClass, CLEAR_TABLES);
     }
-    
+
     public void testQueryTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntities() {
         if (getLog().isTraceEnabled())
             getLog().trace("***** Entered TestTimeoutException." +
@@ -69,12 +69,12 @@ public class TestTimeoutException extends SingleEMFTestCase {
         EntityManager em2 = emf.createEntityManager();
         assertNotSame(em1, em2);
         Object oid = createEntity(em1);
-        
+
         em1.getTransaction().begin();
         Object entity = em1.find(entityClass, oid);
         assertNotNull(entity);
         em1.lock(entity, LockModeType.PESSIMISTIC_WRITE);
-        
+
         em2.getTransaction().begin();
         final Query query = em2.createQuery("select p from PObject p");
         query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
@@ -87,14 +87,14 @@ public class TestTimeoutException extends SingleEMFTestCase {
             assertError(t, QueryTimeoutException.class);
             assertTrue(em2.getTransaction().isActive());
         }
-        finally { 
+        finally {
             em1.getTransaction().rollback();
             em1.close();
             em2.getTransaction().rollback();
             em2.close();
         }
     }
-    
+
     public void testLockTimeOutExceptionWhileLockingAlreadyLockedEntities() {
         if (getLog().isTraceEnabled())
             getLog().trace("***** Entered TestTimeoutException." +
@@ -103,12 +103,12 @@ public class TestTimeoutException extends SingleEMFTestCase {
         final EntityManager em2 = emf.createEntityManager();
         assertNotSame(em1, em2);
         final Object oid = createEntity(em1);
-        
+
         em1.getTransaction().begin();
         final Object entity1 = em1.find(entityClass, oid);
         assertNotNull(entity1);
         em1.lock(entity1, LockModeType.PESSIMISTIC_WRITE);
-        
+
         em2.getTransaction().begin();
         final Object entity2 = em2.find(entityClass, oid);
         final long timeout = 1000;
@@ -137,12 +137,12 @@ public class TestTimeoutException extends SingleEMFTestCase {
         EntityManager em2 = emf.createEntityManager();
         assertNotSame(em1, em2);
         Object oid = createEntity(em1);
-        
+
         em1.getTransaction().begin();
         Object entity = em1.find(entityClass, oid);
         assertNotNull(entity);
         em1.lock(entity, LockModeType.PESSIMISTIC_WRITE);
-        
+
         em2.getTransaction().begin();
         try {
             Map<String,Object> hint = new HashMap<String, Object>();
@@ -161,7 +161,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
             em2.close();
         }
     }
-    
+
     public Object createEntity(EntityManager em) {
         long id = System.nanoTime();
         em.getTransaction().begin();
@@ -171,8 +171,8 @@ public class TestTimeoutException extends SingleEMFTestCase {
         em.getTransaction().commit();
         return id;
     }
-    
-    
+
+
     /**
      * Assert that an exception of proper type has been thrown.
      * Also checks that that the exception has populated the failed object.
@@ -189,8 +189,8 @@ public class TestTimeoutException extends SingleEMFTestCase {
         Object failed = getFailedObject(actual);
         assertNotNull("Failed object is null", failed);
         assertNotEquals("null", failed);
-    } 
-    
+    }
+
     Object getFailedObject(Throwable e) {
         if (e == null) {
             getLog().error("TestTimeoutException.getFailedObject() - Object e was null");
@@ -214,12 +214,12 @@ public class TestTimeoutException extends SingleEMFTestCase {
         StringBuilder str = new StringBuilder(80);
         for (int i=0; i<tab*4;i++)
             str.append(" ");
-        String sqlState = (t instanceof SQLException) ? 
-            "(SQLState=" + ((SQLException)t).getSQLState() + ":" 
+        String sqlState = (t instanceof SQLException) ?
+            "(SQLState=" + ((SQLException)t).getSQLState() + ":"
                 + t.getMessage() + ")" : "";
         str.append(t.getClass().getName() + sqlState);
         getLog().error(str);
-        if (t.getCause() == t) 
+        if (t.getCause() == t)
             return;
         print(t.getCause(), tab+1);
     }

@@ -23,7 +23,7 @@
         <description>PU for SLF4J tests</description>
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
+
         <properties>
             <property name="openjpa.Log" value="slf4j"/>
             <property name="openjpa.DynamicEnhancementAgent" value="false"/>

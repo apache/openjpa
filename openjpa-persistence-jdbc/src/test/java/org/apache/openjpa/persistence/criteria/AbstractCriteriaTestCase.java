@@ -56,7 +56,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     protected abstract SQLAuditor getAuditor();
 
     protected abstract OpenJPAEntityManagerFactorySPI getEntityManagerFactory();
-    
+
     protected abstract EntityManager getEntityManager();
     private DBDictionary dict = null;
 
@@ -74,7 +74,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
      * tell the test framework to delete all table contents before running the tests.
      * NOTE: Caller must close the returned EMF.
-     * 
+     *
      * @param props
      *            list of persistent types used in testing and/or configuration values in the form
      *            key,value,key,value...
@@ -110,7 +110,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             dict.requiresCastForMathFunctions = false;
         } else if (dict instanceof OracleDictionary) {
             dict.setJoinSyntax("sql92");
-        } 
+        }
     }
 
     /**
@@ -119,7 +119,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     void assertEquivalence(CriteriaQuery<?> c, String jpql) {
         assertEquivalence(null, c, jpql, null);
     }
-    
+
     /**
      * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality
      * with the expected SQL.
@@ -127,7 +127,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     void assertEquivalence(CriteriaQuery<?> c, String jpql, String expectedSQL) {
         assertEquivalence(null, c, jpql, expectedSQL);
     }
-    
+
     /**
      * Executes the given CriteriaQuery and JPQL string after decorating with the given decorator,
      * and then compare their respective SQLs for equality.
@@ -137,7 +137,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     }
 
     /**
-     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality. 
+     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
      * Decorates the query with the given decorator before execution.
      * supplied parameters, if any.
      */
@@ -156,7 +156,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     /**
      * Execute the two given queries. The first query originated from a JPQL string must be well-formed. The second
      * query originated from a Criteria is being tested.
-     * 
+     *
      * @param sqls
      *            The target SQL for the queries will be filled-in the given array.
      * @return true if both queries execute successfully.
@@ -202,9 +202,9 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         }
 
         if (expectedSQL != null) {
-            assertTrue("SQL for JPQL " + jpql + " is different than expecetd " + expectedSQL, 
+            assertTrue("SQL for JPQL " + jpql + " is different than expecetd " + expectedSQL,
                     jSQL.get(0).equalsIgnoreCase(expectedSQL));
-            
+
         }
     }
 
@@ -227,7 +227,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             if (!jSQL.get(i).equalsIgnoreCase(expectedSQL)) {
                 printSQL("SQL for JPQL", jSQL.get(i));
                 printSQL("Expected SQL", expectedSQL);
-                assertTrue(i + "-th SQL for JPQL: " + jSQL.get(i) + " are different than Expected SQL " + expectedSQL, 
+                assertTrue(i + "-th SQL for JPQL: " + jSQL.get(i) + " are different than Expected SQL " + expectedSQL,
                     expectedSQL.equalsIgnoreCase(jSQL.get(i)));
             }
         }
@@ -360,9 +360,9 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
 
     /**
      * Affirms if the test case or the test method is annotated with
-     * 
+     *
      * @AllowFailure. Method level annotation has higher precedence than Class level annotation.
-     * 
+     *
      *                Set -DIgnoreAllowFailure=true to ignore this directive altogether.
      */
     protected AllowFailure getAllowFailure() {
@@ -392,7 +392,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             return getCopy();
         }
     }
-    
+
     /**
      * Interface to decorate a query such as set parameter or range before execution.
      *

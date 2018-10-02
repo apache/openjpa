@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.dbcs;
 
@@ -34,7 +34,7 @@ public class TestDBCS extends SQLListenerTestCase {
         setUp(MyDBCSEntity.class);
     }
 
-    
+
     public void test() {
         // Test test is disabled as most won't have their environment configured to support UTF-8 chars
 //        EntityManager em = emf.createEntityManager();

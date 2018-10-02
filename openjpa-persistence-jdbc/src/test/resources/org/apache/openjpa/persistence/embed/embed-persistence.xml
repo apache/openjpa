@@ -27,7 +27,7 @@
         <class>org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEntityA</class>
         <class>org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEntityB</class>
             <properties>
-                <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(SchemaAction='drop,add')"/>                
+                <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(SchemaAction='drop,add')"/>
             </properties>
     </persistence-unit>
 </persistence>

@@ -24,38 +24,38 @@ import javax.persistence.Query;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Tests that Native queries use only 1-based positional parameters and 
+ * Tests that Native queries use only 1-based positional parameters and
  * disallows named parameters.
- * 
- * Originally reported in 
+ *
+ * Originally reported in
  * <A HRE="http://issues.apache.org/jira/browse/OPENJPA-112>OPENJPA-112</A>
- *  
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
 	private static Class<? extends Exception> NO_ERROR = null;
-	
+
 	@Override
 	public void setUp() throws Exception {
 		super.setUp(CLEAR_TABLES);
 	}
-	
+
 	public void testNamedParameterInNativeQueryIsNotValid() {
 		String sql = "SELECT * FROM Application WHERE id=:id";
 		verifyParams(sql, IllegalArgumentException.class, "id", 10);
 	}
-	
+
 	public void testPositionalParameterInNativeQueryIsValid() {
 		String sql = "SELECT * FROM Application WHERE id=?1";
 		verifyParams(sql, NO_ERROR, 1, 10);
 	}
-	
+
 	public void testZeroPositionalParameterInNativeQueryIsNotValid() {
 		String sql = "SELECT * FROM Application WHERE id=?1";
 		verifyParams(sql, IllegalArgumentException.class, 0, 10);
 	}
-	
+
 	public void testNativeQueryDeclaredParameters() {
         String sql = "SELECT * FROM Application WHERE id=?1 AND name=?2";
         EntityManager em = emf.createEntityManager();
@@ -65,7 +65,7 @@ public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
 	}
-	
+
 	void verifyParams(String jpql, Class<? extends Exception> error,
         Object... params) {
         EntityManager em = emf.createEntityManager();
@@ -86,8 +86,8 @@ public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
                     // let the test harness handle the exception.
                     throw new RuntimeException("An unexpected exception " +
                             "occurred see the initCause for details", e);
-				} 
-			}		
+				}
+			}
 		}
         em.getTransaction().commit();
         em.close();

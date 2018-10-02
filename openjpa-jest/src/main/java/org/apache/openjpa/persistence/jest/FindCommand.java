@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -42,21 +42,21 @@ class FindCommand extends AbstractCommand {
     private static final String ARG_TYPE = "type";
     private static final List<String> _mandatoryArgs   = Arrays.asList(ARG_TYPE);
     private static final List<String> _validQualifiers = Arrays.asList("format", "plan");
-    
+
     public FindCommand(JPAServletContext ctx) {
         super(ctx);
     }
-    
+
     @Override
     protected Collection<String> getMandatoryArguments() {
         return _mandatoryArgs;
     }
-    
+
     @Override
     protected int getMinimumArguments() {
         return 1;
     }
-    
+
     protected Collection<String> getValidQualifiers() {
         return _validQualifiers;
     }
@@ -76,20 +76,20 @@ class FindCommand extends AbstractCommand {
         Object oid = ApplicationIds.fromPKValues(pks, meta);
         pushFetchPlan(em);
         try {
-            Object pc = em.find(meta.getDescribedType(), oid); 
+            Object pc = em.find(meta.getDescribedType(), oid);
             if (pc != null) {
                 OpenJPAStateManager sm = toStateManager(pc);
                 ObjectFormatter<?> formatter = getObjectFormatter();
                 ctx.getResponse().setContentType(formatter.getMimeType());
                 try {
-                    formatter.writeOut(Collections.singleton(sm), em.getMetamodel(), 
-                        _loc.get("find-title").toString(), _loc.get("find-desc").toString(), ctx.getRequestURI(), 
+                    formatter.writeOut(Collections.singleton(sm), em.getMetamodel(),
+                        _loc.get("find-title").toString(), _loc.get("find-desc").toString(), ctx.getRequestURI(),
                         ctx.getResponse().getOutputStream());
                 } catch (IOException e) {
                     throw new ProcessingException(ctx, e);
                 }
             } else {
-                throw new ProcessingException(ctx, _loc.get("entity-not-found", type, Arrays.toString(pks)), 
+                throw new ProcessingException(ctx, _loc.get("entity-not-found", type, Arrays.toString(pks)),
                     HttpURLConnection.HTTP_NOT_FOUND);
             }
         } finally {

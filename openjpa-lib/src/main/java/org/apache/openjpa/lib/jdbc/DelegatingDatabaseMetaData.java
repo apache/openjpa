@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.jdbc;
 
@@ -822,14 +822,14 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
     public boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException {
         return _metaData.supportsStoredFunctionsUsingCallSyntax();
     }
-    
+
     // Java 7 methods follow
-    
+
     public boolean generatedKeyAlwaysReturned() throws SQLException {
     	throw new UnsupportedOperationException();
     }
-    
-    public ResultSet getPseudoColumns(String catalog, String schemaPattern, 
+
+    public ResultSet getPseudoColumns(String catalog, String schemaPattern,
     	String tableNamepattern, String columnNamePattern) throws SQLException {
     	throw new UnsupportedOperationException();
     }

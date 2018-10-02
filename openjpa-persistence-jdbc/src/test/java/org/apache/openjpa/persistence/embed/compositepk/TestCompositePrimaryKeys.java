@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.compositepk;
 
@@ -52,7 +52,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
     public void setUp() {
         super.setUp(DROP_TABLES, Subject.class, SubjectKey.class, SubjectWithIdClass.class, Topic.class);
-        
+
             em = emf.createEntityManager();
             tx = em.getTransaction();
             tx.begin();
@@ -72,28 +72,28 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
     }
 
     /*
-     * OpenJPA handles this test just fine with or without the fixes of OPENJPA-2631.  This works, 
+     * OpenJPA handles this test just fine with or without the fixes of OPENJPA-2631.  This works,
      * compared to other tests, because a select is performed on the key class' fields.
      */
     public void testFindUsingEqualsOnObjectJPQL() {
         Subject s = createSubject();
-        
+
         TypedQuery<Subject> query = em.createQuery("select distinct s from Subject s where " +
         		"s.key.subjectNummer = :subjectNummer AND s.key.subjectTypeCode = " +
         		":subjectTypeCode", Subject.class);
         query.setParameter("subjectNummer", s.getKey().getSubjectNummer());
         query.setParameter("subjectTypeCode", s.getKey().getSubjectTypeCode());
-        
+
         Subject s2 = query.getSingleResult();
-        
+
         verifySubject(s, s2);
     }
 
     /*
-     * Just like the previous test, OpenJPA handles this test just fine with or without the 
-     * fixes of OPENJPA-2631.  This works, compared to other tests, because a select is 
+     * Just like the previous test, OpenJPA handles this test just fine with or without the
+     * fixes of OPENJPA-2631.  This works, compared to other tests, because a select is
      * performed on the key class' fields.  This slight difference in this test compared to the
-     * previous test is that it traverses from Topic to the SubjectKey fields. 
+     * previous test is that it traverses from Topic to the SubjectKey fields.
      */
     public void testFindUsingJPQLEqualsOnSubjectKeyAttributes() {
 
@@ -107,14 +107,14 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
         verifyResults(topic, s);
     }
-    
+
     /*
      * This test results in an EXPECTED exception:
-     * 
+     *
      * ArgumentException: An error occurred while parsing the query filter 'select distinct g from Topic g where
      * t.subject.key = :subjectKey'. Error message: JPQL query does not support conditional expression over embeddable
      * class. JPQL string: "key". See section 4.6.3 of the JPA 2.0 specification.
-     * 
+     *
      * The message in the exception tells it all. Per the spec, you can not do a compare on embeddables.
      */
     public void testFindUsingJPQLEqualsOnSubjectKey() {
@@ -125,14 +125,14 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
             Assert.assertTrue(t.getMessage().contains("does not support conditional expression"));
         }
     }
-    
+
     /*
      * Prior to the fix #1 (see notes above), this fails on OJ with:
-     * 
-     * java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey cannot be cast to 
+     *
+     * java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey cannot be cast to
      * [Ljava.lang.Object;]
      * at org.apache.openjpa.jdbc.kernel.exps.Param.appendTo(Param.java:149)
-     * 
+     *
      * With fix #1, this test works fine.
      */
     public void testFindSubjectUsingJPQLEqualsOnSubject() {
@@ -148,11 +148,11 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
     /*
      * Prior to the fix #1 (see notes above), this fails on OJ with:
-     * 
-     * java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey cannot be cast to 
+     *
+     * java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey cannot be cast to
      * [Ljava.lang.Object;]
      * at org.apache.openjpa.jdbc.kernel.exps.Param.appendTo(Param.java:149)
-     * 
+     *
      * With fix #1, this test works fine.
      */
     public void testFindUsingNamedQuery() {
@@ -170,11 +170,11 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
     /*
      * Prior to the fix #1 (see notes above), this fails on OJ with:
-     * 
-     * java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey cannot be cast to 
+     *
+     * java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey cannot be cast to
      * [Ljava.lang.Object;]
      * at org.apache.openjpa.jdbc.kernel.exps.Param.appendTo(Param.java:149)
-     * 
+     *
      * With fix #1, this test works fine.
      */
     public void testFindUsingJPQLEqualsOnSubject() {
@@ -191,38 +191,38 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
     /*
      * Due to the fix #1 (see notes above), this fails on OJ with:
-     * 
+     *
      * java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
      * at org.apache.openjpa.jdbc.meta.ClassMapping.toDataStoreValue(ClassMapping.java:272)
-     * 
+     *
      */
-    public void testFindUsingJPQLSubjectKeyIn() { 
+    public void testFindUsingJPQLSubjectKeyIn() {
         Query query = em.createQuery("select distinct s from Subject s where s.key in :subjectKeyList");
-        query.setParameter("subjectKeyList", 
+        query.setParameter("subjectKeyList",
                 Arrays.asList(
-                    new SubjectKey(1, "Type"), 
-                    new SubjectKey(2, "Type2"), 
+                    new SubjectKey(1, "Type"),
+                    new SubjectKey(2, "Type2"),
                     new SubjectKey(3, "Type3")));
         query.getResultList();
     }
 
     /*
      * Prior to the fix #1 (see notes above), this fails on OJ with:
-     * 
-     * java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey cannot be cast to 
+     *
+     * java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey cannot be cast to
      * [Ljava.lang.Object;]
      * at org.apache.openjpa.jdbc.kernel.exps.Param.appendTo(Param.java:149)
-     * 
+     *
      * With fix #1, the CCEx is avoided/resolved. However, we then got an incorrectly generated SQL as follows:
-     * 
+     *
      * SELECT t0.SUBJECTNUMMER, t0.CODE_SUBJECTTYPE FROM SUBJECT t0 WHERE (t0.SUBJECTNUMMER = ?)
      *   optimize for 1 row [params=(int) 1]
-     * 
+     *
      * Notice that 't0.CODE_SUBJECTTYPE' is missing.  With fix #2.1 this issue is resolved.
-     * 
+     *
      * The thing to note (which is different than the test 'findSubjectUsingCriteriaBuilderEquals' below) is that
-     * the Subject is treated as an OpenJPA 'Parameter' (see changes in EqualExpression). The test 
-     * 'findSubjectUsingCriteriaBuilderEquals' below causes the Subject to be treated as a Lit. There is 
+     * the Subject is treated as an OpenJPA 'Parameter' (see changes in EqualExpression). The test
+     * 'findSubjectUsingCriteriaBuilderEquals' below causes the Subject to be treated as a Lit. There is
      * a bug in both cases, with an additional bug for the 'Lit' case.
      */
     public void testFindSubjectUsingCriteriaBuilderEqualsAndParameter() {
@@ -250,20 +250,20 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
     /*
      * Prior to the fix #1 (see notes above), this fails on OJ with:
-     * 
-     * Caused by: java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey 
+     *
+     * Caused by: java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey
      * cannot be cast to [Ljava.lang.Object;
      *   at org.apache.openjpa.jdbc.kernel.exps.Lit.appendTo(Lit.java:120)
-     * 
+     *
      * Notice the exception this time is in 'Lit'.  Previous CCEx for the other tests have been in Param.
      * With fix #1, the CCEx is avoided/resolved. However, we then got an incorrectly generated SQL as follows:
-     * 
-     * SELECT t0.SUBJECTNUMMER, t0.CODE_SUBJECTTYPE FROM SUBJECT t0 WHERE (t0.SUBJECTNUMMER = ??)  
+     *
+     * SELECT t0.SUBJECTNUMMER, t0.CODE_SUBJECTTYPE FROM SUBJECT t0 WHERE (t0.SUBJECTNUMMER = ??)
      * optimize for 1 row [params=(int) 1, (String) Type]
-     * 
+     *
      * Notice that 't0.CODE_SUBJECTTYPE' is missing, and there are two parameter markers.  With fix #2.1 and
      * #2.2, this issue is resolved.
-     * 
+     *
      * The other thing to note (which is different than the test 'findSubjectUsingCriteriaBuilderEqualsAndParameter'
      * above) is that the Subject is treated as an OpenJPA 'Lit' (see changes in EqualExpression). The test
      * 'findSubjectUsingCriteriaBuilderEqualsAndParameter' above treats the Subject as a Parameter. There is a bug in
@@ -300,7 +300,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
     }
 
     /*
-     * For comparison, this test does the same CriteriaBuilder code on Topic (an entity 
+     * For comparison, this test does the same CriteriaBuilder code on Topic (an entity
      * with a single PK) as was done in the previous test to make sure it works.
      */
     public void testFindTopicUsingCriteriaBuilderEquals() {
@@ -326,19 +326,19 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
     /*
      * Prior to the fix #1 (see notes above), this fails on OJ with:
-     * 
-     * Caused by: java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey 
+     *
+     * Caused by: java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey
      * cannot be cast to [Ljava.lang.Object;
      *   at org.apache.openjpa.jdbc.kernel.exps.Lit.appendTo(Lit.java:120)
-     * 
+     *
      * Notice the exception this time is in 'Lit'.  Previous CCEx for the other tests have been in Param.
      * With fix #1, the CCEx is avoided/resolved. However, we then got an incorrectly generated SQL as follows:
-     * 
-     * SELECT t0.ID, t1.SUBJECTNUMMER, t1.CODE_SUBJECTTYPE FROM TOPIC t0 LEFT OUTER JOIN SUBJECT t1 ON 
-     * t0.SUBJECT_SUBJECTNUMMER = 
-     * t1.SUBJECTNUMMER AND t0.SUBJECT_CODE_SUBJECTTYPE = t1.CODE_SUBJECTTYPE WHERE (t0.SUBJECT_SUBJECTNUMMER = ??)  
+     *
+     * SELECT t0.ID, t1.SUBJECTNUMMER, t1.CODE_SUBJECTTYPE FROM TOPIC t0 LEFT OUTER JOIN SUBJECT t1 ON
+     * t0.SUBJECT_SUBJECTNUMMER =
+     * t1.SUBJECTNUMMER AND t0.SUBJECT_CODE_SUBJECTTYPE = t1.CODE_SUBJECTTYPE WHERE (t0.SUBJECT_SUBJECTNUMMER = ??)
      * optimize for 1 row [params=(int) 1, (String) Type]
-     * 
+     *
      * Notice that 't0.CODE_SUBJECTTYPE' is missing, and there are two parameter markers.  With fix #2.1 and
      * #2.2, this issue is resolved.
      */
@@ -362,11 +362,11 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
     /*
      * Prior to the fix #1 (see notes above), this fails on OJ with:
-     * 
-     * Caused by: java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey 
+     *
+     * Caused by: java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey
      * cannot be cast to [Ljava.lang.Object;
      *   at org.apache.openjpa.jdbc.kernel.exps.InExpression.orContains(InExpression.java:178)
-     *   
+     *
      * Notice this time the CCEx occurs in InExpression.  With fix #1 the issue is resolved.
      */
     public void testFindUsingJPQLInClauseOnSubject() {
@@ -378,31 +378,31 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         List<Subject> subjectList = new ArrayList<Subject>();
         subjectList.add(s);
         subjectList.add(s2);
-        
+
         TypedQuery<Topic> query = em.createQuery(
                 "select distinct t from Topic t where t.subject in :subjectList", Topic.class);
         query.setParameter("subjectList", subjectList);
         Topic t = query.getSingleResult();
-        
+
         verifyResults(t, s);
     }
-    
+
     /*
      * Prior to the fix #1 (see notes above), this fails on OJ with:
-     * 
-     * Caused by: java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey 
+     *
+     * Caused by: java.lang.ClassCastException: org.apache.openjpa.persistence.embed.compositepk.SubjectKey
      * cannot be cast to [Ljava.lang.Object;
      *   at org.apache.openjpa.jdbc.kernel.exps.Lit.appendTo(Lit.java:120)
-     * 
+     *
      * Notice the exception this time is in 'Lit'.  Previous CCEx for the other tests have been in Param.
-     * 
+     *
      * With fix #1, the CCEx is avoided/resolved. However, we then got an incorrectly generated SQL as follows:
-     * 
-     * SELECT t0.ID, t1.SUBJECTNUMMER, t1.CODE_SUBJECTTYPE FROM TOPIC t0 LEFT OUTER JOIN SUBJECT t1 ON 
-     * t0.SUBJECT_SUBJECTNUMMER = 
-     * t1.SUBJECTNUMMER AND t0.SUBJECT_CODE_SUBJECTTYPE = t1.CODE_SUBJECTTYPE WHERE (t0.SUBJECT_SUBJECTNUMMER = ??)  
+     *
+     * SELECT t0.ID, t1.SUBJECTNUMMER, t1.CODE_SUBJECTTYPE FROM TOPIC t0 LEFT OUTER JOIN SUBJECT t1 ON
+     * t0.SUBJECT_SUBJECTNUMMER =
+     * t1.SUBJECTNUMMER AND t0.SUBJECT_CODE_SUBJECTTYPE = t1.CODE_SUBJECTTYPE WHERE (t0.SUBJECT_SUBJECTNUMMER = ??)
      * optimize for 1 row [params=(int) 1, (String) Type]
-     * 
+     *
      * Notice that 't0.CODE_SUBJECTTYPE' is missing, and there are two parameter markers.  With fix #2.1 and
      * #2.2, this issue is resolved.
      */
@@ -444,10 +444,10 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
             TypedQuery<SubjectWithIdClass> query =
                 em.createQuery("select s from SubjectWithIdClass s where s = :subject", SubjectWithIdClass.class);
-            
+
             query.setParameter("subject", s);
             SubjectWithIdClass s2 = query.getSingleResult();
-       
+
 
         Assert.assertNotNull(s2);
         Assert.assertEquals(s.getSubjectNummer(), s2.getSubjectNummer());
@@ -457,11 +457,11 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
     /*
      * For this test, the CCEx is actually never hit with or without the fixes.  However, incorrect
      * SQL was generated as follows:
-     * 
-     * SELECT t0.SUBJECTNUMMER, t0.CODE_SUBJECTTYPE FROM SUBJECT2 t0 WHERE 
+     *
+     * SELECT t0.SUBJECTNUMMER, t0.CODE_SUBJECTTYPE FROM SUBJECT2 t0 WHERE
      * (t0.SUBJECTNUMMER = ??)  optimize for 1 row [params=(int) 1, (String) Type]}
-     * 
-     * Notice that 't0.CODE_SUBJECTTYPE' is missing, and there is an extra parameter marker.  With 
+     *
+     * Notice that 't0.CODE_SUBJECTTYPE' is missing, and there is an extra parameter marker.  With
      * fix #2.1 and #2.2 this issue is resolved.
      */
     public void testFindUsingCriteriaBuilderOnSubjectWithIdClass() {
@@ -487,23 +487,23 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         Assert.assertEquals(s.getSubjectNummer(), s2.getSubjectNummer());
         Assert.assertEquals(s.getSubjectTypeCode(), s2.getSubjectTypeCode());
     }
-    
+
 
     private void createData(){
         Subject s = new Subject();
         SubjectKey sk = new SubjectKey();
         sk.setSubjectNummer(1);
         sk.setSubjectType("Type2");
-        s.setKey(sk);            
+        s.setKey(sk);
         em.persist(s);
-        
+
         s = new Subject();
         sk = new SubjectKey();
         sk.setSubjectNummer(1);
         sk.setSubjectType("Type");
-        s.setKey(sk);            
+        s.setKey(sk);
         em.persist(s);
-        
+
         Topic t = new Topic();
         t.setId(5);
         t.setSubject(s);
@@ -513,12 +513,12 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         swic.setSubjectNummer(1);
         swic.setSubjectTypeCode("Type");
         em.persist(swic);
-        
+
         swic = new SubjectWithIdClass();
         swic.setSubjectNummer(1);
         swic.setSubjectTypeCode("Type2");
         em.persist(swic);
-        
+
         em.flush();
     }
 
@@ -542,7 +542,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         Assert.assertEquals(expected.getKey().getSubjectNummer(), actual.getKey().getSubjectNummer());
         Assert.assertEquals(expected.getKey().getSubjectTypeCode(), actual.getKey().getSubjectTypeCode());
     }
-    
+
     public void tearDown() {
         if (tx != null && tx.isActive()) {
             tx.rollback();
@@ -553,5 +553,5 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
             em.close();
             em = null;
         }
-    }    
+    }
 }

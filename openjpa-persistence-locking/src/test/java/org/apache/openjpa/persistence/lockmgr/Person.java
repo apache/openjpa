@@ -39,7 +39,7 @@ public class Person implements Externalizable {
     private String firstName;
     private String lastName;
     private List<PhoneNumber> phoneNumbers;
-    
+
     @Id
     public int getId() {
         return id;
@@ -64,12 +64,12 @@ public class Person implements Externalizable {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
+
     @ManyToMany(mappedBy = "owners")
     public List<PhoneNumber> getPhoneNumbers(){
         return phoneNumbers;
     }
-    
+
     public void setPhoneNumbers(List<PhoneNumber> numbers){
         phoneNumbers = numbers;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package hellojpa;
 
@@ -22,7 +22,7 @@ import java.util.*;
 import javax.persistence.*;
 
 
-/** 
+/**
  * A very simple, stand-alone program that stores a new entity in the
  * database and then performs a query to retrieve it.
  */
@@ -63,10 +63,10 @@ public class Main {
         Query q = em2.createQuery("select m from Message m");
 
         // Go through each of the entities and print out each of their
-        // messages, as well as the date on which it was created 
+        // messages, as well as the date on which it was created
         for (Message m : (List<Message>) q.getResultList()) {
             System.out.println(m.getMessage()
-                + " (created on: " + m.getCreated() + ")"); 
+                + " (created on: " + m.getCreated() + ")");
         }
 
         // Again, it is always good to clean up after ourselves

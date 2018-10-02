@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="ref_guide_integration">
     <title>
@@ -226,7 +226,7 @@ formatting attributes.
             <para>
 The enhancer task allows you to invoke the OpenJPA enhancer directly from within
 the Ant build process. The task's parameters correspond exactly to the long
-versions of the command-line arguments to the 
+versions of the command-line arguments to the
 <link linkend="ref_guide_pc_enhance"><classname>
 org.apache.openjpa.enhance.PCEnhancer</classname></link>.
             </para>
@@ -445,7 +445,7 @@ the reverse mapping tool:
 &lt;target name="reversemap"&gt;
   &lt;!-- define the reversemappingtool task; this can be done at the top of --&gt;
   &lt;!-- the build.xml file, so it will be available for all targets        --&gt;
-  &lt;taskdef name="reversemappingtool" 
+  &lt;taskdef name="reversemappingtool"
     classname="org.apache.openjpa.jdbc.ant.ReverseMappingToolTask"/&gt;
 
   &lt;!-- reverse map the entire database --&gt;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.test;
 
@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
  * Testcase which caches EntityManagerFactories based on the persistence unit name and the properties provided at
  * runtime.  Extends AbstractPersistenceTestCase and provides cleanup of EMFs created by createNamedEMF() through
  * LinkHashMap.removeEldestEntry().
- * 
+ *
  */
 public abstract class AbstractCachedEMFTestCase extends AbstractPersistenceTestCase {
     private static FixedMap<EMFKey, OpenJPAEntityManagerFactorySPI> _emfs =
@@ -41,7 +41,7 @@ public abstract class AbstractCachedEMFTestCase extends AbstractPersistenceTestC
     /**
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
      * tell the test framework to delete all table contents before running the tests.
-     * 
+     *
      * @param props
      *            list of persistent types used in testing and/or configuration values in the form
      *            key,value,key,value...

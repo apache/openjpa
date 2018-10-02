@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
@@ -25,7 +25,7 @@ import javax.persistence.*;
 		entities={
             @EntityResult(entityClass=RecursiveEntityWithCompositeId.class,
 				fields={
-				
+
                 @FieldResult(name="id",                   column="T0_ID"),
                 @FieldResult(name="name",                 column="T0_NAME"),
                 @FieldResult(name="relation.id",          column="T0_REL_ID"),
@@ -37,14 +37,14 @@ import javax.persistence.*;
                         column="T2_REL_ID"),
                 @FieldResult(name="relation.relation.relation.name",
                         column="T2_REL_NAME")
-				
+
 				}
 			)
 		}
 	)
   }
 )
- 
+
 @Entity
 @IdClass(CompositeId.class)
 @Table(name="RECURSIVE_ENTITY")
@@ -52,16 +52,16 @@ import javax.persistence.*;
 public class RecursiveEntityWithCompositeId {
 	private Integer id;   // this must match the field in CompositeId
 	private String  name; // this must match the field in CompositeId
-	private int     value;// a non-primary key field 
+	private int     value;// a non-primary key field
 	private RecursiveEntityWithCompositeId  relation; // self-related
-	
+
 	public RecursiveEntityWithCompositeId() {
 		super();
 	}
-	
+
 	@Id
 	@Column(name="ID")
-	public Integer getId () 
+	public Integer getId ()
 	{
 		return id;
 	}
@@ -71,35 +71,35 @@ public class RecursiveEntityWithCompositeId {
 	public String getName () {
 		return name;
 	}
-	
+
 	@Column(name="VALUE")
 	public int getValue(){
-	   return value;	
+	   return value;
 	}
-	
+
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumns({
 		@JoinColumn(name="RELATION_ID",   referencedColumnName="ID"),
 		@JoinColumn(name="RELATION_NAME", referencedColumnName="NAME")
 	})
-	public RecursiveEntityWithCompositeId getRelation() 
+	public RecursiveEntityWithCompositeId getRelation()
 	{
 		return relation;
 	}
-	
+
 	public void setId (Integer id) {
 		this.id = id;
 	}
-	
-	public void setName (String name) 
+
+	public void setName (String name)
 	{
 		this.name = name;
 	}
-	public void setValue (int value) 
+	public void setValue (int value)
 	{
 		this.value = value;
 	}
-	
+
 	public void setRelation (RecursiveEntityWithCompositeId relation)
 	{
 		this.relation = relation;

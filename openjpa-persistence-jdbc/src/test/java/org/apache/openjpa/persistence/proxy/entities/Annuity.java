@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -50,9 +50,9 @@ import javax.persistence.TemporalType;
 @DiscriminatorValue(value="ANNUITY")
 @AttributeOverride(name="lastUpdateDate", column=@Column(name="LAST_UPDATE_TS"))
 public class Annuity extends AnnuityPersistebleObject implements IAnnuity {
-    
-    private Double lastPaidAmt; 
-    private String AccountNumber;       
+
+    private Double lastPaidAmt;
+    private String AccountNumber;
     private Double amount;
     private String annuityHolderId;
     private List<IPayout> payouts = new ArrayList<IPayout>();
@@ -60,7 +60,7 @@ public class Annuity extends AnnuityPersistebleObject implements IAnnuity {
     private List<IPayor> payors = new ArrayList<IPayor>();
     private List<String> comments;
     private Date approvedAt;
-    
+
     private Annuity previousAnnuity;
     public Annuity(){
     }
@@ -76,7 +76,7 @@ public class Annuity extends AnnuityPersistebleObject implements IAnnuity {
             this.lastPaidAmt= new Double(df.format(lastPaidAmt));
         }
     }
-    
+
     @Column(name="ACCOUNT_NUMBER")
     public String getAccountNumber() {
         return AccountNumber;
@@ -84,7 +84,7 @@ public class Annuity extends AnnuityPersistebleObject implements IAnnuity {
     public void setAccountNumber(String accountNumber) {
         AccountNumber = accountNumber;
     }
-    
+
     @Column(name="AMOUNT")
     public Double getAmount() {
         return amount;
@@ -103,38 +103,38 @@ public class Annuity extends AnnuityPersistebleObject implements IAnnuity {
     }
     public void setAnnuityHolderId(String annuityHolderId) {
         this.annuityHolderId = annuityHolderId;
-        
+
     }
-    
-    @ManyToMany(targetEntity=Payor.class, 
-            fetch=FetchType.EAGER)          
-    @JoinTable(name="ANNUITY_PAYOR", 
-            joinColumns={@JoinColumn(name="FK_ANNUITY_ID")}, 
+
+    @ManyToMany(targetEntity=Payor.class,
+            fetch=FetchType.EAGER)
+    @JoinTable(name="ANNUITY_PAYOR",
+            joinColumns={@JoinColumn(name="FK_ANNUITY_ID")},
             inverseJoinColumns={@JoinColumn(name="FK_PAYOR_ID")})
     public List<IPayor> getPayors() {
         return this.payors;
     }
     public void setPayors(List<IPayor> payors) {
         this.payors = payors;
-        
+
     }
-    
-    @OneToMany(targetEntity=Payout.class,       
-            mappedBy="annuity", 
-            fetch=FetchType.EAGER)  
+
+    @OneToMany(targetEntity=Payout.class,
+            mappedBy="annuity",
+            fetch=FetchType.EAGER)
     public List<IPayout> getPayouts() {
         return this.payouts;
     }
     public void setPayouts(List<IPayout> payouts) {
-        this.payouts = payouts;     
+        this.payouts = payouts;
     }
 
-    @OneToMany(cascade={CascadeType.ALL}, 
-            targetEntity=Rider.class, 
+    @OneToMany(cascade={CascadeType.ALL},
+            targetEntity=Rider.class,
             fetch=FetchType.EAGER)
-    @JoinTable(name="ANNUITY_RIDER", 
-            joinColumns={@JoinColumn(name="FK_ANNUITY_ID")}, 
-            inverseJoinColumns={@JoinColumn(name="FK_RIDER_ID")})   
+    @JoinTable(name="ANNUITY_RIDER",
+            joinColumns={@JoinColumn(name="FK_ANNUITY_ID")},
+            inverseJoinColumns={@JoinColumn(name="FK_RIDER_ID")})
     public List<IRider> getRiders() {
         return this.riders;
     }

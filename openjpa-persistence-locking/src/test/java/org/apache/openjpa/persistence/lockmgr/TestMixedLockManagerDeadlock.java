@@ -33,7 +33,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
     private DBType dbType;
     private HashMap<DBType,Class<?>[]> expWriteLockExClasses;
-    
+
     public void setUp() {
         setSupportedDatabases(
                 org.apache.openjpa.jdbc.sql.DB2Dictionary.class,
@@ -67,29 +67,29 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
 
     /* ======== Find dead lock exception test ============*/
     public void testFindDeadLockException() {
-        commonFindTest("testFindDeadLockException", LockModeType.READ, null); 
+        commonFindTest("testFindDeadLockException", LockModeType.READ, null);
         commonFindTest("testFindDeadLockException", LockModeType.WRITE, expWriteLockExClasses.get(dbType));
         commonFindTest("testFindDeadLockException", LockModeType.PESSIMISTIC_WRITE, ExpectingAnyLockExClass);
     }
 
-    private void commonFindTest( String testName, 
+    private void commonFindTest( String testName,
         LockModeType t1Lock, Class<?>[] t1Exceptions ) {
         String[] parameters = new String[] { "Thread 1: lock= " + t1Lock + ", expectedEx= "
                 + Arrays.toString(t1Exceptions) };
-            
+
         Object[][] threadMain = {
             {Act.CreateEm},
             {Act.StartTx},
-            
+
             {Act.FindWithLock, 1, t1Lock},
-            {Act.Flush},            
-            
+            {Act.Flush},
+
             {Act.NewThread, 1 },
             {Act.StartThread, 1 },
 
             {Act.Wait, 0},
-            {Act.FindWithLock, 2, t1Lock},                        
-            
+            {Act.FindWithLock, 2, t1Lock},
+
             {Act.WaitAllChildren},
             {Act.TestException, -1, t1Exceptions}, // test t1Exceptions in any thread
             {Act.RollbackTx}
@@ -97,18 +97,18 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
         Object[][] thread1 = {
             {Act.CreateEm},
             {Act.StartTx},
-            {Act.FindWithLock, 2, t1Lock},            
-            {Act.Flush},            
+            {Act.FindWithLock, 2, t1Lock},
+            {Act.Flush},
 
             {Act.Notify, 0},
             {Act.Sleep, 1000},
-            {Act.FindWithLock, 1, t1Lock},            
+            {Act.FindWithLock, 1, t1Lock},
 
             {Act.RollbackTx},
         };
         launchActionSequence(testName, parameters, threadMain, thread1);
     }
-    
+
     /* ======== named query dead lock exception test ============*/
     public void testNamedQueryDeadLockException() {
         commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.READ, null);
@@ -116,24 +116,24 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
         commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.PESSIMISTIC_FORCE_INCREMENT, ExpectingAnyLockExClass);
     }
 
-    private void commonNamedQueryTest( String testName, 
+    private void commonNamedQueryTest( String testName,
         LockModeType t1Lock, Class<?>[] t1Exceptions ) {
         String[] parameters = new String[] { "Thread 1: lock= " + t1Lock + ", expectedEx= "
                 + Arrays.toString(t1Exceptions) };
-            
+
         Object[][] threadMain = {
             {Act.CreateEm},
             {Act.StartTx},
-            
+
             {Act.NamedQueryWithLock, "findEmployeeById", 1, t1Lock, "openjpa.hint.IgnorePreparedQuery", true},
-            {Act.Flush},            
-            
+            {Act.Flush},
+
             {Act.NewThread, 1 },
             {Act.StartThread, 1 },
 
             {Act.Wait, 0},
-            {Act.NamedQueryWithLock, "findEmployeeById", 2, t1Lock, "openjpa.hint.IgnorePreparedQuery", true},                        
-            
+            {Act.NamedQueryWithLock, "findEmployeeById", 2, t1Lock, "openjpa.hint.IgnorePreparedQuery", true},
+
             {Act.WaitAllChildren},
             {Act.TestException, -1, t1Exceptions},
 
@@ -143,12 +143,12 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
         Object[][] thread1 = {
             {Act.CreateEm},
             {Act.StartTx},
-            {Act.NamedQueryWithLock, "findEmployeeById", 2, t1Lock, "openjpa.hint.IgnorePreparedQuery", true},            
-            {Act.Flush},            
+            {Act.NamedQueryWithLock, "findEmployeeById", 2, t1Lock, "openjpa.hint.IgnorePreparedQuery", true},
+            {Act.Flush},
 
             {Act.Notify, 0},
             {Act.Sleep, 1000},
-            {Act.NamedQueryWithLock, "findEmployeeById", 1, t1Lock, "openjpa.hint.IgnorePreparedQuery", true},            
+            {Act.NamedQueryWithLock, "findEmployeeById", 1, t1Lock, "openjpa.hint.IgnorePreparedQuery", true},
 
             {Act.RollbackTx},
             {Act.CloseEm}

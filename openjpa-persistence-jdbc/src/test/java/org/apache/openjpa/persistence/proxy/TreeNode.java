@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy;
 
@@ -39,15 +39,15 @@ import org.apache.openjpa.persistence.jdbc.OrderColumn;
 /**
  * Persistent entity for testing adding/removing elements of collection valued
  * field while in detached state.
- * 
+ *
  * Node refers to a list of Nodes as children.
- * 
+ *
  * Contains recursive methods to create or modify uniform subtree. Uniform
  * subtree implies that each child at a level L has equal number of
  * grand children at level L+1.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @Entity
 @DetachedState
@@ -135,7 +135,7 @@ public class TreeNode implements Serializable {
 	/**
      * Create a uniform subtree below the receiver. Uniform subtree implies that
      * each child at a level L has equal number of grand children at level L+1.
-	 * 
+	 *
 	 * @param fanOuts
 	 *            array of fan outs for children at every level.
 	 */

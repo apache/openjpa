@@ -34,7 +34,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     Compatibility compat;
-    
+
     Entity1 e1;     // references e14 - no cascade
     Entity3 e3;     // references e4 - cascade ALL
     Entity4 e4;     // references e5 - cascade CLEAR
@@ -46,12 +46,12 @@ public class TestDetachCascade extends SingleEMFTestCase {
     Entity9 e9;
     Entity10 e10;   // references a Collection<Entity8> - cascade ALL
     Entity11 e11;
-    Entity12 e12;   
+    Entity12 e12;
     Entity13 e13;   // references a Map<String, Entity11> - cascade ALL
     Entity14 e14;
-    
+
     Collection<Object> allEntities = new HashSet<Object>();
-    
+
     public void setUp() throws Exception {
         setUp(Entity1.class,
             Entity3.class,
@@ -112,18 +112,18 @@ public class TestDetachCascade extends SingleEMFTestCase {
         e5.setE6(e6);
         e6.setE7(e7);
         e8.setE9(e9);
-        
+
         Collection<Entity8> collection = new HashSet<Entity8>();
         collection.add(e8);
         collection.add(e8a); // e8a contains a null value for Entity9
         e10.setCollection(collection);
-        
+
         Map<String, Entity11> map = new HashMap<String, Entity11>();
         map.put(e11.getName(), e11);
         e13.setMap(map);
-        
+
     }
-    
+
     // Test that detach cascade values are set correctly
     public void testCascadeValues() {
         id++;
@@ -131,21 +131,21 @@ public class TestDetachCascade extends SingleEMFTestCase {
         create(id);
         em.persistAll(allEntities);
         em.getTransaction().commit();
-        
+
         MetaDataRepository repos = emf.getConfiguration()
             .getMetaDataRepositoryInstance();
         // Test CascadeType.ALL
         ClassMetaData meta3 = repos.getCachedMetaData(Entity3.class);
         assertNotNull(meta3);
-        assertEquals(ValueMetaData.CASCADE_IMMEDIATE, 
+        assertEquals(ValueMetaData.CASCADE_IMMEDIATE,
             meta3.getField("e4").getCascadeDetach());
         // Test CascadeType.CLEAR
         ClassMetaData meta4 = repos.getCachedMetaData(Entity4.class);
         assertNotNull(meta4);
-        assertEquals(ValueMetaData.CASCADE_IMMEDIATE, 
+        assertEquals(ValueMetaData.CASCADE_IMMEDIATE,
             meta4.getField("e5").getCascadeDetach());
     }
-    
+
     // Make sure cascade is no longer done by default
     public void testNoCascade() {
         boolean cwd = compat.getCascadeWithDetach();
@@ -162,7 +162,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         em.getTransaction().commit();
         compat.setCascadeWithDetach(cwd);
     }
-    
+
     // Change to the previous behavior to always cascade
     public void testAlwaysCascade() {
         id++;
@@ -171,18 +171,18 @@ public class TestDetachCascade extends SingleEMFTestCase {
         em.persistAll(allEntities);
         assertTrue(em.contains(e1));
         assertTrue(em.contains(e14));
-        
+
         compat.setCascadeWithDetach(true);
-        
+
         em.detach(e1);
         assertFalse(em.contains(e1));
         assertFalse(em.contains(e14));
         em.getTransaction().commit();
-        
+
         // reset compatibility option to default
         compat.setCascadeWithDetach(false);
     }
-    
+
     // Test explicit cascade of entities
     public void testCascadeOfEntities() {
         boolean cwd = compat.getCascadeWithDetach();
@@ -203,7 +203,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         em.getTransaction().commit();
         compat.setCascadeWithDetach(cwd);
     }
-    
+
     // Test always cascade of entities
     public void testAlwaysCascadeOfEntities() {
         id++;
@@ -223,7 +223,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         em.getTransaction().commit();
         compat.setCascadeWithDetach(false);
     }
-    
+
     // test single cascade in new transaction with no fetch of e4
     public void testSingleCascadeNoFetch() {
         id++;
@@ -233,10 +233,10 @@ public class TestDetachCascade extends SingleEMFTestCase {
         assertTrue(em.contains(e3));
         assertTrue(em.contains(e4));
         em.getTransaction().commit();
-        
+
         em.close();
         em = emf.createEntityManager();
-        
+
         em.getTransaction().begin();
         em.clear();
         e3 = em.find(Entity3.class, id);
@@ -247,7 +247,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         assertFalse(em.contains(e3));
         assertFalse(em.contains(e4));
     }
-    
+
     // test cascade of a simple collection
     public void testCascadeOfCollection() {
         id++;
@@ -265,7 +265,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         assertFalse(em.contains(e8a));
         em.getTransaction().commit();
     }
-    
+
     // test cascade of Map
     public void testCascadeOfMap() {
         id++;
@@ -279,11 +279,11 @@ public class TestDetachCascade extends SingleEMFTestCase {
         assertFalse(em.contains(e11));
         em.getTransaction().commit();
     }
-    
+
     // Test old detach behavior - flush, copy, and cascade
     public void testOldDetachBehavior() {
         id++;
-        
+
         compat.setFlushBeforeDetach(true);
         em.getTransaction().begin();
         create(id);
@@ -293,14 +293,14 @@ public class TestDetachCascade extends SingleEMFTestCase {
         Entity14 e14Det = e1.getE14();
         assertEquals(e14, e14Det);
         em.getTransaction().commit();
-        
+
         // check for flushed and cascaded flushed
         Entity1 e1Saved = em.find(Entity1.class, id);
         assertNotNull(e1Saved);
         Entity14 e14Saved = e1Saved.getE14();
         assertNotNull(e14Saved);
-        
+
         compat.setFlushBeforeDetach(false);
     }
-    
+
 }

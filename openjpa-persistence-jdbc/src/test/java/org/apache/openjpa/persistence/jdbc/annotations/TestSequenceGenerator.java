@@ -30,17 +30,17 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Test for sequence generator. 
- * 
+ * Test for sequence generator.
+ *
  * The test variations execute only when the target database dictionary has
  * a native sequence query defined. Even that condition is not sufficient for
- * exclusion, since some databases support sequences, but not named sequences.  
- * For that reason, and due to specific configuration needs for some databases 
- * (Oracle) this test is allowed to fail.  
- * 
- * To run these tests successfully on Oracle a ORMSCHEMA user and SEQSCHEMA 
- * user need to exist.  In addition, the Oracle user profile used to run the 
- * test must have SELECT object priviledge on the ORMSCHEMA.ORMSEQ and 
+ * exclusion, since some databases support sequences, but not named sequences.
+ * For that reason, and due to specific configuration needs for some databases
+ * (Oracle) this test is allowed to fail.
+ *
+ * To run these tests successfully on Oracle a ORMSCHEMA user and SEQSCHEMA
+ * user need to exist.  In addition, the Oracle user profile used to run the
+ * test must have SELECT object priviledge on the ORMSCHEMA.ORMSEQ and
  * SEQSCHEMA.SCHEMASEQ sequences and CREATE ANY SEQUENCE (or equivalent)
  * authority.
  *
@@ -50,13 +50,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSequenceGenerator extends SingleEMFTestCase {
 
     private boolean enabled = true;
-    
+
     public void setUp()
         throws Exception {
-        setUp(NativeSequenceEntity.class, 
-            NativeORMSequenceEntity.class, 
+        setUp(NativeSequenceEntity.class,
+            NativeORMSequenceEntity.class,
             CLEAR_TABLES);
-        
+
         // disable testcase for dictionaries which do not have a native sequence
         // query.
         try {
@@ -76,7 +76,7 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
     /*
      * Test use of the schema attribute on a native sequence generator.  Some
      * databases do not support native sequences so this method is
-     * currently allowed to fail. 
+     * currently allowed to fail.
      */
     public void testSequenceSchema() {
         if (enabled) {
@@ -100,7 +100,7 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
     /*
      * Test use of the schema element on a native sequence generator.  Some
      * databases do not support native sequences so this method is
-     * currently allowed to fail. 
+     * currently allowed to fail.
      */
     public void testORMSequenceSchema() {
         if (enabled) {
@@ -121,8 +121,8 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
     }
 
     /**
-     * Method to verify a sequence was created for the given schema and 
-     * sequence name. 
+     * Method to verify a sequence was created for the given schema and
+     * sequence name.
      */
     private boolean sequenceExists(OpenJPAEntityManagerSPI em, String schema,
         String sequence) {
@@ -133,13 +133,13 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
             DatabaseMetaData dbmd = conn.getMetaData();
             Sequence[] seqs = dict.getSequences(dbmd, conn.getCatalog(), schema,
                     sequence, conn);
-            if (seqs != null && seqs.length == 1 && 
+            if (seqs != null && seqs.length == 1 &&
                     seqs[0].getName().equalsIgnoreCase(sequence) &&
                     seqs[0].getSchemaName().equalsIgnoreCase(schema))
                 return true;
         } catch (SQLException e) {
             e.printStackTrace();
-        }        
+        }
         return false;
     }
 }

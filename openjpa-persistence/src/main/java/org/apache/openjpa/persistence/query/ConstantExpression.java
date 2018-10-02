@@ -20,22 +20,22 @@ package org.apache.openjpa.persistence.query;
 
 /**
  * Denotes a Value based expression such as Number, String or Date.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 class ConstantExpression extends ExpressionImpl {
 	private final Object _value;
-	
+
 	public ConstantExpression(Object value) {
 		_value = value;
 	}
-	
+
 	@Override
 	public String asExpression(AliasContext ctx) {
 		return JPQLHelper.toJPQL(ctx, _value);
 	}
-	
+
 	@Override
 	public String asProjection(AliasContext ctx) {
 		return asExpression(ctx);

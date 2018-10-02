@@ -28,27 +28,27 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * See OPENJPA-2603 for details.
  */
 public class TestMultipleMerge extends SingleEMFTestCase {
-    
+
     public void setUp() {
-        //Since a JPA 1.0 p.xml file is used the property "NonDefaultMappingAllowed=true" is 
-        //needed for this test.  This is needed since Order uses an @JoinColumn; something 
+        //Since a JPA 1.0 p.xml file is used the property "NonDefaultMappingAllowed=true" is
+        //needed for this test.  This is needed since Order uses an @JoinColumn; something
         //not allowed in 1.0 (or at least a grey area in the spec) on an @OneToMany.
-        setUp("openjpa.Compatibility", "NonDefaultMappingAllowed=true", 
+        setUp("openjpa.Compatibility", "NonDefaultMappingAllowed=true",
             CLEAR_TABLES, Order.class, LineItemPK.class, LineItem.class);
-    }    
+    }
 
     public void testMultiMerge() {
-        EntityManager em = emf.createEntityManager(); 
+        EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Order order = new Order( 1l );
-        
+
         LineItem item = new LineItem( "my product", 44, 4.99f );
         order.addItem(item);
-        
+
         //NOTE: Notice that throughout the rest of the test the unmanaged order is merged.
         //Throughout the rest of the test we should do a 'order = em.merge(order)', or
-        //something to that effect (i.e. use the 'managed' order).  However, technically 
-        //speaking merging the unmanaged order is not wrong, albeit odd and potentially 
+        //something to that effect (i.e. use the 'managed' order).  However, technically
+        //speaking merging the unmanaged order is not wrong, albeit odd and potentially
         //error prone.
         em.merge(order);
         em.getTransaction().commit();
@@ -63,25 +63,25 @@ public class TestMultipleMerge extends SingleEMFTestCase {
         em.merge(order);
         //Prior to fix, an exception occurred on the commit.
         em.getTransaction().commit();
-        
+
         em.clear();
-        
+
         //OK, good, we no longer get an exception, to be double certain
         //all is well, lets verify that the expected LineItems are in the DB.
         LineItemPK liPK = new LineItemPK();
         liPK.setItemId(1l);
         liPK.setOrderId(1l);
         LineItem li = em.find(LineItem.class, liPK);
-        
+
         assertNotNull(li);
         assertEquals(item.getProductName(), li.getProductName());
-        
+
         liPK.setItemId(2l);
         liPK.setOrderId(1l);
         li = em.find(LineItem.class, liPK);
         assertNotNull(li);
         assertEquals(additional.getProductName(), li.getProductName());
-        
-        em.close();  
+
+        em.close();
   }
 }

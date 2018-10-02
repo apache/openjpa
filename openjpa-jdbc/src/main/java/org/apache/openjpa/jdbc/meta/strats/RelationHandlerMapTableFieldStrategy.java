@@ -62,7 +62,7 @@ public class RelationHandlerMapTableFieldStrategy
     }
 
     public void selectValue(Select sel, ClassMapping val,
-        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch, 
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         Joins joins) {
         sel.select(_vcols, joins);
     }
@@ -74,7 +74,7 @@ public class RelationHandlerMapTableFieldStrategy
         ValueMapping key = field.getKeyMapping();
         final ClassMapping[] keys = key.getIndependentTypeMappings();
         Union union = store.getSQLFactory().newUnion(keys.length);
-        if (fetch.getSubclassFetchMode(key.getTypeMapping()) 
+        if (fetch.getSubclassFetchMode(key.getTypeMapping())
             != JDBCFetchConfiguration.EAGER_JOIN)
             union.abortUnion();
         union.setLRS(lrs);

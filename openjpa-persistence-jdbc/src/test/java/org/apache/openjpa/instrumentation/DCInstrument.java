@@ -23,7 +23,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 public class DCInstrument extends AbstractDataCacheInstrument {
 
     public static final String NAME = "SimpleDCInstrument";
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -40,5 +40,5 @@ public class DCInstrument extends AbstractDataCacheInstrument {
 
     public void stop() {
         setStarted(false);
-    }    
+    }
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -33,12 +33,12 @@ import javax.persistence.Table;
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
 
 /**
- * Entity used to test compound primary keys using entity as relationship to 
+ * Entity used to test compound primary keys using entity as relationship to
  * more than one level.
- * 
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-207">OPENJPA-207</A>
- *  
+ *
  * @author Jeffrey Blattman
  * @author Pinaki Poddar
  *
@@ -50,21 +50,21 @@ public class Library1 implements Serializable {
     @Id
     @Column(name="LIBRARY_NAME", nullable = false)
     private String name;
-    
+
     @OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "library")
     @OrderBy(value = "bid.library ASC, bid.name ASC")
     private Set<Book1> books = new HashSet<Book1>();
-    
+
     private String location;
-    
+
 	public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Set<Book1> getBooks() {
 		return books;
 	}
@@ -75,7 +75,7 @@ public class Library1 implements Serializable {
                 return b;
             }
         }
-        
+
         return null;
     }
 
@@ -83,7 +83,7 @@ public class Library1 implements Serializable {
         book.setLibrary(this);
         books.add(book);
     }
-    
+
 	public String getLocation() {
 		return location;
 	}
@@ -96,13 +96,13 @@ public class Library1 implements Serializable {
         if (!(o instanceof Library1)) {
             return false;
         }
-        
+
         Library1 other = (Library1)o;
-        
+
         if (!getName().equals(other.getName())) {
             return false;
         }
-        
+
         return true;
     }
 

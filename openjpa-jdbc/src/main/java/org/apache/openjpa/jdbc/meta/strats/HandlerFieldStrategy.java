@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -259,8 +259,8 @@ public class HandlerFieldStrategy
             sql.append("(");
         }
         for (int i = 0; i < _cols.length; i++) {
-            if (i > 0) { 
-                sql.append(" OR "); 
+            if (i > 0) {
+                sql.append(" OR ");
             }
             // Some databases do not allow IS NOT NULL for every column type - let the DBDictionary decide.
             DBDictionary dict = sel.getDictionary();
@@ -319,12 +319,12 @@ public class HandlerFieldStrategy
             if (fk != null){
                 col = fk.getColumn(col);
             }
-            
+
             //OJ-1793: Get the args from the handler and first check to see if the
             //args are null.  If they aren't null then use the first element in the args
             //array rather than passing into 'getObject' the entire args array.  This is
             //akin to what is done in the 'else if' leg below.
-            Object[] args = (Object[]) field.getHandler().getResultArgument(field);            
+            Object[] args = (Object[]) field.getHandler().getResultArgument(field);
             val = res.getObject(col, (args == null) ? null : args[0],
                     joins);
         } else if (cols.length > 1) {
@@ -382,7 +382,7 @@ public class HandlerFieldStrategy
                 data = new Object[_cols.length];
             for (int i = 0; i < _cols.length; i++) {
                 if (_cols[i] == col) {
-                    ((Object[]) data)[i] = JavaTypes.convert(autoInc, 
+                    ((Object[]) data)[i] = JavaTypes.convert(autoInc,
                         col.getJavaType());
                     break;
                 }

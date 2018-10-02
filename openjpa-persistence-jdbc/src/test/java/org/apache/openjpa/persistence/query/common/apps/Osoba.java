@@ -24,56 +24,56 @@ import javax.persistence.ManyToMany;
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 @Entity
 public class Osoba {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private String name;
 	private int age;
-	
+
 	protected Osoba() {
 		this("?", 0);
 	}
-	
+
 	public Osoba(String name, int age) {
 		super();
 		this.name = name;
 		this.age = age;
 	}
-	
+
 	@ManyToMany
 	private List<Projekt> projekty;
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public long getId() {
 		return id;
 	}
-	
+
 	public List<Projekt> getProjekty() {
 		return projekty;
 	}
-	
+
 	public void addProjekty(Projekt projekt) {
 		if (projekty == null)
 			projekty = new ArrayList<Projekt>();
 		projekty.add(projekt);
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public int getAge() {
 		return age;
 	}
-	
+
 	public void setAge(int age) {
 		this.age = age;
 	}

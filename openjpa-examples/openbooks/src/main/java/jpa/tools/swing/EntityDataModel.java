@@ -31,11 +31,11 @@ import javax.swing.table.TableModel;
 /**
  * A data model for a tabular view of a list of persistent entities.
  * The data supplied by this model can be filtered to display field values of
- * basic type or single-valued or multi-valued relationships.  
+ * basic type or single-valued or multi-valued relationships.
  * <br>
- * The meta-information about the attributes of the entity are supplied by 
+ * The meta-information about the attributes of the entity are supplied by
  * newly defined {@link Metamodel meta-model API} of JPA 2.0 specification.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -66,15 +66,15 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
     private List<Class<?>> columnClasses;
     private List<Method>   methods;
     private List<T>        data;
-    private List<Attribute<? super T,?>> attributes; 
+    private List<Attribute<? super T,?>> attributes;
     private static Object[] EMPTY_ARGS = null;
     private static Class<?>[] EMPTY_CLASSES = null;
-    
+
     private boolean showsRowCount;
     private boolean showsBasicAttr;
     private boolean showsSingularAttr;
     private boolean showsPluralAttr;
-    
+
     /**
      * Attributes of the entity are reordered with basic attributes, followed by singular
      * association followed by the many-valued attributes.
@@ -83,17 +83,17 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
         super();
         this.data = data;
         EntityType<T> entityType = meta.entity(cls);
-        
+
         columnNames   = new ArrayList<String>();
         columnClasses = new ArrayList<Class<?>>();
         attributes    = new ArrayList<Attribute<? super T,?>>();
         methods       = new ArrayList<Method>();
-        
+
         showsRowCount     = (styleBits & ROW_COUNT) != 0;
         showsBasicAttr    = (styleBits & BASIC_ATTR) != 0;
         showsSingularAttr = (styleBits & ASSOCIATION_ATTR) != 0;
         showsPluralAttr   = (styleBits & PLURAL_ATTR) != 0;
-        
+
         Set<SingularAttribute<? super T, ?>> sAttrs = entityType.getSingularAttributes();
         if (showsBasicAttr) {
             for (SingularAttribute<? super T, ?> attr : sAttrs) {
@@ -126,7 +126,7 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
             methods.add(0, null);
         }
     }
-    
+
     private void populate(Class<T> cls, Attribute<?,?> attr) {
         columnNames.add(attr.getName());
         columnClasses.add(wrap(attr.getJavaType()));
@@ -135,19 +135,19 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
 
     /**
      * Gets the attribute at a given column index.
-     * Can be null for 0-th index if row count is being shown. 
+     * Can be null for 0-th index if row count is being shown.
      */
-    public Attribute<?,?> getAttribute(int columnIndex) { 
+    public Attribute<?,?> getAttribute(int columnIndex) {
         return attributes.get(columnIndex);
     }
-    
+
     /**
      * Gets the entity represented in the given row.
      */
     public T getRow(int row) {
         return data.get(row);
     }
-    
+
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         return columnClasses.get(columnIndex);
@@ -176,7 +176,7 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
         }
         Object row = data.get(rowIndex);
         Object val = getValueByReflection(rowIndex, row, columnIndex, method);
-        return val; 
+        return val;
     }
 
     @Override
@@ -209,7 +209,7 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
         }
         return null;
     }
-    
+
     Class<?> wrap(Class<?> c) {
         if (c == null || c.isInterface() || c.isArray())
             return Object.class;
@@ -225,7 +225,7 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
         }
         return c;
     }
-    
+
     private Method getMethod(Class<T> type, String p) {
         try {
             String getter = "get" + Character.toUpperCase(p.charAt(0))+p.substring(1);
@@ -234,9 +234,9 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
             e.printStackTrace();
         }
         return null;
-        
+
     }
-    
+
     public void updateData(List<T> newData) {
         data = newData;
         fireTableDataChanged();
@@ -246,5 +246,5 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
     public Iterator<T> iterator() {
         return data.iterator();
     }
-    
+
 }

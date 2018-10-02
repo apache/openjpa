@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -71,7 +71,7 @@ public class SchemaGenerator {
 
     private List<Listener> _listeners = null;
     private int _schemaObjects = 0;
-    
+
     private Connection _conn = null;
 
     /**
@@ -142,7 +142,7 @@ public class SchemaGenerator {
         Object[][] parsed = new Object[schemas.size()][2];
         Map.Entry<DBIdentifier, Collection<DBIdentifier>> entry;
         int idx = 0;
-        for (Iterator<Map.Entry<DBIdentifier, Collection<DBIdentifier>>> itr = schemas.entrySet().iterator(); 
+        for (Iterator<Map.Entry<DBIdentifier, Collection<DBIdentifier>>> itr = schemas.entrySet().iterator();
             itr.hasNext();) {
             entry = itr.next();
             tables = entry.getValue();
@@ -258,10 +258,10 @@ public class SchemaGenerator {
      * @deprecated
      */
     public void generateSchemas(String[] schemasAndTables)
-        throws SQLException {        
+        throws SQLException {
         generateSchemas(DBIdentifier.toArray(schemasAndTables, DBIdentifierType.TABLE));
     }
-    
+
     /**
      * Generate the schemas and/or tables named in the given strings.
      * This method calls {@link #generateIndexes},
@@ -390,7 +390,7 @@ public class SchemaGenerator {
             DBIdentifier.toArray(tableNames, DBIdentifierType.TABLE));
     }
 
-    
+
     /**
      * Generate primary key information for the given schema. This method
      * must be called in addition to {@link #generateSchema}. It should
@@ -426,7 +426,7 @@ public class SchemaGenerator {
      * for all schemas and/or tables.
      * @deprecated
      */
-    public void generateIndexes(String schemaName, String[] tableNames) 
+    public void generateIndexes(String schemaName, String[] tableNames)
         throws SQLException {
         generateIndexes(DBIdentifier.newSchema(schemaName),
             DBIdentifier.toArray(tableNames, DBIdentifierType.TABLE));
@@ -473,7 +473,7 @@ public class SchemaGenerator {
             DBIdentifier.toArray(tableNames, DBIdentifierType.TABLE));
     }
 
-    
+
     /**
      * Generate foreign key information for the given schema. This method
      * must be called in addition to {@link #generateSchema}. It should
@@ -505,7 +505,7 @@ public class SchemaGenerator {
      * @deprecated
      */
     public void generateTables(String schemaName, String tableName,
-        Connection conn, DatabaseMetaData meta) 
+        Connection conn, DatabaseMetaData meta)
         throws SQLException {
         generateTables(DBIdentifier.newSchema(schemaName),
             DBIdentifier.newTable(tableName), conn, meta);
@@ -522,7 +522,7 @@ public class SchemaGenerator {
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("gen-tables", schemaName, tableName));
 
-        Column[] cols = _dict.getColumns(meta, 
+        Column[] cols = _dict.getColumns(meta,
             DBIdentifier.newCatalog(conn.getCatalog()), schemaName,
             tableName, null, conn);
 
@@ -570,7 +570,7 @@ public class SchemaGenerator {
             else {
                 tableSchema = schemaName;
             }
-            
+
             // ignore special tables
             if (!_openjpaTables &&
                 (tableName.getName().toUpperCase(Locale.ENGLISH).startsWith("OPENJPA_")
@@ -580,7 +580,7 @@ public class SchemaGenerator {
                 continue;
 
             // ignore tables not in list, or not allowed by schemas property
-            
+
             if (tableNames != null
                 && !tableNames.contains(DBIdentifier.toUpper(tableName)))
                 continue;
@@ -668,13 +668,13 @@ public class SchemaGenerator {
 
         // if looking for a non-existant table, just return
         SchemaGroup group = getSchemaGroup();
-        if (tableName != null && !tableName.isNull() && 
+        if (tableName != null && !tableName.isNull() &&
                 group.findTable(QualifiedDBIdentifier.getPath(tableName)) == null)
             return;
 
         // if the database can't use a table name wildcard, recurse on each
         // concrete table in the requested schema(s)
-        PrimaryKey[] pks = _dict.getPrimaryKeys(meta, 
+        PrimaryKey[] pks = _dict.getPrimaryKeys(meta,
             DBIdentifier.newCatalog(conn.getCatalog()),
             schemaName, tableName, conn);
         Table table;
@@ -929,10 +929,10 @@ public class SchemaGenerator {
     public void generateSequences(String schemaName, String sequenceName,
         Connection conn, DatabaseMetaData meta)
         throws SQLException {
-        generateSequences(DBIdentifier.newSchema(schemaName), 
+        generateSequences(DBIdentifier.newSchema(schemaName),
             DBIdentifier.newSequence(sequenceName), conn, meta);
     }
-    
+
     public void generateSequences(DBIdentifier schemaName, DBIdentifier sequenceName,
         Connection conn, DatabaseMetaData meta)
         throws SQLException {
@@ -1061,7 +1061,7 @@ public class SchemaGenerator {
             return _total;
         }
     }
-    
+
     private void getConn() throws SQLException {
         if (_conn == null) {
             _conn = _ds.getConnection();

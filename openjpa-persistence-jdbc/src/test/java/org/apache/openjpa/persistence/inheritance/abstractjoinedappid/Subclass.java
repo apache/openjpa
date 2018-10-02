@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.inheritance.abstractjoinedappid;
 
@@ -24,9 +24,9 @@ import javax.persistence.*;
 @IdClass(SubID.class)
 @Table(name="SUB")
 public class Subclass extends Superclass {
-	
+
 	private String attr2;
-	
+
 	@Column(name="ATTR2")
 	public String getAttr2() { return attr2; }
 	public void setAttr2(String attr2) { this.attr2 = attr2; }

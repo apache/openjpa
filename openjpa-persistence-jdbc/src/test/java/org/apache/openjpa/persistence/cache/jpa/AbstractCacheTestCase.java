@@ -40,7 +40,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase {
     protected final String RETRIEVE_MODE_PROP = "javax.persistence.cache.retrieveMode";
     protected final String STORE_MODE_PROP = "javax.persistence.cache.storeMode";
-    
+
     protected static OpenJPAEntityManagerFactorySPI emf = null;
 
     abstract OpenJPAEntityManagerFactorySPI getEntityManagerFactory();
@@ -66,7 +66,7 @@ public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase 
 
     public OpenJPAEntityManagerFactorySPI createEntityManagerFactory(String puName,
         Map<String, Object> additionalProperties) {
-        Map<String, Object> propertiesMap = getPropertiesMap( persistentTypes, 
+        Map<String, Object> propertiesMap = getPropertiesMap( persistentTypes,
             "openjpa.jdbc.JDBCListeners", new JDBCListener [] { getListener() });
         if (additionalProperties != null) {
             Set<String> keys = additionalProperties.keySet();
@@ -86,7 +86,7 @@ public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase 
         cleanDatabase();
         populate();
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -96,7 +96,7 @@ public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase 
             emf = null;
         }
     }
-    
+
     public void cleanDatabase() throws Exception {
         EntityManager em = getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();

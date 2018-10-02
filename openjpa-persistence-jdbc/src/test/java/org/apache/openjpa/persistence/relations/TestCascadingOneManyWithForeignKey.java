@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -131,7 +131,7 @@ public class TestCascadingOneManyWithForeignKey
         parent = oem.find(CascadingOneManyParent.class, id);
         assertNotNull(parent);
         assertEquals(2, parent.getChildren().size());
-        child = parent.getChildren().get(0); 
+        child = parent.getChildren().get(0);
         oem.getTransaction().begin();
         oem.remove(parent);
         // undelete one child

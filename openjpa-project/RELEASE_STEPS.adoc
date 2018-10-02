@@ -12,11 +12,11 @@ These instructions describe how perform an official release of the Apache OpenJP
 == Prerequisits
 
 
-* You need a valid Apache account and 
+* You need a valid Apache account and
 * Maven installed on your box
 * Java 6 or 7
 * Do NOT Release with Java 8 yet!
-* TODO probably we require a ~/.m2/toolchains.xml set up correctly in the future 
+* TODO probably we require a ~/.m2/toolchains.xml set up correctly in the future
 
 
 
@@ -44,14 +44,14 @@ At last add a link to the RELEASE-NOTES.html of the previous release to the tabl
 
 == Performing the Release
 
-We use maven to roll the release. Please make sure you understand how 
+We use maven to roll the release. Please make sure you understand how
 the Apache Maven maven-release-plugin works:
 http://maven.apache.org/maven-release/maven-release-plugin/
 
 
 === Running the release prepare steps
 
-$> mvn release:prepare 
+$> mvn release:prepare
 
 Depending on your location you probably get an error for the first time.
 This happens if you hit a svn mirror which is not updated quickly enough.
@@ -61,7 +61,7 @@ exactly where it left off.
 === Validating the tag
 
 You should now get a fresh tag in https://svn.apache.org/repos/asf/openjpa/tags/
-Please verify that the tag looks good and that all pom.xml files really got updated. 
+Please verify that the tag looks good and that all pom.xml files really got updated.
 
 
 === Running the release perform steps

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.cache.jpa;
@@ -25,7 +25,7 @@ import java.util.Map;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 /*
  * When ENABLE_SELECTIVE is set for the shared-cache-mode element and an entity is marked as cacheable(true),
- * the entity will be cached even though DataCache ExcludedTypes indicate it should be excluded 
+ * the entity will be cached even though DataCache ExcludedTypes indicate it should be excluded
  * since shared-cache-mode take the precedence.
  */
 public class TestCacheModeEnableSelectedDataCacheTrue  extends TestCacheModeEnableSelective{

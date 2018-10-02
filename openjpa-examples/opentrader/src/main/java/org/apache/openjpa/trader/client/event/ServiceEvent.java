@@ -29,13 +29,13 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.GwtEvent.Type;
 
 /**
- * Specialization of GWTEvent (that represent mouse/keybord events and DOM events) 
+ * Specialization of GWTEvent (that represent mouse/keybord events and DOM events)
  * for service related events such as a new trade has been committed or a tradable
  * is consumed. Each service event carries a payload and one or more handlers can
- * register interest in that event via the 
- * {@link OpenTrader#registerHandler(com.google.gwt.event.shared.GwtEvent.Type, EventHandler) 
+ * register interest in that event via the
+ * {@link OpenTrader#registerHandler(com.google.gwt.event.shared.GwtEvent.Type, EventHandler)
  * application controller}.
- *   
+ *
  * @author Pinaki Poddar
  *
  * @param <T>
@@ -53,7 +53,7 @@ public abstract class ServiceEvent<T, H extends EventHandler> extends GwtEvent<H
     }
 
     public static class TradableAdded extends ServiceEvent<Tradable, ServiceEventHandler.AddTradableHandler> {
-        public static Type<ServiceEventHandler.AddTradableHandler> TYPE = 
+        public static Type<ServiceEventHandler.AddTradableHandler> TYPE =
             new Type<ServiceEventHandler.AddTradableHandler>();
 
         public TradableAdded(Tradable tradable) {
@@ -73,7 +73,7 @@ public abstract class ServiceEvent<T, H extends EventHandler> extends GwtEvent<H
     }
 
     public static class TradableRemoved extends ServiceEvent<Tradable, ServiceEventHandler.RemoveTradableHandler> {
-        public static Type<ServiceEventHandler.RemoveTradableHandler> TYPE = 
+        public static Type<ServiceEventHandler.RemoveTradableHandler> TYPE =
             new Type<ServiceEventHandler.RemoveTradableHandler>();
 
         public TradableRemoved(Tradable tradable) {
@@ -109,9 +109,9 @@ public abstract class ServiceEvent<T, H extends EventHandler> extends GwtEvent<H
             return TYPE;
         }
     }
-    
+
     public static class TradeCommitted extends ServiceEvent<Trade, ServiceEventHandler.AddTradeHandler> {
-        public static Type<ServiceEventHandler.AddTradeHandler> TYPE = 
+        public static Type<ServiceEventHandler.AddTradeHandler> TYPE =
             new Type<ServiceEventHandler.AddTradeHandler>();
 
         public TradeCommitted(Trade trade) {

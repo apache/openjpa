@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.jpql;
 
@@ -47,7 +47,7 @@ public class JPQLParser
         try {
         	return new JPQLExpressionBuilder.ParsedJPQL(ql);
         } catch (ParseException e) {
-        	throw new ParseException(_loc.get("jpql-parse-error", 
+        	throw new ParseException(_loc.get("jpql-parse-error",
         		ql, e.getMessage()).getMessage(), e);
         }
     }

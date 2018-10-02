@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -92,7 +92,7 @@ public class DBDictionaryFactory {
         try {
             conn = ds.getConnection();
             DatabaseMetaData meta = conn.getMetaData();
-            String dclass = dictionaryClassForString(meta.getDatabaseProductName(), conf);            
+            String dclass = dictionaryClassForString(meta.getDatabaseProductName(), conf);
             if (dclass == null)
                 dclass = dictionaryClassForString(getProtocol(meta.getURL()), conf);
             if (dclass != null && dclass.contains("MySQL")) {
@@ -120,7 +120,7 @@ public class DBDictionaryFactory {
      * Returns the "jdbc:" protocol of the url parameter. Looks for the prefix
      * string up to the 3rd ':' or the 1st '@', '/' or '\', whichever comes
      * first.
-     * 
+     *
      * This method is package qualified so that TestDictionaryFactory class can
      * access and test this method behavior.
      */
@@ -270,7 +270,7 @@ public class DBDictionaryFactory {
         if (prod.indexOf("sapdb") != -1) {
             return dbdictionaryPlugin.unalias("maxdb");
         }
-        // test h2 in a special way, because there's a decent chance the string 
+        // test h2 in a special way, because there's a decent chance the string
         // h2 could appear in the URL of another database
         if (prod.indexOf("jdbc:h2:") != -1)
             return dbdictionaryPlugin.unalias("h2");
@@ -281,7 +281,7 @@ public class DBDictionaryFactory {
         // "testdb2" or something)
         if (prod.indexOf("db2") != -1 || prod.indexOf("as400") != -1)
             return dbdictionaryPlugin.unalias("db2");
-        if (prod.indexOf("soliddb") != -1) 
+        if (prod.indexOf("soliddb") != -1)
             return dbdictionaryPlugin.unalias("soliddb");
 
         // known dbs that we don't support
@@ -295,7 +295,7 @@ public class DBDictionaryFactory {
         String prodClassName = dbdictionaryPlugin.unalias(prod);
         if (!Objects.equals(prod, prodClassName))
             return prodClassName;
-        
+
         // give up
         return null;
     }

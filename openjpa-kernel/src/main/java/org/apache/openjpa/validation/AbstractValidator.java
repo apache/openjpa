@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.validation;
 
@@ -25,10 +25,10 @@ public abstract class AbstractValidator implements Validator {
 
     public abstract <T> ValidationException validate(T arg0, int event);
 
-    public abstract <T> ValidationException validateProperty(T arg0, 
-            String property, int event); 
+    public abstract <T> ValidationException validateProperty(T arg0,
+            String property, int event);
 
-    public abstract <T> ValidationException validateValue(Class<T> arg0, 
+    public abstract <T> ValidationException validateValue(Class<T> arg0,
         String arg1, Object arg2, int event);
 
     public <T> boolean validating(T arg0, int event) {

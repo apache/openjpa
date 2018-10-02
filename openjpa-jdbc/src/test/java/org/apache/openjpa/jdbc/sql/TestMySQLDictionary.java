@@ -42,14 +42,14 @@ public class TestMySQLDictionary {
         assertEquals(Integer.MIN_VALUE, db.getBatchFetchSize(1));
     }
 
-    
-    
+
+
     /**
      * <P>
-     * Ensure that <code>SQLBuffer.prepareStatement</code> calls 
-     * <code>setFetchSize(Integer.MIN_VALUE)</code> when using MySQL. 
+     * Ensure that <code>SQLBuffer.prepareStatement</code> calls
+     * <code>setFetchSize(Integer.MIN_VALUE)</code> when using MySQL.
      * </P>
-     * 
+     *
      * @throws Exception
      *             If any of the expectations are not met or any unexpected
      *             method calls are made
@@ -58,13 +58,13 @@ public class TestMySQLDictionary {
     public void testPreparedStatementGetFetchBatchSize() throws Exception {
         DBDictionary db = new MySQLDictionary();
         SQLBuffer sql = new SQLBuffer(db);
-        
+
         final PreparedStatement mockStatement = context.mock(PreparedStatement.class);
         final Connection mockConnection = context.mock(Connection.class);
 
-        // Expected method calls on the mock objects above. If any of these are 
+        // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
-        // an exception will be thrown and the test will fail. 
+        // an exception will be thrown and the test will fail.
         context.checking(new Expectations()
         {
             {
@@ -73,20 +73,20 @@ public class TestMySQLDictionary {
                 oneOf(mockStatement).setFetchSize(Integer.MIN_VALUE);
             }
         });
-        
+
         JDBCFetchConfiguration fetch = new JDBCFetchConfigurationImpl();
         fetch.setResultSetType(ResultSet.TYPE_FORWARD_ONLY);
         fetch.setFetchBatchSize(1);
 
         sql.prepareStatement(mockConnection, fetch, -1, -1);
     }
-    
+
     /**
      * <P>
-     * Ensure that <code>SQLBuffer.prepareCall()</code> calls 
-     * <code>setFetchSize(Integer.MIN_VALUE)</code> when using MySQL. 
+     * Ensure that <code>SQLBuffer.prepareCall()</code> calls
+     * <code>setFetchSize(Integer.MIN_VALUE)</code> when using MySQL.
      * </P>
-     * 
+     *
      * @throws Exception
      *             If any of the expectations are not met or any unexpected
      *             method calls are made
@@ -95,13 +95,13 @@ public class TestMySQLDictionary {
     public void testPreparedCallGetFetchBatchSize() throws Exception {
         DBDictionary db = new MySQLDictionary();
         SQLBuffer sql = new SQLBuffer(db);
-        
+
         final CallableStatement mockStatement = context.mock(CallableStatement.class);
         final Connection mockConnection = context.mock(Connection.class);
 
-        // Expected method calls on the mock objects above. If any of these are 
+        // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
-        // an exception will be thrown and the test will fail. 
+        // an exception will be thrown and the test will fail.
         context.checking(new Expectations() {
             {
                 oneOf(mockConnection).prepareCall(with(any(String.class)));
@@ -109,7 +109,7 @@ public class TestMySQLDictionary {
                 oneOf(mockStatement).setFetchSize(Integer.MIN_VALUE);
             }
         });
-        
+
         JDBCFetchConfiguration fetch = new JDBCFetchConfigurationImpl();
         fetch.setResultSetType(ResultSet.TYPE_FORWARD_ONLY);
         fetch.setFetchBatchSize(1);

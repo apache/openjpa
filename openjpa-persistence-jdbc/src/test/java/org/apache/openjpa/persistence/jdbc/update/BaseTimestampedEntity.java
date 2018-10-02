@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.update;
 
@@ -30,12 +30,12 @@ public abstract class BaseTimestampedEntity {
     @Id
     @GeneratedValue
     private long id;
-    
+
     private String name;
-    
+
     @Version
     private Timestamp version;
-    
+
 
     public long getId() {
         return id;
@@ -48,7 +48,7 @@ public abstract class BaseTimestampedEntity {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Timestamp getVersion() {
         return version;
     }

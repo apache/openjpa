@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -36,7 +36,7 @@ public class NumberVersionStrategy
 
     private Number _initial = 1;
     private Integer _javaType = null;
-    
+
     /**
      * Set the initial value for version column. Defaults to 1.
      */
@@ -64,7 +64,7 @@ public class NumberVersionStrategy
 
         return _javaType;
     }
-    
+
     protected Object nextVersion(Object version) {
         if (version == null)
             return _initial;

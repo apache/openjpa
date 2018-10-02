@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -62,7 +62,7 @@ import org.apache.openjpa.util.OpenJPAId;
 
 /**
  * Repository of and factory for persistent metadata.
- * 
+ *
  * @since 0.3.0
  * @author Abe White
  * @author Steve Kim (query metadata)
@@ -157,14 +157,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     protected boolean _preloadComplete = false;
     protected boolean _locking = true;
     private static final String PRELOAD_STR = "Preload";
-    
+
     // A boolean used to decide whether or not we need to call to PCEnhancer to check whether we have any down level
     // Entities.
     private boolean _logEnhancementLevel = true;
 
     // A boolean used to decide whether to filter Class<?> objects submitted by the PCRegistry listener system
     private boolean _filterRegisteredClasses = false;
-    
+
     /**
      * Default constructor. Configure via {@link Configurable}.
      */
@@ -173,7 +173,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         EMPTY_FIELDS = newFieldMetaDataArray(0);
         EMPTY_ORDERS = newOrderArray(0);
         EMPTY_XMLMETAS = newXMLClassMetaDataArray(0);
-        
+
     }
 
     /**
@@ -294,7 +294,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public boolean getPreload() {
         return _preload;
     }
-    
+
     /**
      * Sets whether this repository will load all known persistent classes at initialization.
      * Defaults to false.
@@ -306,7 +306,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
      /**
      * If the openjpa.MetaDataRepository plugin value Preload=true is set, this method will load all
-     * MetaData for all persistent classes and will remove locking from this class. 
+     * MetaData for all persistent classes and will remove locking from this class.
      */
     public synchronized void preload() {
         if (_preload == false) {
@@ -352,7 +352,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             }
         }
         resolveAll(multi);
-        
+
         // Preload XML MetaData
         for (Class<?> cls : loaded) {
             ClassMetaData cmd = getCachedMetaData(cls);
@@ -363,7 +363,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 }
             }
         }
-        
+
         // Hook in this class as a listener and process registered classes list to populate _aliases
         // list.
         PCRegistry.addRegisterClassListener(this);
@@ -372,10 +372,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         _preloadComplete = true;
     }
 
-    
+
     /**
      * Return the metadata for the given class.
-     * 
+     *
      * @param cls
      *            the class to retrieve metadata for
      * @param envLoader
@@ -386,7 +386,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public ClassMetaData getMetaData(Class<?> cls, ClassLoader envLoader, boolean mustExist) {
         if (_locking) {
             synchronized(this){
-                return getMetaDataInternal(cls, envLoader, mustExist);    
+                return getMetaDataInternal(cls, envLoader, mustExist);
             }
         } else {
             return getMetaDataInternal(cls, envLoader, mustExist);
@@ -421,7 +421,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Return the metadata for the given alias name.
-     * 
+     *
      * @param alias
      *            the alias to class to retrieve metadata for
      * @param envLoader
@@ -526,7 +526,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         for(Map.Entry<String, List<Class<?>>> e : _aliases.entrySet()){
             if (e.getValue() != null) {
                 aliases.add(e.getKey());
-            }            
+            }
         }
         return aliases;
     }
@@ -777,7 +777,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Resolve and initialize mapping.
-     * 
+     *
      * @return false if we're still in the process of resolving mappings
      */
     private boolean resolveMapping(ClassMetaData meta) {
@@ -845,7 +845,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 buffer.clear();
             }
         }
-        
+
         return processed;
     }
 
@@ -855,13 +855,13 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public ClassMetaData[] getMetaDatas() {
         if (_locking) {
             synchronized(this){
-                return getMetaDatasInternal();    
+                return getMetaDatasInternal();
             }
         } else {
             return getMetaDatasInternal();
         }
     }
-    
+
     private ClassMetaData[] getMetaDatasInternal() {
             // prevent concurrent mod errors when resolving one metadata
             // introduces others
@@ -898,18 +898,18 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Create a new metadata, populate it with default information, add it to the repository, and
      * return it.
-     * 
+     *
      * @param access
      *            the access type to use in populating metadata
      */
     public ClassMetaData addMetaData(Class<?> cls, int access) {
         return addMetaData(cls, access, false);
     }
-    
+
     /**
      * Create a new metadata, populate it with default information, add it to the repository, and
      * return it.
-     * 
+     *
      * @param access
      *            the access type to use in populating metadata
      */
@@ -929,7 +929,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         } else {
             return metasPutInternal(cls, meta);
         }
-            
+
     }
 
     private ClassMetaData metasPutInternal(Class<?> cls, ClassMetaData meta){
@@ -1054,7 +1054,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Remove a metadata instance from the repository.
-     * 
+     *
      * @return true if removed, false if not in this repository
      */
     public boolean removeMetaData(ClassMetaData meta) {
@@ -1065,7 +1065,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Remove a metadata instance from the repository.
-     * 
+     *
      * @return true if removed, false if not in this repository
      */
     public boolean removeMetaData(Class<?> cls) {
@@ -1148,7 +1148,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Return the least-derived class metadata for the given application identity object.
-     * 
+     *
      * @param oid
      *            the oid to get the metadata for
      * @param envLoader
@@ -1241,7 +1241,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Return all least-derived metadatas with some mapped assignable type that implement the given
      * class.
-     * 
+     *
      * @param cls
      *            the class or interface to retrieve implementors for
      * @param envLoader
@@ -1298,7 +1298,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Gets all the metadatas for persistence-aware classes
-     * 
+     *
      * @return empty array if no class has been registered as pers-aware
      */
     public NonPersistentMetaData[] getPersistenceAwares() {
@@ -1319,7 +1319,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Add the given class as persistence-aware.
-     * 
+     *
      * @param cls
      *            non-null and must not alreaddy be added as persitence-capable
      */
@@ -1348,7 +1348,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Remove a persitence-aware class from the repository
-     * 
+     *
      * @return true if removed
      */
     public boolean removePersistenceAware(Class<?> cls) {
@@ -1365,7 +1365,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Gets the corresponding metadatas for all registered, non-mapped interfaces
-     * 
+     *
      * @return empty array if no non-mapped interface has been registered.
      */
     public NonPersistentMetaData[] getNonMappedInterfaces() {
@@ -1386,7 +1386,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Add the given non-mapped interface to the repository.
-     * 
+     *
      * @param iface
      *            the non-mapped interface
      */
@@ -1403,7 +1403,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return addNonMappedInterfaceInternal(iface);
         }
     }
-    
+
     private NonPersistentMetaData addNonMappedInterfaceInternal(Class<?> iface) {
             if (_nonMapped.containsKey(iface))
                 return (NonPersistentMetaData) _nonMapped.get(iface);
@@ -1417,7 +1417,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Remove a non-mapped interface from the repository
-     * 
+     *
      * @return true if removed
      */
     public boolean removeNonMappedInterface(Class<?> iface) {
@@ -1457,7 +1457,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     }
     /**
      * Return the set of configured persistent classes, or null if the user did not configure any.
-     * 
+     *
      * @param devpath
      *            if true, search for metadata files in directories in the classpath if no classes
      *            are configured explicitly
@@ -1496,7 +1496,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * Load the persistent classes named in configuration. This ensures that all subclasses and
      * application identity classes of each type are known in advance, without having to rely on the
      * application loading the classes before performing operations that might involve them.
-     * 
+     *
      * @param devpath
      *            if true, search for metadata files in directories in the classpath if the no
      *            classes are configured explicitly
@@ -1517,7 +1517,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private Collection<Class<?>> loadPersistentTypesInternal(boolean devpath, ClassLoader envLoader, 
+    private Collection<Class<?>> loadPersistentTypesInternal(boolean devpath, ClassLoader envLoader,
         boolean mustExist) {
             Set<String> names = getPersistentTypeNames(devpath, envLoader);
             if (names == null || names.isEmpty()) {
@@ -1644,7 +1644,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             if (pcNames != null && !pcNames.isEmpty() && !pcNames.contains(reg[i].getName())) {
                 continue;
             }
-            
+
             // If the compatibility option "filterPCRegistryClasses" is enabled, then verify that the type is
             // accessible to the envLoader/Thread Context ClassLoader
             if (_filterRegisteredClasses) {
@@ -1652,16 +1652,16 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 ClassLoader loadCL = (envLoader != null) ?
                         envLoader :
                         AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
-                        
+
                 try {
                     Class<?> classFromAppClassLoader = Class.forName(reg[i].getName(), true, loadCL);
-                    
+
                     if (!reg[i].equals(classFromAppClassLoader)) {
                         // This is a class that belongs to a ClassLoader not associated with the Application,
                         // so it should be processed.
                         if (log != null && log.isTraceEnabled()) {
                             log.trace(
-                                "Metadata Repository will ignore Class " + reg[i].getName() + 
+                                "Metadata Repository will ignore Class " + reg[i].getName() +
                                 ", since it originated from a ClassLoader not associated with the application.");
                         }
                         continue;
@@ -1724,7 +1724,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 leastDerived = anc;
             }
         }
-        
+
         // update oid mappings if this is a base concrete class
         Object oid = null;
         try {
@@ -1763,17 +1763,17 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // set alias for class
         registerAlias(cls);
     }
-    
-    
+
+
     /**
      * Register the given class to the list of known aliases.
      * The alias is registered only if the class has been enhanced.
-     * 
+     *
      */
     void registerAlias(Class<?> cls) {
         registerAlias(PCRegistry.getTypeAlias(cls), cls);
     }
-    
+
     public void registerAlias(String alias, Class<?> cls) {
         if (alias == null)
             return;
@@ -1933,7 +1933,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _nonMapped = new HashMap<Class<?>, NonPersistentMetaData>();
             _subs = new HashMap<Class<?>, List<Class<?>>>();
             // Wait till we're done loading MetaData to flip _lock boolean.
-        }            
+        }
     }
 
     private void initializeMetaDataFactory() {
@@ -1962,7 +1962,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name, ClassLoader envLoader, 
+    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name, ClassLoader envLoader,
         boolean mustExist) {
             QueryMetaData meta = getQueryMetaDataInternal(cls, name, envLoader);
             if (meta == null) {
@@ -2009,7 +2009,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // see if factory can figure out a scope for this query
         if (cls == null)
             cls = _factory.getQueryScope(name, envLoader);
-        
+
         // get metadata for class, which will find queries in metadata file
         if (cls != null && getMetaData(cls, envLoader, false) != null) {
             qm = _queries.get(name);
@@ -2018,7 +2018,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
         if ((_sourceMode & MODE_QUERY) == 0)
             return null;
-        
+
         // not in cache; load
         _factory.load(cls, MODE_QUERY , envLoader);
         return _queries.get(name);
@@ -2036,7 +2036,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return _queries.values().toArray(new QueryMetaData[_queries.size()]);
         }
     }
-    
+
 
     public QueryMetaData getCachedQueryMetaData(Class<?> cls, String name) {
         return getCachedQueryMetaData(name);
@@ -2068,7 +2068,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }else{
             QueryMetaData meta = newQueryMetaData(cls, name);
             _queries.put(name, meta);
-            return meta;   
+            return meta;
         }
     }
 
@@ -2129,10 +2129,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Searches all cached query metadata by name.
      */
-    public QueryMetaData searchQueryMetaDataByName(String name) {        
+    public QueryMetaData searchQueryMetaDataByName(String name) {
         return _queries.get(name);
     }
-    
+
     /**
      * Return a unique key for a given class / name. The class argument can be null.
      */
@@ -2415,7 +2415,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Return XML metadata for a given field metadata
-     * 
+     *
      * @return XML metadata
      */
     public XMLMetaData getXMLMetaData(Class<?> cls) {
@@ -2427,7 +2427,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return getXMLMetaDataInternal(cls);
         }
     }
-    
+
     private XMLMetaData getXMLMetaDataInternal(Class<?> cls) {
         if (cls == null) {
             return null;
@@ -2448,14 +2448,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Create a new metadata, populate it with default information, add it to the repository, and
      * return it.
-     * 
+     *
      * @param type the access type to use in populating metadata
      */
     public XMLClassMetaData addXMLClassMetaData(Class<?> type) {
         XMLClassMetaData meta = newXMLClassMetaData(type);
         if(_locking){
             synchronized(this){
-                _xmlmetas.put(type, meta);                
+                _xmlmetas.put(type, meta);
             }
         }else{
             _xmlmetas.put(type, meta);
@@ -2472,7 +2472,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Create a new xml class metadata
-     * 
+     *
      * @return a XMLClassMetaData
      */
     protected XMLClassMetaData newXMLClassMetaData(Class<?> type) {
@@ -2481,7 +2481,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Create a new xml field meta, add it to the fieldMap in the given xml class metadata
-     * 
+     *
      * @return a XMLFieldMetaData
      */
     public XMLFieldMetaData newXMLFieldMetaData(Class<?> type, String name) {
@@ -2514,7 +2514,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             log.info(_loc.get("down-level-entity"));
         }
     }
-    
+
     /**
      * This method returns the ClassMetaData whose described type name matches the typeName parameter. It ONLY operates
      * against MetaData that is currently known by this repository. Note: This method call WILL NOT resolve any

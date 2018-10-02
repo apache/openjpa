@@ -34,12 +34,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * javax.persistence.* namespace and old openjpa.* namespace. The two style can
  * also be mixed where one property is in javax.* namespace the other in
  * openjpa.*. But same property can not be specified in both style.
- * 
+ *
  * Tests with different configuration sources such as persistence.xml, System
  * properties and runtime properties.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
@@ -56,16 +56,16 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     private static final String NEW_STYLE_URL_KEY    =
         "javax.persistence.jdbc.url";
 
-    private static final String[] KEYS = { 
-        OLD_STYLE_DRIVER_KEY, OLD_STYLE_URL_KEY, 
+    private static final String[] KEYS = {
+        OLD_STYLE_DRIVER_KEY, OLD_STYLE_URL_KEY,
         NEW_STYLE_DRIVER_KEY, NEW_STYLE_URL_KEY };
 
-    // NOTE: Non-standard naming because another test in the harness scans all 
+    // NOTE: Non-standard naming because another test in the harness scans all
     // META-INF/persistence.xml and fails as this file contains conflicting
     // property keys for testing.
     private static final String PERSISTENCE_UNIT =
         "org/apache/openjpa/lib/conf/META-INF/persistence-config.xml";
-    
+
     private static final String OLD_STYLE_UNIT_NAME = "old-style";
     private static final String NEW_STYLE_UNIT_NAME = "new-style";
     private static final String MIXED_STYLE_UNIT_NAME = "mixed-style";
@@ -75,7 +75,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
         "system-configured";
     private static final String RUNTIME_CONFIGURED_UNIT_NAME =
         "runtime-configured";
-    
+
     private static final String URL    =
         "jdbc:derby:target/database/openjpa-test-database;create=true";
     private static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
@@ -104,7 +104,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
             emf1 = null;
         }
     }
-    
+
     /**
      * Tests that openjpa.* namespace can be used for persistence.xml.
      */
@@ -157,9 +157,9 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     /**
      * Tests that openjpa.* and javax.* namespace can not both be used for the
      * same property in persistence.xml.
-     * 
+     *
      */
-    
+
     public void testConflictStylePersistenceUnitConfiguration() {
         try {
             emf1 = OpenJPAPersistence.createEntityManagerFactory(
@@ -342,7 +342,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     void verifyDatabaseConnection() {
         String driver = OpenJPAPersistence.cast(emf1).getConfiguration()
                 .getConnectionDriverName();
-        
+
         EntityManager em = emf1.createEntityManager();
         em.getTransaction().begin();
         em.flush();
@@ -352,7 +352,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     boolean containsProperty(String key) {
         return getConfiguration().toProperties(true).containsKey(key);
     }
-    
+
     OpenJPAConfiguration getConfiguration() {
         return ((OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.cast(emf1))
             .getConfiguration();

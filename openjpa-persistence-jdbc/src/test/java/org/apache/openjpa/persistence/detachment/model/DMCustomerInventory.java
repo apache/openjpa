@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.detachment.model;
 
@@ -32,13 +32,13 @@ public class DMCustomerInventory  {
 
     @ManyToOne(cascade={PERSIST, MERGE, REFRESH})
     @JoinColumn(name = "CI_ITEMID")
-    private DMItem  item;    
+    private DMItem  item;
     private int quantity;
 
     @ManyToOne(cascade=MERGE)
     @JoinColumn(name="CI_CUSTOMERID")
     private DMCustomer customer;
-    
+
     @Version int version;
 
     public DMCustomerInventory() {
@@ -74,5 +74,5 @@ public class DMCustomerInventory  {
 
     public void setCustomer(DMCustomer customer) {
         this.customer = customer;
-    }    
+    }
 }

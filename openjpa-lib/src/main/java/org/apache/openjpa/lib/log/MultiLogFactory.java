@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.log;
 
@@ -76,7 +76,7 @@ public class MultiLogFactory implements LogFactory {
      */
     public synchronized Log getLog(String channel) {
         List<Log> logs = new ArrayList<Log>(_delegates.size());
-        for(LogFactory f : _delegates) { 
+        for(LogFactory f : _delegates) {
             if (f != null) {
                 Log l = f.getLog(channel);
                 if (l != null)

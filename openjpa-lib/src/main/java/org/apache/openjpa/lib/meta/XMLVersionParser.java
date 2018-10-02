@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.meta;
 
@@ -40,7 +40,7 @@ public class XMLVersionParser extends XMLMetaDataParser {
     private String _rootElement;
     private String _version;
     private String _schemaLocation;
-    
+
     public XMLVersionParser(String rootElement) {
         _rootElement = rootElement;
         setCaching(false);
@@ -73,7 +73,7 @@ public class XMLVersionParser extends XMLMetaDataParser {
     public String getVersion() {
         return _version;
     }
-    
+
     /**
      * Get the string value of the schema location attribute on the root element
      * @return doc schema location

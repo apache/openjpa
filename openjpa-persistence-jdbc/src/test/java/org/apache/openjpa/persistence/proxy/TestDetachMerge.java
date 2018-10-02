@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy;
 
@@ -59,23 +59,23 @@ import org.apache.openjpa.persistence.proxy.entities.AnnuityType;
 /*
  * Test the complicated interaction between Detached entities, Proxy classes
  * and Merging changes made in ProxyCollections back into entities.
- * 
+ *
  * This code is based on AcmeTest2, which was originally written by
  * Mohammad at IBM and contributed under ASL 2.0.
  */
 public class TestDetachMerge extends SingleEMFTestCase {
-            
+
     public void setUp() {
         setUp(DROP_TABLES, Address.class, Annuity.class, AnnuityHolder.class, AnnuityPersistebleObject.class,
             Contact.class, EquityAnnuity.class, FixedAnnuity.class, Payor.class, Payout.class,
             Person.class, Rider.class);
     }
-    
-    /* 
+
+    /*
      * Test default 1.0 compatibility behavior, which should pass AS-IS
      */
     public void testAnnuity1Compat() throws Exception {
-        OpenJPAEntityManagerFactorySPI emf1 = 
+        OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "Annuity1Compat", "org/apache/openjpa/persistence/proxy/persistence1.xml");
         assertNotNull(emf1);
@@ -101,12 +101,12 @@ public class TestDetachMerge extends SingleEMFTestCase {
             emf1.close();
         }
     }
-    
-    /* 
+
+    /*
      * Test default 2.0 compatibility behavior, which should PASS
      */
     public void testAnnuity2Compat() throws Exception {
-        OpenJPAEntityManagerFactorySPI emf2 = 
+        OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "Annuity2Compat", "org/apache/openjpa/persistence/proxy/persistence2.xml");
         assertNotNull(emf2);
@@ -132,22 +132,22 @@ public class TestDetachMerge extends SingleEMFTestCase {
             emf2.close();
         }
     }
-    
+
     private void execute(OpenJPAEntityManagerFactorySPI myEMF) throws Exception {
         Log log = myEMF.getConfiguration().getLog("test");
         //EntityManager em = myEMF.createEntityManager();
         IContact contact = null;
-        
+
         try {
             if (log.isTraceEnabled())
                 log.trace("creating contact");
-            try {       
-                contact = createContact(myEMF);      
+            try {
+                contact = createContact(myEMF);
             } catch (Exception e) {
                 log.error("Create Contact failed.", e);
                 throw e;
             }
-            
+
             try {
                 verifyContactValues(myEMF, contact);
             } catch (Exception e) {
@@ -155,24 +155,24 @@ public class TestDetachMerge extends SingleEMFTestCase {
                 throw e;
                 // do not return, as this might be a small bug that we can bypass
             }
-            
+
             if (log.isTraceEnabled())
                 log.trace("creating annuity holder");
             IAnnuityHolder annuityHolder = null;
             try {
-                annuityHolder = createAnnuityHolder(myEMF, contact);           
+                annuityHolder = createAnnuityHolder(myEMF, contact);
             } catch (Exception e) {
                 log.error("failed to create Annuity Holder Successfully.", e);
                 throw e;
             }
-            
+
             try {
                 verifyAnnuityHolderValues(myEMF, annuityHolder);
             } catch (Exception e) {
                 log.info("failed to verify create annuity holder successfuly.", e);
                 throw e;
             }
-            
+
             if (log.isTraceEnabled())
                 log.trace("creating payor");
             IPayor payor = null;
@@ -182,33 +182,33 @@ public class TestDetachMerge extends SingleEMFTestCase {
                 log.error("failed to create payor successfuly.", e);
                 throw e;
             }
-            
+
             try {
                 verifyPayorValues(myEMF, payor);
             } catch (Exception e) {
                 log.error("failed to verify create payor successfuly.", e);
                 throw e;
             }
-            
+
             if (log.isTraceEnabled())
                 log.trace("creating annuity");
-            IAnnuity annuity =null;     
+            IAnnuity annuity =null;
             AnnuityType annuityType = AnnuityType.FIXED;
-            try {           
+            try {
                 annuity = createAnnuityWithRider(myEMF, annuityType);
             } catch (Exception e) {
                 log.error("failed to create annuity successfuly.", e);
                 throw e;
             }
-            
+
             try {
                 log.trace("verify annuity with rider");
                 verifyAnnuityValues(myEMF, annuity, annuityType);
             } catch (Exception e) {
                 log.error("failed to verify create annuity successfuly.", e);
                 throw e;
-            }       
-            
+            }
+
             if (log.isTraceEnabled())
                 log.trace("upating annuity");
             try {
@@ -218,14 +218,14 @@ public class TestDetachMerge extends SingleEMFTestCase {
                 log.error("failed to create annuity successfuly.", e);
                 throw e;
             }
-            
+
             try {
                 verifyAnnuityValues(myEMF, annuity, annuityType);
             } catch (Exception e) {
                 log.error("failed to verify create annuity successfuly.", e);
                 throw e;
-            }       
-            
+            }
+
             if (log.isTraceEnabled())
                 log.trace("upating annuity");
             try {
@@ -240,9 +240,9 @@ public class TestDetachMerge extends SingleEMFTestCase {
                 log.error("failed to update annuity successfuly.", e);
                 throw e;
             }
-            
+
             try {
-                verifyAnnuityValues(myEMF, annuity, annuityType); 
+                verifyAnnuityValues(myEMF, annuity, annuityType);
             } catch (Exception e) {
                 log.error("failed to verify annuity update successfuly.", e);
                 throw e;
@@ -250,7 +250,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
         } finally {
             log.error("scenario: failed.");
         }
-        
+
         if (log.isTraceEnabled())
             log.trace("scenario: completed.");
     }
@@ -281,7 +281,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
         IRider rider2 = getRider();
         IRider rider3 = getRider();
         annuity.getRiders().add(rider1);
-        annuity.getRiders().add(rider2);    
+        annuity.getRiders().add(rider2);
         annuity.getRiders().add(rider3);
         em.persist(annuity);
         em.getTransaction().commit();
@@ -309,7 +309,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
         }
         if (AnnuityType.FIXED.equals(annuityType)) {
             FixedAnnuity annuity = new FixedAnnuity();
-            ((FixedAnnuity)annuity).setRate(10.0);        
+            ((FixedAnnuity)annuity).setRate(10.0);
             annuity.setId(getId());
             annuity.setAmount(500.00);
             annuity.setAccountNumber("123456");
@@ -335,24 +335,24 @@ public class TestDetachMerge extends SingleEMFTestCase {
                 "Fixed Annuity from Client is not equal to DB value", "Mismacth was found.");
         } else if (annuity instanceof IEquityAnnuity) {
             assertEqual((IEquityAnnuity)annuity, (IEquityAnnuity)results,
-                    "Equity Annuity from Client is not equal to DB value", "Mismacth was found.");          
+                    "Equity Annuity from Client is not equal to DB value", "Mismacth was found.");
         } else {
             assertEqual(annuity, results,
-                    "Basic Annuity from Client is not equal to DB value", "Mismacth was found.");           
+                    "Basic Annuity from Client is not equal to DB value", "Mismacth was found.");
         }
-    
-        assertEqual(annuity.getPayouts(), results.getPayouts(), 
-                "Annuity payouts from Client is not equal to DB value", "Mismacth was found in number of payouts");     
+
+        assertEqual(annuity.getPayouts(), results.getPayouts(),
+                "Annuity payouts from Client is not equal to DB value", "Mismacth was found in number of payouts");
         boolean found = false;
         if (annuity.getPayouts() != null) {
             IPayout clientPayout = null;
-            for (int i=0; i<annuity.getPayouts().size(); i++) {     
+            for (int i=0; i<annuity.getPayouts().size(); i++) {
                 found = false;  // reset
                 clientPayout = annuity.getPayouts().get(i);
                 for (IPayout resultPayout: results.getPayouts()) {
                     if (clientPayout.getId().equals(resultPayout.getId())){
                         found = true;
-                        assertEqual(clientPayout, resultPayout, 
+                        assertEqual(clientPayout, resultPayout,
                         "Annuity Payout from Client is not equal to DB value at location: " +i , "Mismacth was found");
                     }else{
                         continue;
@@ -360,24 +360,24 @@ public class TestDetachMerge extends SingleEMFTestCase {
                 }
                 if (!(found) && clientPayout != null) {
                     throw new RuntimeException("Annuity: Payout from client is not equal to DB.  " +
-                            "Found Payout with id: " + clientPayout.getId() + 
+                            "Found Payout with id: " + clientPayout.getId() +
                             " on the client side, but not in the database for annuity id:" + annuity.getId());
-                    
+
                 }
             }
         }
-        
-        assertRidersEqual(annuity.getRiders(), results.getRiders(), 
-                "Annuity rider from Client is not equal to DB value", "Mismacth was found in number of rider");     
+
+        assertRidersEqual(annuity.getRiders(), results.getRiders(),
+                "Annuity rider from Client is not equal to DB value", "Mismacth was found in number of rider");
         if (annuity.getRiders() != null) {
             IRider clientRider = null;
-            for (int i=0; i<annuity.getRiders().size(); i++) {      
+            for (int i=0; i<annuity.getRiders().size(); i++) {
                 found = false;  // reset
                 clientRider = annuity.getRiders().get(i);
                 for (IRider resultRider : results.getRiders()) {
                     if (clientRider.getId().equals(resultRider.getId())){
                         found = true;
-                        assertEqual(clientRider, resultRider, 
+                        assertEqual(clientRider, resultRider,
                         "Annuity rider from Client is not equal to DB value at location: " +i , "Mismacth was found");
                     }else{
                         continue;
@@ -385,24 +385,24 @@ public class TestDetachMerge extends SingleEMFTestCase {
                 }
                 if (!(found) && clientRider != null) {
                     throw new RuntimeException("Annuity: Rider from client is not equal to DB.  " +
-                            "Found rider with id: " + clientRider.getId() + 
+                            "Found rider with id: " + clientRider.getId() +
                             " on the client side, but not in the database for annuity id:" + annuity.getId());
-                    
+
                 }
             }
         }
-        
-        assertPayorsEqual(annuity.getPayors(), results.getPayors(), 
+
+        assertPayorsEqual(annuity.getPayors(), results.getPayors(),
                 "Annuity Payor from Client is not equal to DB value", "Mismacth was found.");
         if (annuity.getPayors() != null) {
             IPayor clientPayor = null;
-            for (int i=0; i<annuity.getPayors().size(); i++) {      
+            for (int i=0; i<annuity.getPayors().size(); i++) {
                 found = false;  // reset
                 clientPayor = annuity.getPayors().get(i);
                 for (IPayor resultPayor : results.getPayors()) {
                     if (clientPayor.getId().equals(resultPayor.getId())){
                         found = true;
-                        assertEqual(annuity.getPayors().get(i), resultPayor, 
+                        assertEqual(annuity.getPayors().get(i), resultPayor,
                         "Annuity payor from Client is not equal to DB value at location: " +i , "Mismacth was found");
                     }else{
                         continue;
@@ -410,14 +410,14 @@ public class TestDetachMerge extends SingleEMFTestCase {
                 }
                 if (!(found) && clientPayor != null) {
                     throw new RuntimeException("Annuity: Payor from client is not equal to DB.  " +
-                            "Found payor with id: " + clientPayor.getId() + 
+                            "Found payor with id: " + clientPayor.getId() +
                             " on the client side, but not in the database for annuity id:" + annuity.getId());
-                    
+
                 }
             }
         }
     }
-    
+
     private void assertEqual(IAnnuity annuity, IAnnuity results, String string, String string2) throws Exception {
         if(annuity == null && results == null)
             return;
@@ -440,7 +440,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
         if (!annuity.getId().equals(results.getId())) {
             throw new RuntimeException("Annuity: Annuities ! equal (EquityAnnuity ids not the same).");
         }
-        
+
         assertPayorsEqual(annuity.getPayors(), results.getPayors(), string, string2);
         assertRidersEqual(annuity.getRiders(), results.getRiders(), string, string2);
         assertEqual(annuity.getPayouts(),results.getPayouts(), string, string2);
@@ -469,7 +469,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
 
     private void assertEqual(List<IPayout> payouts, List<IPayout> payouts2, String string, String string2)
     throws Exception {
-        if (payouts == null && payouts2 == null) 
+        if (payouts == null && payouts2 == null)
             return;
         if (payouts == null)
             throw new RuntimeException("Annuity: IPayout list not the same (payouts was null)!");
@@ -495,7 +495,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
 
     private void assertEqual(IPayout clientPayout, IPayout resultPayout, String string, String string2)
     throws Exception {
-        if (clientPayout == null && resultPayout == null) 
+        if (clientPayout == null && resultPayout == null)
             return;
         if (clientPayout == null)
             throw new RuntimeException("Annuity: IPayout not the same (clientPayout was null)! " +
@@ -508,7 +508,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
 
     private void assertRidersEqual(List<IRider> riders, List<IRider> riders2, String string, String string2)
     throws Exception {
-        if (riders == null && riders2 == null) 
+        if (riders == null && riders2 == null)
             return;
         if (riders == null)
             throw new RuntimeException("Annuity: IRider list not the same (riders was null)!");
@@ -533,7 +533,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
     }
 
     private void assertEqual(IRider clientRider, IRider resultRider, String string, String string2) throws Exception {
-        if (clientRider == null && resultRider == null) 
+        if (clientRider == null && resultRider == null)
             return;
         if (clientRider == null)
             throw new RuntimeException("Annuity: IRider not the same (clientRider was null)! " +
@@ -546,7 +546,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
 
     private void assertPayorsEqual(List<IPayor> payors, List<IPayor> payors2, String string, String string2)
     throws Exception {
-        if (payors == null && payors2 == null) 
+        if (payors == null && payors2 == null)
             return;
         if (payors == null)
             throw new RuntimeException("Annuity: IPayor list not the same (payors was null)!");
@@ -572,7 +572,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
     }
 
     private void verifyPayorValues(OpenJPAEntityManagerFactorySPI myEMF, IPayor payor) throws Exception {
-        IPayor results = null; 
+        IPayor results = null;
         results = findPayorById(myEMF, Payor.class, payor.getId());
         assertEqual(payor, results,
                 "Payor from Client is not equal to DB value.", "Mismacth was found.");
@@ -586,7 +586,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
     }
 
     private void assertEqual(IPayor payor, IPayor results, String string, String string2) throws Exception {
-        if (payor == null && results == null) 
+        if (payor == null && results == null)
             return;
         if (payor == null)
             throw new RuntimeException("Annuity: IPayor not the same (payor was null)! " +
@@ -613,12 +613,12 @@ public class TestDetachMerge extends SingleEMFTestCase {
     throws Exception {
         IAnnuityHolder result = null;
         result = findHolderById(myEMF, AnnuityHolder.class, annuityHolder.getId());
-        assertEqual(annuityHolder, result, 
+        assertEqual(annuityHolder, result,
             "Annuity Holder from Client is not equal to DB value.", "Mismacth was found.");
-        assertEqual(annuityHolder.getContact(), result.getContact(), 
+        assertEqual(annuityHolder.getContact(), result.getContact(),
                 "Annuity Holder Contact from Client is not equal to DB value.", "Mismacth was found.");
     }
-    
+
     private IAnnuityHolder findHolderById(OpenJPAEntityManagerFactorySPI myEMF, Class<AnnuityHolder> class1, String id)
     {
         EntityManager em = createEM(myEMF);
@@ -633,7 +633,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
 
     private void assertEqual(IAnnuityHolder annuityHolder, IAnnuityHolder results, String string, String string2)
     throws Exception {
-            if (annuityHolder == null && results == null) 
+            if (annuityHolder == null && results == null)
                 return;
             if (annuityHolder == null)
                 throw new RuntimeException("Annuity: IAnnuityHolder not the same (annuityHolder was null)! " +
@@ -645,7 +645,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
     }
 
     private void assertEqual(IContact contact, IContact contact2, String string, String string2) throws Exception {
-        if (contact == null && contact2 == null) 
+        if (contact == null && contact2 == null)
             return;
         if (contact == null)
             throw new RuntimeException("Annuity: Contacts not the same (contact was null)! " +
@@ -678,8 +678,8 @@ public class TestDetachMerge extends SingleEMFTestCase {
         // read the contact with id.
         IContact results = null;
         results = findContactById(myEMF, Contact.class, contact.getId());
-        assertEqual(contact, results, 
-            "Contact from Client is not equal to DB value.", "Mismacth was found.");     
+        assertEqual(contact, results,
+            "Contact from Client is not equal to DB value.", "Mismacth was found.");
     }
 
     private IContact findContactById(OpenJPAEntityManagerFactorySPI myEMF, Class<Contact> class1, String id) {

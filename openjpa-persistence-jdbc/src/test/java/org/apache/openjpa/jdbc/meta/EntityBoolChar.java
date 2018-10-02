@@ -24,21 +24,21 @@ import javax.persistence.Id;
 
 @Entity
 public class EntityBoolChar {
-    
+
     @Id
     @GeneratedValue
     private int id;
 
     private boolean dummy;
-    
+
     public boolean isDummy() {
         return dummy;
     }
-    
+
     public void setDummy(boolean value) {
         dummy = value;
     }
-    
+
     public int getId() {
         return id;
     }

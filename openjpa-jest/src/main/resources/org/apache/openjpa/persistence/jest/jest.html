@@ -19,19 +19,19 @@ under the License.
 
 <!--
    The single web page for JEST is a templated HTML. This page consists of three major divisions
-   a) a section holds the menu items for available commands 
+   a) a section holds the menu items for available commands
    b) a section for the command window where user enters command specifications
    c) a section displays the server response of the command execution
-     
-   This templated file contains replaceable tokens in ${token} form.  JEST servlet replaces the tokens with 
+
+   This templated file contains replaceable tokens in ${token} form.  JEST servlet replaces the tokens with
    actual deployment values on initialization.
-     
+
    The menu navigation and command window are managed by jest.js script.
    The rendition of server response is managed by dojo script.
-   
+
    All hyperlinks in this page are relative to the base URI of this page to prevent
    any cross-domain scripting.
-     
+
  -->
 <html>
 <head>
@@ -45,7 +45,7 @@ under the License.
 <link   type="text/css" rel="stylesheet" href="${dojo.base}/dijit/themes/${dojo.theme}/${dojo.theme}.css">
 <!-- link   type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.5/dijit/themes/claro/claro.css" -->
 <link   type="text/css" rel="stylesheet" href="jest.css">
-<script type="text/javascript" language="javascript" djConfig="parseOnLoad: true, isDebug: true"  
+<script type="text/javascript" language="javascript" djConfig="parseOnLoad: true, isDebug: true"
         src="${dojo.base}/dojo/dojo.xd.js">
 </script>
 <!-- script type="text/javascript" djConfig="parseOnLoad:true;isDebug=true" src="http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojo/dojo.xd.js"></script -->
@@ -95,27 +95,27 @@ under the License.
 <!-- ==================================================================================== -->
 <!--                   Introduces basic information about JEST                            -->
 <!-- ==================================================================================== -->
-<div id="home" class="highlight" dojoType="dijit.TitlePane" 
-title="<a href='http://openjpa.apache.org/jest-usage.html' target='_blank'>JEST</a>  
+<div id="home" class="highlight" dojoType="dijit.TitlePane"
+title="<a href='http://openjpa.apache.org/jest-usage.html' target='_blank'>JEST</a>
       <b>facilitates RESTful interaction with OpenJPA</b>">
 
 
 <UL>
-<LI>Deployed as a HTTP servlet in <b>any</b> web or enterprise application module using 
-OpenJPA as its JPA persistence provider. 
+<LI>Deployed as a HTTP servlet in <b>any</b> web or enterprise application module using
+OpenJPA as its JPA persistence provider.
 </LI>
 
-<LI>Completely <b>metadata-driven</b> and hence <b>generic</b> as opposed to specific to any 
+<LI>Completely <b>metadata-driven</b> and hence <b>generic</b> as opposed to specific to any
 application domain.
-</LI> 
+</LI>
 
-<LI>Introduces a <b>URI syntax</b>. Interprets the HTTP request as a JPA resource based on 
+<LI>Introduces a <b>URI syntax</b>. Interprets the HTTP request as a JPA resource based on
 that syntax. The response is in <tt>XML</tt> or <tt>JSON</tt> format. </LI>
 
-<LI>Representational state for persistent instances is <b>coherent</b>. 
-The response always contains the <em>closure</em> of the persistent instances. 
+<LI>Representational state for persistent instances is <b>coherent</b>.
+The response always contains the <em>closure</em> of the persistent instances.
 </LI>
-      
+
 <LI>Connects to the <b>persistent unit</b> of an application in the same module. Or
     instantiates its own persistence unit.
 </LI>
@@ -125,15 +125,15 @@ The response always contains the <em>closure</em> of the persistent instances.
 <!-- ==================================================================================== -->
 <!--        Describes deployment details                                                  -->
 <!-- ==================================================================================== -->
-<div id="deploy" class="highlight" style="display:none;" dojoType="dijit.TitlePane" 
-	title='<a href="http://openjpa.apache.org/jest-usage.html" target="_blank">Deploy JEST</a> 
+<div id="deploy" class="highlight" style="display:none;" dojoType="dijit.TitlePane"
+	title='<a href="http://openjpa.apache.org/jest-usage.html" target="_blank">Deploy JEST</a>
 	<b>as a servlet in a web application.</b>'>
-	
-	
+
+
 	Following <code>WEB-INF/web.xml</code> descriptor will enable JEST to
-	operate on a persistence unit named <code>${persistence.unit}</code>. Of course, JEST 
-	servlet must be in the same module scope of the application that is using using 
-	<code>${persistence.unit}</code> as its persistence unit.  
+	operate on a persistence unit named <code>${persistence.unit}</code>. Of course, JEST
+	servlet must be in the same module scope of the application that is using using
+	<code>${persistence.unit}</code> as its persistence unit.
 	<br>
 <pre>
 <code class="tag">&lt;servlet&gt;</code>
@@ -150,15 +150,15 @@ The response always contains the <em>closure</em> of the persistent instances.
 <code class="tag">&lt;/servlet-mapping&gt;</code>
 
 </pre>
-	When an web application module named <code>${webapp.name}</code> containing the above JEST servlet 
+	When an web application module named <code>${webapp.name}</code> containing the above JEST servlet
 	in a servlet container runs on <code>${server.name}</code> at port ${server.port}, then the JEST servlet
 	can be accessed at <br>
-	<code class="url">http://${server.name}:${server.port}/${webapp.name}/${servlet.name}/</code> 
+	<code class="url">http://${server.name}:${server.port}/${webapp.name}/${servlet.name}/</code>
 	<br>
-	(<span style="color:red">do not miss the the trailing forward-slash / character</span>) 
+	(<span style="color:red">do not miss the the trailing forward-slash / character</span>)
 	<p>
 </div>
-		 
+
 <!-- ==================================================================================== -->
 <!--        Command window for find                                                       -->
 <!--                                                                                      -->
@@ -178,10 +178,10 @@ The response always contains the <em>closure</em> of the persistent instances.
 <!-- The event handlers on the input elements update the URI on change.                   -->
 <!-- The user can click the hyperlink to send the request to the server.                  -->
 <!-- ==================================================================================== -->
-<div id="find"  class="highlight" style="display:none;" dojoType="dijit.TitlePane" 
-  title='<a href="http://openjpa.apache.org/jest-syntax.html" target="_blank">Find</a>  
+<div id="find"  class="highlight" style="display:none;" dojoType="dijit.TitlePane"
+  title='<a href="http://openjpa.apache.org/jest-syntax.html" target="_blank">Find</a>
 	<b>persistent objects by primary identifier.</b>'>
-	
+
 	<!-- a form for user to fill in the find specifications. Script uses these entries to -->
 	<!-- build up a request URI for JEST server                                           -->
 	<table id="find.command">
@@ -194,13 +194,13 @@ The response always contains the <em>closure</em> of the persistent instances.
   <th width="30%" class="mandatory" title="Primary Key of the entity.">Identifier</th>
   <th width="30%" title="Fetch Plan(s) to use. Separate each plan with comma.">Fetch Plan
     <span class="help">
-      <img src="images/help.jpg"   width="8px" height="8px" 
+      <img src="images/help.jpg"   width="8px" height="8px"
           onclick="showHelp('Fetch Plan', 'help/fetch-plan.html');">
     </span>
   </th>
   <th width="10%" title="Format of the response.">Format
     <span class="help">
-      <img src="images/help.jpg"   width="8px" height="8px" 
+      <img src="images/help.jpg"   width="8px" height="8px"
          onclick="showHelp('Response Format', 'help/response-format.html');"></img>
     </span>
   </th>
@@ -223,12 +223,12 @@ The response always contains the <em>closure</em> of the persistent instances.
 	<!-- The element is made to look like a hyperlink but actually a span to omit the     -->
 	<!-- associated complexity of preventing the browser's default handling of hyperlink  -->
 	<!-- click events.                                                                    -->
-	<b>URI: </b><span id="find.uri" class="url-invalid">filling the form will update 
+	<b>URI: </b><span id="find.uri" class="url-invalid">filling the form will update
 	this hyperlink.</span>
 	<button id="find.execute" style="display:none;">
 	<img src="images/arrow_right.jpg" width="12px" height="12px"></button>
 </div>
-		 
+
 <!-- ==================================================================================== -->
 <!--                      Command window for Query                                        -->
 <!--                                                                                      -->
@@ -240,17 +240,17 @@ The response always contains the <em>closure</em> of the persistent instances.
 <!-- integer. If a dynamically created row is removed by the user, the index {n} does not -->
 <!-- decrement.                                                                           -->
 <!-- ==================================================================================== -->
-<div id="query"  class="highlight" style="display:none;" dojoType="dijit.TitlePane" 
-	title='<a href="http://openjpa.apache.org/jest-syntax.html" target="_blank">Query</a> 
+<div id="query"  class="highlight" style="display:none;" dojoType="dijit.TitlePane"
+	title='<a href="http://openjpa.apache.org/jest-syntax.html" target="_blank">Query</a>
 	<b>with JPQL or named query and binding parameters.</b>'>
-	
+
 	<!-- a form for user to fill in the find specifications. Script uses these entries to -->
 	<!-- build up a request URI for JEST server. This form is more complicated than that  -->
 	<!-- of find, because a query can accept variable number of binding parameters        -->
 	<table id="query.command">
 	<tr>
 	  <th width="20%" class="mandatory" title="JPQL query or a named query">Query
-	  <span class="help"><img src="images/help.jpg"   width="8px" height="8px" 
+	  <span class="help"><img src="images/help.jpg"   width="8px" height="8px"
 	  onclick="showHelp('Query', 'help/query.html');"></img></span></th>
       <th width="10%"style="display: hidden"></th>
       <th width="10%"style="display: hidden"></th>
@@ -258,7 +258,7 @@ The response always contains the <em>closure</em> of the persistent instances.
 	  <th width="5%" title="Is it a named query?">Single</th>
 	  <th width="5%" title="Returns single result?">Named</th>
 	  <th width="30%" title="Fetch Plan(s) to use. Separate each plan with comma.">Fetch Plan
-	  <span class="help"><img src="images/help.jpg"   width="8px" height="8px" 
+	  <span class="help"><img src="images/help.jpg"   width="8px" height="8px"
 	  onclick="showHelp('Fetch Plan', 'help/fetch-plan.html');"></img></span></th>
 	  <th width="10%" title="Format of the response.">Format
 	</tr>
@@ -286,35 +286,35 @@ The response always contains the <em>closure</em> of the persistent instances.
 	<!-- The element is made to look like a hyperlink but actually a span to omit the     -->
 	<!-- associated complexity of preventing the browser's default handling of hyperlink  -->
 	<!-- click events.                                                                    -->
-	<b>URI: </b><span id="query.uri" class="url-invalid">filling the form will update 
+	<b>URI: </b><span id="query.uri" class="url-invalid">filling the form will update
 	this hyperlink.</span> <button id="query.execute" style="display:none;">
 	<img src="images/arrow_right.jpg" width="12px" height="12px"></button>
-	 
+
 </div>
-		 
+
 <!-- ==================================================================================== -->
 <!--    Command window for browsing persistent domain model                               -->
 <!-- ==================================================================================== -->
-<div id="domain"  class="highlight" style="display:none;" dojoType="dijit.TitlePane" 
-  title='<a href="http://openjpa.apache.org/jest-syntax.html" target="_blank">Browse</a> 
+<div id="domain"  class="highlight" style="display:none;" dojoType="dijit.TitlePane"
+  title='<a href="http://openjpa.apache.org/jest-syntax.html" target="_blank">Browse</a>
   <b>persistent domain model.</b>'>
-  
+
 	This command accepts no qualifier or arguments.	 <br>
-	
+
 	<b>JEST URI: </b><span id="domain.uri" class="url"
 	onclick="javascript:render('domain','canvas', 'domain', 'xml');">domain</span>
 </div>
-		 
+
 <!-- ==================================================================================== -->
 <!--    Command window for viewing configuration of the persistence unit.                 -->
 <!-- ==================================================================================== -->
-<div id="properties"  class="highlight" style="display:none;" dojoType="dijit.TitlePane" 
- title='<a href="http://openjpa.apache.org/jest-syntax.html" target="_blank">View</a> 
+<div id="properties"  class="highlight" style="display:none;" dojoType="dijit.TitlePane"
+ title='<a href="http://openjpa.apache.org/jest-syntax.html" target="_blank">View</a>
  <b>configuration properties of the persistence unit.</b>'>
- 
+
 	This command accepts no qualifier or arguments	 <br>
-		 
-	<b>URI: </b><span id="properties.uri" class="url" 
+
+	<b>URI: </b><span id="properties.uri" class="url"
 	onclick="javascript:render('properties','canvas', 'properties', 'xml');">properties</span>
 </div>
 

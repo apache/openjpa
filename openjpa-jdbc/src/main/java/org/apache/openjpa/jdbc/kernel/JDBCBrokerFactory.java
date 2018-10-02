@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -85,7 +85,7 @@ public class JDBCBrokerFactory
         JDBCBrokerFactory factory = (JDBCBrokerFactory) getPooledFactoryForKey(key);
         if (factory != null)
             return factory;
-        
+
         // The creation of all BrokerFactories should be driven through Bootstrap.
         factory = (JDBCBrokerFactory) Bootstrap.newBrokerFactory(cp, loader);
         pool(key, factory);
@@ -99,7 +99,7 @@ public class JDBCBrokerFactory
     public JDBCBrokerFactory(JDBCConfiguration conf) {
         super(conf);
     }
-   
+
     public Map<String,Object> getProperties() {
         // add platform property
         Map<String,Object> props = super.getProperties();
@@ -113,7 +113,7 @@ public class JDBCBrokerFactory
 
         return props;
     }
-    
+
     @Override
     public void postCreationCallback() {
         super.postCreationCallback();
@@ -145,7 +145,7 @@ public class JDBCBrokerFactory
     /**
      * Synchronize the mappings of the classes listed in the configuration.
      */
-    protected void synchronizeMappings(ClassLoader loader, 
+    protected void synchronizeMappings(ClassLoader loader,
         JDBCConfiguration conf) {
         mapSchemaGenerationToSynchronizeMappings(conf);
         String action = conf.getSynchronizeMappings();
@@ -174,7 +174,7 @@ public class JDBCBrokerFactory
         }
         tool.record();
     }
-    
+
     protected void synchronizeMappings(ClassLoader loader) {
         synchronizeMappings(loader, (JDBCConfiguration) getConfiguration());
     }

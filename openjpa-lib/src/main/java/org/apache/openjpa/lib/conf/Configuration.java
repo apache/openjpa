@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -76,17 +76,17 @@ public interface Configuration
      * the property's name in XML format (i.e. two-words instead of TwoWords).
      */
     public static final String ATTRIBUTE_XML = "xmlName";
-    
+
     public static final int INIT_STATE_LIQUID   = 0;
     public static final int INIT_STATE_FREEZING = 1;
     public static final int INIT_STATE_FROZEN   = 2;
-    
+
 
     /**
      * Return the product name. Defaults to <code>openjpa</code>.
      */
     public String getProductName();
-    
+
     /**
      * Set the product name.
      */
@@ -125,21 +125,21 @@ public interface Configuration
      */
     public Log getConfigurationLog();
 
-    
+
     /**
-     * An environment-specific identifier for this configuration. This 
+     * An environment-specific identifier for this configuration. This
      * might correspond to a JPA persistence-unit name, or to some other
      * more-unique value available in the current environment.
-     * 
+     *
      * @since 0.9.7
      */
     public String getId();
 
     /**
-     * An environment-specific identifier for this configuration. This 
+     * An environment-specific identifier for this configuration. This
      * might correspond to a JPA persistence-unit name, or to some other
      * more-unique value available in the current environment.
-     * 
+     *
      * @since 0.9.7
      */
     public void setId(String id);
@@ -165,7 +165,7 @@ public interface Configuration
      * Remove the given value from the set of configuration properties.
      */
     public boolean removeValue(Value val);
-    
+
     /**
      * A properties representation of this Configuration.
      * Note that changes made to this properties object will
@@ -175,22 +175,22 @@ public interface Configuration
      * out even if they match the default value for a property
      */
     public Map<String,Object> toProperties(boolean storeDefaults);
-    
+
     /**
      * Get the set of all known property keys, including any equivalent keys,
      * appropriately prefixed.
-     * 
+     *
      * @param propertyName the name of the property for which the keys are
      * to be retrieved.
-     * 
+     *
      * @since 2.0.0
      */
     public List<String> getPropertyKeys(String propertyName);
-    
+
     /**
      * Get the set of all known property keys, including any equivalent keys,
      * appropriately prefixed.
-     * 
+     *
      * @since 2.0.0
      */
     public Set<String> getPropertyKeys();
@@ -250,21 +250,21 @@ public interface Configuration
      * Return a copy of this configuration.
      */
     public Object clone();
-    
+
     /**
      * Gets a class loader that can be additionally used to load custom plugin values.
-     * 
+     *
      * @see Configurations#newInstance(String, ClassLoader)
      * @return an additional classloader for loading custom plugins. Can be null.
      * @since 2.3.0
      */
     ClassLoader getUserClassLoader();
-    
+
     /**
      * Sets an additional classloader to load custom plugin values.
      * In OSGi environment, we internally set the bundle class loader as
      * the user class loader.
-     * 
+     *
      * @param loader a class loader to load custom plugin values
      * @see PersistenceProviderImpl.createEntityManagerFactory(String, Map)
      * @since 2.3.0

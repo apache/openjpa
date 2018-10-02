@@ -108,11 +108,11 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
     public ChangeTracker getChangeTracker() {
         return this.changeTracker;
     }
-    
+
     protected void setChangeTracker(CollectionChangeTracker ct) {
         changeTracker = ct;
     }
-    
+
     @Override
     public Object copy(Object paramObject) {
         return new LinkedHashSet((Collection) paramObject);
@@ -121,7 +121,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
     public Class getElementType() {
         return this.elementType;
     }
-    
+
     protected void setElementType(Class<?> elemType) {
         elementType = elemType;
     }

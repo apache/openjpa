@@ -31,14 +31,14 @@ import javax.persistence.TemporalType;
 @Entity
 @Access(AccessType.PROPERTY)
 @NamedQueries( {
-    @NamedQuery(name="PropertySub2.query", 
-        query="SELECT ps FROM PropertySub2 ps WHERE " + 
+    @NamedQuery(name="PropertySub2.query",
+        query="SELECT ps FROM PropertySub2 ps WHERE " +
         "ps.id = :id AND ps.name = :name AND ps.createDate = :crtDate"),
-    @NamedQuery(name="PropertySub2.badQuery", 
-        query="SELECT ps FROM PropertySub2 ps WHERE " + 
+    @NamedQuery(name="PropertySub2.badQuery",
+        query="SELECT ps FROM PropertySub2 ps WHERE " +
         "ps.id = :id AND ps.name = :name AND ps.crtDate = :crtDate") } )
 public class PropertySub2 extends MappedSuperField {
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     public Date getCreateDate() {
         return crtDate;
@@ -47,7 +47,7 @@ public class PropertySub2 extends MappedSuperField {
     public void setCreateDate(Date date) {
         crtDate = date;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof PropertySub2) {
             PropertySub2 ps = (PropertySub2)obj;
@@ -58,5 +58,5 @@ public class PropertySub2 extends MappedSuperField {
         }
         return false;
     }
-    
+
 }

@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Fun stuff to fade-in, fade-out a changing label.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -52,7 +52,7 @@ public class FadeEffect extends Timer {
             cancel();
         }
     }
-    
+
     boolean ended() {
         if (sign == -1) {
             return opacity <= 0.0;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.delayed;
 
@@ -41,24 +41,24 @@ import org.apache.openjpa.util.ProxyCollection;
  * Verifies generic delay-load capabilities for delay-load collection proxies.
  */
 public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCase {
-    
+
     protected static Set<String> _ignoreMethods;
     protected static Set<String> _delayMethods;
     protected static Set<Class<?>> _ignoreInterfaces;
-    
+
     public void setUp(Object...props) {
         List<Object> parms = new ArrayList<Object>();
         parms.addAll(Arrays.asList(
                 CLEAR_TABLES,
                 "openjpa.ProxyManager", "delayCollectionLoading=true",
-                Award.class, 
+                Award.class,
                 Location.class,
                 Product.class,
                 Certification.class));
         parms.addAll(Arrays.asList(props));
         super.setUp(parms.toArray());
     }
-    
+
     public abstract IAccount createAccount(String name, IUserIdentity ui);
     public abstract IDepartment createDepartment();
     public abstract IDepartment findDepartment(EntityManager em, int id);
@@ -94,7 +94,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         _ignoreMethods.add(stringMethodName("trimToSize", null));
         _ignoreMethods.add(stringMethodName("ensureCapacity", new Class<?>[] {int.class}));
         _ignoreMethods.add(stringMethodName("comparator", null));
-        
+
         // non-trigger base Object methods
         _ignoreMethods.add(stringMethodName("wait", new Class<?>[] {long.class}));
         _ignoreMethods.add(stringMethodName("wait", null));
@@ -102,7 +102,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         _ignoreMethods.add(stringMethodName("getClass", null));
         _ignoreMethods.add(stringMethodName("notify", null));
         _ignoreMethods.add(stringMethodName("notifyAll", null));
-                
+
         _ignoreInterfaces = new HashSet<Class<?>>();
         _ignoreInterfaces.add(DelayedProxy.class);
         _ignoreInterfaces.add(Proxy.class);
@@ -132,7 +132,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         }
         return sb.toString();
     }
-    
+
     public Set<String> methodsToIgnore() {
         return _ignoreMethods;
     }
@@ -164,15 +164,15 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         l.setZip(Integer.toString(new Random().nextInt(99999)));
         return l;
     }
-    
+
     /*
      * Verify an element can be non-index removed from a delayed proxy collection
      * without triggering a load of the collection.
      */
     public void testSingleRemove() {
-        
+
         EntityManager em = emf.createEntityManager();
-        
+
         // Create a new department and an employee
         IDepartment d = createDepartment();
         IEmployee e = createEmployee();
@@ -185,12 +185,12 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         emps.add(e);
         emps.add(e2);
         d.setEmployees(emps);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
         em.clear();
-        
+
         resetSQL();
         d = findDepartment(em, d.getId());
         // assert the select did not contain the employee table
@@ -215,7 +215,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         assertAnySQLAnyOrder("DELETE FROM DC_DEP_EMP .*");
         // assert no select from employee or dept table
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*", "SELECT .* DC_DEPARTMENT .*");
-        
+
         // iterate the collection and assert a select from the employee table
         // and that the expected entity is returned
         resetSQL();
@@ -232,7 +232,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      */
     public void testSingleAdd() {
         EntityManager em = emf.createEntityManager();
-        
+
         // Create a new department and an employee
         IDepartment d = createDepartment();
         IEmployee e = createEmployee();
@@ -241,12 +241,12 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         Collection<IEmployee> emps = createEmployees();
         emps.add(e);
         d.setEmployees(emps);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
         em.clear();
-        
+
         resetSQL();
         d = findDepartment(em, d.getId());
         // assert the select did not contain the employee table
@@ -275,7 +275,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         assertAnySQLAnyOrder("INSERT INTO DC_EMPLOYEE .*");
         // assert no select from employee or dept table
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*", "SELECT .* DC_DEPARTMENT .*");
-        
+
         // call contains and assert a select from the employee table
         // occurred that the expected entities are returned.
         resetSQL();
@@ -288,14 +288,14 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
         em.close();
     }
-    
+
     /*
      * Verify a mix of non-indexed add and remove operations can occur without
-     * triggering a load on a delayed collection. 
+     * triggering a load on a delayed collection.
      */
     public void testMixedAddRemove() {
         EntityManager em = emf.createEntityManager();
-        
+
         // Create a new department and an employee
         IDepartment d = createDepartment();
         IEmployee e = createEmployee();
@@ -304,12 +304,12 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         Collection<IEmployee> emps = createEmployees();
         emps.add(e);
         d.setEmployees(emps);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
         em.clear();
-        
+
         resetSQL();
         d = findDepartment(em, d.getId());
         // assert the select did not contain the employee table
@@ -382,23 +382,23 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
     public void testEagerCollection() {
         EntityManager em = emf.createEntityManager();
 
-        // Create a new department and 
+        // Create a new department and
         IDepartment d = createDepartment();
         Collection<Product> products = createProducts();
-        
+
         Product p = createProduct();
         products.add(p);
         Product p2 = createProduct();
         products.add(p2);
         d.setProducts(products);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
         resetSQL();
 
         em.clear();
-        
+
         d = findDepartment(em, d.getId());
         assertAnySQLAnyOrder("SELECT .* DC_DEP_PRD .*");
         resetSQL();
@@ -412,27 +412,27 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         assertNoneSQLAnyOrder("SELECT .* DC_DEPARTMENT .*", "SELECT .* DC_DEP_PRD .*");
         em.close();
     }
-    
+
     /*
      * Verify that a DB ordered collection is not delay load capable.
      */
     public void testOrderedCollection() {
         EntityManager em = emf.createEntityManager();
-        
+
         // Create a new department and persist
         IDepartment d = createDepartment();
-        
+
         Location l = createLocation();
         Collection<Location> locs = createLocations();
         locs.add(l);
         d.setLocations(locs);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
-        
+
         em.clear();
-        
+
         d = findDepartment(em, d.getId());
         assertNoneSQLAnyOrder("SELECT .* DC_DEP_LOC .*");
         // verify that the collection is not delay loaded and does not trigger a load
@@ -447,13 +447,13 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         assertNoneSQLAnyOrder("SELECT .* DC_DEPARTMENT .*", "SELECT .* DC_DEP_LOC .*");
         em.close();
     }
-    
+
     /*
      * Verify that a collection will load upon serialization
      */
     public void testSerialization() {
         EntityManager em = emf.createEntityManager();
-        
+
         // Create a new department and an employee
         IDepartment d = createDepartment();
         IEmployee e = createEmployee();
@@ -462,12 +462,12 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         Collection<IEmployee> emps = createEmployees();
         emps.add(e);
         d.setEmployees(emps);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
         em.clear();
-        
+
         resetSQL();
         d = findDepartment(em, d.getId());
         // assert the select did not contain the employee table
@@ -496,7 +496,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         assertAnySQLAnyOrder("INSERT INTO DC_EMPLOYEE .*");
         // assert no select from employee or dept table
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*", "SELECT .* DC_DEPARTMENT .*");
-        
+
         resetSQL();
         try {
             // Serialize the department entity and verify the employee collection was loaded
@@ -509,32 +509,32 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         } catch (Exception ex) {
             fail(ex.getMessage());
         }
-        
+
         em.close();
     }
-    
+
     /*
      * Verify that a lazy collection of embeddables works as expected
      * (delays load) with delayed loading enabled
      */
     public void testLazyEmbeddableCollection() {
         EntityManager em = emf.createEntityManager();
-        
+
         IDepartment d = createDepartment();
-        
+
         Collection<Certification> certs = createCertifications();
         certs.add(createCertification());
         certs.add(createCertification());
         d.setCertifications(certs);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
-        
+
         resetSQL();
 
         em.clear();
-        
+
         d = findDepartment(em, d.getId());
         assertNoneSQLAnyOrder("SELECT .* DC_DEP_CERT .*");
         resetSQL();
@@ -543,7 +543,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         assertTrue(certs instanceof DelayedProxy);
         assertEquals(2,certs.size());
         assertAnySQLAnyOrder("SELECT .* DC_DEP_CERT .*");
-        
+
         em.close();
     }
 
@@ -553,23 +553,23 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      */
     public void testEagerEmbeddableCollection() {
         EntityManager em = emf.createEntityManager();
-        
+
         IDepartment d = createDepartment();
-        
+
         Collection<Award> awards = createAwards();
         awards.add(createAward());
         awards.add(createAward());
         awards.add(createAward());
         d.setAwards(awards);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
-        
+
         resetSQL();
 
         em.clear();
-        
+
         d = findDepartment(em, d.getId());
         assertAnySQLAnyOrder("SELECT .* DC_DEP_AWD .*");
         resetSQL();
@@ -580,7 +580,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         assertTrue(awards instanceof DelayedProxy);
         assertEquals(3,awards.size());
         assertNoneSQLAnyOrder("SELECT .* DC_DEP_AWD .*");
-        
+
         em.close();
     }
 
@@ -590,7 +590,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      */
     public void testPostDetach() {
         EntityManager em = emf.createEntityManager();
-        
+
         // Create a new department and an employee
         IDepartment d = createDepartment();
         IEmployee e = createEmployee();
@@ -599,17 +599,17 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         Collection<IEmployee> emps = createEmployees();
         emps.add(e);
         d.setEmployees(emps);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
         resetSQL();
         em.clear();
-        
+
         d = findDepartment(em, d.getId());
         emps = d.getEmployees();
         em.close();
-        
+
         // assert there was no select on the employee table
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
         assertTrue(emps instanceof DelayedProxy);
@@ -632,7 +632,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         assertTrue(pc.pcGetStateManager() instanceof DetachedStateManager);
         // verify a second SQL was not issued to get the size
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
-        
+
         // add a employee to the collection and merge
         IEmployee e2 = createEmployee();
         e2.setDept(d);
@@ -655,44 +655,44 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         em.merge(d);
         em.getTransaction().commit();
         emps = d.getEmployees();
-        
+
         // assert the delete from the join table
         assertAnySQLAnyOrder("DELETE FROM DC_DEP_EMP .*");
         assertEquals(1, emps.size());
         em.close();
     }
-    
+
     /*
      * Verify that a lazy collection within an embeddable can be
-     * delayed.  The to-many in the embeddable uses 
+     * delayed.  The to-many in the embeddable uses
      */
     public void testEmbeddableRelationship() {
         EntityManager em = emf.createEntityManager();
-        
+
         IUserIdentity ui = createUserIdentity();
         IMember m = createMember("Member 1");
         ui.setMember(m);
-        
+
         Collection<IAccount> accounts = createAccounts();
         IAccount checking = createAccount("Checking", ui);
         accounts.add(checking);
         IAccount savings = createAccount("Savings", ui);
         accounts.add(savings);
-        
+
         em.getTransaction().begin();
         em.persist(ui);
         em.persist(checking);
         em.persist(savings);
         em.getTransaction().commit();
-        
+
         em.clear();
-        
+
         ui = findUserIdentity(em, ui.getId());
-        
+
         m = ui.getMember();
         resetSQL();
         accounts = m.getAccounts();
-        
+
         ProxyCollection pxycoll = (ProxyCollection)accounts;
         assertTrue(pxycoll.getOwner().isDelayed(pxycoll.getOwnerField()));
         assertNoneSQLAnyOrder("SELECT .* DC_ACCOUNT .*");
@@ -704,7 +704,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         }
         assertEquals(2,count);
         assertAnySQLAnyOrder("SELECT .* DC_ACCOUNT .*");
-        
+
         em.close();
     }
 
@@ -715,7 +715,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
     public void testProxyMethods() {
         // Load up a collection
         EntityManager em = emf.createEntityManager();
-        
+
         // Create a new department and employees
         IDepartment d = createDepartment();
         Collection<IEmployee> emps = createEmployees();
@@ -726,14 +726,14 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
             emps.add(e);
         }
         d.setEmployees(emps);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
         em.clear();
-        
+
         resetSQL();
-        
+
         // build a list of public proxy methods
         // exclude those methods that are certain not to cause a load
         // add(Object) remove(Object), addAll(Collection), removeAll(Collection), poll?, copy()

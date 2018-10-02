@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.xs;
 
@@ -72,7 +72,7 @@ public class AccountingHierarchy implements Serializable {
         return shortDesc;
     }
 
-    @OneToMany(mappedBy = "accountingHierarchy", fetch = FetchType.EAGER, 
+    @OneToMany(mappedBy = "accountingHierarchy", fetch = FetchType.EAGER,
         targetEntity = AccountingHierarchyRate.class, cascade = CascadeType.ALL, orphanRemoval = true)
     public List<AccountingHierarchyRate> getAccRateList() {
         return accRateList;

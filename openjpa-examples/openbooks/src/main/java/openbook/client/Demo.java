@@ -73,7 +73,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * A graphical user interface based client of OpenBooks for demonstration.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -90,12 +90,12 @@ public class Demo extends JFrame {
     private Action _about;
     private Action _buyBook;
     private Action _deliver;
-    private Action _supply;       
-    private Action _viewConfig;  
-    private Action _viewDomain; 
+    private Action _supply;
+    private Action _viewConfig;
+    private Action _viewDomain;
     private Action _viewSource;
     private Action _viewQuery;
-    
+
     /**
      * The primary graphic widgets used to invoke and display the results of the actions.
      */
@@ -109,14 +109,14 @@ public class Demo extends JFrame {
     private SourceCodeBrowser _sourceBrowser;
     private static Demo _instance;
     private static final String SRC_ROOT = "source/";
-    
+
     /**
      * The handle to the service.
      */
     private OpenBookService     _service;
     private Customer            _customer;
     private Map<String, Object> _config;
-    
+
     /**
      * Runs the demo.
      */
@@ -134,14 +134,14 @@ public class Demo extends JFrame {
             }
         });
     }
-    
+
     public synchronized static Demo getInstance() {
         if (_instance == null) {
             _instance = new Demo();
         }
         return _instance;
     }
-    
+
     static void adjustWidgetSize() {
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int sw = (int)(95*screen.getWidth()/100);
@@ -151,13 +151,13 @@ public class Demo extends JFrame {
         OUT_VIEW = new Dimension(75*sw/100, 35*sh/100);
     }
 
-    
+
     private Demo() {
         Thread.currentThread().setUncaughtExceptionHandler(new ErrorHandler());
         _config = PropertyHelper.load(System.getProperty("openbook.client.config", "demo.properties"));
         setIconImage(((ImageIcon)Images.LOGO_OPENBOOKS).getImage());
         setTitle("OpenBooks: A Sample JPA 2.0 Application");
-        
+
         _root         = new WelcomeAction("OpenBooks", Images.LOGO_OPENBOOKS, "OpenBooks");
         _about        = new AboutAction("About OpenBooks", Images.LOGO_OPENBOOKS, "About OpenBooks");
         _buyBook      = new BuyBookAction("Buy", Images.BUY, "Browse and Buy Books");
@@ -167,13 +167,13 @@ public class Demo extends JFrame {
         _viewDomain   = new ViewDomainAction("Domain", Images.VIEW_DOMAIN, "View Domain Model");
         _viewSource   = new ViewSourceAction("Source", Images.VIEW_CODE, "View Source Code");
         _viewQuery    = new ViewQueryCacheAction("Query", Images.VIEW_QUERY, "View Queries");
-        
+
         _toolBar    = createToolBar();
         _navigator  = createNavigator();
         _tabbedPane = createTabbedView();
         _outputPane = createOutputView();
         _statusBar  = createStatusBar();
-        
+
         JSplitPane horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         horizontalSplitPane.setContinuousLayout(true);
         horizontalSplitPane.setDividerSize(5);
@@ -181,29 +181,29 @@ public class Demo extends JFrame {
         scrollPane.setMinimumSize(new Dimension(NAV_VIEW.width/4, NAV_VIEW.height));
         scrollPane.setPreferredSize(NAV_VIEW);
         horizontalSplitPane.add(scrollPane);
-        
+
         JSplitPane verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         verticalSplitPane.setContinuousLayout(true);
         verticalSplitPane.setDividerSize(5);
         verticalSplitPane.add(_tabbedPane);
         verticalSplitPane.add(_outputPane);
         horizontalSplitPane.add(verticalSplitPane);
-        
+
         Container content = getContentPane();
         content.add(_toolBar, BorderLayout.PAGE_START);
         content.add(horizontalSplitPane, BorderLayout.CENTER);
         content.add(_statusBar, BorderLayout.SOUTH);
-        
+
         _root.actionPerformed(null);
     }
-    
+
     /**
-     * Gets the handle to OpenBooks service. 
+     * Gets the handle to OpenBooks service.
      */
     public OpenBookService getService() {
         if (_service == null) {
             final String unitName = getConfiguration("openbook.unit", OpenBookService.DEFAULT_UNIT_NAME);
-            
+
             SwingWorker<OpenBookService, Void> getService = new SwingWorker<OpenBookService, Void> () {
                 @Override
                 protected OpenBookService doInBackground() throws Exception {
@@ -213,7 +213,7 @@ public class Demo extends JFrame {
                     service.initialize(null);
                     return service;
                 }
-                
+
             };
             getService.execute();
             try {
@@ -227,7 +227,7 @@ public class Demo extends JFrame {
         }
         return _service;
     }
-    
+
     public Customer getCustomer() {
         if (_customer == null) {
             SwingWorker<Customer, Void> task = new SwingWorker<Customer, Void> () {
@@ -235,7 +235,7 @@ public class Demo extends JFrame {
                 protected Customer doInBackground() throws Exception {
                     return getService().login("guest");
                 }
-                
+
             };
             task.execute();
             try {
@@ -246,7 +246,7 @@ public class Demo extends JFrame {
         }
         return _customer;
     }
-    
+
     private JToolBar  createToolBar() {
         JToolBar toolBar = new JToolBar();
         toolBar.add(_buyBook);
@@ -254,28 +254,28 @@ public class Demo extends JFrame {
         toolBar.add(_supply);
         Dimension d = new Dimension(40, 32);
         toolBar.addSeparator(d);
-        
+
         toolBar.add(_viewConfig);
         toolBar.add(_viewDomain);
         toolBar.add(_viewSource);
         toolBar.add(_viewQuery);
-        
+
         toolBar.addSeparator(d);
-        
+
         toolBar.add(Box.createHorizontalGlue());
         toolBar.add(_about);
         toolBar.add(Box.createHorizontalStrut(2));
         return toolBar;
     }
-    
+
     private StatusBar createStatusBar() {
         return new StatusBar();
     }
-    
+
     public String getConfiguration(String key, String def) {
         return PropertyHelper.getString(_config, key, def);
     }
-    
+
     private SourceCodeBrowser getSourceCodeBrowser() {
         if (_sourceBrowser == null) {
             String root = getConfiguration("openbook.source.root",  SRC_ROOT);
@@ -297,7 +297,7 @@ public class Demo extends JFrame {
     /**
      * Abstract root of all Action objects helps to locate/configure visual action parameters such as
      * tooltip text or image.
-     * 
+     *
      * @author Pinaki Poddar
      *
      */
@@ -308,13 +308,13 @@ public class Demo extends JFrame {
             putValue(Action.SMALL_ICON, icon);
         }
     }
-    
+
     public class BuyBookAction extends OpenBookAction {
         BuyBookPage         _buyBookPage;
         public BuyBookAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
-        
+
         public void actionPerformed(ActionEvent e) {
             if (_buyBookPage == null) {
                 _buyBookPage = new BuyBookPage(getService(), getCustomer());
@@ -322,7 +322,7 @@ public class Demo extends JFrame {
             showTab(_tabbedPane, "Buy Books", _buyBookPage);
             switchTab(_outputPane, _sqlLog);
         }
-        
+
     }
     public class DeliveryAction extends OpenBookAction {
         DeliveryPage        _deliveryPage;
@@ -336,9 +336,9 @@ public class Demo extends JFrame {
             showTab(_tabbedPane, "Deliver Books", _deliveryPage);
             switchTab(_outputPane, _sqlLog);
         }
-        
+
     }
-    
+
     public class SupplyAction extends OpenBookAction {
         SupplyPage          _supplyPage;
         public SupplyAction(String name, Icon icon, String tooltip) {
@@ -351,9 +351,9 @@ public class Demo extends JFrame {
             showTab(_tabbedPane, "Supply Books", _supplyPage);
             switchTab(_outputPane, _sqlLog);
         }
-        
+
     }
-    
+
     public class ViewConfigAction extends OpenBookAction {
         ConfigurationViewer _configView;
         public ViewConfigAction(String name, Icon icon, String tooltip) {
@@ -367,9 +367,9 @@ public class Demo extends JFrame {
                 showTab(_tabbedPane, "Configuration", _configView);
             }
         }
-        
+
     }
-    
+
     public class ViewDomainAction extends OpenBookAction {
         MetamodelView       _domainView;
         AttributeLegendView _legends;
@@ -384,7 +384,7 @@ public class Demo extends JFrame {
             }
             showTab(_tabbedPane, "Domain Model", _domainView);
         }
-        
+
     }
 
     public class ViewDataAction extends OpenBookAction {
@@ -394,9 +394,9 @@ public class Demo extends JFrame {
         public void actionPerformed(ActionEvent e) {
             showTab(_tabbedPane, "Buy Books", null);
         }
-        
+
     }
-    
+
     public class ViewQueryCacheAction extends OpenBookAction {
         PreparedQueryViewer _queryView;
         public ViewQueryCacheAction(String name, Icon icon, String tooltip) {
@@ -409,19 +409,19 @@ public class Demo extends JFrame {
             }
             showTab(_tabbedPane, "JPQL Queries", _queryView);
         }
-        
+
     }
-    
+
     public class ViewSourceAction extends OpenBookAction {
         public ViewSourceAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
-        
+
         public void actionPerformed(ActionEvent e) {
             getSourceCodeBrowser();
         }
     }
-    
+
     /**
      * An action to show a piece of code in an internal or external browser.
      *
@@ -429,24 +429,24 @@ public class Demo extends JFrame {
     public class ShowCodeAction extends OpenBookAction {
         private String _key;
         private String _page;
-        
+
         public ShowCodeAction() {
             super("View Code", Images.VIEW_CODE, "View Java Source Code");
         }
-        
+
         public void setPage(String key, String page) {
             _key  = key;
             _page = page;
         }
-        
+
         public void actionPerformed(ActionEvent e) {
            getSourceCodeBrowser().showPage(_key, _page);
         }
     }
-    
+
     /**
      * Displays the "welcome" page.
-     *  
+     *
      * @author Pinaki Poddar
      *
      */
@@ -454,15 +454,15 @@ public class Demo extends JFrame {
         PowerPointViewer    _powerpoint;
         JLabel              _logoLabel = new JLabel(Images.LOGO_OPENBOOKS);
         boolean _showPresentation = true;
-        
+
         public WelcomeAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
-        
+
         public void actionPerformed(ActionEvent e) {
             if (_powerpoint == null && _showPresentation) {
                 String dir = getConfiguration("openbook.slides.dir", "slides/");
-                String[] defaultSlides = { 
+                String[] defaultSlides = {
                                     "Slide1.JPG",
                                     "Slide2.JPG",
                                     "Slide3.JPG",
@@ -486,19 +486,19 @@ public class Demo extends JFrame {
                     _showPresentation = false;
                     System.err.println("Error while opening slide deck at " + dir + ". \r\n"+ e1);
                 }
-            } 
+            }
             showTab(_tabbedPane, "Home", _powerpoint != null ? _powerpoint : _logoLabel);
         }
-        
+
     }
-    
+
     public class AboutAction extends OpenBookAction {
         AboutDialog _dialog;
-        
+
         public AboutAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
-        
+
         public void actionPerformed(ActionEvent e) {
             if (_dialog == null) {
                 _dialog = new AboutDialog(Images.LOGO_OPENBOOKS);
@@ -507,7 +507,7 @@ public class Demo extends JFrame {
             _dialog.setVisible(true);
         }
     }
-    
+
     /**
      * Show the given tab in the given pane.
      * @param pane the tabbed pane
@@ -525,22 +525,22 @@ public class Demo extends JFrame {
             pane.setSelectedComponent(c);
         }
     }
-    
+
     void switchTab(JTabbedPane pane, Component tab) {
         if (tab == null)
             return;
         Component c = locateTab(pane, tab);
         if (c == null) {
             pane.setSelectedComponent(c);
-        } 
+        }
     }
-    
+
     Component locateTab(JTabbedPane pane, Component tab) {
         int index = pane.indexOfComponent(tab);
         if (index == -1) {
             Component[] components = pane.getComponents();
             for (int i = 0; i < components.length; i++) {
-                if (components[i] instanceof JScrollPane 
+                if (components[i] instanceof JScrollPane
                 && (((JScrollPane)components[i]).getViewport().getView() == tab)) {
                     return components[i];
                 }
@@ -550,38 +550,38 @@ public class Demo extends JFrame {
         }
         return null;
     }
-    
-    
+
+
     private JTabbedPane createTabbedView() {
         JTabbedPane pane = new JTabbedPane();
         pane.setPreferredSize(TAB_VIEW);
         pane.setMinimumSize(new Dimension(TAB_VIEW.width, TAB_VIEW.height));
         return pane;
     }
-    
+
     private JTabbedPane createOutputView() {
         JTabbedPane pane = new JTabbedPane();
         pane.setPreferredSize(OUT_VIEW);
-        
+
         _sqlListener = new SQLLogger();
         _sqlLog = new ScrollingTextPane();
-        
+
         GraphicOutputStream stream = new GraphicOutputStream(_sqlLog);
         _sqlLog.setPreferredSize(TAB_VIEW);
         _sqlListener.setOutput(stream);
         pane.addTab("SQL Log", new JScrollPane(_sqlLog));
-        
+
         ScrollingTextPane consoleLog = new ScrollingTextPane();
         GraphicOutputStream console = new GraphicOutputStream(consoleLog);
         System.setErr(new PrintStream(console, true));
         pane.addTab("Console", new JScrollPane(consoleLog));
-        
+
         return pane;
     }
-    
+
     /**
      * Creates the navigation tree and adds the tree nodes. Each tree node is attached with an action
-     * that fires when the node is selected.  
+     * that fires when the node is selected.
      */
     private JTree createNavigator() {
         ActionTreeNode root = new ActionTreeNode(_root);
@@ -589,21 +589,21 @@ public class Demo extends JFrame {
         DefaultMutableTreeNode views = new DefaultMutableTreeNode("Views");
         root.add(app);
         root.add(views);
-        
-        
+
+
         app.add(new ActionTreeNode(_buyBook));
         app.add(new ActionTreeNode(_deliver));
         app.add(new ActionTreeNode(_supply));
-        
+
         views.add(new ActionTreeNode(_viewConfig));
         views.add(new ActionTreeNode(_viewDomain));
         views.add(new ActionTreeNode(_viewQuery));
         views.add(new ActionTreeNode(_viewSource));
-        
-        
+
+
         JTree tree = new JTree(root);
         tree.setShowsRootHandles(true);
-        
+
         tree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
                 Object treeNode = _navigator.getLastSelectedPathComponent();
@@ -613,17 +613,17 @@ public class Demo extends JFrame {
             }
         });
         tree.setCellRenderer(new TypedTreeCellRenderer());
-        
+
         for (int i = 0; i < tree.getRowCount(); i++) {
             tree.expandRow(i);
         }
-        
+
         return tree;
     }
-    
+
     /**
      * A tree node which may have an associated action.
-     * 
+     *
      * @author Pinaki Poddar
      *
      */
@@ -632,30 +632,30 @@ public class Demo extends JFrame {
         public ActionTreeNode(Action action) {
             _action = action;
         }
-        
+
         public String toString() {
             return _action.getValue(Action.SHORT_DESCRIPTION).toString();
         }
-        
+
     }
-    
+
     public class TypedTreeCellRenderer extends DefaultTreeCellRenderer {
         @Override
-        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, 
-                boolean leaf, int row, boolean hasFocus) { 
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded,
+                boolean leaf, int row, boolean hasFocus) {
             return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
         }
     }
-    
+
     public static class AboutDialog extends JDialog {
         public AboutDialog(Icon logo) {
             setModal(true);
             setLayout(new BorderLayout());
-            JButton button = new JButton("<html>" 
-                    + "<b>OpenBooks</b> " 
+            JButton button = new JButton("<html>"
+                    + "<b>OpenBooks</b> "
                     + "<p>"
-                    + "<br> by JPA Team, SWG" 
-                    + "<br> IBM Corporation" 
+                    + "<br> by JPA Team, SWG"
+                    + "<br> IBM Corporation"
                     + "<p>"
                     + "</html>");
             button.setIcon(logo);

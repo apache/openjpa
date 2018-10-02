@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -418,7 +418,7 @@ public abstract class Extensions
     /**
      * Key class.
      */
-    private static class HashKey 
+    private static class HashKey
         implements Serializable {
 
         public final String vendor;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase; 
+import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
 
 
 /**
@@ -47,7 +47,7 @@ public class TestEmbeddedPessimisticLocking
     private boolean supportsLocking;
     private Object oid;
     private OpenJPAEntityManagerFactory emf;
-    
+
     public TestEmbeddedPessimisticLocking(String name)
     {
     	super(name);

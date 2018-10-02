@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -33,7 +33,7 @@ import org.w3c.dom.Document;
 /**
  * Specialized RuntimException thrown by JEST commands.
  * The exception can be serialized to the output stream of a HTTP Servlet response as a HTML page.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -41,11 +41,11 @@ import org.w3c.dom.Document;
 public class ProcessingException extends RuntimeException {
     private final JPAServletContext ctx;
     private final int _errorCode;
-    
+
     public ProcessingException(JPAServletContext ctx, Throwable error) {
         this(ctx, error, HTTP_INTERNAL_ERROR);
     }
-    
+
     public ProcessingException(JPAServletContext ctx, Throwable error, int errorCode) {
         super(error);
         this.ctx = ctx;
@@ -57,20 +57,20 @@ public class ProcessingException extends RuntimeException {
         this.ctx = ctx;
         this._errorCode = errorCode;
     }
-    
+
     public ProcessingException(JPAServletContext ctx, Throwable error, Message message) {
         this(ctx, error, message, HTTP_INTERNAL_ERROR);
     }
-    
+
     public ProcessingException(JPAServletContext ctx, Throwable error, Message message, int errorCode) {
         super(message.toString(), error);
         this.ctx = ctx;
         this._errorCode = errorCode;
     }
-    
+
     /**
      * Prints the stack trace in a HTML format on the given response output stream.
-     * 
+     *
      * @param response
      * @throws IOException
      */

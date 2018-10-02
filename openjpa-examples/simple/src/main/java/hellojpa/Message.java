@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package hellojpa;
 
@@ -22,7 +22,7 @@ import java.util.*;
 import javax.persistence.*;
 
 
-/** 
+/**
  * A very simple persistent entity that holds a "message", has a
  * "created" field that is initialized to the time at which the
  * object was created, and an id field that is initialized to the

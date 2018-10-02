@@ -23,7 +23,7 @@ import javax.persistence.Entity;
 
 @Entity
 public class SubclassB extends BaseClass {
-    
+
     @Basic
     private String classBName;
 
@@ -34,7 +34,7 @@ public class SubclassB extends BaseClass {
     public String getClassBName() {
         return classBName;
     }
-    
+
     public String toString() {
         return super.toString() + ";classBName=" + classBName;
     }

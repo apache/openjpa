@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel.common.apps;
 
@@ -30,7 +30,7 @@ public class SequenceAssigned2 extends SequenceAssigned {
     public SequenceAssigned2() {
         this(1);
     }
-    
+
     public SequenceAssigned2(long pk) {
         super(pk);
     }

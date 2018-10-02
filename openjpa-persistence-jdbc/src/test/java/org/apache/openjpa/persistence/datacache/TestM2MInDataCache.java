@@ -81,7 +81,7 @@ public class TestM2MInDataCache extends SingleEMFTestCase {
 
     /**
      * Test if child list is in order after new child list is added in setup().
-     * 
+     *
      */
     public void testM2MDataCache() {
         EntityManager em = emf.createEntityManager();

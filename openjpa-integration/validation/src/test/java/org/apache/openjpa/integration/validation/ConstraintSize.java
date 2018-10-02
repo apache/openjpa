@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -37,7 +37,7 @@ public class ConstraintSize implements Serializable {
 
     @Transient
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue
     private long id;
@@ -48,8 +48,8 @@ public class ConstraintSize implements Serializable {
 
     private Map<String,String> myMap;  // @Size(1,2) constraint is on the getter
 
-    
-    /* 
+
+    /*
      * Some helper methods to create the entities to test with
      */
     public static ConstraintSize createInvalidString() {
@@ -80,7 +80,7 @@ public class ConstraintSize implements Serializable {
         return c;
     }
 
-    
+
     /*
      * Main entity code
      */
@@ -107,8 +107,8 @@ public class ConstraintSize implements Serializable {
     public void setMyMap(Map<String,String> m) {
         myMap = m;
     }
-    
-    
+
+
     private void setInvalidMap() {
         Map<String,String> m = new HashMap<String,String>();
         m.put("a", "a value");
@@ -116,11 +116,11 @@ public class ConstraintSize implements Serializable {
         m.put("c", "c value");
         setMyMap(m);
     }
-    
+
     private void setValidMap() {
         Map<String,String> m = new HashMap<String,String>();
         m.put("a", "a value");
         setMyMap(m);
     }
-    
+
 }

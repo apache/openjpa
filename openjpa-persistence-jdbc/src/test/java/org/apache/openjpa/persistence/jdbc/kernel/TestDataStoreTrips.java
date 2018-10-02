@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
@@ -51,18 +51,18 @@ public class TestDataStoreTrips extends BaseJDBCTest{
 
 
 //    private boolean  = true;//Boolean.valueOf(bool);
-	
+
     private OpenJPAEntityManagerFactory _factory = null;
     private Object _oid = null;
     private SelectCounter _counter = null;
-    
+
     /** Creates a new instance of TestDataStoreTrips */
     public TestDataStoreTrips() {
     }
     public TestDataStoreTrips(String name) {
         super(name);
     }
-    
+
     public void setUp()
         throws Exception {
        deleteAll(DataStoreTripsPC.class);
@@ -72,7 +72,7 @@ public class TestDataStoreTrips extends BaseJDBCTest{
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
         JDBCConfiguration conf =
             (JDBCConfiguration) ((OpenJPAEntityManagerSPI) kem)
-            .getConfiguration();        
+            .getConfiguration();
 
         ClassMapping mapping = conf.getMappingRepositoryInstance().getMapping
             (DataStoreTripsPC.class, null, true);
@@ -88,10 +88,10 @@ public class TestDataStoreTrips extends BaseJDBCTest{
             "ValidateTrueChecksStore=true"
         });
 */
-        
+
         OpenJPAEntityManager pm = _factory.createEntityManager();
         startTx(pm);
-        
+
         DataStoreTripsPC pc = new DataStoreTripsPC(0);
         pm.persist(pc);
         _oid = pm.getObjectId(pc);
@@ -157,7 +157,7 @@ public class TestDataStoreTrips extends BaseJDBCTest{
         //FIXME jthomas ...need to find a substitute
         //pm.currentTransaction().setOptimistic(false);
         startTx(pm);
-        
+
 
         // no count call b/c loading data
         pm.getObjectId(_oid);
@@ -194,6 +194,6 @@ public class TestDataStoreTrips extends BaseJDBCTest{
             }
         }
     }
-    
-    
+
+
 }

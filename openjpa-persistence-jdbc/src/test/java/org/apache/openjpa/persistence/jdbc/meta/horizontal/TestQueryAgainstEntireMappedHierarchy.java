@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta.horizontal;
 
@@ -35,15 +35,15 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestQueryAgainstEntireMappedHierarchy
     extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-	
+
     /** Creates a new instance of TestQueryAgainstEntireMappedHierarchy */
-    public TestQueryAgainstEntireMappedHierarchy(String name) 
+    public TestQueryAgainstEntireMappedHierarchy(String name)
     {
     	super(name);
     }
-    
-    public void setUpTestCase() 
-    {        
+
+    public void setUpTestCase()
+    {
         // this test depends on this fact
         assertTrue(HorizJ.class.getSuperclass() == HorizD.class);
         assertTrue(HorizK.class.getSuperclass() == HorizJ.class);
@@ -80,5 +80,5 @@ public class TestQueryAgainstEntireMappedHierarchy
         assertTrue(lastStatement.toLowerCase().indexOf("in (") == -1);
         pm.close();
     }
-    
+
 }

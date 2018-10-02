@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.jdbc.common.apps.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestRangeQuery extends 
+public class TestRangeQuery extends
         org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     /** Creates a new instance of TestRangeQuery */

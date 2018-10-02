@@ -29,7 +29,7 @@ public class CacheableEntity {
 
     @Id
     private int id;
-    
+
     @Basic
     private String name;
 

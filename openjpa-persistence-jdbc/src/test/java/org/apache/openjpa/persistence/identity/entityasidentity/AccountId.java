@@ -14,21 +14,21 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity.entityasidentity;
 
 public class AccountId implements java.io.Serializable {
     private static final long serialVersionUID = 4262907482129342511L;
-    
+
     private Integer accountId;
     private Integer groupId;
     private Integer accountHolder;
-    
+
     private Integer hashcode = null;
-    
+
     public AccountId() {
-        
+
     }
 
     public Integer getAccountId() {
@@ -38,7 +38,7 @@ public class AccountId implements java.io.Serializable {
     public void setAccountId(Integer accountId) {
         this.accountId = accountId;
     }
-    
+
 
     public Integer getGroupId() {
         return groupId;
@@ -55,24 +55,24 @@ public class AccountId implements java.io.Serializable {
     public void setAccountHolder(Integer accountHolder) {
         this.accountHolder = accountHolder;
     }
-    
+
     public boolean equals(Object o) {
         if (o == this) {
             return true;
         }
-            
+
         if (o instanceof AccountId) {
             AccountId oId = (AccountId) o;
-            if (    oId.accountId.equals(this.accountId) && 
+            if (    oId.accountId.equals(this.accountId) &&
                     oId.accountHolder.equals(this.accountHolder) &&
                     oId.groupId.equals(this.groupId)) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     public int hashCode() {
         if (hashcode == null) {
             String hashStr = this.groupId + ":" + this.accountHolder + ":" + this.accountId;
@@ -80,5 +80,5 @@ public class AccountId implements java.io.Serializable {
         }
         return hashcode.intValue();
     }
-    
+
 }

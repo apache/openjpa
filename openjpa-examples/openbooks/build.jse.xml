@@ -7,29 +7,29 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <!-- ====================================================================== -->
 <!--                                                                        -->
 <!--     Ant build script to build/package JSE version of OpenBooks         -->
 <!--                                                                        -->
 <!-- ====================================================================== -->
-                    
+
 <project name="OpenBooks.JSE" default="package">
-	
+
 	<target name="package"
 		description="Build, package and deploy OpenBooks as a Swing-based JSE application">
 		<delete file="${target.dir}/openbooks.jar" failonerror="false"/>
 		<delete file="${target.dir}/openbooks.zip" failonerror="false"/>
-		
+
 		<jar destfile="${target.dir}/openbooks.jar" basedir="${classes.dir}">
 			<exclude name="junit/**" />
 		</jar>
@@ -75,19 +75,19 @@
 		</copy>
 
 	</target>
-	
-	<target name="compile" 
+
+	<target name="compile"
 		description="Compile classes.">
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true">
 			<classpath refid="compile.classpath" />
 			<exclude name="openbook/tools/**/*.java"/>
 		</javac>
 	</target>
-	
+
 	<target name="generate-source-with-options">
-		<java2html 
-			sourcepath="${src.dir}" 
-			destDir="${generated.html.dir}" 
+		<java2html
+			sourcepath="${src.dir}"
+			destDir="${generated.html.dir}"
 			extension=".html"
 			addLineBreak="true"
 			addExplicitSpace="true"
@@ -96,9 +96,9 @@
 			<exclude name="jpa/**/*.java"/>
 			<exclude name="openbook/util/*.java"/>
 		</java2html>
-		<java2html 
-			sourcepath="${generated.src.dir}" 
-			destDir="${generated.html.dir}" 
+		<java2html
+			sourcepath="${generated.src.dir}"
+			destDir="${generated.html.dir}"
 			extension=".html"
 			addLineBreak="true"
 			addExplicitSpace="true"

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.foreign.keys;
 
@@ -27,17 +27,17 @@ import javax.persistence.ManyToOne;
 
 @Embeddable
 public class ContainsMultSimpleEntity implements Serializable {
-    
+
     private static final long serialVersionUID = -8576236113079133657L;
 
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(nullable=false)
     private SimpleEntity simpleEntity1;
-    
+
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(nullable=false)
     private SimpleEntity simpleEntity2;
-    
+
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(nullable=false)
     private SimpleEntity simpleEntity3;

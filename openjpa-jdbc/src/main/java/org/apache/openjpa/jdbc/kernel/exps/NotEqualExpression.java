@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -36,7 +36,7 @@ class NotEqualExpression
         super(val1, val2);
     }
 
-    public void appendTo(Select sel, ExpContext ctx, BinaryOpExpState bstate, 
+    public void appendTo(Select sel, ExpContext ctx, BinaryOpExpState bstate,
         SQLBuffer buf, boolean val1Null, boolean val2Null) {
         if (val1Null && val2Null)
             buf.append("1 <> 1");
@@ -56,13 +56,13 @@ class NotEqualExpression
         } else {
             Val val1 = getValue1();
             Val val2 = getValue2();
-            if (val1.length(sel, ctx, bstate.state1) == 1 
+            if (val1.length(sel, ctx, bstate.state1) == 1
                 && val2.length(sel, ctx, bstate.state2) == 1) {
                 ctx.store.getDBDictionary().comparison(buf, "<>",
                     new FilterValueImpl(sel, ctx, bstate.state1, val1),
                     new FilterValueImpl(sel, ctx, bstate.state2, val2));
             } else {
-                int len = java.lang.Math.max(val1.length(sel, ctx, 
+                int len = java.lang.Math.max(val1.length(sel, ctx,
                     bstate.state1), val2.length(sel, ctx, bstate.state2));
                 buf.append("(");
                 for (int i = 0; i < len; i++) {

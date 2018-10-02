@@ -44,21 +44,21 @@ import com.google.gwt.user.client.ui.Widget;
  * <LI>sql-update
  * <LI>sql-select
  * <LI>sql-delete
- * 
+ *
  * @author Pinaki Poddar
  *
  */
-public class ServerLogPanel extends ScrollableTable<LogStatement> 
-    implements AddTradableHandler, RemoveTradableHandler, 
+public class ServerLogPanel extends ScrollableTable<LogStatement>
+    implements AddTradableHandler, RemoveTradableHandler,
     AddTradeHandler, UpdateStockHandler {
     final OpenTrader session;
-    public static final String[] MARKERS_AND_STYLES = {"SELECT", "INSERT", "UPDATE", "DELETE"}; 
-    
-    
+    public static final String[] MARKERS_AND_STYLES = {"SELECT", "INSERT", "UPDATE", "DELETE"};
+
+
     public ServerLogPanel(final OpenTrader session, final int w, final int h) {
         super("Server Log (" + session.getServiceURI() + ")", w,h, false);
         this.session = session;
-        
+
         session.registerHandler(ServiceEvent.TradableAdded.TYPE, this);
         session.registerHandler(ServiceEvent.TradableRemoved.TYPE, this);
         session.registerHandler(ServiceEvent.TradeCommitted.TYPE, this);
@@ -66,7 +66,7 @@ public class ServerLogPanel extends ScrollableTable<LogStatement>
 
         setColumnHeader(0, "Context", "10%");
         setColumnHeader(1, "Message", "90%");
-        
+
         setRenderer(0, new GridCellRenderer<LogStatement>() {
             public Widget render(LogStatement log) {
                 return new Label(log.getContext());
@@ -78,7 +78,7 @@ public class ServerLogPanel extends ScrollableTable<LogStatement>
            }
         });
     }
-    
+
     HTML decorate(String s, String[] markersAndStyles) {
             HTML html = new HTML(s);
             String style = getStyle(s, MARKERS_AND_STYLES);
@@ -86,7 +86,7 @@ public class ServerLogPanel extends ScrollableTable<LogStatement>
                 html.addStyleName(style);
             return html;
     }
-    
+
     static String getStyle(String s, String[] markersAndStyles) {
         String style = null;
         for (int i = 0; i < markersAndStyles.length; i++) {
@@ -103,7 +103,7 @@ public class ServerLogPanel extends ScrollableTable<LogStatement>
         }
         return null;
     }
-    
+
     private void log() {
         session.getService().getLog(new LoggingCallback());
     }
@@ -111,7 +111,7 @@ public class ServerLogPanel extends ScrollableTable<LogStatement>
     /**
      * ---------------------------------------------------------------------------------
      * Service Event Response Management
-     * 
+     *
      * This widget receives all service event update and logs the corresponding server
      * logs.
      * ---------------------------------------------------------------------------------
@@ -131,16 +131,16 @@ public class ServerLogPanel extends ScrollableTable<LogStatement>
     public void onStockUpdated(ServiceEvent.StockUpdated event) {
         log();
     }
-    
+
     /**
      * ---------------------------------------------------------------------------------
      * Asynchronous RPC service callbacks
      * ---------------------------------------------------------------------------------
      */
-    
+
     /**
      * Unlike other callbacks, this callback on completion does not broadcast the log messages.
-     * Instead it simply inserts the message in its own tabular display.  
+     * Instead it simply inserts the message in its own tabular display.
      */
     public class LoggingCallback implements AsyncCallback<List<LogStatement>> {
         public void onFailure(Throwable caught) {

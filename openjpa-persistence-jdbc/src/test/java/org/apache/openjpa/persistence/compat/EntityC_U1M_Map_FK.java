@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -31,22 +31,22 @@ public class EntityC_U1M_Map_FK {
 
     private String name;
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int hashCode() {
         return name.hashCode() + (int)id;
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof EntityC_U1M_Map_FK)) return false;
         EntityC_U1M_Map_FK c = (EntityC_U1M_Map_FK)o;

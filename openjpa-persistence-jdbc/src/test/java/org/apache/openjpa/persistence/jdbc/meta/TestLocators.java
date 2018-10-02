@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
@@ -42,24 +42,24 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 
 public class TestLocators
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-    
+
     private OpenJPAEntityManagerFactory pmf;
 
     public TestLocators(String name) {
         super(name);
-    }    
-    
+    }
+
     /** Creates a new instance of TestLocators */
     public TestLocators() {
     }
     public void setUp() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
-        
+
         Extent e = pm.createExtent(LocatorTestObject.class, true);
         for (Iterator i = e.iterator(); i.hasNext();) {
             pm.remove(i.next());
-            
+
         }
         endTx(pm);
         pm.close();
@@ -222,5 +222,5 @@ public class TestLocators
             assertEquals(chars[i], newchars[i]);
         }
     }
-    
+
 }

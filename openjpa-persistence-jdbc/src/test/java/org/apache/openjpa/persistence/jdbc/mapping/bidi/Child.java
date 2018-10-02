@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
@@ -27,10 +27,10 @@ import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.persistence.jdbc.ForeignKey;
 
 /**
- * Child in a logically bidirectional but actually unidirectional parent-child 
- * relationship where Child holds reference to Parent via primary key and not 
+ * Child in a logically bidirectional but actually unidirectional parent-child
+ * relationship where Child holds reference to Parent via primary key and not
  * via object reference.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -39,33 +39,33 @@ import org.apache.openjpa.persistence.jdbc.ForeignKey;
 public class Child {
 	@Id
 	private long id;
-	
+
 	private String name;
 
 	@Column(name="FK_PARENT_SEQ_ID", nullable=true)
 	@ForeignKey(implicit=true)
 	private long seqParentId;
-	
+
 	@Column(name="FK_PARENT_AUTO_ID", nullable=true)
 	@ForeignKey(implicit=true)
 	private long autoParentId;
-	
+
 	@Column(name="FK_PARENT_APP_ID", nullable=true)
 	@ForeignKey(implicit=true)
 	private long appParentId;
 
 	public Child() {
-		
+
 	}
-	
+
 	public long getId() {
 		return id;
 	}
-	
+
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -81,7 +81,7 @@ public class Child {
 	void setSeqParentId(long parentId) {
 		this.seqParentId = parentId;
 	}
-	
+
 	public long getAutoParentId() {
 		return autoParentId;
 	}
@@ -96,14 +96,14 @@ public class Child {
 	void setAppParentId(long parentId) {
 		this.appParentId = parentId;
 	}
-	
+
 	public long getParentIdType(int idType) {
 		switch (idType) {
 		case ValueStrategies.NONE : return getAppParentId();
 		case ValueStrategies.AUTOASSIGN : return getAutoParentId();
 		case ValueStrategies.SEQUENCE : return getSeqParentId();
 		default :
-            throw new IllegalArgumentException("No parent with id strategy " + 
+            throw new IllegalArgumentException("No parent with id strategy " +
 					idType);
 		}
 	}

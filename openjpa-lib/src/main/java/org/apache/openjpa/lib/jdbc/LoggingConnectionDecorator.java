@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.jdbc;
 
@@ -67,7 +67,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     private static final int WARN_THROW = 5;
     private static final int WARN_HANDLE = 6;
     private static final String[] WARNING_ACTIONS = new String[7];
-    
+
     static {
         WARNING_ACTIONS[WARN_IGNORE] = "ignore";
         WARNING_ACTIONS[WARN_LOG_TRACE] = "trace";
@@ -184,7 +184,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     public Connection decorate(Connection conn) throws SQLException {
         return newLoggingConnection(conn);
     }
-         
+
     private LoggingConnection newLoggingConnection(Connection conn)
         throws SQLException {
         return new LoggingConnection(conn);
@@ -197,7 +197,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     private SQLException wrap(SQLException sqle, String sql) {
         return wrap(sqle, null, sql, -1);
     }
-    
+
     private SQLException wrap(SQLException sqle, Statement stmnt, String sql) {
         return wrap(sqle, stmnt, sql, -1);
     }
@@ -286,7 +286,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             boolean wrap) throws SQLException {
             SQLException err = null;
             try {
-                Statement stmnt = super.createStatement(type, concurrency, 
+                Statement stmnt = super.createStatement(type, concurrency,
                     false);
                 return newLoggingStatement(stmnt);
             } catch (SQLException se) {
@@ -296,8 +296,8 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 handleSQLErrors(err);
             }
         }
-        
-        protected CallableStatement prepareCall(String sql, boolean wrap) 
+
+        protected CallableStatement prepareCall(String sql, boolean wrap)
             throws SQLException {
             SQLException err = null;
             try {
@@ -315,17 +315,17 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             (PreparedStatement stmnt, String sql) throws SQLException {
             return new LoggingPreparedStatement(stmnt, sql);
         }
-        
+
         private CallableStatement newLoggingCallableStatement(
             CallableStatement stmnt, String sql) throws SQLException {
             return new LoggingCallableStatement(stmnt, sql);
         }
-        
+
         private LoggingStatement newLoggingStatement(Statement stmnt)
             throws SQLException {
             return new LoggingStatement(stmnt);
         }
-        
+
         private LoggingDatabaseMetaData newLoggingDatabaseMetaData
             (DatabaseMetaData meta) throws SQLException {
             return new LoggingDatabaseMetaData(meta);
@@ -335,7 +335,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         public void commit() throws SQLException {
             long start = System.currentTimeMillis();
-            SQLException err = null;            
+            SQLException err = null;
             try {
                 super.commit();
             } catch (SQLException se) {
@@ -350,7 +350,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         public void rollback() throws SQLException {
             long start = System.currentTimeMillis();
-            SQLException err = null;            
+            SQLException err = null;
             try {
                 super.rollback();
             } catch (SQLException se) {
@@ -364,7 +364,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         }
 
         public void close() throws SQLException {
-            long start = System.currentTimeMillis();       
+            long start = System.currentTimeMillis();
             try {
                 super.close();
             } finally {
@@ -375,7 +375,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         public Savepoint setSavepoint() throws SQLException {
             long start = System.currentTimeMillis();
-            SQLException err = null;            
+            SQLException err = null;
             try {
                 return super.setSavepoint();
             } catch (SQLException se) {
@@ -390,7 +390,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         public Savepoint setSavepoint(String name) throws SQLException {
             long start = System.currentTimeMillis();
-            SQLException err = null;            
+            SQLException err = null;
             try {
                 return super.setSavepoint(name);
             } catch (SQLException se) {
@@ -405,7 +405,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         public void rollback(Savepoint savepoint) throws SQLException {
             long start = System.currentTimeMillis();
-            SQLException err = null;            
+            SQLException err = null;
             try {
                 super.rollback(savepoint);
             } catch (SQLException se) {
@@ -427,7 +427,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         public void releaseSavepoint(Savepoint savepoint) throws SQLException {
             long start = System.currentTimeMillis();
-            SQLException err = null;            
+            SQLException err = null;
             try {
                 super.releaseSavepoint(savepoint);
             } catch (SQLException se) {
@@ -535,7 +535,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
          */
         private void logTime(long startTime) throws SQLException {
             if (_logs.isSQLEnabled())
-                _logs.logSQL("spent", startTime, this); 
+                _logs.logSQL("spent", startTime, this);
         }
 
         /**
@@ -553,7 +553,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             if (_logs.isSQLEnabled())
                 _logs.logSQL("executing batch " + stmnt, this);
         }
-        
+
         /**
          * Handle any {@link SQLWarning}s on the current {@link Connection}.
          * Chain throwed SQLWarnings to SQLException.
@@ -581,11 +581,11 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
          *
          * @see #handleSQLWarning(SQLWarning)
          */
-        private void handleSQLErrors(Statement stmnt, SQLException err) 
+        private void handleSQLErrors(Statement stmnt, SQLException err)
             throws SQLException {
             if (_warningAction == WARN_IGNORE)
-                return; 
-            
+                return;
+
             try {
                 handleSQLWarning(stmnt.getWarnings());
             } catch (SQLException warning) {
@@ -596,19 +596,19 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             } finally {
                 stmnt.clearWarnings();
             }
-        }        
-        
+        }
+
         /**
          * Handle any {@link SQLWarning}s on the specified {@link ResultSet}.
          * Chain throwed SQLWarnings to SQLException.
-         * 
+         *
          * @see #handleSQLWarning(SQLWarning)
          */
-        private void handleSQLErrors(ResultSet rs, SQLException err) 
+        private void handleSQLErrors(ResultSet rs, SQLException err)
             throws SQLException {
             if (_warningAction == WARN_IGNORE)
                 return;
-            
+
             try {
                 handleSQLWarning(rs.getWarnings());
             } catch (SQLException warning){
@@ -620,7 +620,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 rs.clearWarnings();
             }
         }
-        
+
         /**
          * Handle the specified {@link SQLWarning} depending on the
          * setting of the {@link #setWarningAction} attribute.
@@ -893,7 +893,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 SQLException err = null;
                 try {
                     return super.executeQuery(sql, wrap);
-                } catch (SQLException se) {               	
+                } catch (SQLException se) {
                     err = wrap(se, LoggingStatement.this, sql);
                     throw err;
                 } finally {
@@ -909,7 +909,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 SQLException err = null;
                 try {
                     return super.executeUpdate(sql);
-                } catch (SQLException se) {                	
+                } catch (SQLException se) {
                     err = wrap(se, LoggingStatement.this, sql);
                     throw err;
                 } finally {
@@ -941,7 +941,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 SQLException err = null;
                 try {
                     return super.executeUpdate(sql, i);
-                } catch (SQLException se) {                 
+                } catch (SQLException se) {
                     err = wrap(se, LoggingStatement.this, sql);
                     throw err;
                 } finally {
@@ -957,7 +957,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 SQLException err = null;
                 try {
                     return super.executeUpdate(sql, ia);
-                } catch (SQLException se) {                 
+                } catch (SQLException se) {
                     err = wrap(se, LoggingStatement.this, sql);
                     throw err;
                 } finally {
@@ -973,7 +973,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 SQLException err = null;
                 try {
                     return super.executeUpdate(sql, sa);
-                } catch (SQLException se) {                 
+                } catch (SQLException se) {
                     err = wrap(se, LoggingStatement.this, sql);
                     throw err;
                 } finally {
@@ -1160,7 +1160,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     //If an exception is caused, then we know that _paramBatch.size was
                     //the index of the LAST row to successfully execute.
                     if (_paramBatch != null){
-                        batchedRowsBaseIndex = _paramBatch.size();            
+                        batchedRowsBaseIndex = _paramBatch.size();
                     }
                     return toReturn;
                 } catch (SQLException se) {
@@ -1428,13 +1428,13 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 setLogParameter(i1, "InputStream", is);
                 super.setBinaryStream(i1, is, i2);
             }
-            
+
             public void setBinaryStream(int i1, InputStream is)
             throws SQLException {
             	setLogParameter(i1, "InputStream", is);
-            	super.setBinaryStream(i1, is);            	
+            	super.setBinaryStream(i1, is);
             }
-            
+
             public void clearParameters() throws SQLException {
                 clearLogParameters(false);
                 super.clearParameters();
@@ -1661,7 +1661,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public void close() throws SQLException {
-                SQLException err = null;            	
+                SQLException err = null;
                 try {
                     super.close();
                 } catch (SQLException se) {
@@ -1673,7 +1673,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public void beforeFirst() throws SQLException {
-                SQLException err = null;            	
+                SQLException err = null;
                 try {
                     super.beforeFirst();
                 } catch (SQLException se) {
@@ -1685,7 +1685,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public void afterLast() throws SQLException {
-                SQLException err = null;            	
+                SQLException err = null;
                 try {
                     super.afterLast();
                 } catch (SQLException se) {
@@ -1697,7 +1697,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public boolean first() throws SQLException {
-                SQLException err = null;            	
+                SQLException err = null;
                 try {
                     return super.first();
                 } catch (SQLException se) {
@@ -1709,7 +1709,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public boolean last() throws SQLException {
-                SQLException err = null;            	
+                SQLException err = null;
                 try {
                     return super.last();
                 } catch (SQLException se) {
@@ -1721,7 +1721,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public boolean absolute(int a) throws SQLException {
-                SQLException err = null;            	
+                SQLException err = null;
                 try {
                     return super.absolute(a);
                 } catch (SQLException se) {
@@ -1733,7 +1733,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public boolean relative(int a) throws SQLException {
-                SQLException err = null;            	
+                SQLException err = null;
                 try {
                     return super.relative(a);
                 } catch (SQLException se) {
@@ -1745,7 +1745,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public boolean previous() throws SQLException {
-                SQLException err = null;            	
+                SQLException err = null;
                 try {
                     return super.previous();
                 } catch (SQLException se) {
@@ -1756,32 +1756,32 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
         }
-        
+
         /**
          * CallableStatement decorated with logging.
          * Similar to {@link LoggingPreparedStatement} but can not be extended
          * due to the existing delegation hierarchy.
          */
-        protected class LoggingCallableStatement extends 
+        protected class LoggingCallableStatement extends
             DelegatingCallableStatement {
             private final String _sql;
             private List<String> _params = null;
             private List<List<String>> _paramBatch = null;
             //When batching is used, this variable contains the index into the last
             //successfully executed batched statement.
-            int batchedRowsBaseIndex = 0;            
+            int batchedRowsBaseIndex = 0;
 
-            public LoggingCallableStatement(CallableStatement stmt, String sql) 
+            public LoggingCallableStatement(CallableStatement stmt, String sql)
                 throws SQLException {
         		super(stmt, LoggingConnection.this);
         		_sql = sql;
         	}
-        	
+
             private LoggingResultSet newLoggingResultSet(ResultSet rs,
                 CallableStatement stmnt) {
                 return new LoggingResultSet(rs, stmnt);
             }
-            
+
             protected ResultSet wrapResult(ResultSet rs, boolean wrap) {
                 if (!wrap || rs == null)
                     return super.wrapResult(wrap, rs);
@@ -1856,7 +1856,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public int executeUpdate() throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
-                SQLException err = null;                
+                SQLException err = null;
                 try {
                     return super.executeUpdate();
                 } catch (SQLException se) {
@@ -1874,25 +1874,25 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
                 logBatchSQL(this);
                 long start = System.currentTimeMillis();
-                SQLException err = null;                
+                SQLException err = null;
                 try {
                     int[] toReturn = super.executeBatch();
                     //executeBatch is called any time the number of batched statements
-                    //is equal to, or less than, batchLimit.  In the 'catch' block below, 
-                    //the logic seeks to find an index based on the current executeBatch 
-                    //results.  This is fine when executeBatch is only called once, but 
-                    //if executeBatch is called many times, the _paramsBatch will continue 
-                    //to grow, as such, to index into _paramsBatch, we need to take into 
-                    //account the number of times executeBatch is called in order to 
-                    //correctly index into _paramsBatch.  To that end, each time executeBatch 
-                    //is called, lets get the size of _paramBatch.  This will effectively 
-                    //tell us the index of the last successfully executed batch statement.  
-                    //If an exception is caused, then we know that _paramBatch.size was 
+                    //is equal to, or less than, batchLimit.  In the 'catch' block below,
+                    //the logic seeks to find an index based on the current executeBatch
+                    //results.  This is fine when executeBatch is only called once, but
+                    //if executeBatch is called many times, the _paramsBatch will continue
+                    //to grow, as such, to index into _paramsBatch, we need to take into
+                    //account the number of times executeBatch is called in order to
+                    //correctly index into _paramsBatch.  To that end, each time executeBatch
+                    //is called, lets get the size of _paramBatch.  This will effectively
+                    //tell us the index of the last successfully executed batch statement.
+                    //If an exception is caused, then we know that _paramBatch.size was
                     //the index of the LAST row to successfully execute.
                     if (_paramBatch != null){
-                        batchedRowsBaseIndex = _paramBatch.size();                        
+                        batchedRowsBaseIndex = _paramBatch.size();
                     }
-                    return toReturn; 
+                    return toReturn;
                 } catch (SQLException se) {
                     // if the exception is a BatchUpdateException, and
                     // we are tracking parameters, then set the current
@@ -1917,20 +1917,20 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                             // no -3 element: it may be that the server stopped
                             // processing, so the size of the count will be
                             // the index
-                            //See the Javadoc for 'getUpdateCounts'; a provider 
-                            //may stop processing when the first failure occurs, 
-                            //as such, it may only return 'UpdateCounts' for the 
-                            //first few which pass.  As such, the failed 
+                            //See the Javadoc for 'getUpdateCounts'; a provider
+                            //may stop processing when the first failure occurs,
+                            //as such, it may only return 'UpdateCounts' for the
+                            //first few which pass.  As such, the failed
                             //index is 'count.length', NOT count.length+1.  That
-                            //is, if the provider ONLY returns the first few that 
+                            //is, if the provider ONLY returns the first few that
                             //passes (i.e. say an array of [1,1] is returned) then
-                            //length is 2, and since _paramBatch starts at 0, we 
-                            //don't want to use length+1 as that will give us the 
+                            //length is 2, and since _paramBatch starts at 0, we
+                            //don't want to use length+1 as that will give us the
                             //wrong index.
                             if (indexOfFirstFailedObject == -1){
                                 indexOfFirstFailedObject = count.length;
                             }
-                            
+
                             //Finally, whatever the index is at this point, add batchedRowsBaseIndex
                             //to it to get the final index.  Recall, we need to start our index from the
                             //last batch which successfully executed.
@@ -1953,7 +1953,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public boolean execute() throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
-                SQLException err = null;                
+                SQLException err = null;
                 try {
                     return super.execute();
                 } catch (SQLException se) {
@@ -1969,7 +1969,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public int executeUpdate(String s, int i) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
-                SQLException err = null;                
+                SQLException err = null;
                 try {
                     return super.executeUpdate(s, i);
                 } catch (SQLException se) {
@@ -1985,7 +1985,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public int executeUpdate(String s, int[] ia) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
-                SQLException err = null;                
+                SQLException err = null;
                 try {
                     return super.executeUpdate(s, ia);
                 } catch (SQLException se) {
@@ -2001,7 +2001,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public int executeUpdate(String s, String[] sa) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
-                SQLException err = null;                
+                SQLException err = null;
                 try {
                     return super.executeUpdate(s, sa);
                 } catch (SQLException se) {
@@ -2017,7 +2017,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public boolean execute(String s, int i) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
-                SQLException err = null;                
+                SQLException err = null;
                 try {
                     return super.execute(s, i);
                 } catch (SQLException se) {
@@ -2033,7 +2033,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public boolean execute(String s, int[] ia) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
-                SQLException err = null;                
+                SQLException err = null;
                 try {
                     return super.execute(s, ia);
                 } catch (SQLException se) {
@@ -2049,7 +2049,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public boolean execute(String s, String[] sa) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
-                SQLException err = null;                
+                SQLException err = null;
                 try {
                     return super.execute(s, sa);
                 } catch (SQLException se) {
@@ -2354,5 +2354,5 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 _params.set(index - 1, val);
             }
         }
-    }   
+    }
 }

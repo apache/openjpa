@@ -25,16 +25,16 @@ import javax.persistence.Version;
 
 @Entity
 public class M21UniEmployee {
-    
-    @Id    
+
+    @Id
     public String empid;
-    
+
     @Version
     private int version;
-    
+
     @ManyToOne
     M21UniDepartment department;
-    
+
     public M21UniDepartment getDepartment() {
         return department;
     }
@@ -68,7 +68,7 @@ public class M21UniEmployee {
     }
 
     public String name;
-    
+
     public float salary;
 
     public float getSalary() {

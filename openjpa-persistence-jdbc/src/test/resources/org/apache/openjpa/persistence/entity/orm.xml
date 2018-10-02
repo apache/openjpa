@@ -27,7 +27,7 @@ under the License.
 			<embedded-id name="id"></embedded-id>
 			<basic name="basic1">
 				<column name="basic1_override" length="100"/>
-			</basic>         
+			</basic>
 		</attributes>
     </entity>
     <embeddable class="MixedMappingLocationEmbeddedId">
@@ -35,7 +35,7 @@ under the License.
 		<basic name="basic10">
 			<column name="basic10_override" length="100"/>
 		</basic>
-		</attributes>         
+		</attributes>
 		</embeddable>
-		
+
 </entity-mappings>

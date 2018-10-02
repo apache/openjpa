@@ -36,7 +36,7 @@ public class TestResultShape extends TestCase {
         ResultShape<Object> shape = new ResultShape<Object>(Object.class, true);
         assertCategory(shape, true, false, false);
         assertEquals(FillStrategy.Assign.class, shape.getStrategy().getClass());
-        
+
         try {
             shape.add(int.class);
             fail(shape + " should not allow adding other shapes");
@@ -48,19 +48,19 @@ public class TestResultShape extends TestCase {
         } catch (UnsupportedOperationException e) {
         }
     }
-    
+
     public void testArrayIsMutable() {
         ResultShape<Object[]> shape = new ResultShape<Object[]>(Object[].class);
         assertCategory(shape, false, true, false);
         assertEquals(FillStrategy.Array.class, shape.getStrategy().getClass());
-        
+
         shape.add(int.class, double.class); // will add primitive shapes
         assertCategory(shape, false, true, false);
-        
+
         ResultShape<Object> primitiveShape = new ResultShape<Object>(Object.class, true);
         shape.nest(primitiveShape);
         assertCategory(shape, false, true, false);
-        
+
         ResultShape<Object[]> nonPrimitiveShape = new ResultShape<Object[]>(Object[].class);
         nonPrimitiveShape.add(int.class, double.class);
         assertCategory(nonPrimitiveShape, false, true, false);
@@ -96,7 +96,7 @@ public class TestResultShape extends TestCase {
         ResultShape<Bar> bar2 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
         root.nest(bar2);
         assertEquals("Object[]{Foo, Object, Foo{short, Bar{int}}, Bar}", root.toString());
-        assertEquals(Arrays.asList(Foo.class, Object.class, short.class, int.class, Bar.class), 
+        assertEquals(Arrays.asList(Foo.class, Object.class, short.class, int.class, Bar.class),
                 root.getCompositeTypes());
         assertEquals(Arrays.asList(Foo.class, Object.class, Foo.class, Bar.class), root.getTypes());
         assertEquals(5, root.argLength());
@@ -107,7 +107,7 @@ public class TestResultShape extends TestCase {
         ResultShape<Object[]> root = new ResultShape<Object[]>(Object[].class);
         ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
         bar1.add(int.class);
-        ResultShape<Foo> fooBarConstructor = new ResultShape<Foo>(Foo.class, 
+        ResultShape<Foo> fooBarConstructor = new ResultShape<Foo>(Foo.class,
                 new FillStrategy.NewInstance(constructor(Foo.class, short.class, Bar.class)));
         fooBarConstructor.add(short.class);
         fooBarConstructor.nest(bar1);
@@ -115,12 +115,12 @@ public class TestResultShape extends TestCase {
         root.nest(fooBarConstructor);
         ResultShape<Bar> bar2 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
         root.nest(bar2);
-        
+
         try {
             bar1.nest(fooBarConstructor);
             fail("Expecetd recursive nesting error in nest " + fooBarConstructor + " in " + bar1);
         } catch (IllegalArgumentException e) {
-            
+
         }
     }
 
@@ -133,7 +133,7 @@ public class TestResultShape extends TestCase {
         foo.add(short.class);
         foo.nest(bar);
         assertEquals("Foo{short, Bar{String, Double}}", foo.toString());
-        
+
         //from this array: 200s, "bar1", 12.3d)
         Object[] values = {(short)200, "bar1", 12.3d};
         Class[]  types  = {short.class, String.class, Double.class};
@@ -157,13 +157,13 @@ public class TestResultShape extends TestCase {
         root.nest(fooBarConstr);
         root.nest(bar2);
         assertEquals("Object[]{Foo, Object, Foo{short, Bar{String, Double}}, Bar{double}}", root.toString());
-        
+
         //from this array: new Foo(), new Object(), 200s, "bar1", 12.3d, 45.6d)
         Object[] values = {new Foo(), new Object(), 200, "bar1", 12.3d, 45.6d};
         Class[]  types  = {Foo.class, Object.class, short.class, String.class, Double.class, double.class};
         String[]  aliases  = {"Foo", "Object", "foo-short", "foo-bar-string", "foo-bar-Double", "bar-double"};
         Object[] result = root.pack(values, types, aliases);
-        
+
         assertEquals(4, result.length);
         assertEquals(Foo.class, result[0].getClass());
         assertEquals(Object.class, result[1].getClass());
@@ -182,21 +182,21 @@ public class TestResultShape extends TestCase {
             assertFalse(s + " is primitive", s.isPrimitive());
         if (compound)
             assertTrue(s + " is not compound", s.isCompound());
-        else 
+        else
             assertFalse(s + " is compound", s.isCompound());
         if (nesting)
             assertTrue(s + " is not nesting", s.isNesting());
-        else 
+        else
             assertFalse(s + " is nesting", s.isNesting());
     }
-    
+
     void arrayEquals(Object[] a, Object[] b) {
         assertEquals(a.length, b.length);
         for (int i = 0; i < a.length; i++) {
             assertEquals(i+"-th element not equal", a[i], b[i]);
         }
     }
-    
+
     <T> Constructor<T> constructor(Class<T> t, Class<?>...args) {
         try {
             return t.getConstructor(args);
@@ -211,7 +211,7 @@ public class TestResultShape extends TestCase {
             throw new RuntimeException(e);
         }
     }
-    
+
     public static class Foo {
         private String string;
         private int i;
@@ -223,7 +223,7 @@ public class TestResultShape extends TestCase {
         public String toString() {
             return "Foo(string='"+string+"' i="+i+" short="+shrt+" bar="+b+"";}
     }
-    
+
     public static class Bar {
         private String string;
         private Double Dbl;

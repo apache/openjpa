@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -22,21 +22,21 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class EmployeeName3 {
-    
+
     String fName;
     String lName;
-    
+
     public EmployeeName3() {}
-    
+
     public EmployeeName3(String fName, String lName) {
         this.fName = fName;
         this.lName = lName;
     }
-    
+
     public String getFName() {
         return fName;
     }
-    
+
     public void setFName(String fName) {
         this.fName = fName;
     }
@@ -44,11 +44,11 @@ public class EmployeeName3 {
     public String getLName() {
         return lName;
     }
-    
+
     public void setLName(String lName) {
         this.lName = lName;
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof EmployeeName3)) return false;
         EmployeeName3 other = (EmployeeName3) o;
@@ -57,12 +57,12 @@ public class EmployeeName3 {
             return true;
         return false;
     }
-    
+
     public int hashCode() {
         int ret = 0;
         ret += lName.hashCode();
         ret = 31 * ret + fName.hashCode();
         return ret;
     }
-    
+
 }

@@ -14,10 +14,10 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
- 
+
 
 import javax.persistence.*;
 
@@ -27,23 +27,23 @@ public class Zipcode {
 	protected String zip;
     @Column(length = 20)
 	protected String plusFour;
-	
+
 	public String getZip() {
 		return zip;
 	}
-	
+
 	public void setZip(String zip) {
 		this.zip = zip;
 	}
-	
+
 	public String getPlusFour() {
 		return plusFour;
 	}
-	
+
 	public void setPlusFour(String plusFour) {
 		this.plusFour = plusFour;
 	}
-	
+
 	public boolean equals(Object o) {
 		if (o == this) return true;
 		if (!(o instanceof Zipcode)) return false;
@@ -52,7 +52,7 @@ public class Zipcode {
 		if (!plusFour.equals(z.plusFour)) return false;
 		return true;
 	}
-	
+
 	public int hashCode() {
 		int ret = 0;
 		ret = ret + 31 * zip.hashCode();

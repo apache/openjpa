@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -36,7 +36,7 @@ public class Rider extends AnnuityPersistebleObject implements IRider {
 	private String rule;
 	private Date effectiveDate;
 	private RiderType type;
-	
+
 	@Column(name="EFFECTIVE_DATE")
 	public Date getEffectiveDate() {
 		return effectiveDate;
@@ -52,14 +52,14 @@ public class Rider extends AnnuityPersistebleObject implements IRider {
 	public void setRule(String rule) {
 		this.rule = rule;
 	}
-	
-	@Enumerated(EnumType.STRING)	
+
+	@Enumerated(EnumType.STRING)
 	public RiderType getType() {
 		return type;
 	}
 	public void setType(RiderType type) {
 		this.type = type;
 	}
-	
+
 
 }

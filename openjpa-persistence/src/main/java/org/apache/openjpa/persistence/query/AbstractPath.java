@@ -23,17 +23,17 @@ import java.util.LinkedList;
 /**
  * An abstract path is formed by two parts : the first part is a parent path.
  * The second part can be an attribute or an operation (e.g. KEY() or VALUE())
- * or a join type operation. Based on the exact nature of the second part, 
- * concrete derivation of this class combines the two constituent parts to 
+ * or a join type operation. Based on the exact nature of the second part,
+ * concrete derivation of this class combines the two constituent parts to
  * arrive at complete path name.
- * For example, a navigation path adds the two part with a navigation '.' 
+ * For example, a navigation path adds the two part with a navigation '.'
  * operator, while a OperatorPath will combine the parts as KEY(parent).
- * 
+ *
  * The constituent parts are immutable and supplied at construction. Hence
  * concrete implementations know what exact type they are dealing with, but
  * this receiver maintains it state as more generic type to accommodate
- * concrete types to cast/interpret these state variables. 
- * 
+ * concrete types to cast/interpret these state variables.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -43,19 +43,19 @@ abstract class AbstractPath extends ExpressionImpl implements
 	protected final Object 		  _part2;
 	protected final PathOperator  _operator;
 	protected final QueryDefinitionImpl _owner;
-	
-	protected AbstractPath(QueryDefinitionImpl owner, AbstractPath parent, 
+
+	protected AbstractPath(QueryDefinitionImpl owner, AbstractPath parent,
 	    PathOperator op, Object part2) {
 		_owner = owner;
 		_parent = parent;
 		_part2  = part2;
 		_operator = op;
 	}
-	
+
     // ------------------------------------------------------------------------
     // Path related functions.
     // ------------------------------------------------------------------------
-	
+
 	final QueryDefinitionImpl getOwner() {
 		return _owner;
 	}
@@ -66,7 +66,7 @@ abstract class AbstractPath extends ExpressionImpl implements
 	public AbstractPath getParent() {
 		return _parent;
 	}
-	
+
 	/**
 	 * Gets operator that derived this receiver from its parent.
 	 */
@@ -75,7 +75,7 @@ abstract class AbstractPath extends ExpressionImpl implements
 	}
 
 	/**
-	 * Gets the last segment of this path. 
+	 * Gets the last segment of this path.
 	 * Concrete implementation should return a covariant type.
 	 */
 	public Object getLastSegment() {
@@ -116,12 +116,12 @@ abstract class AbstractPath extends ExpressionImpl implements
 	public Expression type() {
 		return new TypeExpression(this);
 	}
-	
+
 	LinkedList<AbstractPath> split() {
 		return _split(this, new LinkedList<AbstractPath>());
 	}
-	
-	private LinkedList<AbstractPath> _split(AbstractPath path, 
+
+	private LinkedList<AbstractPath> _split(AbstractPath path,
 		LinkedList<AbstractPath> list) {
 		if (path == null)
 			return list;

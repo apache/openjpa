@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.identifier;
 
@@ -33,9 +33,9 @@ public class IdConfigurationTestImpl implements IdentifierConfiguration {
     public IdConfigurationTestImpl() {
         _rules.put("DEFAULT", _defRule);
     }
-    
+
     private IdentifierRule _defRule = new IdentifierRule();
-    
+
     public boolean delimitAll() {
         return false;
     }

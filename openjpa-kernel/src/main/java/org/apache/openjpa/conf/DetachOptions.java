@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.conf;
 
@@ -32,7 +32,7 @@ public abstract class DetachOptions
     private boolean _transient = true;
     private boolean _manager = true;
     private boolean _access = true;
-    
+
     private boolean _liteAutoDetach = false;
     private boolean _detachProxyFields = true;
 
@@ -126,7 +126,7 @@ public abstract class DetachOptions
     public void setAccessUnloaded(boolean val) {
         _access = val;
     }
-    
+
     /**
      * Whether to use lite detachment when auto detaching. This setting only applies when
      * DetachState is set to loaded.
@@ -142,14 +142,14 @@ public abstract class DetachOptions
     public boolean getLiteAutoDetach() {
         return (getDetachState() & DETACH_LOADED) == 1 && _liteAutoDetach;
     }
-    
+
     /**
      * Whether to detach proxy fields.
      */
     public void setDetachProxyFields(boolean b) {
         _detachProxyFields = b;
     }
-    
+
     /**
      * Whether to detach proxy fields.
      */
@@ -191,6 +191,6 @@ public abstract class DetachOptions
 
         public int getDetachState() {
             return DETACH_ALL;
-		}		
+		}
 	}
 }

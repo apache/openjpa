@@ -23,7 +23,7 @@ public class Security1 {
     private long id;
 
     private Embed symbol;
-    
+
     private Country1 country;
 
     private Country1 countryEager;

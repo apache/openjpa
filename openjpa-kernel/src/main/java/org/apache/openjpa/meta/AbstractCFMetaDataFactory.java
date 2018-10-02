@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -530,7 +530,7 @@ public abstract class AbstractCFMetaDataFactory
      * Set the current source file of the given metadata.
      */
     protected void setSourceFile(ClassMetaData meta, File sourceFile) {
-        meta.setSource(sourceFile, meta.getSourceType(), sourceFile != null ? 
+        meta.setSource(sourceFile, meta.getSourceType(), sourceFile != null ?
             sourceFile.getPath() : "");
     }
 
@@ -693,7 +693,7 @@ public abstract class AbstractCFMetaDataFactory
                 if ("file".equals(url.getProtocol())) {
                     File file = AccessController
                         .doPrivileged(J2DoPrivHelper
-                            .getAbsoluteFileAction(new File(url.getFile()))); 
+                            .getAbsoluteFileAction(new File(url.getFile())));
                     if (files != null && files.contains(file)) {
                         continue;
                     } else if ((AccessController
@@ -771,7 +771,7 @@ public abstract class AbstractCFMetaDataFactory
                             log.trace(_loc.get("scanning-jar-url", url));
                         scan(new JarFileURLMetaDataIterator(url,
                             newMetaDataFilter()), cparser, names, true, url);
-                    }                   
+                    }
                 } else if (url.getPath().endsWith(".jar")) {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-jar-at-url", url));
@@ -789,21 +789,21 @@ public abstract class AbstractCFMetaDataFactory
                     // Open an InputStream from the URL and sniff for a zip header.  If it is, then this is
                     // a URL with a jar-formated InputStream, as per the JPA specification.  Otherwise, fall back
                     // to URLMetaDataIterator.
-                    BufferedInputStream is = null; 
-                    
+                    BufferedInputStream is = null;
+
                     try {
                         is = new BufferedInputStream((InputStream) AccessController.
                             doPrivileged(J2DoPrivHelper.openStreamAction(url)));
                     } catch (PrivilegedActionException pae) {
                         throw (IOException) pae.getException();
                     }
-                    
+
                     // Check for zip header magic 0x50 0x4b 0x03 0x04
                     is.mark(0);
-                    boolean zipHeaderMatch = is.read() == 0x50 && is.read() == 0x4b && is.read() == 0x03 && 
+                    boolean zipHeaderMatch = is.read() == 0x50 && is.read() == 0x4b && is.read() == 0x03 &&
                         is.read() == 0x04;
                     is.reset();
-                    
+
                     if (zipHeaderMatch) {
                         // The URL provides a Jar-formatted InputStream, consume it with ZipStreamMetaDataIterator
                         if (log.isTraceEnabled())
@@ -820,7 +820,7 @@ public abstract class AbstractCFMetaDataFactory
                             log.trace(_loc.get("scan-found-names", newNames, url));
                         names.addAll(newNames);
                         mapPersistentTypeNames(url, clss);
-                    }                    
+                    }
                 }
             }
         }
@@ -831,7 +831,7 @@ public abstract class AbstractCFMetaDataFactory
                 rsrc = (String) itr.next();
                 if (rsrc.endsWith(".jar")) {
                     url = AccessController.doPrivileged(
-                        J2DoPrivHelper.getResourceAction(loader, rsrc)); 
+                        J2DoPrivHelper.getResourceAction(loader, rsrc));
                     if (url != null) {
                         if (log.isTraceEnabled())
                             log.trace(_loc.get("scanning-jar-stream-url", url));
@@ -856,7 +856,7 @@ public abstract class AbstractCFMetaDataFactory
                     if (conf instanceof OpenJPAConfigurationImpl)
                         peMap = ((OpenJPAConfigurationImpl)conf).getPersistenceEnvironment();
                     URL puUrl = peMap == null ? null : (URL) peMap.get(PERSISTENCE_UNIT_ROOT_URL);
-                    List<String> mappingFileNames = 
+                    List<String> mappingFileNames =
                         peMap == null ? null : (List<String>) peMap.get(MAPPING_FILE_NAMES);
                     List<URL> jars = peMap == null ? null : (List<URL>)peMap.get(JAR_FILE_URLS);
                     String puUrlString = puUrl == null ? null : puUrl.toString();
@@ -934,7 +934,7 @@ public abstract class AbstractCFMetaDataFactory
 
         if (log.isTraceEnabled())
             log.trace(_loc.get("parse-found-names", names));
-        
+
         return names;
     }
 
@@ -963,7 +963,7 @@ public abstract class AbstractCFMetaDataFactory
             names.addAll(newNames);
         }
     }
-    
+
     /**
      * Decodes a URL-encoded path string.  For example, an encoded
      * space (%20) is decoded into a normal space (' ') character.

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.event;
 
@@ -69,7 +69,7 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         emf = null;
         super.tearDown();
     }
-    
+
     public void testQuery() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) emf.createEntityManager();
         em.addTransactionListener(this);
@@ -81,8 +81,8 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
             assertNull(ae.getName());
         }
         else if (dict instanceof SybaseDictionary) {
-            // Sybase converts empty strings to " " 
-            assertEquals(" ", ae.getName()); 
+            // Sybase converts empty strings to " "
+            assertEquals(" ", ae.getName());
         }
         else {
             assertEquals("", ae.getName());
@@ -101,7 +101,7 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
 
         tran.begin();
         tran.commit();
-        em.clear(); 
+        em.clear();
         ae = em.find(AnEntity.class, PKID);
         assertEquals("AvaAva", ae.getName());
         assertEquals(3, ae.getVersion());
@@ -126,8 +126,8 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         em.clear();
 
         tran.begin();
-        tran.commit(); 
-        
+        tran.commit();
+
         // when BeforeCommit was fired AE was not managed. As a result its state is out of sync with the database.
         assertEquals("Ava", ae.getName());
         ae = doQuery(em);

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -35,8 +35,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-
-import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Utility operations on files.
@@ -88,7 +86,7 @@ public class Files {
 
         // create new file object copy so we don't modify the original
         String path = AccessController.doPrivileged(
-            J2DoPrivHelper.getAbsolutePathAction(backup)); 
+            J2DoPrivHelper.getAbsolutePathAction(backup));
         File clone = new File(path);
         File orig = new File(path.substring(0, path.length() - 1));
         if (!(AccessController.doPrivileged(
@@ -132,7 +130,7 @@ public class Files {
             name = name.substring(0, innerIdx);
 
         URL rsrc = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(cls, name + ext)); 
+            J2DoPrivHelper.getResourceAction(cls, name + ext));
         if (rsrc != null && rsrc.getProtocol().equals("file"))
             return new File(URLDecoder.decode(rsrc.getFile()));
         return null;
@@ -202,7 +200,7 @@ public class Files {
             loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         URL url = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(loader, name)); 
+            J2DoPrivHelper.getResourceAction(loader, name));
         if (url != null) {
             String urlFile = url.getFile();
             if (urlFile != null) {
@@ -306,7 +304,7 @@ public class Files {
                 J2DoPrivHelper.newFileInputStreamAction(from));
             BufferedInputStream inbuf = new BufferedInputStream(in);
             out = AccessController.doPrivileged(
-                J2DoPrivHelper.newFileOutputStreamAction(to)); 
+                J2DoPrivHelper.newFileOutputStreamAction(to));
             BufferedOutputStream outbuf = new BufferedOutputStream(out);
             for (int b; (b = inbuf.read()) != -1; outbuf.write(b)) ;
             outbuf.flush();

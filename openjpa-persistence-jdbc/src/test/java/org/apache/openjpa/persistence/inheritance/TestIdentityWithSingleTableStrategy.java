@@ -28,15 +28,15 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Tests entities obtained via find(), getReference() or navigated to via
  * relation traversal refers to the same instances.
- * 
+ *
  * Original reported in the context of entities of a inheritance hierarchy with
  * SINGLE_TABLE strategy.
- * 
+ *
  * <A HREF="http://issues.apache.org/jira/browse/OPENJPA-677">OPENJPA-677</A>
- * 
+ *
  * @author Przemek Koprowski
  * @author Pinaki Poddar
- * 
+ *
  */
 public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 	private Admin admin;

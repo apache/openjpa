@@ -25,15 +25,15 @@ import java.util.LinkedList;
 public class CaseExpressionImpl implements CaseExpression, Visitable {
 	private LinkedList<WhenClause> _whens = new LinkedList<WhenClause>();
 	private final Object _caseOperand;
-	
+
 	public CaseExpressionImpl() {
 		this(null);
 	}
-	
+
 	public CaseExpressionImpl(Object caseOperand) {
 		_caseOperand = caseOperand;
 	}
-	
+
 	public Expression elseCase(Expression arg) {
 		return new ElseExpression(this, arg);
 	}
@@ -159,19 +159,19 @@ public class CaseExpressionImpl implements CaseExpression, Visitable {
 		_whens.add(clause);
 		return this;
 	}
-	
+
 	void assertWhenState() {
 		boolean ok = _whens.isEmpty() || _whens.getLast().hasThen();
 		if (!ok)
             throw new IllegalStateException("when() can not be called now");
 	}
-	
+
 	void assertThenState() {
 		boolean ok = !_whens.isEmpty() && !_whens.getLast().hasThen();
 		if (!ok)
             throw new IllegalStateException("then() can not be called now");
 	}
-	
+
 	public String asExpression(AliasContext ctx) {
 		StringBuilder tmp = new StringBuilder("CASE ");
 		if (_caseOperand != null) {
@@ -182,20 +182,20 @@ public class CaseExpressionImpl implements CaseExpression, Visitable {
 		}
 		return tmp.toString();
 	}
-	
+
 	public String asProjection(AliasContext ctx) {
 		return asExpression(ctx);
 	}
-	
+
 	public String asJoinable(AliasContext ctx) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	public String getAliasHint(AliasContext ctx) {
 		throw new UnsupportedOperationException();
 	}
-	
-	
+
+
 
 	String toJPQL(AliasContext ctx, Object o) {
 		if (o instanceof Visitable) {

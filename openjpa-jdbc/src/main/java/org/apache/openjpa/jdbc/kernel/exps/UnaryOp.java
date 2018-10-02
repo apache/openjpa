@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -47,7 +47,7 @@ abstract class UnaryOp
     public UnaryOp(Val val) {
         _val = val;
     }
-    
+
     public UnaryOp(Val val, boolean noParen) {
         _val = val;
         _noParen = noParen;
@@ -74,7 +74,7 @@ abstract class UnaryOp
     public void setImplicitType(Class type) {
         _cast = type;
     }
-    
+
     public boolean getNoParen() {
         return _noParen;
     }
@@ -87,14 +87,14 @@ abstract class UnaryOp
         return _val.initialize(sel, ctx, flags);
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
         if (isAggregate())
             sel.setAggregate(true);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         _val.selectColumns(sel, ctx, state, true);
     }
@@ -103,7 +103,7 @@ abstract class UnaryOp
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
@@ -130,7 +130,7 @@ abstract class UnaryOp
         return Filters.convert(value, type);
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         _val.calculateValue(sel, ctx, state, null, null);
     }
@@ -139,12 +139,12 @@ abstract class UnaryOp
         return 1;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         sql.append(getOperator());
         sql.append(_noParen ? " " : "(");
         _val.appendTo(sel, ctx, state, sql, 0);
-       
+
         // OPENJPA-2149: If _val (Val) is an 'Arg', we need to get the Val[]
         // from it, and the single element it contains because the
         // 'addCastForParam' method gets the 'type' from the Val it receives.
@@ -176,7 +176,7 @@ abstract class UnaryOp
         _val.acceptVisit(visitor);
         visitor.exit(this);
     }
-    
+
     // OPENJPA-1794
     protected boolean nullableValue(ExpContext ctx, ExpState state) {
         return false;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -22,22 +22,22 @@ import static org.apache.openjpa.persistence.query.PathOperator.NAVIGATION;
 
 /**
  * Denotes a path used in fetch join. Simply wraps a Navigation Path.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
-public class FetchPath extends AbstractDomainObject 
+public class FetchPath extends AbstractDomainObject
     implements FetchJoinObject, Visitable {
     FetchPath(AbstractDomainObject parent, PathOperator joinType, String attr) {
 		super(parent.getOwner(), parent, joinType, attr);
 	}
-	
+
 	@Override
 	public String asJoinable(AliasContext ctx) {
-		return getOperator() 
-		     + getParent().asProjection(ctx) 
-		     + NAVIGATION 
-		     + getLastSegment() 
+		return getOperator()
+		     + getParent().asProjection(ctx)
+		     + NAVIGATION
+		     + getLastSegment()
 		     + SPACE;
 	}
 

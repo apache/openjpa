@@ -21,12 +21,12 @@ package org.apache.openjpa.kernel;
 /**
  * An interface to create objects that are used by result processing.
  * @see FillStrategy.Factory
- * 
+ *
  * @author Pinaki Poddar
  * @since 2.0.0
- * 
+ *
  * @param <T> the type created by this factory.
- * 
+ *
  */
 public interface ObjectFactory<T> {
     public T newInstance();

@@ -34,10 +34,10 @@ import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="TYPE", discriminatorType=DiscriminatorType.STRING)
 @DiscriminatorValue("StrA")
-public class PIdJTSDMSCRootEntity 
+public class PIdJTSDMSCRootEntity
     extends PrimitiveIDMappedSuperclass implements RootEntity {
     private String rootEntityData;
-    
+
     public String getRootEntityData() {
         return rootEntityData;
     }

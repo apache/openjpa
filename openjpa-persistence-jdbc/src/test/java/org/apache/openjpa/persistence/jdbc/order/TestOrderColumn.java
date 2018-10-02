@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -39,10 +39,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestOrderColumn extends SingleEMFTestCase {   
-    
+public class TestOrderColumn extends SingleEMFTestCase {
+
     private Student[] students = new Student[12];
-    
+
     public void setUp() {
         super.setUp(
                 CLEAR_TABLES,
@@ -61,13 +61,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
     /*
      * Verifies that a collection remains contiguous and element
      * indexes are reordered if an element is removed for a
-     * OneToMany relationship 
+     * OneToMany relationship
      */
     public void testOneToManyElementRemoval() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
-        validateOrderColumnName(BattingOrder.class, "batters", 
+        validateOrderColumnName(BattingOrder.class, "batters",
             "batters_ORDER");// "batters_ORDER");
 
         // Create some data
@@ -80,7 +80,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             playersArr.add(players[i]);
         }
         em.getTransaction().commitAndResume();
-                      
+
         // Persist the related entities
         BattingOrder order = new BattingOrder();
         order.setBatters(playersArr);
@@ -88,20 +88,20 @@ public class TestOrderColumn extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.refresh(order);
         em.clear();
-        
+
         // Verify order is correct.
         BattingOrder newOrder = em.find(BattingOrder.class, order.id);
         assertNotNull(newOrder);
         for (int i = 0; i < 10 ; i++) {
             assertEquals(newOrder.getBatters().get(i), (players[i]));
         }
-        
+
         // Remove some items
         em.getTransaction().begin();
         newOrder.getBatters().remove(1);
         playersArr.remove(1);
         newOrder.getBatters().remove(5);
-        playersArr.remove(5);        
+        playersArr.remove(5);
         em.getTransaction().commit();
         em.clear();
 
@@ -115,23 +115,23 @@ public class TestOrderColumn extends SingleEMFTestCase {
         }
 
         // Stronger assertion via INDEX value
-        validateIndexAndValues(em, "BattingOrder", "batters", 0, 
-            playersArr.toArray(), "id", 
+        validateIndexAndValues(em, "BattingOrder", "batters", 0,
+            playersArr.toArray(), "id",
             order.id);
-        
-        em.close();        
+
+        em.close();
     }
 
     /*
      * Verifies that a collection remains contiguous and element
      * indexes are reordered if an element is removed for a
-     * OneToMany relationship 
+     * OneToMany relationship
      */
     public void testOneToManyBiDirElementRemoval() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
-        validateOrderColumnName(BiOrderMappedByEntity.class, "bo2mEntities", 
+        validateOrderColumnName(BiOrderMappedByEntity.class, "bo2mEntities",
             "bo2mEntities_ORDER");
 
         // Create some data
@@ -153,18 +153,18 @@ public class TestOrderColumn extends SingleEMFTestCase {
         for (BiOrderEntity boe : boea) {
             em.persist(boe);
         }
-        em.getTransaction().commit();        
+        em.getTransaction().commit();
         em.refresh(bome);
         em.clear();
-        
+
         // Verify order is correct.
-        BiOrderMappedByEntity newBome = em.find(BiOrderMappedByEntity.class, 
+        BiOrderMappedByEntity newBome = em.find(BiOrderMappedByEntity.class,
             bome.getId());
         assertNotNull(newBome);
         for (int i = 0; i < 5 ; i++) {
             assertEquals(newBome.getBo2mEntities().get(i), boea.get(i));
         }
-        
+
         // Remove an item
         em.getTransaction().begin();
         newBome.getBo2mEntities().get(2).setEntity(null);
@@ -183,26 +183,26 @@ public class TestOrderColumn extends SingleEMFTestCase {
         }
 
         // Stronger assertion via INDEX value
-        validateIndexAndValues(em, "BiOrderMappedByEntity", "bo2mEntities", 0, 
-            boea.toArray(), "id", 
+        validateIndexAndValues(em, "BiOrderMappedByEntity", "bo2mEntities", 0,
+            boea.toArray(), "id",
             bome.getId());
-        
+
         em.close();
     }
 
     /*
      * Verifies that a collection remains contiguous and element
      * indexes are reordered if an element is removed for an
-     * ElementCollection 
+     * ElementCollection
      */
     public void testElementCollectionElementRemoval() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         Game game = new Game();
-        
+
         // Verify field name is the default via fm
-        validateOrderColumnName(Game.class, "rainDates", 
-            "dateOrder"); 
-        
+        validateOrderColumnName(Game.class, "rainDates",
+            "dateOrder");
+
         // Create a list of basic types
         java.sql.Date dates[] = new java.sql.Date[10];
         ArrayList<java.sql.Date> rainDates = new ArrayList<java.sql.Date>(10);
@@ -216,13 +216,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
             rainDates.add(dates[i]);
         }
         game.setRainDates(rainDates);
-        
+
         em.getTransaction().begin();
         em.persist(game);
         em.getTransaction().commit();
-               
+
         em.clear();
-        
+
         Game newGame = em.find(Game.class, game.getId());
         assertNotNull(newGame);
         // Verify the order
@@ -230,7 +230,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             assertEquals(game.getRainDates().get(i),
                 rainDates.get(i));
         }
-        
+
         // Remove some dates
         em.getTransaction().begin();
         newGame.getRainDates().remove(4);
@@ -249,23 +249,23 @@ public class TestOrderColumn extends SingleEMFTestCase {
             assertEquals(newGame.getRainDates().get(i).toString(),
                 rainDates.get(i).toString());
         }
-        
+
         // Stronger assertion via INDEX value
-        validateCollIndexAndValues(em, "Game", "rainDates", 0, 
-            newGame.getRainDates().toArray(), "id", 
+        validateCollIndexAndValues(em, "Game", "rainDates", 0,
+            newGame.getRainDates().toArray(), "id",
             newGame.getId());
-        
+
         em.close();
     }
     /*
      * Verifies that a collection remains contiguous and element
-     * indexes are reordered if an element is inserted into the collection. 
+     * indexes are reordered if an element is inserted into the collection.
      */
     public void testOneToManyElementInsert() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
-        validateOrderColumnName(BattingOrder.class, "batters", 
+        validateOrderColumnName(BattingOrder.class, "batters",
             "batters_ORDER");// "batters_ORDER");
 
         // Create some data
@@ -278,30 +278,30 @@ public class TestOrderColumn extends SingleEMFTestCase {
             playersArr.add(players[i]);
         }
         em.getTransaction().commitAndResume();
-                      
+
         // Persist the related entities
         BattingOrder order = new BattingOrder();
         order.setBatters(playersArr);
         em.persist(order);
         em.getTransaction().commitAndResume();
         em.refresh(order);
-        
+
         em.getTransaction().commit();
         em.clear();
-        
+
         // Verify order is correct.
         BattingOrder newOrder = em.find(BattingOrder.class, order.id);
         assertNotNull(newOrder);
         for (int i = 0; i < 10 ; i++) {
             assertEquals(newOrder.getBatters().get(i), (players[i]));
         }
-                
+
         Player p = new Player("PlayerNew", 150);
         playersArr.add(2, p);
 
         Player p2 = new Player("PlayerNew2", 151);
         playersArr.add(p2);
-        // Add an item at index 2 and at the end of the list 
+        // Add an item at index 2 and at the end of the list
         em.getTransaction().begin();
         newOrder.getBatters().add(2, p);
         newOrder.getBatters().add(p2);
@@ -318,25 +318,25 @@ public class TestOrderColumn extends SingleEMFTestCase {
         }
 
         // Stronger assertion via INDEX value
-        validateIndexAndValues(em, "BattingOrder", "batters", 0, 
-            playersArr.toArray(), "id", 
+        validateIndexAndValues(em, "BattingOrder", "batters", 0,
+            playersArr.toArray(), "id",
             order.id);
-        
-        em.close();        
+
+        em.close();
     }
     /*
      * Verifies that a collection remains contiguous and element
      * indexes are reordered if an element is inserted into an
-     * ElementCollection 
+     * ElementCollection
      */
     public void testElementCollectionElementInsert() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         Game game = new Game();
-        
+
         // Verify field name is the default via fm
-        validateOrderColumnName(Game.class, "rainDates", 
-            "dateOrder"); 
-        
+        validateOrderColumnName(Game.class, "rainDates",
+            "dateOrder");
+
         // Create a list of basic types
         java.sql.Date dates[] = new java.sql.Date[10];
         ArrayList<java.sql.Date> rainDates = new ArrayList<java.sql.Date>(10);
@@ -350,13 +350,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
             rainDates.add(dates[i]);
         }
         game.setRainDates(rainDates);
-        
+
         em.getTransaction().begin();
         em.persist(game);
         em.getTransaction().commit();
-               
+
         em.clear();
-        
+
         Game newGame = em.find(Game.class, game.getId());
         assertNotNull(newGame);
         // Verify the order
@@ -364,13 +364,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
             assertEquals(game.getRainDates().get(i),
                 rainDates.get(i));
         }
-        
+
         // Add some dates
         today.set(2009, 1, 15);
         rainDates.add(1, new java.sql.Date(today.getTimeInMillis()));
         today.set(2009, 1, 20);
         rainDates.add(6, new java.sql.Date(today.getTimeInMillis()));
-        
+
         em.getTransaction().begin();
         game.getRainDates().add(1, rainDates.get(1));
         game.getRainDates().add(6, rainDates.get(6));
@@ -386,11 +386,11 @@ public class TestOrderColumn extends SingleEMFTestCase {
             assertEquals(game.getRainDates().get(i),
                 rainDates.get(i));
         }
-        
+
         em.close();
     }
 
-    
+
     /*
      * Validates use of OrderColumn with OneToMany using the default
      * order column name
@@ -399,7 +399,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
-        validateOrderColumnName(BattingOrder.class, "batters", 
+        validateOrderColumnName(BattingOrder.class, "batters",
             "batters_ORDER");// "batters_ORDER");
 
         // Create some data
@@ -410,14 +410,14 @@ public class TestOrderColumn extends SingleEMFTestCase {
             em.persist(players[i]);
         }
         em.getTransaction().commitAndResume();
-        
-        
+
+
         // Add it to the persistent list in reverse order
         ArrayList<Player> playersArr = new ArrayList<Player>();
         for (int i = 0; i < 10 ; i++) {
             playersArr.add(players[9 - i]);
         }
-        
+
         // Persist the related entities
         BattingOrder order = new BattingOrder();
         order.setBatters(playersArr);
@@ -425,17 +425,17 @@ public class TestOrderColumn extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.refresh(order);
         em.clear();
-        
+
         // Verify order is correct.
         BattingOrder newOrder = em.find(BattingOrder.class, order.id);
         assertNotNull(newOrder);
         for (int i = 0; i < 10 ; i++) {
             assertEquals(newOrder.getBatters().get(i), (players[9 - i]));
         }
-        
+
         // Add another entity and check order
         Player newPlayer = new Player("New Player", 99);
-        
+
         em.getTransaction().begin();
         newOrder.getBatters().add(9, newPlayer);
         em.getTransaction().commit();
@@ -451,7 +451,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             else if (i == 10)
               assertEquals(newOrder.getBatters().get(i), players[0]);
         }
-        
+
         em.close();
     }
 
@@ -461,9 +461,9 @@ public class TestOrderColumn extends SingleEMFTestCase {
      */
     public void testOneToManyNamed() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         // Verify field name is the default via fm
-        validateOrderColumnName(BattingOrder.class, "pinch_hitters", 
+        validateOrderColumnName(BattingOrder.class, "pinch_hitters",
             "pinch_order");
 
         // Create some data
@@ -474,25 +474,25 @@ public class TestOrderColumn extends SingleEMFTestCase {
             em.persist(players[i]);
         }
         em.getTransaction().commitAndResume();
-                
+
         // Add it to the persistent list in reverse order
         ArrayList<Player> pinchArr = new ArrayList<Player>();
         for (int i = 0; i < players.length ; i++) {
             pinchArr.add(players[players.length - 1 - i]);
         }
-        
+
         // Persist the related entities
         BattingOrder order = new BattingOrder();
         order.setPinchHitters(pinchArr);
         em.persist(order);
-        em.getTransaction().commit();        
+        em.getTransaction().commit();
         em.clear();
-        
+
         // Verify order is correct.
         BattingOrder newOrder = em.find(BattingOrder.class, order.id);
         assertNotNull(newOrder);
         for (int i = 0; i < players.length ; i++) {
-            assertEquals(newOrder.getPinchHitters().get(i), 
+            assertEquals(newOrder.getPinchHitters().get(i),
                     (players[players.length - 1 - i]));
         }
         em.close();
@@ -503,11 +503,11 @@ public class TestOrderColumn extends SingleEMFTestCase {
      */
     public void testManyToMany() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         // Verify field name is the default via fm
-        validateOrderColumnName(Trainer.class, "playersTrained", 
-            "trainingOrder"); 
-        
+        validateOrderColumnName(Trainer.class, "playersTrained",
+            "trainingOrder");
+
         // Create some data
         Player[] players = new Player[25];
         em.getTransaction().begin();
@@ -533,7 +533,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             em.persist(trainers[i]);
         }
         em.getTransaction().commit();
-        
+
         em.clear();
         // Verify order is correct.
         for (int i = 0; i < trainers.length; i++) {
@@ -543,7 +543,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             assertNotNull(trainedPlayers);
             assertEquals(trainedPlayers.size(), 5);
             for (int j = trainedPlayers.size() - 1; j >=0  ; j--) {
-                assertEquals(trainedPlayers.get(j), 
+                assertEquals(trainedPlayers.get(j),
                     (players[(i * 5) + (4 - j)]));
             }
         }
@@ -554,17 +554,17 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * Validates use of OrderColumn with ManyToMany bi-directional with
      * both sides of the relationship maintaining order.  This test is not
      * currently run since work is underway to determine the feasiblity of
-     * bi-directional ordering.  
+     * bi-directional ordering.
      */
     public void validateBiOrderedManyToMany() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
-        // Verify field name is the default via fm
-        validateOrderColumnName(Game.class, "playedIn", 
-            "playerOrder"); 
 
-        validateOrderColumnName(Player.class, "gamesPlayedIn", 
-            "playedInOrder"); 
+        // Verify field name is the default via fm
+        validateOrderColumnName(Game.class, "playedIn",
+            "playerOrder");
+
+        validateOrderColumnName(Player.class, "gamesPlayedIn",
+            "playedInOrder");
 
         // Create some data
         Player[] players = new Player[25];
@@ -591,7 +591,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             em.persist(games[i]);
         }
         em.getTransaction().commit();
-        
+
         em.clear();
         // Verify order is correct.
         for (int i = 0; i < games.length; i++) {
@@ -602,16 +602,16 @@ public class TestOrderColumn extends SingleEMFTestCase {
             assertEquals(playedIn.size(), 5);
             for (int j = playedIn.size() - 1; j >=0  ; j--) {
                 Player p = playedIn.get(j);
-                assertEquals(p, 
+                assertEquals(p,
                     (players[(i * 5) + (4 - j)]));
                 for (int k = 0; k < p.getGamesPlayedIn().size(); k++) {
                     assertNotNull(p.getGamesPlayedIn());
                     assertEquals(p.getGamesPlayedIn().get(k),
                             games[k]);
                 }
-            }            
+            }
         }
-        em.close();        
+        em.close();
     }
 
     /*
@@ -619,14 +619,14 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * elements
      */
     public void testElementCollectionBasic() {
-        
+
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         Game game = new Game();
-        
+
         // Verify field name is the default via fm
-        validateOrderColumnName(Game.class, "rainDates", 
-            "dateOrder"); 
-        
+        validateOrderColumnName(Game.class, "rainDates",
+            "dateOrder");
+
         // Create a list of basic types
         java.sql.Date dates[] = new java.sql.Date[10];
         ArrayList<java.sql.Date> rainDates = new ArrayList<java.sql.Date>(10);
@@ -640,13 +640,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
             rainDates.add(dates[i]);
         }
         game.setRainDates(rainDates);
-        
+
         em.getTransaction().begin();
         em.persist(game);
         em.getTransaction().commit();
 
         em.clear();
-        
+
         Game newGame = em.find(Game.class, game.getId());
         assertNotNull(newGame);
         // Verify the order
@@ -663,17 +663,17 @@ public class TestOrderColumn extends SingleEMFTestCase {
     public void testElementCollectionEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         Game game = new Game();
-        
+
         // Verify field name is the default via fm
-        validateOrderColumnName(Game.class, "innings", 
-            "inningOrder"); 
-        
+        validateOrderColumnName(Game.class, "innings",
+            "inningOrder");
+
         // Create a list of basic types
         Inning innings[] = new Inning[9];
         Collection<Inning> inningCol = new ArrayList<Inning>();
         Random rnd = new Random();
         for (int i = 8; i >= 0; i--) {
-            innings[i] = new Inning(i, Math.abs(rnd.nextInt()) % 10, 
+            innings[i] = new Inning(i, Math.abs(rnd.nextInt()) % 10,
                 Math.abs(rnd.nextInt()) % 10);
         }
         // Add in reverse (correct) order
@@ -681,13 +681,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
             inningCol.add(innings[i]);
         }
         game.setInnings(inningCol);
-        
+
         em.getTransaction().begin();
         em.persist(game);
         em.getTransaction().commit();
 
         em.clear();
-        
+
         Game newGame = em.find(Game.class, game.getId());
         assertNotNull(newGame);
         // Verify the order
@@ -697,46 +697,46 @@ public class TestOrderColumn extends SingleEMFTestCase {
             assertEquals(inningArr[i],
                 innings[8-i]);
         }
-        em.close();        
+        em.close();
     }
 
 
     /*
-     * Validates the use of the updatable on OrderColumn.  insertable=false 
-     * simply means the order column is omitted from the sql. Having the 
-     * appropriate field mapping will enforce that. 
+     * Validates the use of the updatable on OrderColumn.  insertable=false
+     * simply means the order column is omitted from the sql. Having the
+     * appropriate field mapping will enforce that.
      */
     public void testOrderColumnInsertable() {
-        
+
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         // Create a collection using secondary entities
 
         // Verify field name is the default via fm
-        validateOrderColumnName(BattingOrder.class, "titles", 
+        validateOrderColumnName(BattingOrder.class, "titles",
             "titles_ORDER");
 
-        validateOrderColumnInsertable(emf, BattingOrder.class, "fixedBatters", 
+        validateOrderColumnInsertable(emf, BattingOrder.class, "fixedBatters",
                 false);
-        
+
         em.close();
     }
-    
+
     /*
-     * Validates the use of the updatable on OrderColumn.  updatable=false 
-     * simply means the order column is omitted from the sql. Having the 
-     * appropriate field mapping will enforce that. 
+     * Validates the use of the updatable on OrderColumn.  updatable=false
+     * simply means the order column is omitted from the sql. Having the
+     * appropriate field mapping will enforce that.
      */
     public void testOrderColumnUpdateable() {
-        
+
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
-        validateOrderColumnName(BattingOrder.class, "titles", 
+        validateOrderColumnName(BattingOrder.class, "titles",
             "titles_ORDER");
 
-        validateOrderColumnUpdatable(emf, BattingOrder.class, "titles", 
+        validateOrderColumnUpdatable(emf, BattingOrder.class, "titles",
             false);
-        
+
         em.close();
     }
 
@@ -744,87 +744,87 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * Validates the use of the OrderColumn with o2o, o2m, m2m relationships
      * and collection table - with and without join tables.
      */
-    public void testOrderColumnTable() {   
-        
+    public void testOrderColumnTable() {
+
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
-        validateOrderColumnTable(emf, Owner.class, "cars", 
-            "OC_CAR", "car_o2m_order"); 
-                
-        validateOrderColumnTable(emf, Owner.class, "homes", 
-             "home_o2m_table", "homes_ORDER"); 
+        validateOrderColumnTable(emf, Owner.class, "cars",
+            "OC_CAR", "car_o2m_order");
 
-        validateOrderColumnTable(emf, Owner.class, "bikeColl", 
-             "bike_table", "bike_coll_order"); 
+        validateOrderColumnTable(emf, Owner.class, "homes",
+             "home_o2m_table", "homes_ORDER");
 
-        validateOrderColumnTable(emf, Owner.class, "widgets", 
-                "widget_m2m_table", "widgets_ORDER"); 
+        validateOrderColumnTable(emf, Owner.class, "bikeColl",
+             "bike_table", "bike_coll_order");
+
+        validateOrderColumnTable(emf, Owner.class, "widgets",
+                "widget_m2m_table", "widgets_ORDER");
 
         Owner owner = new Owner();
         Collection<Car> cars = new ArrayList<Car>();
         Collection<Home> homes = new ArrayList<Home>();
         Collection<Bicycle> bicycles = new ArrayList<Bicycle>();
         Collection<Widget> widgets = new ArrayList<Widget>();
-        Collection<Owner> owners = new ArrayList<Owner>(); 
+        Collection<Owner> owners = new ArrayList<Owner>();
         owner.setCars(cars);
         owner.setHomes(homes);
         owner.setBikeColl(bicycles);
         owner.setWidgets(widgets);
-        
+
         for (int i = 0;  i < 5; i++){
             Car car = new Car(2000 + 1, "Make"+i, "Model"+i);
             car.setOwner(owner);
             cars.add(car);
-            
+
             Home home = new Home(2000 + i);
             homes.add(home);
-            
+
             Bicycle bike = new Bicycle("Brand"+i, "Model"+i);
-            bicycles.add(bike);   
-            
+            bicycles.add(bike);
+
             Widget widget = new Widget("Name"+i);
             widgets.add(widget);
             widget.setOwners(owners);
         }
-        
+
         Object[] carArr = cars.toArray();
         Object[] homeArr = homes.toArray();
         Object[] bikeArr = bicycles.toArray();
         Object[] widgetArr = widgets.toArray();
-        
+
         em.getTransaction().begin();
         em.persist(owner);
         em.getTransaction().commit();
         String oid = owner.getId();
-        
+
         em.clear();
-        
+
         // Run queries to ensure the query component uses the correct tables
-        validateIndexAndValues(em, "Owner", "cars", 0, 
-                carArr, "id", 
+        validateIndexAndValues(em, "Owner", "cars", 0,
+                carArr, "id",
                 oid);
 
-        validateIndexAndValues(em, "Owner", "homes", 0, 
-                homeArr, "id", 
+        validateIndexAndValues(em, "Owner", "homes", 0,
+                homeArr, "id",
                 oid);
 
-        validateIndexAndValues(em, "Owner", "widgets", 0, 
-                widgetArr, "id", 
+        validateIndexAndValues(em, "Owner", "widgets", 0,
+                widgetArr, "id",
                 oid);
 
-        validateIndexAndValues(em, "Owner", "bikeColl", 0, 
-                bikeArr, "id", 
+        validateIndexAndValues(em, "Owner", "bikeColl", 0,
+                bikeArr, "id",
                 oid);
-        
+
         em.close();
-    }    
+    }
 
     /*
      * Validates the use of order column (via INDEX) in the predicate of a
      * JPQL query.
      */
     public void testOrderColumnPredicateQuery() {
-        
+
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Query and verify the result
@@ -851,8 +851,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
         qry.setParameter("widx", 1);
         idx0 = (Student)qry.getSingleResult();
         assertNotNull(idx0);
-        assertEquals(idx0, students[10]);  
-        
+        assertEquals(idx0, students[10]);
+
         em.close();
     }
 
@@ -861,7 +861,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * a JPQL query.
      */
     public void testOrderColumnProjectionQuery() {
-        
+
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Query and verify the result
@@ -869,7 +869,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             " WHERE c.name = :cname ORDER BY w";
         Query qry = em.createQuery(queryString);
         qry.setParameter("cname", "Course A");
-        List rlist = qry.getResultList();       
+        List rlist = qry.getResultList();
         assertNotNull(rlist);
         assertEquals(2, rlist.size());
         assertEquals(0l, rlist.get(0));
@@ -879,13 +879,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
             " WHERE c.name = :cname AND w.name = 'Student11'";
         qry = em.createQuery(queryString);
         qry.setParameter("cname", "Course B");
-        Long idx = (Long)qry.getSingleResult();       
+        Long idx = (Long)qry.getSingleResult();
         assertNotNull(idx);
         assertEquals((Long)idx, (Long)1L);
-        
+
         em.close();
     }
-    
+
     /*
      * Create the data used by the query tests
      */
@@ -897,11 +897,11 @@ public class TestOrderColumn extends SingleEMFTestCase {
         }
         Course courseA = new Course("Course A");
         Course courseB = new Course("Course B");
-        
+
         HashSet<Course> courses = new HashSet<Course>();
         courses.add(courseA);
         courses.add(courseB);
-        HashSet<Student> cAstudents = new HashSet<Student>(); 
+        HashSet<Student> cAstudents = new HashSet<Student>();
         for (int i = 0; i < 5; i++) {
             cAstudents.add(students[i]);
             students[i].setCourses(courses);
@@ -911,8 +911,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
         cAwaitlist.add(students[11]);
         cAwaitlist.add(students[10]);
         courseA.setWaitList(cAwaitlist);
-        
-        HashSet<Student> cBstudents = new HashSet<Student>(); 
+
+        HashSet<Student> cBstudents = new HashSet<Student>();
         for (int i = 5; i < 10; i++) {
             cBstudents.add(students[i]);
         }
@@ -921,15 +921,15 @@ public class TestOrderColumn extends SingleEMFTestCase {
         cBwaitlist.add(students[10]);
         cBwaitlist.add(students[11]);
         courseB.setWaitList(cBwaitlist);
-        
+
         em.getTransaction().begin();
         em.persist(courseA);
         em.persist(courseB);
         em.getTransaction().commit();
         em.close();
     }
-    
-    private void validateIndexAndValues(OpenJPAEntityManagerSPI em, 
+
+    private void validateIndexAndValues(OpenJPAEntityManagerSPI em,
             String entity, String indexedCol, int base, Object[] objs, String
             idField, Object idValue) {
         String queryString =
@@ -938,10 +938,10 @@ public class TestOrderColumn extends SingleEMFTestCase {
         em.clear();
         Query qry = em.createQuery(queryString);
         qry.setParameter("idVal", idValue);
-        List rlist = qry.getResultList();  
-        
+        List rlist = qry.getResultList();
+
         assertNotNull(rlist);
-        assertEquals(objs.length, rlist.size()); 
+        assertEquals(objs.length, rlist.size());
         TreeMap<Long, Object> objMap = new TreeMap<Long, Object>();
         for (int i = 0; i < objs.length; i++)
         {
@@ -956,7 +956,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
         }
     }
 
-    private void validateCollIndexAndValues(OpenJPAEntityManagerSPI em, 
+    private void validateCollIndexAndValues(OpenJPAEntityManagerSPI em,
         String entity, String indexedCol, int base, Object[] objs, String
         idField, Object idValue) {
     String queryString =
@@ -965,10 +965,10 @@ public class TestOrderColumn extends SingleEMFTestCase {
     em.clear();
     Query qry = em.createQuery(queryString);
     qry.setParameter("idVal", idValue);
-    List rlist = qry.getResultList();  
-    
+    List rlist = qry.getResultList();
+
     assertNotNull(rlist);
-    assertEquals(objs.length, rlist.size()); 
+    assertEquals(objs.length, rlist.size());
     TreeMap<Long, Object> objMap = new TreeMap<Long, Object>();
     for (int i = 0; i < objs.length; i++)
     {
@@ -983,12 +983,12 @@ public class TestOrderColumn extends SingleEMFTestCase {
     }
 }
 
-    private void validateOrderColumnName(Class clazz, String fieldName, 
+    private void validateOrderColumnName(Class clazz, String fieldName,
             String columnName) {
         validateOrderColumnName(emf, clazz, fieldName, columnName);
     }
-    
-    private Column getOrderColumn(OpenJPAEntityManagerFactorySPI emf1, 
+
+    private Column getOrderColumn(OpenJPAEntityManagerFactorySPI emf1,
         Class clazz, String fieldName) {
         JDBCConfiguration conf = (JDBCConfiguration) emf1.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
@@ -999,33 +999,33 @@ public class TestOrderColumn extends SingleEMFTestCase {
         return oc;
     }
 
-    private void validateOrderColumnName(OpenJPAEntityManagerFactorySPI emf1, 
-        Class clazz, String fieldName, String columnName) {        
+    private void validateOrderColumnName(OpenJPAEntityManagerFactorySPI emf1,
+        Class clazz, String fieldName, String columnName) {
         Column oc = getOrderColumn(emf1, clazz, fieldName);
         assertTrue(oc.getName().equalsIgnoreCase(columnName));
     }
 
     private void validateOrderColumnTable(
-            OpenJPAEntityManagerFactorySPI emf1, 
-            Class clazz, String fieldName, String tableName, 
-            String columnName) {        
+            OpenJPAEntityManagerFactorySPI emf1,
+            Class clazz, String fieldName, String tableName,
+            String columnName) {
             Column oc = getOrderColumn(emf1, clazz, fieldName);
             // Verify the oc has the correct table name
             assertTrue(oc.getTableName().equalsIgnoreCase(tableName));
             // Verify the table exists in the db
-            assertTrue(tableAndColumnExists(emf1, null, tableName, null, 
+            assertTrue(tableAndColumnExists(emf1, null, tableName, null,
                 columnName));
     }
 
     private void validateOrderColumnUpdatable(
-            OpenJPAEntityManagerFactorySPI emf1, Class clazz, String fieldName, 
+            OpenJPAEntityManagerFactorySPI emf1, Class clazz, String fieldName,
             boolean updatable) {
             Column oc = getOrderColumn(emf1, clazz, fieldName);
             assertEquals(updatable, !oc.getFlag(Column.FLAG_DIRECT_UPDATE));
     }
 
     private void validateOrderColumnInsertable(
-            OpenJPAEntityManagerFactorySPI emf1, Class clazz, String fieldName, 
+            OpenJPAEntityManagerFactorySPI emf1, Class clazz, String fieldName,
             boolean insertable) {
             Column oc = getOrderColumn(emf1, clazz, fieldName);
             assertEquals(insertable, !oc.getFlag(Column.FLAG_DIRECT_INSERT));
@@ -1034,13 +1034,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
     /**
      * Method to verify a table was created for the given name and schema
      */
-    private boolean tableAndColumnExists(OpenJPAEntityManagerFactorySPI emf1, 
+    private boolean tableAndColumnExists(OpenJPAEntityManagerFactorySPI emf1,
             OpenJPAEntityManagerSPI em, String tableName, String schemaName,
             String columnName) {
         JDBCConfiguration conf = (JDBCConfiguration) emf1.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         OpenJPAEntityManagerSPI em1 = em;
-                
+
         // If no em supplied, create one
         if (em1 == null) {
             em1 = emf1.createEntityManager();
@@ -1049,13 +1049,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
         try {
             DatabaseMetaData dbmd = conn.getMetaData();
             // (meta, catalog, schemaName, tableName, conn)
-            Column[] cols = dict.getColumns(dbmd, null, null, 
+            Column[] cols = dict.getColumns(dbmd, null, null,
                     tableName, columnName, conn);
             if (cols != null && cols.length == 1) {
                 Column col = cols[0];
                 String colName = col.getName();
                 if (col.getTableName().equalsIgnoreCase(tableName) &&
-                    (schemaName == null || 
+                    (schemaName == null ||
                     col.getSchemaName().equalsIgnoreCase(schemaName)) &&
                     colName.equalsIgnoreCase(columnName))
                     return true;

@@ -28,16 +28,16 @@ import javax.persistence.Transient;
 @Access(AccessType.FIELD)
 public class Quantity {
 
-    public Quantity() {        
+    public Quantity() {
     }
-    
+
     public Quantity(double amt, String uom) {
         setAmount(amt);
         setUnitOfMeasure(uom);
     }
-    
+
     private double amount;
-    
+
     @Transient
     private String unit;
 

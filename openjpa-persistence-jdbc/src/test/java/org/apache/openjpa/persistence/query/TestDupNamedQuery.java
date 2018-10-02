@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -60,7 +60,7 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
         assertNotNull(list);
         assertEquals(list.size(), 1);
         Object o = list.get(0);
-        assertTrue(simple2 ? o instanceof SimpleEntity2 
+        assertTrue(simple2 ? o instanceof SimpleEntity2
         		: o instanceof SimpleEntity);
         assertEquals(simple2 ? ((SimpleEntity2) o).getValue()
             : ((SimpleEntity) o).getValue(), ValueOne);
@@ -71,7 +71,7 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
             assertEquals(list.size(), 2);
             for (Iterator resultIter = list.iterator(); resultIter.hasNext();) {
                 o = resultIter.next();
-                assertTrue(simple2 ? o instanceof SimpleEntity2 
+                assertTrue(simple2 ? o instanceof SimpleEntity2
                 		: o instanceof SimpleEntity);
                 String n = null;
                 String v = null;

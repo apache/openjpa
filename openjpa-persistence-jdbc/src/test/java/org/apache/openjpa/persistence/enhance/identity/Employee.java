@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -27,26 +27,26 @@ import javax.persistence.*;
 public class Employee {
     @Id
     int empId;
-    
+
     @Id
     @Enumerated
     EmpType empType;
 
     @OneToOne
-    PhoneNumber phoneNumber; 
-    
+    PhoneNumber phoneNumber;
+
     public PhoneNumber getPhoneNumber() {
         return phoneNumber;
     }
-    
+
     public void setPhoneNumber(PhoneNumber phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-      
+
     public int getEmpId() {
         return empId;
     }
-    
+
     public void setEmpId(int empId) {
         this.empId = empId;
     }
@@ -54,7 +54,7 @@ public class Employee {
     public EmpType getEmpType() {
         return empType;
     }
-    
+
     public void setEmpType(EmpType empType) {
         this.empType = empType;
     }
@@ -64,11 +64,11 @@ public class Employee {
         PhoneNumber p = e.getPhoneNumber();
         if (p.getPhNumber() != phoneNumber.getPhNumber())
             return false;
-        
+
         return true;
     }
-    
+
     public enum EmpType { A1, A2, A3, A4 };
-    
-    
+
+
 }

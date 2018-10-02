@@ -98,7 +98,7 @@ public abstract class AbstractTask extends MatchingTask {
         if (_conf == null) {
              _conf = newConfiguration();
             _conf.setDeferResourceLoading(true);
-        }    
+        }
         return _conf;
     }
 
@@ -165,8 +165,8 @@ public abstract class AbstractTask extends MatchingTask {
             _conf = newConfiguration();
         ConfigurationProvider cp = null;
         String propertiesResource = _conf.getPropertiesResource();
-        if ( propertiesResource == null) {            
-            cp = ProductDerivations.loadDefaults(getConfigPropertiesResourceLoader());           
+        if ( propertiesResource == null) {
+            cp = ProductDerivations.loadDefaults(getConfigPropertiesResourceLoader());
         } else if (_conf.isDeferResourceLoading() && !StringUtil.isEmpty(propertiesResource)) {
             Map<String, String> result = Configurations.parseConfigResource(propertiesResource);
             String path = result.get(Configurations.CONFIG_RESOURCE_PATH);
@@ -196,13 +196,13 @@ public abstract class AbstractTask extends MatchingTask {
                 .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
         loader.addClassLoader(getClassLoader());
         loader.addClassLoader(AccessController.doPrivileged(
-                J2DoPrivHelper.getClassLoaderAction(_conf.getClass())));        
+                J2DoPrivHelper.getClassLoaderAction(_conf.getClass())));
         return loader;
     }
 
     private String[] getFiles() {
         List<String> files = new ArrayList<String>();
-        for(FileSet fs : fileSets) { 
+        for(FileSet fs : fileSets) {
             DirectoryScanner ds = fs.getDirectoryScanner(getProject());
 
             String[] dsFiles = ds.getIncludedFiles();

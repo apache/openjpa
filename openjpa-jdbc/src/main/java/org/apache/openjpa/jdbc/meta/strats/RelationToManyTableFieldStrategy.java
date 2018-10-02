@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -89,7 +89,7 @@ public abstract class RelationToManyTableFieldStrategy
 
     protected Joins joinElementRelation(Joins joins, ClassMapping elem) {
         ValueMapping vm = field.getElementMapping();
-        return joins.joinRelation(field.getName(), vm.getForeignKey(elem), 
+        return joins.joinRelation(field.getName(), vm.getForeignKey(elem),
             elem, vm.getSelectSubclasses(), false, false);
     }
 
@@ -157,7 +157,7 @@ public abstract class RelationToManyTableFieldStrategy
 
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() == null || field.isBiMTo1JT()) 
+        if (field.getMappedBy() == null || field.isBiMTo1JT())
             insert(sm, rm, sm.fetchObject(field.getIndex()));
     }
 
@@ -278,7 +278,7 @@ public abstract class RelationToManyTableFieldStrategy
         }
         if (forceOuter)
             return joins.outerJoinRelation(field.getName(),
-                elem.getForeignKey(clss[0]), clss[0], 
+                elem.getForeignKey(clss[0]), clss[0],
                 elem.getSelectSubclasses(), false, false);
         return joins.joinRelation(field.getName(), elem.getForeignKey(clss[0]),
             clss[0], elem.getSelectSubclasses(), false, false);

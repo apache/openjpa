@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -33,12 +33,12 @@ import javax.persistence.Table;
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
 
 /**
- * Entity used to test compound primary keys using entity as relationship to 
+ * Entity used to test compound primary keys using entity as relationship to
  * more than one level.
- * 
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-207">OPENJPA-207</A>
- *  
+ *
  * @author Jeffrey Blattman
  * @author Pinaki Poddar
  *
@@ -55,8 +55,8 @@ public class Line1 implements Serializable {
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name="LIBRARY_NAME", referencedColumnName="LIBRARY_NAME"),
-        @JoinColumn(name="BOOK_NAME", referencedColumnName="BOOK_NAME"),    
-        @JoinColumn(name="PAGE_NUM", referencedColumnName="PAGE_NUM")    
+        @JoinColumn(name="BOOK_NAME", referencedColumnName="BOOK_NAME"),
+        @JoinColumn(name="PAGE_NUM", referencedColumnName="PAGE_NUM")
     })
     private Page1 page;
 
@@ -74,5 +74,5 @@ public class Line1 implements Serializable {
 
     public void setPage(Page1 page) {
         this.page = page;
-    }    
+    }
 }

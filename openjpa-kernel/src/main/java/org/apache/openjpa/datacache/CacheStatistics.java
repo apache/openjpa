@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -26,13 +26,13 @@ import java.util.Set;
 /**
  * Counts number of read/write requests and hit ratio for a cache in total and
  * per-class basis.
- * 
- * All methods with Class as input argument treats null as 
- * <code>java.lang.Object</code>. All per-class statistics  depends on 
+ *
+ * All methods with Class as input argument treats null as
+ * <code>java.lang.Object</code>. All per-class statistics  depends on
  * determining the runtime type of the instance being cached. If it is not
  * possible to determine the runtime type from the given context, the statistics
- * is registered under generic <code>java.lang.Object</code>. 
- * 
+ * is registered under generic <code>java.lang.Object</code>.
+ *
  * @since 1.3.0
  */
 public interface CacheStatistics extends Serializable {
@@ -71,11 +71,11 @@ public interface CacheStatistics extends Serializable {
 
     /**
      * Gets number of total read requests for the given class since last reset.
-     * 
+     *
      * @deprecated - should use getReadCount(String c)
      */
     public long getReadCount(Class<?> cls);
-  
+
     /**
      * Gets number of total read requests for the given class since last reset.
 	 */
@@ -83,19 +83,19 @@ public interface CacheStatistics extends Serializable {
 
     /**
      * Gets number of total read requests that has been found in cache for the given class since last reset.
-     * 
+     *
      * @deprecated - should use getHitCount(String c)
      */
     public long getHitCount(Class<?> cls);
-    
+
 	/**
      * Gets number of total read requests that has been found in cache for the given class since last reset.
      */
 	public long getHitCount(String c);
-	
+
 	/**
      * Gets number of total write requests for the given class since last reset.
-     * 
+     *
      * @deprecated - should use getWriteCount(String c)
      */
     public long getWriteCount(Class<?> cls);
@@ -107,11 +107,11 @@ public interface CacheStatistics extends Serializable {
 
 	/**
      * Gets number of total read requests for the given class since start.
-     * 
+     *
      * @deprecated - should use getTotalReadCount(String c)
      */
     public long getTotalReadCount(Class<?> cls);
-    
+
 	/**
 	 * Gets number of total read requests for the given class since start.
 	 */
@@ -124,7 +124,7 @@ public interface CacheStatistics extends Serializable {
 
     /**
      * Gets number of total read requests that has been found in cache for the given class since start.
-     * 
+     *
      * @deprecated - should use getTotalHitCount(String c)
      */
     public long getTotalHitCount(Class<?> cls);
@@ -136,7 +136,7 @@ public interface CacheStatistics extends Serializable {
 
     /**
      * Gets number of total write requests for the given class since start.
-     * 
+     *
      * @deprecated - should use getTotalWriteCount(String c)
      */
     public long getTotalWriteCount(Class<?> cls);
@@ -155,17 +155,17 @@ public interface CacheStatistics extends Serializable {
 	 * Clears all accumulated statistics.
 	 */
 	public void reset();
-	
+
 	/**
 	 * Returns whether or not statistics will be collected.
 	 */
 	public boolean isEnabled();
-	
+
 	/**
 	 * Returns the types that are known to this cache being tracked.
 	 */
     public Set<String> classNames();
-    
+
     public Map<String, long[]> toMap();
-    
+
 }

@@ -27,12 +27,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a getter method or field so {@link Reflection reflection 
- * utility} to control whether the annotated member is recorded during scanning 
+ * Annotates a getter method or field so {@link Reflection reflection
+ * utility} to control whether the annotated member is recorded during scanning
  * for bean-style method or field.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  * @since 2.0.0
  *
  */

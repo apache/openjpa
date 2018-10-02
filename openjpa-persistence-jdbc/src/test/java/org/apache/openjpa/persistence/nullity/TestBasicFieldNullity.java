@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.nullity;
 
@@ -32,8 +32,8 @@ import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
- * Test @Basic(optional=true|false) and @Column(nullable=true|false) 
- * specification is honored. 
+ * Test @Basic(optional=true|false) and @Column(nullable=true|false)
+ * specification is honored.
  * Note: null constraint violation manifests as different exception types
  * for option and nullable condition.
  *
@@ -49,82 +49,82 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
 
     public void testNullOnOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
-    	pc.setOptional(null); 
+    	pc.setOptional(null);
     	assertCommitSucceeds(pc, NEW);
     }
-    
+
     public void testNullOnNonOptionalFieldIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotOptional(null);
     	assertCommitFails(pc, NEW, InvalidStateException.class);
     }
-    
+
     public void testNotNullOnOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
-    
+
     public void testNotNullOnNonOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
-    
+
     public void testNullOnNullableColumnAllowed() {
     	NullValues pc = new NullValues();
     	pc.setNullable(null);
     	assertCommitSucceeds(pc, NEW);
     }
-    
+
     public void testNullOnNonNullableColumnIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotNullable(null);
     	assertCommitFails(pc, NEW, RollbackException.class);
     }
-    
+
     public void testNotNullOnNullableColumnIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
-    
+
     public void testNotNullOnNonNullableColumnIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
-    
+
     public void testNullOnOptionalBlobFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	pc.setOptionalBlob(null);
     	assertCommitSucceeds(pc, NEW);
     }
-    
+
     public void testNullOnNonOptionalBlobFieldIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotOptionalBlob(null);
     	assertCommitFails(pc, NEW, InvalidStateException.class);
     }
-    
+
     public void testNullOnNullableBlobColumnAllowed() {
     	NullValues pc = new NullValues();
     	pc.setNullableBlob(null);
     	assertCommitSucceeds(pc, NEW);
     }
-    
+
     public void testNullOnNonNullableBlobColumnIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotNullableBlob(null);
     	assertCommitFails(pc, NEW, RollbackException.class);
     }
-    
+
     public void testX() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     	OpenJPAPersistence.getEntityManager(pc).close();
-    	
+
     	pc.setNotNullableBlob(null);
     	assertCommitFails(pc, !NEW, RollbackException.class);
     }
-    
-    
+
+
     public void testUniqueStringColumnCanBeNull() {
         if (!isUniqueColumnNullable()) {
             return;
@@ -133,7 +133,7 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
         pc.setUniqueNullable(null);
         assertCommitSucceeds(pc, NEW);
     }
-    
+
     public void testUniqueStringColumnAsNull() {
         if (!isUniqueColumnNullable()) {
             return;
@@ -141,7 +141,7 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
         NullValues pc = new NullValues();
         pc.setUniqueNullable(null);
         assertCommitSucceeds(pc, NEW);
-        
+
         String jpql = "select n from NullValues n where n.uniqueNullable = :p";
         EntityManager em = emf.createEntityManager();
         List<NullValues> result = em.createQuery(jpql, NullValues.class)
@@ -151,13 +151,13 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
         for (NullValues n : result)
             assertNull(n.getUniqueNullable());
     }
-    
+
     public void testUniqueStringColumnAsEmpty() {
         String EMPTY_STRING = "";
         NullValues pc = new NullValues();
         pc.setUniqueNullable(EMPTY_STRING);
         assertCommitSucceeds(pc, NEW);
-        
+
         String jpql = "select n from NullValues n where n.uniqueNullable = :p";
         if (dict instanceof OracleDictionary)
             jpql = "select n from NullValues n where n.uniqueNullable IS NULL";
@@ -171,8 +171,8 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
             if (dict instanceof OracleDictionary) {
                 assertNull(n.getUniqueNullable());
             }
-            else if (dict instanceof SybaseDictionary) { 
-                // Sybase converts empty strings to "" 
+            else if (dict instanceof SybaseDictionary) {
+                // Sybase converts empty strings to ""
                 assertEquals(" ", n.getUniqueNullable());
             }
             else {
@@ -180,7 +180,7 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
             }
         }
     }
-    
+
     boolean isUniqueColumnNullable() {
         return ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance().supportsNullUniqueColumn;
     }

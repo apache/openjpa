@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance;
 
@@ -118,13 +118,13 @@ public class PCClassFileTransformer
             return null;
         }
         // prevent re-entrant calls, which can occur if the enhancing
-        // loader is used to also load OpenJPA libraries; this is to prevent 
+        // loader is used to also load OpenJPA libraries; this is to prevent
         // recursive enhancement attempts for internal openjpa libraries
         if (_transforming)
             return null;
 
         _transforming = true;
-        
+
         return transform0(className, redef, bytes);
     }
 
@@ -135,7 +135,7 @@ public class PCClassFileTransformer
      */
     private byte[] transform0(String className, Class redef, byte[] bytes)
         throws IllegalClassFormatException {
-        
+
         byte[] returnBytes = null;
         try {
             Boolean enhance = needsEnhance(className, redef, bytes);

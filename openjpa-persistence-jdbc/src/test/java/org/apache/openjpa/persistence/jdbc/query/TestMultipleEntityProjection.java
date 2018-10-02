@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
@@ -35,14 +35,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Tests multiple entities in projection are returned with both inner and outer
  * joins.
- * 
- * Originally reported in 
+ *
+ * Originally reported in
  * <A HREF=
  * "http://n2.nabble.com/Selecting-multiple-objects---bug--tc732941.html">
  * OpenJPA mailing list</A>
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class TestMultipleEntityProjection extends SingleEMFTestCase {
 	private static boolean INNER_JOIN = true;
@@ -55,9 +55,9 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 		new String[] {"Nature",     "Publisher-5"},
 		new String[] {"MIT Review", "Publisher-6"},
 		new String[] {"Wired",      "Publisher-7"},
-		
+
 	};
-	
+
 	public void setUp() {
 		super.setUp(CLEAR_TABLES, Magazine.class, Publisher.class);
 		createData();
@@ -86,7 +86,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 					mag.setDatePublished(null);
 				}
                 mag.setTsPublished(new Timestamp(System.currentTimeMillis() - 100000));
-				
+
 				em.persist(pub);
 			}
 			em.persist(mag);
@@ -100,13 +100,13 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
                       "where ((:useName = false) or (m.name like :name))";
 		EntityManager em = emf.createEntityManager();
 		Query query = em.createQuery(jpql);
-		
+
 		String magKey = "Times";
 		query.setParameter("useName", true);
 		query.setParameter("name", '%'+magKey+'%');
-		
+
 		List result = query.getResultList();
-		
+
         int expecetedCount = getExpecetedResultCount(magKey, !INNER_JOIN);
 		assertFalse(result.isEmpty());
 		assertEquals(expecetedCount, result.size());
@@ -120,20 +120,20 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 			assertEquals(((Magazine)row[0]).getPublisher(), row[1]);
 		}
 	}
-	
+
 	public void testMultipleEntitiesInProjectionUsingInnerJoin() {
 		String jpql = "select m, p " +
 		              "from Magazine m inner join m.publisher p " +
                       "where ((:useName = false) or (m.name like :name))";
 		EntityManager em = emf.createEntityManager();
 		Query query = em.createQuery(jpql);
-		
+
 		String magKey = "Times";
 		query.setParameter("useName", true);
 		query.setParameter("name", '%'+magKey+'%');
-		
+
 		List result = query.getResultList();
-		
+
         int expecetedCount = getExpecetedResultCount(magKey, INNER_JOIN);
 		assertFalse(result.isEmpty());
 		assertEquals(expecetedCount, result.size());
@@ -148,45 +148,45 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 			assertEquals(((Magazine)row[0]).getPublisher(), row[1]);
 		}
 	}
-	
+
 	public void testAggregateExpressionInHavingExpression() {
-        String jpql = "select m.publisher, max(m.datePublished) " + 
+        String jpql = "select m.publisher, max(m.datePublished) " +
                       "from Magazine m group by m.publisher " +
 					  "having max(m.datePublished) is null";
-		
+
 		EntityManager em = emf.createEntityManager();
 		Query query = em.createQuery(jpql);
 		List result = query.getResultList();
 		assertTrue(result.isEmpty());
-		
-        jpql = "select m.publisher, max(m.datePublished) " + 
-		       "from Magazine m group by m.publisher " + 
+
+        jpql = "select m.publisher, max(m.datePublished) " +
+		       "from Magazine m group by m.publisher " +
 		       "having max(m.tsPublished) = CURRENT_TIMESTAMP";
 		query = em.createQuery(jpql);
 		result = query.getResultList();
 		assertTrue(result.isEmpty());
 
 //      The following JPQL results in syntax error,
-//      see comments in OPENJPA-1814              
-//		jpql = "select m.publisher, max(m.datePublished) " + 
-//		    "from Magazine m group by m.publisher " + 
-//		    "having max(m.tsPublished) IN " + 
+//      see comments in OPENJPA-1814
+//		jpql = "select m.publisher, max(m.datePublished) " +
+//		    "from Magazine m group by m.publisher " +
+//		    "having max(m.tsPublished) IN " +
 //		    "(select max(m.tsPublished) from Magazine m " +
 //		    "where m.datePublished = CURRENT_TIMESTAMP)";
 //		query = em.createQuery(jpql);
 //		result = query.getResultList();
 //		assertTrue(result.isEmpty());
 
-		jpql = "select m.publisher, max(m.datePublished) " + 
-		    "from Magazine m group by m.publisher " + 
-		    "having max(m.tsPublished) = " + 
-		    "(select max(m.tsPublished) from Magazine m " + 
+		jpql = "select m.publisher, max(m.datePublished) " +
+		    "from Magazine m group by m.publisher " +
+		    "having max(m.tsPublished) = " +
+		    "(select max(m.tsPublished) from Magazine m " +
 		    "where m.datePublished = CURRENT_TIMESTAMP)";
 		query = em.createQuery(jpql);
 		result = query.getResultList();
 		assertTrue(result.isEmpty());
 	}
-	
+
 	/**
      * Count number of expected result based on inner/outer join condition and
 	 * the name of the Magazine.

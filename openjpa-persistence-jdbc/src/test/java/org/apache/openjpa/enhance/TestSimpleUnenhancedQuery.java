@@ -23,12 +23,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * A simple query fails with unenhanced (or runtime enhanced classes)
- * as originally reported in 
+ * as originally reported in
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-659">OPENJPA-659</A>.
  * The original issue reports the failure in a Spring-Tomcat-Weaver settings
- * with embedded instances but even the following test shows the same failure 
+ * with embedded instances but even the following test shows the same failure
  * in a simpler settings.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -40,7 +40,7 @@ public class TestSimpleUnenhancedQuery extends SingleEMFTestCase {
 		em.persist(new UnenhancedPObject());
 		em.getTransaction().commit();
 	}
-	
+
 	public void testExtentQuery() {
 		EntityManager em = emf.createEntityManager();
 		assertFalse(em.createQuery("SELECT p FROM UnenhancedPObject p")

@@ -29,12 +29,12 @@ import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * 
+ *
  * This test was added for OPENJPA-1882.
  * <p>
  * When caching is enabled and a given type isn't being cached, make sure calling exists/syncVersion with that type
  * doesn't result in a NPE.
- * 
+ *
  */
 public class TestDataCacheStoreManager extends SingleEMFTestCase {
     Object[] p =

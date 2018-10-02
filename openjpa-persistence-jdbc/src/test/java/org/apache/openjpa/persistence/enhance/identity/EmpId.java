@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -23,14 +23,14 @@ import javax.persistence.Enumerated;
 
 public class EmpId {
     int empId;
-    
-    @Enumerated(EnumType.ORDINAL)  
+
+    @Enumerated(EnumType.ORDINAL)
     Employee.EmpType empType;
-    
+
     public int getEmpId() {
         return empId;
     }
-    
+
     public void setEmpId(int empId) {
         this.empId = empId;
     }
@@ -38,20 +38,20 @@ public class EmpId {
     public Employee.EmpType getEmpType() {
         return empType;
     }
-    
+
     public void setEmpType(Employee.EmpType empType) {
         this.empType = empType;
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof EmpId)) return false;
         if (((EmpId)o).empId == empId &&
             ((EmpId)o).empType == empType) return true;
         return false;
     }
-    
+
     public int hashCode() {
         return empId *31 + empType.hashCode();
     }
-    
+
 }

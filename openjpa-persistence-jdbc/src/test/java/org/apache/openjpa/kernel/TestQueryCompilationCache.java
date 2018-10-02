@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -36,10 +36,10 @@ import junit.framework.TestCase;
 
 public class TestQueryCompilationCache
     extends TestCase {
-    
+
     public void testDynamicJPQLWithNamedEntity() {
         Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" 
+        props.put("openjpa.MetaDataFactory", "jpa(Types="
             + NamedEntity.class.getName() + ")");
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
             OpenJPAPersistence.cast(
@@ -54,12 +54,12 @@ public class TestQueryCompilationCache
 
         // make sure that there's an entry in the cache now
         assertEquals(1, cache.size());
-        
+
         // dig into the entry and check its internal state
         Compilation comp = (Compilation) cache.values().iterator().next();
         assertEquals(NamedEntity.class,
             ((ParsedJPQL) comp.storeData).getCandidateType());
-        
+
         emf.close();
     }
 }

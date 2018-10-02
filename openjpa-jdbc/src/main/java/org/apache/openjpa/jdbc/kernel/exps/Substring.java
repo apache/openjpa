@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -77,12 +77,12 @@ public class Substring
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val1.selectColumns(sel, ctx, bstate.state1, true);
@@ -93,7 +93,7 @@ public class Substring
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
@@ -111,7 +111,7 @@ public class Substring
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val1.calculateValue(sel, ctx, bstate.state1, null, null);
@@ -122,14 +122,14 @@ public class Substring
         return 1;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         FilterValue str = new FilterValueImpl(sel, ctx, bstate.state1, _val1);
         FilterValue start;
         FilterValue length = null;
         if (_val2 instanceof Args) {
-            FilterValue[] filts = ((Args) _val2).newFilterValues(sel, ctx, 
+            FilterValue[] filts = ((Args) _val2).newFilterValues(sel, ctx,
                 bstate.state2);
             start = filts[0];
             length = filts[1];

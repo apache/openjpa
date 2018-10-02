@@ -105,20 +105,20 @@ public interface OpenJPAEntityManagerSPI
      * previous settings.
      */
     public void setLifecycleListenerCallbackMode(EnumSet<CallbackMode> modes);
-    
-    
+
+
     /**
      * Affirms if this receiver is caching database queries.
-     *  
+     *
      * @since 2.0.0
      */
     public boolean getQuerySQLCache();
-    
+
     /**
-     * Sets whether this receiver will cache database queries during its 
-     * lifetime. The cache configured at BrokerFactory level is not affected by 
-     * setting it inactive for this receiver. 
-     * 
+     * Sets whether this receiver will cache database queries during its
+     * lifetime. The cache configured at BrokerFactory level is not affected by
+     * setting it inactive for this receiver.
+     *
      * @since 2.0.0
      */
     public void setQuerySQLCache(boolean flag);

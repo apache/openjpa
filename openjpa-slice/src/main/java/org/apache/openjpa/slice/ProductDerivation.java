@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -29,27 +29,27 @@ import org.apache.openjpa.slice.jdbc.DistributedJDBCBrokerFactory;
 /**
  * Derives configuration for Slice.
  * Introduces a specialized BrokerFactory aliased as <code>slice</code>.
- * All Slice specific configuration is prefixed as 
+ * All Slice specific configuration is prefixed as
  * <code>openjpa.slice.*.*</code>
- * 
- * @author Pinaki Poddar 
+ *
+ * @author Pinaki Poddar
  *
  */
 public class ProductDerivation extends AbstractProductDerivation implements
 		OpenJPAProductDerivation {
     /**
-     * Prefix for all Slice-specific configuration properties. 
+     * Prefix for all Slice-specific configuration properties.
      */
     public static final String PREFIX_SLICE   = "openjpa.slice";
-    
+
     /**
-     * Hint key <code>openjpa.hint.slice.Target </code> to specify a subset of 
+     * Hint key <code>openjpa.hint.slice.Target </code> to specify a subset of
      * slices for query. The value corresponding to the key is comma-separated
      * list of slice identifiers.
-     *  
+     *
      */
     public static final String HINT_TARGET  = "openjpa.hint.slice.Target";
-    
+
 	@SuppressWarnings("unchecked")
 	public void putBrokerFactoryAliases(Map m) {
 		m.put("slice", DistributedJDBCBrokerFactory.class.getName());
@@ -62,7 +62,7 @@ public class ProductDerivation extends AbstractProductDerivation implements
 	public int getType() {
 		return TYPE_STORE;
 	}
-	
+
     public Set<String> getSupportedQueryHints() {
         return Collections.singleton(HINT_TARGET);
     }

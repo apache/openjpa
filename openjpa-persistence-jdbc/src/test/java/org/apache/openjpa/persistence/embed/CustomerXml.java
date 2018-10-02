@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -23,27 +23,27 @@ import java.util.Set;
 
 public class CustomerXml {
     protected int id;
-    
+
     protected String name;
-    
+
     protected Set<OrderXml> orders = new HashSet<OrderXml>();
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Set<OrderXml> getOrders() {
         return orders;
     }
@@ -51,11 +51,11 @@ public class CustomerXml {
     public void setOrders(Set<OrderXml> orders) {
         this.orders = orders;
     }
-    
+
     public void addOrder(OrderXml order) {
         orders.add(order);
     }
-    
+
     public boolean equals(Object obj) {
         CustomerXml c0 = (CustomerXml) obj;
         if (c0 == null) return false;
@@ -70,7 +70,7 @@ public class CustomerXml {
         }
         return true;
     }
-    
+
     private boolean contains(Set<OrderXml> orders0, OrderXml o) {
         int id = o.getId();
         for (OrderXml o0 : orders0) {

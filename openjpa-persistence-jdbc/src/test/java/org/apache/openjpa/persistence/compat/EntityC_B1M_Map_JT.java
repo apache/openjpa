@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -30,7 +30,7 @@ public class EntityC_B1M_Map_JT {
     private long id;
 
     private String name;
-    
+
     @ManyToOne
     @JoinTable(
         name="Bi1M_Map_JT_C",
@@ -41,30 +41,30 @@ public class EntityC_B1M_Map_JT {
     )
     Bi_1ToM_Map_JT bi1mjt;
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setBi1mjt(Bi_1ToM_Map_JT bi1mjt) {
         this.bi1mjt = bi1mjt;
     }
-    
+
     public Bi_1ToM_Map_JT getBi1mjt() {
         return bi1mjt;
     }
-    
+
     public int hashCode() {
         return name.hashCode() + (int)id;
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof EntityC_B1M_Map_JT)) return false;
         EntityC_B1M_Map_JT c = (EntityC_B1M_Map_JT)o;

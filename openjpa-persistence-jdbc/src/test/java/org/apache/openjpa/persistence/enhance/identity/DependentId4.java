@@ -14,14 +14,14 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
 public class DependentId4 {
     public long id;
     public long parent;
-    
+
     public boolean equals(Object o) {
     	if (!(o instanceof DependentId4)) return false;
     	if (id != ((DependentId4)o).id) return false;

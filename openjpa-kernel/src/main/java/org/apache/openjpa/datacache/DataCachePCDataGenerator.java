@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -84,7 +84,7 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
 
     private void enhanceToData(BCClass bc) {
         BCMethod meth = bc.declareMethod("toData", Object.class,
-            new Class []{ FieldMetaData.class, Object.class, 
+            new Class []{ FieldMetaData.class, Object.class,
             StoreContext.class });
         Code code = meth.getCode(true);
         // if (fmd.isLRS ()))
@@ -110,7 +110,7 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
 
     private void enhanceToNestedData(BCClass bc) {
         BCMethod meth = bc.declareMethod("toNestedData", Object.class,
-            new Class []{ ValueMetaData.class, Object.class, 
+            new Class []{ ValueMetaData.class, Object.class,
             StoreContext.class });
         Code code = meth.getCode(true);
 
@@ -160,7 +160,7 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
     }
 
     private void replaceNewEmbeddedPCData(BCClass bc) {
-        BCMethod meth = bc.declareMethod("newEmbeddedPCData", 
+        BCMethod meth = bc.declareMethod("newEmbeddedPCData",
             AbstractPCData.class, new Class[]{ OpenJPAStateManager.class });
         Code code = meth.getCode(true);
 
@@ -168,10 +168,10 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         code.anew().setType(DataCachePCDataImpl.class);
         code.dup();
         code.aload().setParam(0);
-        code.invokeinterface().setMethod(OpenJPAStateManager.class, "getId", 
+        code.invokeinterface().setMethod(OpenJPAStateManager.class, "getId",
             Object.class, null);
         code.aload().setParam(0);
-        code.invokeinterface().setMethod(OpenJPAStateManager.class, 
+        code.invokeinterface().setMethod(OpenJPAStateManager.class,
             "getMetaData", ClassMetaData.class, null);
         code.invokespecial().setMethod(DataCachePCDataImpl.class, "<init>",
             void.class, new Class[] { Object.class, ClassMetaData.class });

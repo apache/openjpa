@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -38,7 +38,7 @@ public class LockException
 
     private int timeout   = -1;
     private int lockLevel = -1;
-    
+
     public LockException(Object failed) {
         super(_loc.get("lock-failed", Exceptions.toString(failed)));
         setFailedObject(failed);
@@ -47,7 +47,7 @@ public class LockException
     public LockException(Object failed, int timeout) {
         this(failed, timeout, -1);
     }
-    
+
     public LockException(Object failed, int timeout, int lockLevel) {
         super(_loc.get("lock-timeout", Exceptions.toString(failed), String.valueOf(timeout)));
         setFailedObject(failed);

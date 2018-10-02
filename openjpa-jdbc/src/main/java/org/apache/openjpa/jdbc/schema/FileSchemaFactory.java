@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -80,7 +80,7 @@ public class FileSchemaFactory
 
     public SchemaGroup readSchema() {
         URL url = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(_loader, _fileName)); 
+            J2DoPrivHelper.getResourceAction(_loader, _fileName));
         if (url == null)
             return new SchemaGroup();
 

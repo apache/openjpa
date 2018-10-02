@@ -25,10 +25,10 @@ import javax.tools.Diagnostic;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * Simple logger sets log level from javac compilers annotation processing 
+ * Simple logger sets log level from javac compilers annotation processing
  * options <code>-Alog=TRACE|INFO|WARN|ERROR</code> and uses the processing
  * environment to determine the log output stream.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -38,10 +38,10 @@ public class CompileTimeLogger {
     private static Level DEFAULT_LEVEL = Level.WARN;
     private int logLevel;
     private Messager messager;
-    
+
     public CompileTimeLogger(ProcessingEnvironment env, String level) {
         messager = env.getMessager();
-        
+
         if (level == null) {
             logLevel = DEFAULT_LEVEL.ordinal();
             return;
@@ -59,30 +59,30 @@ public class CompileTimeLogger {
             warn(_loc.get("mmg-bad-log", level, DEFAULT_LEVEL));
         }
     }
-    
+
     public void info(Localizer.Message message) {
         log(Level.INFO, message, Diagnostic.Kind.NOTE);
     }
-    
+
     public void trace(Localizer.Message message) {
         log(Level.TRACE, message, Diagnostic.Kind.NOTE);
     }
-    
+
     public void warn(Localizer.Message message) {
         log(Level.WARN, message, Diagnostic.Kind.MANDATORY_WARNING);
     }
-    
+
     public void error(Localizer.Message message) {
         error(message, null);
     }
-    
+
     public void error(Localizer.Message message, Throwable t) {
         log(Level.ERROR, message, Diagnostic.Kind.ERROR);
         if (t != null)
             t.printStackTrace();
     }
-    
-    private void log(Level level, Localizer.Message message, 
+
+    private void log(Level level, Localizer.Message message,
         Diagnostic.Kind kind) {
         if (logLevel <= level.ordinal()) {
             messager.printMessage(kind, message.toString());

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -27,30 +27,30 @@ import java.util.*;
 public class Employee2 {
     @EmbeddedId
     EmployeeId2 empId;
-    
+
     @OneToMany(mappedBy="emp")
     List<Dependent2> dependents = new ArrayList<Dependent2>();
-    
+
     public EmployeeId2 getEmpId() {
         return empId;
     }
-    
+
     public void setEmpId(EmployeeId2 empId) {
         this.empId = empId;
     }
-    
+
     public List<Dependent2> getDependents() {
         return dependents;
     }
-    
+
     public void setDependents(List<Dependent2> dependents) {
         this.dependents = dependents;
     }
-    
+
     public void addDependent(Dependent2 d) {
         dependents.add(d);
     }
-    
+
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof Employee2)) return false;
@@ -58,16 +58,16 @@ public class Employee2 {
         EmployeeId2 eid0 = e0.getEmpId();
         List<Dependent2> ds0 = e0.getDependents();
         if (!empId.equals(eid0)) return false;
-        if (ds0 != null && ds0.size() != 0 && dependents == null) return false; 
+        if (ds0 != null && ds0.size() != 0 && dependents == null) return false;
         if (ds0 == null && dependents != null && dependents.size() != 0)
             return false;
         if (ds0 == null && dependents == null) return true;
-        if (ds0 != null && dependents != null) { 
+        if (ds0 != null && dependents != null) {
             if (ds0.size() != dependents.size()) return false;
         }
         return true;
     }
-    
+
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + empId.hashCode();

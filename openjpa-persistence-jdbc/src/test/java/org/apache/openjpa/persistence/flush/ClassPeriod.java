@@ -47,46 +47,46 @@ public class ClassPeriod implements Serializable {
     @SequenceGenerator(name="clpIdSeq", sequenceName="FL_CLP_SEQ")
     @GeneratedValue(generator="clpIdSeq", strategy=GenerationType.SEQUENCE)
     protected Long clpId;
-    
+
     @Column(name="CLP_TEXT")
     protected String clpText;
-    
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.LAZY)
     @JoinColumn(name="COURSE_ID")
     protected Course course;
-    
+
     @OneToMany(mappedBy="clp",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
     @ElementDependent(true)
     protected Set<Topic> topics;
-    
+
     public Set<Topic> getTopics() {
         return topics;
     }
-    
+
     public void setTopics(Set<Topic> topics) {
         this.topics = topics;
     }
-    
+
     public Long getClassPeriodId() {
         return clpId;
     }
-    
+
     public void setClassPeriodId(Long clpId) {
         this.clpId = clpId;
     }
-    
+
     public Course getCourse() {
         return course;
     }
-    
+
     public void setCourse(Course course) {
-        this.course = course;   
+        this.course = course;
     }
-    
+
     public String getClassPeriodText() {
         return clpText;
     }
-    
+
     public void setClassPeriodText(String clpText) {
         this.clpText = clpText;
     }

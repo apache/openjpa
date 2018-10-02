@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -36,7 +36,7 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 ///////////////////////////////////////////////////////////////
-// NOTE: when adding a public API method, be sure to add it to 
+// NOTE: when adding a public API method, be sure to add it to
 // JDO and JPA facades!
 ///////////////////////////////////////////////////////////////
 
@@ -105,14 +105,14 @@ public class DelegatingBroker
     protected RuntimeException translate(RuntimeException re) {
         return (_trans == null) ? re : _trans.translate(re);
     }
-    
+
     /**
      * Translate the exception with the failed object.
-     * 
+     *
      * @param re exception raised by the delegate.
      * @param failed the context that failed.
-     * 
-     * @return the translated exception. If the given input exception had not set 
+     *
+     * @return the translated exception. If the given input exception had not set
      * the failed instance, then sets the given instance as the failed context.
      */
     protected RuntimeException translate(RuntimeException re, Object failed) {
@@ -208,7 +208,7 @@ public class DelegatingBroker
             throw translate(re);
         }
     }
-    
+
     public Map<String,Object> getProperties() {
         try {
             return _broker.getProperties();
@@ -216,7 +216,7 @@ public class DelegatingBroker
             throw translate(re);
         }
     }
-    
+
     public Set<String> getSupportedProperties() {
         try {
             return _broker.getSupportedProperties();
@@ -854,7 +854,7 @@ public class DelegatingBroker
             throw translate(re);
         }
     }
-    
+
     public Collection<Object> getTransactionListeners() {
         try {
             return _broker.getTransactionListeners();
@@ -1439,15 +1439,15 @@ public class DelegatingBroker
             throw translate(re);
         }
     }
-        
+
     public boolean getCachePreparedQuery() {
         return _broker.getCachePreparedQuery();
     }
-    
+
     public void setCachePreparedQuery(boolean flag) {
         _broker.setCachePreparedQuery(flag);
     }
-    
+
     public String getConnectionFactoryName() {
         return _broker.getConnectionFactoryName();
     }
@@ -1463,7 +1463,7 @@ public class DelegatingBroker
     public void setConnectionFactory2Name(String connectionFactory2Name) {
         _broker.setConnectionFactory2Name(connectionFactory2Name);
     }
-    
+
     public Object getConnectionFactory() {
         return _broker.getConnectionFactory();
     }
@@ -1471,15 +1471,15 @@ public class DelegatingBroker
     public Object getConnectionFactory2() {
         return _broker.getConnectionFactory2();
     }
-    
+
     public boolean isCached(List<Object> oid) {
         return _broker.isCached(oid);
     }
-    
+
     public boolean getAllowReferenceToSiblingContext() {
         return _broker.getAllowReferenceToSiblingContext();
     }
-    
+
     public void setAllowReferenceToSiblingContext(boolean allow) {
         _broker.setAllowReferenceToSiblingContext(allow);
     }

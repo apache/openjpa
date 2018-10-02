@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.conf;
 
@@ -54,7 +54,7 @@ public class QueryCompilationCacheValue
         Configuration conf, boolean fatal) {
         // make sure map handles concurrency
         Map map;
-        
+
         try {
             map = (Map) super.newInstance(clsName, type, conf, fatal);
         } catch (ParseException pe) {

@@ -29,8 +29,8 @@
             <basic name="superStrValue"/>
         </attributes>
     </mapped-superclass>
-    <entity name="XMLBase" 
-            class="org.apache.openjpa.integration.validation.XMLBase" 
+    <entity name="XMLBase"
+            class="org.apache.openjpa.integration.validation.XMLBase"
             access="PROPERTY">
         <attributes>
             <id name="id">
@@ -38,5 +38,5 @@
             </id>
             <basic name="strValue"/>
         </attributes>
-    </entity>    
+    </entity>
 </entity-mappings>

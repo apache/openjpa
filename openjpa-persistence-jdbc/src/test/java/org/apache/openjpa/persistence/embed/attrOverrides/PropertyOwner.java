@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 import javax.persistence.*;
@@ -25,15 +25,15 @@ public class PropertyOwner {
 	protected Address addr;
 	@Column(length = 10)
 	protected String ssn;
-	
+
 	public Address getAddress() {
 		return addr;
 	}
-	
+
 	public void setAddress(Address addr) {
 		this.addr = addr;
 	}
-	
+
 	public String getSsn() {
 		return ssn;
 	}
@@ -41,7 +41,7 @@ public class PropertyOwner {
 	public void setSsn(String ssn) {
 		this.ssn = ssn;
 	}
-	
+
 	public boolean equals(Object o) {
 		if (o == this) return true;
 		if (!(o instanceof PropertyOwner)) return false;
@@ -50,7 +50,7 @@ public class PropertyOwner {
 		if (!addr.equals(p.addr)) return false;
 		return true;
 	}
-	
+
 	public int hashCode() {
 		int ret = 0;
 		ret = ret + 31 * ssn.hashCode();

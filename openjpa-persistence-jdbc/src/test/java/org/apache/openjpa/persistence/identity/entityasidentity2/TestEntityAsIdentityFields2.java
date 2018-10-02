@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity.entityasidentity2;
 
@@ -34,7 +34,7 @@ public class TestEntityAsIdentityFields2 extends SingleEMFTestCase {
 
         Query query = em.createQuery("select p from Person p");
         query.getResultList();
-        
+
         em.close();
     }
 }

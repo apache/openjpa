@@ -28,7 +28,7 @@ import javax.persistence.OneToMany;
 @Entity
 @DiscriminatorValue("SINGER")
 public class Singer extends Person {
-    
+
     @OneToMany
     private Set<CD> cds;
 
@@ -39,7 +39,7 @@ public class Singer extends Person {
     public Singer(String firstName, String lastName, short age, int yob) {
         super(firstName, lastName, age, yob);
     }
-    
+
     public Set<CD> getCds() {
         return cds;
     }

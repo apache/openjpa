@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.conf;
 
@@ -62,7 +62,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
             init(jndiNames[0]);
         }
     }
-    
+
     protected EntityManagerFactory getEmf(String cfPropertyName, String cfPropertyValue) {
         return getEmf(cfPropertyName, cfPropertyValue, false);
     }
@@ -72,17 +72,17 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
         if (syncMappings) {
             return createEMF(
                 "openjpa.jdbc.SynchronizeMappings", "buildSchema",
-                "openjpa.ConnectionDriverName", "", 
+                "openjpa.ConnectionDriverName", "",
                 "openjpa.ConnectionFactoryMode", "managed",
                 "openjpa.ConnectionFactoryName", defaultJndiName,  // must have a cf1, to initialize configuration
-                cfPropertyName,cfPropertyValue, 
+                cfPropertyName,cfPropertyValue,
                 Person.class);
         }
         return createEMF(
-            "openjpa.ConnectionDriverName", "", 
+            "openjpa.ConnectionDriverName", "",
             "openjpa.ConnectionFactoryMode", "managed",
             "openjpa.ConnectionFactoryName", defaultJndiName, // must have a cf1, to initialize configuration
-            cfPropertyName,cfPropertyValue, 
+            cfPropertyName,cfPropertyValue,
             Person.class);
     }
 
@@ -184,50 +184,50 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
             closeEMF(emf1);
         }
     }
-    
-    public void testDataCache() { 
+
+    public void testDataCache() {
         EntityManagerFactory emf1 = null;
-    
+
         try {
             emf1 = getEmf("openjpa.DataCache", "true");
             getEm(emf1, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
-            assertTrue(e.getMessage().contains("jdbc/NotReal")); 
-            assertTrue(e.getMessage().contains("L2 Cache")); 
+            assertTrue(e.getMessage().contains("jdbc/NotReal"));
+            assertTrue(e.getMessage().contains("L2 Cache"));
         } finally {
             closeEMF(emf1);
         }
     }
-    
-    public void testQueryCache() { 
+
+    public void testQueryCache() {
         EntityManagerFactory emf1 = null;
-    
+
         try {
             emf1 = getEmf("openjpa.QueryCache", "true");
             getEm(emf1, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
-            assertTrue(e.getMessage().contains("jdbc/NotReal")); 
-            assertTrue(e.getMessage().contains("openjpa.QueryCache")); 
+            assertTrue(e.getMessage().contains("jdbc/NotReal"));
+            assertTrue(e.getMessage().contains("openjpa.QueryCache"));
         } finally {
             closeEMF(emf1);
         }
     }
-    
-    public void testSyncMappings() { 
+
+    public void testSyncMappings() {
         EntityManagerFactory emf1 = null;
-    
+
         try {
             emf1 = getEmf("openjpa.jdbc.SynchronizeMappings", "buildSchema");
             getEm(emf1, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
-            assertTrue(e.getMessage().contains("jdbc/NotReal")); 
-            assertTrue(e.getMessage().contains("openjpa.jdbc.SynchronizeMappings")); 
+            assertTrue(e.getMessage().contains("jdbc/NotReal"));
+            assertTrue(e.getMessage().contains("openjpa.jdbc.SynchronizeMappings"));
         } finally {
             closeEMF(emf1);
         }

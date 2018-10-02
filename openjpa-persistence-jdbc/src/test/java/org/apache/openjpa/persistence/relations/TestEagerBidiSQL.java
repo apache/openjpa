@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**
- * Test that when both sides of a mapped-by relation are eager fetched, 
+ * Test that when both sides of a mapped-by relation are eager fetched,
  * traversing from the mapped-by side to the mapping side cuts off -- that
  * we don't traverse in a loop back to the mapped-by side in the generated
  * SQL.
@@ -46,8 +46,8 @@ public class TestEagerBidiSQL
 
     public void setUp() {
         setUp(BidiParent.class, BidiChild.class);
-        
-        
+
+
         // If using an Oracle DB, use sql92 syntax in order to get a correct
         // comparison of SQL.  This may not work on Oracle JDBC drivers
         // prior to 10.x
@@ -100,7 +100,7 @@ public class TestEagerBidiSQL
         assertEquals("parent1", parent.getName());
         assertEquals(3, parent.getOneToManyChildren().size());
         for (int i = 0; i < 3; i++) {
-            assertEquals("oneToManyChild1::" + (i + 1), 
+            assertEquals("oneToManyChild1::" + (i + 1),
                 parent.getOneToManyChildren().get(i).getName());
             assertEquals(parent,
                 parent.getOneToManyChildren().get(i).getOneToManyParent());
@@ -134,7 +134,7 @@ public class TestEagerBidiSQL
             + "ORDER BY o.name ASC");
         q.getFetchPlan().addField(BidiParent.class, "oneToManyChildren");
         q.getFetchPlan().addField(BidiChild.class, "oneToManyParent");
-        List<BidiParent> res = (List<BidiParent>) q.getResultList(); 
+        List<BidiParent> res = (List<BidiParent>) q.getResultList();
 
         assertEquals(2, res.size());
         assertEquals(sql.toString(), 2, sql.size());
@@ -144,7 +144,7 @@ public class TestEagerBidiSQL
             assertEquals("parent" + (i + 1), res.get(i).getName());
             assertEquals(3, res.get(i).getOneToManyChildren().size());
             for (int j = 0; j < 3; j++) {
-                assertEquals("oneToManyChild" + (i + 1) + "::" + (j + 1), 
+                assertEquals("oneToManyChild" + (i + 1) + "::" + (j + 1),
                     res.get(i).getOneToManyChildren().get(j).getName());
                 assertEquals(res.get(i), res.get(i).getOneToManyChildren().
                     get(j).getOneToManyParent());
@@ -162,7 +162,7 @@ public class TestEagerBidiSQL
             + "ORDER BY o.name ASC");
         q.getFetchPlan().addField(BidiParent.class, "oneToOneChild");
         q.getFetchPlan().addField(BidiChild.class, "oneToOneParent");
-        List<BidiParent> res = (List<BidiParent>) q.getResultList(); 
+        List<BidiParent> res = (List<BidiParent>) q.getResultList();
 
         assertEquals(2, res.size());
         assertEquals(1, sql.size());
@@ -173,7 +173,7 @@ public class TestEagerBidiSQL
             assertNotNull(res.get(i).getOneToOneChild());
             assertEquals("oneToOneChild" + (i + 1),
                 res.get(i).getOneToOneChild().getName());
-            assertEquals(res.get(i), 
+            assertEquals(res.get(i),
                 res.get(i).getOneToOneChild().getOneToOneParent());
         }
         assertEquals(1, sql.size());
@@ -188,7 +188,7 @@ public class TestEagerBidiSQL
             + "ORDER BY o.name ASC");
         q.getFetchPlan().addField(BidiParent.class, "oneToOneChild");
         q.getFetchPlan().addField(BidiChild.class, "oneToManyParent");
-        List<BidiParent> res = (List<BidiParent>) q.getResultList(); 
+        List<BidiParent> res = (List<BidiParent>) q.getResultList();
 
         assertEquals(2, res.size());
         assertEquals(1, sql.size());

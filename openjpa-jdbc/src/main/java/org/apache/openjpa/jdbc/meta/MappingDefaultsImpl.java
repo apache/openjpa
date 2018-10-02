@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -457,11 +457,11 @@ public class MappingDefaultsImpl
     public void setNullIndicatorColumnName(String nullIndName) {
         setNullIndicatorColumnIdentifier(DBIdentifier.newColumn(nullIndName));
     }
-    
+
     public void setNullIndicatorColumnIdentifier(DBIdentifier nullIndName) {
         _nullIndName = nullIndName;
     }
-    
+
     public boolean defaultMissingInfo() {
         return _defMissing;
     }
@@ -519,12 +519,12 @@ public class MappingDefaultsImpl
     }
 
     /**
-     * Provides a default value for the given Discriminator. 
-     * 
+     * Provides a default value for the given Discriminator.
+     *
      * <P>
      * The type of the object returned relies on the javaType field being set on
      * the Discriminator which is provided.
-     * <TABLE border="2"> 
+     * <TABLE border="2">
      * <TH>JavaType
      * <TH>Default value
      * <TBODY>
@@ -534,10 +534,10 @@ public class MappingDefaultsImpl
      * <TR><TD>{@link JavaTypes#STRING}<TD>The entity name</TR>
      * </TBODY>
      * </TABLE>
-     * 
+     *
      * @param disc The discriminator that needs a default value
-     * @param adapt 
-     * 
+     * @param adapt
+     *
      * @return A new object containing the generated Discriminator value.
      */
     public Object getDiscriminatorValue(Discriminator disc, boolean adapt) {
@@ -546,14 +546,14 @@ public class MappingDefaultsImpl
 
         // WARNING: CHANGING THIS WILL INVALIDATE EXISTING DATA IF DEFAULTING
         // MISSING MAPPING INFO
-        
+
         String alias = ClassUtil.getClassName(disc.getClassMapping().getTypeAlias());
-        
+
         switch (disc.getJavaType()) {
             case JavaTypes.INT:
                 return Integer.valueOf(alias.hashCode());
             case JavaTypes.CHAR:
-                return Character.valueOf(alias.charAt(0)); 
+                return Character.valueOf(alias.charAt(0));
             case JavaTypes.STRING:
             default:
                 return alias;
@@ -746,7 +746,7 @@ public class MappingDefaultsImpl
         Table foreign, boolean inverse) {
         return getForeignKey(vm, DBIdentifier.newForeignKey(name), local, foreign, inverse);
     }
-        
+
     public ForeignKey getForeignKey(ValueMapping vm, DBIdentifier name, Table local,
         Table foreign, boolean inverse) {
         if (_fkAction == ForeignKey.ACTION_NONE)

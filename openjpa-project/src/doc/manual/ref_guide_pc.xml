@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="ref_guide_pc">
     <title>
@@ -161,13 +161,13 @@ are loaded into the JVM. The following sections describe each option.
                 </secondary>
             </indexterm>
             <para>
-The enhancer can be invoked at build time 
+The enhancer can be invoked at build time
 via its Java class, <classname>
 org.apache.openjpa.enhance.PCEnhancer</classname>.
             </para>
             <note>
                 <para>
-You can also enhance via Ant; see 
+You can also enhance via Ant; see
 <xref linkend="ref_guide_integration_enhance"/>.
                 </para>
             </note>
@@ -386,33 +386,33 @@ java -javaagent:/home/dev/openjpa/lib/openjpa.jar=addDefaultConstructor=false co
 <section id="ref_guide_pc_enhance_dynamic">
 	<title>
 		Enhancing Dynamically at Runtime
-	</title>          
+	</title>
 	<para>
-		If a javaagent is not provided via the command line and 
+		If a javaagent is not provided via the command line and
 		OpenJPA is running on the Oracle 1.6 SDK or IBM 1.6 JDK (SR8+), OpenJPA
-		will attempt to dynamically load the Enhancer that was 
-		mentioned in the previous section. This support is 
+		will attempt to dynamically load the Enhancer that was
+		mentioned in the previous section. This support is
 		provided as an ease of use feature and it is not recommended
-		for use in a production system. Using this method of 
+		for use in a production system. Using this method of
 		enhancement has the following caveats:
 	</para>
 	<itemizedlist>
 		<listitem>
 			<para>
-				The dynamic runtime enhancer is plugged into 
-				the JVM during creation of the 
-				EntityManagerFactory. Any Entity classes that 
-				are loaded before the EntityManagerFactory is 
-				created will not be enhanced. 			
+				The dynamic runtime enhancer is plugged into
+				the JVM during creation of the
+				EntityManagerFactory. Any Entity classes that
+				are loaded before the EntityManagerFactory is
+				created will not be enhanced.
 			</para>
 		</listitem>
 		<listitem>
 			<para>
 				The command line javaagent settings are not
-				configurable when using this method of 
-				enhancement.			
+				configurable when using this method of
+				enhancement.
 			</para>
-		</listitem>		
+		</listitem>
 		<listitem>
                 	<para>
 				Just as with the Javaagent approach, if you
@@ -420,17 +420,17 @@ java -javaagent:/home/dev/openjpa/lib/openjpa.jar=addDefaultConstructor=false co
 				will only search for metadata and try to
 				enhance the listed classes.
             		</para>
-		</listitem>		
+		</listitem>
 	</itemizedlist>
 	<para>
-		When then dynamic enhancer is loaded, the following 
+		When then dynamic enhancer is loaded, the following
 		informational message is logged:
 <programlisting>
 [java] jpa.enhancement  INFO   [main] openjpa.Runtime - OpenJPA dynamically loaded the class enhancer. Any classes that were not enhanced at build time will be enhanced when they are loaded by the JVM.
 </programlisting>
 	</para>
 	<para>
-		Setting the property openjpa.DynamicEnhancementAgent to false 
+		Setting the property openjpa.DynamicEnhancementAgent to false
 		will disable this function.
 	</para>
 </section>
@@ -452,7 +452,7 @@ java -javaagent:/home/dev/openjpa/lib/openjpa.jar=addDefaultConstructor=false co
             <para>
 OpenJPA does not require that the enhancer be run. If you do not run the
 enhancer, OpenJPA will fall back to one of several possible alternatives for
-state tracking, depending on the execution environment. 
+state tracking, depending on the execution environment.
              </para>
             <itemizedlist>
                 <listitem><para>
@@ -490,7 +490,7 @@ if you set the <literal>classLoadEnhancement</literal> javaagent flag to
 runtime enhancement process for some reason.
                 </para></listitem>
                 <listitem><para>
-<emphasis>Runtime Unenhanced Classes</emphasis>: AKA state comparison and 
+<emphasis>Runtime Unenhanced Classes</emphasis>: AKA state comparison and
 subclassing. If you are running
 in a Java 5 environment without a javaagent, or in a Java 6 environment that
 does not support class retransformation, OpenJPA will still create subclasses
@@ -501,7 +501,7 @@ notifications when you read or write persistent data.
                 <note>
 Runtime Unenhanced Classes has some known limitations which are discussed below
 and documented in JIRA issue tracker on the OpenJPA website. As a result this option is
-disabled by default. Support for this method of automatic enhancement may be 
+disabled by default. Support for this method of automatic enhancement may be
 enabled via the <xref linkend="openjpa.RuntimeUnenhancedClasses">
 openjpa.RuntimeUnenhancedClasses configuration </xref> option.
                 </note>
@@ -509,7 +509,7 @@ openjpa.RuntimeUnenhancedClasses configuration </xref> option.
                 <para>
 To enable Runtime Unenhanced Classes for a specific persistence unit, add the following property to persistence.xml:
 <programlisting>
-<![CDATA[<properties> 
+<![CDATA[<properties>
     . . .
     <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
     . . .
@@ -691,14 +691,14 @@ record.
                 </tertiary>
             </indexterm>
             <para>
-OpenJPA allows <literal>ManyToOne</literal> and <literal>OneToOne</literal> 
+OpenJPA allows <literal>ManyToOne</literal> and <literal>OneToOne</literal>
 relations to be identity fields.  To identify a relation field as an identity
 field, simply annotate it with both the <literal>@ManyToOne</literal> or
 <literal>@OneToOne</literal> relation annotation and the <literal>@Id</literal>
 identity annotation.
             </para>
             <para>
-When finding an entity identified by a relation, pass the id of the 
+When finding an entity identified by a relation, pass the id of the
 <emphasis>relation</emphasis> to the <methodname>EntityManager.find</methodname>
 method:
             </para>
@@ -715,24 +715,24 @@ public Delivery createDelivery(Order order) {
 }
 
 public Delivery findDelivery(EntityManager em, Order order) {
-    // use the identity of the related instance 
+    // use the identity of the related instance
     return em.find(Delivery.class, order.getId());
 }
-</programlisting>    
+</programlisting>
             </example>
             <para>
-When your entity has multiple identity fields, at least one of which is a 
-relation to another entity, you can use an identity class (see 
-<xref linkend="jpa_overview_pc_identitycls"/> in the JPA Overview), or 
+When your entity has multiple identity fields, at least one of which is a
+relation to another entity, you can use an identity class (see
+<xref linkend="jpa_overview_pc_identitycls"/> in the JPA Overview), or
 an embedded identity object.  Identity class fields corresponding to
-entity identity fields should be of the same type as the related entity's 
-identity. If an embedded identity object is used, you must annotate the 
+entity identity fields should be of the same type as the related entity's
+identity. If an embedded identity object is used, you must annotate the
 relation field with both the <literal>@ManyToOne</literal> or
-<literal>@OneToOne</literal> relation annotation and the 
+<literal>@OneToOne</literal> relation annotation and the
 <literal>@MapsId</literal> annotation.
 
             </para>
-            
+
             <example id="ref_guide_pc_oid_entitypk_idcls">
                 <title>
                     Id Class for Entity Identity Fields
@@ -744,17 +744,17 @@ public class Order {
     @Id
     private long id;
 
-    ... 
+    ...
 }
 
 	/**
-	 * LineItem uses a compound primary key. Part of the compound key 
+	 * LineItem uses a compound primary key. Part of the compound key
 	 * LineItemId is relation or reference to Order instance.
-	**/   
+	**/
 @Entity
 @IdClass(LineItemId.class)
 public class LineItem {
-    
+
     @Id
     private int index;
 
@@ -772,15 +772,15 @@ public class LineItemId {
                        // also the variable name must match the name of the
                        // variable in LineItem that refers to Order.
 }
-</programlisting>    
+</programlisting>
             </example>
             <para>
-In the example above, if <classname>Order</classname> had used an identity 
+In the example above, if <classname>Order</classname> had used an identity
 class <classname>OrderId</classname> in place of a simple <classname>long
 </classname> value, then the <literal>LineItemId.order</literal> field would
 have been of type <classname>OrderId</classname>.
             </para>
-            
+
             <example id="ref_guide_pc_oid_entitypk_embeded_id">
                 <title>
                     Embedded Id for Entity Identity Fields
@@ -792,25 +792,25 @@ public class Order {
     @Id
     private long id;
 
-    ... 
+    ...
 }
 
 	/**
-	 * LineItem uses a compound primary key. Part of the compound key 
+	 * LineItem uses a compound primary key. Part of the compound key
 	 * LineItemId is relation or reference to Order instance.
-	**/   
+	**/
 @Entity
 public class LineItem {
-    
+
     @EmbeddedId LineItemId id;
 
     @ManyToOne
-    @MapsId("orderId")     // The value element of the MapsId annotation 
+    @MapsId("orderId")     // The value element of the MapsId annotation
                            // must be used to specify the name of the primary
-                           // key attribute to which the relationship  
-                           // corresponds. If the primary key referenced by  
-                           // the relationship attribute is of the same Java  
-                           // type as the dependent's primary key, then the 
+                           // key attribute to which the relationship
+                           // corresponds. If the primary key referenced by
+                           // the relationship attribute is of the same Java
+                           // type as the dependent's primary key, then the
                            // value element is not specified.
     private Order order;
 
@@ -821,22 +821,22 @@ public class LineItem {
 public class LineItemId {
 
     public int index;
-    public long orderId; 
+    public long orderId;
 }
-</programlisting>    
+</programlisting>
             </example>
 
             <para>
-In the example above, the <classname>LineItem</classname> uses an embedded id to  
-represent its primary key. The primary key attribute corresponding to the 
-relationship in the <classname>LineItemId</classname> must be of the same 
-type as the primary key of the <classname>Order</classname>. The 
-<literal>MapsId</literal> annotation must be applied to the relationship 
+In the example above, the <classname>LineItem</classname> uses an embedded id to
+represent its primary key. The primary key attribute corresponding to the
+relationship in the <classname>LineItemId</classname> must be of the same
+type as the primary key of the <classname>Order</classname>. The
+<literal>MapsId</literal> annotation must be applied to the relationship
 field <literal>LineItem.order</literal>.
             </para>
-            
+
         </section>
-        
+
         <section id="ref_guide_pc_oid_application">
             <title>
                 Application Identity Tool
@@ -1233,7 +1233,7 @@ public class Company {
 
     public Company {
         // or we can initialize fields in our no-args constructor; even though
-        // this field is declared type Map, OpenJPA will detect that it's 
+        // this field is declared type Map, OpenJPA will detect that it's
         // actually a TreeMap and use natural ordering for loaded data
         departments = new TreeMap();
     }
@@ -1313,7 +1313,7 @@ OpenJPA smart proxies by using fields of type <classname>java.util.Set
 </classname>, <classname>java.util.TreeSet</classname>, and <classname>
 java.util.HashSet</classname> for your collections whenever possible. Smart
 proxies for these types are more efficient than proxies for <classname>
-List</classname>s. You can also design your own smart proxies to further 
+List</classname>s. You can also design your own smart proxies to further
 optimize OpenJPA for your usage patterns. See the section on
 <link linkend="ref_guide_pc_scos_proxy_custom">custom proxies</link> for
 details.
@@ -1406,7 +1406,7 @@ concrete collection or map class.
                     </listitem>
                     <listitem>
                         <para>
-The field cannot have an externalizer (see 
+The field cannot have an externalizer (see
 <xref linkend="ref_guide_pc_extern"/>).
                         </para>
                     </listitem>
@@ -1504,11 +1504,11 @@ Defaults to <literal>false</literal>.
                     </listitem>
                 </itemizedlist>
                 <para>
-The default proxy manager can proxy the standard methods of any 
-<classname>Collection</classname>, <classname>List</classname>, 
-<classname>Map</classname>, <classname>Queue</classname>, 
-<classname>Date</classname>, or <classname>Calendar</classname> class, 
-including custom implementations.  It can also proxy custom classes whose 
+The default proxy manager can proxy the standard methods of any
+<classname>Collection</classname>, <classname>List</classname>,
+<classname>Map</classname>, <classname>Queue</classname>,
+<classname>Date</classname>, or <classname>Calendar</classname> class,
+including custom implementations.  It can also proxy custom classes whose
 accessor and mutator methods follow JavaBean naming conventions.  Your custom
 types must, however, meet the following criteria:
                 </para>
@@ -1522,21 +1522,21 @@ constructor that takes a single <classname>Comparator</classname> parameter.
                     <listitem>
                         <para>
 Custom date types must have a public no-arg constructor or a public
-constructor that takes a single <classname>long</classname> parameter 
+constructor that takes a single <classname>long</classname> parameter
 representing the current time.
                         </para>
                     </listitem>
                     <listitem>
                         <para>
 Other custom types must have a public no-arg constructor or a public copy
-constructor.  If a custom types does not have a copy constructor, it must be 
-possible to fully copy an instance A by creating a new instance B and calling 
+constructor.  If a custom types does not have a copy constructor, it must be
+possible to fully copy an instance A by creating a new instance B and calling
 each of B's setters with the value from the corresponding getter on A.
                         </para>
                     </listitem>
                 </itemizedlist>
                 <para>
-If you have custom classes that must be proxied and do not meet these 
+If you have custom classes that must be proxied and do not meet these
 requirements, OpenJPA allows you to define your own proxy classes and
 your own proxy manager. See the <literal>openjpa.util</literal> package
 <ulink url="../../apidocs/">Javadoc</ulink> for details on the interfaces involved,
@@ -1578,8 +1578,8 @@ You can plug your custom proxy manager into the OpenJPA runtime through the
                 </indexterm>
                 <para>
 When objects are serialized, the <literal>DetachedStateField</literal> in
-section <xref linkend="ref_guide_detach_state"/> 
-will be used to help determine when build time proxies will be removed.  
+section <xref linkend="ref_guide_detach_state"/>
+will be used to help determine when build time proxies will be removed.
 If runtime created proxies are being used (proxies not supplied by OpenJPA)
 or if an entity has already been detached, then any found proxies will be
 removed during serialization.
@@ -1866,8 +1866,8 @@ complex as a collection or map of entities, or anything in
 between. If you do choose to externalize to a collection or map, OpenJPA
 recognizes a family of metadata extensions for specifying type information for the
 externalized form of your fields - see <xref linkend="type"/>. If the
-external form of your field is an entity object or contains entities, OpenJPA 
-will correctly include the objects in its persistence-by-reachability 
+external form of your field is an entity object or contains entities, OpenJPA
+will correctly include the objects in its persistence-by-reachability
 algorithms and its delete-dependent algorithms.
             </para>
             <para>
@@ -2229,15 +2229,15 @@ You can also set the system's default maximum fetch depth with the
 <link linkend="openjpa.MaxFetchDepth"><literal>openjpa.MaxFetchDepth</literal>
 </link> configuration property.  The maximum fetch depth determines how "deep"
 into the object graph to traverse when loading an instance.  For example, with
-a <literal>MaxFetchDepth</literal> of 1, OpenJPA will load at most the target 
+a <literal>MaxFetchDepth</literal> of 1, OpenJPA will load at most the target
 instance and its immediate relations.  With a <literal>MaxFetchDepth</literal>
 of 2, OpenJPA may load the target instance, its immediate relations, and
 the relations of those relations.  This works to arbitrary depth.  In fact,
-the default <literal>MaxFetchDepth</literal> value is -1, which symbolizes 
-infinite depth.  Under this setting, OpenJPA will fetch configured relations 
-until it reaches the edges of the object graph.  Of course, which relation 
-fields are loaded depends on whether the fields are eager or lazy, and on the 
-active fetch groups.  A fetch group member's recursion depth may also limit 
+the default <literal>MaxFetchDepth</literal> value is -1, which symbolizes
+infinite depth.  Under this setting, OpenJPA will fetch configured relations
+until it reaches the edges of the object graph.  Of course, which relation
+fields are loaded depends on whether the fields are eager or lazy, and on the
+active fetch groups.  A fetch group member's recursion depth may also limit
 the fetch depth to something less than the configured maximum.
             </para>
             <para>
@@ -2246,7 +2246,7 @@ OpenJPAQuery</classname> extensions to the standard <classname>EntityManager
 </classname> and <classname>Query</classname> interfaces provide access to a
 <ulink url="../../apidocs/org/apache/openjpa/persistence/FetchPlan.html">
 <classname>org.apache.openjpa.persistence.FetchPlan</classname></ulink> object.
-The <classname>FetchPlan</classname> maintains the set of active fetch groups 
+The <classname>FetchPlan</classname> maintains the set of active fetch groups
 and the maximum fetch depth. It begins with the groups and depth defined in the
 <literal>openjpa.FetchGroups</literal> and <literal>openjpa.MaxFetchDepth
 </literal> properties, but allows you to add or remove groups and change the
@@ -2336,23 +2336,23 @@ field-masking algorithms, which would allow the latter method behavior if
 <literal>Magazine</literal> did not also define a field called <literal>
 publisher</literal>.
             </para>
-            
+
             <para>
 To include the fields defined in a super class by the subclass or to distinguish
 between fields that are defined in <emphasis>both</emphasis> super- and subclass,
 set <literal>setExtendedPathLookup(boolean)</literal> on <literal>FetchPlan
 </literal> to <literal>true</literal>. By default, this option is set to
-<literal>false</literal>, to reduce more extensive lookups for predominant use 
-cases.           
+<literal>false</literal>, to reduce more extensive lookups for predominant use
+cases.
             </para>
-            
+
             <para>
 In order to avoid the cost of reflection, OpenJPA does not perform any
 validation of the field name / class name pairs that you put into the fetch
 configuration. If you specify non-existent class / field pairs, nothing adverse
 will happen, but you will receive no notification of the fact that the specified
 configuration is not being used.
-            </para>         
+            </para>
             <example id="ref_guide_fetch-conf_per_field">
                 <title>
                     Adding an Eager Field
@@ -2389,11 +2389,11 @@ joined into the select, OpenJPA avoids the extra join just to select the foreign
 key values.
                     </para>
                 </listitem>
-                
-                
+
+
             </itemizedlist>
-            
-            
+
+
         </section>
     </section>
     <section id="ref_guide_perfpack_eager">
@@ -2514,7 +2514,7 @@ but they can spawn recursive to-one joins.
                 <para>
 Under the <literal>join</literal> subclass fetch mode, subclass data in joined
 tables is selected by outer joining to all possible subclass tables of the type
-being queried. As you'll see below, subclass data fetching is configured 
+being queried. As you'll see below, subclass data fetching is configured
 separately from relation fetching, and can be disabled for specific classes.
                 </para>
                 <note>

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.detachment.model;
 
@@ -31,17 +31,17 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
-@Entity 
+@Entity
 public class DMCustomer {
 
-    private static long idCounter = System.currentTimeMillis();	
-    @Id private long id = idCounter++;    
-    private String firstName;    
-    private String lastName;    
+    private static long idCounter = System.currentTimeMillis();
+    @Id private long id = idCounter++;
+    private String firstName;
+    private String lastName;
 
     @Version int version;
-    
-    @OneToMany(mappedBy="customer", 
+
+    @OneToMany(mappedBy="customer",
             fetch=FetchType.EAGER,
             cascade=CascadeType.ALL)
             private List<DMCustomerInventory> customerInventories =
@@ -49,7 +49,7 @@ public class DMCustomer {
 
     @Temporal(TemporalType.TIMESTAMP)
     Calendar cal;
-    
+
     public DMCustomer() {
     }
 

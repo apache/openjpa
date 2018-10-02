@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.identifier;
 
@@ -26,19 +26,19 @@ import org.apache.openjpa.lib.test.AbstractTestCase;
 public class TestIdentifiers extends AbstractTestCase {
 
     public void testIdentifierConversion() {
-        
+
         // Create a naming configs used for testing.
         IdentifierConfiguration defConfig = new IdConfigurationTestImpl();
         IdentifierConfiguration newConfig = new NewIdConfigurationTestImpl();
-        
+
         IdentifierUtil nu = new IdentifierUtilImpl(defConfig);
-        
+
         // Test basic name conversion with single name converter
         String n0 = "\"TABLE\"";
         String cn0 = nu.convert(newConfig, "DEFAULT", n0);
         assertEquals("`TABLE`", cn0);
-        
-        // Test basic name conversion with single name converter - no 
+
+        // Test basic name conversion with single name converter - no
         // conversion
         String n1 = "TABLE";
         String cn1 = nu.convert(newConfig, "DEFAULT", n1);
@@ -53,6 +53,6 @@ public class TestIdentifiers extends AbstractTestCase {
         String cn3 = nu.convertFull(newConfig, "DEFAULT", n3);
         assertEquals("`TABLE`:`SCHEMA`", cn3);
     }
-    
-    
+
+
 }

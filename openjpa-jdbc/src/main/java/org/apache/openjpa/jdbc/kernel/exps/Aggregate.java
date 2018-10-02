@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -96,13 +96,13 @@ class Aggregate
         return _arg.initialize(sel, ctx, JOIN_REL);
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
         sel.setAggregate(true);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         if (_arg != null)
             _arg.selectColumns(sel, ctx, state, true);
@@ -112,7 +112,7 @@ class Aggregate
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false,
             getSelectAs());
@@ -127,11 +127,11 @@ class Aggregate
 
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
-        return Filters.convert(res.getObject(this, JavaSQLTypes.JDBC_DEFAULT, 
+        return Filters.convert(res.getObject(this, JavaSQLTypes.JDBC_DEFAULT,
             null), getType());
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         if (_arg != null)
             _arg.calculateValue(sel, ctx, state, null, null);
@@ -141,9 +141,9 @@ class Aggregate
         return 1;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
-        _listener.appendTo(sql, getArgs(sel, ctx, state), _candidate, 
+        _listener.appendTo(sql, getArgs(sel, ctx, state), _candidate,
             ctx.store);
         sel.append(sql, state.joins);
     }

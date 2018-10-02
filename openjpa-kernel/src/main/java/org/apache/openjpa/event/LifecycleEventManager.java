@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.event;
 
@@ -54,7 +54,7 @@ public class LifecycleEventManager
     private static final Localizer _loc = Localizer.forPackage(
         LifecycleEventManager.class);
 
-    private Map<Class<?>, ListenerList> _classListeners = null; 
+    private Map<Class<?>, ListenerList> _classListeners = null;
     private ListenerList _listeners = null;
     // odd-element: Listener even-element: Class[]
     private List<Object> _addListeners = new LinkedList<Object>();

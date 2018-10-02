@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -65,7 +65,7 @@ public class LifecycleMetaData
     /**
      * Whether the LifeCycleMetaData has had any callbacks or listeners registered.  Used
      * for a quick test to determine whether to attempt to fire any events.
-     * @return boolean 
+     * @return boolean
      */
     public boolean is_activated() {
         return _activated;

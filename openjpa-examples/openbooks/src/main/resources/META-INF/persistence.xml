@@ -24,16 +24,16 @@
     version="2.0">
     <persistence-unit name="OpenBooks">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        
+
         <class>openbook.domain.Book</class>
         <class>openbook.domain.Inventory</class>
         <class>openbook.domain.PurchaseOrder</class>
         <class>openbook.domain.LineItem</class>
         <class>openbook.domain.Customer</class>
         <class>openbook.domain.Author</class>
-        
+
         <validation-mode>NONE</validation-mode>
-        
+
         <properties>
         <!-- Use these for MySQL
             <property name="javax.persistence.jdbc.driver"   value="com.mysql.jdbc.Driver"/>
@@ -41,7 +41,7 @@
             <property name="javax.persistence.jdbc.user"     value="user"/>
             <property name="javax.persistence.jdbc.password" value="password"/>
         -->
-            
+
         <!-- Use these for derby -->
             <property name="javax.persistence.jdbc.driver"   value="org.apache.derby.jdbc.EmbeddedDriver"/>
             <property name="javax.persistence.jdbc.url"      value="jdbc:derby:memory:OpenBooks;create=true"/>
@@ -49,17 +49,17 @@
             <property name="javax.persistence.jdbc.password" value=""/>
 
 
-            <property name="openjpa.DataCache"                value="true"/>        
+            <property name="openjpa.DataCache"                value="true"/>
             <property name="openjpa.RemoteCommitProvider"     value="sjvm"/>
             <property name="openjpa.InitializeEagerly"        value="true"/>
-            
+
             <property name="openjpa.DynamicEnhancementAgent"  value="false"/>
             <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
-            
+
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
             <property name="openjpa.jdbc.QuerySQLCache"       value="true(EnableStatistics=true)"/>
-            
+
         </properties>
     </persistence-unit>
-    
+
 </persistence>

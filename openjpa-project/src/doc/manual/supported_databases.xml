@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <appendix id="supported_databases" role="non-normative">
     <title>
@@ -33,13 +33,13 @@ parameters, known issues or limitations.
 The <link linkend="dbsupport">Verified Database Matrix</link>, contains the
 list of databases and drivers that were tested extensively against this
 release of OpenJPA, while the <link linkend="dbcompatible">Compatible Database
-Matrix</link> contains the list of databases and drivers that were tested 
+Matrix</link> contains the list of databases and drivers that were tested
 against prior releases or by OpenJPA users and may not support every feature
 of this release.
 
-The <link linked="dbunverified">Unverified Database Matrix</link> contains a 
+The <link linked="dbunverified">Unverified Database Matrix</link> contains a
 list of databases which have been reported to work, but have not been tested by
-the development team. 
+the development team.
     </para>
     </section>
 
@@ -484,7 +484,7 @@ databases that have been fully tested against this release, please refer to the
                         Pointbase JDBC driver
                     </entry>
                     <entry colname="drivversion">
-                        4.4 (4.4) 
+                        4.4 (4.4)
                     </entry>
                 </row>
                 <row>
@@ -543,8 +543,8 @@ databases that have been fully tested against this release, please refer to the
 Following is a table of the database and JDBC driver versions that have been reported
 to work with OpenJPA by the community but have not been verified by the development
 team. In some cases this is a question of availability since the developers may not
-be able to obtain a license to test, or have experience configuring these databases. 
-For the list of databases that have been fully tested against this release, please 
+be able to obtain a license to test, or have experience configuring these databases.
+For the list of databases that have been fully tested against this release, please
 refer to the <link linkend="dbsupport">Verified Database Matrix</link> section.
     </para>
     <table tocentry="1">
@@ -578,13 +578,13 @@ refer to the <link linkend="dbsupport">Verified Database Matrix</link> section.
                         SAP MaxDB
                     </entry>
                     <entry colname="dbversion">
-                        
+
                     </entry>
                     <entry colname="drivname">
-                        
+
                     </entry>
                     <entry colname="drivversion">
-                       
+
                     </entry>
                 </row>
             </tbody>
@@ -690,43 +690,43 @@ extending <classname>DB2Dictionary</classname>.
                 </listitem>
                 <listitem>
                     <para>
-Explicit creation of indexes specified by the OpenJPA @Index annotation will 
-fail on DB2 for iSeries if the default schema used by the JDBC driver does not 
-exist.  If a default schema is not specified on the connection, the iSeries 
-will default to the user profile name.  If a schema of that name does not 
-exist, DB2 on iSeries will not create the schema, resulting in a failure when 
-creating the index.  The failure message will look similar to: "[SQL0204] 
-USERNAME in QSYS type *LIB not found."  To work around this issue, specify a 
-default schema on the JDBC URL or data source property and make sure that 
-schema exists or create a schema which matches the user profile of the 
+Explicit creation of indexes specified by the OpenJPA @Index annotation will
+fail on DB2 for iSeries if the default schema used by the JDBC driver does not
+exist.  If a default schema is not specified on the connection, the iSeries
+will default to the user profile name.  If a schema of that name does not
+exist, DB2 on iSeries will not create the schema, resulting in a failure when
+creating the index.  The failure message will look similar to: "[SQL0204]
+USERNAME in QSYS type *LIB not found."  To work around this issue, specify a
+default schema on the JDBC URL or data source property and make sure that
+schema exists or create a schema which matches the user profile of the
 connection.
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-Use of DB2 on z/OS with the IBM JCC driver requires the DESCSTAT subsystem 
-parameter value to be set to 'YES'.  If this parameter is set to 'NO', the 
-mapping tool will fail with a persistence exception containing this text: 
-"Invalid parameter: Unknown column name TABLE_SCHEM".  After changing the value 
-of DESCSTAT, DB2 metadata tables must be recreated by running the DSNTIJMS job. 
+Use of DB2 on z/OS with the IBM JCC driver requires the DESCSTAT subsystem
+parameter value to be set to 'YES'.  If this parameter is set to 'NO', the
+mapping tool will fail with a persistence exception containing this text:
+"Invalid parameter: Unknown column name TABLE_SCHEM".  After changing the value
+of DESCSTAT, DB2 metadata tables must be recreated by running the DSNTIJMS job.
 See DB2 for z/OS documentation for additional information.
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-When using LOBs with persistent attributes of a streaming data type (e.g. 
-<literal>java.io.InputStream</literal>) in the case of very large LOB, DB2 JCC 
-driver will automatically use progressive streaming to retrieve the LOB data. 
+When using LOBs with persistent attributes of a streaming data type (e.g.
+<literal>java.io.InputStream</literal>) in the case of very large LOB, DB2 JCC
+driver will automatically use progressive streaming to retrieve the LOB data.
 With progressiveStreaming, the inputStream retrieved must be fully materialized
 before the next iteration of call to rs.next(). By default
 this will result in a LobClosedException when OpenJPA processes the InputStream.
                     </para>
                     <para>
-To work around this condition you may force fullyMaterializedLobData to true in 
+To work around this condition you may force fullyMaterializedLobData to true in
 the connection URL as shown below :
 <programlisting>
-openjpa.ConnectionURL: jdbc:db2://localhost:50000/demodb:fullyMaterializeLobData=true;progressiveStreaming=NO 
-</programlisting> 
+openjpa.ConnectionURL: jdbc:db2://localhost:50000/demodb:fullyMaterializeLobData=true;progressiveStreaming=NO
+</programlisting>
                     </para>
                 </listitem>
             </itemizedlist>
@@ -844,7 +844,7 @@ Firebird does not support auto-increment columns.
                 </listitem>
                 <listitem>
                     <para>
-In order to use many of JPQL functions with Firebird 1.5, Interbase UDFs 
+In order to use many of JPQL functions with Firebird 1.5, Interbase UDFs
 have to be available in the database.
                     </para>
                 </listitem>
@@ -898,7 +898,7 @@ openjpa.ConnectionURL: \
             </title>
             <itemizedlist>
                 <listitem>
-                    <para> 
+                    <para>
                         Databases must be created with the -n flag for Unicode compatibility in
                         order to use LOBs.
                     </para>
@@ -926,7 +926,7 @@ openjpa.ConnectionURL: jdbc:Cache://SERVER_NAME:SERVER_PORT/DB_NAME
             <itemizedlist>
                 <listitem>
                     <para>
-Support for Cache is done via SQL access over JDBC, not through their object 
+Support for Cache is done via SQL access over JDBC, not through their object
 database APIs.
                     </para>
                 </listitem>
@@ -980,24 +980,24 @@ openjpa.ConnectionURL: \
             <itemizedlist>
                 <listitem>
                     <para>
-When using a Microsoft SQL Server JDBC Driver v1.2 or earlier, the 
+When using a Microsoft SQL Server JDBC Driver v1.2 or earlier, the
 ConnectionURL must always contain the <literal>selectMethod=cursor
-</literal> string, which is necessary for the driver to properly 
+</literal> string, which is necessary for the driver to properly
 support large result sets.
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-When using a Microsoft SQL Server JDBC Driver v1.2 or earlier, the 
-JDBC driver has bugs that manifest themselves when prepared statements 
-are pooled.  Please disable prepared statement pooling by including the 
-<literal>MaxCachedStatements=0</literal> configuration property 
+When using a Microsoft SQL Server JDBC Driver v1.2 or earlier, the
+JDBC driver has bugs that manifest themselves when prepared statements
+are pooled.  Please disable prepared statement pooling by including the
+<literal>MaxCachedStatements=0</literal> configuration property
 in your org.apache.openjpa.ConnectionFactoryProperties.
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-SQL Server date fields are accurate only to the nearest 3 milliseconds, 
+SQL Server date fields are accurate only to the nearest 3 milliseconds,
 possibly resulting in precision loss in stored dates.
                     </para>
                 </listitem>
@@ -1027,17 +1027,17 @@ Floats and doubles may lose precision when stored.
                 <listitem>
                     <para>
 When using a SQL Server instance that has been configured to be case-sensitive
-in schema names, you need to set the "schemaCase=preserve" parameter in the 
+in schema names, you need to set the "schemaCase=preserve" parameter in the
 <link linkend="openjpa.jdbc.DBDictionary">openjpa.jdbc.DBDictionary</link>
 property.
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-SQL Server 2005 does not support native sequences. If you would like to use 
-generated values with SQL Server you should use GenerationType.IDENTITY, 
+SQL Server 2005 does not support native sequences. If you would like to use
+generated values with SQL Server you should use GenerationType.IDENTITY,
 GenerationType.TABLE, or GenerationType.AUTO.
-                    </para> 
+                    </para>
                 </listitem>
                 <listitem>
                     <para>
@@ -1126,9 +1126,9 @@ List results = query.getResultList();
             </title>
             <itemizedlist>
                 <listitem>
-                    <para> 
+                    <para>
 The default table types that MySQL uses do not support transactions, which will
-prevent OpenJPA from being able to roll back transactions. Use the 
+prevent OpenJPA from being able to roll back transactions. Use the
 <literal>InnoDB</literal> table type for any tables that OpenJPA will access.
                     </para>
                 </listitem>
@@ -1165,10 +1165,10 @@ When using large result sets with MySQL there are a number of documented limitat
 Please read the section titled "ResultSet" in the "MySQL JDBC API Implementation Notes".
 The net effect of these limitations is that you will have to read all of the rows of a
 result set (or close the connection) before you can issue any other queries on
-the connection, or an exception will be thrown. Setting openjpa.FetchBatchSize 
-to any value greater than zero will enable streaming result sets. 
+the connection, or an exception will be thrown. Setting openjpa.FetchBatchSize
+to any value greater than zero will enable streaming result sets.
                     </para>
-                </listitem>                
+                </listitem>
                 <listitem>
                     <para>
 The use of <link linkend="ref_guide_streamsupport">LOB streaming</link> is limited.
@@ -1220,11 +1220,11 @@ List results = query.getResultList();
             </title>
             <itemizedlist>
                 <listitem>
-                    <para> 
-The Oracle JDBC driver has significant differences between different versions. 
-It is important to use the officially supported version of the drivers 
+                    <para>
+The Oracle JDBC driver has significant differences between different versions.
+It is important to use the officially supported version of the drivers
 (10.2.0.1.0/11.2.0.x.0), which is backward compatible with previous versions of the Oracle
-server. It can be downloaded from 
+server. It can be downloaded from
 <ulink url="http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html">
 http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html</ulink>.
                     </para>
@@ -1237,11 +1237,11 @@ Empty string/char values are stored as NULL.
                 <listitem>
                     <para>
 Oracle corp's JDBC driver for Oracle has only limited support for batch updates.
-The result for OpenJPA is that batching of some statements may fail and in some cases, 
+The result for OpenJPA is that batching of some statements may fail and in some cases,
 the exact object that failed an optimistic lock check cannot be determined. OpenJPA will
 throw an <classname>OptimisticException</classname> with more failed objects than actually
 failed.  This situation may be resolved by disabling statement batching by setting the
-batchLimit value to zero or by using a more recent Oracle JDBC Driver (11.2.0.1) with 
+batchLimit value to zero or by using a more recent Oracle JDBC Driver (11.2.0.1) with
 batch support improvements.  Attempting to resolve the issue with a more current driver
 is recommended since disabling statement batching can result in a decrease in performance.
             <example id="dbsupport_oracle_disable_batch_updates">
@@ -1250,7 +1250,7 @@ is recommended since disabling statement batching can result in a decrease in pe
                 </title>
 <programlisting>
 openjpa.jdbc.DBDictionary: oracle(batchLimit=0)
-</programlisting> 
+</programlisting>
             </example>
                     </para>
                 </listitem>
@@ -1271,13 +1271,13 @@ CLOB columns cannot be used in queries.
                 </listitem>
                 <listitem>
                     <para>
-The use of LOBs with persistent attributes of a streaming data type (ex. 
-<literal>java.io.InputStream</literal> or <literal>java.io.Reader</literal>) may 
-require the same connection to be used over the life of the transaction or 
+The use of LOBs with persistent attributes of a streaming data type (ex.
+<literal>java.io.InputStream</literal> or <literal>java.io.Reader</literal>) may
+require the same connection to be used over the life of the transaction or
 entity manager.  If the same connection is not used for persistent operations
 a <literal>java.io.IOException</literal> with message <literal>Closed Connection
 </literal> may result.  The OpenJPA property <literal>openjpa.ConnectionRetainMode</literal>
-can be used to control how OpenJPA uses datastore connections.  See 
+can be used to control how OpenJPA uses datastore connections.  See
 <xref linkend="ref_guide_dbsetup_retain"/> for details.
             <example id="dbsupport_oracle_retain_connection">
                 <title>
@@ -1285,7 +1285,7 @@ can be used to control how OpenJPA uses datastore connections.  See
                 </title>
 <programlisting>
 openjpa.ConnectionRetainMode: always
-</programlisting> 
+</programlisting>
             </example>
                     </para>
                 </listitem>
@@ -1301,12 +1301,12 @@ error may result.
                     <para>
 If Oracle dictionary property <literal>MaxEmbeddedBlobSize</literal> or
 <literal>MaxEmbeddedClobSize</literal> is set to some limit (i.e. not -1) and embedded collection
-with BLOB/CLOB attribute is used, a 
+with BLOB/CLOB attribute is used, a
 <literal>"org.apache.openjpa.persistence.ArgumentException:
 "x.y.z.EmbedOwner.embedCollection&lt;element:class x.y.z.EmbedValue&gt;"
 is mapped as embedded, but embedded field
-"x.y.z.EmbedOwner.embedCollection.x.y.z.EmbedValue.blob" is not embeddable. 
-Embedded element/key/value types are limited to simple fields and direct relations to other 
+"x.y.z.EmbedOwner.embedCollection.x.y.z.EmbedValue.blob" is not embeddable.
+Embedded element/key/value types are limited to simple fields and direct relations to other
 persistent types"</literal> error may result. To overcome this limitation, either use JDBC driver
 11.2.0.x.0 (or later version) or set both <literal>MaxEmbeddedBlobSize</literal> and
 <literal>MaxEmbeddedClobSize</literal> properties to -1.
@@ -1335,10 +1335,10 @@ openjpa.ConnectionURL: \
             </title>
             <itemizedlist>
                 <listitem>
-                    <para> 
+                    <para>
 Fields of type BLOB and CLOB are limited to 1M.  Set the <literal>BlobTypeName
-</literal> and/or <literal>ClobTypeName</literal> properties of the 
-<literal>openjpa.jdbc.DBDictionary</literal> setting to override.  
+</literal> and/or <literal>ClobTypeName</literal> properties of the
+<literal>openjpa.jdbc.DBDictionary</literal> setting to override.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -1406,20 +1406,20 @@ openjpa.ConnectionURL: jdbc:solid://localhost:2315/dba/dba
                 M-type tables vs. D-type tables
             </title>
             <para>
-IBM solidDB supports two types of tables: in-memory tables (M-tables) and 
-on-disk tables (D-tables). Since cursor hold over commit can not apply to M-tables 
-(which will cause SOLID Table Error 13187: The cursor cannot continue  
-accessing M-tables after the transaction has committed or aborted. 
-The statement must be re-executed), the default OpenJPA tables are D-tables. 
-One can set the whole server to disk-based mode by adding 
+IBM solidDB supports two types of tables: in-memory tables (M-tables) and
+on-disk tables (D-tables). Since cursor hold over commit can not apply to M-tables
+(which will cause SOLID Table Error 13187: The cursor cannot continue
+accessing M-tables after the transaction has committed or aborted.
+The statement must be re-executed), the default OpenJPA tables are D-tables.
+One can set the whole server to disk-based mode by adding
          [General]
-             DefaultStoreIsMemory=no 
-in solid.ini. The table types can also be determined by setting OpenJPA property 
-"openjpa.jdbc.DBDictionary" with value "storeIsMemory=true" or "storeIsMemory=false" 
-in the persistence.xml. The "STORE MEMORY" and "STORE DISK" will be appended to 
-the create table DDL, respectively. 
+             DefaultStoreIsMemory=no
+in solid.ini. The table types can also be determined by setting OpenJPA property
+"openjpa.jdbc.DBDictionary" with value "storeIsMemory=true" or "storeIsMemory=false"
+in the persistence.xml. The "STORE MEMORY" and "STORE DISK" will be appended to
+the create table DDL, respectively.
             </para>
-        </section>    
+        </section>
         <section id="dbsupport_soliddb_concurrency_control">
             <title>
                 Concurrency control mechanism
@@ -1428,19 +1428,19 @@ the create table DDL, respectively.
 The default concurrency control mechanism depends on the table type:
 Disk-based tables (D-tables) are by default optimistic.
 Main-memory tables (M-tables) are always pessimistic.
-Since OpenJPA applications expects lock waits as usually is done with 
-normal pessimistic databases, the server should be set to the pessimistic mode. 
-The optimistic mode is about not waiting for the locks at all. That increases 
-concurrency but requires more programming. The pessimistic mode with the 
-READ COMMITTED isolation level (default) should get as much concurrency as one 
-might need. The pessimistic locking mode can be set in solid.ini:  
+Since OpenJPA applications expects lock waits as usually is done with
+normal pessimistic databases, the server should be set to the pessimistic mode.
+The optimistic mode is about not waiting for the locks at all. That increases
+concurrency but requires more programming. The pessimistic mode with the
+READ COMMITTED isolation level (default) should get as much concurrency as one
+might need. The pessimistic locking mode can be set in solid.ini:
       [General]
          Pessimistic=yes
-One can override the locking mode on the per table base by setting OpenJPA property 
-"openjpa.jdbc.DBDictionary" to value "lockingMode=PESSIMISTIC" in the persistence.xml. 
-An extra SQL will be generated along with CREATE TABLE DDL: 
-ALTER TABLE EX_POBJECT SET PESSIMISTIC. 
-The possible values for lockingMode is OPTIMISTIC/PESSIMISTIC.         
+One can override the locking mode on the per table base by setting OpenJPA property
+"openjpa.jdbc.DBDictionary" to value "lockingMode=PESSIMISTIC" in the persistence.xml.
+An extra SQL will be generated along with CREATE TABLE DDL:
+ALTER TABLE EX_POBJECT SET PESSIMISTIC.
+The possible values for lockingMode is OPTIMISTIC/PESSIMISTIC.
            </para>
         </section>
     </section>
@@ -1464,8 +1464,8 @@ openjpa.ConnectionURL: \
             </title>
             <itemizedlist>
                 <listitem>
-                    <para> 
-The "<literal>DYNAMIC_PREPARE</literal>" parameter of the Sybase JDBC driver 
+                    <para>
+The "<literal>DYNAMIC_PREPARE</literal>" parameter of the Sybase JDBC driver
 cannot be used with OpenJPA.
                     </para>
                 </listitem>
@@ -1492,8 +1492,8 @@ procedure.</literal> ".
                     </para>
                 </listitem>
                 <listitem>
-                    <para> 
-Applications performing update/insert data of the BigDecimal Java type may fail 
+                    <para>
+Applications performing update/insert data of the BigDecimal Java type may fail
 with OptimisticException if the data exceeds the scale or precision of the
 column on Sybase. To avoid this problem, applications can specify the precision
 and scale for the numeric type by setting numericTypeName='NUMERIC(p,s)' for

@@ -26,10 +26,10 @@ import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.
     EntityD;
 @Entity
 @DiscriminatorValue("G")
-public class PIdSTCDMSCEntityD 
+public class PIdSTCDMSCEntityD
 extends PIdSTCDMSCMappedSuperclass implements EntityD {
 private String entityDData;
-    
+
     public String getEntityDData() {
         return entityDData;
     }

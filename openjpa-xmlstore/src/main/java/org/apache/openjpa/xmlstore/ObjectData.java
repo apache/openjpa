@@ -113,7 +113,7 @@ public final class ObjectData
 
         FieldMetaData[] fmds = _meta.getFields();
         for (int i = 0; i < fmds.length; i++)
-            if (!sm.getLoaded().get(i) && fetch.requiresFetch(fmds[i]) 
+            if (!sm.getLoaded().get(i) && fetch.requiresFetch(fmds[i])
                 != FetchConfiguration.FETCH_NONE)
                 sm.store(i, toLoadable(sm, fmds[i], _data[i], fetch));
     }

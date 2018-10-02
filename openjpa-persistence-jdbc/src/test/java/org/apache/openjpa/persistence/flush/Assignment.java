@@ -37,17 +37,17 @@ import javax.persistence.Table;
 public class Assignment implements Serializable {
 
     private static final long serialVersionUID = -7707299604883998179L;
-    
+
     @Id
     @Column(name="ASSIGN_ID")
     @SequenceGenerator(name="assignIdSeq", sequenceName="FL_ASSIGN_SEQ")
     @GeneratedValue(generator="assignIdSeq", strategy=GenerationType.SEQUENCE)
     protected Long assignId;
-    
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.LAZY)
     @JoinColumn(name="TOPIC_ID")
     protected Topic topic;
-    
+
     @Column(name="ASSIGN_TEXT")
     protected String assignText;
 

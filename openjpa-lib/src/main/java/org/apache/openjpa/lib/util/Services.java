@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -123,8 +123,8 @@ public class Services {
             urlCon = url.openConnection();
             urlCon.setUseCaches(false);
             in = urlCon.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(in)); 
-            
+            reader = new BufferedReader(new InputStreamReader(in));
+
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().startsWith("#")
@@ -142,9 +142,9 @@ public class Services {
                 }
             }
         } finally {
-            try { 
+            try {
                 reader.close();
-            } catch (IOException ioe) { 
+            } catch (IOException ioe) {
                 // silently consume exception
             }
             try {

@@ -94,5 +94,5 @@ public boolean equals(Object obj) {
 	} else if (!parent.equals(other.parent))
 		return false;
 	return true;
-}  
+}
 }

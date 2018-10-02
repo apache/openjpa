@@ -32,13 +32,13 @@ public class EntityI2 {
     @Column(name="entityI2 id")
     private int id;
     private String name;
-    
+
     @OneToOne
     @PrimaryKeyJoinColumn
     private EntityI3 entityI3;
-    
+
     public EntityI2() {}
-    
+
     public EntityI2(int id) {
         this.id = id;
     }

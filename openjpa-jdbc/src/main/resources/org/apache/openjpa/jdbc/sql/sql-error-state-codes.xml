@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <!-- ======================================================================= -->
 <!-- Lists SQL Error State codes for specific type of faults per database    -->
@@ -36,7 +36,7 @@
 		<optimistic></optimistic>
 		<query>57014</query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.DerbyDictionary">
 		<lock>40001,40XL1,40XL2</lock>
 		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
@@ -45,7 +45,7 @@
 		<optimistic></optimistic>
 		<query>XCL52</query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.SQLServerDictionary">
 		<lock>1204,1205,1222,HY008,HYT00,40001</lock>
 		<referential-integrity>544,2601,2627,8114,8115</referential-integrity>
@@ -54,7 +54,7 @@
 		<optimistic>1205</optimistic>
 		<query>HY008,HYT00</query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.SybaseDictionary">
 		<lock>1204,1205,1279, JZ006</lock>
 		<referential-integrity>423,511,515,530,547,2601,2615,2714</referential-integrity>
@@ -63,7 +63,7 @@
 		<optimistic>1205,1222</optimistic>
 		<query>611</query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.AccessDictionary">
 		<lock>40001</lock>
 		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
@@ -72,7 +72,7 @@
 		<optimistic>40XL1,40001</optimistic>
 		<query></query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.CacheDictionary">
 		<lock>40001,40XL1,40XL2</lock>
 		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
@@ -81,7 +81,7 @@
 		<optimistic></optimistic>
 		<query>XCL52</query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.EmpressDictionary">
 		<lock>40001</lock>
 		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
@@ -90,7 +90,7 @@
 		<optimistic>40XL1,40001</optimistic>
 		<query></query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.FoxProDictionary">
 		<lock>1222,1599,40001</lock>
 		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
@@ -99,7 +99,7 @@
 		<optimistic>40XL1,40001</optimistic>
 		<query></query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.H2Dictionary">
 		<lock>HYT00,57014</lock>
 		<referential-integrity>22001,22003,22012,22018,22025,23502,23503,23506,23507,23513,23000,23002,23003</referential-integrity>
@@ -108,7 +108,7 @@
 		<optimistic></optimistic>
 		<query>90031,57014</query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.HSQLDictionary">
 		<lock></lock>
 		<referential-integrity>-9</referential-integrity>
@@ -117,7 +117,7 @@
 		<optimistic></optimistic>
 		<query></query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.InformixDictionary">
 		<lock>-143,-154</lock>
 		<referential-integrity>-239,-268,-692,-11030</referential-integrity>
@@ -126,7 +126,7 @@
 		<optimistic></optimistic>
 		<query>IX000</query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.InterbaseDictionary">
 		<lock></lock>
 		<referential-integrity></referential-integrity>
@@ -135,7 +135,7 @@
 		<optimistic></optimistic>
 		<query></query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.FirebirdDictionary">
 		<lock>335544336</lock>
 		<referential-integrity></referential-integrity>
@@ -144,7 +144,7 @@
 		<optimistic></optimistic>
 		<query></query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.JDataStoreDictionary">
 		<lock></lock>
 		<referential-integrity></referential-integrity>
@@ -153,7 +153,7 @@
 		<optimistic></optimistic>
 		<query></query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.MySQLDictionary">
 		<lock>41000</lock>
 		<referential-integrity>630,839,840,893,1062,1169,1215,1216,1217,1451,1452,1557</referential-integrity>
@@ -171,7 +171,7 @@
         <optimistic></optimistic>
         <query>70100</query>
     </dictionary>
-    	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.OracleDictionary">
 		<lock>42000,61000,72000</lock>
 		<referential-integrity>1,1400,1722,2291,2292</referential-integrity>
@@ -180,7 +180,7 @@
 		<optimistic></optimistic>
 		<query>72000</query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.PointbaseDictionary">
 		<lock></lock>
 		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
@@ -189,7 +189,7 @@
 		<optimistic></optimistic>
 		<query></query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.PostgresDictionary">
 		<lock>55P03,40P01</lock>
 		<referential-integrity>23000,23502,23503,23514</referential-integrity>
@@ -198,7 +198,7 @@
 		<optimistic>55P03</optimistic>
 		<query>57014</query>
 	</dictionary>
-	
+
 	<dictionary class="org.apache.openjpa.jdbc.sql.SolidDBDictionary">
 		<lock>HY000</lock>
 		<referential-integrity></referential-integrity>

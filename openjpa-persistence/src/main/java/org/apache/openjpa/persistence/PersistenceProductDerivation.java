@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -69,19 +69,19 @@ import org.xml.sax.SAXException;
 
 /**
  * Sets JPA specification defaults and parses JPA specification XML files.
- * 
+ *
  * For globals, looks in <code>openjpa.properties</code> system property for
  * the location of a file to parse. If no system property is defined, the
  * default resource location of <code>META-INF/openjpa.xml</code> is used.
  *
  * For defaults, looks for <code>META-INF/persistence.xml</code>.
  * Within <code>persistence.xml</code>, look for the named persistence unit, or
- * if no name given, an OpenJPA unit (preferring an unnamed OpenJPA unit to 
+ * if no name given, an OpenJPA unit (preferring an unnamed OpenJPA unit to
  * a named one).
  *
  * @author Abe White
  */
-public class PersistenceProductDerivation 
+public class PersistenceProductDerivation
     extends AbstractProductDerivation
     implements OpenJPAProductDerivation {
 
@@ -96,26 +96,26 @@ public class PersistenceProductDerivation
 
     private HashMap<String, PUNameCollision> _puNameCollisions
         = new HashMap<String,PUNameCollision>();
-    
-    public static final String PREFIX = "javax.persistence"; 
-    
-    // These are properties that are invalid to be configured at the provider level. 
+
+    public static final String PREFIX = "javax.persistence";
+
+    // These are properties that are invalid to be configured at the provider level.
     private static final String[] _invalidPersistenceProperties =
         new String[] { PREFIX + ".cache.storeMode", PREFIX + ".cache.retrieveMode" };
-    
+
     private static Set<String> _hints = new HashSet<String>();
-    
+
     // Provider name to filter out PUs that don't belong to this derivation.
     protected String _providerImplName;
 
     static {
         _hints.add("javax.persistence.lock.timeout");
         _hints.add("javax.persistence.query.timeout");
-        
+
         _hints.add("openjpa.FetchPlan.ExtendedPathLookup");
-        _hints.add("openjpa.FetchBatchSize"); 
+        _hints.add("openjpa.FetchBatchSize");
         _hints.add("openjpa.FetchPlan.FetchBatchSize");
-        _hints.add("openjpa.MaxFetchDepth"); 
+        _hints.add("openjpa.MaxFetchDepth");
         _hints.add("openjpa.FetchPlan.MaxFetchDepth");
         _hints.add("openjpa.LockTimeout");
         _hints.add("openjpa.FetchPlan.LockTimeout");
@@ -151,23 +151,23 @@ public class PersistenceProductDerivation
 
         _hints = Collections.unmodifiableSet(_hints);
     }
-    
+
 	public PersistenceProductDerivation() {
 		_providerImplName = PersistenceProviderImpl.class.getName();
 	}
-    
+
     public void putBrokerFactoryAliases(Map<String, String> m) {
     }
 
     public int getType() {
         return TYPE_SPEC;
     }
-    
+
     @Override
     public String getConfigurationPrefix() {
         return PREFIX;
     }
-    
+
     @Override
     public Set<String> getSupportedQueryHints() {
         return _hints;
@@ -180,18 +180,18 @@ public class PersistenceProductDerivation
         AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(
             javax.persistence.EntityManagerFactory.class));
     }
-    
+
     @Override
     public boolean beforeConfigurationLoad(Configuration c) {
         if (!(c instanceof OpenJPAConfigurationImpl))
             return false;
-        
+
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
         conf.metaFactoryPlugin.setAlias(ALIAS_EJB.getName(), PersistenceMetaDataFactory.class.getName());
         conf.metaFactoryPlugin.setAlias(SPEC_JPA.getName(),  PersistenceMetaDataFactory.class.getName());
-        
+
         conf.addValue(new EntityManagerFactoryValue());
-        
+
         conf.readLockLevel.setAlias("optimistic", String.valueOf(MixedLockLevels.LOCK_OPTIMISTIC));
         conf.readLockLevel.setAlias("optimistic-force-increment", String
             .valueOf(MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT));
@@ -215,31 +215,31 @@ public class PersistenceProductDerivation
 
 
         configureBeanValidation(conf);
-        
+
         conf.dataCacheMode = conf.addString(JPAProperties.CACHE_MODE);
         conf.dataCacheMode.setDefault(DataCacheMode.UNSPECIFIED.toString());
         conf.dataCacheMode.set(DataCacheMode.UNSPECIFIED.toString());
 
         return true;
     }
-    
+
     /**
      * Bean Validation configuration is unusual because its usage of enums and keys that
      * do not have counterparts in kernel.
      * Hence the plugins are defined in product derivation instead of the kernel's
      * core configuration.
-     * 
+     *
      * @param conf
      */
     private void configureBeanValidation(OpenJPAConfigurationImpl conf) {
         // Validation defines/adds the following plugins to OpenJPA Configuration
-        conf.validationFactory         = conf.addObject(JPAProperties.VALIDATE_FACTORY); 
+        conf.validationFactory         = conf.addObject(JPAProperties.VALIDATE_FACTORY);
         conf.validator                 = conf.addObject("Validator");
         conf.validationMode            = conf.addString(JPAProperties.VALIDATE_MODE);
         conf.validationGroupPrePersist = conf.addString(JPAProperties.VALIDATE_PRE_PERSIST);
         conf.validationGroupPreUpdate  = conf.addString(JPAProperties.VALIDATE_PRE_UPDATE);
         conf.validationGroupPreRemove  = conf.addString(JPAProperties.VALIDATE_PRE_REMOVE);
-        
+
         conf.validationMode.setDynamic(true);
         String[] aliases = new String[] {
                 String.valueOf(ValidationMode.AUTO),
@@ -277,7 +277,7 @@ public class PersistenceProductDerivation
         if (!OpenJPAConfigurationImpl.class.isInstance(c)
          && !SPEC_JPA.isSame(((OpenJPAConfiguration) c).getSpecification()))
             return false;
- 
+
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
         conf.metaFactoryPlugin.setDefault(SPEC_JPA.getName());
         conf.metaFactoryPlugin.setString(SPEC_JPA.getName());
@@ -334,7 +334,7 @@ public class PersistenceProductDerivation
         boolean explicit = !StringUtil.isEmpty(rsrc);
         if (!explicit)
             rsrc = RSRC_DEFAULT;
-        
+
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
         Boolean ret = load(cp, rsrc, name, m, null, explicit);
         if (ret != null)
@@ -354,7 +354,7 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public ConfigurationProvider load(String rsrc, String anchor, 
+    public ConfigurationProvider load(String rsrc, String anchor,
         ClassLoader loader)
         throws IOException {
         if (rsrc != null && !rsrc.endsWith(".xml"))
@@ -366,14 +366,14 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public ConfigurationProvider load(File file, String anchor) 
+    public ConfigurationProvider load(File file, String anchor)
         throws IOException {
         if (!file.getName().endsWith(".xml"))
             return null;
 
         ConfigurationParser parser = new ConfigurationParser(null);
         parser.parse(file);
-        return load(findUnit((List<PersistenceUnitInfoImpl>) 
+        return load(findUnit((List<PersistenceUnitInfoImpl>)
             parser.getResults(), anchor, null), null);
     }
 
@@ -438,7 +438,7 @@ public class PersistenceProductDerivation
         String rsrc = null;
         for (int i = 0; i < prefixes.length && StringUtil.isEmpty(rsrc); i++)
            rsrc = AccessController.doPrivileged(J2DoPrivHelper
-                .getPropertyAction(prefixes[i] + ".properties")); 
+                .getPropertyAction(prefixes[i] + ".properties"));
         boolean explicit = !StringUtil.isEmpty(rsrc);
         String anchor = null;
         int idx = (!explicit) ? -1 : rsrc.lastIndexOf('#');
@@ -487,7 +487,7 @@ public class PersistenceProductDerivation
         throws IOException {
         Enumeration<URL> urls = null;
         try {
-            urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
+            urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, rsrc));
             if (!urls.hasMoreElements()) {
                 if (!rsrc.startsWith("META-INF"))
                   urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, "META-INF/" + rsrc));
@@ -511,10 +511,10 @@ public class PersistenceProductDerivation
      * @return {@link Boolean#TRUE} if the resource was loaded, null if it
      * does not exist, or {@link Boolean#FALSE} if it is not for OpenJPA
      */
-    private Boolean load(ConfigurationProviderImpl cp, String rsrc, 
+    private Boolean load(ConfigurationProviderImpl cp, String rsrc,
         String name, Map m, ClassLoader loader, boolean explicit)
         throws IOException {
-        ClassLoader contextLoader = null;         
+        ClassLoader contextLoader = null;
         if (loader == null) {
             contextLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
             loader = contextLoader;
@@ -529,24 +529,24 @@ public class PersistenceProductDerivation
         if (pinfo == null) {
             if (!explicit)
                 return Boolean.FALSE;
-            throw new MissingResourceException(_loc.get("missing-xml-config", 
+            throw new MissingResourceException(_loc.get("missing-xml-config",
                 rsrc, String.valueOf(name)).getMessage(), getClass().getName(), rsrc);
         } else if (!isOpenJPAPersistenceProvider(pinfo, loader)) {
             if (!explicit) {
                 warnUnknownProvider(pinfo);
                 return Boolean.FALSE;
             }
-            throw new MissingResourceException(_loc.get("unknown-provider", 
+            throw new MissingResourceException(_loc.get("unknown-provider",
                 rsrc, name, pinfo.getPersistenceProviderClassName()).
                 getMessage(), getClass().getName(), rsrc);
         }
 
         // Process jar-file references after confirming OpenJPA is the desired JPA provider.
         if ( loader != contextLoader && loader instanceof MultiClassLoader) {
-            // combine the MultiClassLoader and set to the context 
+            // combine the MultiClassLoader and set to the context
             // so that it could be used in the jar validation
             MultiClassLoader mutliClassLoader = (MultiClassLoader) loader;
-            contextLoader = (contextLoader != null) ? contextLoader 
+            contextLoader = (contextLoader != null) ? contextLoader
                     : AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
             mutliClassLoader.addClassLoader(contextLoader);
             AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(mutliClassLoader));
@@ -583,7 +583,7 @@ public class PersistenceProductDerivation
      * Find the unit with the given name, or an OpenJPA unit if no name is
      * given (preferring an unnamed OpenJPA unit to a named one).
      */
-    private PersistenceUnitInfoImpl findUnit(List<PersistenceUnitInfoImpl> 
+    private PersistenceUnitInfoImpl findUnit(List<PersistenceUnitInfoImpl>
         pinfos, String name, ClassLoader loader) {
         PersistenceUnitInfoImpl ojpa = null;
         PersistenceUnitInfoImpl result = null;
@@ -605,7 +605,7 @@ public class PersistenceProductDerivation
             }
 
             if (isOpenJPAPersistenceProvider(pinfo, loader)) {
-                // if no name given and found unnamed unit, return it.  
+                // if no name given and found unnamed unit, return it.
                 // otherwise record as default unit unless we find a better match later
                 if (StringUtil.isEmpty(pinfo.getPersistenceUnitName()))
                     return pinfo;
@@ -640,15 +640,15 @@ public class PersistenceProductDerivation
     }
 
     /**
-     * Warn the user that we could only find an unrecognized persistence 
+     * Warn the user that we could only find an unrecognized persistence
      * provider.
      */
     private static void warnUnknownProvider(PersistenceUnitInfo pinfo) {
         log(_loc.get("unrecognized-provider", pinfo.getPersistenceProviderClassName()).getMessage());
     }
-    
+
     /**
-     * Log a message.   
+     * Log a message.
      */
     private static void log(String msg) {
         // at this point logging isn't configured yet
@@ -665,9 +665,9 @@ public class PersistenceProductDerivation
             _puNameCollisions.put(puName, new PUNameCollision(puName, file1, file2));
         }
     }
-    
+
     /**
-     * Custom configuration provider.   
+     * Custom configuration provider.
      */
     public static class ConfigurationProviderImpl
         extends MapConfigurationProvider {
@@ -699,9 +699,9 @@ public class PersistenceProductDerivation
                     // Set the spec level based on the persistence version
                     oconf.setSpecification("jpa " + persistenceVersion.toString());
                 }
-                    
 
-                // we merge several persistence.xml elements into the 
+
+                // we merge several persistence.xml elements into the
                 // MetaDataFactory property implicitly.  if the user has a
                 // global openjpa.xml with this property set, its value will
                 // get overwritten by our implicit setting.  so instead, combine
@@ -715,29 +715,29 @@ public class PersistenceProductDerivation
                 }
             }
             super.setInto(conf, null);
-            
+
             // At this point user properties have been loaded into the configuration. Apply any modifications based off
             // those.
             if (conf instanceof OpenJPAConfiguration) {
                 OpenJPAConfiguration oconf = (OpenJPAConfiguration) conf;
                 String dataCache = oconf.getDataCache();
                 String sharedDataCacheMode = oconf.getDataCacheMode();
-                
-                if (DataCacheMode.NONE.toString().equals(sharedDataCacheMode) 
+
+                if (DataCacheMode.NONE.toString().equals(sharedDataCacheMode)
                         && dataCache != null && !"false".equals(dataCache)) {
                     Log log = conf.getConfigurationLog();
                     if (log.isWarnEnabled()) {
                         log.warn(_loc.get("shared-cache-mode-take-precedence", dataCache));
                     }
                 }
-                
-                if ((dataCache == null || "false".equals(dataCache)) 
-                        && !DataCacheMode.NONE.toString().equals(sharedDataCacheMode) 
+
+                if ((dataCache == null || "false".equals(dataCache))
+                        && !DataCacheMode.NONE.toString().equals(sharedDataCacheMode)
                         && !DataCacheMode.UNSPECIFIED.toString().equals(sharedDataCacheMode)){
                     oconf.setDataCache("true");
                 }
-                
-                // If the datacache is enabled, make sure we have a RemoteCommitProvider                
+
+                // If the datacache is enabled, make sure we have a RemoteCommitProvider
                 String rcp = oconf.getRemoteCommitProvider();
                 dataCache = oconf.getDataCache();
                 // If the datacache is set and is something other than false
@@ -748,7 +748,7 @@ public class PersistenceProductDerivation
                     }
                 }
             }
-            
+
             Log log = conf.getConfigurationLog();
             if (log.isWarnEnabled()) {
                 Map<?, ?> props = getProperties();
@@ -805,9 +805,9 @@ public class PersistenceProductDerivation
                 _persistenceVersion = vp.getVersion();
                 _schemaLocation = vp.getSchemaLocation();
             } catch (Throwable t) {
-                    log(_loc.get("version-check-error", 
+                    log(_loc.get("version-check-error",
                         _source.toString()).toString());
-            }            
+            }
             super.parse(url);
         }
 
@@ -825,25 +825,25 @@ public class PersistenceProductDerivation
             try {
                 vp.parse(file);
                 _persistenceVersion = vp.getVersion();
-                _schemaLocation = vp.getSchemaLocation();                
+                _schemaLocation = vp.getSchemaLocation();
             } catch (Throwable t) {
-                    log(_loc.get("version-check-error", 
+                    log(_loc.get("version-check-error",
                         _source.toString()).toString());
-            }            
+            }
             super.parse(file);
         }
 
         @Override
         protected Object getSchemaSource() {
-            // use the version 1 schema by default.  non-versioned docs will 
-            // continue to parse with the old xml if they do not contain a 
+            // use the version 1 schema by default.  non-versioned docs will
+            // continue to parse with the old xml if they do not contain a
             // persistence-unit.  that is currently the only significant change
-            // to the schema.  if more significant changes are made in the 
+            // to the schema.  if more significant changes are made in the
             // future, the 2.0 schema may be preferable.
             String persistencexsd = "persistence-xsd.rsrc";
-            // if the version and/or schema location is for 1.0, use the 1.0 
+            // if the version and/or schema location is for 1.0, use the 1.0
             // schema
-            if (_persistenceVersion != null && _persistenceVersion.equals(XMLVersionParser.VERSION_2_0) 
+            if (_persistenceVersion != null && _persistenceVersion.equals(XMLVersionParser.VERSION_2_0)
             || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1)) {
                 persistencexsd = "persistence_2_0-xsd.rsrc";
             }
@@ -890,7 +890,7 @@ public class PersistenceProductDerivation
                 case 'j':
                     if ("jta-data-source".equals(name))
                         _info.setJtaDataSourceName(currentText());
-                    else { // jar-file 
+                    else { // jar-file
                         try {
                             _info.addJarFileName(currentText());
                         } catch (IllegalArgumentException iae) {
@@ -917,9 +917,9 @@ public class PersistenceProductDerivation
             }
         }
 
-        // The default value for exclude-unlisted-classes was 
+        // The default value for exclude-unlisted-classes was
         // modified in JPA 2.0 from false to true.  Set the default
-        // based upon the persistence version to preserve behavior 
+        // based upon the persistence version to preserve behavior
         // of pre-JPA 2.0 applications.
         private void setExcludeUnlistedClasses(String value) {
             if (!_excludeUnlistedSet) {
@@ -929,9 +929,9 @@ public class PersistenceProductDerivation
                     excludeUnlisted = !("false".equalsIgnoreCase(value));
                 } else {
                     excludeUnlisted = "true".equalsIgnoreCase(value);
-                }                    
+                }
                 _info.setExcludeUnlistedClasses(excludeUnlisted);
-                _excludeUnlistedSet = true;            
+                _excludeUnlistedSet = true;
             }
         }
 
@@ -940,11 +940,11 @@ public class PersistenceProductDerivation
          */
         private void startPersistenceUnit(Attributes attrs)
             throws SAXException {
-            _excludeUnlistedSet = false;            
+            _excludeUnlistedSet = false;
             _info = new PersistenceUnitInfoImpl();
             _info.setPersistenceUnitName(attrs.getValue("name"));
             _info.setPersistenceXMLSchemaVersion(_persistenceVersion);
-            
+
             // we only parse this ourselves outside a container, so default
             // transaction type to local
             String val = attrs.getValue("transaction-type");
@@ -956,7 +956,7 @@ public class PersistenceProductDerivation
             if (_source != null)
                 _info.setPersistenceXmlFileUrl(_source);
 		}
-        
+
         private void endPersistenceUnit() {
             if (!_excludeUnlistedSet) {
                 setExcludeUnlistedClasses(null);
@@ -969,20 +969,20 @@ public class PersistenceProductDerivation
                     return new BigDecimal(_info.getPersistenceXMLSchemaVersion());
                 }
                 catch (Throwable t) {
-                    log(_loc.get("invalid-version-attribute", 
+                    log(_loc.get("invalid-version-attribute",
                         _info.getPersistenceXMLSchemaVersion(),
                         VERSION_1_0.toString()).toString());
                 }
             }
             // OpenJPA supports persistence files without a version attribute.
             // A persistence file without a version attribute will be considered
-            // a version 1.0 persistence file by default to maintain backward 
+            // a version 1.0 persistence file by default to maintain backward
             // compatibility.
             return VERSION_1_0;
         }
     }
-    
-    
+
+
     /**
      * This private class is used to hold onto information regarding
      * PersistentUnit name collisions.
@@ -998,14 +998,14 @@ public class PersistenceProductDerivation
 
             _puName=puName;
         }
-        
+
         void logCollision(Log logger){
             if(logger.isWarnEnabled()){
-                logger.warn(_loc.getFatal("dup-pu", new Object[]{_puName,_resources.toString(),	
+                logger.warn(_loc.getFatal("dup-pu", new Object[]{_puName,_resources.toString(),
                     _resources.iterator().next()}));
             }
         }
-        
+
         void addCollision(String file1, String file2){
             _resources.add(file1);
             _resources.add(file2);

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -24,7 +24,7 @@ import org.apache.openjpa.kernel.BrokerFactory;
 
 /**
  * Extension to BrokerFactory to allow dynamically add/remove slices.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -33,14 +33,14 @@ public interface DistributedBrokerFactory extends BrokerFactory {
      * Adds the given slice with the given properties. This newly added slice
      * will be configured to brokers constructed by this factory after this
      * call.
-     * 
+     *
      * @param name logical name of the to be added slice. Must be different from
      * any currently available slices.
      * @see DistributedConfiguration#getAvailableSliceNames()
-     * 
+     *
      * @param properties key-value pair of configuration for the slice to be
      * added. The keys must have openjpa.slice.&lt;name&gt;.* as prefix.
-     * 
+     *
      * @see DistributedConfiguration#addSlice(String, Map)
      */
     public Slice addSlice(String name, Map properties);

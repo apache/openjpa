@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.nullity;
 
@@ -22,7 +22,7 @@ import java.io.Serializable;
 
 /**
  * Simple serializable entity for testing null constraint on field values.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -31,27 +31,27 @@ public class BlobValue implements Serializable {
     private String  strVal;
     private int     intVal;
     private byte[]  bytes;
-    
+
     public String getStrVal() {
         return strVal;
     }
-    
+
     public void setStrVal(String strVal) {
         this.strVal = strVal;
     }
-    
+
     public int getIntVal() {
         return intVal;
     }
-    
+
     public void setIntVal(int intVal) {
         this.intVal = intVal;
     }
-    
+
     public byte[] getBytes() {
         return bytes;
     }
-    
+
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
     }

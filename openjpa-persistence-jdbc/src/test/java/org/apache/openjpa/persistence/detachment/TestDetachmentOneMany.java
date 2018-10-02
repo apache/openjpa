@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.detachment;
 
@@ -39,7 +39,7 @@ public class TestDetachmentOneMany
 
     public void testDetachment() {
         long id = createParentAndChildren();
-    
+
         EntityManager em = emf.createEntityManager();
         OpenJPAPersistence.cast(em).setAutoDetach(
             AutoDetachType.NON_TRANSACTIONAL_READ);
@@ -52,7 +52,7 @@ public class TestDetachmentOneMany
 
     public void testFetchWithDetach() {
         long id = createParentAndChildren();
-     
+
         EntityManager em = emf.createEntityManager();
         OpenJPAPersistence.cast(em).setAutoDetach(
             AutoDetachType.NON_TRANSACTIONAL_READ);
@@ -71,10 +71,10 @@ public class TestDetachmentOneMany
         assertFalse("The second child was not detached", em.contains(child1));
         em.close();
     }
-    
+
     public void testFetchWithDetachForToOneRelationship() {
         long id = createParentAndChildren();
-        
+
         EntityManager em = emf.createEntityManager();
         OpenJPAPersistence.cast(em).setAutoDetach(
             AutoDetachType.NON_TRANSACTIONAL_READ);
@@ -82,11 +82,11 @@ public class TestDetachmentOneMany
             id);
         assertNotNull(parent);
         assertEquals(2, parent.getChildren().size());
-        assertEquals("ToOne relationship was not eagerly fetched", 
+        assertEquals("ToOne relationship was not eagerly fetched",
               parent, parent.getChildren().get(0).getParent());
         em.close();
     }
-    
+
     private long createParentAndChildren() {
         DetachmentOneManyParent parent = new DetachmentOneManyParent();
         parent.setName("parent");
@@ -95,7 +95,7 @@ public class TestDetachmentOneMany
             child.setName("child" + i);
             parent.addChild(child);
         }
-      
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(parent);
@@ -108,9 +108,9 @@ public class TestDetachmentOneMany
         DetachmentOneManyChild child1 = parent.getChildren().get(1);
         assertEquals("child0", child0.getName());
         assertEquals("child1", child1.getName());
-        assertEquals("The first child has no relationship to the parent", 
+        assertEquals("The first child has no relationship to the parent",
             parent, child0.getParent());
-        assertEquals("The second child has no relationship to the parent", 
+        assertEquals("The second child has no relationship to the parent",
             parent, child1.getParent());
         em.close();
         return id;

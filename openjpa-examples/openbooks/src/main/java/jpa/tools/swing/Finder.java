@@ -29,19 +29,19 @@ import java.util.jar.JarFile;
 /**
  * Searches for a given class in the set of directories recursively.
  * If a given directory contains jar file then searches inside the jar.
- * 
+ *
  *  Usage
  *  $ java find.Finder class dir1 dir2...
  *  where
  *     class is fully qualified class name
  *     dir name of a file system directory
- *  
+ *
  *  Example
  *     $ java find.Finder org.eclipse.ui.plugin.AbstractUIPlugin c:\eclipse\plugins
  *  will print
- *      org.eclipse.ui.plugin.AbstractUIPlugin found in 
+ *      org.eclipse.ui.plugin.AbstractUIPlugin found in
  *      c:\eclipse\plugins\org.eclipse.ui.workbench_3.4.1.M20080827-0800a.jar
- *      
+ *
  * @author Pinaki Poddar
  *
  */
@@ -50,7 +50,7 @@ public class Finder {
     private static final String JAR_SUFFIX = ".jar";
     private static final char DOT = '.';
     private static final boolean DEBUG = false;
-    
+
     private static void usage() {
         System.err.println("Searches a given class in the given directories."
         + "\r\nIf a given directory contains jar then searches within the jar."
@@ -64,7 +64,7 @@ public class Finder {
         System.err.println("\r\n Example:");
         System.err.println(" $ java find.Finder java.lang.Object c:\\java");
     }
-    
+
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
             usage();
@@ -76,7 +76,7 @@ public class Finder {
             finder.scan(root, args[0]);
         }
     }
-    
+
     private void scan(File dir, String cls) throws IOException {
         File[] classes = dir.listFiles(new FileFilter() {
             public boolean accept(File path) {
@@ -95,21 +95,21 @@ public class Finder {
                 return path.getName().endsWith(JAR_SUFFIX);
             }
         });
-        
+
         for (File jar : jars) {
             JarFile jarFile = new JarFile(jar);
             scan(jarFile, cls);
         }
-        
+
         File[] dirs = dir.listFiles(new FileFilter() {
             public boolean accept(File path) {
                 return path.isDirectory();
             }
         });
-        for (File cdir : dirs) 
+        for (File cdir : dirs)
             scan(cdir, cls);
     }
-    
+
     private void scan(JarFile jar, String cls) {
         String clsName = cls.replace('.', '/') + CLASS_SUFFIX;
         debug("Scanning " + jar.getName() + " for [" + clsName + "]");
@@ -123,7 +123,7 @@ public class Finder {
                 System.err.println(cls + " found in " + jar.getName());
         }
     }
-    
+
     private void debug(String s) {
         if (DEBUG)
             System.err.println(s);

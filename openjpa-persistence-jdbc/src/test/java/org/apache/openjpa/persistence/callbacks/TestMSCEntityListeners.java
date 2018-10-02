@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 public class TestMSCEntityListeners extends SingleEMFTestCase {
 
     private static final int MSC_LISTENER_ENTITY = 4;
-    
+
     public void setUp() {
         setUp(CLEAR_TABLES);
         ListenerImpl.prePersistCount = 0;
@@ -58,7 +58,7 @@ public class TestMSCEntityListeners extends SingleEMFTestCase {
             case MSC_LISTENER_ENTITY:
                 o = new MSCListenerEntity();
                 break;
-                
+
             }
             em.persist(o);
 
@@ -76,7 +76,7 @@ public class TestMSCEntityListeners extends SingleEMFTestCase {
             case MSC_LISTENER_ENTITY:
                 o = em.find(MSCListenerEntity.class, id);
                 break;
-                
+
             }
             assertNotNull(o);
             assertStatus(1, 1, 0, 0, 0, 0, 1);

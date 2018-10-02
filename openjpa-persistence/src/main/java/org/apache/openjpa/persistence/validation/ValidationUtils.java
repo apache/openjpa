@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.validation;
 
@@ -30,7 +30,7 @@ import org.apache.openjpa.validation.ValidationUnavailableException;
 /**
  * Validation helper routines and wrappers to remove runtime dependencies
  * on the Bean Valdiation APIs or a implementation.
- * 
+ *
  * Note:  This class should have no direct dependency on the javax.validation
  *        packages, which should only occur in the ValidatorImpl class.
  *
@@ -52,7 +52,7 @@ public class ValidationUtils {
     public static boolean setupValidation(OpenJPAConfiguration conf) {
         Log log = conf.getConfigurationLog();
         boolean brc = false;
-        
+
         // only try creating a Validator for JPA2 and if not mode==NONE
         if (conf.getSpecificationInstance().getVersion() < 2) {
             if (log.isTraceEnabled()) {
@@ -140,11 +140,11 @@ public class ValidationUtils {
     public static boolean isConstraintViolationException(Exception e) {
         if (e == null)
             return false;
-        
+
         if (e.getClass().getName().equals(
             "javax.validation.ConstraintViolationException"))
             return true;
-        
-        return false;       
+
+        return false;
     }
 }

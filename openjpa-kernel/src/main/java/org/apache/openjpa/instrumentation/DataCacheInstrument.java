@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation;
 
@@ -117,7 +117,7 @@ public interface DataCacheInstrument {
     public Boolean getStatisticsEnabled();
 
     /**
-     * 
+     *
      * @param enable - If true, the cache will start collecting statistics. Else cache statistics will not be collected.
      */
     public void collectStatistics(boolean enable);
@@ -126,15 +126,15 @@ public interface DataCacheInstrument {
      * This method is used to enable/disable caching for the specified className.
      */
     public void cache(String className, boolean enable);
-    
+
     /**
      * Returns the CacheStatistics for the cache.
      * The format for this map is:
      *  Type(String) => Enabled(Boolean),Read(Long),Hit(Long),Write(Long)
      */
     public Map<String, long[]> getCacheStatistics();
-    
-    
+
+
     /**
      * Clears all data from the DataCache.
      */

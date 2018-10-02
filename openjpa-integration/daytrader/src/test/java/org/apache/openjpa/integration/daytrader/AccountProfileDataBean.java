@@ -47,22 +47,22 @@ public class AccountProfileDataBean implements java.io.Serializable {
     @Id
     @Column(name = "USERID", nullable = false)
     private String userID;              /* userID */
-    
+
     @Column(name = "PASSWD")
     private String passwd;              /* password */
-    
+
     @Column(name = "FULLNAME")
     private String fullName;            /* fullName */
-    
+
     @Column(name = "ADDRESS")
     private String address;             /* address */
-    
+
     @Column(name = "EMAIL")
     private String email;               /* email */
-    
+
     @Column(name = "CREDITCARD")
     private String creditCard;          /* creditCard */
-    
+
     @OneToOne(mappedBy="profile", fetch=FetchType.LAZY)
     private AccountDataBean account;
 
@@ -176,7 +176,7 @@ public class AccountProfileDataBean implements java.io.Serializable {
     public void setAccount(AccountDataBean account) {
         this.account = account;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;

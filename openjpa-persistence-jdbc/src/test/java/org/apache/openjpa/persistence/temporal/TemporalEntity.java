@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.temporal;
 
@@ -29,11 +29,11 @@ import javax.persistence.TemporalType;
 public class TemporalEntity {
     @Id
     private Integer id;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date testDate;
 
-    
+
     public TemporalEntity(int id) {
         this.id = id;
     }
@@ -52,7 +52,7 @@ public class TemporalEntity {
 
     public void setTestDate(Date testDate) {
         this.testDate = testDate;
-        
+
     }
 
 }

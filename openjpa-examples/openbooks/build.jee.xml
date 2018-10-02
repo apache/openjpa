@@ -7,29 +7,29 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <!-- ====================================================================== -->
 <!--                                                                        -->
 <!--   Ant build script for JEE version of OpenBooks                        -->
 <!--                                                                        -->
 <!-- ====================================================================== -->
-                    
+
 <project name="OpenBooks.JEE" default="package">
-	
+
 	<target name="package"
 		description="Build, package and deploy OpenBooks as a WAR application in an Application Server">
 
-	   <condition property="app.server" value="" else=".${appserver}">		 
-			<equals arg1="${appserver}" arg2="" casesensitive="true" trim="true"/>			
+	   <condition property="app.server" value="" else=".${appserver}">
+			<equals arg1="${appserver}" arg2="" casesensitive="true" trim="true"/>
 		</condition>
 		<antcall target="jee.uninstall"/>
 		<mkdir dir="${classes.dir}/META-INF"/>
@@ -59,9 +59,9 @@
 
    <target name="jee.uninstall"
       description="AppServer specific installation">
-   		<subant antfile="build.${build.mode}${app.server}.xml" 
-			    target="uninstall" 
-			    inheritrefs="true" 
+   		<subant antfile="build.${build.mode}${app.server}.xml"
+			    target="uninstall"
+			    inheritrefs="true"
 			    inheritall="true"
 			    buildpath="${basedir}"/>
    </target>
@@ -73,27 +73,27 @@
 
    <target name="jee.pre-package"
       description="AppServer specific pre-packaging.  Occurs before war packaging.">
-   		<subant antfile="build.${build.mode}${app.server}.xml" 
-			    target="pre-package" 
-			    inheritrefs="true" 
+   		<subant antfile="build.${build.mode}${app.server}.xml"
+			    target="pre-package"
+			    inheritrefs="true"
 			    inheritall="true"
 			    buildpath="${basedir}"/>
    </target>
 
    <target name="pre-package"
       description="Default application pre-packaging">
-		<copy file="${rsrc.dir}/META-INF/persistence.xml" todir="${classes.dir}/META-INF"/>   
+		<copy file="${rsrc.dir}/META-INF/persistence.xml" todir="${classes.dir}/META-INF"/>
    </target>
 
    <target name="jee.install"
       description="AppServer selective installation.">
-   		<subant antfile="build.${build.mode}${app.server}.xml" 
-			    target="install" 
-			    inheritrefs="true" 
+   		<subant antfile="build.${build.mode}${app.server}.xml"
+			    target="install"
+			    inheritrefs="true"
 			    inheritall="true"
 			    buildpath="${basedir}"/>
    </target>
-   
+
    <target name="install"
       description="Default application installation">
 		<move file="${target.dir}/openbooks.war" todir="${deploy.dir}" overwrite="true"/>
@@ -108,11 +108,11 @@
 			<exclude name="openbook/client/**/*.java"/>
 		</javac>
 	</target>
-	
+
 	<target name="generate-source-with-options">
-		<java2html 
-			sourcepath="${src.dir}" 
-			destDir="${generated.html.dir}" 
+		<java2html
+			sourcepath="${src.dir}"
+			destDir="${generated.html.dir}"
 			extension=".html"
 			addLineBreak="false"
 			addExplicitSpace="false"
@@ -121,9 +121,9 @@
 			<exclude name="jpa/**/*.java"/>
 			<exclude name="openbook/util/*.java"/>
 		</java2html>
-		<java2html 
-			sourcepath="${generated.src.dir}" 
-			destDir="${generated.html.dir}" 
+		<java2html
+			sourcepath="${generated.src.dir}"
+			destDir="${generated.html.dir}"
 			extension=".html"
 			addLineBreak="false"
 			addExplicitSpace="false"
@@ -131,5 +131,5 @@
 		</java2html>
 
 	</target>
-	
+
 </project>

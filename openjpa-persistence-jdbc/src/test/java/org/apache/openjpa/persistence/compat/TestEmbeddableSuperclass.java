@@ -30,17 +30,17 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *  <B>This is an anti-test because it validates or masks root cause of a possibly serious error.
  *
  * <b>Compatible testcases</b> are used to test various backwards compatibility scenarios between JPA 2.0 and JPA 1.2
- * 
+ *
  * <p>The following scenarios are tested:
  * <ol>
  * <li>RelationFieldStrategy
  * </ol>
- * <p> 
+ * <p>
  * <b>Note(s):</b>
  * <ul>
  * <li>The proper openjpa.Compatibility value(s) must be provided in order for the testcase(s) to succeed
  * </ul>
- * 
+ *
  */
 public class TestEmbeddableSuperclass
     extends SingleEMFTestCase {
@@ -60,7 +60,7 @@ public class TestEmbeddableSuperclass
         assertEquals(RelationFieldStrategy.class, fm.getStrategy().getClass());
         // This was an anti-test because it legitimizes/masks the root cause of a serious error.
         // The strategy for a field should not change without a valid reason.
-        
+
 //        if (OpenJPAVersion.MAJOR_RELEASE >= 2) {
             // OPENJPA-1214 - OpenJPA 2 returns a EmbedFieldStrategy instead of
             // a RelationFieldStrategy as in prior releases.
@@ -68,10 +68,10 @@ public class TestEmbeddableSuperclass
 //        } else {
             // Prior OpenJPA 1.2/1.3 behavior
 //            assertEquals(RelationFieldStrategy.class, fm.getStrategy().getClass());
-//            
+//
 //        }
-        
-        // 
-    } 
+
+        //
+    }
 }
 

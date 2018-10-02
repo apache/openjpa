@@ -25,12 +25,12 @@ public class Security {
     @Id
     @Column(name="SECURITY_ID")
     private long id;
-    
+
     @Embedded
     @Column(name="SYMBOL")
     private Embed symbol;
-    
-    @ManyToOne(optional=false,fetch=FetchType.LAZY) 
+
+    @ManyToOne(optional=false,fetch=FetchType.LAZY)
     @JoinColumn(name="COUNTRY_ID")
     private Country country;
 

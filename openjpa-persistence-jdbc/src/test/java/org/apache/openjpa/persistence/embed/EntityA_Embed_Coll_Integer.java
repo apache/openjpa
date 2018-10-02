@@ -35,12 +35,12 @@ public class EntityA_Embed_Coll_Integer implements Serializable {
 
     @Column(length=30)
     String name;
-    
+
     @Basic(fetch=FetchType.LAZY)
     int age;
 
     protected Embed_Coll_Integer embed;
-    
+
     public int getAge() {
         return age;
     }
@@ -68,7 +68,7 @@ public class EntityA_Embed_Coll_Integer implements Serializable {
     public Embed_Coll_Integer getEmbed() {
         return embed;
     }
-    
+
     public void setEmbed(Embed_Coll_Integer embed) {
         this.embed = embed;
     }

@@ -34,9 +34,9 @@ public class EntityD {
     private String name;
     @ManyToMany(mappedBy="entityDs")
     private Collection<EntityC> entityCs = new HashSet<EntityC>();
-    
+
     public EntityD() {}
-    
+
     public EntityD(int id) {
         this.id = id;
     }
@@ -82,7 +82,7 @@ public class EntityD {
     public void setEntityCs(Collection<EntityC> entityCs) {
         this.entityCs = entityCs;
     }
-    
+
     public void addEntityC(EntityC entityC) {
         entityCs.add(entityC);
     }

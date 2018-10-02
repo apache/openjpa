@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -49,7 +49,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
 
     protected JDBCConfiguration conf;
     private DataSource _ds;
-    
+
     @Override
     public Connection getConnection(Properties props) throws SQLException {
         return getDBCPConnection(props);
@@ -70,7 +70,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
             _ds = null;
         }
     }
-    
+
     protected Connection getDBCPConnection(Properties props) throws SQLException {
         Connection con = getDBCPDataSource(props).getConnection();
         if (con == null) {
@@ -101,7 +101,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
             throw _dbcpEx;
         }
     }
-    
+
     /**
      * This method should not throw an exception, as it is called by
      * AutoDriverDataSource to determine if user already specified
@@ -113,7 +113,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         return (getConnectionDriverName() != null &&
             getConnectionDriverName().toLowerCase(Locale.ENGLISH).indexOf(DBCPPACKAGENAME) >= 0);
     }
-    
+
     /**
      * This method should not throw an exception, as it is called by
      * AutoDriverDataSource to determine if it should use DBCP or not
@@ -138,7 +138,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
             }
             return _dbcpAvail.booleanValue();
         }
-    }        
+    }
 
     /**
      * Normalize properties for Commons DBCP.  This should be done for every call from DataSourceFactory,
@@ -148,7 +148,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
      */
     private Properties updateDBCPProperties(Properties props) {
         Properties dbcpProps = mergeConnectionProperties(props);
-        
+
         // only perform the following check for the first connection attempt (_driverClassName == null),
         // as multiple connections could be requested (like from SchemaTool) and isDBCPDriver() will be true
         if (isDBCPDataSource()) {
@@ -170,7 +170,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
             // set Commons DBCP expected URL property
             dbcpProps.setProperty(hasKey(dbcpProps, "url", "url"), getConnectionURL());
         }
-        
+
         // Commons DBCP requires non-Null username/password values in the connection properties
         if (hasKey(dbcpProps, "username") == null) {
             if (getConnectionUserName() != null)
@@ -196,10 +196,10 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         if (hasKey(dbcpProps, "maxActive") == null) {
             dbcpProps.setProperty("maxActive", "10");
         }
-        
+
         return dbcpProps;
     }
-    
+
     /**
      * Merge the passed in properties with a copy of the existing _connectionProperties
      * @param props
@@ -214,7 +214,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         if (uid != null) {
             mergedProps.setProperty("username", uid);
         }
-        
+
         // now, merge in any passed in properties
         if (props != null && !props.isEmpty()) {
             for (Iterator<Object> itr = props.keySet().iterator(); itr.hasNext();) {
@@ -228,7 +228,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
                 String existingKey = hasKey(mergedProps, key);
                 if (existingKey != null) {
                     // update existing entry
-                    mergedProps.setProperty(existingKey, value);                        
+                    mergedProps.setProperty(existingKey, value);
                 } else {
                     // add property to the merged set
                     mergedProps.setProperty(key, value);
@@ -237,7 +237,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         }
         return mergedProps;
     }
-    
+
     /**
      * Case-insensitive search of the given properties for the given key.
      * @param props
@@ -247,7 +247,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
     private String hasKey(Properties props, String key) {
         return hasKey(props, key, null);
     }
-    
+
     /**
      * Case-insensitive search of the given properties for the given key.
      * @param props
@@ -266,7 +266,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         }
         return defaultKey;
     }
-    
+
     private String hasProperty(Properties props, String key) {
         if (props != null && key != null) {
             String entry = hasKey(props, key);
@@ -276,7 +276,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         return null;
 
     }
-    
+
     private String removeProperty(Properties props, String key) {
         if (props != null && key != null) {
             String entry = hasKey(props, key);
@@ -285,7 +285,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         }
         return null;
     }
-    
+
     // Configurable interface methods
     public void setConfiguration(Configuration conf) {
         if (conf instanceof JDBCConfiguration)

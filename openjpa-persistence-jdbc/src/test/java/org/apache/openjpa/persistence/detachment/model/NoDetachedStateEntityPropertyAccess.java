@@ -33,7 +33,7 @@ public class NoDetachedStateEntityPropertyAccess {
 	int version;
 	String string;
 	public NoDetachedStateEntityPropertyAccess(){
-		
+
 	}
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -60,6 +60,6 @@ public class NoDetachedStateEntityPropertyAccess {
 	public void setString(String string) {
 		this.string = string;
 	}
-	
-	
+
+
 }

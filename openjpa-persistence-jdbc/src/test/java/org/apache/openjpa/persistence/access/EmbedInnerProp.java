@@ -28,30 +28,30 @@ import javax.persistence.Embedded;
 public class EmbedInnerProp {
 
     private String inName;
-    
+
     private EmbedOuterField eof;
-    
+
     public String getInnerName() {
         return inName;
     }
-    
+
     public void setInnerName(String innerName) {
         inName = innerName;
     }
-    
+
     @Embedded
     public EmbedOuterField getOuterField() {
         return eof;
     }
-    
+
     public void setOuterField(EmbedOuterField eo) {
         eof = eo;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof EmbedInnerProp) {
             EmbedInnerProp ps = (EmbedInnerProp)obj;
-            
+
             return getInnerName().equals(ps.getInnerName()) &&
                 getOuterField().equals(ps.getOuterField());
         }

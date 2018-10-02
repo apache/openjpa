@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
@@ -27,17 +27,17 @@ import javax.persistence.Id;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
-@Entity 
+@Entity
 @Table(name="PSN")
 public class Person {
-    @Id 
+    @Id
     protected String ssn;
     protected String name;
 
     @ElementCollection
     @OrderBy("zipcode.zip, zipcode.plusFour")
     protected List<Address> residences = new ArrayList<Address>();
-    
+
     @ElementCollection
     @CollectionTable(name="PSN_nickNames")
     @OrderBy("DESC")
@@ -46,27 +46,27 @@ public class Person {
     public List<String> getNickNames() {
         return nickNames;
     }
-    
+
     public void setNickNames(List<String> nickNames) {
         this.nickNames = nickNames;
     }
-    
+
     public void addNickName(String nickName) {
         nickNames.add(nickName);
     }
-    
+
     public String getSsn() {
         return ssn;
     }
-    
+
     public void setSsn(String ssn) {
         this.ssn = ssn;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -74,11 +74,11 @@ public class Person {
     public List<Address> getResidences() {
         return residences;
     }
-    
+
     public void setResidences(List<Address> residences) {
         this.residences = residences;
     }
-    
+
     public void addResidence(Address residence) {
         residences.add(residence);
     }

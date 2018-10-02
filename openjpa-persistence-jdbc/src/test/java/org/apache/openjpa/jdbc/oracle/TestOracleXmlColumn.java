@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.oracle;
 
@@ -63,7 +63,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         Connection con = ((DataSource) conf.getConnectionFactory()).getConnection();
         Statement stmt = con.createStatement();
         String ddl = "DROP TABLE XmlColEntity";
-        try { 
+        try {
             stmt.execute(ddl);
             con.commit();
         } catch (SQLException se) {
@@ -89,7 +89,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         // It passes with 10.2.0.1.0 (maybe others).
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(XmlColEntity.class,
-                "openjpa.jdbc.SchemaFactory", "native", 
+                "openjpa.jdbc.SchemaFactory", "native",
                 "openjpa.jdbc.SynchronizeMappings",  "");
 
         JDBCConfiguration conf = ((JDBCConfiguration) emf.getConfiguration());
@@ -120,13 +120,13 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         em.close();
         emf.close();
     }
-    
+
     public void testExistingColumn() throws SQLException {
         // This test will fail with Oracle JDBC driver version 11.2.0.1.0.
         // It passes with 10.2.0.1.0 (maybe others).
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(XmlColEntity.class,
-                "openjpa.jdbc.SchemaFactory", "native", 
+                "openjpa.jdbc.SchemaFactory", "native",
                 "openjpa.jdbc.SynchronizeMappings",  "");
 
         JDBCConfiguration conf = ((JDBCConfiguration) emf.getConfiguration());
@@ -139,7 +139,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
 
         EntityManager em = emf.createEntityManager();
 
-        XmlColEntity xce = em.find(XmlColEntity.class, 42); 
+        XmlColEntity xce = em.find(XmlColEntity.class, 42);
         assertNotNull(xce);
         assertNotNull(xce.getXmlColumn());
         assertEquals(xmlData, xmlResult(xce.getXmlColumn()));

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex1;
 
@@ -26,34 +26,34 @@ import javax.persistence.*;
 @Entity
 @Table(name="S26x1Dept")
 public class Department {
-    
+
     @Id
     int deptId;
-    
+
     @OneToMany(cascade=CascadeType.ALL, mappedBy="dept", fetch=FetchType.EAGER)
     @MapKey(name="empId")
     Map<Integer, Employee> empMap = new HashMap<Integer, Employee>();
-    
+
     public int getDeptId() {
         return deptId;
     }
-    
+
     public void setDeptId(int deptId) {
         this.deptId = deptId;
     }
-    
+
     public Map<Integer, Employee> getEmpMap() {
         return empMap;
     }
-    
+
     public void setEmpMap(Map<Integer, Employee> empMap) {
         this.empMap = empMap;
     }
-    
+
     public void addEmployee(Employee e) {
         empMap.put(e.getEmpId(), e);
     }
-    
+
     public void removeEmployee(Integer empId) {
         empMap.remove(empId);
     }

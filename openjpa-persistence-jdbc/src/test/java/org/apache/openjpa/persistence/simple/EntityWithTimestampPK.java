@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.simple;
 
@@ -24,11 +24,11 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity 
+@Entity
 public class EntityWithTimestampPK {
-    
+
     @Id
-    private Timestamp idTsp; 
+    private Timestamp idTsp;
 
     private String description;
 
@@ -38,12 +38,12 @@ public class EntityWithTimestampPK {
 
     public EntityWithTimestampPK(String desc) {
         super();
-        this.idTsp = new Timestamp((new Date()).getTime());        
+        this.idTsp = new Timestamp((new Date()).getTime());
         this.description = desc;
     }
-    
+
     public EntityWithTimestampPK(){
-        
+
     }
 
     public void setIdTsp(Timestamp idTsp) {
@@ -57,6 +57,6 @@ public class EntityWithTimestampPK {
     public void setDesc(String desc) {
         this.description = desc;
     }
-     
-     
+
+
 }

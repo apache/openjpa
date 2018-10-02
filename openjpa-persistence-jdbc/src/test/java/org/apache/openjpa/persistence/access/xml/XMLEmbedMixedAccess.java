@@ -19,27 +19,27 @@
 package org.apache.openjpa.persistence.access.xml;
 
 public class XMLEmbedMixedAccess {
-    
+
     private transient String fName;
     private transient String lName;
 
-    private String mName; 
+    private String mName;
 
     public String getFirstName() {
         return fName;
     }
-    
+
     public void setFirstName(String fname) {
-        fName = fname;        
+        fName = fname;
     }
-    
+
     public String getLastName() {
         return lName;
     }
-    
+
     public void setLastName(String lname) {
         lName = lname;
-    }  
+    }
 
     public String getMiddleName() {
         return getMName();
@@ -48,7 +48,7 @@ public class XMLEmbedMixedAccess {
     public void setMiddleName(String mname) {
         setMName(mname);
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLEmbedMixedAccess) {
             XMLEmbedMixedAccess ps = (XMLEmbedMixedAccess)obj;

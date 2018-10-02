@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -28,12 +28,12 @@ import javax.persistence.Embedded;
 
 
 /**
- * Entity identity used to test compound primary keys using entity as 
+ * Entity identity used to test compound primary keys using entity as
  * relationship to more than one level.
- * 
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-207">OPENJPA-207</A>
- *  
+ *
  * @author Jeffrey Blattman
  * @author Pinaki Poddar
  *
@@ -51,13 +51,13 @@ public final class PageId1 implements Serializable {
     private BookId1 book;
 
     public PageId1() {}
-    
+
     public PageId1(int number, BookId1 book) {
     	this.number = number;
     	this.book = book;
     }
-    
-    
+
+
     public int getNumber() {
         return number;
     }
@@ -65,30 +65,30 @@ public final class PageId1 implements Serializable {
     public void setNumber(int number) {
         this.number = number;
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof PageId1)) {
             return false;
         }
-        
+
         PageId1 other = (PageId1)o;
-        
+
         if (!(getNumber() == other.getNumber())) {
             return false;
         }
-      
+
         if (!getBook().equals(other.getBook())) {
             return false;
         }
 
         return true;
     }
-    
+
     public int hashCode() {
         return number * (book != null ? getBook().hashCode() : 31);
     }
 
-    
+
     public BookId1 getBook() {
         return book;
     }

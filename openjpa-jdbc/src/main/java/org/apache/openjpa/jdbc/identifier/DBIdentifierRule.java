@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.identifier;
 
@@ -27,11 +27,11 @@ import org.apache.openjpa.lib.identifier.IdentifierRule;
  * The default DBIdentifier rule.  Closely matches SQL92 naming rules.
  */
 public class DBIdentifierRule extends IdentifierRule {
-    
+
     public static final String DEFAULT_SQL_92 = "DefaultSQL92";
-    
+
     public static final String SPECIAL_CHARS = " #$&%!?,.:;\"\'";
-    
+
     public DBIdentifierRule() {
         setName(DEFAULT_SQL_92);
         // SQL92 Identifier rule 1) Can be up to 128 characters long
@@ -42,7 +42,7 @@ public class DBIdentifierRule extends IdentifierRule {
         setMustBeginWithLetter(true);
         // SQL92 Identifier rule 3) Can contain letters, digits, and underscores
         setOnlyLettersDigitsUnderscores(true);
-        // SQL Identifier rule 4) Can't contain spaces or special characters such 
+        // SQL Identifier rule 4) Can't contain spaces or special characters such
         // as #, $, &, %, or punctuation.
         setSpecialCharacters(SPECIAL_CHARS);
     }

@@ -1,4 +1,4 @@
-package org.apache.openjpa.tools.maven.test; 
+package org.apache.openjpa.tools.maven.test;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -16,7 +16,7 @@ package org.apache.openjpa.tools.maven.test;
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 import java.io.BufferedReader;
@@ -37,7 +37,7 @@ import junit.framework.TestCase;
 
 public class ModifyDatabaseTest extends TestCase {
 
-    
+
     /**
      * check if the generated classes have been enhanced.
      * @throws Exception
@@ -46,18 +46,18 @@ public class ModifyDatabaseTest extends TestCase {
     {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory( "TestUnit" );
         assertNotNull( emf );
-        
+
         EntityManager em = emf.createEntityManager();
         assertNotNull( em );
-        
-        try 
+
+        try
         {
             em.getTransaction().begin();
-            
+
             TestEntity entity = new TestEntity();
             entity.setInt1( 4711 );
             entity.setString1( "myVal" );
-            
+
             em.persist( entity );
             em.getTransaction().commit();
         }

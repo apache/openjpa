@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.validation;
 
@@ -42,7 +42,7 @@ import org.apache.openjpa.validation.AbstractValidator;
 import org.apache.openjpa.validation.ValidationException;
 
 public class ValidatorImpl extends AbstractValidator {
-    
+
     private static final Localizer _loc = Localizer.forPackage(ValidatorImpl.class);
 
     private ValidatorFactory _validatorFactory = null;
@@ -50,17 +50,17 @@ public class ValidatorImpl extends AbstractValidator {
     private ValidationMode _mode = ValidationMode.AUTO;
     private OpenJPAConfiguration _conf = null;
     private transient Log _log = null;
-    
+
     // A map storing the validation groups to use for a particular event type
     private Map<Integer, Class<?>[]> _validationGroups = new HashMap<Integer,Class<?>[]>();
-        
-    // Lookup table for event to group property mapping 
+
+    // Lookup table for event to group property mapping
     private static HashMap<String, Integer> _vgMapping = new HashMap<String, Integer> ();
-            
+
     static {
         _vgMapping.put(JPAProperties.VALIDATE_PRE_PERSIST, LifecycleEvent.BEFORE_PERSIST);
         _vgMapping.put(JPAProperties.VALIDATE_PRE_REMOVE,  LifecycleEvent.BEFORE_DELETE);
-        _vgMapping.put(JPAProperties.VALIDATE_PRE_UPDATE,  LifecycleEvent.BEFORE_UPDATE); 
+        _vgMapping.put(JPAProperties.VALIDATE_PRE_UPDATE,  LifecycleEvent.BEFORE_UPDATE);
     }
 
     /**
@@ -71,7 +71,7 @@ public class ValidatorImpl extends AbstractValidator {
     public ValidatorImpl() {
         initialize();
     }
-    
+
     public ValidatorImpl(Configuration conf) {
         if (conf instanceof OpenJPAConfiguration) {
             _conf = (OpenJPAConfiguration)conf;
@@ -85,13 +85,13 @@ public class ValidatorImpl extends AbstractValidator {
                 } else {
                     // Supplied object was not an instance of a ValidatorFactory
                     throw new IllegalArgumentException(
-                        _loc.get("invalid-factory").getMessage());                
+                        _loc.get("invalid-factory").getMessage());
                 }
             }
         }
         initialize();
     }
-    
+
     /**
      * Type-specific constructor
      * Returns an Exception if a Validator could not be created.
@@ -129,7 +129,7 @@ public class ValidatorImpl extends AbstractValidator {
                 throw new RuntimeException(
                     _loc.get("no-default-factory").getMessage());
             }
-            
+
             // throw an exception if we have no Validator
             if (_validator == null) {
                 // A Validator provider could not be created.
@@ -151,12 +151,12 @@ public class ValidatorImpl extends AbstractValidator {
                 _loc.get("no-validation").getMessage());
         }
     }
-    
+
     /**
      * Add a validation group for the specific property.  The properties map
      * to a specific lifecycle event.  To disable validation for a group, set
      * the validation group to null.
-     * 
+     *
      * @param validationGroupName
      * @param vgs
      */
@@ -171,19 +171,19 @@ public class ValidatorImpl extends AbstractValidator {
                 _loc.get("no-group-events", validationGroupName).getMessage());
         }
     }
-            
+
     /**
      * Add a validation group for a specified event.  Event definitions
      * are defined in LifecycleEvent.  To disable validation for a group, set
      * the validation group to null.
-     * 
+     *
      * @param event
      * @param validationGroup
      */
     public void addValidationGroup(Integer event, Class<?>... validationGroup) {
-        _validationGroups.put(event, validationGroup);        
+        _validationGroups.put(event, validationGroup);
     }
-    
+
     /**
      * Add the validation group(s) for the specified event.  Event definitions
      * are defined in LifecycleEvent
@@ -225,7 +225,7 @@ public class ValidatorImpl extends AbstractValidator {
                         _loc.get("invalid-validation-group", StringUtil.trim(strClasses[i]),
                             vgName).getMessage(), t);
                 }
-            }            
+            }
         }
         return vgGrp;
     }
@@ -238,12 +238,12 @@ public class ValidatorImpl extends AbstractValidator {
     public Class<?>[] getValidationGroup(Integer event) {
         return _validationGroups.get(event);
     }
-    
+
     /**
-     * Returns whether the Validator is validating for the 
+     * Returns whether the Validator is validating for the
      * specified event.  Based on whether validation groups are specified for
      * the event.
-     * 
+     *
      * @param event the event to check for validation
      * @return returns true if validating for this particular event
      */
@@ -253,7 +253,7 @@ public class ValidatorImpl extends AbstractValidator {
 
     /**
      * Returns the validation constraints for the specified class
-     * 
+     *
      * @param cls Class for which constraints to return
      * @return The validation bean descriptor
      */
@@ -263,7 +263,7 @@ public class ValidatorImpl extends AbstractValidator {
 
     /**
      * Validates a given instance
-     * 
+     *
      * @param <T> The instance to validate
      * @param arg0 The class, of type T to validate
      * @param event The event id
@@ -271,7 +271,7 @@ public class ValidatorImpl extends AbstractValidator {
      *         constraint violations.
      */
     @Override
-    public <T> ValidationException validate(T arg0, int event) { 
+    public <T> ValidationException validate(T arg0, int event) {
         if (!isValidating(event))
             return null;
         Set<ConstraintViolation<T>> violations = AccessController.doPrivileged(
@@ -291,7 +291,7 @@ public class ValidatorImpl extends AbstractValidator {
 
     /**
      * Validates a property of a given instance
-     * 
+     *
      * @param <T> The instance to validate
      * @param arg0 The property to validate
      * @param property The property to validate
@@ -304,13 +304,13 @@ public class ValidatorImpl extends AbstractValidator {
         int event) {
         if (!isValidating(event))
             return null;
-        Set<ConstraintViolation<T>> violations = 
-            _validator.validateProperty(arg0, property, 
+        Set<ConstraintViolation<T>> violations =
+            _validator.validateProperty(arg0, property,
                 getValidationGroup(event));
         if (violations != null && violations.size() > 0) {
             return new ValidationException(
                 new ConstraintViolationException(
-                    // A validation constraint failure occurred for 
+                    // A validation constraint failure occurred for
                     // property "{1}" in class "{0}".
                     _loc.get("valdiate-property-failed",
                         arg0.getClass().getName(),property).getMessage(),
@@ -332,20 +332,20 @@ public class ValidatorImpl extends AbstractValidator {
      *         constraint violations.
      */
     @Override
-    public <T> ValidationException validateValue(Class<T> arg0, 
+    public <T> ValidationException validateValue(Class<T> arg0,
         String arg1, Object arg2, int event)  {
         if (!isValidating(event))
             return null;
-        Set<ConstraintViolation<T>> violations = 
-            _validator.validateValue(arg0, arg1, arg2, 
+        Set<ConstraintViolation<T>> violations =
+            _validator.validateValue(arg0, arg1, arg2,
                 getValidationGroup(event));
         if (violations != null && violations.size() > 0) {
             return new ValidationException(
                 new ConstraintViolationException(
-                    // A validation constraint failure occurred for 
+                    // A validation constraint failure occurred for
                     // value "{2}" of property "{1}" in class "{0}".
                     _loc.get("validate-value-failed", arg0.getClass().getName(),
-                        arg1, arg2.toString()).getMessage(),                    
+                        arg1, arg2.toString()).getMessage(),
                     (Set)violations),
                 true);
         }
@@ -354,7 +354,7 @@ public class ValidatorImpl extends AbstractValidator {
 
     /**
      * Returns whether validation is active for the given event.
-     * 
+     *
      * @param <T>
      * @param arg0 Type being validated
      * @param event event type
@@ -362,16 +362,16 @@ public class ValidatorImpl extends AbstractValidator {
      */
     @Override
     public <T> boolean validating(T arg0, int event) {
-        // TODO: This method will also make a determination based upon which 
+        // TODO: This method will also make a determination based upon which
         // groups are validating and the group defined on the class
         return isValidating(event);
     }
-    
+
     // Lookup the lifecycle event id for the validationProperty
     private Integer findEvent(String validationProperty) {
         return _vgMapping.get(validationProperty);
     }
-    
+
     // Get the default validator factory
     private ValidatorFactory getDefaultValidatorFactory() {
         ValidatorFactory factory = null;
@@ -383,9 +383,9 @@ public class ValidatorImpl extends AbstractValidator {
         }
         return factory;
     }
-    
+
     // Per JSR-317, the pre-persist and pre-update groups will validate using
-    // the default validation group and pre-remove will not validate (no 
+    // the default validation group and pre-remove will not validate (no
     // validation group)
     private void addDefaultValidationGroups() {
         addValidationGroup(JPAProperties.VALIDATE_PRE_PERSIST, javax.validation.groups.Default.class);

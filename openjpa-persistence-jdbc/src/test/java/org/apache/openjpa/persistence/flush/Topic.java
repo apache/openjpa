@@ -47,7 +47,7 @@ public class Topic implements Serializable {
     @SequenceGenerator(name="topicIdSeq", sequenceName="TOPIC_SEQ")
     @GeneratedValue(generator="topicIdSeq", strategy=GenerationType.SEQUENCE)
     protected Long topicId;
-    
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.LAZY)
     @JoinColumn(name="CLP_ID")
     protected ClassPeriod clp;
@@ -58,7 +58,7 @@ public class Topic implements Serializable {
     @OneToMany(mappedBy="topic",cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @ElementDependent(true)
     protected Set<Assignment> assignments;
-    
+
     @OneToMany(mappedBy="topic",cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @ElementDependent(true)
     protected Set<SubTopic> subTopics;

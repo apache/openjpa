@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -76,7 +76,7 @@ class VersionAttachStrategy
             meta.getRepository().getConfiguration());
 
         boolean embedded = ownerMeta != null && ownerMeta.isEmbeddedPC();
-        
+
         // OJ-2405: If toAttach has a StateManagerImpl, then it is important to check if it
         // is being managed by different broker.  If it is, then it should not be
         // considered "new".
@@ -151,14 +151,14 @@ class VersionAttachStrategy
         int detach = (isNew) ? DETACH_ALL : broker.getDetachState();
         FetchConfiguration fetch = broker.getFetchConfiguration();
         try {
-            FieldMetaData[] fmds = sm.getMetaData().getFields(); 
+            FieldMetaData[] fmds = sm.getMetaData().getFields();
             for (int i = 0; i < fmds.length; i++) {
                 switch (detach) {
                     case DETACH_ALL:
                         attachField(manager, toAttach, sm, fmds[i], true);
                         break;
                     case DETACH_FETCH_GROUPS:
-                        if (fetch.requiresFetch(fmds[i]) 
+                        if (fetch.requiresFetch(fmds[i])
                             != FetchConfiguration.FETCH_NONE)
                             attachField(manager, toAttach, sm, fmds[i], true);
                         break;
@@ -182,7 +182,7 @@ class VersionAttachStrategy
         Object version = pc.pcGetVersion();
         // In the event that the version field is a primitive and it is the types default value, we can't differentiate
         // between a value that was set to be the default, and one that defaulted to that value.
-        if (version != null 
+        if (version != null
                 && JavaTypes.isPrimitiveDefault(version, sm.getMetaData().getVersionField().getTypeCode())) {
             Field pcVersionInitField = null;
             try {
@@ -197,7 +197,7 @@ class VersionAttachStrategy
                     }
                 }
             } catch (Exception e) {
-                // Perhaps this is an Entity that was enhanced before the pcVersionInit field was added. 
+                // Perhaps this is an Entity that was enhanced before the pcVersionInit field was added.
             }
         }
         if (version == null) {
@@ -411,18 +411,18 @@ class VersionAttachStrategy
         }
         return false;
     }
-    
-    private static boolean isManagedByAnotherPCtx(PersistenceCapable pc, BrokerImpl broker) {        
+
+    private static boolean isManagedByAnotherPCtx(PersistenceCapable pc, BrokerImpl broker) {
         StateManager sm = pc.pcGetStateManager();
         if (sm != null && sm instanceof StateManagerImpl) {
             StateManagerImpl smi = (StateManagerImpl) sm;
-            Broker associatedBroker = smi.getBroker(); 
-            
+            Broker associatedBroker = smi.getBroker();
+
             if (broker != associatedBroker) {
                 return true;
             }
         }
-        
+
         return false;
     }
 }

@@ -22,44 +22,44 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToOne;
 
-@Embeddable 
+@Embeddable
 public class Embed_ToOne {
     protected String name1;
     protected String name2;
     protected String name3;
     @OneToOne(cascade=CascadeType.ALL)
     protected EntityB1 b;
-    
+
     public String getName1() {
         return name1;
     }
-    
+
     public void setName1(String name1) {
         this.name1 = name1;
     }
-    
+
     public String getName2() {
         return name2;
     }
-    
+
     public void setName2(String name2) {
         this.name2 = name2;
     }
-    
+
     public String getName3() {
         return name3;
     }
-    
+
     public void setName3(String name3) {
         this.name3 = name3;
     }
-    
+
     public void setEntityB(EntityB1 b) {
         this.b = b;
     }
-    
+
     public EntityB1 getEntityB() {
         return b;
     }
-    
+
 }

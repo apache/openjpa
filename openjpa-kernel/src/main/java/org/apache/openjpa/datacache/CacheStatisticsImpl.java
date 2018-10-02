@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -70,9 +70,9 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     }
 
     public long getReadCount(Class<?> c) {
-        return getReadCount(c.getName());        
+        return getReadCount(c.getName());
     }
-    
+
     public long getReadCount(String str){
         return getCount(stats, str, READ);
     }
@@ -84,7 +84,7 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     public long getHitCount(String str) {
         return getCount(stats, str, HIT);
     }
-    
+
     public long getWriteCount(Class<?> c) {
         return getWriteCount(c.getName());
     }
@@ -97,13 +97,13 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     }
 
     public long getTotalReadCount(String str) {
-        return getCount(totalStats, str, READ);        
+        return getCount(totalStats, str, READ);
     }
-    
+
     public long getTotalHitCount(Class<?> c) {
-        return getTotalHitCount(c.getName());   
+        return getTotalHitCount(c.getName());
     }
-    
+
     public long getTotalHitCount(String str) {
         return getCount(totalStats, str, HIT);
     }
@@ -111,7 +111,7 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     public long getTotalWriteCount(Class<?> c) {
         return getCount(totalStats, c.getName(), WRITE);
     }
-    
+
     public long getTotalWriteCount(String str) {
         return getCount(totalStats, str, WRITE);
     }
@@ -137,7 +137,7 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     public Set<String> classNames() {
         return totalStats.keySet();
     }
-    
+
     public Map<String, long[]> toMap() {
         Map<String, long[]> res = new HashMap<String, long[]>();
         for(Entry<String, long[]> s  : stats.entrySet()){
@@ -145,7 +145,7 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
         }
         return res;
     }
-    
+
     /**
      * SPI implementation
      */

@@ -34,7 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Holds metadata about a Database Stored Procedure. 
+ * Holds metadata about a Database Stored Procedure.
  * This is different than {@link MultiQueryMetaData} which holds the metadata
  * about what the user has specified.
  * <br>

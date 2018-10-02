@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -32,33 +32,33 @@ import javax.persistence.TemporalType;
 public class Item5 {
     @Id
     int id;
-    
+
     @ElementCollection
     @MapKeyTemporal(TemporalType.TIME)
     Map<Timestamp, FileName4> images = new HashMap<Timestamp, FileName4>();
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public Map<Timestamp, FileName4> getImages() {
         return images;
     }
-    
+
     public void addImage(Timestamp ts, FileName4 fileName) {
         images.put(ts, fileName);
     }
-    
+
     public void removeImage(Timestamp ts) {
         images.remove(ts);
     }
-    
+
     public FileName4 getImage(Timestamp ts) {
         return images.get(ts);
     }
-    
+
 }

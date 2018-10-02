@@ -34,7 +34,7 @@ public class EntityB2 implements Serializable {
 
     @Column(length=30)
     String name;
-    
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     EntityA_Embed_MappedToOneCascadeDelete entityA;
 

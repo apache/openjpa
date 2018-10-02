@@ -26,16 +26,16 @@ import javax.persistence.PostPersist;
 /*
  * Annotated entity class with no persistent attributes or access type
  * defined.  This is necessary to force query of the superclass to determine
- * the default access type. 
+ * the default access type.
  */
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class BaseCallback extends XMLCallback {
-    
+
     public transient static int postPersistCount = 0;
 
     @PostPersist
-    public void basePostPersist() {        
-        postPersistCount++;    
+    public void basePostPersist() {
+        postPersistCount++;
     }
 }

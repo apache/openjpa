@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria.multiselect;
 
@@ -28,122 +28,122 @@ import javax.persistence.Table;
 @Entity
 @Table(name="T_DIM_DAY")
 public class DimDay {
-	
+
 	@Id
 	@Column(name="DAY_KY")
 	private Long key;
-	
+
 	@Column(name="DAY_DT")
 	private Date date;
-	
+
 	@Column(name = "DAY_FULL_NM")
 	private String dayFullName;
-	
+
 	@Column(name = "QTR_FULL_NM")
 	private String qtrFullName;
-	
+
 	@Column(name = "MNTH_FULL_NM")
 	private String monthFullName;
 
 	@Column(name = "MNTH_SHRT_NM")
 	private String monthName;
-	
-	@Column(name = "YR_NBR") 
+
+	@Column(name = "YR_NBR")
 	private String year;
-	
-	@Column(name = "QTR_IN_YR_NBR") 
+
+	@Column(name = "QTR_IN_YR_NBR")
 	private int quarterInYearNumber;
-	
-	@Column(name = "YR_CD") 
+
+	@Column(name = "YR_CD")
 	private String yearCode;
-	
-	@Column(name = "QTR_CD") 
+
+	@Column(name = "QTR_CD")
 	private String quarterCode;
-	
-	@Column(name = "MNTH_CD") 
+
+	@Column(name = "MNTH_CD")
 	private String monthCode;
-	
+
 	@Column(name = "MNTH_IN_YR_NBR")
 	private Long monthInYearNumber;
-	
+
 	@Column(name="CUR_MNTH_IND")
 	private Long currentMonthInd;
-	
+
 	@Column(name="CUR_QTR_IND")
 	private Long currentQtrInd;
-	
+
 	@Column(name="CUR_YR_IND")
 	private Long currentYearInd;
 
 	@Column(name="PREV_MNTH_IND")
 	private Long prevMonthInd;
-	
+
 	@Column(name="PREV_QTR_IND")
 	private Long prevQtrInd;
-	
+
 	@Column(name="PREV_YR_IND")
 	private Long prevYearInd;
-	
+
 	@Column(name="CUR_MNTH_IN_PREV_YR_IND")
 	private Long currentMonthVsPrevYearInd;
-	
+
 	@Column(name="CUR_QTR_IN_PREV_YR_IND")
 	private Long currentQtrVsPrevYearInd;
-	
+
 	@Column(name="WK_IN_YR_NBR")
 	private Long weekInYear;
-	
+
 	@Column(name="WK_IN_YR_FULL_NM")
 	private String weekInYearFullNm;
-	
+
 	@Column(name = "DAY_IN_WK_NBR")
 	private Long dayInWeek;
 
 	@Column(name = "DAY_IN_MNTH_NBR")
 	private Long dayInMonth;
-	
+
 	@Column(name = "DAY_IN_QTR_NBR")
 	private Long dayInQuarter;
-	
+
 	@Column(name = "DAY_IN_YR_NBR")
 	private Long dayInYear;
-	
+
 	@Column(name="EOM_IND")
-	private Long eomInd; 
-	
+	private Long eomInd;
+
 	@Column(name="EOQ_IND")
 	private Long eoqInd;
-	
+
 	@Column(name="EOY_IND")
-	private Long eoyInd; 
-	
+	private Long eoyInd;
+
 	@Column(name = "ROLL_13_MNTH_IND")
 	private Long roll13MonthInd;
-	
+
 	@Column(name = "ROLL_4_YRS_IND")
 	private Long roll4YearsInd;
-	
+
 	@Column(name = "ROLL_5_QTRS_IND")
 	private Long roll5QuartersInd;
-	
+
 	@Column(name="MNTH_STRT_DAY_KY")
 	private Long monthStrtDate;
-	
+
 	@Column(name="MNTH_END_DAY_KY")
 	private Long monthEndDate;
-	
+
 	@Column(name="QTR_STRT_DAY_KY")
 	private Long quarterStrtDate;
-	
+
 	@Column(name="QTR_END_DAY_KY")
 	private Long quarterEndDate;
-	
+
 	@Column(name = "YR_STRT_DAY_KY")
 	private Long yearStrtDate;
-	
+
 	@Column(name = "YR_END_DAY_KY")
 	private Long yearEndDate;
-	
+
 	public Long getKey() {
 		return key;
 	}

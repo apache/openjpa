@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -54,29 +54,29 @@ public class SolidDBDictionary
 
     /**
      * Sets whether tables are to be located in-memory or on disk.
-     * Creating in-memory tables should append "STORE MEMORY" to the 
-     * "CREATE TABLE" statement. Creating disk-based tables should 
-     * append "STORE DISK". Since cursor hold over commit can not apply 
-     * to M-tables (which will cause SOLID Table Error 13187: The cursor 
-     * cannot continue accessing M-tables after the transaction has committed 
-     * or aborted. The statement must be re-executed.), the default is 
+     * Creating in-memory tables should append "STORE MEMORY" to the
+     * "CREATE TABLE" statement. Creating disk-based tables should
+     * append "STORE DISK". Since cursor hold over commit can not apply
+     * to M-tables (which will cause SOLID Table Error 13187: The cursor
+     * cannot continue accessing M-tables after the transaction has committed
+     * or aborted. The statement must be re-executed.), the default is
      * STORE DISK.
      * The default concurrency control mechanism depends on the table type:
      *    Disk-based tables (D-tables) are by default optimistic.
      *    Main-memory tables (M-tables) are always pessimistic.
-     * Since OpenJPA applications expects lock waits (as usually is done with 
-     * normal pessimistic databases), the server should be set to the pessimistic mode. 
-     * The optimistic mode is about not waiting for the locks at all. That increases 
-     * concurrency but requires more programming. The pessimistic mode with the 
-     * READ COMMITTED isolation level (default) should get as much concurrency as one 
-     * might need. The pessimistic locking mode can be set in solid.ini:  
+     * Since OpenJPA applications expects lock waits (as usually is done with
+     * normal pessimistic databases), the server should be set to the pessimistic mode.
+     * The optimistic mode is about not waiting for the locks at all. That increases
+     * concurrency but requires more programming. The pessimistic mode with the
+     * READ COMMITTED isolation level (default) should get as much concurrency as one
+     * might need. The pessimistic locking mode can be set in solid.ini:
      *    [General]
      *        Pessimistic=yes
-     *    
-     * 
+     *
+     *
      */
     public boolean storeIsMemory = false;
-    
+
     /**
      * If true, then simulate auto-assigned values in SolidDB by
      * using a trigger that inserts a sequence value into the
@@ -94,7 +94,7 @@ public class SolidDBDictionary
      * trigger name for backwards compatibility.
      */
     public boolean openjpa3GeneratedKeyNames = false;
-    
+
     /**
      * Possible values for LockingMode are "PESSIMISTIC" and "OPTIMISTIC"
      */
@@ -111,13 +111,13 @@ public class SolidDBDictionary
         booleanTypeName = "TINYINT";
         clobTypeName = "LONG VARCHAR";
         doubleTypeName = "DOUBLE PRECISION";
-        
+
         allowsAliasInBulkClause = false;
         useGetStringForClobs = true;
         useSetStringForClobs = true;
         supportsDeferredConstraints = false;
         supportsNullUniqueColumn = false;
-        
+
         concatenateFunction = "CONCAT({0},{1})";
         stringLengthFunction = "LENGTH({0})";
         trimLeadingFunction = "LTRIM({0})";
@@ -131,9 +131,9 @@ public class SolidDBDictionary
         sequenceSQL = "SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM SYS_SEQUENCES";
         sequenceSchemaSQL = "SEQSCHEMA = ?";
         sequenceNameSQL = "SEQNAME = ?";
-        
+
         reservedWordSet.addAll(Arrays.asList(new String[]{
-            "BIGINT", "BINARY", "DATE", "TIME", 
+            "BIGINT", "BINARY", "DATE", "TIME",
             "TINYINT", "VARBINARY"
         }));
     }
@@ -145,7 +145,7 @@ public class SolidDBDictionary
             supportsAutoAssign = true;
         }
     }
-    
+
     @Override
     public String[] getCreateTableSQL(Table table, SchemaGroup group) {
         StringBuilder buf = new StringBuilder();
@@ -178,19 +178,19 @@ public class SolidDBDictionary
             buf.append("MEMORY");
         else
             buf.append("DISK");
-        
+
         String[] create = null;
         if (lockingMode != null) {
             StringBuilder buf1 = new StringBuilder();
-            if (lockingMode.equalsIgnoreCase("PESSIMISTIC")) { 
+            if (lockingMode.equalsIgnoreCase("PESSIMISTIC")) {
                 buf1.append("ALTER TABLE ").append(getFullName(table, false)).
                     append(" SET PESSIMISTIC");
             } else if (lockingMode.equalsIgnoreCase("OPTIMISTIC")){
                 buf1.append("ALTER TABLE ").append(getFullName(table, false)).
                     append(" SET OPTIMISTIC");
-            } else 
+            } else
                 throw new UserException(_loc.get("invalid-locking-mode", lockingMode));
-            
+
             create = new String[2];
             create[0] = buf.toString();
             create[1] = buf1.toString();
@@ -198,7 +198,7 @@ public class SolidDBDictionary
             create = new String[1];
             create[0] = buf.toString();
         }
-        
+
         if (!useTriggersForAutoAssign)
             return create;
 
@@ -214,7 +214,7 @@ public class SolidDBDictionary
             if (sequenceExists(table.getSchemaIdentifier().getName(), seq, group))
                 seqs.add("DROP SEQUENCE " + seq);
             seqs.add("CREATE SEQUENCE " + seq);
-            
+
             if (openjpa3GeneratedKeyNames)
                 trig = getOpenJPA3GeneratedKeyTriggerName(cols[i]);
             else
@@ -222,8 +222,8 @@ public class SolidDBDictionary
 
             // create the trigger that will insert new values into
             // the table whenever a row is created
-            // CREATE TRIGGER TRIG01 ON table1 
-            //     BEFORE INSERT 
+            // CREATE TRIGGER TRIG01 ON table1
+            //     BEFORE INSERT
             //     REFERENCING NEW COL1 AS NEW_COL1
             // BEGIN
             //     EXEC SEQUENCE seq1 NEXT INTO NEW_COL1;
@@ -233,7 +233,7 @@ public class SolidDBDictionary
                 + " ON " + toDBName(table.getIdentifier())
                 + " BEFORE INSERT REFERENCING NEW " + toDBName(cols[i].getIdentifier())
                 + " AS NEW_COL1 BEGIN EXEC SEQUENCE " + seq + " NEXT INTO NEW_COL1; END");
-            
+
         }
         if (seqs == null)
             return create;
@@ -252,7 +252,7 @@ public class SolidDBDictionary
             String dbSchemaName = schemas[i].getIdentifier().getName();
             if (schemaName != null && !schemaName.equalsIgnoreCase(dbSchemaName))
                 continue;
-                  
+
             Sequence[] seqs = schemas[i].getSequences();
             for (int j = 0; j < seqs.length; j++) {
                 String dbSeqName = seqs[j].getName();
@@ -262,7 +262,7 @@ public class SolidDBDictionary
         }
         return false;
     }
-    
+
     /**
      * Trigger name for simulating auto-assign values on the given column.
      */
@@ -286,7 +286,7 @@ public class SolidDBDictionary
      * Returns a OpenJPA 3-compatible name for an auto-assign trigger.
      */
     protected String getOpenJPA3GeneratedKeyTriggerName(Column col) {
-        Table table = col.getTable();        
+        Table table = col.getTable();
         DBIdentifier sName = DBIdentifier.preCombine(table.getIdentifier(), "TRIG");
         return toDBName(getNamingUtil().makeIdentifierValid(sName, table.getSchema().
             getSchemaGroup(), maxTableNameLength, true));
@@ -305,16 +305,16 @@ public class SolidDBDictionary
 
     @Override
     protected String getGenKeySeqName(String query, Column col) {
-        return MessageFormat.format(query, new Object[]{getAutoGenSeqName(col)});        
+        return MessageFormat.format(query, new Object[]{getAutoGenSeqName(col)});
     }
-    
+
     @Override
     public String convertSchemaCase(DBIdentifier objectName) {
         if (objectName != null && objectName.getName() == null)
             return "";
         return super.convertSchemaCase(objectName);
     }
-    
+
     @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
             FilterValue length) {
@@ -343,7 +343,7 @@ public class SolidDBDictionary
             buf.append(")");
         }
     }
-    
+
     @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
@@ -357,7 +357,7 @@ public class SolidDBDictionary
         }
         buf.append(")");
     }
-   
+
     @Override
     public boolean isSystemIndex(DBIdentifier name, Table table) {
         // names starting with "$$" are reserved for SolidDB internal use
@@ -367,7 +367,7 @@ public class SolidDBDictionary
             startsWith$$ = name.isDelimited() ? strName.startsWith("\"$$") :
                 strName.startsWith("$$");
         }
-        return super.isSystemIndex(name, table) || startsWith$$; 
+        return super.isSystemIndex(name, table) || startsWith$$;
     }
 
     @Override
@@ -378,7 +378,7 @@ public class SolidDBDictionary
         String schemaName = DBIdentifier.isNull(schema) ? null : schema.getName();
         boolean startsWith_SYSTEM = schema.isDelimited() ? schemaName.startsWith("\"_SYSTEM") :
             schemaName.startsWith("_SYSTEM");
-        
+
         String seqName = DBIdentifier.isNull(name) ? null : name.getName();
         boolean startsWithSYS_SEQ_ = name.isDelimited() ? seqName.startsWith("\"SYS_SEQ_") :
             seqName.startsWith("SYS_SEQ_");
@@ -430,15 +430,15 @@ public class SolidDBDictionary
             break;
         }
     }
-    
+
     @Override
     public boolean needsToCreateIndex(Index idx, Table table, Unique[] uniques) {
-       // SolidDB will automatically create a unique index for the 
+       // SolidDB will automatically create a unique index for the
        // constraint, so don't create another index again
        PrimaryKey pk = table.getPrimaryKey();
        if (pk != null && idx.columnsMatch(pk.getColumns()))
            return false;
-       
+
        // If table1 has constraints on column (a, b), an explicit index on (a)
        // will cause duplicate index error from SolidDB
        Column[] icols = idx.getColumns();
@@ -466,10 +466,10 @@ public class SolidDBDictionary
 
     @Override
     protected String getSequencesSQL(String schemaName, String sequenceName) {
-        return getSequencesSQL(DBIdentifier.newSchema(schemaName), 
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName),
             DBIdentifier.newSequence(sequenceName));
     }
-    
+
     @Override
     protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
         StringBuilder buf = new StringBuilder();
@@ -491,12 +491,12 @@ public class SolidDBDictionary
             int idx) {
         // if this is a literal value, add a cast...
         Object val = sel.getSelects().get(idx);
-        boolean toCast = (val instanceof Lit) && 
-        ((Lit)val).getParseType() != Literal.TYPE_DATE && 
+        boolean toCast = (val instanceof Lit) &&
+        ((Lit)val).getParseType() != Literal.TYPE_DATE &&
         ((Lit)val).getParseType() != Literal.TYPE_TIME &&
         ((Lit)val).getParseType() != Literal.TYPE_TIMESTAMP;
 
-        if (toCast) 
+        if (toCast)
             selectSQL.append("CAST(");
 
             // ... and add the select per super's behavior...

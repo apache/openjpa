@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="jpa_overview_emfactory">
     <title>
@@ -30,7 +30,7 @@
         <imageobject>
             <!-- PNG image data, 418 x 274 (see README) -->
             <imagedata fileref="img/entitymanagerfactory.png" width="279px"/>
-            
+
         </imageobject>
     </mediaobject>
     <para>
@@ -93,7 +93,7 @@ vendors to pool factories, cutting down on resource utilization.
             </primary>
         </indexterm>
 JPA allows you to create and configure an <classname>
-EntityManagerFactory</classname>, then store it in a Java Naming and Directory 
+EntityManagerFactory</classname>, then store it in a Java Naming and Directory
 Interface (JNDI) tree for later retrieval and use.
         </para>
     </section>
@@ -129,7 +129,7 @@ The two <methodname>createEntityManager</methodname> methods above create a new
 <classname>EntityManager</classname> each time they are invoked. The optional
 <classname>Map</classname> is used to supply vendor-specific settings. If you
 have configured your implementation for JTA transactions and a JTA transaction
-is active, the returned <classname>EntityManager</classname> will be 
+is active, the returned <classname>EntityManager</classname> will be
 synchronized with that transaction.
         </para>
         <note>
@@ -294,7 +294,7 @@ EntityManager em; // injected
 
 // outside a transaction:
 
-// each operation occurs in a separate persistence context, and returns 
+// each operation occurs in a separate persistence context, and returns
 // a new detached instance
 Magazine mag1 = em.find(Magazine.class, magId);
 Magazine mag2 = em.find(Magazine.class, magId);
@@ -445,12 +445,12 @@ IllegalStateException</classname>.
 public PersistenceUnitUtil getPersistenceUnitUtil();
 </programlisting>
         <para>
-The <classname>EntityManagerFactory</classname> method 
-<methodname>getPersistenceUnitUtil</methodname> provides access to a 
+The <classname>EntityManagerFactory</classname> method
+<methodname>getPersistenceUnitUtil</methodname> provides access to a
 <classname>PersistenceUnitUtil</classname> utility. <classname>PersistenceUnitUtil</classname>
 can be used to obtain the identity of a managed object and determine the load
 state of the entity or one of its attributes.  If the object is not
-managed by one of the entity managers created from the entity manager factory 
+managed by one of the entity managers created from the entity manager factory
 from which the utility was obtained, the <methodname>getIdentifier</methodname> method will
 return null and the <methodname>isLoaded</methodname> methods will return false.
 <programlisting>

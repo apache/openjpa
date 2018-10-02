@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.merge.model;
 
@@ -35,15 +35,15 @@ public class Car {
 	@GeneratedValue
 	@Column(name="CAR_ID")
 	private long id;
-	
+
 	@OneToOne(cascade=CascadeType.ALL, mappedBy="car")
 	private Model model;
-	
+
     @SuppressWarnings("unused")
     @Version
     private int version;
 
-		
+
 	public void setId(long id) {
 		this.id = id;
 	}

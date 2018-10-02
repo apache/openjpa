@@ -14,19 +14,19 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
  * Denotes e1 BETWEEN(e2 AND e3) Expression.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class BetweenExpression extends BinaryExpressionPredicate {
 	public BetweenExpression(Expression arg1, RangeExpression arg2) {
-		super(arg1, BinaryConditionalOperator.BETWEEN, 
+		super(arg1, BinaryConditionalOperator.BETWEEN,
 			BinaryConditionalOperator.BETWEEN_NOT, arg2);
 	}
 }

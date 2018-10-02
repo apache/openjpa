@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.blob.mysql;
 
@@ -29,37 +29,37 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Testcase for MySQL Blob types. OPENJPA-740 introduced intelligent column type for BLOBs, OPENJPA-1870 refined it a
- * bit.  
+ * bit.
  */
 public class TestBlobColumnType extends SingleEMFTestCase {
 
     private static boolean _firstRun=true;
-    private boolean _runTest = false; // only test with MySQL 
+    private boolean _runTest = false; // only test with MySQL
 
     public void setUp() throws Exception {
-        
+
         // create EMF solely to obtain a DBDictionary.
         // need to do this without BlobColumnEntity.class since it contains a column definition which might
-        // not work with all databases. 
+        // not work with all databases.
         super.setUp((Object) null);
         if (!(getDBDictionary() instanceof MySQLDictionary || getDBDictionary() instanceof MariaDBDictionary)) {
             // normal teardown will take care of the EMF.
             return;
         }
-        
+
         // remove the EMF
         tearDown();
-        
+
         _runTest = true;
         super.setUp(BlobColumnEntity.class, DROP_TABLES, "openjpa.jdbc.SchemaFactory", "native");
-        
-        if(_firstRun) { 
+
+        if(_firstRun) {
             emf.createEntityManager().close(); // trigger table creation.
-            _firstRun = false; 
+            _firstRun = false;
         }
     }
 
-    private Column getCol(String name) { 
+    private Column getCol(String name) {
         ClassMapping mapping = getMapping(BlobColumnEntity.class);
 
         Table t = mapping.getTable();
@@ -67,37 +67,37 @@ public class TestBlobColumnType extends SingleEMFTestCase {
         assertNotNull(col);
         return col;
     }
-    
+
     public void testSmallLob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.tinyBlobTypeName, getCol("smallLob").getTypeIdentifier().getName());
         }
     }
-    
+
     public void testMedLob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.mediumBlobTypeName, getCol("medLob").getTypeIdentifier().getName());
         }
     }
-    
+
     public void testLongBlob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.longBlobTypeName, getCol("longLob").getTypeIdentifier().getName());
         }
     }
-    
+
     public void testOldLob() {
         if (_runTest) {
             assertEquals(getDBDictionary().blobTypeName, getCol("oldLob").getTypeIdentifier().getName());
         }
     }
-    
+
     public void testDefaultLob() {
         if (_runTest) {
             assertEquals(getDBDictionary().blobTypeName, getCol("defaultLob").getTypeIdentifier().getName());
         }
     }
-    
+
     public void testDefinedLob() {
         if (_runTest) {
             assertEquals("BINARY", getCol("definedLob").getTypeIdentifier().getName());

@@ -45,7 +45,7 @@ public class PropAccessFieldStratsEntity {
     @Basic
     @Access(AccessType.FIELD)
     private String name;
-    
+
     @ManyToOne(cascade=CascadeType.ALL)
     @Access(AccessType.FIELD)
     private PropAccess m2one;
@@ -53,19 +53,19 @@ public class PropAccessFieldStratsEntity {
     @OneToMany(cascade=CascadeType.ALL)
     @Access(AccessType.FIELD)
     private Collection<FieldAccess> one2m;
-    
+
     @OneToOne(cascade=CascadeType.ALL)
     @Access(AccessType.FIELD)
     private PropAccess one2one;
-    
+
     @ElementCollection
     @Access(AccessType.FIELD)
     private Collection<EmbedPropAccess> ecoll;
-    
+
     @Embedded
     @Access(AccessType.FIELD)
     private EmbedFieldAccess embed;
-    
+
     @Version
     @Access(AccessType.FIELD)
     private int ver;
@@ -87,20 +87,20 @@ public class PropAccessFieldStratsEntity {
     public EmbedFieldAccess getEmbedField() {
         return embed;
     }
-    
+
     public void setEmbedField(EmbedFieldAccess efa) {
         embed = efa;
     }
-    
+
     @Transient
     public int getVersion() {
         return ver;
     }
-    
+
     public void setVersion(int version) {
         ver = version;
     }
-    
+
     @Transient
     public PropAccess getManyToOne() {
         return m2one;
@@ -136,12 +136,12 @@ public class PropAccessFieldStratsEntity {
     public void setManyToMany(Collection<PropAccess> many) {
         m2m = many;
     }
-    
+
     @Transient
     public String getName() {
         return name;
     }
-    
+
     public void setName(String n) {
         name = n;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -27,29 +27,29 @@ import org.apache.openjpa.util.UserException;
 /**
  * Utility methods to determine the target slices for a persistence capable
  * instance by calling back to user-specified distribution policy.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class SliceImplHelper {
 	private static final Localizer _loc =
 		Localizer.forPackage(SliceImplHelper.class);
-	
+
 	/**
-	 * Gets the target slices by calling user-specified {@link DistributionPolicy} or {@link ReplicationPolicy} 
+	 * Gets the target slices by calling user-specified {@link DistributionPolicy} or {@link ReplicationPolicy}
      * depending on whether the given instance is {@link DistributedConfiguration#isReplicated(Class) replicated}.
      * The policy is invoked when an instance enters the managed life cycle. However, if the instance
      * being persisted is distributed to a target slice that is <em>not</em> determinable by its own basic attributes,
-     * but on its associated instance then those association may not have been initialized at the point of entry. 
-     * In such case, the policy may return null. However, when a target slice may not be determinable at the 
-     * entry to managed life cycle, a target slice must be determinable by the time an instance is flushed.   
-     * 
+     * but on its associated instance then those association may not have been initialized at the point of entry.
+     * In such case, the policy may return null. However, when a target slice may not be determinable at the
+     * entry to managed life cycle, a target slice must be determinable by the time an instance is flushed.
+     *
      * @param pc the managed instance whose target slice is to be determined.
      * @param conf to supply the distribution policy
      * @param ctx the (opaque) context of invocation. No semantics is currently associated.
-     * 
+     *
      * @return information about the target slice for the given instance. Can be null if the policy
-     * can not determine the target slice(s) based on the current state of the instance.  
+     * can not determine the target slice(s) based on the current state of the instance.
 	 */
 	public static SliceInfo getSlicesByPolicy(Object pc, DistributedConfiguration conf, Object ctx) {
 		List<String> actives = conf.getActiveSliceNames();
@@ -70,26 +70,26 @@ public class SliceImplHelper {
 		}
 		return targets != null ? new SliceInfo(replicated, targets) : null;
 	}
-	
+
 	private static void assertSlices(String[] targets, Object pc, List<String> actives, Object policy) {
 	    if (targets == null || targets.length == 0)
             throw new UserException(_loc.get("no-policy-slice", new Object[] {
                 policy.getClass().getName(), pc, actives}));
-        for (String target : targets) 
+        for (String target : targets)
             if (!actives.contains(target))
-                throw new UserException(_loc.get("bad-policy-slice", 
-                   new Object[] {policy.getClass().getName(), target, pc, 
+                throw new UserException(_loc.get("bad-policy-slice",
+                   new Object[] {policy.getClass().getName(), target, pc,
                     actives}));
 	}
-	
+
     /**
      * Gets the target slices for the given StateManager.
      */
-    public static SliceInfo getSlicesByPolicy(OpenJPAStateManager sm, 
+    public static SliceInfo getSlicesByPolicy(OpenJPAStateManager sm,
         DistributedConfiguration conf, Object ctx) {
         return getSlicesByPolicy(sm.getPersistenceCapable(), conf, ctx);
     }
-    
+
 	/**
 	 * Affirms if the given instance be replicated to multiple slices.
 	 */
@@ -97,12 +97,12 @@ public class SliceImplHelper {
         return pc == null ? false : conf.isReplicated(pc.getClass());
 	}
 
-	
+
 	/**
 	 * Affirms if the given StateManager has an assigned slice.
 	 */
 	public static boolean isSliceAssigned(OpenJPAStateManager sm) {
-	     return sm != null && sm.getImplData() != null 
+	     return sm != null && sm.getImplData() != null
 	         && sm.getImplData() instanceof SliceInfo;
 	}
 

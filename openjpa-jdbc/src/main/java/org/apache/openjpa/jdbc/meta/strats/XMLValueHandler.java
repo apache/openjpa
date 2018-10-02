@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -72,7 +72,7 @@ public class XMLValueHandler
     public Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         // check for null value.
-        if (val == null) 
+        if (val == null)
             return null;
         try {
             JAXBContext jc = JAXBContext.newInstance(
@@ -95,7 +95,7 @@ public class XMLValueHandler
 
     public Object toObjectValue(ValueMapping vm, Object val) {
         // check for null value.
-        if (val == null) 
+        if (val == null)
             return null;
         try {
             String className  = vm.getDeclaredType().getName();

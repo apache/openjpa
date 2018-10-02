@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
     private List<String> _sql = new ArrayList<String>();
-    
+
     public void setUp() throws Exception {
         super.setUp(
                 "openjpa.DataCache", "true",
@@ -53,7 +53,7 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
         Query q = em.createQuery(query);
         q.setParameter(1, 100000);
         List l = q.getResultList();
-        assertEquals(0, l.size());     
+        assertEquals(0, l.size());
 
         // Create a new Entity that has the PartBase accesspath. Has a newer timestamp than our query
         em.getTransaction().begin();
@@ -63,17 +63,17 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
         // Make sure that our sql listener is working
         assertTrue(_sql.size() > 0);
         _sql.clear();
-        
+
         q = em.createQuery(query);
         q.setParameter(1, 100000);
         q.getResultList();
-        
+
         // Make sure that we execute sql. This means that the query was properly kicked out of the cache.
         assertEquals(1, _sql.size());
         em.close();
 
     }
-    
+
     /**
      * Verify that the persistent unit property configuration is enabling
      * the TIMESTAMP Eviction Policy.
@@ -83,13 +83,13 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
         EvictPolicy ep = qc.getEvictPolicy();
         assertTrue(ep == EvictPolicy.TIMESTAMP);
     }
-    
+
     public void testLoadQueries() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
         	return;
-        }                                 
+        }
         loadQueryCache();
         int cacheSizeBeforeUpdate = queryCacheGet();
         updateAnEntity();
@@ -106,10 +106,10 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
      * This testcase was added for OPENJPA-1379. Prior to this fix, the main thread holds a lock on
      * the QueryCache which it never released. As a result, thread t2 will never successfully obtain
      * the writeLock().
-     * 
+     *
      * The main thread holds the writeLock because setUp(..) calls deleteAllData() which eventually
      * results in AbstractQueryCache.onTypesChanges(TypesChangedEvent) being called.
-     * 
+     *
      * @throws Exception
      */
     public void testWriteLock() throws Exception {
@@ -122,7 +122,7 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
         };
         t2.start();
         t2.join(5000);
-        
+
         if (t2.getState().equals(java.lang.Thread.State.WAITING)) {
             fail("The thread is still waiting on a writeLock()!");
         }

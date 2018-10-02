@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance.stats;
 
@@ -33,7 +33,7 @@ import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 
 /**
- * FetchStatisticsAuxEnhancer adds the call back function to each persistent fields in the persistent entity which 
+ * FetchStatisticsAuxEnhancer adds the call back function to each persistent fields in the persistent entity which
  * will invoke the hit method from FetchStatsCollector whenever the field is fetched at runtime.
  */
 public class FetchStatisticsAuxEnhancer implements AuxiliaryEnhancer {

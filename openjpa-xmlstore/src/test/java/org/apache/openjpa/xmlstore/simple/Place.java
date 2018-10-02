@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.xmlstore.simple;
 
@@ -26,7 +26,7 @@ import javax.persistence.Id;
 @Entity
 public class Place implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     private String location;
 
     @Id

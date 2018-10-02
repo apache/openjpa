@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -78,7 +78,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     public static final String ACTION_GET = "get";
     public static final String ACTION_SET = "set";
     public static final String DEFAULT_TABLE = "OPENJPA_SEQUENCE_TABLE";
-    
+
     private static final Localizer _loc = Localizer.forPackage
         (TableJDBCSeq.class);
 
@@ -96,7 +96,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
 
     private Column _seqColumn = null;
     private Column _pkColumn = null;
-    
+
     /**
      * The sequence table name. Defaults to <code>OPENJPA_SEQUENCE_TABLE</code>.
      * By default, the table will be placed in the first schema listed in your
@@ -187,10 +187,10 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     public void setAllocate(int alloc) {
         _alloc = alloc;
     }
-    
+
     /**
-     * Return the number as the initial number for the 
-     * GeneratedValue.TABLE strategy to start with. 
+     * Return the number as the initial number for the
+     * GeneratedValue.TABLE strategy to start with.
      * @return an initial number
      */
     public int getInitialValue() {
@@ -199,23 +199,23 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
 
     /**
      * Set the initial number in the table for the GeneratedValue.TABLE
-     * strategy to use as initial number. 
+     * strategy to use as initial number.
      * @param intValue. The initial number
      */
     public void setInitialValue(int intValue) {
         _intValue = intValue;
     }
-    
+
     /**
      * Sets the names of the columns on which a unique constraint is set.
      * @param columnsNames are passed as a single String concatenated with
-     * a '|' character. This method parses it back to array of Strings. 
+     * a '|' character. This method parses it back to array of Strings.
      */
     public void setUniqueColumns(String columnNames) {
     	_uniqueColumnNames = (StringUtil.isEmpty(columnNames))
     		? null : DBIdentifier.split(columnNames, DBIdentifierType.COLUMN, IdentifierUtil.BAR);
     }
-    
+
     public String getUniqueColumns() {
     	return Normalizer.joinNames(DBIdentifier.toStringArray(_uniqueColumnNames), IdentifierUtil.BAR);
     }
@@ -243,13 +243,13 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     public void endConfiguration() {
         buildTable();
     }
-    
+
 
     public void addSchema(ClassMapping mapping, SchemaGroup group) {
         // Since the table is created by openjpa internally
         // we can create the table for each schema within the PU
         // in here.
-        
+
         Schema[] schemas = group.getSchemas();
         for (int i = 0; i < schemas.length; i++) {
             QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(_table);
@@ -266,7 +266,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
             if (schema == null) {
                 schema = group.addSchema(schemaName);
             }
-            
+
             Table copy = schema.importTable(_pkColumn.getTable());
             // importTable() does not import unique constraints
             Unique[] uniques = _pkColumn.getTable().getUniques();
@@ -345,9 +345,9 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      * Return the appropriate status object for the given class, or null
      * if cannot handle the given class. The mapping may be null.
      */
-    protected Status getStatus(ClassMapping mapping) {  
-        Status status = (Status) _stat.get(mapping);        
-        if (status == null){ 
+    protected Status getStatus(ClassMapping mapping) {
+        Status status = (Status) _stat.get(mapping);
+        if (status == null){
             status = new Status();
             Status tStatus = _stat.putIfAbsent(mapping, status);
             // This can happen if another thread calls .put(..) sometime after our call to get. Return
@@ -392,7 +392,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         else {
             tableName = _table;
         }
-        
+
         if (DBIdentifier.isEmpty(schemaName)) {
             schemaName = Schemas.getNewTableSchemaIdentifier(_conf);
         }
@@ -410,7 +410,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
             (_seqColumnName, table));
         _seqColumn.setType(dict.getPreferredType(Types.BIGINT));
         _seqColumn.setJavaType(JavaTypes.LONG);
-        
+
         if (_uniqueColumnNames != null) {
             DBIdentifier uniqueName = _uniqueConstraintName;
             if (DBIdentifier.isEmpty(uniqueName)) {
@@ -426,7 +426,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     			u.addColumn(col);
     		}
         }
-        
+
     }
 
     /**
@@ -445,7 +445,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
                 _conf.getManagedRuntimeInstance().doNonTransactionalWork(
                         runnable);
                 }
-                catch(NotSupportedException nse) { 
+                catch(NotSupportedException nse) {
                     SQLException sqlEx = new SQLException(
                             nse.getLocalizedMessage());
                     sqlEx.initCause(nse);
@@ -456,16 +456,16 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
             }
         } catch (RuntimeException re) {
             Throwable e = re.getCause();
-            if(e instanceof SQLException ) 
+            if(e instanceof SQLException )
                 throw (SQLException) e;
-            else 
+            else
                 throw re;
         }
     }
 
     /**
      * Inserts the initial sequence column into the database.
-     * 
+     *
      * @param mapping
      *            ClassMapping for the class whose sequence column will be
      *            updated
@@ -474,7 +474,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      */
     private void insertSequence(ClassMapping mapping, Connection conn)
         throws SQLException {
-        
+
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("insert-seq"));
 
@@ -491,7 +491,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
             append(") VALUES (").
             appendValue(pk, _pkColumn).append(", ").
             appendValue(_intValue, _seqColumn).append(")");
-        
+
         boolean wasAuto = conn.getAutoCommit();
         if (!wasAuto && !suspendInJTA())
             conn.setAutoCommit(true);
@@ -511,13 +511,13 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
 
     /**
      * Get the current sequence value.
-     * 
+     *
      * @param mapping
      *            ClassMapping of the entity whose sequence value will be
      *            obtained.
      * @param conn
      *            Connection used issue SQL statements.
-     * 
+     *
      * @return The current sequence value, or <code>SEQUENCE_NOT_FOUND</code>
      *         if the sequence could not be found.
      */
@@ -551,7 +551,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         } finally {
             if (rs != null)
                 try { rs.close(); } catch (SQLException se) {}
-            if (stmnt != null)    
+            if (stmnt != null)
                 try { stmnt.close(); } catch (SQLException se) {}
         }
     }
@@ -573,7 +573,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
             throw new InvalidStateException(_loc.get("bad-seq-type",
                 getClass(), mapping));
 
-        DBDictionary dict = _conf.getDBDictionaryInstance();        
+        DBDictionary dict = _conf.getDBDictionaryInstance();
         SQLBuffer where = new SQLBuffer(dict).append(_pkColumn).append(" = ").
             appendValue(pk, _pkColumn);
 
@@ -606,14 +606,14 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
                 updates = executeUpdate(_conf, conn, stmnt, upd,
                         RowImpl.ACTION_UPDATE);
             } finally {
-                if (rs != null) 
+                if (rs != null)
                     try { rs.close(); } catch (SQLException se) {}
                 if (stmnt != null)
                     try { stmnt.close(); } catch (SQLException se) {}
             }
         }
 
-        // setup new sequence range        
+        // setup new sequence range
         synchronized (stat) {
             if (updateStatSeq && stat.seq < cur)
                 stat.seq = cur;
@@ -624,7 +624,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     }
     /**
      * Resolve a fully qualified table name
-     * 
+     *
      * @param class
      *            mapping to get the schema name
      * @deprecated
@@ -635,14 +635,14 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
 
     /**
      * Resolve a fully qualified table name
-     * 
+     *
      * @param class
      *            mapping to get the schema name
      */
     public DBIdentifier resolveTableIdentifier(ClassMapping mapping, Table table) {
         DBIdentifier sName = mapping.getTable().getSchemaIdentifier();
         DBIdentifier tableName = DBIdentifier.NULL;
-        
+
         //OPENJPA-2650: Don't use a schema name if the user has requested,
         //via useSchemaName, to not use one.
         if (!_conf.getDBDictionaryInstance().useSchemaName){
@@ -657,7 +657,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         return tableName;
     }
 
-    
+
     /**
      * Creates the sequence table in the DB.
      */
@@ -812,35 +812,35 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     }
 
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of preparing statement.
      */
     protected PreparedStatement prepareStatement(Connection conn, SQLBuffer buf)
         throws SQLException {
         return buf.prepareStatement(conn);
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of executing update.
      */
-    protected int executeUpdate(JDBCConfiguration conf, Connection conn,  
+    protected int executeUpdate(JDBCConfiguration conf, Connection conn,
         PreparedStatement stmnt, SQLBuffer buf, int opcode) throws SQLException
     {
         return stmnt.executeUpdate();
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of executing query.
      */
     protected ResultSet executeQuery(JDBCConfiguration conf, Connection conn,
         PreparedStatement stmnt, SQLBuffer buf) throws SQLException {
         return stmnt.executeQuery();
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of getting sequence from the result set.
      */
     protected long getSequence(ResultSet rs, DBDictionary dict)
@@ -889,7 +889,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
 
         /**
          * This method actually obtains the current sequence value.
-         * 
+         *
          * @throws RuntimeException
          *             any SQLExceptions that occur when obtaining the sequence
          *             value are wrapped in a runtime exception to avoid
@@ -901,14 +901,14 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
             SQLException err = null;
             try {
                 // Try to use the store's connection.
-                
-                conn = getConnection(store);  
+
+                conn = getConnection(store);
                 boolean sequenceSet =
                     setSequence(mapping, stat, alloc, updateStatSeq, conn);
                 closeConnection(conn);
 
                 if (!sequenceSet) {
-                    // insert a new sequence column. Prefer connection2 / non-jta-data-source when inserting a 
+                    // insert a new sequence column. Prefer connection2 / non-jta-data-source when inserting a
                     // sequence column regardless of Seq.type.
                     conn = _conf.getDataSource2(store.getContext()).getConnection();
                     try {
@@ -921,7 +921,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
                                 "seqence. ", e);
                         }
                     }
-                    
+
                     conn.close();
 
                     // now we should be able to update using the connection per
@@ -960,7 +960,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
 
         /**
          * This method actually obtains the current sequence value.
-         * 
+         *
          * @throws RuntimeException
          *             any SQLExceptions that occur when obtaining the sequence
          *             value are wrapped in a runtime exception to avoid

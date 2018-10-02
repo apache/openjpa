@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -24,8 +24,8 @@ import org.apache.openjpa.kernel.StoreManager;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Repository of store-specific facade classes. This is used by facade 
- * implementations to wrap store-specific components without knowing 
+ * Repository of store-specific facade classes. This is used by facade
+ * implementations to wrap store-specific components without knowing
  * about all possible back-ends.
  */
 public class StoreFacadeTypeRegistry {
@@ -36,22 +36,22 @@ public class StoreFacadeTypeRegistry {
      * Register a facade implementation.
      *
      * @param facadeType the facade interface
-     * @param storeType the store's 
+     * @param storeType the store's
      * {@link org.apache.openjpa.kernel.StoreManager} type, or null for generic
      * @param implType the class implementing the facade
      */
-    public void registerImplementation(Class facadeType, Class storeType, 
+    public void registerImplementation(Class facadeType, Class storeType,
         Class implType) {
-        Object key = (storeType == null) ? (Object) facadeType 
+        Object key = (storeType == null) ? (Object) facadeType
             : new Key(facadeType, storeType);
         _impls.put(key, implType);
     }
-    
+
     /**
      * Return the implementation for the given facade and store.
      *
      * @param facadeType the facade interface
-     * @param storeType the store's 
+     * @param storeType the store's
      * {@link org.apache.openjpa.kernel.StoreManager} type, or null for generic
      * @param implType the registered implementor
      */
@@ -59,27 +59,27 @@ public class StoreFacadeTypeRegistry {
         // traverse store type hierarchy to store manager to find most specific
         // store avaialble
         Class impl;
-        for (; storeType != null && storeType != StoreManager.class; 
+        for (; storeType != null && storeType != StoreManager.class;
             storeType = storeType.getSuperclass()) {
             impl = (Class) _impls.get(new Key(facadeType, storeType));
             if (impl != null)
-                return impl; 
-        }    
+                return impl;
+        }
         return (Class) _impls.get(facadeType);
     }
-    
+
     /**
-     * Return the implementation for the given facade and store. If no 
+     * Return the implementation for the given facade and store. If no
      * registered implementation is found then returns the given default type
      * provided it the facade type is assignable from the deafult type.
      *
      * @param facadeType the facade interface
-     * @param storeType the store's 
+     * @param storeType the store's
      * {@link org.apache.openjpa.kernel.StoreManager} type, or null for generic
      * @param implType the registered implementor
      * @param defaultType class if no registered implementation is available.
      */
-    public Class getImplementation(Class facadeType, Class storeType, 
+    public Class getImplementation(Class facadeType, Class storeType,
     	Class defaultType) {
     	Class result = getImplementation(facadeType, storeType);
     	if (result == null)

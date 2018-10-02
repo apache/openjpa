@@ -31,8 +31,8 @@ import javax.persistence.Id;
 
 
 /**
- * Entity using reserved words for column names 
- * 
+ * Entity using reserved words for column names
+ *
  * @see sql-keywords.rscs
  * @author Tim McConnell
  * @since 2.0.0
@@ -95,7 +95,7 @@ public class EntityReservedWords implements Serializable {
     private int year;
     private Integer years;
     private Date zerofill;
-    private String zone; 
+    private String zone;
     private Integer type;
     private String alias;
     private int Boolean;
@@ -486,7 +486,7 @@ public class EntityReservedWords implements Serializable {
     }
     public void setZone(String zone) {
         this.zone = zone;
-    } 
+    }
 
     public Integer getType() {
         return type;

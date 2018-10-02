@@ -45,31 +45,31 @@ public class EntityH {
     @Column(name="ha id")
     private int id;
     private String name;
-    
+
     @Column(table="ha sec join table")
     private String secName;
-    
+
     @ManyToMany
     @JoinTable(name="ha i", schema="delim id2")
     private Collection<EntityI> entityIs = new HashSet<EntityI>();
-    
+
     @OneToOne
     @JoinColumn(name="enti2 id", referencedColumnName="entityI2 id", table="join column")
     private EntityI2 entityI2;
-    
+
     @ManyToMany
     @JoinTable(name="map3a join table", schema="delim id2")
     @MapKeyJoinColumn(name="map_ei3", referencedColumnName="entityI3 id")
     Map<EntityI3,EntityI4> map = new HashMap<EntityI3,EntityI4>();
-    
+
     @ManyToMany
     @JoinTable(name="map4 join table", schema="delim id2")
-    @MapKeyJoinColumn(name="map ei4", 
+    @MapKeyJoinColumn(name="map ei4",
         referencedColumnName="entityI4 id", table="mk j col")
     Map<EntityI4,EntityI3> map2 = new HashMap<EntityI4,EntityI3>();
 
     public EntityH() {}
-    
+
     public EntityH(int id) {
         this.id = id;
     }
@@ -115,7 +115,7 @@ public class EntityH {
     public void setSecName(String secName) {
         this.secName = secName;
     }
-    
+
     public Collection<EntityI> getEntityIs() {
         return entityIs;
     }
@@ -125,7 +125,7 @@ public class EntityH {
     public void setEntityIs(Collection<EntityI> entityIs) {
         this.entityIs = entityIs;
     }
-    
+
     public void addEntityI(EntityI entityI) {
         entityIs.add(entityI);
     }
@@ -157,7 +157,7 @@ public class EntityH {
     public void setMap(Map<EntityI3, EntityI4> map) {
         this.map = map;
     }
-    
+
     public void addMapValues(EntityI3 key, EntityI4 value) {
         map.put(key, value);
     }
@@ -175,7 +175,7 @@ public class EntityH {
     public void setMap2(Map<EntityI4, EntityI3> map2) {
         this.map2 = map2;
     }
-    
+
     public void addMap2Values(EntityI4 key, EntityI3 value) {
         map2.put(key, value);
     }

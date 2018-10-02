@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance.ids;
 
@@ -33,31 +33,31 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * during the enhancement process for the entities used by this test.
  */
 public class TestOptimizeIdCopy extends SingleEMFTestCase {
-    
+
     @Override
     public void setUp() {
         setUp(Device.class,Hardware.class,Software.class, CLEAR_TABLES);
     }
-    
+
     /*
      * Verifies that constructor-based Id optimization occurs during Id copy. Asserts
      * only the proper/expected public constructor is called during the id copy operation.
      */
     public void testIdOptimization() {
         EntityManager em = emf.createEntityManager();
-        
+
         // Add a software entity
         Software sw = new Software();
         int id = new Random().nextInt();
         sw.setIdInt(id);
         sw.setIdInteger(10);
         sw.setIdString("StringIdVal");
-        
+
         em.getTransaction().begin();
         em.persist(sw);
         em.getTransaction().commit();
         em.clear();
-        
+
         TypedQuery<Software> swq = em.createQuery("select sw from Software sw", Software.class);
         List<Software> swl = swq.getResultList();
         assertTrue("Software result list > 0", swl.size() > 0);
@@ -67,24 +67,24 @@ public class TestOptimizeIdCopy extends SingleEMFTestCase {
         assertTrue("Third (correct) constructor was used", SoftwareId.usedConstructor[2]);
         em.close();
     }
-    
+
     /*
      * Verifies that constructor based optimization functions even if parms
      * are different than field order
      */
     public void testIdOptimizationConstructorOutOfOrder() {
         EntityManager em = emf.createEntityManager();
-        
+
         Hardware hw = new Hardware();
         String id = "Model" + (new Random().nextInt());
         hw.setModel("Model" + id);
         hw.setSerial("123XYZ");
-        
+
         em.getTransaction().begin();
         em.persist(hw);
         em.getTransaction().commit();
         em.clear();
-        
+
         TypedQuery<Hardware> hwq = em.createQuery("select hw from Hardware hw", Hardware.class);
         List<Hardware> hwl = hwq.getResultList();
         assertTrue("Hardware result list > 0", hwl.size() > 0);
@@ -93,18 +93,18 @@ public class TestOptimizeIdCopy extends SingleEMFTestCase {
         assertFalse("Second constructor was not used", HardwareId.usedConstructor[1]);
         em.close();
     }
-    
+
     /*
      * Verifies that classes without a proper constructor do not get optimized
      */
     public void testNoOptimization() {
         EntityManager em = emf.createEntityManager();
-        
+
         int id = new Random().nextInt();
         Device d = new Device();
         d.setId(id);
         d.setType(10);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();

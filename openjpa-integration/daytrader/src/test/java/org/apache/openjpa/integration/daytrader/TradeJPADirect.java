@@ -48,13 +48,13 @@ import org.apache.openjpa.lib.log.Log;
  * operations that can be performed by customers of the brokerage such as login,
  * logout, get a stock quote, buy or sell a stock, etc. and are specified in the
  * {@link org.apache.geronimo.samples.daytrader.TradeServices} interface
- * 
+ *
  * Note: In order for this class to be thread-safe, a new TradeJPA must be
  * created for each call to a method from the TradeInterface interface.
  * Otherwise, pooled connections may not be released.
- * 
+ *
  * @see org.apache.geronimo.samples.daytrader.TradeServices
- * 
+ *
  */
 
 // public class TradeJPADirect implements TradeServices, TradeDBServices {
@@ -69,9 +69,9 @@ public class TradeJPADirect {
 
     protected static Log log = null;
     boolean _poolEm = true;
-    
+
     EntityManager _em;
-    
+
     public EntityManager getEm(EntityManagerFactory emf) {
         if (_poolEm) {
             if (_em == null)
@@ -80,7 +80,7 @@ public class TradeJPADirect {
         }
         return emf.createEntityManager();
     }
-    
+
     public void putEm(EntityManager em){
         if(_poolEm)
             em.clear();
@@ -89,7 +89,7 @@ public class TradeJPADirect {
                 em.close();
         }
     }
-    
+
 
     // constructor for OpenJPA junit tests
     public TradeJPADirect(Log log, EntityManagerFactory emf, boolean poolEm) {
@@ -99,7 +99,7 @@ public class TradeJPADirect {
         if (initialized == false)
             init();
     }
-    
+
     public static synchronized void init() {
         if (initialized)
             return;
@@ -393,7 +393,7 @@ public class TradeJPADirect {
             order.setCompletionDate(new java.sql.Timestamp(System.currentTimeMillis()));
             entityManager.persist(order);
             entityManager.getTransaction().commit();
-            
+
             if (log.isTraceEnabled())
                 log.trace("TradeJPADirect:completeOrder--> Completed Order "
                           + order.getOrderID() + "\n\t Order info: " + order
@@ -615,10 +615,10 @@ public class TradeJPADirect {
         if (TradeConfig.jpaLayer == TradeConfig.HIBERNATE) {
             quote = entityManager.find(QuoteDataBean.class, symbol);
         } else if (TradeConfig.jpaLayer == TradeConfig.OPENJPA) {
-  
+
             Query q = entityManager.createNamedQuery("quoteejb.quoteForUpdate");
             q.setParameter(1, symbol);
-  
+
             quote = (QuoteDataBean) q.getSingleResult();
         }
 
@@ -736,9 +736,9 @@ public class TradeJPADirect {
          * profileData.getUserID()); // In order for the object to merge
          * correctly, the account has to be hooked into the temp object... // -
          * may need to reverse this and obtain the full object first
-         * 
+         *
          * profileData.setAccount(temp.getAccount());
-         * 
+         *
          * //TODO this might not be correct temp =
          * entityManager.merge(profileData); //System.out.println(temp);
          */
@@ -822,7 +822,7 @@ public class TradeJPADirect {
             log.trace("TradeJPADirect:logout(" + userID + ") success");
     }
 
-    public AccountDataBean register(String userID, String password, String fullname, 
+    public AccountDataBean register(String userID, String password, String fullname,
                                     String address, String email, String creditcard,
                                     BigDecimal openBalance) {
         AccountDataBean account = null;
@@ -833,7 +833,7 @@ public class TradeJPADirect {
             //Log.trace("TradeJPADirect:register", userID, password, fullname, address, email, creditcard, openBalance);
             log.trace("TradeJPADirect:register - userID=" + userID);
         }
-        
+
         // Check to see if a profile with the desired userID already exists
         profile = entityManager.find(AccountProfileDataBean.class, userID);
         if (profile != null) {
@@ -901,16 +901,16 @@ public class TradeJPADirect {
                       + " quote=" + ((quote == null) ? null : quote.getSymbol())
                       + " orderType=" + orderType + " quantity=" + quantity);
         try {
-            order = new OrderDataBean(orderType, 
-                                      "open", 
-                                      new Timestamp(System.currentTimeMillis()), 
-                                      null, 
-                                      quantity, 
+            order = new OrderDataBean(orderType,
+                                      "open",
+                                      new Timestamp(System.currentTimeMillis()),
+                                      null,
+                                      quantity,
                                       // quote.getPrice().setScale(FinancialUtils.SCALE, FinancialUtils.ROUND),
                                       quote.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP),
-                                      TradeConfig.getOrderFee(orderType), 
-                                      account, 
-                                      quote, 
+                                      TradeConfig.getOrderFee(orderType),
+                                      account,
+                                      quote,
                                       holding);
                 entityManager.persist(order);
         }
@@ -993,7 +993,7 @@ public class TradeJPADirect {
 
     /**
      * Get mode - returns the persistence mode (TradeConfig.JPA)
-     * 
+     *
      * @return int mode
      */
     public int getMode() {

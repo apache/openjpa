@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -105,7 +105,7 @@ public abstract class LocalConstraint
             throw new InvalidStateException(_loc.get("table-mismatch",
                 col == null ? null : col.getTable(),
                 col == null ? null : getTable()));
-    	
+
         if (_colList == null)
             _colList = new ArrayList<Column>(3);
         else if (_colList.contains(col))

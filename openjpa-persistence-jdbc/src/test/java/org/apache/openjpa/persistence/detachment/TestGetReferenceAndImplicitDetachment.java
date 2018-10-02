@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.detachment;
 
@@ -36,12 +36,12 @@ public class TestGetReferenceAndImplicitDetachment
     public void testNonexistentGetReferenceDetachmentInTxWithCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        DetachmentOneManyParent o = 
+        DetachmentOneManyParent o =
             em.getReference(DetachmentOneManyParent.class, 0);
         em.getTransaction().commit();
         em.close();
 
-        // the close detachment should leave these invalid objects in a 
+        // the close detachment should leave these invalid objects in a
         // transient state
         assertFalse(((PersistenceCapable) o).pcIsTransactional());
         assertFalse(((PersistenceCapable) o).pcIsPersistent());
@@ -51,11 +51,11 @@ public class TestGetReferenceAndImplicitDetachment
 
     public void testNonexistentGetReferenceDetachmentOutsideTx() {
         EntityManager em = emf.createEntityManager();
-        DetachmentOneManyParent o = 
+        DetachmentOneManyParent o =
             em.getReference(DetachmentOneManyParent.class, 0);
         em.close();
 
-        // the close detachment should leave these invalid objects in a 
+        // the close detachment should leave these invalid objects in a
         // transient state
         assertFalse(((PersistenceCapable) o).pcIsTransactional());
         assertFalse(((PersistenceCapable) o).pcIsPersistent());
@@ -66,7 +66,7 @@ public class TestGetReferenceAndImplicitDetachment
     public void testNonexistentGetReferenceDetachmentInTxWithRollback() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        DetachmentOneManyParent o = 
+        DetachmentOneManyParent o =
             em.getReference(DetachmentOneManyParent.class, 0);
         em.getTransaction().rollback();
 
@@ -82,7 +82,7 @@ public class TestGetReferenceAndImplicitDetachment
     public void testNonexistentGetReferenceDetachmentInTxWithFailedCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        DetachmentOneManyParent o = 
+        DetachmentOneManyParent o =
             em.getReference(DetachmentOneManyParent.class, 0);
         em.getTransaction().setRollbackOnly();
         try {

@@ -29,15 +29,15 @@ import static javax.persistence.AccessType.PROPERTY;
 
 @Entity
 @Access(value=PROPERTY)
-@NamedQuery(name="PropertyAccess.query", 
-    query="SELECT pa FROM PropAccess pa WHERE " + 
+@NamedQuery(name="PropertyAccess.query",
+    query="SELECT pa FROM PropAccess pa WHERE " +
         "pa.id = :id AND pa.strProp = :strVal")
 public class PropAccess {
 
     private int id;
 
     private int version;
-    
+
     private String strField;
 
     public void setId(int id) {
@@ -65,8 +65,8 @@ public class PropAccess {
 
     public String getStrProp() {
         return strField;
-    } 
-    
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof PropAccess) {
             PropAccess pa = (PropAccess)obj;

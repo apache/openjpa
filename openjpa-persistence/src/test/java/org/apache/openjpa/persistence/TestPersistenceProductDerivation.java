@@ -47,45 +47,45 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 public class TestPersistenceProductDerivation extends TestCase {
     private File sourceFile;
     private File targetFile;
-    
+
     ClassLoader originalLoader = null;
     ClassLoader tempLoader = null;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         String currentDir = System.getProperty("user.dir");
-        
+
         // openjpa-persistence/target/test-classes/resources/second-persistence/META-INF/persistence.xml
-        sourceFile = new File(currentDir + File.separator 
+        sourceFile = new File(currentDir + File.separator
             + "target" + File.separator + "test-classes"
-            + File.separator  + "second-persistence" + File.separator 
+            + File.separator  + "second-persistence" + File.separator
             + "META-INF" + File.separator + "persistence.xml");
-        
+
         // openjpa-persistence/target/test-classes/
-        //   TestPersistenceProductDerivation_generated_(time_stamp).jar        
-        targetFile = new File(currentDir + File.separator + "target" + 
-            File.separator + "test-classes" + File.separator + 
+        //   TestPersistenceProductDerivation_generated_(time_stamp).jar
+        targetFile = new File(currentDir + File.separator + "target" +
+            File.separator + "test-classes" + File.separator +
             "TestPersistenceProductDerivation_generated_" +
             System.currentTimeMillis() + ".jar");
-        
+
         AccessController.doPrivileged(J2DoPrivHelper
             .deleteOnExitAction(targetFile));
         buildJar(sourceFile,targetFile);
-        
+
         // Hold a reference to the current classloader so we can cleanup
         // when we're done.
         originalLoader = Thread.currentThread().getContextClassLoader();
         tempLoader = new TempUrlLoader(new URL[]{targetFile.toURI().toURL()}
-            ,originalLoader);        
+            ,originalLoader);
         AccessController.doPrivileged(J2DoPrivHelper
             .setContextClassLoaderAction(tempLoader));
     }
-    
+
     protected void tearDown() throws Exception {
         super.tearDown();
         // Restore the original classloader.
         Thread.currentThread().setContextClassLoader(originalLoader);
-        
+
         // For whatever reason, this file won't ever delete. I searched around
         // and found numerous documented problems with deleting files. Perhaps
         // sometime in the future this problem will be fixed. For now it doesn't
@@ -97,21 +97,21 @@ public class TestPersistenceProductDerivation extends TestCase {
         }
     }
     /**
-     * Added for OPENJPA-932. Verifies a PersistenceProductDerivation properly loads pu's from multiple 
+     * Added for OPENJPA-932. Verifies a PersistenceProductDerivation properly loads pu's from multiple
      * archives.
-     * 
+     *
      * @throws Exception
      */
     public void testGetAnchorsInResource()throws Exception {
-        
+
         List<String> expectedPUs = Arrays.asList(
             new String[]{"pu_1","pu_2","pu_3"});
-        
+
         PersistenceProductDerivation ppd = new PersistenceProductDerivation();
         List<String> actual = ppd.getAnchorsInResource("META-INF/persistence.xml");
-        
+
         assertTrue(actual.containsAll(expectedPUs));
-        
+
         // Added for OPENJPA-993
         assertFalse(actual.contains("bad_provider"));
     }
@@ -151,22 +151,22 @@ public class TestPersistenceProductDerivation extends TestCase {
 
 		assertNull(conf.getEncryptionProvider());
 	}
-    
+
     /*
      * Verifies value of exclude-unlisted-classes with a version 1.0
      * persistence.xml.
      */
     public void testJPA1ExcludeUnlistedClasses() throws Exception {
-        PersistenceProductDerivation.ConfigurationParser cp = 
+        PersistenceProductDerivation.ConfigurationParser cp =
                 new PersistenceProductDerivation.ConfigurationParser(new HashMap());
 
         List<URL> urls = getResourceURL(PersistenceProductDerivation.RSRC_DEFAULT);
         assertNotNull(urls);
         assertEquals(1, urls.size());
         cp.parse(urls.get(0));
-        
+
         List<PersistenceUnitInfoImpl> units = cp.getResults();
-                
+
         int vfyCount = 0;
         for (PersistenceUnitInfoImpl ppui : units) {
             if ("exclude_not_specified".equals(ppui.getPersistenceUnitName())) {
@@ -190,10 +190,10 @@ public class TestPersistenceProductDerivation extends TestCase {
             if ("exclude_false".equals(ppui.getPersistenceUnitName())) {
                 vfyCount++;
                 assertFalse(ppui.excludeUnlistedClasses());
-            }            
+            }
         }
         // Make sure all pu's were validated
-        assertEquals(4, vfyCount);                
+        assertEquals(4, vfyCount);
     }
 
     /*
@@ -201,16 +201,16 @@ public class TestPersistenceProductDerivation extends TestCase {
      * persistence.xml.
      */
     public void testExcludeUnlistedClasses() throws Exception {
-        PersistenceProductDerivation.ConfigurationParser cp = 
+        PersistenceProductDerivation.ConfigurationParser cp =
             new PersistenceProductDerivation.ConfigurationParser(new HashMap());
 
     List<URL> urls = getResourceURL("META-INF/persistence-2_0.xml");
     assertNotNull(urls);
     assertEquals(1, urls.size());
     cp.parse(urls.get(0));
-    
+
     List<PersistenceUnitInfoImpl> units = cp.getResults();
-            
+
     int vfyCount = 0;
     for (PersistenceUnitInfoImpl ppui : units) {
         // Verify case where exclude-unlisted-classes was not specified
@@ -235,11 +235,11 @@ public class TestPersistenceProductDerivation extends TestCase {
         if ("exclude_false".equals(ppui.getPersistenceUnitName())) {
             vfyCount++;
             assertFalse(ppui.excludeUnlistedClasses());
-        }            
+        }
     }
     // Make sure all pu's were validated
-    assertEquals(4, vfyCount);                
-        
+    assertEquals(4, vfyCount);
+
     }
 
     private static List<URL> getResourceURL(String rsrc)
@@ -248,7 +248,7 @@ public class TestPersistenceProductDerivation extends TestCase {
     try {
         ClassLoader cl = TestPersistenceProductDerivation.class.getClassLoader();
         urls = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourcesAction(cl, rsrc)); 
+            J2DoPrivHelper.getResourcesAction(cl, rsrc));
         if (!urls.hasMoreElements()) {
             if (!rsrc.startsWith("META-INF"))
               urls = AccessController.doPrivileged(
@@ -264,11 +264,11 @@ public class TestPersistenceProductDerivation extends TestCase {
 }
 
     private void buildJar(File sourceFile, File targetFile) throws Exception {
-        
+
         JarOutputStream out = new JarOutputStream(
             new BufferedOutputStream(new FileOutputStream(targetFile)));
-        
-        BufferedInputStream in = 
+
+        BufferedInputStream in =
             new BufferedInputStream(new FileInputStream(sourceFile));
 
         out.putNextEntry(new JarEntry("META-INF/"));
@@ -279,9 +279,9 @@ public class TestPersistenceProductDerivation extends TestCase {
         while ((i = in.read(buf)) != -1) {
           out.write(buf, 0, i);
         }
-        
+
         out.close();
-        in.close();        
+        in.close();
     }
 
     class TempUrlLoader extends URLClassLoader {
@@ -300,7 +300,7 @@ public class TestPersistenceProductDerivation extends TestCase {
 
 		/**
 		 * This method ALWAYS returns the String "decypted_password".
-		 * 
+		 *
 		 * @see EncryptionProvider#decrypt(String)
 		 */
 		public String decrypt(String password) {

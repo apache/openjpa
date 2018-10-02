@@ -127,7 +127,7 @@
                 <jdbc.DBDictionary />
             </properties>
         </profile>
-        
+
         <!-- Profile for testing with MariaDB DB -->
         <profile>
             <id>test-mariadb</id>
@@ -414,9 +414,9 @@
         </profile>
 
         <!--
-            The test-custom2 profile does not work very well when used with a 
-            continuous build system. As a convenience I've added profiles for 
-            some of the proprietary databases to make testing easier. 
+            The test-custom2 profile does not work very well when used with a
+            continuous build system. As a convenience I've added profiles for
+            some of the proprietary databases to make testing easier.
         -->
         <profile>
             <!--
@@ -428,13 +428,13 @@
                 commands :
                     mvn install:install-file -Dfile=${path to db2jcc.jar} \
                                              -DgroupId=com.ibm.db2 \
-                                             -DartifactId=jcc-driver \ 
+                                             -DartifactId=jcc-driver \
                                              -Dversion=9.5 \
                                              -Dpackaging=jar
-                                         
+
                     mvn install:install-file -Dfile=${path to db2jcc_license.jar} \
                                              -DgroupId=com.ibm.db2 \
-                                             -DartifactId=jcc-license \ 
+                                             -DartifactId=jcc-license \
                                              -Dversion=9.5 \
                                              -Dpackaging=jar
 
@@ -564,7 +564,7 @@
         <profile>
             <!--
                 Example Informix JCC profile. You can use this profile if you:
-                1a) have the DB2 JCC artifacts installed in a local repo and 
+                1a) have the DB2 JCC artifacts installed in a local repo and
                 supply the URL:
 	            -Dids.maven.repo=http://my.local.repo
                 1b) or have a copy of the DB2 JCC driver and run the commands
@@ -638,14 +638,14 @@
         <profile>
             <!--
                 Example Informix profile. You can use this profile if you:
-                1) have the Informix JDBC artifacts installed in a local repo and 
+                1) have the Informix JDBC artifacts installed in a local repo and
                 supply the URL:
                   -Dids.maven.repo=http://my.local.repo
                 2) have a copy of the Informix driver and run the following
                 commands :
                     mvn install:install-file -Dfile=${path to ifxjdbc.jar} \
                                              -DgroupId=com.informix \
-                                             -DartifactId=informix-driver \ 
+                                             -DartifactId=informix-driver \
                                              -Dversion=3.70 \
                                              -Dpackaging=jar
 
@@ -702,10 +702,10 @@
                 </repository>
             </repositories>
         </profile>
-        
+
         <!-- Profile for testing with Oracle DB -->
         <profile>
-            <!-- 
+            <!--
                 Example oracle profile. You can use this profile if you:
                 1) have the Oracle artifacts installed in a local repo and
                 supply the URL:
@@ -714,10 +714,10 @@
                 command:
                     mvn install:install-file -Dfile=${path to ojdbc.jar} \
                                              -DgroupId=com.oracle \
-                                             -DartifactId=jdbc-driver \ 
+                                             -DartifactId=jdbc-driver \
                                              -Dversion=10g \
                                              -Dpackaging=jar
-                                         
+
                 You must also set the following properties:
                     -Dopenjpa.oracle.url
                     -Dopenjpa.oracle.username

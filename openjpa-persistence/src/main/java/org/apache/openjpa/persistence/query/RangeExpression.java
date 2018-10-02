@@ -14,13 +14,13 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
  * Denotes a range used by e1 BETWEEN x AND y operation.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -28,10 +28,10 @@ public class RangeExpression extends BinaryOperatorExpression {
 	public RangeExpression(Expression e1, Expression e2) {
 		super(e1, BinaryFunctionalOperator.RANGE, e2);
 	}
-	
+
 	@Override
 	public String asExpression(AliasContext ctx) {
-		return ((Visitable)_e1).asExpression(ctx) 
+		return ((Visitable)_e1).asExpression(ctx)
 		     + " AND " + ((Visitable)_e2).asExpression(ctx);
 	}
 }

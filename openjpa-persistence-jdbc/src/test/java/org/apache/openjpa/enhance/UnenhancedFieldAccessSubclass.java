@@ -24,7 +24,7 @@ import javax.persistence.CascadeType;
 
 @Entity
 public class UnenhancedFieldAccessSubclass
-    extends UnenhancedFieldAccess 
+    extends UnenhancedFieldAccess
     implements UnenhancedSubtype {
 
     @OneToOne(cascade = CascadeType.ALL)

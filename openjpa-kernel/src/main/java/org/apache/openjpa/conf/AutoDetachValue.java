@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.conf;
 
@@ -49,7 +49,7 @@ class AutoDetachValue
         "true", String.valueOf(AutoDetach.DETACH_COMMIT),
         "false", "0",
     };
-    
+
     private int _flags;
     private boolean _flagsSet;
 
@@ -74,7 +74,7 @@ class AutoDetachValue
                 _flags |= Integer.parseInt(unalias(vals[i]));
             _flagsSet = true;
         }
-            
+
         return _flags;
     }
 

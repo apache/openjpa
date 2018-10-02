@@ -18,7 +18,7 @@ import javax.persistence.Query;
 /**
  * Decorates an executable query.
  * Concrete decorative action can be binding parameters, limiting the result range etc.
- * 
+ *
  * @author Pinaki Poddar
  *
  */

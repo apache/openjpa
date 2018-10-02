@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
@@ -25,7 +25,7 @@ import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQuery;
 
 @Entity
-@NamedQuery(name="JPQL_POSITIONAL", 
+@NamedQuery(name="JPQL_POSITIONAL",
         query="SELECT p FROM Binder p WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3")
 @NamedNativeQuery(name="SQL_POSITIONAL",
         query="SELECT id, p1 FROM Binder WHERE p1=?1 AND p2=?2 AND p3=?3")
@@ -33,19 +33,19 @@ public class Binder {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private int p1;
 	private String p2;
 	private double p3;
-	
+
 	protected Binder() {
 		this(-1, "-1" , -1.0);
 	}
-	
+
 	public Binder(int i1, String i2, double i3) {
 		p1 = i1;
 		p2 = i2;
 		p3 = i3;
 	}
-	
+
 }

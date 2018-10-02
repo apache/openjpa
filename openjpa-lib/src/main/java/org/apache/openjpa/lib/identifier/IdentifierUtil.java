@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.identifier;
 
@@ -30,10 +30,10 @@ public interface IdentifierUtil {
     public static final String BAR = "|";
     public static final String EMPTY = "";
     public static final String PERCENT = "%";
-    
+
     public static final char DOLLAR_CHAR = '$';
     public static final char UNDERSCORE_CHAR = '_';
-    
+
     public static final String CASE_UPPER = "upper";
     public static final String CASE_LOWER = "lower";
     public static final String CASE_PRESERVE = "preserve";
@@ -41,13 +41,13 @@ public interface IdentifierUtil {
      * Get the naming configuration.
      */
     public IdentifierConfiguration getIdentifierConfiguration();
-    
+
     /**
      * Set the naming configuration to use for naming operations.  A naming
      * configuration must be set before calling any other methods.
      */
     void setIdentifierConfiguration(IdentifierConfiguration config);
-    
+
     /**
      * Delimit the name if it requires delimiters
      * @param the rule to use for delimiting
@@ -63,10 +63,10 @@ public interface IdentifierUtil {
      * @return the delimited name, if delimiting was necessary.
      */
     public String delimit(IdentifierRule rule, String name);
-    
+
     /**
      * Delimit the string with the option to force delimiting.  If force is
-     * true, the name will delimited without checking to see if it 
+     * true, the name will delimited without checking to see if it
      * requires delimiters.
      * @param the rule to use for delimiting
      * @param name the name to delimit
@@ -77,7 +77,7 @@ public interface IdentifierUtil {
 
     /**
      * Delimit the string with the option to force delimiting.  If force is
-     * true, the name will delimited without checking to see if it 
+     * true, the name will delimited without checking to see if it
      * requires delimiters.
      * @param the rule to use for delimiting
      * @param name the name to delimit
@@ -85,48 +85,48 @@ public interface IdentifierUtil {
      * @return the delimited name, if delimiting was necessary.
      */
     public String delimit(IdentifierRule rule, String name, boolean force);
-    
-    
+
+
     /**
-     * Remove delimiters from a delimited name 
+     * Remove delimiters from a delimited name
      * @param the rule to use for removing delimiters
      * @param name the name from which to remove delimiters
      */
     public String removeDelimiters(String rule, String name);
 
     /**
-     * Remove delimiters from a delimited name 
+     * Remove delimiters from a delimited name
      * @param the rule to use for removing delimiters
      * @param name the name from which to remove delimiters
      */
     public String removeDelimiters(IdentifierConfiguration config, String rule, String name);
 
     /**
-     * Remove delimiters from a delimited name 
+     * Remove delimiters from a delimited name
      * @param the rule to use for removing delimiters
      * @param name the name from which to remove delimiters
      */
     public String removeDelimiters(IdentifierRule rule, String name);
-    
+
     /**
      * Determines whether a name is delimited.
      * @param the rule to use for removing delimiters
      * @param name the name to examine for delimiters
      */
-    public boolean isDelimited(String rule, String name); 
-    
+    public boolean isDelimited(String rule, String name);
+
     /**
      * Determines whether a name is delimited.
      * @param the rule to use for removing delimiters
      * @param name the name to examine for delimiters
      */
-    public boolean isDelimited(IdentifierRule rule, String name); 
+    public boolean isDelimited(IdentifierRule rule, String name);
 
     /**
      * Determines whether a name requires delimiters based upon:
      * <ul>
      * <li> The SQL-92 Reference definition of a valid unquoted name</li>
-     * <li> The naming rule specified</li> 
+     * <li> The naming rule specified</li>
      * </ul>
      * @param the rule to use for removing delimiters
      * @param name the name to examine for delimiting requirements
@@ -137,41 +137,41 @@ public interface IdentifierUtil {
      * Determines whether a name requires delimiters based upon:
      * <ul>
      * <li> The SQL-92 Reference definition of a valid unquoted name</li>
-     * <li> The naming rule specified</li> 
+     * <li> The naming rule specified</li>
      * </ul>
      * @param the rule to use for removing delimiters
      * @param name the name to examine for delimiting requirements
      */
     public boolean requiresDelimiters(IdentifierRule rule, String name);
-    
+
     /**
      * Combines names using delimiting rules and appropriate separators
      * @return a combined name
-     *         ex. {"TH IS", THAT} -> "TH IS_THAT" 
+     *         ex. {"TH IS", THAT} -> "TH IS_THAT"
      */
     public String combineNames(String rule, String[] rules, String[] names);
 
     /**
      * Combines names using delimiting rules and appropriate separators
      * @return a combined name
-     *         ex. {"TH IS", THAT} -> "TH IS_THAT" 
+     *         ex. {"TH IS", THAT} -> "TH IS_THAT"
      */
     public String combineNames(IdentifierRule rule, IdentifierRule[] rules, String[] names);
 
     /**
      * Combines names using the specified delimiting rule and appropriate separators
      * @return a combined name
-     *         ex. {"TH IS", THAT} -> "TH IS_THAT" 
+     *         ex. {"TH IS", THAT} -> "TH IS_THAT"
      */
     public String combineNames(String rule, String[] names);
 
     /**
      * Combines names using the specified delimiting rule and appropriate separators
      * @return a combined name
-     *         ex. {"TH IS", THAT} -> "TH IS_THAT" 
+     *         ex. {"TH IS", THAT} -> "TH IS_THAT"
      */
     public String combineNames(IdentifierRule rule, String[] names);
-    
+
     /**
      * Combines two names using delimiting rules and appropriate separators
      */
@@ -187,7 +187,7 @@ public interface IdentifierUtil {
      * using appropriate delimiters and separators
      */
     public String joinNames(String[] rules, String[] names);
-    
+
     /**
      * Joins several names with different naming rules into a single string
      * using appropriate delimiters and separators
@@ -199,7 +199,7 @@ public interface IdentifierUtil {
      * using appropriate delimiters and separators
      */
     public String joinNames(String rule, String[] names);
-    
+
     /**
      * Joins several names with different naming rules into a single string
      * using appropriate delimiters and separators
@@ -224,7 +224,7 @@ public interface IdentifierUtil {
      *         ex. schema.table --> { schema, table }
      */
     public String[] splitName(String rule, String name);
-    
+
     /**
      * Splits a combined name name using the provided naming rule
      * @param name  the multi-value name
@@ -255,18 +255,18 @@ public interface IdentifierUtil {
      * Returns whether a name is considered a reserved word
      */
     public boolean isReservedWord(String rule, String name);
-    
+
     /**
      * Returns whether a name is considered a reserved word
      */
     public boolean isReservedWord(IdentifierRule rule, String name);
-    
+
     /**
      * Convert the string using this naming configuration to the supplied
      * naming configuration.
      */
     public String convert(IdentifierConfiguration config, String rule, String name);
-    
+
     /**
      * Truncates a name while maintaining delimiters.
      */
@@ -286,13 +286,13 @@ public interface IdentifierUtil {
      * Append the names together while maintaining delimiters.
      */
     public String appendNames(String rule, String name1, String name2);
-    
+
     /**
      * Converts a qualified string-based name defined using the base configuration to the
      * specified configuration.  Returns the converted name.
      */
     public String convertFull(IdentifierConfiguration config, String rule, String fullName);
-    
+
     /**
      * Removes Hungarian notation from the specified string.
      */

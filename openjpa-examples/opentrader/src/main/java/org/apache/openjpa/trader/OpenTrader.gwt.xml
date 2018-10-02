@@ -38,8 +38,8 @@
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
   <source path='domain'/>
-  
-  
-  <set-property name="user.agent" value="gecko1_8"/> 
+
+
+  <set-property name="user.agent" value="gecko1_8"/>
 
 </module>

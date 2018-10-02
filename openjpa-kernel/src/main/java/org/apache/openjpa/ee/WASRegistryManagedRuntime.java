@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.ee;
 
@@ -32,7 +32,7 @@ import com.ibm.wsspi.uow.UOWManagerFactory;
 public class WASRegistryManagedRuntime extends RegistryManagedRuntime {
     /**
      * <P>
-     * RegistryManagedRuntime cannot suspend transactions, but WebSphere 
+     * RegistryManagedRuntime cannot suspend transactions, but WebSphere
      * provides an interface to submit work outside of the current tran.
      * </P>
      */
@@ -55,10 +55,10 @@ public class WASRegistryManagedRuntime extends RegistryManagedRuntime {
         }
     }
 
-    
+
     /**
-     * Delegate for the WebSphere proprietary UOWAction interface. Enables a 
-     * {@link Runnable} to be passed in to the WebSphere UOWManager.  
+     * Delegate for the WebSphere proprietary UOWAction interface. Enables a
+     * {@link Runnable} to be passed in to the WebSphere UOWManager.
      */
     class DelegatingUOWAction implements UOWAction {
         Runnable _del;

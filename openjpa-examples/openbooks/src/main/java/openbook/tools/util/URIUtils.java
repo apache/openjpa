@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package openbook.tools.util;
 
@@ -30,8 +30,8 @@ public class URIUtils {
     }
 
     /**
-     * Resolves a URI reference against a base URI. 
-     * 
+     * Resolves a URI reference against a base URI.
+     *
      * @param baseURI the base URI
      * @param reference the URI reference
      * @return the resulting URI
@@ -58,7 +58,7 @@ public class URIUtils {
 
     /**
      * Removes dot segments according to RFC 3986, section 5.2.4
-     * 
+     *
      * @param uri
      *            the original URI
      * @return the URI without dot segments
@@ -98,7 +98,7 @@ public class URIUtils {
 
         File f = new File(targetPath);
         boolean isDir = f.isDirectory();
-        //  We need the -1 argument to split to make sure we get a trailing 
+        //  We need the -1 argument to split to make sure we get a trailing
         //  "" token if the base ends in the path separator and is therefore
         //  a directory. We require directory paths to end in the path
         //  separator -- otherwise they are indistinguishable from files.
@@ -106,7 +106,7 @@ public class URIUtils {
         String[] target = targetPath.split(Pattern.quote(pathSeparator), 0);
 
         //  First get all the common elements. Store them as a string,
-        //  and also count how many of them there are. 
+        //  and also count how many of them there are.
         String common = "";
         int commonIndex = 0;
         for (int i = 0; i < target.length && i < base.length; i++) {
@@ -119,7 +119,7 @@ public class URIUtils {
 
         if (commonIndex == 0) {
             //  not even a single common path element. This most
-            //  likely indicates differing drive letters, like C: and D:. 
+            //  likely indicates differing drive letters, like C: and D:.
             //  These paths cannot be relativized. Return the target path.
             return targetPath;
         }
@@ -130,14 +130,14 @@ public class URIUtils {
             relative = "." + pathSeparator;
         }  else {
             int numDirsUp = base.length - commonIndex - (isDir ? 0 : 1); /* only subtract 1 if it  is a file. */
-            //  The number of directories we have to backtrack is the length of 
+            //  The number of directories we have to backtrack is the length of
             //  the base path MINUS the number of common path elements, minus
             //  one because the last element in the path isn't a directory.
             for (int i = 1; i <= (numDirsUp); i++) {
                 relative += ".." + pathSeparator;
             }
         }
-        //if we are comparing directories 
+        //if we are comparing directories
         if (targetPath.length() > common.length()) {
            //it's OK, it isn't a directory
            relative += targetPath.substring(common.length());

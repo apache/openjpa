@@ -28,14 +28,14 @@ public class ImplClassA implements ManagedIface {
 
     @Basic
     private String implClassAName;
-    
-    @Id 
+
+    @Id
     @GeneratedValue
     private int id;
-    
+
     @Basic
     private int intFieldSup;
-    
+
     public void setImplClassAName(String implClassAName) {
         this.implClassAName = implClassAName;
     }
@@ -43,9 +43,9 @@ public class ImplClassA implements ManagedIface {
     public String getImplClassAName() {
         return implClassAName;
     }
-    
+
     public String toString() {
-        return super.toString() + ";implClassAName=" + implClassAName + 
+        return super.toString() + ";implClassAName=" + implClassAName +
             ";intFieldSup=" + intFieldSup;
     }
 

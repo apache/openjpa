@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -93,7 +93,7 @@ public abstract class PersistenceTestCase
                 prop = false;
             } else if (props[i] == CLEAR_TABLES) {
                 map.put("openjpa.jdbc.SynchronizeMappings",
-                    "buildSchema(ForeignKeys=true," 
+                    "buildSchema(ForeignKeys=true,"
                     + "SchemaAction='add,deleteTableContents')");
             } else if (props[i] instanceof Class)
                 types.add((Class) props[i]);
@@ -142,7 +142,7 @@ public abstract class PersistenceTestCase
     protected boolean closeEMF(EntityManagerFactory emf) {
         if (emf == null || !emf.isOpen())
             return false;
-        
+
         closeAllOpenEMs(emf);
         emf.close();
         return !emf.isOpen();
@@ -206,9 +206,9 @@ public abstract class PersistenceTestCase
             ClassMetaData... types) {
         if (emf == null || types.length == 0)
             return;
-        
-        // prevent deadlock by closing the open entity managers 
-        // and rolling back any open transactions 
+
+        // prevent deadlock by closing the open entity managers
+        // and rolling back any open transactions
         // before issuing delete statements on a new entity manager.
         if (closeEMs)
             closeAllOpenEMs(emf);
@@ -216,7 +216,7 @@ public abstract class PersistenceTestCase
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (ClassMetaData meta : types) {
-            if (!meta.isMapped() || meta.isEmbeddedOnly() 
+            if (!meta.isMapped() || meta.isEmbeddedOnly()
                 || Modifier.isAbstract(meta.getDescribedType().getModifiers()))
                 continue;
 //            em.createQuery("DELETE FROM " + meta.getTypeAlias() + " o").
@@ -227,7 +227,7 @@ public abstract class PersistenceTestCase
     }
 
     /**
-     * Return the entity name for the given type.   
+     * Return the entity name for the given type.
      */
     protected String entityName(EntityManagerFactory emf, Class c) {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf, c);

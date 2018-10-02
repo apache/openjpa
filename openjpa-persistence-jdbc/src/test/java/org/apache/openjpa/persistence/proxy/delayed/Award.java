@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.delayed;
 
@@ -28,7 +28,7 @@ public class Award implements Serializable, Comparable<Award>{
     private static final long serialVersionUID = -1110613520812966568L;
 
     private String awdName;
-    
+
     private String awdType;
 
     public void setAwdName(String awdName) {

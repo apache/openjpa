@@ -22,7 +22,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -69,21 +69,21 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
      * Test that configuration is frozen after retrieving a factory.
      *
      * This test case is for kodo persistencemanagerfactories and not
-     * openjpaentitymanagers. Therefore it's been commented out. 
+     * openjpaentitymanagers. Therefore it's been commented out.
      * FIX ME: aokeke
      */
-/*    public void testConfigurationFreeze() 
+/*    public void testConfigurationFreeze()
     {
         OpenJPAEntityManagerFactory pmf =
             getOpenJPAEntityManagerFactory(_conf.toProperties(false));
         assertEquals("user", pmf.getConfiguration().getConnection2UserName());
         assertEquals("url", pmf.getConfiguration().getConnection2URL());
-        try 
+        try
         {
             pmf.getConfiguration().setConnection2URL("url2");
             fail("Allowed configuration change.");
-        } 
-        catch (Exception e) 
+        }
+        catch (Exception e)
         {
         }
     }*/
@@ -100,28 +100,28 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
         props.putAll(_conf.toProperties(false));
         OpenJPAEntityManagerFactory pmf1 =
             getOpenJPAEntityManagerFactory(props);
-        
+
         props = new Properties();
         props.putAll(_conf.toProperties(false));
         OpenJPAEntityManagerFactory pmf2 =
             getOpenJPAEntityManagerFactory(props);
-        
+
         props = new Properties();
         props.putAll(_conf.toProperties(false));
         OpenJPAEntityManagerFactory pmf3 =
             getOpenJPAEntityManagerFactory(props);
-        
+
         _conf.setConnectionURL("url2");
         props = new Properties();
         props.putAll(_conf.toProperties(false));
         OpenJPAEntityManagerFactory pmf4 = getOpenJPAEntityManagerFactory
                 (_conf.toProperties(false));
-        
+
         props = new Properties();
         props.putAll(_conf.toProperties(false));
         OpenJPAEntityManagerFactory pmf5 =
             getOpenJPAEntityManagerFactory(_conf.toProperties(false));
-        
+
         assertTrue(JPAFacadeHelper.toBrokerFactory(pmf1) ==
             JPAFacadeHelper.toBrokerFactory(pmf2));
         assertTrue(JPAFacadeHelper.toBrokerFactory(pmf1) ==
@@ -142,7 +142,7 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
         OpenJPAEntityManagerFactorySPI pmfSPI =
             ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(pmf));
 
-        //FIXME jthomas        
+        //FIXME jthomas
         LoadListener listener = new LoadListener() {
             public void afterLoad(LifecycleEvent ev) {
             }

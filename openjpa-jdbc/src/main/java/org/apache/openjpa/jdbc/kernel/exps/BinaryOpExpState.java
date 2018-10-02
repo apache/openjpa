@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -22,10 +22,10 @@ import org.apache.openjpa.jdbc.sql.Joins;
 
 /**
  * Expression tree state for a binary operator.
- * 
+ *
  * @author Abe White
  */
-class BinaryOpExpState 
+class BinaryOpExpState
     extends ExpState {
 
     /**

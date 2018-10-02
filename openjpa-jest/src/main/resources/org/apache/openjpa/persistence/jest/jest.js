@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 dojo.require("dijit.form.Button");
@@ -26,24 +26,24 @@ dojo.require("dijit.Dialog");
 /** -----------------------------------------------------------------------------------------
  *                        Navigation functions
  *
- * Available commands appear on left menu. Clicking on any command makes a corresponding 
- * highlighted section to appear at a fixed position. These command windows are identified 
- * and these identifiers are used to make only one of the section to be visible while 
+ * Available commands appear on left menu. Clicking on any command makes a corresponding
+ * highlighted section to appear at a fixed position. These command windows are identified
+ * and these identifiers are used to make only one of the section to be visible while
  * hiding the rest.
  *
- * The jest.html document will use these same identifiers in their command section. 
+ * The jest.html document will use these same identifiers in their command section.
  * ------------------------------------------------------------------------------------------
  *
  * The identifiers of every element to be shown or hidden.
- * --------------------------------------------------------------------------------------- */ 
+ * --------------------------------------------------------------------------------------- */
 
 var menuIds = new Array('home', 'deploy', 'find', 'query', 'domain', 'properties');
 
 /**
  * Opening a menu implies clearing the canvas, hiding the current menu item and making
  * the given menu identifier visible.
- * 
- * @param id menu section identifier 
+ *
+ * @param id menu section identifier
  */
 function openMenu(/*HTML element id*/id) {
 	clearElement('canvas');
@@ -53,7 +53,7 @@ function openMenu(/*HTML element id*/id) {
 /**
  * Show the division identified by the given id, and hide all others
  */
-function switchId(/*string*/id, /*string[]*/highlightedSections) {	
+function switchId(/*string*/id, /*string[]*/highlightedSections) {
     for (var i=0; i < highlightedSections.length; i++){
     	var section = document.getElementById(highlightedSections[i]);
     	if (section != null) {
@@ -69,48 +69,48 @@ function switchId(/*string*/id, /*string[]*/highlightedSections) {
 
 /** -----------------------------------------------------------------------------------------
  *    Generic Command handling functions
- *    
+ *
  *  All available JEST commands are enumerated by their qualifiers and arguments.
- *  
+ *
  *  Specification of a JEST Command requires the following:
  *     a) a name
- *     b) zero or more Qualifiers. Qualifiers are not ordered. All Qualifiers are optional. 
- *     c) zero or more Arguments. Arguments are ordered. Some Arguments can be mandatory. 
- *     
+ *     b) zero or more Qualifiers. Qualifiers are not ordered. All Qualifiers are optional.
+ *     c) zero or more Arguments. Arguments are ordered. Some Arguments can be mandatory.
+ *
  *  Command, Qualifier and Argument are 'objects' -- in a curious JavaScript sense. They
  *  are responsible to harvest their state value from the HTML element such as a input
- *  text box or a check box etc. The aim of harvesting the values is to construct a 
+ *  text box or a check box etc. The aim of harvesting the values is to construct a
  *  relative URI that can be passed to the server via a HTTP get request.
- *  
+ *
  *  jest.html attaches change event handlers to all input elements and the on change
  *  event handler updates the URI.
- *  
+ *
  *  The complexity is added because some commands may take variable number of arguments.
- *  Hence the input text boxes to enter arbitrary number of key-value pair can be created 
+ *  Hence the input text boxes to enter arbitrary number of key-value pair can be created
  *  or removed by the user.
- *  
- *  A lot of implicit naming convention for the element identifiers are used in this 
- *  script. These naming conventions are documented in jest.html.     
+ *
+ *  A lot of implicit naming convention for the element identifiers are used in this
+ *  script. These naming conventions are documented in jest.html.
  * --------------------------------------------------------------------------------------- */
-var findCommand = new Command('find', 
-		new Array( // 
+var findCommand = new Command('find',
+		new Array( //
 		   new Qualifier("plan",        "plan",        false),
 		   new Qualifier("format",      "format",      false),
 		   new Qualifier("ignoreCache", "ignoreCache", true)
-		), 
+		),
 		new Array( // Order of arguments is significant
 		   new Argument("type", "type", true),
 		   new Argument("pk",   null,   true)
 		));
 
-var queryCommand = new Command('query', 
+var queryCommand = new Command('query',
 		new Array( // Qualifiers are not ordered
 		   new Qualifier("plan",        "plan",        false),
 		   new Qualifier("format",      "format",      false),
 		   new Qualifier("single",      "single",      true),
 		   new Qualifier("named",       "named",       true),
 		   new Qualifier("ignoreCache", "ignoreCache", true)
-		), 
+		),
 		new Array( // Order of arguments is significant
 		   new Argument("q", "q", true)
 		));
@@ -122,12 +122,12 @@ var propertiesCommand = new Command('properties', new Array(), new Array());
 var commands = new Array(findCommand, queryCommand, domainCommand, propertiesCommand);
 
 /** -----------------------------------------------------------------------------------------
- * Creates a relative URI for the given commandName by reading the content of the given HTML 
+ * Creates a relative URI for the given commandName by reading the content of the given HTML
  * element and its children.
  * The URI is written to the HTML anchor element identified by {commandName} + '.uri'.
- * 
- * @param commandName name of the command. All source HTML element are identified by this 
- * command name as prefix. 
+ *
+ * @param commandName name of the command. All source HTML element are identified by this
+ * command name as prefix.
  * --------------------------------------------------------------------------------------- */
 function toURI(commandName) {
 	var command = null;
@@ -144,17 +144,17 @@ function toURI(commandName) {
 /** -----------------------------------------------------------------------------------------
  * Adds columns to the given row for entering a variable argument key-value pair.
  * A remove button is created as well to remove the row.
- * A new row is created to invoke this function again to add another new row. 
- * 
+ * A new row is created to invoke this function again to add another new row.
+ *
  * @param rowIdPrefix a string such as query.vararg or find.vararg
  * @param index a integer appended to the prefix to identify the row such as query.vararg.3
- * @param message the label on the new button 
+ * @param message the label on the new button
  * --------------------------------------------------------------------------------------- */
 function addVarArgRow(rowIdPrefix, index, message) {
 	var rowId = rowIdPrefix + '.' + index;
 	var row = document.getElementById(rowId);
 	clearElement(rowId);
-	
+
 	// New input column for parameter name. Element id is rowId + '.key'
 	var argNameColumn  = document.createElement('td');
 	var argNameInput   = document.createElement('input');
@@ -162,7 +162,7 @@ function addVarArgRow(rowIdPrefix, index, message) {
 	argNameInput.setAttribute('id', rowId + '.key');
 	argNameInput.setAttribute('onblur', 'javascript:toURI("' + rowIdPrefix.split('.')[0] + '");');
 	argNameColumn.appendChild(argNameInput);
-	
+
 	// New input column for parameter value. Element id is rowId + '.value'
 	var argValueColumn = document.createElement('td');
 	var argValueInput  = document.createElement('input');
@@ -170,24 +170,24 @@ function addVarArgRow(rowIdPrefix, index, message) {
 	argValueInput.setAttribute('id', rowId + '.value');
 	argValueInput.setAttribute('onblur', 'javascript:toURI("' + rowIdPrefix.split('.')[0] + '");');
 	argValueColumn.appendChild(argValueInput);
-	
+
 	// New column for remove button. Will remove this row.
 	var removeColumn   = document.createElement('td');
 	var removeColumnButton  = document.createElement('button');
 	removeColumnButton.innerHTML = 'Remove';
 	removeColumnButton.setAttribute('onclick', 'javascript:removeVarArgRow("' + rowId + '");');
 	removeColumn.appendChild(removeColumnButton);
-	
+
 	// Empty column as the first column
 	var emptyColumn = document.createElement('td');
 	emptyColumn.appendChild(document.createTextNode("Key-Value pair"));
-	
+
 	// Add the empty column, two input columns and remove button to the current row
-	row.appendChild(emptyColumn); 
+	row.appendChild(emptyColumn);
 	row.appendChild(argNameColumn);
 	row.appendChild(argValueColumn);
 	row.appendChild(removeColumn);
-	
+
 	// create a new row with a single column to add another parameter.
 	// This new row looks similar to the original state of the modified column
 	var newIndex = index + 1;
@@ -200,7 +200,7 @@ function addVarArgRow(rowIdPrefix, index, message) {
 	addColumnButton.setAttribute('onclick', 'javascript:addVarArgRow("' + rowIdPrefix + '",' + newIndex + ',"'
 			+ message + '");');
 	newColumn.appendChild(addColumnButton);
-	
+
 	newRow.appendChild(newColumn);
 	row.parentNode.appendChild(newRow);
 }
@@ -208,7 +208,7 @@ function addVarArgRow(rowIdPrefix, index, message) {
 /** -----------------------------------------------------------------------------------------
  * Removes a variable argument row.
  * The URI is updated.
- * 
+ *
  * @param rowId the identifier of the row to be removed. The identifier follows the
  * naming convention of the variable argument row i.e. {commandName}.varargs.{n}
  * --------------------------------------------------------------------------------------- */
@@ -220,12 +220,12 @@ function removeVarArgRow(rowId) {
 
 /** -----------------------------------------------------------------------------------------
  * Definition of Command as a JavScript object.
- * 
+ *
  * @param name name of the command. Used to identify the command, or identify input elements.
- * @param qualifiers zero or more Qualifier objects 
+ * @param qualifiers zero or more Qualifier objects
  * @param arguments zero or more Argument objects
- * 
- * 
+ *
+ *
  * --------------------------------------------------------------------------------------- */
 function Command(name, qualifiers, arguments) {
 	this.name       = name;
@@ -241,7 +241,7 @@ function Command(name, qualifiers, arguments) {
  * elements.
  * The naming of the function and its capitalization follows JavaScript convention for it
  * to behave as a faux object method.
- * 
+ *
  * @returns a string form of URI
  * --------------------------------------------------------------------------------------- */
 function Command_toURI() {
@@ -288,7 +288,7 @@ function Command_toURI() {
 	if (args.length > 0) {
 		uri = uri.concat('?').concat(args);
 	}
-	
+
 	// update the command URI element
 	console.log("New URI is " + uri);
 	var uriNode  = document.getElementById(this.name + ".uri");
@@ -297,11 +297,11 @@ function Command_toURI() {
 		uriNode.setAttribute('class', 'url');
 		uriNode.innerHTML = uri;
 		var contentType = getContentTypeForCommand(this.name);
-		uriCtrl.setAttribute('onclick', 
-				'javascript:render("' 
-				   + uri 
-				   + '", "canvas"' + ',"' 
-				   + contentType   + '","' 
+		uriCtrl.setAttribute('onclick',
+				'javascript:render("'
+				   + uri
+				   + '", "canvas"' + ',"'
+				   + contentType   + '","'
 				   + iformat + '");');
 		uriCtrl.style.display = 'inline';
 	} else {
@@ -317,24 +317,24 @@ function getContentTypeForCommand(/*string*/ commandName) {
 	if (commandName == 'find' || commandName == 'query') return 'instances';
 	if (commandName == 'domain') return 'domain';
 	if (commandName == 'properties') return 'properties';
-	
+
 }
 
 /** -----------------------------------------------------------------------------------------
  *  Definition of Qualifier JavaScript object.
- *  
- *  A qualifier decorates a Command. For example, a query command can be decorated with 
- *  'single' qualifier to return a single result. A 'plan' qualifier can decorate a find or 
- *  query command to use a named fetch plan etc. 
+ *
+ *  A qualifier decorates a Command. For example, a query command can be decorated with
+ *  'single' qualifier to return a single result. A 'plan' qualifier can decorate a find or
+ *  query command to use a named fetch plan etc.
  *  A qualifier is encoded in the path segment of JEST URI followed by the
  *  command name e.g. /query/single or /find/plan=myFetchPlan etc.
- * 
- * 
- * @param name a name when prefixed by the name of the command identifies the HTML element 
+ *
+ *
+ * @param name a name when prefixed by the name of the command identifies the HTML element
  * that carries the value of this qualifier.
  * @param key  the identifier for this qualifier used in the JEST URI
  * @param isBoolean is this qualifier carries a boolean value?
- * 
+ *
  * @returns {Qualifier}
  * -------------------------------------------------------------------------------------- */
 function Qualifier(name, key, isBoolean) {
@@ -346,16 +346,16 @@ function Qualifier(name, key, isBoolean) {
 
 /** -----------------------------------------------------------------------------------------
  *  Generates a string for this qualifier to appear in the command URI.
- *  
+ *
  *  A qualifier is translated to a URI fragment as a key=value pair. A boolean
  *  qualifier is translated to a URI fragment only if the corresponding HTML
  *  element is checked. And even then, only the key is sufficient.
- * 
+ *
  * @returns a string
  * --------------------------------------------------------------------------------------- */
 function Qualifier_toURI(inode) {
 	var value = getNodeValue(inode);
-	if (isEmpty(value) || (this.isBoolean && !inode.checked)) { 
+	if (isEmpty(value) || (this.isBoolean && !inode.checked)) {
 		return null;
 	}
 	if (this.isBoolean) {
@@ -366,16 +366,16 @@ function Qualifier_toURI(inode) {
 
 /** -----------------------------------------------------------------------------------------
  *  Definition of Argument JavaScript object.
- *  
+ *
  *  An argument for a command. Some argument can be mandatory. <br>
  *  Each argument is encoded as key=value pair in JEST URI in query parameters
  *  separated by '&' character.
- * 
- * @param name a name when prefixed by the name of the command identifies the HTML element 
+ *
+ * @param name a name when prefixed by the name of the command identifies the HTML element
  * that carries the value of this argument.
  * @param key the identifier for this argument used in the JEST URI
  * @param mandatory is this argument mandatory?
- * 
+ *
  * @returns {Argument}
  * -------------------------------------------------------------------------------------- */
 function Argument(name, key, mandatory) {
@@ -387,9 +387,9 @@ function Argument(name, key, mandatory) {
 
 /** -----------------------------------------------------------------------------------------
  *  Generates a string for this argument to appear in the command URI.
- *  
- *  An argument is translated to a URI fragment as a key=value pair. 
- * 
+ *
+ *  An argument is translated to a URI fragment as a key=value pair.
+ *
  * @returns a string
  * --------------------------------------------------------------------------------------- */
 function Argument_toURI(inode) {
@@ -422,7 +422,7 @@ String.prototype.startsWith = function(s) {
 
 /**
  * Affirms if the given string is null or zero-length or trimmed to zero-length.
- * 
+ *
  * @param str a string to test for 'emptiness'
  * @returns {Boolean}
  */
@@ -432,9 +432,9 @@ function isEmpty(str) {
 
 /**
  * Gets the string value of the given node.
- * 
+ *
  * @param inode a HTML element
- * @returns null if given node is null or its value is an empty string. 
+ * @returns null if given node is null or its value is an empty string.
  *          Otherwise, trimmed string.
  */
 function getNodeValue(inode) {
@@ -452,13 +452,13 @@ function getNodeValue(inode) {
  * Affirms if the given HTML row element represents a variable argument row
  * for the given commandName.
  * @param row a HTML row element
- * @param commandName name of a command 
- * 
+ * @param commandName name of a command
+ *
  * @returns true if row identifer starts with commandName + '.vararg.'
  */
 function isVarArgRow(row, commandName) {
-	return row != null && row.nodeName != '#text' 
-		&& row.hasAttribute("id") 
+	return row != null && row.nodeName != '#text'
+		&& row.hasAttribute("id")
 		&& row.getAttribute("id").startsWith(commandName + '.vararg.');
 }
 
@@ -484,11 +484,11 @@ function warn(/*string*/message) {
 
 /** -----------------------------------------------------------------------------------------
  *     Rendering functions
- *     
+ *
  *  Several rendering functions to display server response in the canvas section.
  *  The server responds in following formats :
- *      1a) XML 
- *      1b) JSON 
+ *      1a) XML
+ *      1b) JSON
  *  The response can be rendered in following display modes :
  *      2a) raw XML text
  *      2b) HTML table
@@ -499,11 +499,11 @@ function warn(/*string*/message) {
  *      3b) domain model from domain() command
  *      3c) configuration properties from properties() command
  *      3d) error stack trace
- *      
+ *
  *  Thus there are 2x4x4 = 32 possible combinations. However, response format for
- *  certain content type is fixed e.g. server always sends domain/properties/error 
+ *  certain content type is fixed e.g. server always sends domain/properties/error
  *  stack trace in XML format. Moreover certain content-response format-display mode
- *  combinations are not supported. The following matrix describes the supported 
+ *  combinations are not supported. The following matrix describes the supported
  *  display modes for content-response format combinations.
  *  [y] : supported
  *  [x] : not supported
@@ -512,23 +512,23 @@ function warn(/*string*/message) {
  *  Response                              Content
  *  --------------------------------------------------------------------------------
  *               instances         domain            properties            error
- *  --------------------------------------------------------------------------------               
+ *  --------------------------------------------------------------------------------
  *  XML          [y] XML text      [y] XML text      [y] XML text      [x] XML text
- *               [y] HTML          [y] HTML          [y] HTML          [y] HTML 
+ *               [y] HTML          [y] HTML          [y] HTML          [y] HTML
  *               [y] Dojo Widgets  [y] Dojo Widgets  [x] Dojo Widgets  [x] Dojo Widgets
  *               [x] JSON          [x] JSON          [x] JSON          [x] JSON
- *                  
+ *
  *  JSON         [x] XML text      n/a               n/a               n/a
  *               [x] HTML Table    n/a               n/a               [y] HTML
  *               [x] Dojo Widgets  n/a               n/a               n/a
  *               [y] JSON          n/a               n/a               n/a
  *  ---------------------------------------------------------------------------------
- *  The above matrix shows that there are 10 supported combinations.    
+ *  The above matrix shows that there are 10 supported combinations.
  *   ------------------------------------------------------------------------------------- */
 var supportedResponseFormats = new Array('xml', 'json');
 var supportedContentTypes    = new Array('instances', 'domain', 'properties', 'error');
 var renderingCombo = new Array(
-		                                                              
+
 /*XML*/ new Array(new Array('xml', 'dojo', 'html'), // instances
 		          new Array('xml', 'dojo', 'html'), // domain
 		          new Array('xml','html'),          // properties
@@ -536,12 +536,12 @@ var renderingCombo = new Array(
 /*JSON*/new Array(new Array('json'),                // instances
 		          new Array('xml', 'dojo', 'html'), // domain
 		          new Array('xml', 'html'),         // properties
-		          new Array('html')));              // error 
+		          new Array('html')));              // error
 /**
  * Gets the ordinal index of the given key in the given array
  * @param array an array of enumerated strings.
  * @param key a key to search for.
- * 
+ *
  * @returns {Number} 0-based index of the key in the array.
  */
 function getOrdinal(/*Array*/array, /*string*/key) {
@@ -553,10 +553,10 @@ function getOrdinal(/*Array*/array, /*string*/key) {
 }
 /**
  * Gets ordinal number for enumerated response format.
- * 
+ *
  * @param iformat response format. one of 'xml', 'json'
- * 
- * @returns {Number} ordinal number 0 for 'xml', 
+ *
+ * @returns {Number} ordinal number 0 for 'xml',
  */
 function getOrdinalResponseFormat(/*enum*/iformat) {
 	return getOrdinal(supportedResponseFormats, iformat);
@@ -583,22 +583,22 @@ function getSupportedDisplayModes(/*enum*/iformat,/*enum*/contentType) {
 		warn("No display format for response format [" + iformat + "] and content type [" + contentType + "]");
 	}
 	return displayModes;
-} 
+}
 
 /**
  * Render the response from the given URI on to the given HTML element identified by targetId.
- * 
+ *
  * The URI is requested from server in an asynchronous call. Then the server response is rendered
- * in all supported display format but only the given display format is made visible. 
- *  
+ * in all supported display format but only the given display format is made visible.
+ *
  * @param uri the request URI
  * @param targetId identifier of the HTML element that will display the data
  * @param contentType type of the content, one of 'instances', 'domain', 'properties', 'error'
  * @param iformat format of the server response, one of 'xml' or 'json'
  * @param oformat format for display, one of 'xml', 'json', 'dojo', 'html'
- * 
+ *
  * The combination of iformat-contentType-oformat must be compatiable as described in above matrix.
- * 
+ *
  * @returns {Boolean} to prevent default event propagation
  */
 function render(/* string */ uri, /* id */ targetId, /* enum */contentType, /* enum */iformat) {
@@ -618,7 +618,7 @@ function render(/* string */ uri, /* id */ targetId, /* enum */contentType, /* e
 	        		newDivs = renderJSONResponse(data, contentType);
 	        	} else {
 	        		newDivs = renderXMLResponse(data, contentType);
-	        	} 
+	        	}
 	    		var displayModes = getSupportedDisplayModes(iformat, contentType);
 	        	targetNode.appendChild(createDisplayModeControl(displayModes));
 	        	for (var i = 0; i < newDivs.length; i++) {
@@ -642,18 +642,18 @@ function render(/* string */ uri, /* id */ targetId, /* enum */contentType, /* e
 
 /**
  * Creates a table with radio buttons for supported display modes.
- * 
+ *
  * @param displayModes name of supported display modes.
- * 
+ *
  * @returns an unattached HTML table
  */
 function createDisplayModeControl(displayModes) {
 	var displayMode = document.createElement("table");
 	displayMode.style.width = "100%";
-	
+
 	var tr = document.createElement("tr");
 	displayMode.appendChild(tr);
-	// append columns. 0-th an dfirst columns are descriptive texts. 
+	// append columns. 0-th an dfirst columns are descriptive texts.
 	var caption = document.createElement("th");
 	caption.style.width = (100 - displayModes.length*12) + '%';
 	caption.appendChild(document.createTextNode("JEST Response"));
@@ -664,18 +664,18 @@ function createDisplayModeControl(displayModes) {
     	var modeColumn = document.createElement("th");
     	modeColumn.style.width = "12%";
     	tr.appendChild(modeColumn);
-        
+
     	var radio = document.createElement("input");
         radio.setAttribute("type", "radio");
         radio.setAttribute("value", mode);
         radio.setAttribute("name", "display.mode");
         if (i == 0) radio.setAttribute("checked", "checked");
        	radio.setAttribute('onchange', createModeSwitchFunction(mode, displayModes));
-       	
+
        	modeColumn.appendChild(radio);
        	modeColumn.appendChild(document.createTextNode(mode.toUpperCase()));
     }
-	
+
 	return displayMode;
 }
 
@@ -683,7 +683,7 @@ function createDisplayModeControl(displayModes) {
  * Creates a string for javascript function call to switch between display modes
  * @param visible the visible display mode
  * @param all available display modes
- * @returns {String} a event handler function string 
+ * @returns {String} a event handler function string
  */
 function createModeSwitchFunction(/* string */ visible, /* string[] */ all) {
 	var array = '';
@@ -700,10 +700,10 @@ function createModeSwitchFunction(/* string */ visible, /* string[] */ all) {
  * Finds out the supported display format for given content type and renders each display format
  * in separate divs. The div corresponding to the given display format is made visible, and others
  * are hidden. None of the divs are attached to the main document.
- * 
- * @param dom server response as a XML DOM document 
+ *
+ * @param dom server response as a XML DOM document
  * @param contentType enumerated content type. One of 'instances', 'domain', 'properties' or 'error'
- * 
+ *
  * @returns an array of unattached divs only one of which is visible.
  */
 function renderXMLResponse(/*XML DOM*/dom, /*enum*/contentType) {
@@ -727,7 +727,7 @@ function renderXMLResponse(/*XML DOM*/dom, /*enum*/contentType) {
 			}
 		} else if (contentType == 'properties') {
 			newDivs[i] = renderPropertiesFromXMLAsHTML(dom);
-		} 
+		}
 		newDivs[i].style.display = (i == 0 ? 'block' : 'none');
 		newDivs[i].setAttribute("id", "display.mode." + displayMode);
 	}
@@ -736,10 +736,10 @@ function renderXMLResponse(/*XML DOM*/dom, /*enum*/contentType) {
 
 /**
  * Renders the given instance data in the format of a XML DOM document into a set of Dojo widgets
- * inside a div element.  
- * 
+ * inside a div element.
+ *
  * @param data the root node of a XML document containing instances data
- * 
+ *
  * @returns an unattached div containing a set of dojo widgets
  */
 function renderInstancesFromXMLAsDojo(/* XML DOM*/data) {
@@ -764,9 +764,9 @@ function renderInstancesFromXMLAsDojo(/* XML DOM*/data) {
 
 /**
  * Renders given DOM for metamodel as dojo widgets.
- * 
+ *
  * @param data XML DOM for domain model.
- * @returns a HTML div 
+ * @returns a HTML div
  */
 function renderDomainFromXMLAsDojo(/*XML DOM*/data) {
 	var target = document.createElement('div');
@@ -792,7 +792,7 @@ function renderDomainFromXMLAsDojo(/*XML DOM*/data) {
 /**
  * Renders given XML DOM for instances to HTML tables.
  * *** NOT IMPLEMENTED
- * 
+ *
  * @param data XML DOM for list of instances. All instanes may not belong to same entity.
  * @returns a div with zero or more tables.
  */
@@ -803,8 +803,8 @@ function renderInstancesFromXMLAsHTML(/* XML DOM */data) {
 /**
  * Renders given XML DOM for domain model to HTML tables.
  * *** NOT IMPLEMENTED
- * 
- * @param data XML DOM for list of domain model. 
+ *
+ * @param data XML DOM for list of domain model.
  * @returns a div with zero or more tables.
  */
 function renderDomainFromXMLAsHTML(/* XML DOM */data) {
@@ -820,7 +820,7 @@ function unimplemented(/*string*/message) {
 
 /**
  * Renders configration (name-value pairs) in a HTML table.
- * 
+ *
  * @param data XML DOM for name-value pair properties.
  * @returns a HTML table
  */
@@ -832,7 +832,7 @@ function renderPropertiesFromXMLAsHTML(/* XML DOM */data) {
 	dojo.query("property", data)
 	    .forEach(function(item, index) {
 		  var row = document.createElement("tr");
-		  row.className = index%2 == 0 ? 'even' : 'odd'; 
+		  row.className = index%2 == 0 ? 'even' : 'odd';
 		  var key = document.createElement("td");
 		  var val = document.createElement("td");
 		  key.innerHTML = item.getAttribute("name");
@@ -847,9 +847,9 @@ function renderPropertiesFromXMLAsHTML(/* XML DOM */data) {
 
 /**
  * Renders error message in HTML
- * 
+ *
  * @param data XML DOM containing error description
- * 
+ *
  * @returns a div element with error details
  */
 function renderErrorFromXMLAsHTML(/*response as XML DOM*/responseXML, ioargs) {
@@ -861,7 +861,7 @@ function renderErrorFromXMLAsHTML(/*response as XML DOM*/responseXML, ioargs) {
 	ecode.setAttribute("class", "error-header");
 	header.setAttribute("class", "error-message");
 	msg.setAttribute("class", "error-message");
-	
+
 	var serverError = responseXML.documentElement;
 	ecode.innerHTML  = "HTTP Error " + ioargs.xhr.status;
 	header.innerHTML = dojox.xml.parser.textContent(serverError.getElementsByTagName("error-header").item(0));
@@ -877,18 +877,18 @@ function renderErrorFromXMLAsHTML(/*response as XML DOM*/responseXML, ioargs) {
 
 /**
  * Creates a dojo Title Pane from a DOM instance node. The pane has the instance
- * id as its title. The content is a table with name and value of each attribute 
+ * id as its title. The content is a table with name and value of each attribute
  * in each row. Multi-cardinality values are in separate row without the attribute
  * name repeated except the first row.
- * 
+ *
  * @param instanceNode an XML instance node
- * 
+ *
  * @returns dojo widget for a single instance
  */
 function createInstanceDojoWidget(/*XML node*/instanceNode) {
 	var instanceTable = document.createElement("table");
 	dojo.query('id, basic, enum, version', instanceNode)
-	    .forEach(function(item) { 
+	    .forEach(function(item) {
 			var attrRow     = document.createElement("tr");
 			var nameColumn  = document.createElement("td");
 			var valueColumn = document.createElement("td");
@@ -901,7 +901,7 @@ function createInstanceDojoWidget(/*XML node*/instanceNode) {
 		}
 	);
 	dojo.query('one-to-one, many-to-one', instanceNode)
-	    .forEach(function(item) { 
+	    .forEach(function(item) {
 		var attrRow     = document.createElement("tr");
 		var nameColumn  = document.createElement("td");
 		var valueColumn = document.createElement("td");
@@ -916,7 +916,7 @@ function createInstanceDojoWidget(/*XML node*/instanceNode) {
 				instanceTable.appendChild(attrRow);
 		    });
     });
-	dojo.query('one-to-many, many-to-many', instanceNode).forEach(function(item) { 
+	dojo.query('one-to-many, many-to-many', instanceNode).forEach(function(item) {
 		var attrRow     = document.createElement("tr");
 		var nameColumn  = document.createElement("td");
 		var valueColumn = document.createElement("td");
@@ -943,7 +943,7 @@ function createInstanceDojoWidget(/*XML node*/instanceNode) {
 		}
       }
     );
-	
+
 	var pane = new dijit.TitlePane({title:instanceNode.getAttribute("id"),content:instanceTable});
 	return pane;
 }
@@ -953,7 +953,7 @@ function createInstanceDojoWidget(/*XML node*/instanceNode) {
  * Creates a dojo Title Pane from a DOM instance node. The pane has the instance
  * id as its title. The content is name and value of each attribute in separate
  * line.
- * 
+ *
  * @param node
  *            an instance node
  * @returns
@@ -961,7 +961,7 @@ function createInstanceDojoWidget(/*XML node*/instanceNode) {
 function createEntityTypeDojoWidget(node) {
 	var entityTable = document.createElement("table");
 	dojo.query('id, basic, enum, version, one-to-one, many-to-one, one-to-many, many-to-many', node)
-        .forEach(function(item) { 
+        .forEach(function(item) {
 			var attr = document.createElement("tr");
 			var name = document.createElement("td");
 			name.className = item.nodeName.toLowerCase(); /* May be cross-browser trouble */
@@ -977,16 +977,16 @@ function createEntityTypeDojoWidget(node) {
 			entityTable.appendChild(attr);
 		}
 	);
-    
+
     var pane = new dijit.TitlePane({title:node.getAttribute("name"), content: entityTable});
 	return pane;
 }
 
 /**
  * Generic routine to render the given XML Document as a raw but indented text in to an unattached div section.
- * 
+ *
  * @param dom a XML DOM
- * 
+ *
  * @returns an unattached div section
  */
 function renderXMLasXML(/*XML DOM*/dom) {
@@ -997,14 +997,14 @@ function renderXMLasXML(/*XML DOM*/dom) {
 
 /**
  * Renders a XML DOM node as a new child of the given HTML node.
- * 
- * CSS styles used: 
+ *
+ * CSS styles used:
  * node-value : The value of a text node
  * attr-name  : The name of an attribute
  * attr-value : The value of an attribute
  * delimiter  : symbols such = " < \ > used in visual XML
- * the XML element name : e.g. A <metamodel> tag will be decorated with .metamodel CSS style    
- *  
+ * the XML element name : e.g. A <metamodel> tag will be decorated with .metamodel CSS style
+ *
  */
 function print(/* XML node */xnode, /* HTML node*/ hnode, /*int*/counter) {
 	if (xnode.nodeName == '#text') {
@@ -1015,7 +1015,7 @@ function print(/* XML node */xnode, /* HTML node*/ hnode, /*int*/counter) {
 	root.style.position = 'relative';
 	root.style.left = '2em';
 	addRoot(xnode, hnode, root, ++counter);
-	
+
 	var attrs = xnode.attributes;
 	if (attrs) {
 	 	for (var i = 0; i < attrs.length; i++) {
@@ -1035,7 +1035,7 @@ function print(/* XML node */xnode, /* HTML node*/ hnode, /*int*/counter) {
 	addDelimiter(root, '</');
 	addTextNode(root, xnode.nodeName, xnode.nodeName);
 	addDelimiter(root, '>');
-    return;	
+    return;
 }
 
 /**
@@ -1048,7 +1048,7 @@ function addDelimiter(/* HTML node*/ parentNode, /* Delimiter String*/ delim) {
 }
 /**
  * Adds a <span> node of given className to the given parentNode with the given text.
- * 
+ *
  * @param parentNode the parent node to which new text is added as a <span> element.
  * @param text text to be added to the new <span> element
  * @param className class of the new <span> element
@@ -1057,16 +1057,16 @@ function addDelimiter(/* HTML node*/ parentNode, /* Delimiter String*/ delim) {
 function addTextNode(/* HTML node*/parentNode, /* String */text, /* String*/className) {
 	if (isEmpty(text)) return null;
 	newNode = document.createElement('span');
-	if (className) {  
+	if (className) {
 		newNode.className  = className;
 	}
-	if (text) { 
-		newNode.appendChild(document.createTextNode(text)); 
+	if (text) {
+		newNode.appendChild(document.createTextNode(text));
 	}
-	if (parentNode) { 
-		parentNode.appendChild(newNode); 
+	if (parentNode) {
+		parentNode.appendChild(newNode);
 	}
-	return newNode;		
+	return newNode;
 }
 function isTextNode(/* XML node */ xnode) {
 	return xnode == null || xnode.nodeName == '#text';
@@ -1088,11 +1088,11 @@ function addRoot(xnode, hnode, root, counter) {
 		root.setAttribute("id", counter);
 		var moniker = '&lt;' + xnode.nodeName + '&gt;...';
 		ctrl.setAttribute("onclick", 'javascript:toggle(this, "' + moniker + '", "' + counter + '");');
-   } 
+   }
    addDelimiter(root, '<');
    addTextNode(root, xnode.nodeName, xnode.nodeName);
    hnode.appendChild(root);
-   
+
 }
 
 function toggle(/* HTML node */ctrl, /* id */ moniker, /* id */ targetId) {

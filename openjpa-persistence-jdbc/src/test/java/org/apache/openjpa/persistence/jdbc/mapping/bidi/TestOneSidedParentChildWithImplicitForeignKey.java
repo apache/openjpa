@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
@@ -31,26 +31,26 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * has many references to Child b) Child refers to Parent by Parent's identity
  * and not by object reference c) Parent's identity is assigned by the database
  * d) PostPersist callback in Parent sets the children's reference to Parent
- * 
+ *
  * The use case was originally reported in <A HREF=
  * "http://n2.nabble.com/OpenJPA---two-sided-relation-between-objects-Issue-
  * tc687050.html"> OpenJPA User Forum</A>
- * 
+ *
  * @author Pinaki Poddar
  */
 public class TestOneSidedParentChildWithImplicitForeignKey extends
 		SingleEMFTestCase {
 	private EntityManager em;
-	private static Class[] PARENT_ID_TYPES = { 
+	private static Class[] PARENT_ID_TYPES = {
 		ParentWithAppIdentity.class,      // ValueStrategies.NONE = 0
         ParentWithSequenceIdentity.class, // ValueStrategies.SEQUENCE = 2
         ParentWithAutoIdentity.class,     // ValueStrategies.AUTOASSIGN = 3
 	};
-	private static int[] VALUE_STRATEGIES = { 
+	private static int[] VALUE_STRATEGIES = {
 		ValueStrategies.NONE,
-		ValueStrategies.SEQUENCE, 
+		ValueStrategies.SEQUENCE,
 		ValueStrategies.AUTOASSIGN };
-	
+
 	private static long[] PARENT_IDS = new long[PARENT_ID_TYPES.length];
 
 	private static long PARENT_ID_COUNTER = System.currentTimeMillis();
@@ -80,7 +80,7 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 
 	void createData(int nChild) {
 		em.getTransaction().begin();
-		
+
 		Child[] children = new Child[CHILD_COUNT];
 		for (int j = 0; j < CHILD_COUNT; j++) {
 			Child child = new Child();
@@ -88,7 +88,7 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 			child.setName("Child" + j);
 			children[j] = child;
 		}
-		
+
 		for (int i = 0; i < PARENT_ID_TYPES.length; i++) {
 			IParent parent = newParent(i);
 			if (VALUE_STRATEGIES[i] == ValueStrategies.NONE)
@@ -169,9 +169,9 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 		}
 		return null;
 	}
-	
+
 	public IParent findParent(int parentType) {
-		return (IParent) em.find(PARENT_ID_TYPES[parentType], 
+		return (IParent) em.find(PARENT_ID_TYPES[parentType],
 				PARENT_IDS[parentType]);
 	}
 }

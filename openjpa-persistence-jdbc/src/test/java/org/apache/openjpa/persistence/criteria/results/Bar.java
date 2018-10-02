@@ -23,7 +23,7 @@ import javax.persistence.Id;
 
 /**
  * A simple class for testing select projections.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -34,11 +34,11 @@ public class Bar {
     private short bshort;
     private String bstring;
     private int bint;
-    
+
     protected Bar() {
-        
+
     }
-    
+
     public Bar(long bid, String bstring) {
         super();
         this.bid = bid;
@@ -68,5 +68,5 @@ public class Bar {
     public void setBint(int bint) {
         this.bint = bint;
     }
-    
+
 }

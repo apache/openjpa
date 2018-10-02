@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that querying and retrieving entities with multiple same-typed embedded
- * relations, which themselves have eager relations, works. 
+ * relations, which themselves have eager relations, works.
  *
  * @author Abe White
  */
@@ -76,7 +76,7 @@ public class TestMultipleSameTypedEmbeddedWithEagerRelations
         assertEquals("m1", m.getEmbed1().getRel().getName());
         assertEquals("embed2", m.getEmbed2().getName());
         assertEquals("m2", m.getEmbed2().getRel().getName());
-            
+
         em.close();
     }
 

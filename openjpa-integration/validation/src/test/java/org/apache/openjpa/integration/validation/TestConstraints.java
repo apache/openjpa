@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 /**
  * Tests the new Bean Validation constraint support in the JPA 2.0 spec by
  * focusing on the following Validation scenarios:
- *      
+ *
  *   Check special update/delete/ignore cases once:
  *   1)  Update @Null constraint exception on variables in mode=AUTO
  *       Tests that a constraint violation will occur on invalid update.
@@ -42,7 +42,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
  *       Tests that a violation will not occur when deleting invalid entity.
  *   3)  No invalid Persist constraint exception when mode=NONE
  *       Tests that no Validation Providers are used when disabled.
- *   
+ *
  *   Basic constraint tests for violation exceptions:
  *   4)  Persist @Null constraint exception on variables in mode=AUTO
  *   5)  Persist @NotNull constraint exception on getter in mode=AUTO
@@ -61,7 +61,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
  *   25) Test @Pattern constraint exception on variables in mode=AUTO
  *   26) Test @Pattern constraint exception on getter in mode=AUTO
  *   28) Test @Valid constraint exceptions in mode=AUTO
- *   
+ *
  *   Basic constraint test for no violations:
  *   6)  Persist @NotNull and @Null constraints pass in mode=AUTO
  *   9)  Test @AssertFalse and @AssertTrue constraints pass in mode=AUTO
@@ -78,16 +78,16 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 public class TestConstraints extends AbstractPersistenceTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        emf = (OpenJPAEntityManagerFactorySPI) 
+        emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
                 "ConstraintPU",
                 "org/apache/openjpa/integration/validation/persistence.xml");
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         closeEMF(emf);
@@ -102,7 +102,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      */
     public void testNullUpdateConstraint() {
         getLog().trace("testNullUpdateConstraint() started");
-        
+
         long id = 0;
         // Part 1 - Create and persist a valid entity
         // create EM from default EMF
@@ -128,18 +128,18 @@ public class TestConstraints extends AbstractPersistenceTestCase {
         } finally {
             closeEM(em);
         }
-        
+
         // Part 2 - Verify that invalid properties are caught on an update
         // create EM from default EMF
         em = emf.createEntityManager();
-        assertNotNull(em);        
+        assertNotNull(em);
         try {
             // update entity to be invalid
             ConstraintNull c = em.find(ConstraintNull.class, id);
             em.getTransaction().begin();
             c.setNullRequired(new String("not null"));
             em.flush();
-            em.getTransaction().commit();            
+            em.getTransaction().commit();
             getLog().trace("testNullUpdateConstraint() Part 2 of 2 failed");
             fail("Expected a ConstraintViolationException");
         } catch (ConstraintViolationException e) {
@@ -158,7 +158,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      */
     public void testNullDeleteIgnored() {
         getLog().trace("testNullDeleteIgnored() started");
-        
+
         // Part 1 - Create an invalid entity
         // create our EMF w/ props
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
@@ -221,7 +221,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             closeEMF(emf);
         }
     }
-    
+
     /**
      * Scenario being tested:
      *   3) No invalid Persist constraint exception when mode=NONE
@@ -1028,7 +1028,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
     public void testValidFailuresConstraint() {
         Address a = new Address();
         getLog().trace("testValidFailuresConstraint() started");
-        
+
         // Part 1 - Create an invalid Address entity
         try {
             OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
@@ -1106,9 +1106,9 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             getLog().trace("testValidFailuresConstraint() Part 2 of 2 passed");
         } finally {
             closeEM(em);
-        }            
+        }
     }
-    
+
     /**
      * Scenario being tested:
      *   29) Test @Pattern constraints pass in mode=AUTO
@@ -1153,7 +1153,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
 
     /**
      * Internal convenience method for getting the OpenJPA logger
-     * 
+     *
      */
     private Log getLog() {
         return emf.getConfiguration().getLog("Tests");

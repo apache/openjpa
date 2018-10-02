@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation.jmx;
 
@@ -31,14 +31,14 @@ import org.apache.openjpa.util.UserException;
 /**
  * A JMX-specific instrument for the query cache
  */
-public class QueryCacheJMXInstrument extends AbstractQueryCacheInstrument 
+public class QueryCacheJMXInstrument extends AbstractQueryCacheInstrument
     implements JMXInstrument, QueryCacheJMXInstrumentMBean {
-    
+
     private static Localizer _loc = Localizer.forPackage(QueryCacheJMXInstrument.class);
 
     private static final String MBEAN_TYPE = "QueryCache";
     private ObjectName _objName = null;
-    
+
     @Override
     public String getName() {
         return MBEAN_TYPE;
@@ -49,18 +49,18 @@ public class QueryCacheJMXInstrument extends AbstractQueryCacheInstrument
         return InstrumentationLevel.FACTORY;
     }
 
-    
+
     @Override
     public void initialize() {
-        
+
         OpenJPAConfiguration conf = (OpenJPAConfiguration)getProvider().getConfiguration();
         DataCacheManager dcm = conf.getDataCacheManagerInstance();
         QueryCache qc = dcm.getSystemQueryCache();
-        
+
         if (qc == null) {
             throw new UserException(_loc.get("query-cache-not-found"));
         }
-        
+
         setQueryCache(qc);
         setConfigId(conf.getId());
         setContextRef(Integer.toString(System.identityHashCode(getContext())));
@@ -70,7 +70,7 @@ public class QueryCacheJMXInstrument extends AbstractQueryCacheInstrument
         if (_objName != null) {
             return _objName;
         }
-        
+
         try {
             _objName = JMXProvider.createObjectName(this, null);
             return _objName;
@@ -78,7 +78,7 @@ public class QueryCacheJMXInstrument extends AbstractQueryCacheInstrument
             throw new UserException(_loc.get("unable-to-create-object-name", getName()), t);
         }
     }
-    
+
     public void start() {
         getProvider().startInstrument(this);
     }

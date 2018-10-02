@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.query;
 /**
  * An abstract implementation that throws UnsupportedOperationException on
  * every method.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -31,7 +31,7 @@ abstract class AbstractVisitable implements Visitable {
 	public static final String CLOSE_BRACE = ")";
 	public static final String COMMA = ",";
 	public static final String EMPTY = "";
-	
+
 	public String asExpression(AliasContext ctx) {
         throw new UnsupportedOperationException(this.getClass().getName());
 	}

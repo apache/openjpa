@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.arrays.model;
 
@@ -42,8 +42,8 @@ public class AnnoExceptionEntity {
     @Lob
     private ArrayList<Exception> exceptions;
 
-    // ElementCollection does not work with exceptions. 
-    @ElementCollection  
+    // ElementCollection does not work with exceptions.
+    @ElementCollection
     private Collection<String> elemCollExceptions;
 
     @PersistentCollection

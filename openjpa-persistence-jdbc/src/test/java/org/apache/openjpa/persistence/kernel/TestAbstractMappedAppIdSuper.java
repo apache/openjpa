@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -47,7 +47,7 @@ public class TestAbstractMappedAppIdSuper extends BaseKernelTest {
 //        String pk = String.valueOf(System.currentTimeMillis());
 //        pc.setPk(pk);
 //        pc.setName("name");
-//        
+//
 //        OpenJPAEntityManager pm = getPM();
 //        pm.begin();
 //        pm.persist(pc);
@@ -55,31 +55,31 @@ public class TestAbstractMappedAppIdSuper extends BaseKernelTest {
 //        String pkd = pc.getPk();
 //        Object oid = pm.getObjectId(pc);
 //        endEm(pm,());
-//        
+//
 //        pm = getPM();
 //        String query = "SELECT DISTINCT o FROM ConcreteMappedAppIdSub o "
 //                + "WHERE o.pk = :p ";
 //        OpenJPAQuery q = pm.createQuery(query);
-//        
+//
 //        OpenJPAQuery q = pm.createNativeQuery(
 //                "pk == :p", ConcreteMappedAppIdSub.class);
 //        //FIXME jthomas
-//        
-//        try 
+//
+//        try
 //        {
 //            pc = (ConcreteMappedAppIdSub) q.setParameter("p", pkd)
 //                    .getSingleResult();
-//        } 
-//        catch (RuntimeException re) 
+//        }
+//        catch (RuntimeException re)
 //        {
 ////            bug(1170, re, "Cannot query subclass of abstract mapped "
 ////                    + "appid type.");
 ////            return;
 //        }
-//         
+//
 //        assertNotNull(pc);
 //        assertEquals(pk, pc.getPk());
-//        
+//
 //        pm.begin();
 //        pm.remove(pc);
 //        pm.commit();

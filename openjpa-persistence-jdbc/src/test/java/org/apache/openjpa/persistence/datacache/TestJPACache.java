@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -174,7 +174,7 @@ public class TestJPACache extends SingleEMFTestCase {
      * <li>Any of the entities which were in the cache before calling evictAll() are still in the cache after calling
      * evictAll()</li>
      * </ul>
-     * 
+     *
      */
     public void testEvictAll() {
         populate();
@@ -282,8 +282,8 @@ public class TestJPACache extends SingleEMFTestCase {
             // expected exception
         }
     }
-    
-    public void testIllegalStateExceptionAfterClose() { 
+
+    public void testIllegalStateExceptionAfterClose() {
         emf.close();
         try {
             emf.getCache();
@@ -307,7 +307,7 @@ public class TestJPACache extends SingleEMFTestCase {
 
     /**
      * Convenience method. Asserts that the class & primary key do exist in the cache
-     * 
+     *
      * @param cls
      *            Entity class.
      * @param primaryKey
@@ -320,7 +320,7 @@ public class TestJPACache extends SingleEMFTestCase {
 
     /**
      * Convenience method. Assert that the class and primary key do not exist in the cache
-     * 
+     *
      * @param cls
      *            Entity class.
      * @param primaryKey

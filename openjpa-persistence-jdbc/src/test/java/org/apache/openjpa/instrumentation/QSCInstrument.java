@@ -41,5 +41,5 @@ public class QSCInstrument extends AbstractPreparedQueryCacheInstrument {
 
     public void stop() {
         setStarted(false);
-    }    
+    }
 }

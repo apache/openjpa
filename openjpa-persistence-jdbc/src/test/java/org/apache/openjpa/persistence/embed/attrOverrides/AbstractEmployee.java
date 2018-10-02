@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
@@ -31,34 +31,34 @@ import javax.persistence.Version;
 @MappedSuperclass
 public abstract class AbstractEmployee {
     @Id protected Integer id;
-    
+
     @Version protected Integer version;
-    
+
     @ManyToOne protected Address address;
 
-    @ManyToMany protected Collection<Project> projects = 
+    @ManyToMany protected Collection<Project> projects =
     	new ArrayList<Project>();
-    
+
     public Integer getId() {
         return id;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
-    
+
     public Address getAddress() {
         return address;
     }
-    
+
     public void setAddress(Address address) {
         this.address = address;
     }
-    
+
     public Collection<Project> getProjects() {
     	return projects;
     }
-    
+
     public void addProject(Project project) {
     	projects.add(project);
     }

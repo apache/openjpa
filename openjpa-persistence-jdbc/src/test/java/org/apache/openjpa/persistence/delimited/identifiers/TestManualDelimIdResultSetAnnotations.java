@@ -27,7 +27,7 @@ import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestManualDelimIdResultSetAnnotations 
+public class TestManualDelimIdResultSetAnnotations
         extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
@@ -37,16 +37,16 @@ public class TestManualDelimIdResultSetAnnotations
     Animal2 animal2;
     Dog2 dog2;
     Cat2 cat2;
-    
+
     @Override
     public void setUp() throws Exception {
-        // NOTE: This test is only configured to run on DB2 and Derby since 
-        // those DBs handle non-default schemas without additional authority or 
-        // configuration  
+        // NOTE: This test is only configured to run on DB2 and Derby since
+        // those DBs handle non-default schemas without additional authority or
+        // configuration
         setSupportedDatabases(DB2Dictionary.class, DerbyDictionary.class);
         if (isTestsDisabled())
             return;
-        
+
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.Animal.class,
             org.apache.openjpa.persistence.delimited.identifiers.Dog.class,
@@ -56,7 +56,7 @@ public class TestManualDelimIdResultSetAnnotations
             org.apache.openjpa.persistence.delimited.identifiers.Cat2.class,
             DROP_TABLES);
         assertNotNull(emf);
-        
+
         em = emf.createEntityManager();
         assertNotNull(em);
     }
@@ -89,29 +89,29 @@ public class TestManualDelimIdResultSetAnnotations
         createDog(id);
         id++;
         createCat(id);
-        
+
         em.getTransaction().begin();
         em.persist(dog);
         em.persist(cat);
         em.getTransaction().commit();
-        
+
         runQueries();
     }
-    
+
     private void runQueries() {
         em.clear();
         resultSetQuery();
     }
-    
+
     private void resultSetQuery() {
-        String query = 
+        String query =
             "SELECT a.id, a.\"animal type\", a.\"animal name\", " +
             "a.\"discr col\", a.\"animal age\" " +
             "FROM \"Animal\" a ";
         Query q = em.createNativeQuery(query,"AnimalResultSet");
         List<Object[]> results = (List<Object[]>)q.getResultList();
         assertEquals(2,results.size());
-        
+
         for (Object[] result : results) {
             assertEquals(2, result.length);
             assertTrue(result[0] instanceof Animal2);

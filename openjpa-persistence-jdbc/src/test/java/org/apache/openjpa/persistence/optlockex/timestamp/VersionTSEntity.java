@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.optlockex.timestamp;
 
@@ -33,7 +33,7 @@ public class VersionTSEntity implements Serializable {
 
     @Id
     private Long id;
-    
+
     @Version
     @Column(columnDefinition="TIMESTAMP(3)")
     private Timestamp updateTimestamp;
@@ -54,7 +54,7 @@ public class VersionTSEntity implements Serializable {
 
     public void setSomeInt(Integer someInt) {
         this.someInt = someInt;
-        
+
     }
 
     public Integer getSomeInt() {

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -191,21 +191,21 @@ public interface Broker
      * managed objects should be automatically detached in-place.
      */
     public void setAutoDetach(int flag, boolean on);
-    
+
     /**
      * Retrieve the current properties for this broker Some of these properties
      * may have been changed from the original configuration.
-     * 
+     *
      * @return the changed properties
-     * 
+     *
      * @since 2.0.0
      */
     public Map<String, Object> getProperties();
-    
+
     /**
      * Return the supported properties for this broker as property keys. If a
      * property has multiple keys, all keys will be returned.
-     * 
+     *
      * @since 2.0.0
      */
     public Set<String> getSupportedProperties();
@@ -261,10 +261,10 @@ public interface Broker
      * @since 0.2.5
      */
     public void removeTransactionListener(Object listener);
-    
+
     /**
      * Gets an umodifiable collection of currently registered lsteners.
-     * 
+     *
      * @since 2.0.0
      */
     public Collection<Object> getTransactionListeners();
@@ -312,19 +312,19 @@ public interface Broker
      */
     public void setLifecycleListenerCallbackMode(int mode);
 
-    
+
     /**
      * Affirms if this receiver is caching prepared queries.
-     *  
+     *
      * @since 2.0.0
      */
     public boolean getCachePreparedQuery();
-    
+
     /**
-     * Sets whether this receiver will cache prepared queries during its 
-     * lifetime. The cache configured at BrokerFactory level is not affected by 
-     * setting it inactive for this receiver. 
-     * 
+     * Sets whether this receiver will cache prepared queries during its
+     * lifetime. The cache configured at BrokerFactory level is not affected by
+     * setting it inactive for this receiver.
+     *
      * @since 2.0.0
      */
     public void setCachePreparedQuery(boolean flag);
@@ -392,10 +392,10 @@ public interface Broker
      */
     public void setRollbackOnly(Throwable cause);
 
-    /** 
+    /**
      * Returns the Throwable that caused the transaction to be
-     * marked for rollback. 
-     *  
+     * marked for rollback.
+     *
      * @return the Throwable, or null if none was given
      *
      * @since 0.9.7
@@ -729,7 +729,7 @@ public interface Broker
     public boolean isClosed();
 
     /**
-     * Whether {@link #close} has been invoked, though the broker might 
+     * Whether {@link #close} has been invoked, though the broker might
      * remain open until the current managed transaction completes.
      */
     public boolean isCloseInvoked();

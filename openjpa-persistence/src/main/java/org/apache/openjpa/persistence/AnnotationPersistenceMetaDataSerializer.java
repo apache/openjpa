@@ -118,7 +118,7 @@ public class AnnotationPersistenceMetaDataSerializer
         (AnnotationPersistenceMetaDataSerializer.class);
 
     private Log _log = null;
-    
+
     private final OpenJPAConfiguration _conf;
     private Map<String, ClassMetaData> _metas = null;
     private Map<String, List> _queries = null;
@@ -129,7 +129,7 @@ public class AnnotationPersistenceMetaDataSerializer
     private Map<ClassMetaData, List<AnnotationBuilder>> _clsAnnos = null;
     private Map<FieldMetaData, List<AnnotationBuilder>> _fldAnnos = null;
     private Map<SequenceMetaData, List<AnnotationBuilder>> _seqAnnos = null;
-    private Map<QueryMetaData, List<AnnotationBuilder>> _qryAnnos = null; 
+    private Map<QueryMetaData, List<AnnotationBuilder>> _qryAnnos = null;
 
     /**
      * Constructor. Supply configuration.
@@ -161,7 +161,7 @@ public class AnnotationPersistenceMetaDataSerializer
     public void setLog(Log log) {
         _log = log;
     }
-    
+
     /**
      * The serialization mode according to the expected document type. The
      * mode constants act as bit flags, and therefore can be combined.
@@ -456,7 +456,7 @@ public class AnnotationPersistenceMetaDataSerializer
      */
     protected AnnotationBuilder newAnnotationBuilder(
         Class<? extends Annotation> annType) {
-        return new AnnotationBuilder(annType);        
+        return new AnnotationBuilder(annType);
     }
 
     protected void addAnnotation(AnnotationBuilder ab, Object meta) {
@@ -482,7 +482,7 @@ public class AnnotationPersistenceMetaDataSerializer
             list = new ArrayList<AnnotationBuilder>();
             _clsAnnos.put(meta, list);
         }
-        list.add(ab);        
+        list.add(ab);
     }
 
     /**
@@ -582,7 +582,7 @@ public class AnnotationPersistenceMetaDataSerializer
         addAnnotation(ab, meta);
         return ab;
     }
-    
+
     protected void serialize(Collection objects) {
         for (Object obj : objects) {
             int type = type(obj);
@@ -736,7 +736,7 @@ public class AnnotationPersistenceMetaDataSerializer
             && !meta.getTypeAlias().equals(ClassUtil.getClassName(meta.
             getDescribedType())))
             abEntity.add("name", meta.getTypeAlias());
-        
+
         if (isMappingMode())
             addClassMappingAnnotations(meta);
 
@@ -925,7 +925,7 @@ public class AnnotationPersistenceMetaDataSerializer
         PersistenceStrategy strat = getStrategy(fmd);
         ValueMetaData cascades = null;
         AnnotationBuilder ab = addAnnotation(
-            getFieldAnnotationType (fmd, strat), fmd);        
+            getFieldAnnotationType (fmd, strat), fmd);
         if (fmd.isPrimaryKey() && strat == PersistenceStrategy.EMBEDDED)
             ; // noop
         else if (fmd.isPrimaryKey())
@@ -990,7 +990,7 @@ public class AnnotationPersistenceMetaDataSerializer
     protected void addFieldMappingAttributes(FieldMetaData fmd,
         FieldMetaData orig, AnnotationBuilder ab) {
     }
-    
+
     /**
      * Always returns false by default.
      */
@@ -1183,7 +1183,7 @@ public class AnnotationPersistenceMetaDataSerializer
         if (fmd.getMappedBy() != null)
             ab.add("mappedBy", fmd.getMappedBy());
     }
-    
+
     protected Collection getObjects() {
         List all = new ArrayList();
         if (isQueryMode())
@@ -1203,7 +1203,7 @@ public class AnnotationPersistenceMetaDataSerializer
         List<String> annos = new ArrayList<String>();
         for(AnnotationBuilder ab: builders)
             annos.add(ab.toString());
-        output.put(meta, annos);        
+        output.put(meta, annos);
     }
 
     public void serialize(Map output, int flags) throws IOException {
@@ -1261,7 +1261,7 @@ public class AnnotationPersistenceMetaDataSerializer
     }
 
     /**
-     * Represents ordered set of 
+     * Represents ordered set of
      * {@link org.apache.openjpa.meta.SequenceMetaData}s with a common class
      * scope.
      *
@@ -1317,7 +1317,7 @@ public class AnnotationPersistenceMetaDataSerializer
         public int getColNumber() {
             return _seqs[0].getColNumber();
         }
-        
+
         public int compareTo(ClassSeqs other) {
             if (other == this)
                 return 0;
@@ -1394,7 +1394,7 @@ public class AnnotationPersistenceMetaDataSerializer
         public int getColNumber() {
             return _queries[0].getColNumber();
         }
-        
+
         public int compareTo(ClassQueries other) {
             if (other == this)
                 return 0;
@@ -1542,7 +1542,7 @@ public class AnnotationPersistenceMetaDataSerializer
             return fmd1.compareTo(fmd2);
 		}
 	}
-	
+
 	/**
 	 * Returns the stored ClassMetaData
 	 */

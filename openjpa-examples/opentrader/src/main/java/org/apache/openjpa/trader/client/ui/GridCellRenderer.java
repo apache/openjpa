@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Protocol to render a Grid Cell.
- *  
+ *
  * @author Pinaki Poddar
  *
  * @param <T>
@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.Widget;
 public interface GridCellRenderer<T> {
     /**
      * Create an widget for the part of data this render is rendering.
-     * 
+     *
      * @param data the entire data represented in this row.
      * @return a widget such as a Label or HTML to represent a part of the data.
      */

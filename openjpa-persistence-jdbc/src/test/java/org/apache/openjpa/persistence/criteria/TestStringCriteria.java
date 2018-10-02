@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -122,14 +122,14 @@ public class TestStringCriteria extends CriteriaTest {
 
         assertEquivalence(q, jpql);
     }
-    
+
     public void testIsEmpty() {
-        String jpql = "SELECT o FROM Order o WHERE o.lineItems IS EMPTY"; 
-          CriteriaQuery<Order> q = cb.createQuery(Order.class); 
+        String jpql = "SELECT o FROM Order o WHERE o.lineItems IS EMPTY";
+          CriteriaQuery<Order> q = cb.createQuery(Order.class);
           Root<Order> o = q.from(Order.class);
-          q.where(cb.isEmpty(o.get("lineItems").as(Collection.class))); 
+          q.where(cb.isEmpty(o.get("lineItems").as(Collection.class)));
           q.select(o);
-          
+
           assertEquivalence(q, jpql);
     }
 
@@ -169,7 +169,7 @@ public class TestStringCriteria extends CriteriaTest {
         ListJoin<Order, LineItem> i = o.joinList("lineItems");
         Join<Order, Customer> c = o.join("customer");
         q.where(cb.equal(c.get("lastName"), "Smith"), cb.equal(c.get("firstName"), "John"));
-        q.select(cb.sum(i.get("price").as(Double.class))); 
+        q.select(cb.sum(i.get("price").as(Double.class)));
 
         assertEquivalence(q, jpql);
     }
@@ -180,7 +180,7 @@ public class TestStringCriteria extends CriteriaTest {
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<Department> d = q.from(Department.class);
         q.where(cb.equal(d.get("name"), "Sales"));
-        q.select(cb.size((d.get("employees").as(Collection.class)))); 
+        q.select(cb.size((d.get("employees").as(Collection.class))));
 
         assertEquivalence(q, jpql);
     }
@@ -192,23 +192,23 @@ public class TestStringCriteria extends CriteriaTest {
         CriteriaQuery<Object[]> q = cb.createQuery(Object[].class);
         Root<Employee> e = q.from(Employee.class);
         q.where(cb.equal(e.get("department").get("name"), "Engineering"));
-        q.multiselect(e.get("name"), 
+        q.multiselect(e.get("name"),
                 cb.selectCase()
                   .when(cb.equal(e.get("rating"), 1), cb.prod(e.get("salary").as(Float.class), 1.1))
                   .when(cb.equal(e.get("rating"), 2), cb.prod(e.get("salary").as(Float.class), 1.2))
                   .otherwise(cb.prod(e.get("salary").as(Float.class), 1.01)));
         assertEquivalence(q, jpql);
     }
-    
-      public void testLiterals() { 
+
+      public void testLiterals() {
           String jpql = "SELECT p FROM Person p where 'Joe' MEMBER OF " + "p.nickNames";
-          CriteriaQuery<Person> q = cb.createQuery(Person.class); 
+          CriteriaQuery<Person> q = cb.createQuery(Person.class);
           Root<Person> p = q.from(Person.class);
           q.select(p).where(cb.isMember("Joe", p.get("nickNames").as(Collection.class)));
-      
-          assertEquivalence(q, jpql); 
+
+          assertEquivalence(q, jpql);
      }
-      
+
     public void testParameters() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -243,7 +243,7 @@ public class TestStringCriteria extends CriteriaTest {
         CriteriaQuery<CustomerDetails> q = cb.createQuery(CustomerDetails.class);
         Root<Customer> c = q.from(Customer.class);
         SetJoin<Customer, Order> o = c.joinSet("orders");
-        q.where(cb.gt(o.get("quantity").as(Integer.class), 100)); 
+        q.where(cb.gt(o.get("quantity").as(Integer.class), 100));
         q.select(cb.construct(CustomerDetails.class, c.get("id"), c.get("status"), o.get("quantity")));
 
         assertEquivalence(q, jpql);
@@ -289,7 +289,7 @@ public class TestStringCriteria extends CriteriaTest {
         q.select(emp);
         Subquery<BigDecimal> sq = q.subquery(BigDecimal.class);
         Root<Manager> m = sq.from(Manager.class);
-        sq.select(m.get("salary").as(BigDecimal.class)); 
+        sq.select(m.get("salary").as(BigDecimal.class));
         sq.where(cb.equal(m.get("department"), emp.get("department")));
         q.where(cb.gt(emp.get("salary").as(BigDecimal.class), cb.all(sq)));
 
@@ -320,7 +320,7 @@ public class TestStringCriteria extends CriteriaTest {
         Root<Order> o2 = sq4.correlate(o1);
         Join<Order, Customer> c3 = o2.join("customer");
         ListJoin<Customer, Account> a = c3.joinList(("accounts"));
-        sq4.select(a.get("balance").as(Integer.class)); 
+        sq4.select(a.get("balance").as(Integer.class));
         q.where(cb.lt(cb.literal(10000), cb.all(sq4)));
 
         assertEquivalence(q, jpql);
@@ -336,7 +336,7 @@ public class TestStringCriteria extends CriteriaTest {
         Subquery<Integer> sq = q.subquery(Integer.class);
         Join<Order, Customer> c2 = sq.correlate(c);
         ListJoin<Customer, Account> a = c2.joinList("accounts");
-        sq.select(a.get("balance").as(Integer.class)); 
+        sq.select(a.get("balance").as(Integer.class));
         q.where(cb.lt(cb.literal(10000), cb.all(sq)));
 
         assertEquivalence(q, jpql);
@@ -389,7 +389,7 @@ public class TestStringCriteria extends CriteriaTest {
                 + "FROM Customer c JOIN c.orders o JOIN c.address a "
                 + "WHERE a.state = 'CA' AND a.county = 'Santa Clara' "
                 + "ORDER BY o.quantity, taxedCost, a.zipCode";
-        
+
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
         Root<Customer> c = q.from(Customer.class);
         SetJoin<Customer, Order> o = c.joinSet("orders");

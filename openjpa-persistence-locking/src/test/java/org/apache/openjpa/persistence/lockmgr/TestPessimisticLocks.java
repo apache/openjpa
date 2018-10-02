@@ -78,7 +78,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
 
         if (isTestsDisabled())
             return;
-        
+
         setUp(CLEAR_TABLES, Employee.class, Department.class, VersionEntity.class, "openjpa.LockManager", "mixed");
 
         EntityManager em = null;
@@ -141,7 +141,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         try {
             em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, hints);
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
-        } catch (Throwable e) {            
+        } catch (Throwable e) {
             assertError(e, PessimisticLockException.class, LockTimeoutException.class);
         } finally {
             if (em1.getTransaction().isActive())
@@ -239,7 +239,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         } catch (Exception ex) {
             if (!dict.supportsLockingWithOrderClause)
                 fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
-            else 
+            else
                 assertError(ex, LockTimeoutException.class);
         } finally {
             if (em1.getTransaction().isActive())
@@ -385,7 +385,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         //Expected sql for Derby is:
         //SELECT t0.firstName FROM Employee t0 WHERE (t0.id = CAST(? AS BIGINT)) FOR UPDATE WITH RR
         String SQL1 = getLastSQL(sql);
-        
+
         // run the second time
         resetSQL();
         Query q2 = em.createQuery(jpql);
@@ -395,14 +395,14 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         assertEquals(SQL1, SQL2);
         em.getTransaction().commit();
     }
-    
+
     protected Log getLog() {
         return emf.getConfiguration().getLog("Tests");
     }
 
     /**
      * This variation introduces a row level write lock in a secondary thread,
-     * issues a refresh in the main thread with a lock timeout, and expects a 
+     * issues a refresh in the main thread with a lock timeout, and expects a
      * LockTimeoutException.
      */
     public void testRefreshLockTimeout() {
@@ -414,7 +414,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
               dict instanceof InformixDictionary)) {
             return;
         }
-        
+
         // Informix currently requires the lock timeout to be set directly on the dictionary
         if (dict instanceof InformixDictionary) {
             InformixDictionary ifxDict = (InformixDictionary)((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
@@ -423,7 +423,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         }
 
         EntityManager em = emf.createEntityManager();
-        
+
         resetSQL();
         VersionEntity ve = new VersionEntity();
         int veid = new Random().nextInt();
@@ -433,14 +433,14 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         em.getTransaction().begin();
         em.persist(ve);
         em.getTransaction().commit();
-                
+
         em.getTransaction().begin();
         // Assert that the department can be found and no lock mode is set
         ve = em.find(VersionEntity.class, veid);
-        assertTrue(em.contains(ve));        
+        assertTrue(em.contains(ve));
         assertTrue(em.getLockMode(ve) == LockModeType.NONE);
         em.getTransaction().commit();
-        
+
         // Kick of a thread to lock the DB for update
         ExecutorService executor = Executors.newFixedThreadPool(1);
         Future<Boolean> result = executor.submit(new RefreshWithLock(veid, this));
@@ -454,7 +454,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             getLog().trace("Main: done waiting");
             Map<String,Object> props = new HashMap<String,Object>();
             // This property does not have any effect on Derby for the locking
-            // condition produced by this test.  Instead, Derby uses the 
+            // condition produced by this test.  Instead, Derby uses the
             // lock timeout value specified in the config (pom.xml).  On Informix,
             // the dictionary level timeout (set above) will be used.
             if (!(dict instanceof InformixDictionary)) {
@@ -462,7 +462,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             }
             em.getTransaction().begin();
             getLog().trace("Main: refresh with force increment");
-            em.refresh(ve, LockModeType.PESSIMISTIC_FORCE_INCREMENT, props);  
+            em.refresh(ve, LockModeType.PESSIMISTIC_FORCE_INCREMENT, props);
             getLog().trace("Main: commit");
             em.getTransaction().commit();
             getLog().trace("Main: done commit");
@@ -477,16 +477,16 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
                     this.notify();
                 }
                 result.get();
-            } catch (Throwable t) { 
+            } catch (Throwable t) {
                 fail("Caught throwable waiting for thread finish: " + t);
             }
         }
     }
-        
+
     /**
      * Assert that an exception of proper type has been thrown. Also checks that
      * that the exception has populated the failed object.
-     * 
+     *
      * @param actual
      *            exception being thrown
      * @param expeceted
@@ -530,23 +530,23 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     }
 
     /**
-     * Separate execution thread used to forcing a lock condition on 
+     * Separate execution thread used to forcing a lock condition on
      * a row in the VersionEntity table.
      */
     public class RefreshWithLock implements Callable<Boolean> {
 
         private int _id;
         private Object _monitor;
-        
+
         public RefreshWithLock(int id, Object monitor) {
             _id = id;
             _monitor = monitor;
         }
-        
+
         public Boolean call() throws Exception {
             try {
                 EntityManager em = emf.createEntityManager();
-                
+
                 em.getTransaction().begin();
                 // Find with pessimistic force increment.  Will lock row for duration of TX.
                 VersionEntity ve = em.find(VersionEntity.class, _id, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
@@ -556,7 +556,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
                 synchronized(_monitor) {
                     _monitor.notify();
                 }
-                // Wait up to 120 seconds for main thread to complete.  The default derby timeout is 60 seconds. 
+                // Wait up to 120 seconds for main thread to complete.  The default derby timeout is 60 seconds.
                 try {
                     getLog().trace("Thread: waiting up to 120 secs for notify");
                     synchronized(_monitor) {
@@ -566,7 +566,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
                 } catch (Throwable t) {
                     getLog().trace("Unexpected thread interrupt",t);
                 }
-                
+
                 em.getTransaction().commit();
                 em.close();
                 getLog().trace("Thread: done");

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -117,7 +117,7 @@ public interface LRSMapFieldStrategy
      * Elements of the result will be loaded with {@link #loadValue}.
      */
     public void selectValue(Select sel, ClassMapping val,
-        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch, 
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         Joins joins);
 
     /**

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
@@ -31,7 +31,7 @@ import javax.persistence.Table;
 	@AssociationOverride(
 		name="address",
 		joinColumns=@JoinColumn(name="ADDR_ID")),
-	
+
 	@AssociationOverride(
 		name="projects",
 		joinColumns={},
@@ -50,7 +50,7 @@ public class PartTimeEmployee extends AbstractEmployee {
     public Float getHourlyWage() {
         return wage;
     }
-    
+
     public void setHourlyWage(Float wage) {
         this.wage = wage;
     }

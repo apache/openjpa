@@ -35,15 +35,15 @@ import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestUnwrap extends SingleEMFTestCase {
-    
+
     /**
-     * Tests a query can be unwrapped as an instance of a series of class or 
-     * interface. 
+     * Tests a query can be unwrapped as an instance of a series of class or
+     * interface.
      */
     public void testValidQueryUnwrap() {
         OpenJPAEntityManager em = emf.createEntityManager();
         Query query = em.createQuery(QueryLanguages.LANG_SQL,"");
-        
+
         Class[] validCasts = new Class[] {
             org.apache.openjpa.persistence.OpenJPAQuery.class,
             org.apache.openjpa.persistence.OpenJPAQuerySPI.class,
@@ -59,12 +59,12 @@ public class TestUnwrap extends SingleEMFTestCase {
     }
 
     /**
-     * Tests a EntityManager can be unwrapped as an instance of a series of 
-     * class or interface. 
+     * Tests a EntityManager can be unwrapped as an instance of a series of
+     * class or interface.
      */
     public void testValidEntityManagerUnwrap() {
         EntityManager em = emf.createEntityManager();
-        
+
         Class<?>[] validCasts = new Class[] {
             org.apache.openjpa.persistence.OpenJPAEntityManager.class,
             org.apache.openjpa.persistence.OpenJPAEntityManagerSPI.class,
@@ -77,14 +77,14 @@ public class TestUnwrap extends SingleEMFTestCase {
         }
         em.close();
     }
-    
+
     /**
-     * Tests a EntityManager can be unwrapped as an instance of a series of 
-     * class or interface. 
+     * Tests a EntityManager can be unwrapped as an instance of a series of
+     * class or interface.
      */
     public void testValidOtherUnwrap() {
         EntityManager em = emf.createEntityManager();
-        
+
         Class<?>[] validCasts = new Class[] {
             java.sql.Connection.class
         };
@@ -92,24 +92,24 @@ public class TestUnwrap extends SingleEMFTestCase {
             Object unwrapped = em.unwrap(c);
             assertTrue(c.isInstance(unwrapped));
         }
-        
+
         em.close();
     }
-    
+
     public void testConnectionUnwrap() throws Exception {
         String dbDict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().getClass().getName();
-        
+
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = em.unwrap(OpenJPAEntityManager.class);
         try {
             Connection c = (Connection) oem.getConnection();
             assertNotNull(c);
             assertTrue(DelegatingConnection.class.isAssignableFrom(c.getClass()));
-            
+
             List<Class> acceptedConnectionClassTypes = new ArrayList<Class>();
             if (DerbyDictionary.class.getName().equals(dbDict)) {
                 // Connection type can be network or embedded
-                String[] connectionTypes = { 
+                String[] connectionTypes = {
                     "org.apache.derby.impl.jdbc.EmbedConnection40",
                     "org.apache.derby.impl.jdbc.EmbedConnection30",
                     "org.apache.derby.iapi.jdbc.BrokeredConnection40",
@@ -123,7 +123,7 @@ public class TestUnwrap extends SingleEMFTestCase {
                     }
                 }
             }
-            
+
             if (!acceptedConnectionClassTypes.isEmpty()) {
                 boolean pass = false;
                 for (Class cls : acceptedConnectionClassTypes) {
@@ -136,24 +136,24 @@ public class TestUnwrap extends SingleEMFTestCase {
                     } catch (Throwable t) {
                         // Swallow
                     }
-                    
-                   assertTrue(pass); 
+
+                   assertTrue(pass);
                 }
             }
         } finally {
             em.close();
         }
     }
-    
+
     public void testNegativeConnectionUnwrap() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = em.unwrap(OpenJPAEntityManager.class);
-        
+
         try {
             Connection c = (Connection) oem.getConnection();
             assertNotNull(c);
             assertTrue(DelegatingConnection.class.isAssignableFrom(c.getClass()));
-            
+
             // Make a completely bogus unwrap() attempt
             try {
                 c.unwrap(TestUnwrap.class);
@@ -165,19 +165,19 @@ public class TestUnwrap extends SingleEMFTestCase {
             em.close();
         }
     }
-    
+
     /**
-     * Tests a EntityManager can not be unwrapped as Object class, null or an interface. 
+     * Tests a EntityManager can not be unwrapped as Object class, null or an interface.
      * And each such failure raises a Persistence Exception and causes an active transaction
      * to rollback.
      */
     public void testInvalidEntityManagerUnwrap() {
         EntityManager em = emf.createEntityManager();
-        
+
         Class<?>[] invalidCasts = new Class[] {
             Object.class,
             Properties.class,
-            Map.class, 
+            Map.class,
             null,
         };
         for (Class<?> c : invalidCasts) {
@@ -193,19 +193,19 @@ public class TestUnwrap extends SingleEMFTestCase {
         }
         em.close();
     }
-    
+
     /**
-     * Tests a Query can not be unwrapped as Object class, null or an interface. 
+     * Tests a Query can not be unwrapped as Object class, null or an interface.
      * And each such failure raises a Persistence Exception and causes an active transaction
      * to rollback.
      */
     public void testInvalidQueryUnwrap() {
         OpenJPAEntityManager em = emf.createEntityManager();
-        
+
         Class<?>[] invalidCasts = new Class[] {
             Object.class,
             Properties.class,
-            Map.class, 
+            Map.class,
             null,
         };
         for (Class<?> c : invalidCasts) {

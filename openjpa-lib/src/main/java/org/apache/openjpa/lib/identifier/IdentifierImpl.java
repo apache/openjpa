@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.identifier;
 
@@ -24,11 +24,11 @@ import java.io.Serializable;
  * Base identifer implementation.
  */
 public class IdentifierImpl implements Identifier, Serializable {
-    
+
     private String _name = null;
-    
+
     protected IdentifierImpl() {}
-    
+
     public IdentifierImpl(String name) {
         setName(name);
     }
@@ -40,11 +40,11 @@ public class IdentifierImpl implements Identifier, Serializable {
     public String getName() {
         return _name;
     }
-    
+
     public String toString() {
         return getName();
     }
-    
+
     public int hashCode() {
         if (_name == null) {
             return super.hashCode();

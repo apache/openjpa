@@ -36,31 +36,31 @@ public class TestMergeNew extends SQLListenerTestCase {
         assertNotNull(emf);
         populate();
     }
-    
+
     public void testMergeNewParent() {
         EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();    
+        em.getTransaction().begin();
         ParentPK pk = new ParentPK(1);
         pk.setKey1("K1");
         Parent parent = em.find(Parent.class, pk);
-        
-        Child child = new Child();                                               
+
+        Child child = new Child();
         child.setChildKey(1);
-        child.setParent(parent);                                                 
-        parent.getChilds().add(child);                                           
-        
+        child.setParent(parent);
+        parent.getChilds().add(child);
+
         GrandChild grandChild = new GrandChild();
         grandChild.setGrandChildKey(1);
-        grandChild.setChild(child);                                              
+        grandChild.setChild(child);
         child.getGrandChilds().add(grandChild);
-    
+
         Parent newParent = em.merge(parent);
         assertNotNull(newParent);
-        
+
         // verify key fields
         assertEquals(newParent.getKey1(), "K1");
         assertEquals(newParent.getKey2(), new Integer(1));
-        
+
         // verify Child field
         ArrayList<Child> childs = (ArrayList<Child>)newParent.getChilds();
         assertNotNull(childs);
@@ -70,7 +70,7 @@ public class TestMergeNew extends SQLListenerTestCase {
         Parent childParent = newChild.getParent();
         assertEquals(childParent, newParent);
         assertEquals(newChild.getChildKey(), new Integer(1));
-        
+
         // verify GrandChild field
         ArrayList<GrandChild> grandChilds = (ArrayList<GrandChild>)newChild.getGrandChilds();
         assertNotNull(grandChilds);
@@ -79,46 +79,46 @@ public class TestMergeNew extends SQLListenerTestCase {
         assertNotSame(newGrandChild, grandChild);
         Child grandChildChild = newGrandChild.getChild();
         assertEquals(grandChildChild, newChild);
-        
+
         em.getTransaction().commit();
         em.close();
     }
 
-    public void testMergeParentRoundTrip()throws ClassNotFoundException, IOException {    	
+    public void testMergeParentRoundTrip()throws ClassNotFoundException, IOException {
         EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();    
+        em.getTransaction().begin();
         ParentPK pk = new ParentPK(1);
         pk.setKey1("K1");
         Parent parent = em.find(Parent.class, pk);
-        
+
         //Simulate an EJB Call to get the Parent from the server:
         Parent p2 = (Parent) roundtrip(parent);
-        
-        Child child = new Child();                                               
+
+        Child child = new Child();
         child.setChildKey(1);
-        child.setParent(p2);                                                 
-       	p2.getChilds().add(child); 
-       	
+        child.setParent(p2);
+       	p2.getChilds().add(child);
+
         GrandChild grandChild = new GrandChild();
         grandChild.setChild(child);
         grandChild.setGrandChildKey(1);
        	child.getGrandChilds().add(grandChild);
-       	
+
        	//Simulate an EJB Call to send the Parent back to the server:
        	Parent p3 = (Parent) roundtrip(p2);
-       	
+
         em = emf.createEntityManager();
-        em.getTransaction().begin();    
-        
+        em.getTransaction().begin();
+
        	Parent newParent = em.merge(p3);
-       	
+
        	em.getTransaction().commit();
        	assertNotNull(newParent);
-       	
+
        	// verify key fields
        	assertEquals(newParent.getKey1(), "K1");
        	assertEquals(newParent.getKey2(), new Integer(1));
-       	
+
        	// verify Child field
        	ArrayList<Child> childs = (ArrayList<Child>)newParent.getChilds();
        	assertNotNull(childs);
@@ -128,7 +128,7 @@ public class TestMergeNew extends SQLListenerTestCase {
        	Parent childParent = newChild.getParent();
        	assertNotNull(childParent);
        	assertEquals(newChild.getChildKey(), new Integer(1));
-       	
+
        	// verify GrandChild field
        	ArrayList<GrandChild> grandChilds = (ArrayList<GrandChild>)newChild.getGrandChilds();
        	assertNotNull(grandChilds);
@@ -139,7 +139,7 @@ public class TestMergeNew extends SQLListenerTestCase {
        	assertNotNull(grandChildChild);
        	em.close();
     }
-    
+
     private void populate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -150,5 +150,5 @@ public class TestMergeNew extends SQLListenerTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
+
 }

@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test for PersistentCollection Annotation
- * 
+ *
  * @author Albert Lee
  */
 public class TestPersistentCollection extends SingleEMFTestCase {
@@ -61,10 +61,10 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             em = null;
 
             em = emf.createEntityManager();
-            Query q = em.createQuery("SELECT o FROM PColl_EntityA o"); 
+            Query q = em.createQuery("SELECT o FROM PColl_EntityA o");
             List<PColl_EntityA> oList = (List<PColl_EntityA>) q.getResultList();
             PColl_EntityA d1 = oList.get(0);
-            
+
             Set<PColl_EmbedB> b1s = d1.getEmbedCollection();
 
             PColl_EmbedB b1 = b1s.iterator().next();
@@ -104,11 +104,11 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             em = null;
 
             em = emf.createEntityManager();
-            Query q = em.createQuery("SELECT o FROM PColl_EntityA1 o"); 
+            Query q = em.createQuery("SELECT o FROM PColl_EntityA1 o");
             List<PColl_EntityA1> oList =
                 (List<PColl_EntityA1>) q.getResultList();
             PColl_EntityA1 a1 = oList.get(0);
-            
+
             Set<PColl_EntityB> b1s = a1.getEmbedCollection();
 
             PColl_EntityB b1 = b1s.iterator().next();
@@ -124,7 +124,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             if (em != null)
                 em.close();
         }
-    }    
+    }
 
     public void testPersistentCollectionStringsLazy() {
         EntityManager em = emf.createEntityManager();
@@ -138,11 +138,11 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             em.getTransaction().commit();
             em.close();
             em = null;
-            
+
             em = emf.createEntityManager();
-            Query q = em.createQuery("SELECT o FROM PColl_EntityStringLazy o"); 
+            Query q = em.createQuery("SELECT o FROM PColl_EntityStringLazy o");
             PColl_EntityStringLazy a1 = (PColl_EntityStringLazy)q.getSingleResult();
-            
+
             assertEquals(1, a1.getCollectionOfStrings().size());
             assertEquals("one", a1.getCollectionOfStrings().toArray()[0]);
             assertEquals(1, a1.getId());
@@ -154,7 +154,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             if (em != null)
                 em.close();
         }
-    }    
+    }
 
     public void testPersistentCollectionStringsEager() {
         EntityManager em = emf.createEntityManager();
@@ -168,11 +168,11 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             em.getTransaction().commit();
             em.close();
             em = null;
-            
+
             em = emf.createEntityManager();
-            Query q = em.createQuery("SELECT o FROM PColl_EntityStringEager o"); 
+            Query q = em.createQuery("SELECT o FROM PColl_EntityStringEager o");
             PColl_EntityStringEager a1 = (PColl_EntityStringEager)q.getSingleResult();
-            
+
             assertEquals(1, a1.getCollectionOfStrings().size());
             assertEquals("one", a1.getCollectionOfStrings().toArray()[0]);
             assertEquals(1, a1.getId());
@@ -184,5 +184,5 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             if (em != null)
                 em.close();
         }
-    }    
+    }
 }

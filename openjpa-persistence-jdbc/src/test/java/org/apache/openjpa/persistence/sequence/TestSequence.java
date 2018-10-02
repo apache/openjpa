@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.sequence;
 
@@ -278,7 +278,7 @@ public class TestSequence extends SingleEMFTestCase {
 
     /**
      * Execute a test method in multiple threads.
-     * 
+     *
      * @param threads
      *            the number of Threads to run in
      * @param iterations
@@ -302,7 +302,7 @@ public class TestSequence extends SingleEMFTestCase {
 
     public void mttest(int serialCount, int threads, int iterations,
         final String method, final Object[] args) throws ThreadingException {
-        if (multiThreadExecuting != null 
+        if (multiThreadExecuting != null
             && multiThreadExecuting.equals(method)) {
             // we are currently executing in multi-threaded mode:
             // don't deadlock!
@@ -344,7 +344,7 @@ public class TestSequence extends SingleEMFTestCase {
 
     /**
      * Execute a test method in multiple threads.
-     * 
+     *
      * @param title
      *            a description of the test, for inclusion in the error message
      * @param serialCount
@@ -497,7 +497,7 @@ public class TestSequence extends SingleEMFTestCase {
     /**
      * Return the last method name that called this one by parsing the current
      * stack trace.
-     * 
+     *
      * @param exclude
      *            a method name to skip
      * @throws IllegalStateException

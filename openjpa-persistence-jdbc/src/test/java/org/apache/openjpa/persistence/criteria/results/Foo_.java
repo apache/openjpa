@@ -23,7 +23,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 
 /**
  * Hand-written (i.e. non-canonical in techie terms).
- *  
+ *
  * @author Pinaki Poddar
  *
  */

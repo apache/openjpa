@@ -34,7 +34,7 @@ import javax.persistence.MapKeyColumn;
 @Entity
 public class MenuItem {
 
-    private String id;  
+    private String id;
     private String name;
     private Map<String, Ingredient> ingredients;
 
@@ -53,7 +53,7 @@ public class MenuItem {
     @MapKeyColumn(name = "INGREDIENT_ID")
     public Map<String, Ingredient> getIngredients() {
         return ingredients;
-    }    
+    }
 
     public void setIngredients(Map<String, Ingredient> ingredients) {
         this.ingredients = ingredients;

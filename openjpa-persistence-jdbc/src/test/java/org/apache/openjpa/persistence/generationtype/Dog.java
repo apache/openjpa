@@ -27,8 +27,8 @@ import javax.persistence.TableGenerator;
 @Entity
 public class Dog {
     @Id
-    @TableGenerator(name = "Dog_Gen", table = "ID_Gen", 
-            pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", 
+    @TableGenerator(name = "Dog_Gen", table = "ID_Gen",
+            pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL",
             pkColumnValue = "ID2", initialValue = 20, allocationSize = 10)
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Dog_Gen")
     private int id;
@@ -89,6 +89,6 @@ public class Dog {
     public String toString() {
         return "Dog [id=" + id + ", name=" + name + "]";
     }
-    
-    
+
+
 }

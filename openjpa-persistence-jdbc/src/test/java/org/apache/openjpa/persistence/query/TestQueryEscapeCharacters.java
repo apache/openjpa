@@ -50,7 +50,7 @@ public class TestQueryEscapeCharacters
         e.setName("Mike Smith");
         e.setEmpId(3);
         em.persist(e);
-        
+
         e = new Employee();
         e.setName("M%ke Smith");
         e.setEmpId(4);
@@ -67,7 +67,7 @@ public class TestQueryEscapeCharacters
         em.close();
         super.tearDown();
     }
-    
+
     public void testNormalQuery() {
         performFind ("Employee.findByName", "%Dick", 1);
     }
@@ -77,7 +77,7 @@ public class TestQueryEscapeCharacters
     }
 
     public void testEscapedQuery() {
-        performFind ("Employee.findByNameEscaped", 
+        performFind ("Employee.findByNameEscaped",
                 "M\\%%", 1);
     }
 
@@ -93,7 +93,7 @@ public class TestQueryEscapeCharacters
         // get the Dictionary and check the requiresSearchStringEscapeForLike flag
         OpenJPAEntityManagerFactorySPI ojpaEmf = emf;
         JDBCConfiguration conf = (JDBCConfiguration)ojpaEmf.getConfiguration();
-        
+
         if (conf.getDBDictionaryInstance().
                 requiresSearchStringEscapeForLike == true) {
             return;

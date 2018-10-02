@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -61,7 +61,7 @@ class MatchesExpression
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val.calculateValue(sel, ctx, bstate.state1, _const, bstate.state2);
@@ -103,25 +103,25 @@ class MatchesExpression
             // with '%' and '.' with '_'
             str = replaceEscape(str, _multi, "%", _escape);
             str = replaceEscape(str, _single, "_", _escape);
-            buf.append(" LIKE ").appendValue(str, col, 
+            buf.append(" LIKE ").appendValue(str, col,
                     _const instanceof Parameter ? (Parameter)_const : null);
 
             // escape out characters by using the database's escape sequence
             DBDictionary dict = ctx.store.getDBDictionary();
             if (_escape != null) {
-                if (_escape.equals("\\")) 
+                if (_escape.equals("\\"))
                     buf.append(" ESCAPE '").append(dict.searchStringEscape).append("'");
                 else
                     buf.append(" ESCAPE '").append(_escape).append("'");
             }
-            
+
         }
         sel.append(buf, state.joins);
     }
 
-    /** 
-     * Perform a string replacement with simplistic escape handing. 
-     *  
+    /**
+     * Perform a string replacement with simplistic escape handing.
+     *
      * @param  str      the source string
      * @param  from     the string to find
      * @param  to       the string to replace
@@ -151,7 +151,7 @@ class MatchesExpression
         return repbuf.toString();
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val.selectColumns(sel, ctx, bstate.state1, true);

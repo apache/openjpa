@@ -23,11 +23,11 @@ import java.util.Date;
 import javax.persistence.*;
 
 /**
- * Entity used to test MappedSuperClass which does not have IdClass. 
- * 
+ * Entity used to test MappedSuperClass which does not have IdClass.
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-873">OPENJPA-873</A>
- *  
+ *
  * @author pioneer_ip@yahoo.com
  * @author Fay Wang
  *
@@ -54,23 +54,23 @@ public abstract class CashBaseEntity extends BaseEntity{
     public String getCreateUser() {
         return createUser;
     }
-    
+
     public void setCreateUser(String createUser) {
         this.createUser = createUser;
     }
-    
+
     public Date getCreateTime() {
         return createTime;
     }
-    
+
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
-    
+
     public String getUpdateUser() {
         return updateUser;
     }
-    
+
     public void setUpdateUser(String updateUser) {
         this.updateUser = updateUser;
     }
@@ -78,11 +78,11 @@ public abstract class CashBaseEntity extends BaseEntity{
     public int getVersion() {
         return version;
     }
-    
+
     public Date getUpdateTime() {
         return updateTime;
     }
-    
+
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }

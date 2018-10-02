@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -29,7 +29,7 @@ public class DefGrpEntity {
     @Id
     @GeneratedValue
     private int id;
-    
+
     // NotNull constraint with default validation group
     @NotNull
     private String dgName;
@@ -48,5 +48,5 @@ public class DefGrpEntity {
 
     public String getDgName() {
         return dgName;
-    }    
+    }
 }

@@ -37,7 +37,7 @@ public class EntityA_Embed_Coll_Embed implements Serializable {
 
     @Column(length=30)
     String name;
-    
+
     @Basic(fetch=FetchType.LAZY)
     int age;
 
@@ -48,7 +48,7 @@ public class EntityA_Embed_Coll_Embed implements Serializable {
         @AttributeOverride(name="intVal3", column=@Column(name="A3"))
     })
     protected Embed_Coll_Embed embed;
-    
+
     public int getAge() {
         return age;
     }
@@ -76,7 +76,7 @@ public class EntityA_Embed_Coll_Embed implements Serializable {
     public Embed_Coll_Embed getEmbed() {
         return embed;
     }
-    
+
     public void setEmbed(Embed_Coll_Embed embed) {
         this.embed = embed;
     }

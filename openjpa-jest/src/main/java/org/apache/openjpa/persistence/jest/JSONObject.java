@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -32,8 +32,8 @@ import java.util.Map;
  * Persistent instances have a persistent identity that extends beyond the process lifetime unlike other common
  * identity such as {@linkplain System#identityHashCode(Object) identity hash code} for a Java instance in a JVM.
  * <br>
- * A JSONObject instance must need such a persistent identity.  
- * 
+ * A JSONObject instance must need such a persistent identity.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -42,25 +42,25 @@ public class JSONObject implements JSON {
     private final String _id;
     private final boolean _ref;
     private final Map<String, Object> _values;
-    
+
     public JSONObject(String type, Object id, boolean ref) {
         _type = type;
         _id   = id.toString();
         _ref  = ref;
         _values = new LinkedHashMap<String, Object>();
     }
-    
+
     public void set(String key, Object value) {
         _values.put(key, value);
     }
-    
+
     public void write(PrintWriter writer) {
         writer.println(toString());
     }
     public String toString() {
         return asString(0).toString();
     }
-    
+
     public StringBuilder asString(int indent) {
         StringBuilder buf = new StringBuilder().append(OBJECT_START);
         buf.append(encodeField(_ref ? REF_MARKER : ID_MARKER, ior(), 0));
@@ -77,7 +77,7 @@ public class JSONObject implements JSON {
            .append(OBJECT_END);
         return buf;
     }
-    
+
     /**
      * Encoding a JSON field is a quoted field name, followed by a :, followed by a value (which itself can be JSON)
      * @param field
@@ -90,22 +90,22 @@ public class JSONObject implements JSON {
               .append(VALUE_SEPARATOR)
               .append(quoteFieldValue(value, indent));
     }
-    
+
     private static StringBuilder newIndent(int indent) {
         char[] tabs = new char[indent*4];
         Arrays.fill(tabs, SPACE);
         return new StringBuilder().append(tabs);
     }
-    
-    
+
+
     StringBuilder ior() {
         return new StringBuilder(_type).append('-').append(_id);
     }
-    
+
     private static StringBuilder quoteFieldName(String s) {
         return new StringBuilder().append(QUOTE).append(s).append(QUOTE);
     }
-    
+
     /**
      * Creates a StringBuilder for the given value.
      * If the value is null, outputs <code>null</code> without quote
@@ -120,29 +120,29 @@ public class JSONObject implements JSON {
         if (o instanceof JSON) return ((JSON)o).asString(indent);
         return quoted(o.toString());
     }
-    
+
     private static StringBuilder quoted(Object o) {
         if (o == null) return new StringBuilder(NULL_LITERAL);
         return new StringBuilder().append(QUOTE).append(o.toString()).append(QUOTE);
     }
-    
+
     /**
      * An array of objects. Members can be JSON too.
-     *  
+     *
      * @author Pinaki Poddar
      *
      */
     public static class Array implements JSON {
         private List<Object> _members = new ArrayList<Object>();
-        
+
         public void add(Object o) {
             _members.add(o);
         }
-        
+
         public String toString() {
             return asString(0).toString();
         }
-        
+
         public StringBuilder asString(int indent) {
             StringBuilder buf = new StringBuilder().append(ARRAY_START);
             StringBuilder tab = JSONObject.newIndent(indent+1);
@@ -151,35 +151,35 @@ public class JSONObject implements JSON {
                 buf.append(NEWLINE).append(tab);
                 if (o instanceof JSON)
                     buf.append(((JSON)o).asString(indent+1));
-                else 
+                else
                     buf.append(o);
             }
             buf.append(NEWLINE)
                .append(JSONObject.newIndent(indent))
                .append(ARRAY_END);
-           
+
             return buf;
         }
     }
-    
+
     /**
      * A map whose key or value can be JSON.
      * A map is encoded as JSON as an array of entries. Each entry is a key value pair separated with :
-     * 
+     *
      * @author Pinaki Poddar
      *
      */
     public static class KVMap implements JSON {
         private Map<Object,Object> _entries = new LinkedHashMap<Object,Object>();
-        
+
         public void put(Object k, Object v) {
             _entries.put(k,v);
         }
-        
+
         public String toString() {
             return asString(0).toString();
         }
-        
+
         public StringBuilder asString(int indent) {
             StringBuilder buf = new StringBuilder().append(ARRAY_START);
             StringBuilder tab = JSONObject.newIndent(indent+1);
@@ -189,7 +189,7 @@ public class JSONObject implements JSON {
                 Object key = e.getKey();
                 if (key instanceof JSON) {
                     buf.append(((JSON)key).asString(indent+1));
-                } else { 
+                } else {
                     buf.append(key);
                 }
                 buf.append(VALUE_SEPARATOR);
@@ -199,7 +199,7 @@ public class JSONObject implements JSON {
                 } else {
                     buf.append(value);
                 }
-                
+
             }
             buf.append(NEWLINE)
                .append(JSONObject.newIndent(indent))
@@ -207,7 +207,7 @@ public class JSONObject implements JSON {
             return buf;
         }
     }
-    
+
     public static void main(String[] args) throws Exception {
         JSONObject o = new JSONObject("Person", 1234, false);
         JSONObject r = new JSONObject("Person", 1234, true);

@@ -25,7 +25,7 @@ import javax.persistence.Query;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestXmlDelimIdResultSets 
+public class TestXmlDelimIdResultSets
         extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
@@ -35,7 +35,7 @@ public class TestXmlDelimIdResultSets
     Car2 car2;
     Pontiac2 pontiac2;
     Chevrolet2 chevrolet2;
-    
+
     @Override
     public void setUp() throws Exception {
         setSupportedDatabases(
@@ -44,7 +44,7 @@ public class TestXmlDelimIdResultSets
         if (isTestsDisabled()) {
             return;
         }
-        
+
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.xml.Car.class,
             org.apache.openjpa.persistence.delimited.identifiers.xml.Pontiac.class,
@@ -54,11 +54,11 @@ public class TestXmlDelimIdResultSets
             org.apache.openjpa.persistence.delimited.identifiers.xml.Chevrolet2.class,
             DROP_TABLES);
         assertNotNull(emf);
-        
+
         em = emf.createEntityManager();
         assertNotNull(em);
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
@@ -71,8 +71,8 @@ public class TestXmlDelimIdResultSets
     @Override
     protected String getPersistenceUnitName() {
         return "delimited-identifiers-result-set-xml";
-    }    
-    
+    }
+
     private void createChevrolet(int id) {
         chevrolet = new Chevrolet(id);
         chevrolet.setModel("Malibu");
@@ -92,29 +92,29 @@ public class TestXmlDelimIdResultSets
         createPontiac(id);
         id++;
         createChevrolet(id);
-        
+
         em.getTransaction().begin();
         em.persist(pontiac);
         em.persist(chevrolet);
         em.getTransaction().commit();
-        
+
         runQueries();
     }
-    
+
     private void runQueries() {
         em.clear();
         resultSetQuery();
     }
-    
+
     private void resultSetQuery() {
-        String query = 
+        String query =
             "SELECT c.id, c.\"car model\", c.\"car color\", " +
             "c.\"discr col\", c.\"model year\" " +
             "FROM \"XmlCar\" c ";
         Query q = em.createNativeQuery(query,"XmlCarResultSet");
         List<Object[]> results = (List<Object[]>)q.getResultList();
         assertEquals(2,results.size());
-        
+
         for (Object[] result : results) {
             assertEquals(2, result.length);
             assertTrue(result[0] instanceof Car2);

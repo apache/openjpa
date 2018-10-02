@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
@@ -126,12 +126,12 @@ public class TestEntityTypeExpression extends AbstractTestCase {
             setParameter("value", params).getResultList();
         user = rs.get(0);
         assertEquals("Jacob", user.getName());
-        
+
         query = "SELECT TYPE(e) FROM MaleUser e where TYPE(e) = MaleUser";
         rs = em.createQuery(query).getResultList();
         Object type = rs.get(0);
         assertEquals(type, MaleUser.class);
-        
+
         query = "SELECT TYPE(e) FROM CompUser e where TYPE(e) = ?1";
         rs = em.createQuery(query).
             setParameter(1, FemaleUser.class).getResultList();
@@ -149,7 +149,7 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         List<Object> rs2 = em.createQuery(query).getResultList();
         type = ((Object[]) rs2.get(0))[1];
         assertEquals(type, FemaleUser.class);
-        
+
         query = "SELECT e FROM CompUser e where TYPE(e) = :type " +
             " ORDER BY e.name";
         rs =  em.createQuery(query).
@@ -167,14 +167,14 @@ public class TestEntityTypeExpression extends AbstractTestCase {
             setParameter(1, FemaleUser.class).getResultList();
         user = rs.get(0);
         assertEquals("Famzy", user.getName());
-        
+
         query = "SELECT e FROM CompUser e where TYPE(e) in (?1)" +
             " ORDER BY e.name DESC";
         rs = em.createQuery(query).
             setParameter(1, MaleUser.class).getResultList();
         user = rs.get(0);
         assertEquals("Ugo", user.getName());
-        
+
         query = "SELECT e FROM CompUser e where TYPE(e) in (?1, ?2)" +
                 " ORDER BY e.name DESC";
         rs = em.createQuery(query).
@@ -197,7 +197,7 @@ public class TestEntityTypeExpression extends AbstractTestCase {
             "SELECT TYPE(e) FROM CompUser e where TYPE(e) = MaleUser",
             "SELECT TYPE(e) FROM CompUser e",
             "SELECT TYPE(a.user) FROM Address a",
-            "SELECT MaleUser FROM CompUser e", 
+            "SELECT MaleUser FROM CompUser e",
             "SELECT MaleUser FROM Address a",
             "SELECT " +
                 " CASE TYPE(e) WHEN FemaleUser THEN 'Female' " +
@@ -205,7 +205,7 @@ public class TestEntityTypeExpression extends AbstractTestCase {
                 " END " +
                 " FROM CompUser e",
         };
-        
+
         for (int i = 0; i < queries.length; i++) {
             query = queries[i];
             List<Object> rs1 = em.createQuery(query).getResultList();

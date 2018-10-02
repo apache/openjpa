@@ -34,7 +34,7 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
     EntityI2 entityI2;
     EntityI3 entityI3;
     EntityI4 entityI4;
-    
+
     @Override
     public void setUp() throws Exception {
         setSupportedDatabases(
@@ -43,7 +43,7 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
         if (isTestsDisabled()) {
             return;
         }
-        
+
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.EntityH.class,
             org.apache.openjpa.persistence.delimited.identifiers.EntityI.class,
@@ -52,11 +52,11 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
             org.apache.openjpa.persistence.delimited.identifiers.EntityI4.class,
             DROP_TABLES);
         assertNotNull(emf);
-        
+
         em = emf.createEntityManager();
         assertNotNull(em);
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
@@ -70,32 +70,32 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
     protected OpenJPAEntityManagerFactorySPI createEMF(final Object... props) {
         return createNamedEMF("delimited-identifiers", props);
     }
-    
+
     public void createHandI(int id) {
         entityH = new EntityH(id);
         entityH.setName("eh");
         entityH.setSecName("secName1");
-        
+
         entityI = new EntityI(id);
         entityI.setName("ei");
-        
+
         entityI2 = new EntityI2(id);
         entityI2.setName("ei2");
-        
+
         entityI3 = new EntityI3(id);
         entityI3.setName("ei3");
-        
+
         entityI4 = new EntityI4(id);
         entityI4.setName("ei4");
-        
+
         entityH.addEntityI(entityI);
         entityI.addEntityH(entityH);
-        
+
         entityH.setEntityI2(entityI2);
-        
+
         entityH.addMapValues(entityI3, entityI4);
         entityH.addMap2Values(entityI4, entityI3);
-        
+
         entityI2.setEntityI3(entityI3);
     }
 
@@ -103,7 +103,7 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
         id++;
         createHandI(id);
         // TODO: Maybe create another one.
-        
+
         em.getTransaction().begin();
         em.persist(entityH);
         em.persist(entityI);
@@ -111,10 +111,10 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
         em.persist(entityI3);
         em.persist(entityI4);
         em.getTransaction().commit();
-        
+
         runQueries();
     }
-    
+
     private void runQueries() {
         em.clear();
         queryJoinTable();
@@ -125,7 +125,7 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
         em.clear();
         queryMapValue();
     }
-    
+
     private void queryJoinTable() {
         String query =
             "SELECT h " +
@@ -137,7 +137,7 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
     }
 
     private void queryJoinColumn() {
-        String query = 
+        String query =
             "SELECT h " +
             "FROM EntityH h JOIN h.entityI2 i2 " +
             "WHERE i2.name = 'ei2'";
@@ -147,7 +147,7 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
     }
 
     private void querySecondaryTableValue() {
-        String query = 
+        String query =
             "SELECT h " +
             "FROM EntityH h " +
             "WHERE h.secName = 'secName1'";
@@ -165,6 +165,6 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
         List<EntityH> results = (List<EntityH>)q.getResultList();
         assertEquals(1,results.size());
     }
-    
-    
+
+
 }

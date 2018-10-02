@@ -61,11 +61,11 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * entities are explicitly locked). This property may be passed as an argument
  * to the methods of the EntityManager and Query interfaces that allow lock
  * modes to be specified or used with the NamedQuery annotation.
- * 
+ *
  * @since 2.0
  */
 public abstract class LockScopeTestCase extends SQLListenerTestCase {
-    
+
     protected final String Any              = ".*";
     protected final String Select           = "SELECT.*FROM.*";
     protected final String SelectVersion    = "SELECT.*version.*FROM.*";
@@ -78,8 +78,8 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     protected final String NoForUpdate      = ForUpdateClause + "{0}";
     protected final String DB2LockClause    = "(" + ForUpdateRex +
                                               "|FOR READ ONLY WITH R. USE AND KEEP (UPDATE|EXCLUSIVE) LOCKS)";
-    protected final String DB2Lock          = DB2LockClause + "{1}"; 
-    protected final String NoDB2Lock        = DB2LockClause + "{0}"; 
+    protected final String DB2Lock          = DB2LockClause + "{1}";
+    protected final String NoDB2Lock        = DB2LockClause + "{0}";
 
     protected List<String> empTableName = new ArrayList<String>();;
 
@@ -90,7 +90,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     protected String getPersistenceUnitName() {
         return "locking-test";
     }
-    
+
     protected void commonSetUp(Class<?>... eClasses ) {
         normalProps = new HashMap<String, Object>();
         extendedProps = new HashMap<String, Object>();
@@ -153,16 +153,16 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     }
 
     public void assertLockTestSQLs(String... expected) {
-        Log log = getDumpSQLLog(); 
+        Log log = getDumpSQLLog();
         if( log.isTraceEnabled()) {
             log.trace("\r\n" + toString(sql));
             return;
         }
         assertAllSQLAnyOrder(expected);
     }
-    
+
     public void assertLockTestNoSQLs(String... expected) {
-        Log log = getDumpSQLLog(); 
+        Log log = getDumpSQLLog();
         if( log.isTraceEnabled()) {
             log.trace("\r\n" + toString(sql));
             return;
@@ -181,7 +181,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     // for basic test:
     //      [basic=0,sectable=1,singletable=2,join=4,eleColl=5,eleCollEager=6][normal=0|extended=1][entity#]
     // For 1x1/1xm tests:
-    //      [1x1=1,1xM=2] [uni=1|bi=2] [left=1|right=2] [normal=1|join=2] [default=0|lazy=1|eager=2] 
+    //      [1x1=1,1xM=2] [uni=1|bi=2] [left=1|right=2] [normal=1|join=2] [default=0|lazy=1|eager=2]
     //          [normal=0|extended=1] [n-th entity]
     protected <T> void commonLockTest(String testName, Class<T> type, int id0, boolean extended, String queryString,
             String namedQueryString, AssertCallback verify) {

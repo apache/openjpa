@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.oracle;
 
@@ -27,7 +27,7 @@ import javax.persistence.Table;
 /**
  * A persistent entity to verify IDENTITY strategy for primary key value
  * generation with Oracle Database.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -37,20 +37,20 @@ public class PObject {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
-	
+
 	private String name;
-	
+
 	public long getId() {
 		return id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String s) {
 		this.name = s;
 	}
-	
-	
+
+
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -37,11 +37,11 @@ public class CreditCard {
 
     @OneToOne
 	private Customer customer;
-	
+
 	@OneToMany
 	@OrderColumn
 	private List<TransactionHistory> transactionHistory;
-	
+
     public long getId() {
         return id;
     }
@@ -49,20 +49,20 @@ public class CreditCard {
     public List<TransactionHistory> getTransactionHistory() {
         return transactionHistory;
     }
-    
-    public void setTransactionHistory(List<TransactionHistory> 
+
+    public void setTransactionHistory(List<TransactionHistory>
         transactionHistory) {
         this.transactionHistory = transactionHistory;
     }
-    
+
     public void addTransactionHistory(TransactionHistory transaction) {
         transactionHistory.add(transaction);
     }
-	
+
     public Customer getCustomer() {
         return customer;
     }
-    
+
     public void setCustomerr(Customer customer) {
         this.customer = customer;
     }

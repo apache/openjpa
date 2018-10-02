@@ -33,20 +33,20 @@ public class NoDetachedStateEntityFieldAccess {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	int id;
-	
+
 	@Version
 	int version;
-	
+
 	@Basic
 	String string;
-	
+
 	@ManyToOne
 	NoDetachedStateEntityPropertyAccess relationship;
-	
+
 	public NoDetachedStateEntityFieldAccess(){
-		
+
 	}
-	
+
 	public void setString(String s){
 		string = s;
 	}

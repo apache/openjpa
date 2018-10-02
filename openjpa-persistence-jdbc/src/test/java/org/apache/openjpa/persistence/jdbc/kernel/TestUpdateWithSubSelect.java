@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * <br>
  * The solution is {@link DBDictionary#toBulkOperation()} modified to accommodate
  * scenarios that selects from a single table but may involve joins of multiple tables.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -44,12 +44,12 @@ public class TestUpdateWithSubSelect extends SQLListenerTestCase {
         super.setUp(CLEAR_TABLES, Person.class, Address.class);
         DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
         setTestsDisabled(!dict.supportsSubselect || !dict.allowsAliasInBulkClause);
-        getLog().trace(this + " is disabled because " + dict.getClass().getSimpleName() + 
+        getLog().trace(this + " is disabled because " + dict.getClass().getSimpleName() +
           " either both or one of supportsSubselect and allowsAliasInBulkClause is false");
     }
-    
+
     /**
-     * Tests that a bulk update issues a single SQL and that uses a join. 
+     * Tests that a bulk update issues a single SQL and that uses a join.
      */
     public void testUpdateBySubSelect() {
         String jpql = "UPDATE Person p SET p.age = :age WHERE p.address.city = :city";

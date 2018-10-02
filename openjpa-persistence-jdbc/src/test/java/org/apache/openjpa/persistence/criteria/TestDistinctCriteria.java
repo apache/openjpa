@@ -39,36 +39,36 @@ public class TestDistinctCriteria extends CriteriaTest {
             e.printStackTrace();
         }
     }
-    
+
     public void tearDown() throws Exception {
         try {
             deleteDataForTestDistinct();
         } catch (Exception e) {
-            
+
         }
         super.tearDown();
     }
-    
+
     void createDataForTestDistinct() {
         em.getTransaction().begin();
-        
+
         Address a1 = new Address(); a1.setState("NY");
         Address a2 = new Address(); a2.setState("RI");
-        
+
         Customer c1 = new Customer(); c1.setAddress(a1);
         Customer c2 = new Customer(); c2.setAddress(a2);
-        
-        Order o1 = new Order(); o1.setCustomer(c1); 
-        Order o2 = new Order(); o2.setCustomer(c1); 
-        Order o3 = new Order(); o3.setCustomer(c2); 
-        
+
+        Order o1 = new Order(); o1.setCustomer(c1);
+        Order o2 = new Order(); o2.setCustomer(c1);
+        Order o3 = new Order(); o3.setCustomer(c2);
+
         Set<Order> orders = new HashSet<Order>();
         orders.add(o1); orders.add(o2);
         c1.setOrders(orders);
         orders.clear();
         orders.add(o3);
         c2.setOrders(orders);
-        
+
         em.persist(c1);
         em.persist(c2);
         em.persist(a1);
@@ -76,10 +76,10 @@ public class TestDistinctCriteria extends CriteriaTest {
         em.persist(o1);
         em.persist(o2);
         em.persist(o3);
-        
+
         em.getTransaction().commit();
     }
-    
+
     void deleteDataForTestDistinct() {
         em.getTransaction().begin();
         em.createQuery("delete from Customer o").executeUpdate();
@@ -87,7 +87,7 @@ public class TestDistinctCriteria extends CriteriaTest {
         em.createQuery("delete from Order o").executeUpdate();
         em.getTransaction().commit();
     }
-        
+
 
     public void testDistinct() {
         CriteriaQuery<Customer> cq = cb.createQuery(Customer.class);
@@ -97,13 +97,13 @@ public class TestDistinctCriteria extends CriteriaTest {
         cq.select(customer).distinct(true);
         TypedQuery<Customer> distinctQuery = em.createQuery(cq);
         distinctQuery.setMaxResults(20);
-        List<Customer> distinctResult = distinctQuery.getResultList();  
+        List<Customer> distinctResult = distinctQuery.getResultList();
         assertEquals(2, distinctResult.size());
-        
+
         cq.distinct(false);
         TypedQuery<Customer> indistinctQuery = em.createQuery(cq);
         indistinctQuery.setMaxResults(20);
-        List<Customer> indistinctResult = indistinctQuery.getResultList();  
+        List<Customer> indistinctResult = indistinctQuery.getResultList();
         assertEquals(3, indistinctResult.size());
     }
 }

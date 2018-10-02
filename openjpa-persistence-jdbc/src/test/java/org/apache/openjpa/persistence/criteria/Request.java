@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -26,9 +26,9 @@ import javax.persistence.*;
 public class Request {
      @Id
      int id;
-     
+
      private short status;
-    
+
      @ManyToOne(optional = false, fetch = FetchType.LAZY)
      private Account account;
 
@@ -37,11 +37,11 @@ public class Request {
      public int getId() {
          return id;
      }
-     
+
      public void setId(int id) {
          this.id = id;
      }
-     
+
      public short getStatus() {
          return status;
      }
@@ -50,7 +50,7 @@ public class Request {
          this.status = status;
      }
 
-     
+
      public Account getAccount() {
          return account;
      }
@@ -58,13 +58,13 @@ public class Request {
      public void setAccount(Account account) {
          this.account = account;
      }
-    
+
      public Date getRequestTime() {
          return requestTime;
      }
-     
+
      public void setRequestTime(Date requestTime) {
          this.requestTime = requestTime;
      }
-     
+
 }

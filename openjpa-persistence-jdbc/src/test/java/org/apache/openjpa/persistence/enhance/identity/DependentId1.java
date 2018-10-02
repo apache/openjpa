@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -24,30 +24,30 @@ import javax.persistence.*;
 public class DependentId1 {
     String name;
     long empPK;
-    
+
     public DependentId1() {}
-    
+
     public DependentId1(String name, long empPK) {
         this.name = name;
         this.empPK = empPK;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setEmpPK(long empPK) {
         this.empPK = empPK;
     }
-    
+
     public long getEmpPK() {
         return empPK;
     }
-    
+
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof DependentId1)) return false;
@@ -57,12 +57,12 @@ public class DependentId1 {
         if (name == null && d.getName() != null) return false;
         return true;
     }
-    
+
     public int hashCode() {
         int ret = 0;
         ret = (int) (ret * 31 + empPK);
         ret = ret * 31 + name.hashCode();
         return ret;
     }
-    
+
 }

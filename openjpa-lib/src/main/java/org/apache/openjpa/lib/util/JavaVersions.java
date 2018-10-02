@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -29,7 +29,7 @@ import java.security.AccessController;
  *
  * @author Abe White
  * @author Pinaki Poddar
- * 
+ *
  */
 public class JavaVersions {
 
@@ -42,7 +42,7 @@ public class JavaVersions {
 
     static {
         String specVersion = AccessController.doPrivileged(
-            J2DoPrivHelper.getPropertyAction("java.specification.version")); 
+            J2DoPrivHelper.getPropertyAction("java.specification.version"));
         if ("1.2".equals(specVersion))
             VERSION = 2;
         else if ("1.3".equals(specVersion))
@@ -100,7 +100,7 @@ public class JavaVersions {
             return EMPTY_CLASSES;
         }
     }
-    
+
     /**
      * Extracts the class from the given argument, if possible. Null otherwise.
      */

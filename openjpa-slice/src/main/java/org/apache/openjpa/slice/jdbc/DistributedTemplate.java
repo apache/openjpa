@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.jdbc;
 
@@ -29,26 +29,26 @@ import java.util.List;
 
 /**
  * A template for multiple Statements being executed by multiple connections.
- * 
- * @author Pinaki Poddar 
+ *
+ * @author Pinaki Poddar
  *
  */
-public class DistributedTemplate<T extends Statement> 
+public class DistributedTemplate<T extends Statement>
 	implements Statement, Iterable<T> {
 
-    
+
     protected List<T> stmts = new ArrayList<T>();
 	protected final DistributedConnection con;
 	protected T master;
-	
+
 	public DistributedTemplate(DistributedConnection c) {
 		con = c;
 	}
-	
+
 	public Iterator<T> iterator() {
 		return stmts.iterator();
 	}
-	
+
 	public void add(T s) {
 		if (stmts.isEmpty())
 			master = s;
@@ -61,7 +61,7 @@ public class DistributedTemplate<T extends Statement>
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void addBatch(String sql) throws SQLException {
 		for (T s:this)
 			s.addBatch(sql);
@@ -268,7 +268,7 @@ public class DistributedTemplate<T extends Statement>
 		for (T s:this)
 			s.setMaxRows(n);
 	}
-	
+
 	public void setQueryTimeout(int n) throws SQLException {
 		for (T s:this)
 			s.setQueryTimeout(n);
@@ -298,13 +298,13 @@ public class DistributedTemplate<T extends Statement>
     public void setPoolable(boolean arg0) throws SQLException {
         throw new UnsupportedOperationException();
     }
-    
+
     // Java 7 methods follow
-    
+
     public boolean isCloseOnCompletion() throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public void closeOnCompletion() throws SQLException{
     	throw new UnsupportedOperationException();
     }

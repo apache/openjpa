@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -48,7 +48,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class CacheMap
     implements Map {
- 
+
     /**
      * The map for non-expired and non-pinned references.
      */
@@ -78,10 +78,10 @@ public class CacheMap
     public CacheMap() {
         this(false, 1000);
     }
-    
+
     /**
      * Create a cache map with a size of 1000.
-     * 
+     *
      * @param lru if true, create a LRU cache map otherwise a non-LRU map will be created.
      */
     public CacheMap(boolean lru) {
@@ -412,15 +412,15 @@ public class CacheMap
         }
     }
 
-    public void putAll(Map map) { 
+    public void putAll(Map map) {
         putAll(map, true);
     }
-    
+
     public void putAll(Map map, boolean replaceExisting) {
         Map.Entry entry;
         for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
             entry = (Map.Entry) itr.next();
-            if(replaceExisting || !containsKey(entry.getKey())) { 
+            if(replaceExisting || !containsKey(entry.getKey())) {
                 put(entry.getKey(), entry.getValue());
             }
         }

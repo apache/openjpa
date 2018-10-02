@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -28,45 +28,45 @@ import org.junit.Ignore;
 
 /**
  * Tests that if any of the slices fail then none of the slices are committed.
- * 
+ *
  * The test setup assumes that configuration is created for each slice to store
- * cars from a particular Manufacturer. 
- * 
+ * cars from a particular Manufacturer.
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestTransaction extends SliceTestCase {
     private static final Random rng = new Random(System.currentTimeMillis());
     Manufacturer[] manufacturers;
-    
+
     protected String getPersistenceUnitName() {
         return System.getProperty("unit","car");
     }
 
 
     public void setUp() throws Exception {
-        super.setUp(CLEAR_TABLES, 
-                Car.class, Manufacturer.class, 
+        super.setUp(CLEAR_TABLES,
+                Car.class, Manufacturer.class,
                 "openjpa.slice.DistributionPolicy", CarDistributorPolicy.class.getName());
         DistributedConfiguration conf = (DistributedConfiguration)emf.getConfiguration();
         List<Slice> slices = conf.getSlices((Slice.Status[])null);
         assertFalse(slices.isEmpty());
         manufacturers = persistManufacturers(slices);
     }
-    
+
     public void testCommitsAreAtomic() {
         int nCarStart = count(Car.class);
         persistCars(false);
         int nCarStage1 = count(Car.class);
         assertEquals(nCarStart+manufacturers.length, nCarStage1);
-        
+
         for (int i = 0; i < 10; i++) {
             persistCars(true);
             int nCarStage2 = count(Car.class);
             assertEquals(nCarStage1, nCarStage2);
         }
     }
-    
+
     Manufacturer getManufacturer(EntityManager em, Slice slice) {
         Manufacturer m = em.find(Manufacturer.class, slice.getName());
         if (m == null) {
@@ -76,9 +76,9 @@ public class TestTransaction extends SliceTestCase {
         }
         return m;
     }
-    
+
     /**
-     * Creates the manufacturers each per given slice. 
+     * Creates the manufacturers each per given slice.
      */
     Manufacturer[] persistManufacturers(List<Slice> slices) {
         Manufacturer[] manufacturers = new Manufacturer[slices.size()];
@@ -91,9 +91,9 @@ public class TestTransaction extends SliceTestCase {
         em.getTransaction().commit();
         return manufacturers;
     }
-    
+
     /**
-     * Create new car for each manufacture. 
+     * Create new car for each manufacture.
      * @param introduceError if true then one of the car will carry null VIN.
      */
     void persistCars(boolean introduceError) {
@@ -120,14 +120,14 @@ public class TestTransaction extends SliceTestCase {
             }
         }
     }
-    
+
     Car newCar(Manufacturer maker) {
         Car car = new Car();
         car.setVin(maker.getName().charAt(0) + randomString(6));
         car.setMaker(maker);
         return car;
     }
-    
+
     String randomString(int n) {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < n; i++) {
@@ -135,7 +135,7 @@ public class TestTransaction extends SliceTestCase {
         }
         return s.toString();
     }
-    
+
     /**
      * A distribution policy that selects the slice based on Manufacturer.
      * @author Pinaki Poddar

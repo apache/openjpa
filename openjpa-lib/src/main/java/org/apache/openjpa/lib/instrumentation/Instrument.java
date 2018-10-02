@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.instrumentation;
 
@@ -37,30 +37,30 @@ public interface Instrument {
     /**
      * Sets options to specify for the instrument in standard string form.
      * ex.  DataCache(Options='Start=true')
-     * @param options options 
+     * @param options options
      */
     public void setOptions(String options);
 
     /**
-     * Gets the context of the instrument.  Typically, a reference to a broker 
+     * Gets the context of the instrument.  Typically, a reference to a broker
      * or broker factory.
      * @return the context associated with the instrument.
      */
     public Object getContext();
-    
+
     /**
-     * Sets the context of the instrument.  Typically, a reference to a broker 
+     * Sets the context of the instrument.  Typically, a reference to a broker
      * or broker factory.
      * @return the context associated with the instrument.
      */
     public void setContext(Object context);
-    
+
     /**
      * Sets the instrumentation provider for the instrument.
      * @param provider instrumentation provider of the instrument
      */
     public void setProvider(InstrumentationProvider provider);
-    
+
     /**
      * Gets the instrumentation provider for the instrument.
      * @return instrumentation provider of the instrument
@@ -90,13 +90,13 @@ public interface Instrument {
      * @param started
      */
     public void setStarted(boolean started);
-    
+
     /**
      * Starts the instrument.  Typically this will be performed through the provider,
      * but in some cases an instrument will have its own specialized startup.
      */
     public void start();
-    
+
     /**
      * Starts the instrument.  Typically this will be performed through the provider,
      * but in some cases an instrument will have its own specialized shutdown.

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.conf;
 
@@ -38,8 +38,8 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
 public class JDBCProductDerivation extends AbstractProductDerivation
     implements OpenJPAProductDerivation {
 
-    public static final String PREFIX = "openjpa.jdbc"; 
-    
+    public static final String PREFIX = "openjpa.jdbc";
+
     public void putBrokerFactoryAliases(Map<String,String> m) {
         m.put("jdbc", JDBCBrokerFactory.class.getName());
     }
@@ -56,7 +56,7 @@ public class JDBCProductDerivation extends AbstractProductDerivation
         }
         return false;
     }
-    
+
     /**
      * Hint keys correspond to some (not all) bean-style mutable property name in JDBCFetchConfiguration.
      * The fully qualified key is prefixed with <code>openjpa.jdbc</code>.
@@ -70,11 +70,11 @@ public class JDBCProductDerivation extends AbstractProductDerivation
         _hints.add(PREFIX + ".LRSSize");
         _hints.add(PREFIX + ".ResultSetType");
         _hints.add(PREFIX + ".SubclassFetchMode");
-        
+
         _hints.add(MariaDBDictionary.SELECT_HINT);
         _hints.add(MySQLDictionary.SELECT_HINT);
         _hints.add(OracleDictionary.SELECT_HINT);
-        
+
         _hints = Collections.unmodifiableSet(_hints);
     }
 

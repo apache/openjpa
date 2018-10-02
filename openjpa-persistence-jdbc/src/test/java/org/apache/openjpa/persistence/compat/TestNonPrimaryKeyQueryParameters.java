@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -28,15 +28,15 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**
  * Tests that find() queries that use non-primary keys can be cached
- * 
+ *
  *
  * <b>Compatible testcases</b> are used to test various backwards compatibility scenarios between JPA 2.0 and JPA 1.2
- * 
+ *
  * <p>The following scenarios are tested:
  * <ol>
  * <li>query.setParameter()
  * </ol>
- * <p> 
+ * <p>
  * <b>Note(s):</b>
  * <ul>
  * <li>The proper openjpa.Compatibility value(s) must be provided in order for the testcase(s) to succeed
@@ -95,7 +95,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
         } finally {
             em.close();
         }
-    } 
+    }
 
     private void createDepartment(String deptName) {
         if (count(Department.class) > 0)
@@ -124,7 +124,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
         em.close();
 
     }
-    
+
     private void createInvoice() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -138,7 +138,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
         }
         em.flush();
         tran.commit();
-        em.close();        
-    }   
+        em.close();
+    }
 }
 

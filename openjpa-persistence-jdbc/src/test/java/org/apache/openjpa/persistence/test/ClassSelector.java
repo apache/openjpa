@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.test;
 
@@ -34,9 +34,9 @@ import serp.bytecode.Project;
  * a root directory or a single file. Uses serp bytecode library for reading the
  * bytecode. The classes are not loaded in Java Virtual Machine and hence
  * dependent classes need not be in the classpath.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class ClassSelector {
 	private List<String> _supers = new ArrayList<String>();
@@ -45,13 +45,13 @@ public class ClassSelector {
 
 	/**
 	 * Prints the class names that satisfy the following criteria
-	 *   extends org.apache.openjpa.persistence.test.SingleEMFTestCase or 
+	 *   extends org.apache.openjpa.persistence.test.SingleEMFTestCase or
 	 *           junit.framework.TestCase
 	 *   and annotated with org.apache.openjpa.persistence.test.AllowFailure
-	 *   
+	 *
      * @param args the root directory of the class files to be scanned. If no
 	 * argument is given then assumes the current directory.
-	 * 
+	 *
 	 */
 	public static void main(String[] args) throws Exception {
 		String dir = (args.length == 0) ? System.getProperty("user.dir")
@@ -67,26 +67,26 @@ public class ClassSelector {
             .addAnnotation("org.apache.openjpa.persistence.test.AllowFailure");
 		List<String> names = reader.list(new File(dir), true);
 		String spec = reader.getSpecification();
-		System.err.println("Found " + names.size() + " classes under " 
+		System.err.println("Found " + names.size() + " classes under "
 				+ dir + (spec.length() > 0 ? " that" : ""));
 		System.err.println(spec);
 		for (String name : names)
 			System.err.println(name);
 	}
-	
+
 	/**
 	 * List all the class names that match the selection.
-	 * 
+	 *
 	 * @param file a root file or directory
 	 * @param recursive if true scans all directory recursively
-	 * @return list of class names that match the selection. 
+	 * @return list of class names that match the selection.
 	 */
 	public List<String> list(File file, boolean recursive) {
 		List<String> names = new ArrayList<String>();
 		list(file, recursive, names);
 		return names;
 	}
-	
+
 	private void list(File file, boolean recursive, List<String> names) {
 		if (file.isDirectory()) {
 			if (recursive) {
@@ -139,7 +139,7 @@ public class ClassSelector {
 	private String select(File file) {
 		try {
 			BCClass bcls = new Project().loadClass(file);
-			if (applyInheritanceFilter(bcls) 
+			if (applyInheritanceFilter(bcls)
 			 && applyInterfaceFilter(bcls)
 			 && applyAnnotationFilter(bcls))
 				return bcls.getName();
@@ -154,7 +154,7 @@ public class ClassSelector {
 	 * Affirms if super class of the given class matches any of the
 	 * selection filter names. If no super class name has been set for
 	 * selection then return true.
-	 * 
+	 *
 	 * @see #addSuper(String)
 	 */
 	private boolean applyInheritanceFilter(BCClass bcls) {
@@ -168,7 +168,7 @@ public class ClassSelector {
 	 * Affirms if interfaces of the given class match any of the
 	 * selection filter names. If no interface name has been set for
 	 * selection then return true.
-	 * 
+	 *
 	 * @see #addInterface(String)
 	 */
 	private boolean applyInterfaceFilter(BCClass bcls) {
@@ -187,7 +187,7 @@ public class ClassSelector {
      * Affirms if annotations of the given class or its methods match any of the
 	 * selection filter names. If no annotation name has been set for
 	 * selection then return true.
-	 * 
+	 *
 	 * @see #addAnnotation(String)
 	 */
 	private boolean applyAnnotationFilter(BCClass bcls) {
@@ -213,7 +213,7 @@ public class ClassSelector {
 				return true;
 		return false;
 	}
-	
+
 	/**
 	 * Gets a printable description of the currently set selection criteria.
 	 */

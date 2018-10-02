@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.test;
 
@@ -28,17 +28,17 @@ import org.apache.openjpa.persistence.jdbc.update.TestParentChild;
 /**
  * Aids to run a single test under different combination of configuration
  * parameters.
- * 
+ *
  * Each configurable property can be registered to this receiver with all its
  * possible values. This class generates all combinations of all the possible
- * property values as configuration and invokes the same test with each 
+ * property values as configuration and invokes the same test with each
  * configuration combination.
  * The properties can be designated as <em>runtime</code> to be included in
  * combination for execution but excluded from configuration.
- * 
+ *
  *  For example,
  *  @see TestParentChild
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -47,10 +47,10 @@ public class CombinatorialTestHelper {
 	private List<String> propertyKeys;
 	private List currentOption;
 	private BitSet runtimeKeys = new BitSet();
-	
+
 	private List[] combos;
 	private int cursor;
-	
+
 	public CombinatorialTestHelper() {
 		geneartor = new CombinationGenerator();
 		propertyKeys = new ArrayList<String>();
@@ -59,29 +59,29 @@ public class CombinatorialTestHelper {
 		combos = null;
 		cursor = 0;
 	}
-	
+
 	/**
 	 * Generates the key-value property array as expected by its superclass
 	 * by appending the current combinatorially generated properties.
-	 * 
-	 * The important side effect of this method is to set the current 
+	 *
+	 * The important side effect of this method is to set the current
 	 * configuration options.
-	 * 
+	 *
      * If no property is configured for combinatorial generation then returns
 	 * the given list as it is.
-	 * 
+	 *
 	 */
 	Object[] setCombinatorialOption(Object[] props) {
-		if (propertyKeys.isEmpty() || 
+		if (propertyKeys.isEmpty() ||
 			propertyKeys.size() == runtimeKeys.cardinality())
 			return props;
-		
+
 		if (combos == null) {
 			combos = geneartor.generate();
 			cursor = 0;
 		}
 		// Each non-runtime property contributes a key-value pair
-		Object[] options = new Object[2*(propertyKeys.size()- 
+		Object[] options = new Object[2*(propertyKeys.size()-
 				runtimeKeys.cardinality())];
 		currentOption = combos[cursor++];
 		int k = 0;
@@ -93,27 +93,27 @@ public class CombinatorialTestHelper {
 		}
 		if (props == null || props.length == 0)
 			return options;
-		
+
 		Object[] newProps = new Object[props.length + options.length];
 		System.arraycopy(props, 0, newProps, 0, props.length);
         System.arraycopy(options, 0, newProps, props.length, options.length);
 		return newProps;
 	}
-	
+
 	/**
 	 * Adds options for the given configuration property.
 	 */
 	public void addOption(String property, Object[] options) {
 		addOption(property, options, false);
 	}
-	
+
 	/**
 	 * Adds options for the given configuration property.
 	 */
 	public void addOption(String property, List options) {
 		addOption(property, options, false);
 	}
-	
+
 	/**
 	 * Adds options for the given property.
 	 * If runtime is true then this property is not added to configuration.
@@ -150,7 +150,7 @@ public class CombinatorialTestHelper {
             throw new IllegalArgumentException("Unknown option " + key);
 		return currentOption.get(index);
 	}
-	
+
 	/**
 	 * Gets the string value of current option for the given key.
 	 * Raises exception if the given key is not an option.
@@ -165,7 +165,7 @@ public class CombinatorialTestHelper {
 	public List getOptions() {
 		return currentOption;
 	}
-	
+
 	/**
 	 * Gets the key and values of the current options as printable string.
 	 */
@@ -183,14 +183,14 @@ public class CombinatorialTestHelper {
 		}
 		return buf.toString();
 	}
-	
+
 	/**
 	 * Affirms if this receiver has more combinations.
 	 */
 	public boolean hasMoreCombination() {
 		return cursor < combos.length;
 	}
-	
+
 	/**
 	 * Gets total number of combinations.
 	 */

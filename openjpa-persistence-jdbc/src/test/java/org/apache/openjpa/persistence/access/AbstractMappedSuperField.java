@@ -34,7 +34,7 @@ public abstract class AbstractMappedSuperField {
     @Id
     @GeneratedValue
     private int id;
-    
+
     @Basic
     @Access(AccessType.FIELD)
     private String name;
@@ -54,11 +54,11 @@ public abstract class AbstractMappedSuperField {
     public String getName() {
         return name;
     }
-    
+
     abstract public Date getCreateDate();
-    
-    abstract public void setCreateDate(Date date);    
-    
+
+    abstract public void setCreateDate(Date date);
+
     public boolean equals(Object obj) {
         if (obj instanceof AbstractMappedSuperField) {
             AbstractMappedSuperField ps = (AbstractMappedSuperField)obj;

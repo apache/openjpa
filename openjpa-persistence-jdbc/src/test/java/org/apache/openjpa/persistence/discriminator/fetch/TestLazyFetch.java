@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.discriminator.fetch;
 
@@ -77,32 +77,32 @@ public class TestLazyFetch extends AbstractPersistenceTestCase {
         List<Manager> managers = em.createQuery("Select m from D_F_Manager m").getResultList();
         assertEquals(1, managers.size());
         Manager m = managers.get(0);
-        
+
         List<Employee> emps = em.createQuery("Select e from D_F_Employee e").getResultList();
         assertEquals(N_EMPS, emps.size());
-        
-        for(Employee e : emps) { 
+
+        for(Employee e : emps) {
             assertNotNull(e.getManager());
             assertTrue(m.getEmployees().contains(e));
             assertEquals(m, e.getManager());
         }
         closeEM(em);
         closeEMF(emf);
-    }   
-    
+    }
+
     @SuppressWarnings("unchecked")
     public void testFetchManySideFirst() {
         EntityManagerFactory emf = newEmf();
         EntityManager em = emf.createEntityManager();
-        
+
         List<Employee> emps = em.createQuery("Select e from D_F_Employee e").getResultList();
         assertEquals(N_EMPS, emps.size());
-        
+
         List<Manager> managers = em.createQuery("Select m from D_F_Manager m").getResultList();
         assertEquals(1, managers.size());
         Manager m = managers.get(0);
-        
-        for(Employee e : emps) { 
+
+        for(Employee e : emps) {
             assertNotNull(e.getManager());
             assertTrue(m.getEmployees().contains(e));
             assertEquals(m, e.getManager());

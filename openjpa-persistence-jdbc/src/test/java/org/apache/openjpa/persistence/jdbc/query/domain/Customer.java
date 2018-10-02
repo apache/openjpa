@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
@@ -33,7 +33,7 @@ public class Customer {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private String name;
 
 	@OneToMany(mappedBy="customer")

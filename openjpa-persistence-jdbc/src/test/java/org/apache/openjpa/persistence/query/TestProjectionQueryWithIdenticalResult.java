@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -33,18 +33,18 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * The query uses projection and result contains the same instance once as
  * a direct projection and again as a fetch group of the other projection.
  * Does the query return two separate instances or one identical instance?
- * 
+ *
  * Originally reported as two different failures:
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-209">OPENJPA-209</A>
- * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-210">OPENJPA-210</A> 
- * 
+ * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-210">OPENJPA-210</A>
+ *
  * @author Pinaki Poddar
  */
 public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
-	private static boolean USE_TXN = true; 
+	private static boolean USE_TXN = true;
     public void setUp() {
         setUp(CLEAR_TABLES,
-        	  UnidirectionalOneToOneOwned.class, 
+        	  UnidirectionalOneToOneOwned.class,
         	  UnidirectionalOneToOneOwner.class);
 
         EntityManager em = emf.createEntityManager();
@@ -58,7 +58,7 @@ public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
+
 	public void testDuplicateResultInProjection1() {
         String jpql = "SELECT p.owned, p FROM UnidirectionalOneToOneOwner p";
 		List<Object[]> result = executeQuery(jpql, USE_TXN);
@@ -69,7 +69,7 @@ public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
                 row[0]);
 		}
 	}
-	
+
 	public void testDuplicateResultInProjection2() {
         String jpql = "SELECT p, p.owned FROM UnidirectionalOneToOneOwner p";
 		List<Object[]> result = executeQuery(jpql, USE_TXN);
@@ -80,7 +80,7 @@ public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
                 row[1]);
 		}
 	}
-	
+
 	public void testDuplicateResultInProjection3() {
         String jpql = "SELECT p, q FROM UnidirectionalOneToOneOwner p, " +
                       "UnidirectionalOneToOneOwned q WHERE p.owned = q";
@@ -92,7 +92,7 @@ public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
                 row[1]);
 		}
 	}
-	
+
 	public void testDuplicateResultInProjection4() {
         String jpql = "SELECT q, p FROM UnidirectionalOneToOneOwner p, " +
                       "UnidirectionalOneToOneOwned q WHERE p.owned = q";
@@ -104,7 +104,7 @@ public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
                 row[0]);
 		}
 	}
-	
+
 	private List executeQuery(String jpql, boolean useTxn) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();

@@ -762,13 +762,13 @@ public class AnnotationPersistenceMetaDataParser
     private ClassMetaData getMetaData() {
         ClassMetaData meta = getRepository().getCachedMetaData(_cls);
         if (meta != null
-            && ((isMetaDataMode() 
-                && (meta.getSourceMode() & MODE_META) != 0) 
+            && ((isMetaDataMode()
+                && (meta.getSourceMode() & MODE_META) != 0)
                 || (isMappingMode() && (meta.getSourceMode() & MODE_MAPPING) != 0) ) ) {
             if (_log.isWarnEnabled()) {
                 _log.warn(_loc.get("dup-metadata", _cls.getName()));
             }
-            if(_log.isTraceEnabled()) { 
+            if(_log.isTraceEnabled()) {
                 _log.trace(String.format(
                     "MetaData originally obtained from file: %s under mode :%d with scope %s, and type :%d",
                     meta.getSourceName(), meta.getSourceMode(), meta.getSourceScope(), meta.getSourceType()));
@@ -845,8 +845,8 @@ public class AnnotationPersistenceMetaDataParser
     private void parseDataStoreId(ClassMetaData meta, DataStoreId id) {
         parseDataStoreId(meta, id.strategy(), id.generator());
     }
-    
-    static void parseDataStoreId(ClassMetaData meta, GenerationType strategy, 
+
+    static void parseDataStoreId(ClassMetaData meta, GenerationType strategy,
         String generator) {
         meta.setIdentityType(ClassMetaData.ID_DATASTORE);
 
@@ -878,7 +878,7 @@ public class AnnotationPersistenceMetaDataParser
             }
         }
     }
-    
+
     /**
      * Warn that @FlushMode is not supported.
      */
@@ -889,12 +889,12 @@ public class AnnotationPersistenceMetaDataParser
 
     /**
      * Parse @DataCache.
-     * 
+     *
      */
     private void parseDataCache(ClassMetaData meta, DataCache cache) {
         parseDataCache(meta, cache.enabled(), cache.name(), cache.timeout());
     }
-    
+
     static void parseDataCache(ClassMetaData meta,
             boolean enabled,
             String name,
@@ -950,11 +950,11 @@ public class AnnotationPersistenceMetaDataParser
             if (!_conf.getCallbackOptionsInstance().getAllowsDuplicateListener()) {
                 if (listenerColl == null)
                     listenerColl = new ArrayList<Class<?>>();
-                if (listenerColl.contains(cls)) 
+                if (listenerColl.contains(cls))
                     continue;
                 listenerColl.add(cls);
             }
-            
+
             parsed = parseCallbackMethods(cls, parsed, true, true,
                 getRepository());
         }
@@ -1081,8 +1081,8 @@ public class AnnotationPersistenceMetaDataParser
            if (fetchAttributes != null && fetchAttributes.length > 0) {
                fetchAttributeImpls = new FetchAttributeImpl[fetchAttributes.length];
                for (int j = 0; j < fetchAttributes.length; j++) {
-                   fetchAttributeImpls[j] = 
-                           new FetchAttributeImpl(fetchAttributes[j].name(), fetchAttributes[j].recursionDepth()); 
+                   fetchAttributeImpls[j] =
+                           new FetchAttributeImpl(fetchAttributes[j].name(), fetchAttributes[j].recursionDepth());
                }
            }
            fetchGroupImpls[i] = new FetchGroupImpl(groups[i].name(), groups[i].postLoad());
@@ -1093,10 +1093,10 @@ public class AnnotationPersistenceMetaDataParser
                fetchGroupImpls[i].setFetchGroups(groups[i].fetchGroups());
            }
        }
-       
+
        parseFetchGroups(meta, fetchGroupImpls);
     }
-   
+
    /**
     * Parse fetch group input for the FetchGroup and FetchGroups annotations
     * as well as for the fetch-group and fetch-groups XML metadata
@@ -1703,8 +1703,8 @@ public class AnnotationPersistenceMetaDataParser
             throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                 "PersistentCollection"));
 
-        fmd.setPersistentCollection(true); 
-        
+        fmd.setPersistentCollection(true);
+
         if (!StringUtil.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
@@ -1830,7 +1830,7 @@ public class AnnotationPersistenceMetaDataParser
         // create new sequence
         meta = getRepository().addSequenceMetaData(name);
         String seq = gen.sequenceName();
-        // Do not normalize the sequence name if it appears to be a plugin 
+        // Do not normalize the sequence name if it appears to be a plugin
         if (seq.indexOf('(') == -1){
             seq = normalizeSequenceName(seq);
         }
@@ -1914,9 +1914,9 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
-     * A private worker method that calculates the lock mode for an individual NamedQuery. If the NamedQuery is 
+     * A private worker method that calculates the lock mode for an individual NamedQuery. If the NamedQuery is
      * configured to use the NONE lock mode(explicit or implicit), this method will promote the lock to a READ
-     * level lock. This was done to allow for JPA1 apps to function properly under a 2.0 runtime. 
+     * level lock. This was done to allow for JPA1 apps to function properly under a 2.0 runtime.
      */
     private LockModeType processNamedQueryLockModeType(NamedQuery query) {
         LockModeType lmt = query.lockMode();
@@ -2071,7 +2071,7 @@ public class AnnotationPersistenceMetaDataParser
             return 0;
         }
     }
-    
+
     /**
      * An internal class used to mimic the FetchGroup annotation.
      * This is needed to process the fetch-group element in xml
@@ -2082,7 +2082,7 @@ public class AnnotationPersistenceMetaDataParser
         private boolean postLoad = false;
         private FetchAttributeImpl[] attributes = {};
         private String[] fetchGroups = {};
-        
+
         FetchGroupImpl(String name, boolean postLoad)
         {
             this.name = name;
@@ -2114,7 +2114,7 @@ public class AnnotationPersistenceMetaDataParser
             this.fetchGroups = fetchGroups;
         }
     }
-    
+
     /**
      * An internal class used to mimic the FetchAttribute annotation.
      * This is needed to process the fetch-attribute element in xml
@@ -2123,12 +2123,12 @@ public class AnnotationPersistenceMetaDataParser
     static class FetchAttributeImpl {
         private String name = "";
         private int recursionDepth = Integer.MIN_VALUE;
-        
+
         public FetchAttributeImpl(String name, int recursionDepth) {
             this.name = name;
             this.recursionDepth = recursionDepth;
         }
-        
+
         public String name() {
             return name;
         }
@@ -2137,7 +2137,7 @@ public class AnnotationPersistenceMetaDataParser
             return recursionDepth;
         }
 
-        
+
     }
 
     protected String normalizeSequenceName(String seqName) {

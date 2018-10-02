@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -31,20 +31,20 @@ import java.util.List;
  */
 public class StringComparison {
 	private static List<String> _reserved = Arrays.asList(new String[] {
-			"ALL", "AND", "ANY", "AS", "ASC", "AVG",  
-			"BETWEEN", "BIT_LENGTH", "BY", 
+			"ALL", "AND", "ANY", "AS", "ASC", "AVG",
+			"BETWEEN", "BIT_LENGTH", "BY",
             "CASE", "CHAR_LENGTH", "CHARACTER_LENGTH", "CLASS", "COALESCE",
             "COUNT","CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP",
-			"DELETE", "DESC", "DISTINCT", 
+			"DELETE", "DESC", "DISTINCT",
 			"EMPTY", "ENTRY", "EXISTS",
-			"FALSE", "FETCH", "FROM", 
+			"FALSE", "FETCH", "FROM",
 			"GROUP",
 			"HAVING",
 			"IN", "INDEX", "INNER", "IS",
 			"JOIN",
 			"KEY",
 			"LEFT", "LIKE", "LOWER",
-			"MAX", "MEMBER", "MIN", "MOD", 
+			"MAX", "MEMBER", "MIN", "MOD",
 			"NEW", "NOT", "NULL", "NULLIF",
 			"OBJECT", "OF", "OR", "ORDER", "OUTER",
 			"POSITION",
@@ -52,13 +52,13 @@ public class StringComparison {
 			"THEN", "TRIM", "TRUE", "TYPE",
 			"UNKNOWN", "UPDATE", "UPPER",
 			"VALUE",
-			"WHEN", "WHERE", 
+			"WHEN", "WHERE",
 	});
-	
+
 	private boolean isReservedWord(String s) {
 		return _reserved.contains(s.toUpperCase());
 	}
-	
+
 	public List<String> tokenize(String s) throws IOException {
 		List<String> list = new ArrayList<String>();
 		StreamTokenizer tok = new StreamTokenizer(new StringReader(s));
@@ -78,7 +78,7 @@ public class StringComparison {
 		}
 		return list;
 	}
-	
+
 	public boolean compare(String s1, String s2) {
 		try {
 			List<String> list1 = tokenize(s1);
@@ -105,7 +105,7 @@ public class StringComparison {
 		}
 		return false;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		StringComparison c = new StringComparison();
         String s1 = "SELECT DISTINCT o FROM Order AS o JOIN o.lineItems AS l "

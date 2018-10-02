@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -140,13 +140,13 @@ public class PersistenceMappingDefaults
         // base name is table of defining type + '_'
         ClassMapping clm = fm.getDefiningMapping();
         Table table = getTable(clm);
-        
+
         DBIdentifier sName = DBIdentifier.NULL;
-        if (fm.isElementCollection()) 
+        if (fm.isElementCollection())
             sName = DBIdentifier.newTable(clm.getTypeAlias());
-        else 
+        else
             sName = table.getIdentifier();
-        
+
         // if this is an assocation table, spec says to suffix with table of
         // the related type. spec doesn't cover other cases; we're going to
         // suffix with the field name
@@ -160,12 +160,12 @@ public class PersistenceMappingDefaults
         else {
             sName2 = DBIdentifier.newTable(fm.getName().replace('$', '_'));
         }
-        
+
         sName = DBIdentifier.combine(sName, sName2.getName());
-        
+
         return sName;
     }
-    
+
     private Table getTable(ClassMapping clm) {
         Table table = clm.getTable();
         if (table == null) {

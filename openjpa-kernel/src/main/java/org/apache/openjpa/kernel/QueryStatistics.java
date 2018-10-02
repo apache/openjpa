@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -31,31 +31,31 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 /**
  * Records query execution statistics.
- * 
+ *
  * Statistics can be reset.
- * 
+ *
  * Gathers both accumulated statistics since start as well as statistics since
  * last reset.
- *  
+ *
  * @since 1.3.0
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public interface QueryStatistics<T> extends Serializable {
-    
+
     /**
      *  Gets all the identifier keys for the cached queries.
      */
     public Set<T> keys();
-	
+
 	/**
-	 * Record that the given query has been executed. 
+	 * Record that the given query has been executed.
 	 */
 	void recordExecution(T query);
 
     /**
-     * Record that the given query has been evicted. 
+     * Record that the given query has been evicted.
      */
     void recordEviction(T query);
 
@@ -90,13 +90,13 @@ public interface QueryStatistics<T> extends Serializable {
 	public long getTotalHitCount();
 
 	/**
-	 * Gets number of executions for the given query that are cached since 
+	 * Gets number of executions for the given query that are cached since
 	 * last reset.
 	 */
 	public long getHitCount(T query);
 
 	/**
-	 * Gets number of executions for the given query that are cached since 
+	 * Gets number of executions for the given query that are cached since
 	 * start.
 	 */
 	public long getTotalHitCount(T query);
@@ -105,7 +105,7 @@ public interface QueryStatistics<T> extends Serializable {
      * Gets number of total query evictions since last reset.
      */
     public long getEvictionCount();
-        
+
     /**
      * Gets number of total query evictions since start.
      */
@@ -125,41 +125,41 @@ public interface QueryStatistics<T> extends Serializable {
 	 * Clears all  statistics accumulated since last reset.
 	 */
 	public void reset();
-	
+
 	/**
 	 * Clears all statistics accumulated since start.
 	 */
 	public void clear();
-	
+
 	/**
 	 * Dumps on the given output stream.
 	 */
 	public void dump(PrintStream out);
-	
+
 	/**
 	 * A default implementation.
-	 * 
+	 *
 	 * Maintains statistics for only a fixed number of queries.
 	 * Statistical counts are approximate and not exact (to keep thread synchorization overhead low).
-	 * 
+	 *
 	 */
 	public static class Default<T> implements QueryStatistics<T> {
 	    private static final int FIXED_SIZE = 1000;
 	    private static final float LOAD_FACTOR = 0.75f;
 	    private static final int CONCURRENCY = 16;
-	    
+
 		private static final int ARRAY_SIZE = 3;
         private static final int READ  = 0;
         private static final int HIT   = 1;
         private static final int EVICT = 2;
-        
+
 		private long[] astat = new long[ARRAY_SIZE];
 		private long[] stat  = new long[ARRAY_SIZE];
 		private Map<T, long[]> stats;
 		private Map<T, long[]> astats;
 		private Date start = new Date();
 		private Date since = start;
-		
+
 		public Default() {
             initializeMaps();
         }
@@ -175,7 +175,7 @@ public interface QueryStatistics<T> extends Serializable {
             aStatsMap.setMaxSize(FIXED_SIZE);
             astats = aStatsMap;
         }
-        
+
 		public Set<T> keys() {
 		    return stats.keySet();
 		}
@@ -230,7 +230,7 @@ public interface QueryStatistics<T> extends Serializable {
 			stats.clear();
 			since = new Date();
 		}
-		
+
 	    public synchronized void clear() {
 	       astat = new long[ARRAY_SIZE];
 	       stat  = new long[ARRAY_SIZE];
@@ -246,7 +246,7 @@ public interface QueryStatistics<T> extends Serializable {
 			addSample(stats, query, index);
 			addSample(astats, query, index);
 		}
-		
+
 		private void addSample(Map<T, long[]> target, T query, int i) {
 			long[] row = target.get(query);
 			if (row == null) {
@@ -255,7 +255,7 @@ public interface QueryStatistics<T> extends Serializable {
 			row[i]++;
 			target.put(query, row);
 		}
-		
+
 		public void recordExecution(T query) {
 		    if (query == null)
 		        return;
@@ -264,7 +264,7 @@ public interface QueryStatistics<T> extends Serializable {
 			if (cached)
 				addSample(query, HIT);
 		}
-		
+
         public void recordEviction(T query) {
             if (query == null) {
                 return;
@@ -277,11 +277,11 @@ public interface QueryStatistics<T> extends Serializable {
 			out.print(header);
 			if (since == start) {
 				out.println();
-                out.println("Total Query Execution: " + toString(astat)); 
+                out.println("Total Query Execution: " + toString(astat));
 				out.println("\tTotal \t\tQuery");
 			} else {
 				out.println(" last reset on " + since);
-                out.println("Total Query Execution since start " + 
+                out.println("Total Query Execution since start " +
                         toString(astat)  + " since reset " + toString(stat));
                 out.println("\tSince Start \tSince Reset \t\tQuery");
 			}
@@ -297,13 +297,13 @@ public interface QueryStatistics<T> extends Serializable {
 				}
 			}
 		}
-		
+
 		long pct(long per, long cent) {
 			if (cent <= 0)
 				return 0;
 			return (100*per)/cent;
 		}
-		
+
 		String toString(long[] row) {
             return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) + "%)";
 		}
@@ -316,10 +316,10 @@ public interface QueryStatistics<T> extends Serializable {
             return astat[EVICT];
         }
 	}
-	
+
 	/**
 	 * A do-nothing implementation.
-	 * 
+	 *
 	 * @author Pinaki Poddar
 	 *
 	 * @param <T>

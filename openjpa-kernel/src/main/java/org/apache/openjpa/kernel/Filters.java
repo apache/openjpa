@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -244,13 +244,13 @@ public class Filters {
             return true;
         return false;
     }
-    
+
     /**
      * Convert the given value to match the given (presumably a setter) method argument type.
-     *  
+     *
      * @param o given value
-     * @param method a presumably setter method 
-     * 
+     * @param method a presumably setter method
+     *
      * @return the same value if the method does not have one and only one input argument.
      */
     public static Object convertToMatchMethodArgument(Object o, Method method) {
@@ -263,7 +263,7 @@ public class Filters {
     public static Object convert(Object o, Class<?> type) {
         return convert(o, type, false);
     }
-    
+
     /**
      * Convert the given value to the given type.
      */
@@ -285,7 +285,7 @@ public class Filters {
         if (!num) {
             if (type == String.class)
                 return o.toString();
-            else if (type == Boolean.class && o instanceof String) 
+            else if (type == Boolean.class && o instanceof String)
                 return Boolean.valueOf(o.toString());
             else if (type == Integer.class && o instanceof String)
                 try {
@@ -325,7 +325,7 @@ public class Filters {
                     if (temporal != null && type.isAssignableFrom(temporal.getClass()))
                         return temporal;
                 } catch (IllegalArgumentException e) {
-                    
+
                 }
             } else if (o instanceof String && type.isEnum()) {
                 return Enum.valueOf((Class<Enum>)type, o.toString());
@@ -371,7 +371,7 @@ public class Filters {
             throw new ClassCastException(_loc.get("cant-convert", o, o.getClass(), type).getMessage());
         }
     }
-    
+
     private static boolean allowNumericConversion(Class<?> actual, Class<?> target, boolean strict) {
         if (!strict || actual == target)
             return true;
@@ -845,7 +845,7 @@ public class Filters {
                 for (int i = 0; i < clss.length; i++)
                     aggs[i] = (AggregateListener) AccessController.doPrivileged(
                         J2DoPrivHelper.newInstanceAction(
-                            Class.forName(clss[i], true, loader))); 
+                            Class.forName(clss[i], true, loader)));
                 return aggs;
             } catch (Exception e) {
                 if (e instanceof PrivilegedActionException)
@@ -872,7 +872,7 @@ public class Filters {
             try {
                 return (FilterListener) AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(
-                        Class.forName((String) hint, true, loader))); 
+                        Class.forName((String) hint, true, loader)));
             } catch (Exception e) {
                 if (e instanceof PrivilegedActionException)
                     e = ((PrivilegedActionException) e).getException();
@@ -954,9 +954,9 @@ public class Filters {
         }
         Reflection.set(target, setter, value);
     }
-    
+
     /**
-     * Parses the given string assuming it is a JDBC key expression. Extracts the 
+     * Parses the given string assuming it is a JDBC key expression. Extracts the
      * data portion and based on the key, calls static java.sql.Date/Time/Timestamp.valueOf(String)
      * method to convert to a java.sql.Date/Time/Timestamp instance.
      */
@@ -972,10 +972,10 @@ public class Filters {
             return null;
         }
     }
-    
+
     /**
      * Affirms if the given String is enclosed in {}.
-     * 
+     *
      */
     public static boolean isJDBCTemporalSyntax(String s) {
         if (s != null) {
@@ -983,10 +983,10 @@ public class Filters {
         }
         return s != null && s.startsWith("{") && s.endsWith("}");
     }
-    
+
     /**
      * Removes the first and last string if they are the terminal sequence in the given string.
-     * 
+     *
      * @param s a string to be examined
      * @param first the characters in the beginning of the given string
      * @param last the characters in the end of the given string
@@ -1004,28 +1004,28 @@ public class Filters {
         }
         return s;
     }
-    
+
     /**
      * Affirms if the given class is Data, Time or Timestamp.
      */
     public static boolean isTemporalType(Class<?> c) {
-        return c != null 
-            && (Date.class.isAssignableFrom(c) 
-             || Time.class.isAssignableFrom(c) 
+        return c != null
+            && (Date.class.isAssignableFrom(c)
+             || Time.class.isAssignableFrom(c)
              || Timestamp.class.isAssignableFrom(c)
              || Calendar.class.isAssignableFrom(c));
     }
-    
+
     public static Object getDefaultForNull(Class<?> nType) {
-        if (nType == Long.class) 
+        if (nType == Long.class)
             return Long.valueOf(0);
         if (nType == Integer.class)
             return Integer.valueOf(0);
-        if (nType == Double.class) 
+        if (nType == Double.class)
             return Double.valueOf(0.0);
-        if (nType == Float.class) 
+        if (nType == Float.class)
             return new Float(0.0);
-        if (nType == Short.class) 
+        if (nType == Short.class)
             return Short.valueOf((short)0);
         return null;
     }

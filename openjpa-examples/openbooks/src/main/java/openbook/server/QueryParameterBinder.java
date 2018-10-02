@@ -17,20 +17,20 @@ import javax.persistence.Query;
 
 /**
  * Decorates a query by binding parameters.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
 public class QueryParameterBinder implements QueryDecorator {
     private final Object[] params;
-    
+
     /**
      * Construct a parameter binder with the given parameters.
      */
     public QueryParameterBinder(Object...params) {
         this.params = params;
     }
-    
+
     @Override
     public void decorate(Query query) {
         if (params == null)
@@ -41,7 +41,7 @@ public class QueryParameterBinder implements QueryDecorator {
             } else if (params[i] instanceof String) {
                 query.setParameter((String)params[i], params[i+1]);
             } else {
-                throw new IllegalArgumentException("Parameter index " + params[i] + 
+                throw new IllegalArgumentException("Parameter index " + params[i] +
                         " is neither and integer nor String");
             }
         }

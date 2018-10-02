@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.jdbc;
 
@@ -446,7 +446,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
     public void updateBlob(int a, Blob blob) throws SQLException {
         _rs.updateBlob(a, blob);
     }
-    
+
     public void updateCharacterStream(int a, Reader reader, int b)
         throws SQLException {
         _rs.updateCharacterStream(a, reader, b);
@@ -455,7 +455,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
     public void updateClob(int a, Clob clob) throws SQLException {
        _rs.updateClob(a, clob);
     }
-    
+
     public void updateObject(int a, Object ob, int b) throws SQLException {
         _rs.updateObject(a, ob, b);
     }
@@ -675,7 +675,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         throws SQLException {
         _rs.updateArray(columnName, array);
     }
-    
+
     // JDBC 4.0 methods follow.
 
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
@@ -881,13 +881,13 @@ public class DelegatingResultSet implements ResultSet, Closeable {
     public void updateSQLXML(String columnLabel, SQLXML xmlObject) throws SQLException {
         _rs.updateSQLXML(columnLabel, xmlObject);
     }
-    
+
     // Java 7 methods follow
-    
+
     public <T>T getObject(String columnLabel, Class<T> type) throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public <T>T getObject(int columnIndex, Class<T> type) throws SQLException{
     	throw new UnsupportedOperationException();
     }

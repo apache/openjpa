@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -43,11 +43,11 @@ public interface BrokerFactory
      * Return properties describing this runtime.
      */
     public Map<String,Object> getProperties();
-    
+
     /**
      * Return all of the supported properties as a set of keys. If a property
      * has multiple keys, all keys will be returned.
-     * 
+     *
      * @since 2.0.0
      */
     public Set<String>  getSupportedProperties();
@@ -74,7 +74,7 @@ public interface BrokerFactory
      */
     public Broker newBroker(String user, String pass, boolean managed,
         int connRetainMode, boolean findExisting);
-    
+
     /**
      * Return a new broker using the supplied
      * <ul>
@@ -83,16 +83,16 @@ public interface BrokerFactory
      * <li>connectionRetainMode</li>
      * <li>connectionFactories</li>
      * </ul>
-     * 
-     * @param user  Username to use when obtaining a connection. Will be ignored if a connection factory is 
+     *
+     * @param user  Username to use when obtaining a connection. Will be ignored if a connection factory is
      *     obtained from JNDI.
-     * @param pass  Password to use when obtaining a connection. Will be ignored if a connection factory is 
+     * @param pass  Password to use when obtaining a connection. Will be ignored if a connection factory is
      *     obtained from JNDI.
      * @param managed Whether managed transactions will be used by this Broker
      * @param connRetainMode {@link ConnectionRetainMode}
-     * @param findExisting Whether the internal pool of brokers should be used. 
+     * @param findExisting Whether the internal pool of brokers should be used.
      * @param cfName  JTA ConnectionFactory to use
-     * @param cf2Name  Non-JTA ConnectionFactory to use. 
+     * @param cf2Name  Non-JTA ConnectionFactory to use.
      * @return A Broker which matches the provided criteria.
      */
     public Broker newBroker(String user, String pass, boolean managed,
@@ -150,15 +150,15 @@ public interface BrokerFactory
      * Release the internal lock.
      */
     public void unlock ();
-    
+
     /**
      * assert that this broker is open. If the broker has been closed an IllegalStateException will be thrown
-     * with information on when the broker was closed. 
+     * with information on when the broker was closed.
      */
-    public void assertOpen(); 
-    
+    public void assertOpen();
+
     /**
-     * This method is invoked AFTER a BrokerFactory has been instantiated. 
+     * This method is invoked AFTER a BrokerFactory has been instantiated.
      */
     public void postCreationCallback();
 }

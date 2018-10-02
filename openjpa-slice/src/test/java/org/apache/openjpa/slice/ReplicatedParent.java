@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -25,24 +25,24 @@ import javax.persistence.*;
 
 @Entity
 public class ReplicatedParent {
-    @Id 
+    @Id
     private String name;
-    
+
     @OneToMany(mappedBy="parent", cascade=CascadeType.ALL)
     private Set<ReplicatedChild> children;
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Set<ReplicatedChild> getChildren() {
         return children;
     }
-    
+
     public void addChild(ReplicatedChild child) {
         if (children == null)
             children = new HashSet<ReplicatedChild>();

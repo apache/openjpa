@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.identifier;
 
@@ -31,27 +31,27 @@ import org.apache.openjpa.lib.util.Localizer;
  *
  */
 public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
-        
+
     private static final Localizer _loc = Localizer.forPackage
         (IdentifierUtilImpl.class);
-    
+
     private IdentifierConfiguration _config = null;
-    
+
     public IdentifierUtilImpl() {
-        
+
     }
-    
+
     public IdentifierUtilImpl(IdentifierConfiguration config) {
         _config = config;
     }
 
     public void setIdentifierConfiguration(IdentifierConfiguration config) {
         _config = config;
-    }    
+    }
 
     public IdentifierConfiguration getIdentifierConfiguration() {
         return _config;
-    }    
+    }
 
     public String combineNames(String rule, String name1, String name2) {
         return combineNames(getNamingRule(rule), name1, name2);
@@ -65,12 +65,12 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         return combineNames(config, getNamingRule(rule), names);
     }
 
-    public String combineNames(IdentifierRule rule, 
+    public String combineNames(IdentifierRule rule,
         IdentifierRule[] rules, String[] names) {
         return combineNames(_config, rule, rules, names);
     }
 
-    public String combineNames(IdentifierConfiguration config, IdentifierRule rule, 
+    public String combineNames(IdentifierConfiguration config, IdentifierRule rule,
         IdentifierRule[] rules, String[] names) {
         boolean delimited = false;
         String combined = null;
@@ -87,14 +87,14 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
                 combined = combined + config.getIdentifierConcatenator() + name;
             }
         }
-        
+
         if (delimited) {
             combined = delimit(config, rule, combined);
         }
-        
+
         return combined;
     }
-    
+
     public String combineNames(IdentifierConfiguration config, IdentifierRule rule, String name1, String name2) {
         boolean delimit = false;
         if (isDelimited(rule, name1)) {
@@ -128,7 +128,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         if (delimited) {
             combined = delimit(config, namingRule, combined);
         }
-        
+
         return combined;
     }
 
@@ -154,7 +154,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
      * ex. ( {"s", "t", "c"} --> "s"."t"."c" }
      */
     public String joinNames(IdentifierRule[] rules, String[] names) {
-        
+
         if (names == null || names.length == 0) {
             return null;
         }
@@ -190,7 +190,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
      * @param names
      */
     public String joinNames(IdentifierConfiguration config, IdentifierRule rule, String[] names, String delimiter) {
-        
+
         if (names == null || names.length == 0) {
             return null;
         }
@@ -214,13 +214,13 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         return splitName(nrule, name, _config.getIdentifierDelimiter());
     }
 
-    
+
     /**
      * Splits names using single naming rule and appropriate separators
      * @param name  the multi-value name
      * @return individual components of the name
      *         ex. schema.table --> { schema, table }
-     */    
+     */
     public String[] splitName(IdentifierRule nrule, String name, String nameDelim) {
         if (!canSplit(nrule, name, nameDelim) || StringUtil.isEmpty(name)) {
             return new String[] {name};
@@ -228,7 +228,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         // "schema"."table"
         // "sch.ma"."table"
         // "sch""ma".table
-        
+
         // Split names by object delimiter not between name delimiters
         ArrayList<String> names = new ArrayList<String>(2);
         String pname = name;
@@ -241,7 +241,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
             if ((pname.length() + ndLen) >= name.length()) {
                 break;
             }
-            name = name.substring(pname.length() + ndLen); 
+            name = name.substring(pname.length() + ndLen);
         }
         return names.toArray(new String[names.size()]);
     }
@@ -288,7 +288,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         if (name == null || name.length() < 3) {
             return false;
         }
-        return name.startsWith(DOUBLE_QUOTE) && 
+        return name.startsWith(DOUBLE_QUOTE) &&
                name.endsWith(DOUBLE_QUOTE);
     }
 
@@ -296,7 +296,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         return delimit(config, rule, name, false);
     }
 
-    
+
     public String delimit(IdentifierRule rule, String name) {
         return delimit(_config, rule, name, false);
     }
@@ -304,7 +304,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     public String delimit(IdentifierRule rule, String name, boolean force) {
         return delimit(_config, rule, name, force);
     }
-    
+
     public String delimit(IdentifierConfiguration config, IdentifierRule rule, String name, boolean force) {
         if (!rule.getCanDelimit() || StringUtil.isEmpty(name)) {
             return name;
@@ -357,7 +357,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         }
         return false;
     }
-    
+
     /**
      * Returns whether a name is considered a reserved word.
      */
@@ -377,7 +377,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     public boolean isReservedWord(String rule, String name) {
         return isReservedWord(_config.getIdentifierRule(rule), name);
     }
-    
+
 
     protected String removeDelimiters(IdentifierConfiguration config, IdentifierRule rule, String name, String leading,
         String trailing) {
@@ -391,7 +391,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         }
         return name;
     }
-    
+
     public String combineNames(String rule, String[] rules, String[] names) {
         return combineNames(getNamingRule(rule), getNamingRules(rules), names);
     }
@@ -447,11 +447,11 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     public String joinNames(String[] rules, String[] names) {
         return joinNames(getNamingRules(rules), names);
     }
-    
+
     private IdentifierRule getNamingRule(String rule) {
         return _config.getIdentifierRule(rule);
     }
-    
+
     public String appendNames(String rule, String name1, String name2) {
         return appendNames(getNamingRule(rule), name1, name2);
     }
@@ -482,7 +482,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     public String removeHungarianNotation(String rule, String name) {
         return removeHungarianNotation(getNamingRule(rule), name);
     }
-    
+
     public String[] splitName(String nrule, String name, String nameDelim) {
         return splitName(getNamingRule(nrule), name, nameDelim);
     }
@@ -497,7 +497,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         IdentifierRule nrule = config.getIdentifierRule(rule);
         boolean delimit = isDelimited(config, orule, name);
         if (delimit) {
-            name = removeDelimiters(config, orule, name, config.getLeadingDelimiter(), 
+            name = removeDelimiters(config, orule, name, config.getLeadingDelimiter(),
                 config.getTrailingDelimiter());
             return delimit(getIdentifierConfiguration(), nrule, name, delimit);
         }
@@ -519,9 +519,9 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
             return names[0];
         }
         // Join if multiple names
-        return joinNames(getIdentifierConfiguration(), config.getIdentifierRule(rule), names, 
+        return joinNames(getIdentifierConfiguration(), config.getIdentifierRule(rule), names,
             getIdentifierConfiguration().getIdentifierDelimiter());
-    }    
+    }
 
     public String combineFull(IdentifierConfiguration config, String rule, String fullName) {
         if (!needsConversion(config)) {
@@ -535,11 +535,11 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         }
         // Join
         return joinNames(config, config.getIdentifierRule(rule), names, config.getIdentifierDelimiter());
-    }    
+    }
 
 
     protected boolean needsConversion(IdentifierConfiguration config) {
-    	return (config != getIdentifierConfiguration()) 
+    	return (config != getIdentifierConfiguration())
            && !(config.getConversionKey().equals(getIdentifierConfiguration().getConversionKey()));
     }
 

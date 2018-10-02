@@ -7,22 +7,22 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="ref_guide_meta">
     <title>
         Metadata
     </title>
     <para>
-The JPA Overview covers JPA metadata in <xref linkend="jpa_overview_meta"/>. 
+The JPA Overview covers JPA metadata in <xref linkend="jpa_overview_meta"/>.
 This chapter discusses OpenJPA's extensions to standard JPA metadata.
     </para>
     <section id="ref_guide_meta_factory">
@@ -43,7 +43,7 @@ This chapter discusses OpenJPA's extensions to standard JPA metadata.
         <para>
 The <link linkend="openjpa.MetaDataFactory"><literal>openjpa.MetaDataFactory
 </literal></link> configuration property controls metadata loading and storing.
-This property takes a plugin string (see 
+This property takes a plugin string (see
 <xref linkend="ref_guide_conf_plugins"/>) describing a concrete
 <ulink url="../../apidocs/org/apache/openjpa/meta/MetaDataFactory.html">
 <classname>org.apache.openjpa.meta.MetaDataFactory</classname></ulink>
@@ -58,19 +58,19 @@ following built-in metadata factories:
                 <para>
 <literal>jpa</literal>: Standard JPA metadata. This is an alias for the
 <ulink url="../../apidocs/org/apache/openjpa/persistence/PersistenceMetaDataFactory.html">
-<classname> 
+<classname>
 org.apache.openjpa.persistence.PersistenceMetaDataFactory</classname></ulink>.
                 </para>
             </listitem>
         </itemizedlist>
         <para>
-JPA has built-in settings for listing your persistent classes, which 
+JPA has built-in settings for listing your persistent classes, which
 the <link linkend="jpa_overview_persistence_xml">JPA Overview</link> describes.
 OpenJPA supports these JPA standard settings by translating them into its own
-internal metadata factory properties.  Each internal property represents a 
+internal metadata factory properties.  Each internal property represents a
 different mechanism for locating persistent types; you can choose the mechanism
-or combination of mechanisms that are most convenient. See 
-<xref linkend="ref_guide_pc_pcclasses"/> for a discussion of when it is 
+or combination of mechanisms that are most convenient. See
+<xref linkend="ref_guide_pc_pcclasses"/> for a discussion of when it is
 necessary to list your persistent classes.
         </para>
         <itemizedlist>
@@ -83,7 +83,7 @@ persistent class names.
             <listitem>
                 <para>
 <literal>Resources</literal>: A semicolon-separated list of resource paths to
-metadata files or jar archives. Each jar archive will be scanned for 
+metadata files or jar archives. Each jar archive will be scanned for
 annotated JPA entities.
                 </para>
             </listitem>
@@ -121,19 +121,19 @@ scanned for annotated JPA entities.
     </section>
     <!-- start added -->
 	<section id="ref_guide_meta_repository">
-		<para>The openjpa.MetaDataRepository configuration property controls the configuration of 
+		<para>The openjpa.MetaDataRepository configuration property controls the configuration of
 			the MetaDataRepository. The following are valid properties:</para>
 		<itemizedlist>
 		<listitem><para>
-			<literal>Preload</literal>: A boolean property. If true, OpenJPA will eagerly load the repository on 
-			EntityManagerFactory creation. As a result, all Entity classes will be eagerly loaded by the JVM. 
-                        Once MetaData preloading completes, all locking is removed from the MetaDataRepository and this will 
-                        result in a much more scalable repository. If false, the repository will be lazily loaded as Entity 
+			<literal>Preload</literal>: A boolean property. If true, OpenJPA will eagerly load the repository on
+			EntityManagerFactory creation. As a result, all Entity classes will be eagerly loaded by the JVM.
+                        Once MetaData preloading completes, all locking is removed from the MetaDataRepository and this will
+                        result in a much more scalable repository. If false, the repository will be lazily loaded as Entity
                         classes are loaded by the JVM. The default value is false.
 			</para>
-            	</listitem>           	
+            	</listitem>
             	</itemizedlist>
-        	
+
 	        <title>Metadata Repository</title>
 	        <example id="ref_guide_meta_repo">
             <title>
@@ -283,44 +283,44 @@ to denote a persistent <classname>java.awt.Point</classname> field.
 			</indexterm>
 			<para>
 JPA standardizes support for collections of entities with the <literal>
-OneToMany</literal> and <literal>ManyToMany</literal> persistence strategies.  
-OpenJPA supports these strategies, and may be extended for other strategies as 
-well.  For extended strategies, use the 
+OneToMany</literal> and <literal>ManyToMany</literal> persistence strategies.
+OpenJPA supports these strategies, and may be extended for other strategies as
+well.  For extended strategies, use the
 <ulink url="../../apidocs/org/apache/openjpa/persistence/PersistentCollection.html">
-<classname>org.apache.openjpa.persistence.PersistentCollection</classname></ulink> metadata 
+<classname>org.apache.openjpa.persistence.PersistentCollection</classname></ulink> metadata
 annotation to represents any persistent collection field.  It has the following
 properties:
 			</para>
 			<itemizedlist>
 				<listitem>
 					<para>
-<literal>Class elementType</literal>: The class of the collection elements.  
-This information is usually taken from the parameterized collection element 
-type.  You must supply it explicitly, however, if your field isn't a 
+<literal>Class elementType</literal>: The class of the collection elements.
+This information is usually taken from the parameterized collection element
+type.  You must supply it explicitly, however, if your field isn't a
 parameterized type.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-<literal>FetchType fetch</literal>: Whether to load the collection eagerly or 
-lazily.  Corresponds exactly to the same-named property of standard JPA 
+<literal>FetchType fetch</literal>: Whether to load the collection eagerly or
+lazily.  Corresponds exactly to the same-named property of standard JPA
 annotations such as <link linkend="jpa_overview_meta_basic"><classname>
 Basic</classname></link>. Defaults to <literal>FetchType.LAZY</literal>.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-<literal>String mappedBy</literal>: Names the field in the related entity that 
-maps this bidirectional relation.  Corresponds to the same-named property of 
+<literal>String mappedBy</literal>: Names the field in the related entity that
+maps this bidirectional relation.  Corresponds to the same-named property of
 standard JPA annotations such as <link linkend="jpa_overview_meta_manytomany">
 <classname>ManyToMany</classname></link>.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-<literal>CascadeType[] elementCascade</literal>: Array of enum values defining 
-cascade behavior for the collection elements.  Corresponds exactly to the 
-<literal>cascade</literal> property of standard JPA annotations such as 
+<literal>CascadeType[] elementCascade</literal>: Array of enum values defining
+cascade behavior for the collection elements.  Corresponds exactly to the
+<literal>cascade</literal> property of standard JPA annotations such as
 <link linkend="jpa_overview_meta_manytomany"><classname>
 ManyToMany</classname></link>. Defaults to empty array.
 					</para>
@@ -340,50 +340,50 @@ ManyToMany</classname></link>. Defaults to empty array.
 				<secondary>map metadata</secondary>
 			</indexterm>
 			<para>
-JPA has limited support for maps.  If you extend JPA's standard map support to 
-encompass new mappings, use the 
+JPA has limited support for maps.  If you extend JPA's standard map support to
+encompass new mappings, use the
 <ulink url="../../apidocs/org/apache/openjpa/persistence/PersistentMap.html">
-<classname>org.apache.openjpa.persistence.PersistentMap</classname></ulink> metadata 
-annotation to represent your custom persistent map fields.  It has the 
+<classname>org.apache.openjpa.persistence.PersistentMap</classname></ulink> metadata
+annotation to represent your custom persistent map fields.  It has the
 following properties:
 			</para>
 			<itemizedlist>
 				<listitem>
 					<para>
-<literal>Class keyType</literal>: The class of the map keys.  This information 
-is usually taken from the parameterized map key type.  You must supply it 
+<literal>Class keyType</literal>: The class of the map keys.  This information
+is usually taken from the parameterized map key type.  You must supply it
 explicitly, however, if your field isn't a parameterized type.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-<literal>Class elementType</literal>: The class of the map values.  This 
-information is usually taken from the parameterized map value type.  You must 
+<literal>Class elementType</literal>: The class of the map values.  This
+information is usually taken from the parameterized map value type.  You must
 supply it explicitly, however, if your field isn't a parameterized type.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-<literal>FetchType fetch</literal>: Whether to load the collection eagerly or 
-lazily.  Corresponds exactly to the same-named property of standard JPA 
+<literal>FetchType fetch</literal>: Whether to load the collection eagerly or
+lazily.  Corresponds exactly to the same-named property of standard JPA
 annotations such as <link linkend="jpa_overview_meta_basic"><classname>
 Basic</classname></link>. Defaults to <literal>FetchType.LAZY</literal>.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-<literal>CascadeType[] keyCascade</literal>: Array of enum values defining 
+<literal>CascadeType[] keyCascade</literal>: Array of enum values defining
 cascade behavior for the map keys.  Corresponds exactly to the <literal>cascade
-</literal> property of standard JPA annotations such as 
+</literal> property of standard JPA annotations such as
 <link linkend="jpa_overview_meta_manytoone"><classname>
 ManyToOne</classname></link>. Defaults to empty array.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-<literal>CascadeType[] elementCascade</literal>: Array of enum values defining 
-cascade behavior for the map values.  Corresponds exactly to the 
-<literal>cascade</literal> property of standard JPA annotations such as 
+<literal>CascadeType[] elementCascade</literal>: Array of enum values defining
+cascade behavior for the map values.  Corresponds exactly to the
+<literal>cascade</literal> property of standard JPA annotations such as
 <link linkend="jpa_overview_meta_manytoone"><classname>
 ManyToOne</classname></link>. Defaults to empty array.
 					</para>
@@ -601,7 +601,7 @@ in the field. Similarly, deleting a <classname>Magazine</classname> object will
 automatically delete its current cover <classname>Article</classname>. (This
 latter processing is analogous to using JPA's CascadeType.REMOVE functionality
 as described in <xref linkend="jpa_overview_meta_cascade"/>.) You can
-prevent an orphaned dependent object from being automatically deleted by 
+prevent an orphaned dependent object from being automatically deleted by
 assigning it to another relation in the same transaction.
                 </para>
                 <para>
@@ -990,27 +990,27 @@ to OpenJPA extended metadata and mapping annotations. The schema are contained i
 files: <ulink url="http://openjpa.apache.org/builds/latest/docs/schema/extendable/extendable-orm.xsd">
 extendable-orm.xsd</ulink> and
 <ulink url="http://openjpa.apache.org/builds/latest/docs/schema/openjpa-orm.xsd">openjpa-orm.xsd</ulink>.
-The extendable-orm.xsd file provides copies of some of the JPA 2.0 schema elements with additional schema to make it 
+The extendable-orm.xsd file provides copies of some of the JPA 2.0 schema elements with additional schema to make it
 extendable.
 The openjpa-orm.xsd file extends the extendable-orm.xsd with OpenJPA specific elements and attributes representing
 OpenJPA annotations. Currently, only a subset of annotations have actually been implemented, and some of those
 have been partially tested. The current status can be found by comments in the
 <ulink url="http://openjpa.apache.org/builds/latest/docs/schema/openjpa-orm.xsd">openjpa-orm.xsd</ulink>
-schema file.    	
+schema file.
         	</para>
         	<para>
 In order to use the OpenJPA extensions in your mapping file you must include the namespaces for these 2 new
-schemas as well as for the schema for JPA 2.0, as shown in the following example:        	
+schemas as well as for the schema for JPA 2.0, as shown in the following example:
         	</para>
         	<example id="ref_guide_schema_ex">
         		<title>
         			OpenJPA Schema Extensions
         		</title>
 <programlisting>
-&lt;entity-mappings xmlns="http://www.apache.org/openjpa/ns/orm/extendable" 
-    xmlns:openjpa="http://www.apache.org/openjpa/ns/orm" 
-    xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+&lt;entity-mappings xmlns="http://www.apache.org/openjpa/ns/orm/extendable"
+    xmlns:openjpa="http://www.apache.org/openjpa/ns/orm"
+    xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="2.0"&gt;
 
     &lt;entity class="org.apache.openjpa.persistence.jdbc.annotations.MultiColumnVersionPC"
@@ -1031,11 +1031,11 @@ schemas as well as for the schema for JPA 2.0, as shown in the following example
                     column-definition="FLOAT"
                     scale="3"
                     precision="10"/&gt;
-            &lt;/openjpa:version-columns&gt;	
+            &lt;/openjpa:version-columns&gt;
         &lt;/openjpa:entity&gt;
     &lt;/entity&gt;
-    
-&lt;/entity-mappings&gt;    
+
+&lt;/entity-mappings&gt;
 
 </programlisting>
         	</example>

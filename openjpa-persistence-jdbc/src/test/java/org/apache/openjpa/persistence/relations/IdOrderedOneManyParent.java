@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -39,34 +39,34 @@ public class IdOrderedOneManyParent {
 
     @OneToMany(mappedBy="explicitParent")
     @OrderBy("id ASC")
-    private List<IdOrderedOneManyChild> explicitChildren = 
+    private List<IdOrderedOneManyChild> explicitChildren =
         new ArrayList<IdOrderedOneManyChild>();
 
     @OneToMany(mappedBy="implicitParent")
     @OrderBy
-    private List<IdOrderedOneManyChild> implicitChildren = 
+    private List<IdOrderedOneManyChild> implicitChildren =
         new ArrayList<IdOrderedOneManyChild>();
 
     @Version
     private int optLock;
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
-    public List<IdOrderedOneManyChild> getExplicitChildren() { 
-        return explicitChildren; 
+    public List<IdOrderedOneManyChild> getExplicitChildren() {
+        return explicitChildren;
     }
 
-    public List<IdOrderedOneManyChild> getImplicitChildren() { 
-        return implicitChildren; 
+    public List<IdOrderedOneManyChild> getImplicitChildren() {
+        return implicitChildren;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 }

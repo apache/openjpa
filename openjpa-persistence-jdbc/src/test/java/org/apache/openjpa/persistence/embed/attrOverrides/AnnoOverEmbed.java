@@ -26,7 +26,7 @@ public class AnnoOverEmbed {
 
     @Basic
     private int intEmbed;
-    
+
     @Basic
     private String strEmbed;
 

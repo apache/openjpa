@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.annotations.xml;
 
@@ -27,11 +27,11 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 /**
- * Used to test effect of metadata-complete tag. 
- * 
+ * Used to test effect of metadata-complete tag.
+ *
  * The annotations should not be processed as corresponding orm.xml will
  * switch off annotation processing via metadata-complete tag.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -41,11 +41,11 @@ public class EntityA {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
-	
+
 	@Basic(optional=true)
 	private String name;
 
-	
+
 	public long getId() {
 		return id;
 	}

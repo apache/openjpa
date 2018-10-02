@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.qualified.path;
 
@@ -28,7 +28,7 @@ import javax.persistence.Table;
 public class Employee {
     @Id
     private int id;
-    
+
     public int getId() {
         return id;
     }
@@ -36,7 +36,7 @@ public class Employee {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     @Embedded
     private PersonalInfo personalInfo;
 

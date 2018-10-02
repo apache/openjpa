@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta.horizontal;
 
@@ -34,9 +34,9 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 public class TestLockGroupsWithHorizontalBaseType extends AbstractTestCase
-{   
+{
     /** Creates a new instance of TestLockGroupsWithHorizontalBaseType */
-    public TestLockGroupsWithHorizontalBaseType(String name) 
+    public TestLockGroupsWithHorizontalBaseType(String name)
     {
     	super(name, "jdbccactusapp");
     }
@@ -66,14 +66,14 @@ public class TestLockGroupsWithHorizontalBaseType extends AbstractTestCase
 
         pc.setDefaultLockGroupField("wookie");
         pm.getTransaction().commit();
-    }    
-    
+    }
+
    private OpenJPAEntityManager getEm(boolean optimistic,boolean retainValues) {
         OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
         em.setNontransactionalRead(true);
         em.setRetainState(retainValues);
         em.setOptimistic(optimistic);
         return em;
-    }    
-    
+    }
+
 }

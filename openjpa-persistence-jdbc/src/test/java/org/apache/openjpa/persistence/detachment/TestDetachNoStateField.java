@@ -82,7 +82,7 @@ public class TestDetachNoStateField extends SingleEMFTestCase {
         NoDetachedStateEntityPropertyAccess entity = new NoDetachedStateEntityPropertyAccess();
         entity.setVersion(1);
     }
-    
+
     void loadDB() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         em.getTransaction().begin();

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.conf;
 
@@ -233,47 +233,47 @@ public interface OpenJPAConfiguration
     public Collection<String> supportedOptions();
 
     /**
-     * Get a name of the Specification. Specification determines various 
+     * Get a name of the Specification. Specification determines various
      * important default behaviors.
      */
     public String getSpecification();
-    
+
     /**
      * Get the Specification. Specification determines various important default
      * behaviors.
-     * 
+     *
      * @since 2.0.0
      */
     public Specification getSpecificationInstance();
-    
+
     /**
      * Set the Specification for this configuration.
      * Specification determines various default properties and behavior.
      * For example, {@link Compatibility compatibility} options during runtime.
-     *   
-     * This change will trigger all registered Product Derivations to mutate 
+     *
+     * This change will trigger all registered Product Derivations to mutate
      * other configuration properties.
      *
      * @param spec fullname of the specification that possibly encodes major and
      * minor version information. For encoding format
      * @see Specification
-     * 
+     *
      * @since 1.1.0
      */
     public void setSpecification(String spec);
-    
+
     /**
      * Set the Specification for this configuration.
      * Specification determines various default properties and behavior.
      * For example, {@link Compatibility compatibility} options during runtime.
-     *   
-     * This change will trigger all registered Product Derivations to mutate 
+     *
+     * This change will trigger all registered Product Derivations to mutate
      * other configuration properties.
      *
      * @param spec fullname of the specification that possibly encodes major and
      * minor version information. For encoding format
      * @see Specification
-     * 
+     *
      * @since 2.0.0
      */
     public void setSpecification(Specification spec);
@@ -382,39 +382,39 @@ public interface OpenJPAConfiguration
      * @since 0.2.5
      */
     public void setDataCacheTimeout(Integer timeout);
-    
+
     /**
      * Gets whether entity state is to be refreshed from {@link DataCache}.
-     * The entities are never refreshed from DataCache if lock is being applied 
-     * (e.g. in a pessimistic transaction) and hence this setting only refers 
+     * The entities are never refreshed from DataCache if lock is being applied
+     * (e.g. in a pessimistic transaction) and hence this setting only refers
      * to behavior when not locking.
      * This flag can be used to overwrite RetrieveMode.BYPASS.
-     * By default, however, this falg is false. 
-     * 
+     * By default, however, this falg is false.
+     *
      * @since 1.2.0
      */
     public boolean getRefreshFromDataCache();
-    
+
     /**
      * Sets whether entity state is to be refreshed from {@link DataCache}.
-     * The entities are never refreshed from DataCache if lock is being applied 
-     * (e.g. in a pessimistic transaction) and hence this setting only refers 
+     * The entities are never refreshed from DataCache if lock is being applied
+     * (e.g. in a pessimistic transaction) and hence this setting only refers
      * to behavior when not locking.
-     * 
+     *
      * @since 1.2.0
      */
     public void setRefreshFromDataCache(boolean refreshFromDataCache);
-    
+
     /**
      * Sets whether entity state is to be refreshed from {@link DataCache}.
-     * The entities are never refreshed from DataCache if lock is being applied 
-     * (e.g. in a pessimistic transaction) and hence this setting only refers 
+     * The entities are never refreshed from DataCache if lock is being applied
+     * (e.g. in a pessimistic transaction) and hence this setting only refers
      * to behavior when not locking.
-     * 
+     *
      * @since 1.2.0
      */
     public void setRefreshFromDataCache(Boolean refreshFromDataCache);
-    
+
     /**
      * The plugin to use for level-2 data store query caching.
      *
@@ -695,11 +695,11 @@ public interface OpenJPAConfiguration
      * @since 0.3.0
      */
     public MetaDataRepository getMetaDataRepositoryInstance();
-    
+
     /**
-     * Returns true if a metaDataRepository has been created for this 
+     * Returns true if a metaDataRepository has been created for this
      * configuration.
-     * 
+     *
      * @since 1.1.0 1.0.1
      */
     public boolean metaDataRepositoryAvailable();
@@ -1468,7 +1468,7 @@ public interface OpenJPAConfiguration
 	 * Backwards compatibility options.
 	 */
 	public Compatibility getCompatibilityInstance ();
-	
+
 	/**
 	 * Options for configuring callbacks as a String.
      *
@@ -1478,40 +1478,40 @@ public interface OpenJPAConfiguration
 
 	/**
 	 * Options for configuring callbacks.
-	 * 
+	 *
 	 * @since 2.0.0
 	 */
 	public CallbackOptions getCallbackOptionsInstance();
-	
+
     /**
      * Options for configuring callbacks set as a comma-separated string value
      * pair.
-     * 
+     *
      * @since 2.0.0
      */
 	public void setCallbackOptions(String options);
 
     /**
-     * Configuration settings for the query compilation cache to use. 
+     * Configuration settings for the query compilation cache to use.
      * @see QueryCompilationCacheValue
      * @since 0.9.6
      */
     public String getQueryCompilationCache();
 
     /**
-     * Configuration settings for the query compilation cache to use. 
+     * Configuration settings for the query compilation cache to use.
      * @see QueryCompilationCacheValue
      * @since 0.9.6
      */
     public void setQueryCompilationCache(String conf);
-    
+
     /**
-     * Configuration settings for the query compilation cache to use. 
+     * Configuration settings for the query compilation cache to use.
      * @see QueryCompilationCacheValue
      * @since 0.9.6
      */
     public Map getQueryCompilationCacheInstance();
-    
+
     /**
      * Return the {@link StoreFacadeTypeRegistry} instance associated with this
      * configuration.
@@ -1606,75 +1606,75 @@ public interface OpenJPAConfiguration
     /**
      * Return the cache marshaller listeners.
      *
-     * @since 1.1.0 
+     * @since 1.1.0
      */
     public Map<String,CacheMarshaller> getCacheMarshallerInstances();
-    
+
     /**
      * Affirms if all configured elements are initialized eagerly as opposed
      * to lazily on-demand.
-     * 
+     *
      * @since 1.3.0
      */
     public boolean isInitializeEagerly();
-    
+
     /**
      * Sets whether all configured elements will be initialized eagerly or
      * lazily on-demand.
-     * 
+     *
      * @since 1.3.0
      */
     public void setInitializeEagerly(boolean flag);
-    
+
     /**
      * Return PreparedQueryCache used for caching datastore queries.
-     * 
+     *
      * @since 2.0.0
      */
     public PreparedQueryCache getQuerySQLCacheInstance();
-        
+
     /**
      * Gets the configuration of QuerySQLCache.
-     * 
+     *
      * @since 2.0.0
      */
     public String getQuerySQLCache();
-    
+
     /**
      * Sets QuerySQLCache with the given cache.
-     * 
+     *
      * @since 2.0.0
      */
-    public void setQuerySQLCache(PreparedQueryCache cache);   
-    
+    public void setQuerySQLCache(PreparedQueryCache cache);
+
     /**
      * Sets QuerySQLCache with the given configuration.
-     * 
+     *
      * @since 2.0.0
      */
-    public void setQuerySQLCache(String config);    
-    
+    public void setQuerySQLCache(String config);
+
     /**
      * Get the cache of finder queries.
-     * 
+     *
      * @since 2.0.0
      */
     public FinderCache getFinderCacheInstance();
-    
+
     /**
      * Get the string configuration of the finder cache.
-     * 
+     *
      * @since 2.0.0
      */
     public String getFinderCache();
-    
+
     /**
-     * Set the finder cache from a string configuration. 
-     * 
+     * Set the finder cache from a string configuration.
+     *
      * @since 2.0.0
      */
     public void setFinderCache(String cache);
-    
+
     /**
      * The bean validation mode to use for managed classes.
      * Defaults to <code>AUTO</code>.
@@ -1690,7 +1690,7 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public void setValidationMode(String mode);
-    
+
     /**
      * The ValidatorFactory provided by the container or application.
      * Defaults to <code>null</code>.
@@ -1706,7 +1706,7 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public void setValidationFactory(Object factory);
-    
+
     /**
      * The Validator provided by the container or created by the runtime.
      * Defaults to <code>null</code>.
@@ -1722,87 +1722,87 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public void setValidatorInstance(Object val);
-    
+
     /**
      * Gets the lifecycle event manager instance classname.
-     * 
+     *
      * @since 2.0.0
      */
     public String getLifecycleEventManager();
 
     /**
      * Gets the lifecycle event manager instance.
-     * 
+     *
      * @since 2.0.0
      */
     public LifecycleEventManager getLifecycleEventManagerInstance();
 
     /**
      * Sets the lifecycle event manager instance classname.
-     * 
+     *
      * @since 2.0.0
      */
     public void setLifecycleEventManager(String eventMgr);
 
     /**
      * Gets the validation groups for pre-persist
-     * 
+     *
      * @since 2.0.0
      */
     public String getValidationGroupPrePersist();
 
     /**
      * Sets the validation groups for pre-persist
-     * 
+     *
      * @since 2.0.0
      */
     public void setValidationGroupPrePersist(String vgPrePersist);
 
     /**
      * Gets the validation groups for pre-update
-     * 
+     *
      * @since 2.0.0
      */
     public String getValidationGroupPreUpdate();
 
     /**
      * Sets the validation groups for pre-update
-     * 
+     *
      * @since 2.0.0
      */
     public void setValidationGroupPreUpdate(String vgPreUpdate);
 
     /**
      * Gets the validation groups for pre-remove
-     * 
+     *
      * @since 2.0.0
      */
     public String getValidationGroupPreRemove();
 
     /**
      * Sets the validation groups for pre-remove
-     * 
+     *
      * @since 2.0.0
      */
     public void setValidationGroupPreRemove(String vgPreRemove);
-    
+
     /**
      * Sets the {@link EncryptionProvider}.
      *
      */
     public void setEncryptionProvider(String className);
-    
+
     /**
      * Gets the {@link EncryptionProvider}.
-     * 
+     *
      * @return EncryptionProvider
      */
     public EncryptionProvider getEncryptionProvider();
-    
-    
+
+
     /**
      * Set the {@link DataCacheMode}
-     * 
+     *
      * @param mode One of the Sting constants from {@link DataCacheMode}
      * @since 2.0.0
      */
@@ -1814,43 +1814,43 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public String getDataCacheMode();
-    
+
     /**
      * Gets the policy object that determines distribution of cached instances
      * across named partitions of L2 data cache.
-     * 
+     *
      * @return an implementation of {@link CacheDistributionPolicy}.
      * @since 2.0.0
      */
     public CacheDistributionPolicy getCacheDistributionPolicyInstance();
-    
+
     /**
      * Sets the policy object that determines distribution of cached instances
      * across named partitions of L2 data cache.
-     * 
+     *
      * @param policy a non-null implementation of {@link CacheDistributionPolicy}.
      * @since 2.0.0
      */
     public void setCacheDistributionPolicyInstance(CacheDistributionPolicy policy);
-    
+
     /**
      * Gets the plug-in string that described the policy to distribute cached instances
      * across named partitions of L2 data cache.
-     * 
+     *
      * @return a plug-in string for {@link CacheDistributionPolicy}.
      * @since 2.0.0
      */
     public String getCacheDistributionPolicy();
-    
+
     /**
      * Sets the plug-in string that describes the policy to distribute cached instances
      * across named partitions of L2 data cache.
-     * 
+     *
      * @param a plug-in string for {@link CacheDistributionPolicy}.
      * @since 2.0.0
      */
     public void setCacheDistributionPolicy(String policyPlugin);
-    
+
     /**
      * Gets the plug-in string that defines instrumentation providers and what
      * they instrument.
@@ -1858,7 +1858,7 @@ public interface OpenJPAConfiguration
      * @since 2.1.0
      */
     public String getInstrumentation();
-    
+
     /**
      * Sets the plug-in string that defines instrumentation providers and what
      * they instrument.
@@ -1866,7 +1866,7 @@ public interface OpenJPAConfiguration
      * @since 2.1.0
      */
     public void setInstrumentation(String providers);
-    
+
     /**
      * Gets an instance of the instrumentation manager.  The instrumentation
      * provides access to configured instrumentation providers and can be used
@@ -1875,33 +1875,33 @@ public interface OpenJPAConfiguration
      * @since 2.1.0
      */
     public InstrumentationManager getInstrumentationManagerInstance();
-    
-    
+
+
     /**
      * Gets the singular instance of {@link Auditor} associated with this configuration.
-     * 
+     *
      * @since 2.2.0
      */
     public Auditor getAuditorInstance();
-    
+
     /**
      * Sets the singular instance of {@link Auditor} associated with this configuration.
-     * 
+     *
      * @since 2.2.0
      */
 
     public void setAuditorInstance(Auditor auditor);
-    
+
     /**
      * Gets the plug-in string of {@link Auditor} specified in this configuration.
-     * 
+     *
      * @since 2.2.0
      */
     public String getAuditor();
-    
+
     /**
      * Sets the plug-in string of {@link Auditor} specified in this configuration.
-     * 
+     *
      * @since 2.2.0
      */
     public void setAuditor(String s);
@@ -1923,24 +1923,24 @@ public interface OpenJPAConfiguration
       * @since 2.2.0
       */
      public void setPostLoadOnMerge(Boolean postLoadOnMerge);
-    
+
      /**
       * Whether to attempt to optimize id class copy operations during the
       * enhancement process.  Optimization is only applicable for simple id classes
       * that have a constructor with the proper construction parameters and
-      * direct assignments to fields within the id class during construction. 
-      * If the optimization cannot occur, the enhancer will fallback to the 
+      * direct assignments to fields within the id class during construction.
+      * If the optimization cannot occur, the enhancer will fallback to the
       * noraml behavior.
       * @since 2.2.0
       */
      public boolean getOptimizeIdCopy();
-     
+
      /**
       * Whether to attempt to optimize id class copy operations during the
       * enhancement process.  Optimization is only applicable for simple id classes
       * that have a constructor with the proper construction parameters and
-      * direct assignments to fields within the id class during construction. 
-      * If the optimization cannot occur, the enhancer will fallback to the 
+      * direct assignments to fields within the id class during construction.
+      * If the optimization cannot occur, the enhancer will fallback to the
       * normal behavior.
       * @since 2.2.0
       */
@@ -1950,8 +1950,8 @@ public interface OpenJPAConfiguration
       * Whether to attempt to optimize id class copy operations during the
       * enhancement process.  Optimization is only applicable for simple id classes
       * that have a constructor with the proper construction parameters and
-      * direct assignments to fields within the id class during construction. 
-      * If the optimization cannot occur, the enhancer will fallback to the 
+      * direct assignments to fields within the id class during construction.
+      * If the optimization cannot occur, the enhancer will fallback to the
       * normal behavior.
       * @since 2.2.0
       */

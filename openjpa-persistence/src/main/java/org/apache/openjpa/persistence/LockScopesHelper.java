@@ -25,7 +25,7 @@ import org.apache.openjpa.kernel.LockScopes;
 /**
  * Helper methods translate between JPA-defined pessimistic lock scope and
  * OpenJPA internal lock scope levels.
- * 
+ *
  * @since 2.0.0
  */
 public class LockScopesHelper {

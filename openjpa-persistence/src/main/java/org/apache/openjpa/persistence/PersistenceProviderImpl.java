@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -92,20 +92,20 @@ public class PersistenceProviderImpl
             BrokerFactory factory = getBrokerFactory(cp, poolValue, BundleUtils.getBundleClassLoader());
             OpenJPAConfiguration conf = factory.getConfiguration();
             conf.setUserClassLoader(BundleUtils.getBundleClassLoader());
-            _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);            
+            _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
             pd.checkPuNameCollisions(_log,name);
-            
+
             // add enhancer
             loadAgent(factory);
-            
+
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
-            
+
             if (conf.getConnectionRetainModeConstant() == ConnectionRetainModes.CONN_RETAIN_ALWAYS) {
                 // warn about EMs holding on to connections.
                 _log.warn(_loc.get("retain-always", conf.getId()));
             }
-            
+
             OpenJPAEntityManagerFactory emf = JPAFacadeHelper.toEntityManagerFactory(factory);
             if (_log.isTraceEnabled()) {
                 _log.trace(this + " creating " + emf + " for PU " + name + ".");
@@ -115,20 +115,20 @@ public class PersistenceProviderImpl
             if (_log != null) {
                 _log.error(_loc.get("create-emf-error", name), e);
             }
-            
+
             /*
-             * 
+             *
              * Maintain 1.x behavior of throwing exceptions, even though
              * JPA2 9.2 - createEMF "must" return null for PU it can't handle.
-             * 
+             *
              * JPA 2.0 Specification Section 9.2 states:
-             * "If a provider does not qualify as the provider for the named persistence unit, 
+             * "If a provider does not qualify as the provider for the named persistence unit,
              * it must return null when createEntityManagerFactory is invoked on it."
-             * That specification compliance behavior has happened few lines above on null return. 
+             * That specification compliance behavior has happened few lines above on null return.
              * Throwing runtime exception in the following code is valid (and useful) behavior
              * because the qualified provider has encountered an unexpected situation.
              */
-            throw PersistenceExceptions.toPersistenceException(e);                
+            throw PersistenceExceptions.toPersistenceException(e);
         }
     }
 
@@ -144,7 +144,7 @@ public class PersistenceProviderImpl
             // we only support boolean settings for this option currently.
             throw new IllegalArgumentException(poolValue.toString());
         }
-        
+
         if (poolValue == null || !((Boolean) poolValue).booleanValue())
             return Bootstrap.newBrokerFactory(cp, loader);
         else
@@ -185,7 +185,7 @@ public class PersistenceProviderImpl
             ClassLoader loader = pui.getClassLoader();
             if (BundleUtils.runningUnderOSGi()) {
                 // OPENJPA-1491 : If running under OSGi, use the Bundle's ClassLoader instead of the application one
-                // OPENJPA-2542 : Also try to load from app loader in the case of a user implemented interface/config 
+                // OPENJPA-2542 : Also try to load from app loader in the case of a user implemented interface/config
                 loader = new MultiClassLoader(BundleUtils.getBundleClassLoader(), loader);
             }
             BrokerFactory factory = getBrokerFactory(cp, poolValue, loader);
@@ -200,7 +200,7 @@ public class PersistenceProviderImpl
                     _log.warn(_loc.get("transformer-registration-error", pui));
                 }
             }
-            
+
             if (conf.getConnectionRetainModeConstant() == ConnectionRetainModes.CONN_RETAIN_ALWAYS) {
                 // warn about container managed EMs holding on to connections.
                 _log.warn(_loc.get("cm-retain-always",conf.getId()));
@@ -208,12 +208,12 @@ public class PersistenceProviderImpl
 
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
-            
+
             OpenJPAEntityManagerFactory emf = JPAFacadeHelper.toEntityManagerFactory(factory);
             if (_log.isTraceEnabled()) {
                 _log.trace(this + " creating container " + emf + " for PU " + pui.getPersistenceUnitName() + ".");
             }
-            
+
             return emf;
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -243,7 +243,7 @@ public class PersistenceProviderImpl
             peMap.put(AbstractCFMetaDataFactory.JAR_FILE_URLS, pui.getJarFileUrls());
         }
     }
-    
+
     /*
      * Returns a ProviderUtil for use with entities managed by this
      * persistence provider.
@@ -260,7 +260,7 @@ public class PersistenceProviderImpl
     protected String getDefaultBrokerAlias() {
         return BrokerValue.NON_FINALIZING_ALIAS;
     }
-    
+
     /*
      * Return a new instance of Configuration subclass used by entity
      * enhancement in ClassTransformerImpl. If OpenJPAConfigurationImpl
@@ -270,7 +270,7 @@ public class PersistenceProviderImpl
     protected OpenJPAConfiguration newConfigurationImpl() {
         return new OpenJPAConfigurationImpl();
     }
-   
+
     /**
      * Java EE 5 class transformer.
      */
@@ -279,7 +279,7 @@ public class PersistenceProviderImpl
 
         private final ClassFileTransformer _trans;
 
-        private ClassTransformerImpl(ConfigurationProvider cp, String props, 
+        private ClassTransformerImpl(ConfigurationProvider cp, String props,
             final ClassLoader tmpLoader, OpenJPAConfiguration conf) {
             cp.setInto(conf);
             // use the temporary loader for everything
@@ -302,7 +302,7 @@ public class PersistenceProviderImpl
             return _trans.transform(cl, name, previousVersion, pd, bytes);
         }
 	}
-    
+
     /**
      * This private worker method will attempt load the PCEnhancerAgent.
      */
@@ -317,7 +317,7 @@ public class PersistenceProviderImpl
             }
         }
     }
-    
+
     /**
      * This private worker method will attempt to setup the proper
      * LifecycleEventManager type based on if the javax.validation APIs are
@@ -338,7 +338,7 @@ public class PersistenceProviderImpl
 
     /**
      * Determines whether the specified object is loaded.
-     * 
+     *
      * @return LoadState.LOADED - if all implicit or explicit EAGER fetch
      *         attributes are loaded
      *         LoadState.NOT_LOADED - if any implicit or explicit EAGER fetch
@@ -354,7 +354,7 @@ public class PersistenceProviderImpl
      * Determines whether the attribute on the specified object is loaded.  This
      * method may access the value of the attribute to determine load state (but
      * currently does not).
-     * 
+     *
      * @return LoadState.LOADED - if the attribute is loaded.
      *         LoadState.NOT_LOADED - if the attribute is not loaded or any
      *         EAGER fetch attributes of the entity are not loaded.
@@ -364,19 +364,19 @@ public class PersistenceProviderImpl
      */
     public LoadState isLoadedWithReference(Object obj, String attr) {
         // TODO: Are there be any cases where OpenJPA will need to examine
-        // the contents of a field to determine load state?  If so, per JPA 
-        // contract, this method permits that sort of access. In the extremely 
-        // unlikely case that the the entity is managed by multiple providers, 
-        // even if it doesn't trigger loading in OpenJPA, accessing field data 
+        // the contents of a field to determine load state?  If so, per JPA
+        // contract, this method permits that sort of access. In the extremely
+        // unlikely case that the the entity is managed by multiple providers,
+        // even if it doesn't trigger loading in OpenJPA, accessing field data
         // could trigger loading by an alternate provider.
         return isLoadedWithoutReference(obj, attr);
     }
 
     /**
      * Determines whether the attribute on the specified object is loaded.  This
-     * method does not access the value of the attribute to determine load 
+     * method does not access the value of the attribute to determine load
      * state.
-     * 
+     *
      * @return LoadState.LOADED - if the attribute is loaded.
      *         LoadState.NOT_LOADED - if the attribute is not loaded or any
      *         EAGER fetch attributes of the entity are not loaded.
@@ -384,7 +384,7 @@ public class PersistenceProviderImpl
      *         provider or if it does not contain the persistent
      *         attribute.
      */
-    public LoadState isLoadedWithoutReference(Object obj, String attr) {        
+    public LoadState isLoadedWithoutReference(Object obj, String attr) {
         if (obj == null) {
             return LoadState.UNKNOWN;
         }

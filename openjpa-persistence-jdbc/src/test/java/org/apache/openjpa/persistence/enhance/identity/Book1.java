@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -37,12 +37,12 @@ import javax.persistence.Table;
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
 
 /**
- * Entity used to test compound primary keys using entity as relationship to 
+ * Entity used to test compound primary keys using entity as relationship to
  * more than one level.
- * 
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-207">OPENJPA-207</A>
- *  
+ *
  * @author Jeffrey Blattman
  * @author Pinaki Poddar
  *
@@ -57,25 +57,25 @@ public class Book1 implements Serializable {
         @AttributeOverride(name="library", column=@Column(name="LIBRARY_NAME"))
     })
     private BookId1 bid;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "book")
     private Set<Page1> pages = new HashSet<Page1>();
-    
+
     @MapsId("library")
     @ManyToOne
     @JoinColumn(name="LIBRARY_NAME", referencedColumnName="LIBRARY_NAME")
     private Library1 library;
-    
+
     private String author;
-    
+
 	public BookId1 getBid() {
         return bid;
     }
-    
+
     public void setBid(BookId1 bid) {
         this.bid = bid;
     }
-    
+
     public Library1 getLibrary() {
         return library;
     }
@@ -92,12 +92,12 @@ public class Book1 implements Serializable {
         }
         return null;
     }
-    
+
     public void addPage(Page1 p) {
         p.setBook(this);
         pages.add(p);
     }
-    
+
 	public String getAuthor() {
 		return author;
 	}
@@ -110,13 +110,13 @@ public class Book1 implements Serializable {
         if (!(o instanceof Book1)) {
             return false;
         }
-        
+
         Book1 other = (Book1)o;
-        
+
         if (!getBid().equals(other.getBid())) {
             return false;
         }
-        
+
         return true;
     }
 

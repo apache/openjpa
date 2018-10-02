@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.validation;
 
@@ -26,7 +26,7 @@ public interface Validator {
 
     /**
      * Validates a given instance
-     * 
+     *
      * @param <T> The instance to validate
      * @param arg0 The class, of type T to validate
      * @param event The event id
@@ -37,7 +37,7 @@ public interface Validator {
 
     /**
      * Validates a property of a given instance
-     * 
+     *
      * @param <T> The instance to validate
      * @param arg0 The class, of type T to validate
      * @param property The property to validate
@@ -45,8 +45,8 @@ public interface Validator {
      * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
-    public <T> ValidationException validateProperty(T arg0, 
-            String property, int event); 
+    public <T> ValidationException validateProperty(T arg0,
+            String property, int event);
 
     /**
      * Validates a value based upon the constraints applied to a given class
@@ -59,13 +59,13 @@ public interface Validator {
      * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
-    public <T> ValidationException validateValue(Class<T> arg0, 
+    public <T> ValidationException validateValue(Class<T> arg0,
         String arg1, Object arg2, int event);
 
     /**
-     * Method for determining whether validation is active for the given 
+     * Method for determining whether validation is active for the given
      * type and event.
-     * 
+     *
      * @param <T>
      * @param arg0 Type being validated
      * @param event event type

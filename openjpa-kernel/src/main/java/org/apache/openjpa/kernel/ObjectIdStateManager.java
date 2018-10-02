@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -693,18 +693,18 @@ public class ObjectIdStateManager
 
         FieldMetaData fmd = getMetaData().getField(field);
         Object val = null;
-        if (fmd.getBackingMember() instanceof Field) 
+        if (fmd.getBackingMember() instanceof Field)
             val = Reflection.get(_oid, (Field) fmd.getBackingMember());
-        else if (fmd.getBackingMember() instanceof Method) 
+        else if (fmd.getBackingMember() instanceof Method)
             val = Reflection.get(_oid, (Method) fmd.getBackingMember());
         else if (AccessCode.isField(fmd.getDefiningMetaData().getAccessType()))
-            val = Reflection.get(_oid, Reflection.findField(_oid.getClass(), 
+            val = Reflection.get(_oid, Reflection.findField(_oid.getClass(),
                 fmd.getName(), true));
-        else 
+        else
             val = Reflection.get(_oid, Reflection.findGetter(_oid.getClass(),
             fmd.getName(), true));
 
-        if (fmd.getValue().getEmbeddedMetaData() != null) 
+        if (fmd.getValue().getEmbeddedMetaData() != null)
             return new ObjectIdStateManager(val, null, fmd);
         return val;
     }
@@ -732,13 +732,13 @@ public class ObjectIdStateManager
         if (fmd.getBackingMember() instanceof Field)
             Reflection.set(_oid, (Field) fmd.getBackingMember(), val);
         else if (AccessCode.isField(fmd.getDefiningMetaData().getAccessType()))
-            Reflection.set(_oid, Reflection.findField(_oid.getClass(), 
+            Reflection.set(_oid, Reflection.findField(_oid.getClass(),
                 fmd.getName(), true), val);
         else
             Reflection.set(_oid, Reflection.findSetter(_oid.getClass(),
                 fmd.getName(), fmd.getDeclaredType(), true), val);
 	}
-    
+
     @Override
     public boolean isDelayed(int field) {
         return false;

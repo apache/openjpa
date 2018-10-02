@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
@@ -34,11 +34,11 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 /**
- * Simple unrelated persistent entity used to test logically union queries. 
- * This class is root of an inheritance hierarchy using TABLE PER CLASS 
+ * Simple unrelated persistent entity used to test logically union queries.
+ * This class is root of an inheritance hierarchy using TABLE PER CLASS
  * strategy. Polymorphic queries on this class needs to run logical union
- * of queries on all known subclasses. 
- * 
+ * of queries on all known subclasses.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -48,7 +48,7 @@ public class Game {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private String name;
 
 	public long getId() {

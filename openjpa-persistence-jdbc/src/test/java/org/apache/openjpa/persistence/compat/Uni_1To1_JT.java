@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -38,31 +38,31 @@ public class Uni_1To1_JT {
           @JoinColumn(name="C_ID", referencedColumnName="ID")
     )
     private EntityC_U11JT entityC;
-    
-    public long getId() { 
-        return id; 
+
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public EntityC_U11JT getEntityC() { 
-        return entityC; 
+    public EntityC_U11JT getEntityC() {
+        return entityC;
     }
 
-    public void setEntityC(EntityC_U11JT entityC) { 
-        this.entityC = entityC; 
+    public void setEntityC(EntityC_U11JT entityC) {
+        this.entityC = entityC;
     }
 
     public int hashCode() {
         return name.hashCode() + (int)id;
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof Uni_1To1_JT)) return false;
         Uni_1To1_JT u = (Uni_1To1_JT)o;

@@ -22,7 +22,7 @@ package org.apache.openjpa.persistence.delimited.identifiers.xml;
 //@DiscriminatorValue("Chevrolet")
 public class Chevrolet2 extends Car2 {
     public Chevrolet2() {}
-    
+
     public Chevrolet2(int id) {
         super(id);
     }

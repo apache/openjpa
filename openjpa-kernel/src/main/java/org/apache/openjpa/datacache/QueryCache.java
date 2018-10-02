@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -136,11 +136,11 @@ public interface QueryCache
      * Free the resources used by this cache.
 	 */
 	public void close ();
-	
+
 	   /**
      * Gets the simple statistics for query results.
      * If the statistics gathering is disabled, an empty statistics is returned.
-     * @since 2.1.0 
+     * @since 2.1.0
      */
     public QueryStatistics<QueryKey> getStatistics();
 }

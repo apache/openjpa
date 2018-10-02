@@ -40,33 +40,33 @@ import org.apache.openjpa.persistence.FetchGroups;
 public class EntityA {
     @Id
     private long id;
-    
+
     private String name;
-    
+
     @Basic(fetch=FetchType.LAZY)
     private String description;
-    
+
     @OneToOne(cascade=(CascadeType.ALL))
     EntityB entityB;
-    
+
     @OneToOne(cascade=(CascadeType.PERSIST))
     EntityC entityC;
-    
+
     @OneToOne(cascade=(CascadeType.ALL), fetch=FetchType.LAZY)
     EntityD entityD;
-    
+
     @OneToOne(cascade=(CascadeType.PERSIST), fetch=FetchType.LAZY)
     EntityE entityE;
-    
+
     public EntityA() {
     }
-    
+
     public EntityA(long id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
     }
-    
+
     public long getId() {
         return id;
     }

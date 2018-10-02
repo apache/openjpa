@@ -35,9 +35,9 @@ public class TestDepthFirstAnalysis
     private DepthFirstAnalysis _dfa = null;
 
     public void setUp() {
-        setUpGraph1();   
+        setUpGraph1();
     }
-    
+
     public void setUpGraph1() {
         Graph graph = new Graph();
         Object node1 = new Object();
@@ -128,7 +128,7 @@ public class TestDepthFirstAnalysis
             assertFalse(true);
         }
     }
-    
+
     public void testForwardEdges() {
         setUpGraph2();
         Collection edges = _dfa.getEdges(Edge.TYPE_FORWARD);
@@ -151,7 +151,7 @@ public class TestDepthFirstAnalysis
             assertFalse(true);
         }
     }
-    
+
     public static void main(String[] args) {
         main(TestDepthFirstAnalysis.class);
     }

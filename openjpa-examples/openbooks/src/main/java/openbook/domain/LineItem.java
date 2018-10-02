@@ -28,7 +28,7 @@ import javax.persistence.OrderColumn;
  * An immutable persistent entity with complex primary key.
  * The primary key is combination of the primary identity of {@linkplain PurchaseOrder} and
  * an 1-based integer index.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -43,29 +43,29 @@ public class LineItem implements Serializable {
     @Id
     @OneToOne
     private PurchaseOrder order;
-    
+
     @Id
     @OrderColumn
     @Column(name="IDX") // index is keyword
     private int index;
-    
+
     @ManyToOne(optional=false)
     private Book book;
-    
+
     private int quantity;
-    
+
     protected LineItem() {
-        
+
     }
-    
+
     /**
      * Constructed as a line item for the given PurchaseOrder for the given Book for the given quantity.
      * Package protected because only the PurchaseOrder can create its own LineItem.
-     *  
+     *
      * @param order non-null PurchaseOrder
-     * @param i the 1-based index of this line item in its parent PurchaseOrder 
+     * @param i the 1-based index of this line item in its parent PurchaseOrder
      * @param book non-null Book of this line item
-     * @param quantity no. of books must be greater than zero. 
+     * @param quantity no. of books must be greater than zero.
      */
     LineItem(PurchaseOrder order, int i, Book book, int quantity) {
         if (order == null)
@@ -76,13 +76,13 @@ public class LineItem implements Serializable {
             throw new NullPointerException("Can not create LineItem for null Book");
         if (quantity < 1)
             throw new IllegalArgumentException("Can not create LineItem with quantity " + i + ". Must be > 0");
-        
+
         this.order = order;
         this.index = i;
         this.book = book;
         this.quantity = quantity;
     }
-    
+
     /**
      * Gets the Book for this line item.
      * @return non-null Book.
@@ -114,17 +114,17 @@ public class LineItem implements Serializable {
     public int getIndex() {
         return index;
     }
-    
+
     /**
      * Separate identity class.
-     * 
+     *
      * @author Pinaki Poddar
      *
      */
     public static class LineItemId implements Serializable {
-        long order; 
+        long order;
         int index;
-        
+
         @Override
         public boolean equals(Object other) {
             if (other == this)
@@ -135,7 +135,7 @@ public class LineItem implements Serializable {
             }
             return false;
         }
-        
+
         @Override
         public int hashCode() {
             return (int) (31 ^ order + index);

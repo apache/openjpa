@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
@@ -39,27 +39,27 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 
 
 public class TestMetaDataValueIndicator
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {    
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private OpenJPAEntityManager pm;
-    
+
     private ClassMapping eMapping;
     private ClassMapping fMapping;
-    
+
     public TestMetaDataValueIndicator(String str) {
         super(str);
     }
-    
+
     /** Creates a new instance of TestMetaDataValueIndicator */
     public TestMetaDataValueIndicator() {
     }
-    
+
     public void setUp() {
         // ### I hate that we have to do this
         Class c = MultiE.class;
         c = MultiF.class;
-        
+
         pm = (OpenJPAEntityManager)currentEntityManager();
-        
+
         eMapping =
             (ClassMapping) ((OpenJPAEntityManagerSPI) pm).getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(MultiE.class,
@@ -69,7 +69,7 @@ public class TestMetaDataValueIndicator
             getMetaDataRepositoryInstance().getMetaData(MultiF.class,
             pm.getClassLoader(), true);
     }
-    
+
     public void tearDown()
     throws Exception {
         if (pm.getTransaction().isActive())
@@ -77,30 +77,30 @@ public class TestMetaDataValueIndicator
         pm.close();
         super.tearDown();
     }
-    
+
     public void testMetaData() {
         assertEquals(ValueMapDiscriminatorStrategy.class,
                 eMapping.getDiscriminator().getStrategy().getClass());
         assertEquals(SuperclassDiscriminatorStrategy.class,
                 fMapping.getDiscriminator().getStrategy().getClass());
     }
-    
+
     public void testOperations() {
        deleteAll(MultiE.class);
-        
+
         pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getTransaction().begin();
-        
+
         MultiE e = new MultiE();
         e.setString0("foo");
         pm.persist(e);
-        
+
         MultiF f = new MultiF();
         f.setString0("bar");
         pm.persist(f);
-        
+
         pm.getTransaction().commit();
-        
+
         pm = (OpenJPAEntityManager)currentEntityManager();
         //FIXME jthomas
         /* Cant find equivalent of getExtent()
@@ -108,7 +108,7 @@ public class TestMetaDataValueIndicator
         assertEquals(1, countExtent(pm.getExtent(MultiE.class, false)));
         assertEquals(1, countExtent(pm.getExtent(MultiF.class, true)));
         assertEquals(1, countExtent(pm.getExtent(MultiF.class, false)));
-         
+
         Object oid = pm.getObjectId
             (pm.getExtent(MultiE.class, true).iterator().next());
          */
@@ -117,11 +117,11 @@ public class TestMetaDataValueIndicator
         pm = (OpenJPAEntityManager)currentEntityManager();
         assertNotNull(pm.getObjectId(oid));
         pm.close();
-        
+
         pm = (OpenJPAEntityManager)currentEntityManager();
         assertNotNull(pm.getObjectId(oid));
     }
-    
+
     private int countExtent(Extent e) {
         int count = 0;
         for (Iterator iter = e.iterator(); iter.hasNext();) {
@@ -130,6 +130,6 @@ public class TestMetaDataValueIndicator
         }
         return count;
     }
-    
-    
+
+
 }

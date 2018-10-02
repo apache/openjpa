@@ -30,12 +30,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Originally reported in the context of entities of a inheritance hierarchy with
  * JOIN_TABLE strategy.
- * 
+ *
  * <A HREF="http://issues.apache.org/jira/browse/OPENJPA-1536">OPENJPA-1536</A>
- * 
+ *
  * @author Jody Grassel
  * @author Fay Wang
- * 
+ *
  */
 public class TestJoinTableStrategy extends SingleEMFTestCase {
 
@@ -51,13 +51,13 @@ public class TestJoinTableStrategy extends SingleEMFTestCase {
         m.setLastName("ml1");
         m.setSalary(1000000);
         m.setVacationDays(20);
-                
+
         Department d = new Department();
         d.setId(1);
         d.setDepartmentName("d1");
         d.setDepartmentManager(m);
         m.setDepartment(d);
-        
+
         Employee e1 = new Employee();
         e1.setId(2);
         e1.setFirstName("ef1");
@@ -65,7 +65,7 @@ public class TestJoinTableStrategy extends SingleEMFTestCase {
         e1.setDepartment(d);
         e1.setManager(m);
         e1.setVacationDays(20);
-        
+
         em.persist(m);
         em.persist(d);
         em.persist(e1);

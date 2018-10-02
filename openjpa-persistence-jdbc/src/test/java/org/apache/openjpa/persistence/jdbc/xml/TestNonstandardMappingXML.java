@@ -26,7 +26,7 @@ public class TestNonstandardMappingXML extends
     public void setUp() {
         super.setUp();
     }
-    
+
     @Override
     protected String getPersistenceUnitName() {
         return "nonstandard-mapping-xml";

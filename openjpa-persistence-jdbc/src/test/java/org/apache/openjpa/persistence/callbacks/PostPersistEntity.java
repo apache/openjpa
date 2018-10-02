@@ -25,9 +25,9 @@ import javax.persistence.PostPersist;
 
 /**
  * A persistent entity to test that when PostPersist callback is invoked can
- * be configured. Also the auto-generated persistent identity is assigned when 
+ * be configured. Also the auto-generated persistent identity is assigned when
  * PostPersist is invoked.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -36,12 +36,12 @@ public class PostPersistEntity {
     @Id
     @GeneratedValue
     private long id;
-    
+
     private String name;
-    
+
     transient int postPersistCallbackCount;
     transient long idOnCallback;
-    
+
     @PostPersist
     public void postPersist() {
         postPersistCallbackCount++;
@@ -59,7 +59,7 @@ public class PostPersistEntity {
     public long getId() {
         return id;
     }
-    
+
     /**
      * Gets value of the named field by reflection to ensure that the field is
      * not loaded as a side-effect to access it.
@@ -69,6 +69,6 @@ public class PostPersistEntity {
             return getClass().getDeclaredField(f).get(this);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } 
+        }
     }
 }

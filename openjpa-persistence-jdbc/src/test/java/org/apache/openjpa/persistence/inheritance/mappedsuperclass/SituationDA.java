@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 import javax.persistence.*;
 
 /**
- * Entity used to test MappedSuperClass which does not have IdClass. 
- * 
+ * Entity used to test MappedSuperClass which does not have IdClass.
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-873">OPENJPA-873</A>
- *  
+ *
  * @author pioneer_ip@yahoo.com
  * @author Fay Wang
  *
@@ -35,58 +35,58 @@ import javax.persistence.*;
 @Table (name = "cc2SITUATION")
 @IdClass(SituationDA.SituationId.class)
 public class SituationDA extends CashBaseEntity {
-   
+
     @Id
     @Column(name="C2008SRL")
     private String cashBoxPeriodSerial;
-   
+
     @Id
     @Column(name="C2012TYPE")
     private short type;
-    
+
     public static class SituationId implements java.io.Serializable{
         private static final long serialVersionUID = 1L;
         private String cashBoxPeriodSerial;
         private short type;
-       
+
         public SituationId(){}
-        
+
         public SituationId(String cashBoxPeriodSerial, short type){
             this.cashBoxPeriodSerial = cashBoxPeriodSerial;
             this.type = type;
         }
-        
-        
+
+
         public boolean equals(Object other){
             if (other instanceof SituationId) {
                 final SituationId otherId = (SituationId)other;
                 return ( otherId.cashBoxPeriodSerial.equals(
                     this.cashBoxPeriodSerial) && otherId.type == this.type );
                 }
-                return false;   
+                return false;
         }
-       
+
         public int hashCode() {
             return super.hashCode();
         }
     }
-    
+
     public short getType() {
         return type;
     }
-    
+
     public void setType(short type) {
         this.type = type;
     }
-    
+
     public String getCashBoxPeriodSerial() {
         return cashBoxPeriodSerial;
     }
-    
+
     public void setCashBoxPeriodSerial(String cashBoxPeriodSerial) {
         this.cashBoxPeriodSerial = cashBoxPeriodSerial;
     }
-    
+
 }
 
 

@@ -33,40 +33,40 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Displays the current Stock prices and updates periodically.
- * 
- * 
+ *
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class MarketDataPanel extends ScrollableTable<Stock> implements UpdateStockHandler {
     private final OpenTrader session;
     private Timer refreshTimer;
     private static int refreshInterval = 60*1000;
-    
+
     public MarketDataPanel(final OpenTrader session, final int w, final int h) {
         super("Market Prices (Updated every " + refreshInterval/1000 + "s)", w, h, true);
         this.session = session;
-        
+
         session.registerHandler(ServiceEvent.StockUpdated.TYPE, this);
-        
+
         setColumnHeader(0, "Symbol", "25%");
         setColumnHeader(1, "Price",  "25%");
         setColumnHeader(2, "Change", "50%");
-        
+
         // Stock Symbol
         setRenderer(0, new GridCellRenderer<Stock>() {
             public Widget render(Stock stock) {
                 return new Label(stock.getSymbol());
             }
         });
-        
+
         // Current Market Price
         setRenderer(1, new GridCellRenderer<Stock>() {
             public Widget render(Stock stock) {
                 return FormatUtil.formatPrice(stock.getMarketPrice());
             }
         });
-        
+
         // Percent Change since last update
         setRenderer(2, new GridCellRenderer<Stock>() {
             public Widget render(Stock stock) {
@@ -74,10 +74,10 @@ public class MarketDataPanel extends ScrollableTable<Stock> implements UpdateSto
             }
         });
     }
-    
+
     /**
      * Sets the interval to refresh the stock data from the server.
-     * 
+     *
      * @param interval period in milliseconds.
      */
     public void setRefreshInterval(int interval) {
@@ -86,7 +86,7 @@ public class MarketDataPanel extends ScrollableTable<Stock> implements UpdateSto
         if (refreshTimer != null)
             refreshTimer.scheduleRepeating(refreshInterval);
     }
-    
+
     /**
      * Gets the interval (in milliseconds) to refresh  the stock data from the server.
      */
@@ -110,7 +110,7 @@ public class MarketDataPanel extends ScrollableTable<Stock> implements UpdateSto
         refreshTimer.run();
         refreshTimer.scheduleRepeating(refreshInterval);
     }
-    
+
     /**
      * Starts periodic update of the stocks from the server.
      */
@@ -120,13 +120,13 @@ public class MarketDataPanel extends ScrollableTable<Stock> implements UpdateSto
         refreshTimer.cancel();
         refreshTimer = null;
     }
-    
+
     /**
      * ---------------------------------------------------------------------------------
      * Service Event Response Management
      * ---------------------------------------------------------------------------------
      */
-    
+
     /**
      * Updates the stock data.
      */
@@ -143,12 +143,12 @@ public class MarketDataPanel extends ScrollableTable<Stock> implements UpdateSto
      */
 
     /**
-     * Periodically update the stocks and notifies the listeners via the 
+     * Periodically update the stocks and notifies the listeners via the
      * {@link OpenTrader#fireEvent(com.google.gwt.event.shared.GwtEvent) mediator}.
      * In this case, one of the listeners is this widget itself. Still the
      * {@link ServiceEvent.StockUpdated service event} is propagated via the
      * mediator (so that others can listen as well).
-     * 
+     *
      */
     public class UpdateStocks implements AsyncCallback<List<Stock>> {
         public void onFailure(Throwable caught) {

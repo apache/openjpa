@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.detachment.model;
 
@@ -24,11 +24,11 @@ import javax.persistence.Version;
 
 @Entity
 public class DMItem {
-    private static long idCounter = System.currentTimeMillis();	
+    private static long idCounter = System.currentTimeMillis();
     @Id private long id = idCounter++;
 
     @Version int version;
-    
+
     private String name;
     private double price;
 

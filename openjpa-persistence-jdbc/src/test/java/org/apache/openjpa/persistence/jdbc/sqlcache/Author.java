@@ -30,10 +30,10 @@ import javax.persistence.ManyToMany;
 @DiscriminatorValue("AUTHOR")
 public class Author extends Person {
     private String name;
-    
+
     @ManyToMany(fetch=FetchType.LAZY)
     private Set<Book> books;
-    
+
     public String getName() {
         return name;
     }
@@ -53,7 +53,7 @@ public class Author extends Person {
     public Set<Book> getBooks() {
         return books;
     }
-    
+
     public void addBook(Book b) {
         if (books == null)
             books = new HashSet<Book>();

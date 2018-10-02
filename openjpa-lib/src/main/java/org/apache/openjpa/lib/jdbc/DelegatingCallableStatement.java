@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.jdbc;
 
@@ -340,7 +340,7 @@ public class DelegatingCallableStatement
     }
 
     /**
-     * @deprecated 
+     * @deprecated
      */
     public void setUnicodeStream(int i1, InputStream is, int i2)
         throws SQLException {
@@ -1026,21 +1026,21 @@ public class DelegatingCallableStatement
     public void setPoolable(boolean poolable) throws SQLException {
         _stmnt.setPoolable(poolable);
     }
-    
+
     // Java 7 methods follow
-    
+
     public <T>T getObject(String columnLabel, Class<T> type) throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public <T>T getObject(int columnIndex, Class<T> type) throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public boolean isCloseOnCompletion() throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public void closeOnCompletion() throws SQLException{
     	throw new UnsupportedOperationException();
     }

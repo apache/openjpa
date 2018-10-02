@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity.entityasidentity;
 
@@ -32,10 +32,10 @@ import javax.persistence.Table;
 public class AccountGroup {
     @Id
     private Integer id;
-    
+
     @OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.LAZY)
     private Set<Account> accountSet;
-    
+
     public AccountGroup() {
         accountSet = new java.util.HashSet<Account>();
     }
@@ -55,6 +55,6 @@ public class AccountGroup {
     public void setAccountSet(Set<Account> accountSet) {
         this.accountSet = accountSet;
     }
-    
-    
+
+
 }

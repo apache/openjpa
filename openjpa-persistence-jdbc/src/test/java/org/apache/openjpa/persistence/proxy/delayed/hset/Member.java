@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.delayed.hset;
 
@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.proxy.delayed.IMember;
 public class Member implements IMember {
 
     private String name;
-    
+
     @OneToMany(fetch=FetchType.LAZY, mappedBy="userIdent", targetEntity=Account.class)
     private Set<IAccount> accounts;
 

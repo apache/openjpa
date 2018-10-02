@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.nullity;
 
@@ -24,7 +24,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public abstract class AbstractNullityTestCase extends SingleEMFTestCase {
     protected static boolean NEW = true;
-    
+
     /**
      * Asserts that the given instance can not be committed.
      */
@@ -44,18 +44,18 @@ public abstract class AbstractNullityTestCase extends SingleEMFTestCase {
         } catch (Exception e) {
             if (!expected.isAssignableFrom(e.getClass())) {
                 fail("Expected " + expected.getName() + " receieved " + e);
-            } 
+            }
         }
     }
-    
+
     void assertCommitSucceeds(Object pc, boolean isNew) {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         if (isNew)
             em.persist(pc);
-        else 
+        else
             em.merge(pc);
-        
+
         em.getTransaction().commit();
     }
 }

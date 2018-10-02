@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -33,7 +33,7 @@ public class TupleQueryTest
         setUp(NamedEntity.class);
 
         NamedEntity e = new NamedEntity();
-        e.setName("e"); 
+        e.setName("e");
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -93,19 +93,19 @@ public class RelationCollectionTableFieldStrategy
             throw new MetaDataException(_loc.get("not-coll", field));
         super.map(adapt);
     }
-    
+
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
     	if (!field.isBidirectionalJoinTableMappingOwner())
     		super.insert(sm, store, rm);
     }
-    
+
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
     	if (!field.isBidirectionalJoinTableMappingOwner())
     		super.update(sm, store, rm);
     }
-    
+
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
     	if (!field.isBidirectionalJoinTableMappingOwner())

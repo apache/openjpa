@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -25,11 +25,11 @@ import javax.persistence.Version;
 @Entity
 public class M21UniDepartment {
 
-	@Id	
+	@Id
 	private String deptid;
-	
+
 	String name;
-	
+
 	public String getDeptid() {
         return deptid;
     }
@@ -56,7 +56,7 @@ public class M21UniDepartment {
 
     @Version
 	private int version;
-	
+
 	private String costCode;
 
 	public String getName() {

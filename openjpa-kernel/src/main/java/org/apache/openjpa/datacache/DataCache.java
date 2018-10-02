@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -262,49 +262,49 @@ public interface DataCache
      * Free the resources used by this cache.
 	 */
 	public void close ();
-    
+
     /**
 	 * Gets objects from the caches for a given list of keys.
 	 * The returned map has the same keys as the given keys.
 	 * If the cache does not contain data for a specific key,
-	 * the returned map still contains the key with a null value.  
-	 * 
+	 * the returned map still contains the key with a null value.
+	 *
      */
     public Map<Object,DataCachePCData> getAll(List<Object> keys);
-    
+
     /**
      * Gets the named partition. Note that a partition itself is another cache.
-     *  
-     * @param name name of the given partition. 
-     * 
-     * @param create if true optionally create a new partition. 
-     * 
+     *
+     * @param name name of the given partition.
+     *
+     * @param create if true optionally create a new partition.
+     *
      * @return a partition of the given name. Or null, if either no such partition exists or can not be created.
      * @since 2.0.0
      */
     public DataCache getPartition(String name, boolean create);
-    
+
     /**
-     * Gets the name of the known partitions. 
-     * 
+     * Gets the name of the known partitions.
+     *
      * @return empty set if no partition exists.
-     * 
+     *
      * @since 2.0.0
      */
     public Set<String> getPartitionNames();
-        
+
     /**
      * Affirms if this cache maintains partitions.
-     * 
+     *
      * @since 2.0.0
      */
     public boolean isPartitioned();
-    
+
     /**
      * Returns number of read/write request and cache hit ratio data.
      */
     public CacheStatistics getStatistics();
-    
+
     /**
      * Returns whether the the cache needs to be updated when bulk updates as executed. Defaults to true.
      */

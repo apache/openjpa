@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -37,7 +37,7 @@ import static javax.persistence.InheritanceType.SINGLE_TABLE;
 @Table(name="OC_OWNER")
 @Inheritance(strategy=SINGLE_TABLE)
 public class Owner extends Person {
-    
+
     // bidirectional one-to-many w/ default join column
     @OneToMany(mappedBy="owner", cascade=CascadeType.ALL)
     @JoinTable(name="car_o2m_table")
@@ -49,19 +49,19 @@ public class Owner extends Person {
     @JoinTable(name="home_o2m_table")
     @OrderColumn
     private Collection<Home> homes;
-    
+
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name="widget_m2m_table")
     @OrderColumn
     private Collection<Widget> widgets;
-    
+
     // element collection
     @ElementCollection
     @CollectionTable(name="bike_table")
     @OrderColumn(name="bike_coll_order")
     private Collection<Bicycle> bikeColl;
 
-        
+
     public void setCars(Collection<Car> cars) {
         this.cars = cars;
     }
@@ -92,5 +92,5 @@ public class Owner extends Person {
 
     public Collection<Widget> getWidgets() {
         return widgets;
-    }    
+    }
 }

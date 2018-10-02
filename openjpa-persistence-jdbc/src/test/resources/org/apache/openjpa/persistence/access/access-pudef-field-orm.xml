@@ -26,10 +26,10 @@
             <access>FIELD</access>
         </persistence-unit-defaults>
     </persistence-unit-metadata>
-    <entity name="XMLFieldAccess2" 
-            class="org.apache.openjpa.persistence.access.xml.XMLFieldAccess2"> 
+    <entity name="XMLFieldAccess2"
+            class="org.apache.openjpa.persistence.access.xml.XMLFieldAccess2">
         <named-query name="XMLFieldAccess2.query">
-            <query>SELECT xfa FROM XMLFieldAccess2 xfa WHERE 
+            <query>SELECT xfa FROM XMLFieldAccess2 xfa WHERE
             xfa.id = :id AND xfa.strField = :strVal
             </query>
         </named-query>
@@ -45,12 +45,12 @@
         class=
         "org.apache.openjpa.persistence.access.xml.XMLDefFieldMixedPropAccess2">
         <named-query name="XMLDFMPA2.query">
-            <query>SELECT df FROM XMLDFMPA2 df WHERE 
+            <query>SELECT df FROM XMLDFMPA2 df WHERE
             df.id = :id AND df.stringField = :strVal
             </query>
         </named-query>
         <named-query name="XMLDFMPA2.badQuery">
-            <query>SELECT p FROM XMLDFMPA2 p WHERE 
+            <query>SELECT p FROM XMLDFMPA2 p WHERE
             p.id = :id AND p.strField = :strVal
             </query>
         </named-query>
@@ -58,9 +58,9 @@
             <id name="id">
                 <generated-value/>
             </id>
-            <basic name="stringField" access="PROPERTY"/>            
+            <basic name="stringField" access="PROPERTY"/>
             <version name="version"/>
             <transient name="strField"/>
         </attributes>
-    </entity>    
+    </entity>
 </entity-mappings>

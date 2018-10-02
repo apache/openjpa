@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.cascade.pudefault;
 
@@ -30,13 +30,13 @@ public class PUDEntityA02 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    
+
     @Basic
     private String strData;
-    
+
     @Embedded
     private EmbeddableWithRelationships emb;
-    
+
     public PUDEntityA02() {
         emb = new EmbeddableWithRelationships();
     }
@@ -70,6 +70,6 @@ public class PUDEntityA02 {
         return "PUDEntityA02 [id=" + id + ", strData=" + strData + ", emb="
             + emb + "]";
     }
-    
-    
+
+
 }

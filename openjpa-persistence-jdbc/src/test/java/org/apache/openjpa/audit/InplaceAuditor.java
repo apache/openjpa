@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.audit;
 
@@ -27,7 +27,7 @@ import org.apache.openjpa.lib.conf.Configuration;
 /**
  * Example of an {@link Auditor auditor} that records the audit entries in the same database
  * of the managed entities being audited.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -45,9 +45,9 @@ public class InplaceAuditor implements Auditor {
 	public boolean isRollbackOnError() {
 		return false;
 	}
-	
+
 	/**
-	 * Recording an audit is simply persisting an {@link AuditedEntry} with 
+	 * Recording an audit is simply persisting an {@link AuditedEntry} with
 	 * the available {@link Broker persistence context}.
 	 * @param broker
 	 * @param audits

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -28,23 +28,23 @@ public class TestConcurrentMap extends SingleEMTestCase {
 
     public void testConcurrentMap001() {
         em.getTransaction().begin();
-        
+
         ConcurrentEntityLeft left = new ConcurrentEntityLeft();
         left.setId(1);
         left.setStrData("Lefty");
-        
+
         ConcurrentEntityRight right = new ConcurrentEntityRight();
         right.setId(1);
         right.setStrData("Poncho");
-        
+
         em.persist(left);
         em.persist(right);
-        
+
         left.setRightEntity(right);
         right.getLeftEntityMap().put(left.getStrData(), left);
-        
+
         em.getTransaction().commit();
-        
+
         assertEquals(1, right.getLeftEntityMap().size());
         assertEquals(1, right.getLeftEntityMap().get(left.getStrData()).getId());
     }

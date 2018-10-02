@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -84,7 +84,7 @@ public class RelationFieldStrategy
         (RelationFieldStrategy.class);
 
     private Boolean _fkOid = null;
-    
+
     public void map(boolean adapt) {
         if (field.getTypeCode() != JavaTypes.PC || field.isEmbeddedPC())
             throw new MetaDataException(_loc.get("not-relation", field));
@@ -137,7 +137,7 @@ public class RelationFieldStrategy
 
             field.setUseClassCriteria(criteria);
             return;
-        } 
+        }
 
         // this is necessary to support openjpa 3 mappings, which didn't
         // differentiate between secondary table joins and relations built
@@ -155,13 +155,13 @@ public class RelationFieldStrategy
             field.getMappingInfo().setTableIdentifier(DBIdentifier.NULL);
             field.getMappingInfo().setColumns(null);
         }
-        
+
         if (!field.isBiMTo1JT())
             field.mapJoin(adapt, false);
         if (field.getTypeMapping().isMapped()) {
-            if (field.getMappedByIdValue() != null) 
-                setMappedByIdColumns();            
-             
+            if (field.getMappedByIdValue() != null)
+                setMappedByIdColumns();
+
             if (!field.isBiMTo1JT()) {
                 ForeignKey fk = vinfo.getTypeJoin(field, field.getName(), true,
                     adapt);
@@ -192,9 +192,9 @@ public class RelationFieldStrategy
 
     /**
      * When there is MappedById annotation, the owner of the one-to-one/
-     * many-to-one relationship will use its primary key to represent 
+     * many-to-one relationship will use its primary key to represent
      * foreign key relation. No need to create a separate foreign key
-     * column. 
+     * column.
      */
     private void setMappedByIdColumns() {
         ClassMetaData owner = field.getDefiningMetaData();
@@ -203,7 +203,7 @@ public class RelationFieldStrategy
             FieldMapping fm = (FieldMapping) pks[i];
             ValueMappingImpl val = (ValueMappingImpl) field.getValue();
             ValueMappingInfo info = val.getValueInfo();
-            if (info.getColumns().size() == 0) 
+            if (info.getColumns().size() == 0)
                 info.setColumns(getMappedByIdColumns(fm));
         }
     }
@@ -222,7 +222,7 @@ public class RelationFieldStrategy
                     if (fmds[i].getValue().getEmbeddedMetaData() != null) {
                         EmbedValueHandler.getEmbeddedIdCols(
                                 (FieldMapping)fmds[i], cols);
-                    } else 
+                    } else
                         EmbedValueHandler.getIdColumns(
                                 (FieldMapping)fmds[i], cols);
                 }
@@ -270,7 +270,7 @@ public class RelationFieldStrategy
         Row row = null;
         OpenJPAStateManager rel = RelationStrategies.getStateManager
             (sm.fetchObjectField(field.getIndex()), store.getContext());
-        // Checks if the field being inserted is a MapsId field and 
+        // Checks if the field being inserted is a MapsId field and
         // the related object is using auto-assigned identity
         // If the above conditions are satisfied and the related instance has
         // already been inserted in the RowManger, then returns without further
@@ -279,7 +279,7 @@ public class RelationFieldStrategy
 	        List<FieldMetaData> mappedByIdFields = ((StateManagerImpl)sm).getMappedByIdFields();
 	        if (rel != null && ((ClassMapping)rel.getMetaData()).getTable().getAutoAssignedColumns().length > 0
 	        &&  mappedByIdFields!= null && mappedByIdFields.contains(field)) {
-	        	row = rm.getRow(((ClassMapping)rel.getMetaData()).getTable(), Row.ACTION_INSERT, rel, false); 
+	        	row = rm.getRow(((ClassMapping)rel.getMetaData()).getTable(), Row.ACTION_INSERT, rel, false);
 	        	if (row != null) return;
 	        }
         }
@@ -289,24 +289,24 @@ public class RelationFieldStrategy
             if (row == null) row =  field.getRow(sm, store, rm, Row.ACTION_INSERT);
             if (row != null && !field.isBiMTo1JT()) {
                 field.setForeignKey(row, rel);
-                // this is for bi-directional maps, the key and value of the 
-                // map are stored in the table of the mapped-by entity  
+                // this is for bi-directional maps, the key and value of the
+                // map are stored in the table of the mapped-by entity
                 setMapKey(sm, rel, store, row);
             }
         }
     }
-    
-    private void setMapKey(OpenJPAStateManager sm, OpenJPAStateManager rel, 
+
+    private void setMapKey(OpenJPAStateManager sm, OpenJPAStateManager rel,
         JDBCStore store, Row row) throws SQLException {
         if (rel == null)
             return;
         ClassMetaData meta = rel.getMetaData();
         FieldMapping mapField = getMapField(meta);
-        
+
         // there is no bi-directional map field
         if (mapField == null)
             return;
-        
+
         Map mapObj = (Map)rel.fetchObjectField(mapField.getIndex());
         Object keyObj = getMapKeyObj(mapObj, sm.getPersistenceCapable());
         ValueMapping key = mapField.getKeyMapping();
@@ -319,43 +319,43 @@ public class RelationFieldStrategy
                     getForeignKey();
                 ColumnIO io = new ColumnIO();
                 row.setForeignKey(fk, io, keySm);
-            } 
+            }
         } else {
             // key is an embeddable or basic type
-            FieldStrategy strategy = mapField.getStrategy(); 
-            if (strategy instanceof  
+            FieldStrategy strategy = mapField.getStrategy();
+            if (strategy instanceof
                     HandlerRelationMapTableFieldStrategy) {
-                HandlerRelationMapTableFieldStrategy strat = 
+                HandlerRelationMapTableFieldStrategy strat =
                     (HandlerRelationMapTableFieldStrategy) strategy;
                 Column[] kcols = strat.getKeyColumns((ClassMapping)meta);
                 ColumnIO kio = strat.getKeyColumnIO();
                 HandlerStrategies.set(key, keyObj, store, row, kcols,
                         kio, true);
             }
-        } 
+        }
     }
-    
+
     private FieldMapping getMapField(ClassMetaData meta) {
         FieldMapping[] fields = ((ClassMapping)meta).getFieldMappings();
         for (int i = 0; i < fields.length; i++) {
             FieldMetaData mappedBy = fields[i].getMappedByMetaData();
             if (fields[i].getDeclaredTypeCode() == JavaTypes.MAP &&
-                mappedBy == field)  
+                mappedBy == field)
                 return fields[i];
-        } 
-        return null;    
+        }
+        return null;
     }
-    
+
     private Object getMapKeyObj(Map mapObj, Object value) {
         if (value instanceof ReflectingPersistenceCapable)
-            value = ((ReflectingPersistenceCapable)value).getManagedInstance(); 
+            value = ((ReflectingPersistenceCapable)value).getManagedInstance();
 
         Set<Map.Entry> entries = mapObj.entrySet();
         for (Map.Entry entry : entries) {
             if (entry.getValue() == value)
                 return entry.getKey();
         }
-     
+
         return null;
     }
 
@@ -371,17 +371,17 @@ public class RelationFieldStrategy
             nullInverse(sm, rm);
             updateInverse(sm, rel, store, rm);
         } else {
-            int action = (rel == null && 
+            int action = (rel == null &&
                     field.isBidirectionalJoinTableMappingNonOwner()) ?
                     Row.ACTION_DELETE : Row.ACTION_UPDATE;
             Row row = field.getRow(sm, store, rm, action);
             if (row != null && !field.isBiMTo1JT()) {
                 field.setForeignKey(row, rel);
-                // this is for bi-directional maps, the key and value of the 
-                // map are stored in the table of the mapped-by entity  
+                // this is for bi-directional maps, the key and value of the
+                // map are stored in the table of the mapped-by entity
                 setMapKey(sm, rel, store, row);
             }
-            
+
             if (field.isBiMTo1JT()) { // also need to update the join table
                 PersistenceCapable invPC = (PersistenceCapable)sm.fetchObject(
                     field.getBi_1ToM_JTField().getIndex());
@@ -390,7 +390,7 @@ public class RelationFieldStrategy
                     secondaryRow = rm.getSecondaryRow(field.getBi1ToMJoinFK().getTable(),
                         Row.ACTION_INSERT);
                     secondaryRow.setForeignKey(field.getBi1ToMElemFK(), null, sm);
-                    secondaryRow.setForeignKey(field.getBi1ToMJoinFK(), null, 
+                    secondaryRow.setForeignKey(field.getBi1ToMJoinFK(), null,
                         RelationStrategies.getStateManager(invPC,
                         store.getContext()));
                     rm.flushSecondaryRow(secondaryRow);
@@ -430,7 +430,7 @@ public class RelationFieldStrategy
                     Row row = field.getRow(sm, store, rm, Row.ACTION_DELETE);
                     row.setForeignKey(fk, null, rel);
                     // this is for bi-directional maps, the key and value of the
-                    // map are stored in the table of the mapped-by entity  
+                    // map are stored in the table of the mapped-by entity
                     setMapKey(sm, rel, store, row);
                 }
             }
@@ -555,7 +555,7 @@ public class RelationFieldStrategy
             selectEagerParallel((Select) sel, clss[0], store, fetch, eagerMode);
         else {
             Union union = (Union) sel;
-            if (fetch.getSubclassFetchMode (field.getTypeMapping()) 
+            if (fetch.getSubclassFetchMode (field.getTypeMapping())
                 != JDBCFetchConfiguration.EAGER_JOIN)
                 union.abortUnion();
             union.select(new Union.Selector() {
@@ -581,13 +581,13 @@ public class RelationFieldStrategy
         // that might otherwise limit the relations that match
         Joins joins = sel.newJoins().setVariable("*");
         eagerJoin(joins, cls, true);
-        sel.select(cls, field.getSelectSubclasses(), store, fetch, eagerMode, 
+        sel.select(cls, field.getSelectSubclasses(), store, fetch, eagerMode,
             joins);
     }
 
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
-        if (field.isBiMTo1JT()) 
+        if (field.isBiMTo1JT())
             return;
 
         // limit the eager mode to single on recursive eager fetching b/c
@@ -617,7 +617,7 @@ public class RelationFieldStrategy
         if (!forceInner && field.getNullValue() != FieldMapping.NULL_EXCEPTION)
             return joins.outerJoinRelation(field.getName(), fk, field.
                 getTypeMapping(), field.getSelectSubclasses(), inverse, false);
-        return joins.joinRelation(field.getName(), fk, field.getTypeMapping(), 
+        return joins.joinRelation(field.getName(), fk, field.getTypeMapping(),
             field.getSelectSubclasses(), inverse, false);
     }
 
@@ -748,7 +748,7 @@ public class RelationFieldStrategy
         // get the related object's oid
         ClassMapping relMapping = field.getTypeMapping();
         Object oid = null;
-        if (relMapping.isMapped() && !field.isBiMTo1JT()) { 
+        if (relMapping.isMapped() && !field.isBiMTo1JT()) {
             oid = relMapping.getObjectId(store, res, field.getForeignKey(),
                     field.getPolymorphic() != ValueMapping.POLY_FALSE, null);
         } else {
@@ -757,7 +757,7 @@ public class RelationFieldStrategy
                 long id = res.getLong(cols[0]);
                 if (!res.wasNull())
                     oid = store.newDataStoreId(id, relMapping, true);
-            } else { 
+            } else {
                 // application id
                 if (cols.length == 1) {
                     Object val = res.getObject(cols[0], null, null);
@@ -823,11 +823,11 @@ public class RelationFieldStrategy
                         resJoins[idx] = sel.newJoins().joinRelation(null,
                             field.getBi1ToMJoinFK(), rels[idx],
                             field.getSelectSubclasses(), false, false);
-                        sel.whereForeignKey(field.getBi1ToMElemFK(), sm.getObjectId(), 
+                        sel.whereForeignKey(field.getBi1ToMElemFK(), sm.getObjectId(),
                             field.getDefiningMapping(), store);
                     }
                 }
-                sel.select(rels[idx], subs, store, fetch, fetch.EAGER_JOIN, 
+                sel.select(rels[idx], subs, store, fetch, fetch.EAGER_JOIN,
                     resJoins[idx]);
             }
         });
@@ -916,7 +916,7 @@ public class RelationFieldStrategy
             throw RelationStrategies.uninversable(field);
         if (forceOuter)
             return joins.outerJoinRelation(field.getName(),
-                field.getForeignKey(), clss[0], field.getSelectSubclasses(), 
+                field.getForeignKey(), clss[0], field.getSelectSubclasses(),
                 true, false);
         return joins.joinRelation(field.getName(), field.getForeignKey(),
             clss[0], field.getSelectSubclasses(), true, false);
@@ -936,8 +936,8 @@ public class RelationFieldStrategy
 
         joins = setEmbeddedVariable(joins);
         if (forceOuter)
-            return joins.outerJoinRelation(field.getName(), 
-                field.getForeignKey(clss[0]), clss[0], 
+            return joins.outerJoinRelation(field.getName(),
+                field.getForeignKey(clss[0]), clss[0],
                 field.getSelectSubclasses(), false, false);
         return joins.joinRelation(field.getName(), field.getForeignKey(clss[0]),
             clss[0], field.getSelectSubclasses(), false, false);
@@ -958,11 +958,11 @@ public class RelationFieldStrategy
         if (relmapping.getIdentityType() == ClassMapping.ID_DATASTORE) {
             Column col = cols[0];
             if (fk != null)
-                col = fk.getColumn(col);   
+                col = fk.getColumn(col);
             long id = res.getLong(col, joins);
             if (field.getObjectIdFieldTypeCode() == JavaTypes.LONG)
                 return id;
-            return store.newDataStoreId(id, relmapping, field.getPolymorphic() 
+            return store.newDataStoreId(id, relmapping, field.getPolymorphic()
                 != ValueMapping.POLY_FALSE);
         }
 
@@ -973,7 +973,7 @@ public class RelationFieldStrategy
         if (cols == getColumns() && fk == null)
             fk = field.getForeignKey();
         else
-            fk = createTranslatingForeignKey(relmapping, cols, fk); 
+            fk = createTranslatingForeignKey(relmapping, cols, fk);
         return relmapping.getObjectId(store, res, fk,
             field.getPolymorphic() != ValueMapping.POLY_FALSE, joins);
     }
@@ -984,7 +984,7 @@ public class RelationFieldStrategy
      */
     private ForeignKey createTranslatingForeignKey(ClassMapping relmapping,
         Column[] gcols, ForeignKey gfk) {
-        ForeignKey fk = field.getForeignKey(); 
+        ForeignKey fk = field.getForeignKey();
         Column[] cols = fk.getColumns();
 
         ForeignKey tfk = null;
@@ -1007,7 +1007,7 @@ public class RelationFieldStrategy
         col = field.getForeignKey().getPrimaryKeyColumn(col);
         if (col == null)
             throw new InternalException();
-        
+
         Object savedFieldVal = fieldVal;
 
         ClassMapping relmapping = field.getTypeMapping();
@@ -1021,7 +1021,7 @@ public class RelationFieldStrategy
             Object[] pks = ApplicationIds.toPKValues(fieldVal, relmapping);
             fieldVal = pks[relmapping.getField(j.getFieldIndex()).
                 getPrimaryKeyIndex()];
-        } else if (relmapping.getObjectIdType() == ObjectId.class && 
+        } else if (relmapping.getObjectIdType() == ObjectId.class &&
             relmapping.getPrimaryKeyFieldMappings()[0].getValueMapping().isEmbedded()) {
             if (fieldVal == null)
                 return j.getJoinValue(savedFieldVal, col, store);
@@ -1099,7 +1099,7 @@ public class RelationFieldStrategy
                 field.getElement().getEmbeddedMetaData() == null) {
                 Object obj = store.find(oid, field, fetch);
                 sm.storeObject(field.getIndex(), obj);
-            } else    
+            } else
                 sm.setIntermediate(field.getIndex(), oid);
         }
     }

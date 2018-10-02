@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.jdbc.meta.strats;
@@ -53,7 +53,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         new ArrayList<Class<?>>
             (Arrays.asList(MySQLDictionary.class, OracleDictionary.class, SQLServerDictionary.class,
                     DB2Dictionary.class));
-        
+
     public void setUp() throws Exception {
         setSupportedDatabases(supportedDatabases.toArray(new Class<?>[] {}));
         if (isTestsDisabled()) {
@@ -137,7 +137,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
+
     public void testUpdateANullObjectWithoutNull() throws IOException {
         insert(newLobEntity(null, 1));
         EntityManager em = emf.createEntityManager();
@@ -154,7 +154,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
+
     public void testDelete() {
         insert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
@@ -170,7 +170,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
+
     public void testLifeCycleInsertFlushModify() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.xs;
 
@@ -46,7 +46,7 @@ public class AccountingHierarchyRate implements Serializable {
 	public AccountingHierarchyRate() {
 	}
 
-	public AccountingHierarchyRate(String id, AccountingHierarchy accountingHierarchy, 
+	public AccountingHierarchyRate(String id, AccountingHierarchy accountingHierarchy,
 	        BigDecimal currentRate, BigDecimal budgetRate) {
 		this.id = id;
 		this.accountingHierarchy = accountingHierarchy;
@@ -98,7 +98,7 @@ public class AccountingHierarchyRate implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		result = prime * result + ((getAccountingHierarchy() == null) ? 0 : 
+		result = prime * result + ((getAccountingHierarchy() == null) ? 0 :
 		    getAccountingHierarchy().hashCode());
 		return result;
 	}

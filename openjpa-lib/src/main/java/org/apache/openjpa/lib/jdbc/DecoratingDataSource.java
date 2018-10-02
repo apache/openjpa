@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.jdbc;
 
@@ -33,7 +33,7 @@ import javax.sql.DataSource;
  * @author Abe White
  */
 public class DecoratingDataSource extends DelegatingDataSource {
-    
+
     private List<ConnectionDecorator> _decorators =
         new CopyOnWriteArrayList<ConnectionDecorator>();
 
@@ -43,7 +43,7 @@ public class DecoratingDataSource extends DelegatingDataSource {
     public DecoratingDataSource(DataSource ds) {
         super(ds);
     }
-    
+
     /**
      * Return a read-only list of connection decorators in the order they were
      * added.
@@ -94,7 +94,7 @@ public class DecoratingDataSource extends DelegatingDataSource {
     }
 
     private Connection decorate(Connection conn) throws SQLException {
-        for(ConnectionDecorator decorator : _decorators) { 
+        for(ConnectionDecorator decorator : _decorators) {
             conn = decorator.decorate(conn);
         }
         return conn;

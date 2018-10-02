@@ -32,7 +32,7 @@ import serp.bytecode.BCClassLoader;
 public class GeneratedClasses {
 
     /**
-     * Return the more derived loader of the class laoders for the given 
+     * Return the more derived loader of the class laoders for the given
      * classes.
      */
     public static ClassLoader getMostDerivedLoader(Class c1, Class c2) {
@@ -68,13 +68,13 @@ public class GeneratedClasses {
             throw new GeneralException(bc.getName()).setCause(t);
         }
     }
-    
+
     /**
-     * Return true if the given loader will load the same version of a given 
-     * class.  
-     * 
+     * Return true if the given loader will load the same version of a given
+     * class.
+     *
      * @param loader Classloader to use.
-     * @param clazz  Expected class. 
+     * @param clazz  Expected class.
      * @return true if loader.load(clazz.getName()) == clazz. Otherwise false.
      */
     private static boolean canLoad(ClassLoader loader, Class clazz) {

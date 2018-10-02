@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -22,5 +22,5 @@ import java.io.Serializable;
 
 public interface Identifiable extends Configrable<String, String>, Serializable{
 	public String getId();
-	public void setId(String id);	
+	public void setId(String id);
 }

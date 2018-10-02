@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -103,9 +103,9 @@ public abstract class MappingInfo
         }
         return _cols;
     }
-    
+
     /**
-     * Gets the columns whose table name matches the given table name. 
+     * Gets the columns whose table name matches the given table name.
      * @deprecated
      */
     public List<Column> getColumns(String tableName) {
@@ -113,15 +113,15 @@ public abstract class MappingInfo
     }
 
     /**
-     * Gets the columns whose table name matches the given table name. 
+     * Gets the columns whose table name matches the given table name.
      */
     public List<Column> getColumns(DBIdentifier tableName) {
-        if (_cols == null) 
+        if (_cols == null)
         	return Collections.emptyList();
         List<Column> result = new ArrayList<Column>();
         for (Column col : _cols) {
-        	if (DBIdentifier.equal(col.getTableIdentifier(), 
-        			tableName)) 
+        	if (DBIdentifier.equal(col.getTableIdentifier(),
+        			tableName))
         		result.add(col);
         }
         return result;
@@ -162,7 +162,7 @@ public abstract class MappingInfo
         _canIdx = indexable;
     }
 
-    /** 
+    /**
      *  Affirms if this instance represents an implicit relation. For example, a
      *  relation expressed as the value of primary key of the related class and
 	 *  not as object reference.
@@ -172,14 +172,14 @@ public abstract class MappingInfo
     public boolean isImplicitRelation() {
     	return _implicitRelation;
     }
-    
+
     /**
      * Sets a marker to imply a logical relation that can not have any physical
      * manifest in the database. For example, a relation expressed as the value
      * of primary key of the related class and not as object reference.
      * Populated from @ForeignKey(implicit=true) annotation.
      * The mutator can only transit from false to true but not vice versa.
-     * 
+     *
      * @since 1.3.0
      */
     public void setImplicitRelation(boolean flag) {
@@ -443,7 +443,7 @@ public abstract class MappingInfo
 
     /**
      * Assert that the user did not try to place a foreign key on this mapping
-     * or placed an implicit foreign key. 
+     * or placed an implicit foreign key.
      */
     public void assertNoForeignKey(MetaDataContext context, boolean die) {
         if (_fk == null || isImplicitRelation())
@@ -489,7 +489,7 @@ public abstract class MappingInfo
      */
     public Table createTable(MetaDataContext context, TableDefaults def,
         String schemaName, String given, boolean adapt) {
-        return createTable(context, def, DBIdentifier.newSchema(schemaName), 
+        return createTable(context, def, DBIdentifier.newSchema(schemaName),
             DBIdentifier.newTable(given), adapt);
     }
 
@@ -574,10 +574,10 @@ public abstract class MappingInfo
         // n columns because we don't know which of the n columns the info
         // applies to
         List<Column> given = getColumns();
-        
+
         if (context instanceof FieldMapping && ((FieldMapping)context).hasMapsIdCols())
             given = ((FieldMapping)context).getValueInfo().getMapsIdColumns();
-        
+
         boolean fill = ((MappingRepository) context.getRepository()).
             getMappingDefaults().defaultMissingInfo();
         if ((!given.isEmpty() || (!adapt && !fill))
@@ -606,10 +606,10 @@ public abstract class MappingInfo
         }
         return cols;
     }
-    
+
     boolean canMerge(List<Column> given, Column[] templates, boolean adapt,
             boolean fill) {
-    	return !((!given.isEmpty() || (!adapt && !fill)) 
+    	return !((!given.isEmpty() || (!adapt && !fill))
     			&& given.size() != templates.length);
     }
 
@@ -682,13 +682,13 @@ public abstract class MappingInfo
         // find existing column
         Column col = table.getColumn(colName);
         if (col == null && !adapt) {
-            // 
+            //
             // See if column name has already been validated in a dynamic table.
             // If so then want to use that validated column name instead. This
             // should seldom if ever occur as long as the database dictionaries
-            // are kept up-to-date. 
-            // 
-            if ((colName.getName().length() > dict.maxColumnNameLength) || 
+            // are kept up-to-date.
+            //
+            if ((colName.getName().length() > dict.maxColumnNameLength) ||
                dict.getInvalidColumnWordSet().contains(DBIdentifier.toUpper(colName).getName()) &&
               !(table.getClass().getName().contains("DynamicTable"))) {
                 colName=dict.getValidColumnName(colName, new Table());
@@ -719,7 +719,7 @@ public abstract class MappingInfo
                 dict.getJDBCType(tmplate.getJavaType(), size == -1, precis,
                     scale, tmplate.isXML());
         }
-            
+
         boolean ttype = true;
         int otype = type;
         String typeName = tmplate.getTypeName();
@@ -737,7 +737,7 @@ public abstract class MappingInfo
             // the expected column type
             if (given.getType() != Types.OTHER) {
                 ttype = false;
-                if (compat && !given.isCompatible(type, typeName, size, 
+                if (compat && !given.isCompatible(type, typeName, size,
                     decimals)) {
                     Log log = repos.getLog();
                     if (log.isWarnEnabled())
@@ -776,7 +776,7 @@ public abstract class MappingInfo
         if (col == null) {
             col = table.addColumn(colName);
             col.setType(type);
-        } else if ((compat || !ttype) && !col.isCompatible(type, typeName, 
+        } else if ((compat || !ttype) && !col.isCompatible(type, typeName,
             size, decimals)) {
             // if existing column isn't compatible with desired type, die if
             // can't adapt, else warn and change the existing column type
@@ -1057,12 +1057,12 @@ public abstract class MappingInfo
                     context, dict.platform));
             deferred = false;
         }
-        
+
         if (DBIdentifier.isEmpty(name)) {
         	name = cols[0].getIdentifier();
         	name = repos.getDBDictionary().getValidUniqueName(name, table);
         }
-        
+
         Unique unq = table.addUnique(name);
         unq.setDeferred(deferred);
         unq.setColumns(cols);
@@ -1461,9 +1461,9 @@ public abstract class MappingInfo
             } else if ("null".equalsIgnoreCase(targetNameStr))
                 constant = true;
             else {
-                QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(targetName); 
+                QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(targetName);
                 fullTarget = (!DBIdentifier.isNull(path.getObjectTableName()));
-                if (!DBIdentifier.isNull(path.getObjectTableName()) && 
+                if (!DBIdentifier.isNull(path.getObjectTableName()) &&
                     DBIdentifier.isEmpty(path.getObjectTableName())) {
                     // allow use of '.' without prefix to mean "use expected
                     // local table", but ignore if we're already inversed
@@ -1539,7 +1539,7 @@ public abstract class MappingInfo
         Column tmplate = new Column();
         tmplate.setIdentifier(name);
         if (!constant) {
-            Column tcol = foreign.getColumn(targetName, false); 
+            Column tcol = foreign.getColumn(targetName, false);
             if (tcol == null) {
             	String schemaCase = rel.getMappingRepository().getDBDictionary().schemaCase;
             	if (DBDictionary.SCHEMA_CASE_LOWER.equals(schemaCase)) {
@@ -1678,7 +1678,7 @@ public abstract class MappingInfo
         _unq.setIdentifier(unq.getIdentifier());
         _unq.setDeferred(unq.isDeferred());
     }
-    
+
     /**
      * Sets internal constraint and column information to match given mapped
      * constraint.
@@ -1835,16 +1835,16 @@ public abstract class MappingInfo
         return copy;
     }
 
-    /** 
+    /**
      * Return whether the given column belongs to a foreign key.
-     */ 
-    private static boolean isForeignKey(Column col) 
-    {       
+     */
+    private static boolean isForeignKey(Column col)
+    {
         if (col.getTable() == null)
             return false;
         ForeignKey[] fks = col.getTable().getForeignKeys();
-        for (int i = 0; i < fks.length; i++) 
-            if (fks[i].containsColumn(col) 
+        for (int i = 0; i < fks.length; i++)
+            if (fks[i].containsColumn(col)
                 || fks[i].containsConstantColumn(col))
                 return true;
         return false;

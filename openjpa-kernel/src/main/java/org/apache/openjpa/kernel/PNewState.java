@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -77,7 +77,7 @@ class PNewState
     }
 
     boolean isVersionCheckRequired(StateManagerImpl context) {
-        return context.isFlushedDirty(); 
+        return context.isFlushedDirty();
     }
 
     boolean isTransactional() {
@@ -95,7 +95,7 @@ class PNewState
     boolean isDirty() {
         return true;
     }
-    
+
     public String toString() {
         return "Persistent-New";
     }

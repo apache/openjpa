@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 /*
- * When shared-cache-mode is set to ALL, all entities will be cached. 
+ * When shared-cache-mode is set to ALL, all entities will be cached.
  * If the DataCache is not configured, the default values will be used.
  * For example, CacheSize will be set to default value 1000.
  */
@@ -38,7 +38,7 @@ public class TestCacheModeAll extends AbstractCacheModeTestCase {
     protected static Cache cache = null;
     private static List<String> sql = new ArrayList<String>();
     private static JDBCListener listener;
-    
+
     private static Class<?>[] expectedInCache = persistentTypes;
     private static Class<?>[] expectedNotInCache = {};
 
@@ -64,11 +64,11 @@ public class TestCacheModeAll extends AbstractCacheModeTestCase {
         }
         return listener;
     }
-    
-    public List<String> getSql() { 
+
+    public List<String> getSql() {
         return sql;
     }
-    
+
     public void testCacheables() {
         assertCacheables(cache, true);
     }

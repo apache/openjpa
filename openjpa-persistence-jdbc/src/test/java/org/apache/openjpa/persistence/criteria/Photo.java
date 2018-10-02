@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -27,20 +27,20 @@ import javax.persistence.Table;
 @Table(name="CR_PHT")
 
 public class Photo {
-    @Id 
+    @Id
     @GeneratedValue
     private int id;
-    
+
 	private String label;
 
     public int getId() {
         return id;
     }
-    
+
     public String getLabel() {
         return label;
     }
-    
+
     public void setLabel(String label) {
         this.label = label;
     }

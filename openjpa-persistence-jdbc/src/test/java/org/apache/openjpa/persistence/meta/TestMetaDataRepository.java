@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.meta;
 
@@ -70,7 +70,7 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
 			closeEMF(emf);
 		}
 	}
-	
+
 	public void testPreloadCleanUp() {
         OpenJPAEntityManagerFactorySPI emf = null;
         emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "Preload=true");
@@ -91,13 +91,13 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
 
             assertNotNull(mdr.getCachedXMLMetaData(Address.class));
             assertNull(mdr.getCachedXMLMetaData(Order.class));
-            
+
 
         } finally {
             closeEMF(emf);
         }
     }
-	
+
     public void testPreloadConfiguration() {
         OpenJPAEntityManagerFactorySPI emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "preload=true");
         assertTrue(MetaDataRepository.needsPreload(emf.getConfiguration()));

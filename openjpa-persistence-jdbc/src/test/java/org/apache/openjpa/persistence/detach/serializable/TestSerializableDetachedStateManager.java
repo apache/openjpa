@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.detach.serializable;
 
@@ -29,12 +29,12 @@ public class TestSerializableDetachedStateManager extends SingleEMFTestCase {
         setUp(CLEAR_TABLES, SerializableDetachedStateManager.class, DROP_TABLES, "openjpa.DetachState",
             "fgs(DetachedStateField=true)");
     }
-    
+
     public void testRoundTrip() throws Exception {
         SerializableDetachedStateManager c = new SerializableDetachedStateManager();
         c.zDate = new Date(System.currentTimeMillis());
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         em.getTransaction().begin();
         em.persist(c);
         em.getTransaction().commit();

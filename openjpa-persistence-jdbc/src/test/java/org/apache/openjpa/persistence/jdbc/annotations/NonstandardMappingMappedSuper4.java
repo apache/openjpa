@@ -33,13 +33,13 @@ public abstract class NonstandardMappingMappedSuper4 {
     @Strategy("PointHandler")
     @Column(name="my_point")
     private Point point;
-    
-    public Point getPoint() { 
-        return point; 
+
+    public Point getPoint() {
+        return point;
     }
-    
-    public void setPoint(Point point) { 
-        this.point = point; 
+
+    public void setPoint(Point point) {
+        this.point = point;
     }
-   
+
 }

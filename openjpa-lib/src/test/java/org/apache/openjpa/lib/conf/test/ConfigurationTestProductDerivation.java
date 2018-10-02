@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf.test;
 
@@ -32,21 +32,21 @@ import org.apache.openjpa.lib.conf.ProductDerivation;
 
 /**
  * A Product Derivation to test loading of global and default configuration with
- * System settings.  Reads its global from a file specified by 
+ * System settings.  Reads its global from a file specified by
  * <code>"openjpatest.properties"</code> system property.
  *
  * @author Pinaki Poddar
  * @author Abe White
  */
-public class ConfigurationTestProductDerivation 
+public class ConfigurationTestProductDerivation
     extends AbstractProductDerivation {
-    
+
     public static boolean closed = false;
 
     public int getType() {
         return ProductDerivation.TYPE_PRODUCT;
     }
-    
+
     public void beforeConfigurationClose(Configuration conf) {
         closed = true;
     }
@@ -65,7 +65,7 @@ public class ConfigurationTestProductDerivation
 
         URL url = findResource(rsrc, loader);
         if (url == null)
-            throw new MissingResourceException(rsrc, getClass().getName(), 
+            throw new MissingResourceException(rsrc, getClass().getName(),
                 rsrc);
 
         InputStream in = url.openStream();

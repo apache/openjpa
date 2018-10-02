@@ -22,7 +22,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -120,7 +120,7 @@ public class TestInheritance extends BaseKernelTest {
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest2 o");
         q.setSubclasses(false);
 
-//        FIXME jthomas        
+//        FIXME jthomas
 //        OpenJPAQuery q = pm.createNativeQuery("",RuntimeTest2.class);
 //        q.setCandidates(pm.createExtent(RuntimeTest2.class, false));
         Collection c = q.getResultList();

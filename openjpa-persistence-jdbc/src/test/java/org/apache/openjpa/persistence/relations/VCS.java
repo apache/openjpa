@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -45,7 +45,7 @@ public class VCS {
 	@ForeignKey
 	@Id
 	private E e;
-	
+
 	@Basic
 	private String name;
 
@@ -93,7 +93,7 @@ public class VCS {
 	public void setVcs(Set<VC> vcs) {
 		this.vcs = vcs;
 	}
-	
+
 	public void addVC(VC vc){
 		vcs.add(vc);
 		vc.setVcs(this);
@@ -101,8 +101,8 @@ public class VCS {
 	public static class VCSId{
 		private String vcsId;
 		private String e;
-	
-		
+
+
 		public String getE() {
 			return e;
 		}
@@ -126,13 +126,13 @@ public class VCS {
 			if (obj == null ||  ! (obj instanceof VCSId))
 				return false;
 			VCSId id = (VCSId) obj;
-			return (this.getVcsId() == id.getVcsId() || 
-                (this.getVcsId() != null && 
+			return (this.getVcsId() == id.getVcsId() ||
+                (this.getVcsId() != null &&
                 this.getVcsId().equals(id.getVcsId())))
                 && (this.getE() == id.getE() || (this.getE() != null
                 && this.getE().equals(id.getE())));
 		}
-		
+
 		@Override
 		public int hashCode() {
             return (this.getVcsId() != null ?this.getVcsId().hashCode():0)

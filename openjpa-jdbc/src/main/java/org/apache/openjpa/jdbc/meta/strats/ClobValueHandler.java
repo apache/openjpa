@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -50,7 +50,7 @@ public class ClobValueHandler
         DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
         return map(vm, colName, io, adapt);
     }
-    
+
     public Column[] map(ValueMapping vm, DBIdentifier name, ColumnIO io,
         boolean adapt) {
         Column col = new Column();

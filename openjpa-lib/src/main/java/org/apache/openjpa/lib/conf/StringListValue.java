@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -63,14 +63,14 @@ public class StringListValue extends Value {
     public Class<String []> getValueType() {
         return String[].class;
     }
-    
+
     /**
      * Unalias the value list.  This method defers to super.unalias()
      * UNLESS the string passed is a list of values for a property that
      * has aliases.
      */
     public String unalias(String str) {
-        
+
         // defer to super.unalias
         String[] aliases = getAliases();
         if (aliases.length <= 0 || str == null)
@@ -78,26 +78,26 @@ public class StringListValue extends Value {
         str = str.trim();
         if (str.length() <= 0)
             return super.unalias(str);
-        
+
         // snag this case early as it only causes problems
         if (str.equals(","))
             throw new ParseException(s_loc.get("invalid-list-config",
                 getProperty(), str, getAliasList()));
-        
+
         // unalias the list and concatenate the list of
         // canonical values.  Also, catch any bad aliases.
         boolean found;
         String iString;
         StringBuilder retv = new StringBuilder();
         String[] vals = str.split(",", 0);
-        
+
         for (int i = 0; i < vals.length; i++) {
             iString = vals[i] = vals[i].trim();
-            
+
             found = false;
             if (i > 0)
                 retv.append(',');
-            
+
             for (int x = 0; x < aliases.length; x += 2)
                 if (Objects.equals(iString, aliases[x])
                     || Objects.equals(iString, aliases[x + 1])) {
@@ -105,7 +105,7 @@ public class StringListValue extends Value {
                     found = true;
                     break;
                 }
-            
+
             // If the alias list is not comprehensive, add any unknown
             // values back onto the list
             if (!found) {
@@ -136,10 +136,10 @@ public class StringListValue extends Value {
     protected void setInternalObject(Object obj) {
         set((String[]) obj);
     }
-    
+
     protected List<String> getAliasList() {
         return Arrays.asList(getAliases());
     }
-    
+
 }
 

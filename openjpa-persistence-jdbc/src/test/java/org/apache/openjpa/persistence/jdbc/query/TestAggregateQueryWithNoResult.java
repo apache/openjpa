@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
@@ -28,12 +28,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests Aggregate Query that has no record.
- * 
+ *
  * SUM() and COUNT() always return Long.
  * AVG(), MAX(), MIN() preserves the type of aggregated field.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
     EntityManager em;
@@ -51,43 +51,43 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
         String jpql = "SELECT SUM(g.nTile) FROM Scrabble g";
 
         Long result = (Long)em.createQuery(jpql).getSingleResult();
-        
+
         assertNotNull(result);
         assertEquals(result, new Long(0));
     }
-    
+
     public void testAvgWithNoResult() {
         String jpql = "SELECT AVG(g.nTile) FROM Scrabble g";
 
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();
-        
+
         assertNotNull(result);
         assertEquals(result, new Integer(0));
     }
-    
+
     public void testCountWithNoResult() {
         String jpql = "SELECT COUNT(g.nTile) FROM Scrabble g";
 
         Long result = (Long)em.createQuery(jpql).getSingleResult();
-        
+
         assertNotNull(result);
         assertEquals(result, new Long(0));
     }
-    
+
     public void testMaxWithNoResult() {
         String jpql = "SELECT MAX(g.nTile) FROM Scrabble g";
 
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();
-       
+
         assertNotNull(result);
         assertEquals(result, new Integer(0));
     }
-    
+
     public void testMinWithNoResult() {
         String jpql = "SELECT MIN(g.nTile) FROM Scrabble g";
 
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();
-        
+
         assertNotNull(result);
         assertEquals(result, new Integer(0));
     }

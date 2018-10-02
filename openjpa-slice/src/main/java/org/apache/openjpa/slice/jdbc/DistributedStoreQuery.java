@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.jdbc;
 
@@ -45,9 +45,9 @@ import org.apache.openjpa.util.StoreException;
 
 /**
  * A query for distributed databases.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @SuppressWarnings("serial")
 class DistributedStoreQuery extends JDBCStoreQuery {
@@ -86,9 +86,9 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 
 	/**
 	 * Executes queries on multiple databases.
-	 * 
+	 *
 	 * @author Pinaki Poddar
-	 * 
+	 *
 	 */
 	public static class ParallelExecutor extends
 			ExpressionStoreQuery.DataStoreExecutor {
@@ -96,7 +96,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 		private DistributedStoreQuery owner = null;
 
         public ParallelExecutor(DistributedStoreQuery dsq, ClassMetaData meta,
-                boolean subclasses, ExpressionParser parser, Object parsed, 
+                boolean subclasses, ExpressionParser parser, Object parsed,
 				boolean parallel) {
 			super(dsq, meta, subclasses, parser, parsed);
 			owner = dsq;
@@ -119,7 +119,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 			QueryContext ctx = q.getContext();
 			boolean isReplicated = containsReplicated(ctx);
             ExecutorService threadPool = SliceThread.getPool();
-           
+
 			for (int i = 0; i < owner._queries.size(); i++) {
                 // if replicated, then execute only on single slice
 				if (isReplicated && !usedExecutors.isEmpty()) {
@@ -145,7 +145,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 					throw new StoreException(e.getCause());
 				}
 			}
-			
+
 			ResultObjectProvider[] tmp = rops.toArray(new ResultObjectProvider[rops.size()]);
 			ResultObjectProvider result = null;
 			boolean[] ascending = getAscending(q);
@@ -195,7 +195,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
                 StoreManager sm = owner.getDistributedStore().getSlice(i);
 				if (!targets.contains(sm))
 					continue;
-				
+
 				DeleteExecutor call = new DeleteExecutor();
 				call.executor = executors.get(i);
 				call.query = owner._queries.get(i);
@@ -247,7 +247,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
   		    FetchConfiguration fetch = owner.getContext().getFetchConfiguration();
 			return owner.getDistributedStore().getTargets(fetch);
 		}
-		
+
 	}
 
 	static class QueryExecutor implements Callable<ResultObjectProvider> {

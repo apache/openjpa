@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.querycache;
 
@@ -25,7 +25,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
 @Entity
-@NamedQueries({ 
+@NamedQueries({
     @NamedQuery(name = "QCEntity.getByAmount", query = "SELECT o from QCEntity o WHERE o.amount=:amount")
 })
 public class QCEntity {
@@ -40,15 +40,15 @@ public class QCEntity {
     private Long amount;
 
     public QCEntity() {
-        
+
     }
-    
+
     public QCEntity(String pk, String description, Long amount) {
         this.pk = pk;
         this.description = description;
         this.amount = amount;
     }
-    
+
     public String getPk() {
         return pk;
     }

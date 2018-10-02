@@ -29,13 +29,13 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 
 /**
- * An abstract persistent class used as root of inheritance hierarchy and 
+ * An abstract persistent class used as root of inheritance hierarchy and
  * using table-per-concrete-class inheritance strategy.
- * 
+ *
  * For a more detailed description of the domain model to which this receiver
  * belongs
  * @see TestTablePerClassInheritanceWithAbstractRoot
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -44,13 +44,13 @@ import javax.persistence.OneToMany;
 public abstract class Translatable extends BaseEntity {
 	@OneToMany(mappedBy="translatable", cascade=CascadeType.PERSIST)
 	private Set<Translation> translations;
-	
+
 	public void addTranslation(Translation t) {
 		if (translations == null)
 			translations = new HashSet<Translation>();
 		translations.add(t);
 	}
-	
+
 	public Set<Translation> getTranslations() {
 		return Collections.unmodifiableSet(translations);
 	}

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -52,7 +52,7 @@ public class MixedLockManager extends PessimisticLockManager {
      *  #selectForUpdate(org.apache.openjpa.jdbc.sql.Select,int)
      */
     public boolean selectForUpdate(Select sel, int lockLevel) {
-        return (lockLevel >= MixedLockLevels.LOCK_PESSIMISTIC_READ) 
+        return (lockLevel >= MixedLockLevels.LOCK_PESSIMISTIC_READ)
             ? super.selectForUpdate(sel, lockLevel) : false;
     }
 
@@ -83,7 +83,7 @@ public class MixedLockManager extends PessimisticLockManager {
     protected List<SQLBuffer> getLockRows(DBDictionary dict, Object id, ClassMapping mapping,
             JDBCFetchConfiguration fetch, SQLFactory factory) {
         List<SQLBuffer> sqls = super.getLockRows(dict, id, mapping, fetch, factory);
-        // 
+        //
         if(!dict.supportsLockingWithMultipleTables) {
             // look for columns mapped to secondary tables which need to be locked
             FieldMapping fms[] = mapping.getFieldMappings();

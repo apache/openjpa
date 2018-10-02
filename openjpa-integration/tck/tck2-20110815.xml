@@ -197,7 +197,7 @@ create.cmp.tables=false
 
         <!-- Use the following values to start Eclipse remote debug
     	<property name="DEBUG" value="-Djava.compiler=NONE -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777" />
-        -->    	
+        -->
     	<property name="DEBUG" value="" />
         <!--
             Add in a javaagent argument (optional in JPA2 TCK.)

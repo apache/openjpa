@@ -14,19 +14,19 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
  * Utility for converting elements to JPQL string fragments.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class JPQLHelper {
 	private static final StringBuffer SINGLE_QUOTE = new StringBuffer("'");
-	
+
 	static String toJPQL(AliasContext ctx, Object o) {
 		if (o == null)
 			return "NULL";

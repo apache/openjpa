@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.validation;
 
@@ -27,9 +27,9 @@ import org.apache.openjpa.meta.ClassMetaData;
 
 /**
  * An extension of LifecycleEventManager which adds validation capabilities for
- * specific lifecycle events.  Validation occurs after firing all lifecycle 
+ * specific lifecycle events.  Validation occurs after firing all lifecycle
  * events and callbacks.
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class ValidatingLifecycleEventManager extends LifecycleEventManager
@@ -53,7 +53,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
     public void endConfiguration() {
         _validator = (Validator)_conf.getValidatorInstance();
     }
-   
+
     /* (non-Javadoc)
      * @see org.apache.openjpa.lib.conf.Configurable#setConfiguration(
      *      org.apache.openjpa.lib.conf.Configuration)
@@ -72,7 +72,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
 
     @Override
     public boolean hasUpdateListeners(Object source, ClassMetaData meta) {
-        if (_validator == null) {            
+        if (_validator == null) {
             return super.hasUpdateListeners(source, meta);
         }
         return _validator.validating(source, LifecycleEvent.BEFORE_UPDATE) ||
@@ -81,29 +81,29 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
 
     @Override
     public boolean hasPersistListeners(Object source, ClassMetaData meta) {
-        if (_validator == null) {            
+        if (_validator == null) {
             return super.hasPersistListeners(source, meta);
         }
         return _validator.validating(source, LifecycleEvent.BEFORE_PERSIST) ||
-            super.hasPersistListeners(source, meta);        
+            super.hasPersistListeners(source, meta);
     }
 
     @Override
     public boolean hasDeleteListeners(Object source, ClassMetaData meta) {
-        if (_validator == null) {            
+        if (_validator == null) {
             return super.hasDeleteListeners(source, meta);
         }
         return _validator.validating(source, LifecycleEvent.BEFORE_DELETE) ||
             super.hasDeleteListeners(source, meta);
     }
-    
+
     @Override
     public Exception[] fireEvent(Object source,
         ClassMetaData meta, int type) {
-        
+
         return fireEvent(source, null, meta, type);
     }
-    
+
     @Override
     public Exception[] fireEvent(Object source, Object related,
         ClassMetaData meta, int type) {
@@ -115,7 +115,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
         // do not validate
         if (evx != null && evx.length > 0 && isFailFast())
             return evx;
-        
+
         // If a validator is provided and the source object should be validated,
         // validate it and return any exceptions
         if (_validationEnabled && _validator != null && _validator.validating(source, type)) {

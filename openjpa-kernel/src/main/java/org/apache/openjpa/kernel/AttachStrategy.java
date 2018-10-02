@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -76,11 +76,11 @@ abstract class AttachStrategy
         int field);
 
     /**
-     * Return a PNew/PNewProvisional managed object for the given detached 
+     * Return a PNew/PNewProvisional managed object for the given detached
      * instance.
      */
     protected StateManagerImpl persist(AttachManager manager,
-        PersistenceCapable pc, ClassMetaData meta, Object appId, 
+        PersistenceCapable pc, ClassMetaData meta, Object appId,
         boolean explicit) {
         PersistenceCapable newInstance;
         if (!manager.getCopyNew())
@@ -93,26 +93,26 @@ abstract class AttachStrategy
 
         StateManagerImpl sm = (StateManagerImpl) manager.getBroker().persist
             (newInstance, appId, explicit, manager.getBehavior(), !manager.getCopyNew());
-        
+
         attachPCKeyFields(pc, sm, meta, manager);
-        
+
         return sm;
     }
-    
-    private void attachPCKeyFields(PersistenceCapable fromPC, 
+
+    private void attachPCKeyFields(PersistenceCapable fromPC,
         StateManagerImpl sm, ClassMetaData meta, AttachManager manager) {
-        
-        
+
+
         if (fromPC.pcGetStateManager() == null) {
             fromPC.pcReplaceStateManager(sm);
-        
+
             FieldMetaData[] fmds = meta.getDefinedFields();
             for (FieldMetaData fmd : fmds) {
                 if (fmd.isPrimaryKey() && fmd.getDeclaredTypeCode() == JavaTypes.PC) {
                     attachField(manager, fromPC, sm, fmd, true);
                 }
             }
-        
+
             fromPC.pcReplaceStateManager(null);
         }
     }
@@ -382,7 +382,7 @@ abstract class AttachStrategy
             throw new UserException(_loc.get("not-copyable", fmd));
         return coll;
     }
-    
+
     /**
      * Copies the given collection.
      */
@@ -410,7 +410,7 @@ abstract class AttachStrategy
             return manager.getProxyManager().copyMap(orig);
         } catch (Exception e) {
             Map<Object, Object> map = (Map<Object, Object>) sm.newFieldProxy(fmd.getIndex());
-            
+
             for (Entry<Object, Object> entry : ((Map<Object, Object>) orig).entrySet()) {
                 map.put(entry.getKey(), entry.getValue());
             }
@@ -530,7 +530,7 @@ abstract class AttachStrategy
                 if (valmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                     val = getReference(manager, entry.getValue(), sm, valmd);
                 else
-                    val = manager.attach(entry.getValue(), null, sm, valmd, 
+                    val = manager.attach(entry.getValue(), null, sm, valmd,
                         false);
                 entry.setValue(val);
             }

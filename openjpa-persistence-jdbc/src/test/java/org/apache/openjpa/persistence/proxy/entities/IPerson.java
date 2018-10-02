@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -44,10 +44,10 @@ public interface IPerson extends IAnnuityObject {
 
 	public Date getTimeOfBirth();
 
-	public void setTimeOfBirth(Date timeOfBirth);	
-	
+	public void setTimeOfBirth(Date timeOfBirth);
+
 	public IContact getContact();
-	
+
 	public void setContact(IContact contact);
-	
+
 }

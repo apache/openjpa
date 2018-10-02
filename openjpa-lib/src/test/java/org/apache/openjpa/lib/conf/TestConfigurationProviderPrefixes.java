@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -29,8 +29,8 @@ import junit.framework.TestCase;
 
 public class TestConfigurationProviderPrefixes
     extends TestCase {
-    
-    private static final String CUSTOM_PREFIX = 
+
+    private static final String CUSTOM_PREFIX =
         TestConfigurationProviderPrefixes.class.getName();
 
     private String[] _origPrefixes;
@@ -42,21 +42,21 @@ public class TestConfigurationProviderPrefixes
         ProductDerivations.setConfigurationPrefixes(
             (String[]) l.toArray(new String[0]));
     }
-    
+
     public void tearDown() {
         ProductDerivations.setConfigurationPrefixes(_origPrefixes);
     }
-    
-    public void testPrefixContents() { 
+
+    public void testPrefixContents() {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         assertEquals(CUSTOM_PREFIX, prefixes[prefixes.length - 1]);
         assertEquals("openjpa", prefixes[0]);
     }
-    
+
     public void testPartialKeyAndNullMap() {
         assertEquals("openjpa.Foo", "Foo", (Map) null, null);
     }
-        
+
     public void testPartialKeyWithInvalidPrefix() {
         Map map = new HashMap();
         map.put("bar.Foo", "value");
@@ -80,7 +80,7 @@ public class TestConfigurationProviderPrefixes
         map.put(CUSTOM_PREFIX + ".Foo", "value");
         assertEquals(CUSTOM_PREFIX + ".Foo", "Foo", map, "value");
     }
-    
+
     public void testPartialKeyDuplicateFullKeys() {
         Map map = new HashMap();
         map.put(CUSTOM_PREFIX + ".Foo", "value");
@@ -93,7 +93,7 @@ public class TestConfigurationProviderPrefixes
         }
     }
 
-    private static void assertEquals(String fullKey, String partialKey, 
+    private static void assertEquals(String fullKey, String partialKey,
         Map map, Object value) {
         assertEquals(fullKey, ProductDerivations.getConfigurationKey(
             partialKey, map));

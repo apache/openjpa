@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -119,20 +119,20 @@ public class ConfigurationImpl
     private String _auto = null;
     private final List<Value> _vals = new ArrayList<Value>();
     private Set<String> _supportedKeys = new TreeSet<String>();
-    
+
     // property listener helper
     private PropertyChangeSupport _changeSupport = null;
 
     // cache descriptors
     private PropertyDescriptor[] _pds = null;
     private MethodDescriptor[] _mds = null;
-    
+
     // An additional (and optional) classloader to load custom plugins.
     private ClassLoader _userCL;
 
-    //Ant task needs to defer the resource loading 
+    //Ant task needs to defer the resource loading
     //until the classpath setting is loaded properly
-    private boolean _deferResourceLoading = false; 
+    private boolean _deferResourceLoading = false;
 
 
     /**
@@ -167,7 +167,7 @@ public class ConfigurationImpl
         logFactoryPlugin.setInstantiatingGetter("getLogFactory");
 
         id = addString("Id");
-        
+
         if (loadGlobals)
             loadGlobals();
     }
@@ -178,7 +178,7 @@ public class ConfigurationImpl
      */
     public boolean loadGlobals() {
         MultiClassLoader loader = AccessController
-            .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction()); 
+            .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
         loader.addClassLoader(AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction()));
         loader.addClassLoader(getClass().getClassLoader());
@@ -243,7 +243,7 @@ public class ConfigurationImpl
     public String getId() {
         return id.get();
     }
-    
+
     public void setId(String id) {
         this.id.set(id);
     }
@@ -261,7 +261,7 @@ public class ConfigurationImpl
 
     /**
      * Gets the registered Value for the given propertyName.
-     * 
+     *
      * @param property can be either fully-qualified name or the simple name
      * with which the value has been registered. A value may have multiple
      * equivalent names and this method searches with all equivalent names.
@@ -272,7 +272,7 @@ public class ConfigurationImpl
 
         // search backwards so that custom values added after construction
         // are found quickly, since this will be the std way of accessing them
-        for (int i = _vals.size()-1; i >= 0; i--) { 
+        for (int i = _vals.size()-1; i >= 0; i--) {
             if (_vals.get(i).matches(property))
                 return _vals.get(i);
         }
@@ -288,7 +288,7 @@ public class ConfigurationImpl
     public boolean isDeferResourceLoading() {
         return _deferResourceLoading;
     }
- 
+
     public void setDeferResourceLoading(boolean deferResourceLoading) {
         this._deferResourceLoading = deferResourceLoading;
     }
@@ -299,7 +299,7 @@ public class ConfigurationImpl
         String getterName;
         Method getter;
         Object getterTarget;
-        for(Value val : _vals) { 
+        for(Value val : _vals) {
             getterName = val.getInstantiatingGetter();
             if (getterName == null)
                 continue;
@@ -370,11 +370,11 @@ public class ConfigurationImpl
      */
     public final void close() {
         ProductDerivations.beforeClose(this);
-        
+
         preClose();
-        
+
         ObjectValue val;
-        for(Value v : _vals) { 
+        for(Value v : _vals) {
             if (v instanceof Closeable) {
                 try {
                     ((Closeable)v).close();
@@ -397,12 +397,12 @@ public class ConfigurationImpl
             }
         }
     }
-    
+
     /**
-     * Invoked by final method {@link #close} after invoking the 
+     * Invoked by final method {@link #close} after invoking the
      * {@link ProductDerivation#beforeConfigurationClose} callbacks
      * but before performing internal close operations.
-     * 
+     *
      * @since 0.9.7
      */
     protected void preClose() {
@@ -441,7 +441,7 @@ public class ConfigurationImpl
             return _mds;
 
         PropertyDescriptor[] pds = getPropertyDescriptors();
-        List<MethodDescriptor> descs = new ArrayList<MethodDescriptor>(); 
+        List<MethodDescriptor> descs = new ArrayList<MethodDescriptor>();
         for (int i = 0; i < pds.length; i++) {
             Method write = pds[i].getWriteMethod();
             Method read = pds[i].getReadMethod();
@@ -460,7 +460,7 @@ public class ConfigurationImpl
             return _pds;
 
         _pds = new PropertyDescriptor[_vals.size()];
-        
+
         List<String> failures = null;
         Value val;
         for (int i = 0; i < _vals.size(); i++) {
@@ -495,7 +495,7 @@ public class ConfigurationImpl
         // set up property descriptor
         PropertyDescriptor pd;
         try {
-            pd = new PropertyDescriptor(Introspector.decapitalize(prop), 
+            pd = new PropertyDescriptor(Introspector.decapitalize(prop),
                 getClass());
         } catch (IntrospectionException ie) {
             // if there aren't any methods for this value(i.e., if it's a
@@ -528,7 +528,7 @@ public class ConfigurationImpl
         String cat = findLocalized(prop + "-cat", false, val.getScope());
         if (cat != null)
             pd.setValue(ATTRIBUTE_CATEGORY, cat);
-        
+
         pd.setValue(ATTRIBUTE_XML, toXMLName(prop));
 
         String order = findLocalized(prop + "-displayorder", false,
@@ -607,7 +607,7 @@ public class ConfigurationImpl
     /**
      * An internal method to retrieve properties, to support 2 public methods,
      * getAllProperties() and toProperties(boolean).
-     * 
+     *
      * @param storeDefaults
      *            whether or not to retrieve a property if its value is the
      *            default value.
@@ -642,7 +642,7 @@ public class ConfigurationImpl
         }
         return clone;
     }
-    
+
     public void fromProperties(Map map) {
         if (map == null || map.isEmpty())
             return;
@@ -684,7 +684,7 @@ public class ConfigurationImpl
             }
             Configurations.removeProperty(val.getProperty(), remaining);
         }
-        
+
         // convention is to point product at a resource with the
         // <prefix>.properties System property; remove that property so we
         // we don't warn about it
@@ -707,18 +707,18 @@ public class ConfigurationImpl
         if (_props == null && ser)
             _props = map;
     }
-    
+
     public List<String> getPropertyKeys(String propertyName) {
         Value value = getValue(propertyName);
         return value == null ? Collections.EMPTY_LIST : value.getPropertyKeys();
     }
-    
+
     /**
      * Gets all known property keys.
      * The keys are harvested from the property names (including the equivalent names) of the registered values.
      * A key may be prefixed if the corresponding property name was without a prefix.
      * @see #fixPrefix(String)
-     * The Values that are {@linkplain Value#makePrivate() marked private} are filtered out. 
+     * The Values that are {@linkplain Value#makePrivate() marked private} are filtered out.
      */
     public Set<String> getPropertyKeys() {
         synchronized (_supportedKeys) {
@@ -733,20 +733,20 @@ public class ConfigurationImpl
                 }
             }
         }
-        //OJ2257: Return a copy of _supportedKeys as calls to this method (e.g. 
+        //OJ2257: Return a copy of _supportedKeys as calls to this method (e.g.
         //BrokerImpl.getSupportedProperties()) may add to this set.
         return new TreeSet<String>(_supportedKeys);
     }
-    
+
     /**
-     * Adds a prefix <code>"openjpa."</code> to the given key, if necessary. A key is 
-     * considered without prefix if it starts neither of <code>"openjpa."</code>, 
-     * <code>"java."</code> and <code>"javax."</code>. 
+     * Adds a prefix <code>"openjpa."</code> to the given key, if necessary. A key is
+     * considered without prefix if it starts neither of <code>"openjpa."</code>,
+     * <code>"java."</code> and <code>"javax."</code>.
      */
     String fixPrefix(String key) {
         return (key == null || hasKnownPrefix(key)) ? key : "openjpa."+key;
     }
-    
+
     boolean hasKnownPrefix(String key) {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         for (String prefix : prefixes) {
@@ -758,7 +758,7 @@ public class ConfigurationImpl
 
     /**
      * Adds <code>o</code> to <code>map</code> under key for <code>val</code>.
-     * Use this method instead of attempting to add the value directly because 
+     * Use this method instead of attempting to add the value directly because
      * this will account for the property prefix.
      */
     private void setValue(Map map, Value val) {
@@ -775,7 +775,7 @@ public class ConfigurationImpl
                 key = "openjpa." + val.getProperty();
             }
         }
-        Object external = val.isHidden() ? Value.INVISIBLE : 
+        Object external = val.isHidden() ? Value.INVISIBLE :
             val instanceof ObjectValue ? val.getString() : val.get();
         map.put(key, external);
     }
@@ -783,7 +783,7 @@ public class ConfigurationImpl
     /**
      * Look up the given value, testing all available prefixes and all possible
      * property names. Detects if the given map contains multiple keys that
-     * are equivalent names for the given value. 
+     * are equivalent names for the given value.
      */
     private Object findValue(Map map, Value val) {
         Object result = null;
@@ -806,8 +806,8 @@ public class ConfigurationImpl
      * Issue a warning that the specified property is not valid.
      */
     private void warnInvalidProperty(String propName) {
-        if (propName != null && 
-           (propName.startsWith("java.") || propName.startsWith("javax.persistence")|| propName.startsWith("sun."))) 
+        if (propName != null &&
+           (propName.startsWith("java.") || propName.startsWith("javax.persistence")|| propName.startsWith("sun.")))
             return;
         if (!isInvalidProperty(propName))
             return;
@@ -832,7 +832,7 @@ public class ConfigurationImpl
     private Collection<String> newPropertyList() {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         List<String> l = new ArrayList<String>(_vals.size() * prefixes.length);
-        for(Value v : _vals) { 
+        for(Value v : _vals) {
             for (int j = 0; j < prefixes.length; j++)
                 l.add(prefixes[j] + "." + v.getProperty());
         }
@@ -910,7 +910,7 @@ public class ConfigurationImpl
     /**
      * Performs an equality check based on equality of values.
      * {@link Value#equals(Object) Equality} of Values varies if the Value is
-     * {@link Value#isDynamic() dynamic}.  
+     * {@link Value#isDynamic() dynamic}.
      */
     public boolean equals(Object other) {
         if (other == this)
@@ -938,11 +938,11 @@ public class ConfigurationImpl
     /**
      * Computes hash code based on the hashCodes of the values.
      * {@link Value#hashCode() HashCode} of a Value varies if the Value is
-     * {@link Value#isDynamic() dynamic}.  
+     * {@link Value#isDynamic() dynamic}.
      */
     public int hashCode() {
         int hash = 0;
-        for(Value v : _vals) { 
+        for(Value v : _vals) {
         	hash += v.hashCode();
         }
         return hash;
@@ -950,8 +950,8 @@ public class ConfigurationImpl
 
     /**
      * Convert <code>propName</code> to a lowercase-with-hyphens-style string.
-     * This algorithm is only designed for mixes of uppercase and lowercase 
-     * letters and lone digits. A more sophisticated conversion should probably 
+     * This algorithm is only designed for mixes of uppercase and lowercase
+     * letters and lone digits. A more sophisticated conversion should probably
      * be handled by a proper parser generator or regular expressions.
      */
     public static String toXMLName(String propName) {
@@ -962,29 +962,29 @@ public class ConfigurationImpl
         for (int i = 0; i < propName.length(); i++) {
             c = propName.charAt(i);
 
-            // convert sequences of all-caps to downcase with dashes around 
+            // convert sequences of all-caps to downcase with dashes around
             // them. put a trailing cap that is followed by downcase into the
             // downcase word.
-            if (i != 0 && Character.isUpperCase(c) 
+            if (i != 0 && Character.isUpperCase(c)
                 && (Character.isLowerCase(propName.charAt(i-1))
                 || (i > 1 && i < propName.length() - 1
-                && Character.isUpperCase(propName.charAt(i-1)) 
+                && Character.isUpperCase(propName.charAt(i-1))
                 && Character.isLowerCase(propName.charAt(i+1)))))
                 buf.append('-');
-            
+
             // surround sequences of digits with dashes.
             if (i != 0
                 && ((!Character.isLetter(c) && Character.isLetter(propName
-                    .charAt(i - 1))) 
+                    .charAt(i - 1)))
                 || (Character.isLetter(c) && !Character.isLetter(propName
                     .charAt(i - 1)))))
                 buf.append('-');
-            
+
             buf.append(Character.toLowerCase(c));
         }
         return buf.toString();
     }
-    
+
     /**
      * Implementation of the {@link Externalizable} interface to read from
      * the properties written by {@link #writeExternal}.
@@ -1122,11 +1122,11 @@ public class ConfigurationImpl
         addValue(val);
         return val;
     }
-    
+
     public ClassLoader getUserClassLoader() {
     	return _userCL;
     }
-    
+
     public void setUserClassLoader(ClassLoader cl) {
     	_userCL = cl;
     }

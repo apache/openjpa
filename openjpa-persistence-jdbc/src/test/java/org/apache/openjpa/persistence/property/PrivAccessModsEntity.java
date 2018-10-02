@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.property;
 
@@ -30,19 +30,19 @@ import javax.persistence.Transient;
 public class PrivAccessModsEntity {
 
     private int id;
-    
+
     private String pubString;
-    
+
     private String protString;
-    
+
     private String privString;
-        
+
     @Id
     @GeneratedValue
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -72,7 +72,7 @@ public class PrivAccessModsEntity {
     @Column(name="PRIV_COL")
     private String getPrivString() {
         return privString;
-    }    
+    }
 
     // Transient public wrapper around private property
     public void setPubPrivString(String privString) {
@@ -83,5 +83,5 @@ public class PrivAccessModsEntity {
     @Transient
     public String getPubPrivString() {
         return getPrivString();
-    }    
+    }
 }

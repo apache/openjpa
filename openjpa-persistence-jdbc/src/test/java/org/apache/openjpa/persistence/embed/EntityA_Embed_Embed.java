@@ -35,13 +35,13 @@ public class EntityA_Embed_Embed implements Serializable {
 
     @Column(length=30)
     String name;
-    
+
     @Basic(fetch=FetchType.LAZY)
     int age;
 
     @Embedded
     protected Embed_Embed embed;
-    
+
     public int getAge() {
         return age;
     }
@@ -69,7 +69,7 @@ public class EntityA_Embed_Embed implements Serializable {
     public Embed_Embed getEmbed() {
         return embed;
     }
-    
+
     public void setEmbed(Embed_Embed embed) {
         this.embed = embed;
     }

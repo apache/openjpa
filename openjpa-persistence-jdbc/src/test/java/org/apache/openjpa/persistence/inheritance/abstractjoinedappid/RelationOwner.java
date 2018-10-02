@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.inheritance.abstractjoinedappid;
 
@@ -26,15 +26,15 @@ import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 @Entity
 @Table(name="TEST")
 public class RelationOwner {
-	
+
 	private Integer id;
 	private Collection<Superclass> supers = new ArrayList<Superclass>();
-	
+
 	@Id
 	@Column(name="ID")
 	public Integer getId() { return id;	}
 	public void setId(Integer id) { this.id = id; }
-	
+
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@ElementJoinColumn(name="TEST", referencedColumnName="ID")
 	public Collection<Superclass> getSupers() {	return supers; }

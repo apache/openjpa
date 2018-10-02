@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -41,11 +41,11 @@ public interface SelectExecutor {
      * dictionary.
      */
     public SQLBuffer toSelect(boolean forUpdate, JDBCFetchConfiguration fetch);
-    
+
     /**
-     * Get the buffer if it has been computed by a previous call to 
+     * Get the buffer if it has been computed by a previous call to
      * {@link #toSelect(boolean, JDBCFetchConfiguration)}, if any.
-     * 
+     *
      * @since 2.0.0
      */
     public SQLBuffer getSQL();
@@ -89,7 +89,7 @@ public interface SelectExecutor {
      * result set.
      */
     public void setLRS(boolean lrs);
-    
+
     /**
      * The expected result count for the query.
      */
@@ -143,11 +143,11 @@ public interface SelectExecutor {
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
         throws SQLException;
-    
+
     /**
      * Affirm if this receiver requires more than one selects to fetch its
-     * data. 
-     * 
+     * data.
+     *
      * @since 2.0.0
      */
     public boolean hasMultipleSelects();

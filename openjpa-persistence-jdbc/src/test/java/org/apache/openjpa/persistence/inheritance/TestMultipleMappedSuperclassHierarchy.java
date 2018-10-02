@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.inheritance;
 
@@ -39,7 +39,7 @@ public class TestMultipleMappedSuperclassHierarchy
 
     public void testPersist() {
         EntityL3 ent = new EntityL3();
-        ent.setL2Data(99); 
+        ent.setL2Data(99);
         ent.setL3Data(100);
 
         EntityManager em = emf.createEntityManager();

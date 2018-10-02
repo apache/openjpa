@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
@@ -25,11 +25,11 @@ import org.apache.openjpa.persistence.Generator;
 
 /**
  * The persistent class for the DtaSrcField database table.
- * 
+ *
  */
 @Entity
 @NamedQueries({
-@NamedQuery(name = "getDataSourceFieldById", 
+@NamedQuery(name = "getDataSourceFieldById",
     query = "SELECT new org.apache.openjpa.persistence.jdbc.query.domain.DtaSrcFieldBean(d) " +
                 "FROM DtaSrcField d WHERE d.id=:id")
 })

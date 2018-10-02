@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -29,7 +29,7 @@ import javax.persistence.Version;
 @Entity
 @Table(name="OrderTbl")
 public class Order {
-    @Id 
+    @Id
     @GeneratedValue
     int oid;
 
@@ -54,27 +54,27 @@ public class Order {
     public double getAmount() {
         return amount;
     }
-    
+
     public void setAmount(double amount) {
         this.amount = amount;
     }
-    
+
     public Customer getCustomer() {
         return customer;
     }
-    
+
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
-    
+
     public boolean isDelivered() {
         return delivered;
     }
-    
+
     public void setDelivered(boolean delivered) {
         this.delivered = delivered;
     }
-    
+
     public int getOid() {
         return oid;
     }

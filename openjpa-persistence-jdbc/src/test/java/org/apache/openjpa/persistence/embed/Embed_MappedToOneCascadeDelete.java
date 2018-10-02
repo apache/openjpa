@@ -23,45 +23,45 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 
-@Embeddable 
+@Embeddable
 public class Embed_MappedToOneCascadeDelete {
     protected String name1;
     protected String name2;
     protected String name3;
-    
-    @OneToOne(mappedBy="entityA", fetch = FetchType.EAGER, 
+
+    @OneToOne(mappedBy="entityA", fetch = FetchType.EAGER,
         cascade = CascadeType.ALL)
     protected EntityB2 bm;
-    
-    
+
+
     public String getName1() {
         return name1;
     }
-    
+
     public void setName1(String name1) {
         this.name1 = name1;
     }
-    
+
     public String getName2() {
         return name2;
     }
-    
+
     public void setName2(String name2) {
         this.name2 = name2;
     }
-    
+
     public String getName3() {
         return name3;
     }
-    
+
     public void setName3(String name3) {
         this.name3 = name3;
     }
-    
+
     public void setMappedEntityB(EntityB2 bm) {
         this.bm = bm;
     }
-    
+
     public EntityB2 getMappedEntityB() {
         return bm;
     }

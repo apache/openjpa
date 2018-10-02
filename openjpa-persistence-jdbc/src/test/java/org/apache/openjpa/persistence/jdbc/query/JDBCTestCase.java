@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
@@ -38,33 +38,33 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 
 public abstract class JDBCTestCase extends AbstractTestCase {
-    
+
     /** Creates a new instance of JDBCTestCase */
     public JDBCTestCase() {
     }
-    
-    
+
+
     public JDBCTestCase(String name) {
         super(name);
     }
-    
+
     public Class getDefaultInheritanceStrategy() {
         return getClassMapping(RuntimeTest2.class).getStrategy().getClass();
     }
-    
+
     public ClassMapping getClassMapping(Class c) {
         OpenJPAConfiguration jdoConf = getConfiguration();
         return ((JDBCConfiguration) jdoConf).getMappingRepositoryInstance().
                 getMapping(c, getClass().getClassLoader(), true);
     }
-    
+
     public FieldMapping getFieldMapping(Class c, String field) {
         return getClassMapping(c).getFieldMapping(field);
     }
-    
+
     public boolean isInheritanceStrategyVertical() {
         return VerticalClassStrategy.class.
                 isAssignableFrom(getDefaultInheritanceStrategy());
     }
-    
+
 }

@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.jdbc.query;
 
 public class TestUpdateSingleValuedAssociationXML extends
     TestUpdateSingleValuedAssociation {
-    
+
     public void setUp() throws Exception {
         super.setUp();
     }
-    
+
     protected String getPersistenceUnitName() {
         return "foreign-key-xml";
     }

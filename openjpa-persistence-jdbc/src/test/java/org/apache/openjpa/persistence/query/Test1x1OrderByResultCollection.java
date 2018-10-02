@@ -139,6 +139,6 @@ public class Test1x1OrderByResultCollection extends SingleEMTestCase {
                    String n = (to == null) ? "technical-owner-is-null" : to.getName();
                System.out.println("    id=" + hw.getId() + " TechnicalOwner=" + n);
            }
-        }      
+        }
    }
 }

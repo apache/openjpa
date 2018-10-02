@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -26,7 +26,7 @@ public class Employee5 implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId 
+    @EmbeddedId
     EmployeeId5 empId;
 
     public Employee5() {
@@ -35,6 +35,6 @@ public class Employee5 implements Serializable {
     public Employee5(EmployeeId5 eId) {
         this.empId=eId;
     }
-    
-    
+
+
 }

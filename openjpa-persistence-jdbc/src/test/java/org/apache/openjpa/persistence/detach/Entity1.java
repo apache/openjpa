@@ -29,19 +29,19 @@ import javax.persistence.Table;
 public class Entity1 {
     @Id
     private long id;
-    
+
     private String name;
-    
+
     @OneToOne(cascade=(CascadeType.PERSIST))
     private Entity14 e14;
 
     public long getId() {
         return id;
     }
-    
+
     public Entity1() {
     }
-    
+
     public Entity1(long id, String name) {
         this.id = id;
         this.name = name;

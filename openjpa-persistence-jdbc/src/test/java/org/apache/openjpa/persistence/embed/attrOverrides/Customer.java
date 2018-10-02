@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
@@ -24,39 +24,39 @@ import javax.persistence.*;
 @Table(name="CUS_ATTROVER")
 public class Customer {
     @Id protected Integer id;
-    
+
     protected String name;
-    
+
     @AttributeOverrides({
-        @AttributeOverride(name="state", 
+        @AttributeOverride(name="state",
         		column=@Column(name="ADDR_STATE")),
-        @AttributeOverride(name="zipcode.zip", 
+        @AttributeOverride(name="zipcode.zip",
         		column=@Column(name="ADDR_ZIP")),
-        @AttributeOverride(name="zipcode.plusFour", 
+        @AttributeOverride(name="zipcode.plusFour",
                 column=@Column(name="ADDR_PLUSFOUR"))})
     @Embedded
     protected Address address;
-    
+
     public Integer getId() {
     	return id;
     }
-    
+
     public void setId(Integer id) {
     	this.id = id;
     }
-    
+
     public String getName() {
     	return name;
     }
-    
+
     public void setName(String name) {
     	this.name = name;
     }
-    
+
     public Address getAddress() {
     	return address;
     }
-    
+
     public void setAddress(Address address) {
     	this.address = address;
     }

@@ -25,9 +25,9 @@ import javax.persistence.Id;
 public class Entity7 {
     @Id
     private long id;
-    
+
     private String name;
-    
+
     public Entity7() {
     }
 

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity;
 
@@ -44,7 +44,7 @@ public class TestSQLBigDecimalId
         SQLBigDecimalIdEntity e = new SQLBigDecimalIdEntity();
         e.setId(decimal);
         e.setData(1);
-        
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(e);
@@ -56,11 +56,11 @@ public class TestSQLBigDecimalId
         e = em.find(SQLBigDecimalIdEntity.class, decimal);
         assertEquals(1, e.getData());
         em.close();
-        
+
     }
-    
+
     @AllowFailure
-    // This test currently allows failure because DB2 and Derby don't handle BigDecimals properly quite yet. 
+    // This test currently allows failure because DB2 and Derby don't handle BigDecimals properly quite yet.
     public void testQuery() {
         int data = 156;
         BigDecimal decimal = new BigDecimal(1234);
@@ -76,7 +76,7 @@ public class TestSQLBigDecimalId
         SQLBigDecimalIdEntity e2 =
             (SQLBigDecimalIdEntity) em.createQuery("SELECT a FROM SQLBigDecimalIdEntity a WHERE a.data=" + data)
                 .getSingleResult();
-        
+
         assertEquals(e, e2);
         em.close();
 

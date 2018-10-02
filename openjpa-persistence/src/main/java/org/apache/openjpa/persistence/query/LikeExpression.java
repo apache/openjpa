@@ -14,35 +14,35 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
  * Denotes e1 LIKE e2 Expression.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class LikeExpression extends BinaryExpressionPredicate {
 	private final Object  _echar;
 	private final boolean _escaped;
-	
+
 	public LikeExpression(Expression e, Expression pattern, Object echar) {
-		super(e, BinaryConditionalOperator.LIKE, 
+		super(e, BinaryConditionalOperator.LIKE,
 			BinaryConditionalOperator.LIKE_NOT, pattern);
 		_echar = echar;
 		_escaped = true;
 	}
-	
+
 	public LikeExpression(Expression e, Expression pattern) {
-		super(e, BinaryConditionalOperator.LIKE, 
+		super(e, BinaryConditionalOperator.LIKE,
 			BinaryConditionalOperator.LIKE_NOT, pattern);
-		
+
 		_echar = null;
 		_escaped = false;
 	}
-	
+
 	@Override
 	public String asExpression(AliasContext ctx) {
 		return super.asExpression(ctx) +

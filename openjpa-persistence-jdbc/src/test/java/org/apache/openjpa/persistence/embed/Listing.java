@@ -25,37 +25,37 @@ import javax.persistence.ManyToOne;
 
 @Embeddable
 public class Listing {
-	
+
 	@ManyToOne(cascade=CascadeType.ALL)
 	Seller seller;
-	
+
 	Double price;
-	
+
 	String comments;
-	
+
 	public Listing(){}
-	
+
 	public Listing(Seller seller, Double price){
 		this.price=price;
 		this.seller=seller;
 	}
-	
+
 	public Seller getSeller() {
 	    return seller;
 	}
-	
+
 	public void setSeller(Seller seller) {
 	    this.seller = seller;
 	}
-	
+
 	public Double getPrice() {
 	    return price;
 	}
-	
+
 	public void setPrice(Double price) {
 	    this.price = price;
 	}
-	
+
 	public String getComments() {
 	    return comments;
 	}

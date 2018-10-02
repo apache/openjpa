@@ -32,7 +32,7 @@ public class MixedMappingLocationEmbeddedId implements Serializable {
     private String country;
 
     private String basic10;
-    
+
     public MixedMappingLocationEmbeddedId() {
     }
 

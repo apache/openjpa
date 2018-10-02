@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -92,8 +92,8 @@ import org.w3c.dom.Element;
 /**
  * Marshals a root instance and its persistent closure as an XML element.
  * The closure is resolved against the persistence context that contains the root instance.
- * The XML document adheres to the <code>jest-instance.xsd</code> schema. 
- * 
+ * The XML document adheres to the <code>jest-instance.xsd</code> schema.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -103,7 +103,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
     private static final Transformer     _transformer;
     private static final String EMPTY_TEXT = " ";
     protected static Localizer _loc = Localizer.forPackage(XMLFormatter.class);
-    
+
     static {
         try {
             _builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -122,16 +122,16 @@ public class XMLFormatter implements ObjectFormatter<Document> {
             throw new RuntimeException(e);
         }
     }
-    
+
     public String getMimeType() {
         return MIME_TYPE_XML;
-    }    
-    
+    }
+
     /**
-     * Encodes the closure of given collection of  managed instance into a new XML document 
+     * Encodes the closure of given collection of  managed instance into a new XML document
      * according to JEST Instance XML Schema.
-     * 
-     * @param sm a collection of managed instances. 
+     *
+     * @param sm a collection of managed instances.
      * @param parent the parent node to which the new node be attached.
      */
     public Document encode(final Collection<OpenJPAStateManager> sms, Metamodel model) {
@@ -142,10 +142,10 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         }
         return root.getOwnerDocument();
     }
-    
+
     /**
      * Encodes the given meta-model into a new XML document according to JEST Domain XML Schema.
-     * 
+     *
      * @param model a persistent domain model. Must not be null.
      */
     public Document encode(Metamodel model) {
@@ -155,12 +155,12 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         }
         return root.getOwnerDocument();
     }
-    
+
     /**
-     * Create a new document with the given tag as the root element. 
-     * 
+     * Create a new document with the given tag as the root element.
+     *
      * @param rootTag the tag of the root element
-     * 
+     *
      * @return the document element of a new document
      */
     public Element newDocument(String rootTag) {
@@ -178,25 +178,25 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         return root;
     }
 
-    
+
     @Override
-    public Document writeOut(Collection<OpenJPAStateManager> objs, Metamodel model, String title, String desc, 
+    public Document writeOut(Collection<OpenJPAStateManager> objs, Metamodel model, String title, String desc,
         String uri, OutputStream out) throws IOException {
         Document doc = encode(objs, model);
         decorate(doc, title, desc, uri);
         write(doc, out);
         return doc;
     }
-    
+
     @Override
-    public Document writeOut(Metamodel model, String title, String desc, String uri, OutputStream out) 
+    public Document writeOut(Metamodel model, String title, String desc, String uri, OutputStream out)
         throws IOException {
         Document doc = encode(model);
         decorate(doc, title, desc, uri);
         write(doc, out);
         return doc;
     }
-    
+
     Document decorate(Document doc, String title, String desc, String uri) {
         Element root = doc.getDocumentElement();
         Element instance = (Element)root.getElementsByTagName(ELEMENT_INSTANCE).item(0);
@@ -208,7 +208,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         root.insertBefore(descElement, instance);
         return doc;
     }
-    
+
     public void write(Document doc, OutputStream out) throws IOException {
         try {
             _transformer.transform(new DOMSource(doc), new StreamResult(out));
@@ -216,7 +216,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
             throw new IOException(e);
         }
     }
-    
+
     public void write(Document doc, Writer writer) throws IOException {
         try {
             _transformer.transform(new DOMSource(doc), new StreamResult(writer));
@@ -224,25 +224,25 @@ public class XMLFormatter implements ObjectFormatter<Document> {
             throw new IOException(e);
         }
     }
-    
+
     /**
      * Encodes the closure of a persistent instance into a XML element.
-     * 
+     *
      * @param sm the managed instance to be encoded. Can be null.
      * @param parent the parent XML element to which the new XML element be added. Must not be null. Must be
-     * owned by a document. 
+     * owned by a document.
      * @param visited the persistent instances that had been encoded already. Must not be null or immutable.
-     * 
-     * @return the new element. The element has been appended as a child to the given parent in this method.  
+     *
+     * @return the new element. The element has been appended as a child to the given parent in this method.
      */
-    private Element encodeManagedInstance(final OpenJPAStateManager sm, final Element parent, 
+    private Element encodeManagedInstance(final OpenJPAStateManager sm, final Element parent,
          boolean isRef, Metamodel model) {
         if (parent == null)
             throw new InternalException(_loc.get("format-xml-null-parent"));
         Document doc = parent.getOwnerDocument();
-        if (doc == null) 
+        if (doc == null)
             throw new InternalException(_loc.get("format-xml-null-doc"));
-        
+
         if (sm == null || isRef) {
             return encodeRef(parent, sm);
         }
@@ -256,7 +256,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         for (int i = 0; i < attrs.size(); child = null, i++) {
             Members.Member<?, ?> attr = (Members.Member<?, ?>) attrs.get(i);
             FieldMetaData fmd = attr.fmd;
-            if (!loaded.get(fmd.getIndex())) 
+            if (!loaded.get(fmd.getIndex()))
                 continue;
             String tag = MetamodelHelper.getTagByAttributeType(attr);
             Object value = sm.fetch(fmd.getIndex());
@@ -291,21 +291,21 @@ public class XMLFormatter implements ObjectFormatter<Document> {
                 child.setAttribute(ATTR_NAME, fmd.getName());
                 if (value == null) {
                     encodeNull(child);
-                } else { 
+                } else {
                     encodeBasic(child, value, fmd.getDeclaredType());
                 }
                 break;
-                
+
                 case JavaTypes.OID:
                     child = doc.createElement(ELEMENT_REF);
                     child.setAttribute(ATTR_NAME, fmd.getName());
                     if (value == null) {
                         encodeNull(child);
-                    } else { 
+                    } else {
                         encodeBasic(child, value, fmd.getDeclaredType());
                     }
                     break;
-                    
+
                 case JavaTypes.PC:
                     child = doc.createElement(tag);
                     child.setAttribute(ATTR_NAME, fmd.getName());
@@ -313,7 +313,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
                     OpenJPAStateManager other = ctx.getStateManager(value);
                     encodeManagedInstance(other, child, true, model);
                     break;
-                    
+
                 case JavaTypes.ARRAY:
                     Object[] values = (Object[])value;
                     value = Arrays.asList(values);
@@ -383,7 +383,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
                         }
                     }
                     break;
-                    
+
                 case JavaTypes.INPUT_STREAM:
                 case JavaTypes.INPUT_READER:
                     child = doc.createElement(tag);
@@ -391,50 +391,50 @@ public class XMLFormatter implements ObjectFormatter<Document> {
                     child.setAttribute(ATTR_TYPE, typeOf(fmd));
                     if (value == null) {
                         encodeNull(child);
-                    } else { 
+                    } else {
                         CDATASection data = doc.createCDATASection(streamToString(value));
                         child.appendChild(data);
                     }
                     break;
-                    
+
                 case JavaTypes.PC_UNTYPED:
                 case JavaTypes.OBJECT:
                     // START - ALLOW PRINT STATEMENTS
                     System.err.println("Not handled " + fmd.getName() + " of type " + fmd.getDeclaredType());
                     // STOP - ALLOW PRINT STATEMENTS
             }
-            
+
             if (child != null) {
                 root.appendChild(child);
             }
         }
         return root;
     }
-    
+
     /**
      * Sets the given value element as null. The <code>null</code> attribute is set to true.
-     * 
+     *
      * @param element the XML element to be set
      */
     private void encodeNull(Element element) {
         element.setAttribute(ATTR_NULL, "true");
     }
-    
+
     private Element encodeRef(Element parent, OpenJPAStateManager sm) {
         Element ref = parent.getOwnerDocument().createElement(sm == null ? ELEMENT_NULL_REF : ELEMENT_REF);
         if (sm != null)
             ref.setAttribute(ATTR_ID, ior(sm));
      // IMPORTANT: for xml transformer not to omit the closing tag, otherwise dojo is confused
-        ref.setTextContent(EMPTY_TEXT); 
+        ref.setTextContent(EMPTY_TEXT);
         parent.appendChild(ref);
         return ref;
     }
-    
-    
+
+
     /**
      * Sets the given value element. The <code>type</code> is set to the given runtime type.
-     * String form of the given object is set as the text content. 
-     * 
+     * String form of the given object is set as the text content.
+     *
      * @param element the XML element to be set
      * @param obj value of the element. Never null.
      */
@@ -442,17 +442,17 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         element.setAttribute(ATTR_TYPE, typeOf(runtimeType));
         if (obj instanceof Date)
             element.setTextContent(dateFormat.format(obj));
-        else 
+        else
             element.setTextContent(obj == null ? NULL_VALUE : obj.toString());
     }
-    
-    
-    
+
+
+
     /**
      * Convert the given stream (either an InutStream or a Reader) to a String
      * to be included in CDATA section of a XML document.
-     * 
-     * @param value the field value to be converted. Can not be null 
+     *
+     * @param value the field value to be converted. Can not be null
      */
     private String streamToString(Object value) {
         Reader reader = null;
@@ -473,8 +473,8 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         }
         return writer.toString();
     }
-    
-    
+
+
     private void encodeManagedType(ManagedType<?> type, Element parent) {
         Document doc = parent.getOwnerDocument();
         Element root = doc.createElement(type.getPersistenceType().toString().toLowerCase());
@@ -483,7 +483,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         List<Attribute<?,?>> attributes = MetamodelHelper.getAttributesInOrder(type);
         for (Attribute<?,?> a : attributes) {
             String tag = MetamodelHelper.getTagByAttributeType(a);
-            
+
             Element child = doc.createElement(tag);
             root.appendChild(child);
             child.setAttribute(ATTR_TYPE, typeOf(a.getJavaType()));
@@ -503,29 +503,29 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         Validator validator = _xsd.newValidator();
         validator.validate(new DOMSource(doc));
     }
-    
+
     String ior(OpenJPAStateManager sm) {
         return typeOf(sm) + "-" + sm.getObjectId();
     }
-    
+
     String typeOf(OpenJPAStateManager sm) {
         return sm.getMetaData().getDescribedType().getSimpleName();
     }
-    
+
     String typeOf(Class<?> cls) {
         return cls.getSimpleName();
     }
-    
+
     String typeOf(ClassMetaData meta) {
         return meta.getDescribedType().getSimpleName();
     }
-    
+
     String typeOf(ValueMetaData vm) {
         if (vm.getTypeMetaData() == null)
-            return typeOf(vm.getType()); 
+            return typeOf(vm.getType());
         return typeOf(vm.getTypeMetaData());
     }
-    
+
     String typeOf(FieldMetaData fmd) {
         return fmd.getType().getSimpleName();
     }

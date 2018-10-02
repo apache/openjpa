@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -26,7 +26,7 @@ import org.apache.openjpa.kernel.StoreContext;
  *
  * @author Catalina Wei
  */
-public class NullIf 
+public class NullIf
     extends Val {
 
     private final Val _val1;
@@ -53,7 +53,7 @@ public class NullIf
         if (compare(o1, o2))
             return null;
         else
-            return o1;        
+            return o1;
     }
 
     protected Object eval(Object candidate, StoreContext ctx,
@@ -68,7 +68,7 @@ public class NullIf
         if (compare(o1, o2))
             return null;
         else
-            return o1;        
+            return o1;
     }
 
     /**
@@ -91,7 +91,7 @@ public class NullIf
         return _val1.getType();
     }
 
-    public void setImplicitType(Class type) {       
+    public void setImplicitType(Class type) {
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

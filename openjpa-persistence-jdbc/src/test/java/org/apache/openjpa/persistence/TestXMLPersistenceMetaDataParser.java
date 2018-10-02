@@ -126,7 +126,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         em.close();
 
     }
-    
+
     public void testManyToOneEagerFetch() {
         // initialize objects
         EntityManager em = emf.createEntityManager();
@@ -138,7 +138,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         Country1 aUS_country = new Country1(aUS_sid, "USA");
         aI_security.setCountry1(aUS_country);
         aI_security.setCountryEager(aUS_country);
-        
+
         Security aI_securityAnn = new Security(aI_sid, new Embed("XYZ"));
         Country aUS_countryAnn = new Country(aUS_sid, "USA");
         aI_securityAnn.setCountry(aUS_countryAnn);
@@ -152,17 +152,17 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
 
         aI_security = em.find(Security1.class, aI_sid);
         em.clear();
-        Country1 countryEager = aI_security.getCountryEager(); 
+        Country1 countryEager = aI_security.getCountryEager();
         assertNotNull(countryEager);
-        
+
         aI_securityAnn = em.find(Security.class, aI_sid);
         em.clear();
-        Country countryEagerAnn = aI_securityAnn.getCountryEager(); 
+        Country countryEagerAnn = aI_securityAnn.getCountryEager();
         assertNotNull(countryEagerAnn);
-        
+
         // Close
         em.close();
-        
+
     }
 
     public void testQueryHintOrmXml() {

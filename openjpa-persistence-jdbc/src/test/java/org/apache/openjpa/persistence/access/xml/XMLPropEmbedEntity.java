@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.access.xml;
 public class XMLPropEmbedEntity {
 
     private int id;
-    
+
     private String name;
 
     private XMLEmbedFieldAccess efa;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -41,7 +41,7 @@ public class XMLPropEmbedEntity {
     public String getName() {
         return name;
     }
-    
+
     public XMLEmbedFieldAccess getEmbedProp() {
         return efa;
     }
@@ -53,7 +53,7 @@ public class XMLPropEmbedEntity {
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropEmbedEntity) {
             XMLPropEmbedEntity ps = (XMLPropEmbedEntity)obj;
-            return getEmbedProp().equals(ps.getEmbedProp()) 
+            return getEmbedProp().equals(ps.getEmbedProp())
                 && getId() == ps.getId() &&
                 getName().equals(ps.getName());
         }

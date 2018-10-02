@@ -38,7 +38,7 @@ public class TestSQLStoreParamsSubstitution extends TestCase {
      */
     public void testParamSubstitute() {
 
-        String sqlNrtns[][] = { 
+        String sqlNrtns[][] = {
                 {
                     "like '5@%' escape '@'",
                     "[]"

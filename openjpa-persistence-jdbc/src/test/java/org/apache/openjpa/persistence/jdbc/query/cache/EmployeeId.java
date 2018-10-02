@@ -14,16 +14,16 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
 import java.io.Serializable;
 
 public class EmployeeId implements Serializable {
-	
+
 	private String ssn;
-	
+
 	public EmployeeId(){
 	}
 	public EmployeeId(String ssn){
@@ -44,11 +44,11 @@ public class EmployeeId implements Serializable {
 		} else if (!ssn.equals(obj.ssn)) {
 			return false;
 		}
-		
+
         return (true);
     }
-     
-   
+
+
     public int hashCode ()
     {
         return (ssn.hashCode());

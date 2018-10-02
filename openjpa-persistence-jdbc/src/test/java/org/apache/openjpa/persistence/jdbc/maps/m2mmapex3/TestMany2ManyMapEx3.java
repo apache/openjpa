@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex3;
 
@@ -67,14 +67,14 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
-    
+
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
-    public void setCandidate(Query q, Class clz) 
+    public void setCandidate(Query q, Class clz)
         throws Exception {
-        org.apache.openjpa.persistence.QueryImpl q1 = 
+        org.apache.openjpa.persistence.QueryImpl q1 =
             (org.apache.openjpa.persistence.QueryImpl) q;
         org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
         org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
@@ -83,13 +83,13 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         else if (clz == Employee.class)
             qi.setCandidateCollection(rsAllEmps);
     }
-    
+
     public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
         String query = "select KEY(e) from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
         Query q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, PhoneNumber.class);
         List rs = q.getResultList();
         FullName d = (FullName) rs.get(0);
@@ -97,7 +97,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         query = "select KEY(p) from Employee e, " +
             " in (e.phones) p";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Employee.class);
         rs = q.getResultList();
         Department d2 = (Department) rs.get(0);
@@ -106,7 +106,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         query = "select ENTRY(e) from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
@@ -118,18 +118,18 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         query = "select KEY(e), KEY(e).fName from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
         d = (FullName) ((Object[]) rs.get(0))[0];
         String fname = (String) ((Object[]) rs.get(0))[1];
         assertEquals(d.getFName(), fname);
-        
+
         em.clear();
         query = "select KEY(p), KEY(p).name from Employee e, " +
             " in (e.phones) p";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Employee.class);
         rs = q.getResultList();
         d2 = (Department) ((Object[]) rs.get(0))[0];
@@ -141,7 +141,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         query = "select COUNT(KEY(p).id) from Employee e " +
             " left join e.phones p GROUP BY KEY(p).id";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Employee.class);
         rs = q.getResultList();
         if (!inMemory)
@@ -150,7 +150,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         query = "select KEY(p) as k, KEY(p).name from Employee e, " +
           " in (e.phones) p ORDER BY k";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Employee.class);
         rs = q.getResultList();
         d2 = (Department) ((Object[]) rs.get(0))[0];
@@ -160,7 +160,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         query = "select KEY(p), KEY(p).name from Employee e, " +
           " in (e.phones) p ORDER BY KEY(p)";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Employee.class);
         rs = q.getResultList();
         d2 = (Department) ((Object[]) rs.get(0))[0];
@@ -170,7 +170,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         query = "select VALUE(p), KEY(p).name from Employee e, " +
           " in (e.phones) p ORDER BY VALUE(p)";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Employee.class);
         rs = q.getResultList();
         PhoneNumber ph = (PhoneNumber) ((Object[]) rs.get(0))[0];
@@ -200,7 +200,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
     public Employee createEmployee(EntityManager em, int id) {
         Employee e = new Employee();
         e.setEmpId(id);
-        for (int i = 0; i < numPhoneNumbersPerEmployee; i++) { 
+        for (int i = 0; i < numPhoneNumbersPerEmployee; i++) {
             PhoneNumber phoneNumber = new PhoneNumber();
             phoneNumber.setNumber(phoneId++);
             FullName name = new FullName("f" + id, "l" + id);
@@ -281,7 +281,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         checkEmpMap(es0, es);
     }
 
-    public void checkPhoneMap(Map<Department, PhoneNumber> es0, 
+    public void checkPhoneMap(Map<Department, PhoneNumber> es0,
             Map<Department, PhoneNumber> es) throws Exception {
         Collection<Map.Entry<Department, PhoneNumber>> entrySets0 =
             es0.entrySet();
@@ -304,5 +304,5 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
             if (!e0.equals(e))
                 throw new Exception("Assertion failure");
         }
-    }    
+    }
 }

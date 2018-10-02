@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -49,7 +49,7 @@ public class Args
     public Args(Val val1, Val val2) {
         this(new Val[]{val1, val2});
     }
-    
+
     public Args (Val... values) {
         List<Val> list = new ArrayList<Val>();
         if (values != null) {
@@ -67,13 +67,13 @@ public class Args
     /**
      * Return a filter value for each argument.
      */
-    public FilterValue[] newFilterValues(Select sel, ExpContext ctx, 
+    public FilterValue[] newFilterValues(Select sel, ExpContext ctx,
         ExpState state) {
-        ArgsExpState astate = (ArgsExpState) state; 
+        ArgsExpState astate = (ArgsExpState) state;
         FilterValue[] filts = new FilterValue[_args.length];
         for (int i = 0; i < _args.length; i++)
-            filts[i] = new FilterValueImpl(sel, ctx, astate.states[i], 
-                _args[i]); 
+            filts[i] = new FilterValueImpl(sel, ctx, astate.states[i],
+                _args[i]);
         return filts;
     }
 
@@ -129,7 +129,7 @@ public class Args
      */
     private static class ArgsExpState
         extends ExpState {
-        
+
         public ExpState[] states;
 
         public ArgsExpState(Joins joins, ExpState[] states) {
@@ -138,11 +138,11 @@ public class Args
         }
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         ArgsExpState astate = (ArgsExpState) state;
         for (int i = 0; i < _args.length; i++)
@@ -152,7 +152,7 @@ public class Args
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
     }
 
@@ -160,7 +160,7 @@ public class Args
         return null;
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         ArgsExpState astate = (ArgsExpState) state;
         for (int i = 0; i < _args.length; i++)
@@ -174,7 +174,7 @@ public class Args
     public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
         appendTo(sel, ctx, state, sql, index, null);
     }
-    
+
     public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index, String operator) {
         ArgsExpState astate = (ArgsExpState) state;
         for (int i = 0; i < _args.length; i++) {
@@ -187,23 +187,23 @@ public class Args
         }
     }
 
-    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
     }
 
-    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql){
     }
 
-    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+    public void appendSize(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
     }
 
-    public void appendIsNull(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
     }
 
-    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
     }
 

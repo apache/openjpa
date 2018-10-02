@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex1;
 
@@ -56,14 +56,14 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
-    
+
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
-    public void setCandidate(Query q, Class clz) 
+    public void setCandidate(Query q, Class clz)
         throws Exception {
-        org.apache.openjpa.persistence.QueryImpl q1 = 
+        org.apache.openjpa.persistence.QueryImpl q1 =
             (org.apache.openjpa.persistence.QueryImpl) q;
         org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
         org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
@@ -81,7 +81,7 @@ System.out.println("rs size="+rs1.size());
         String query = "select KEY(e) from Department d, " +
             " in (d.empMap) e order by d.deptId, e.empId";
         Query q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         List rs = q.getResultList();
         Integer d = (Integer) rs.get(0);
@@ -90,7 +90,7 @@ System.out.println("rs size="+rs1.size());
         query = "select ENTRY(e) from Department d, " +
             " in (d.empMap) e order by d.deptId, e.empId";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
@@ -102,7 +102,7 @@ System.out.println("rs size="+rs1.size());
         query = "select KEY(e) from Department d, " +
             " in (d.empMap) e where KEY(e) > 1";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
         assertTrue(sql.get(0).toUpperCase().indexOf(">") > 0);
@@ -114,7 +114,7 @@ System.out.println("rs size="+rs1.size());
         queryObj();
         findObj();
     }
-                
+
     public void createObj() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -163,7 +163,7 @@ System.out.println("rs size="+rs1.size());
 
     public void updateObj(EntityManager em, Department d) {
         EntityTransaction tran = em.getTransaction();
-        
+
         // add an element
         tran.begin();
         Employee e = createEmployee(em,
@@ -183,7 +183,7 @@ System.out.println("rs size="+rs1.size());
         em.persist(e);
         em.flush();
         tran.commit();
-        
+
     }
 
     public void deleteObj(EntityManager em, Department d) {
@@ -192,7 +192,7 @@ System.out.println("rs size="+rs1.size());
         em.remove(d);
         tran.commit();
     }
-    
+
     public void assertDepartment(Department d) {
         int id = d.getDeptId();
         Map<Integer, Employee> es = d.getEmpMap();

@@ -33,7 +33,7 @@ public interface CacheMarshaller {
     /**
      * Load and return an instance of the type handled by this marshaller.
      * If the type implements {@link Configurable}, then this method will invoke
-     * {@link Configurable#setConfiguration}, 
+     * {@link Configurable#setConfiguration},
      * {@link Configurable#startConfiguration()}, and
      * {@link Configurable#endConfiguration()} on the instance before returning.
      */

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.ant;
 
@@ -104,7 +104,7 @@ public class ReverseMappingToolTask
     public void setUseSchemaName(boolean useSchemaName) {
         flags.useSchemaName = useSchemaName;
     }
-    
+
     /**
      * Set whether to use the schema name in generated files
      */
@@ -139,7 +139,7 @@ public class ReverseMappingToolTask
      * relations instead of untyped collections.
      */
     public void setUseGenericCollections(boolean useGenericCollections) {
-        flags.useGenericCollections = useGenericCollections; 
+        flags.useGenericCollections = useGenericCollections;
     }
 
     /**
@@ -236,7 +236,7 @@ public class ReverseMappingToolTask
     public void setAccessType(AccessType accessType) {
         flags.accessType = accessType.getValue();
     }
-    
+
     /**
      * Set a customizer class to use.
      */

@@ -60,9 +60,9 @@ import org.apache.openjpa.util.InternalException;
 
 /**
  * Adapts JPA Metamodel to OpenJPA meta-data repository.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class MetamodelImpl implements Metamodel, Resolver {
     private final MetaDataRepository repos;
@@ -77,7 +77,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
 
     /**
      * Constructs a model with the current content of the supplied non-null repository.
-     * 
+     *
      */
     public MetamodelImpl(MetaDataRepository repos) {
         this.repos = repos;
@@ -101,14 +101,14 @@ public class MetamodelImpl implements Metamodel, Resolver {
             }
         }
     }
-    
+
     public MetaDataRepository getRepository() {
         return repos;
     }
 
     /**
      *  Return the metamodel embeddable type representing the embeddable class.
-     *  
+     *
      *  @param cls  the type of the represented embeddable class
      *  @return the metamodel embeddable type
      *  @throws IllegalArgumentException if not an embeddable class
@@ -174,9 +174,9 @@ public class MetamodelImpl implements Metamodel, Resolver {
         result.addAll(_mappedsupers.values());
         return result;
     }
-    
+
     /**
-     *  Return the metamodel managed type representing the 
+     *  Return the metamodel managed type representing the
      *  entity, mapped superclass, or embeddable class.
      *  @param cls  the type of the represented managed class
      *  @return the metamodel managed type
@@ -197,7 +197,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      *  Return the type representing the basic, entity, mapped superclass, or embeddable class.
      *  This method differs from {@linkplain #type(Class)} as it also creates a basic or pesudo
      *  type for the given class argument if not already available in this receiver.
-     *  
+     *
      *  @param cls  the type of the represented managed class
      *  @return the metamodel managed type
      *  @throws IllegalArgumentException if not a managed class
@@ -236,7 +236,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      * Looks up the given container for the managed type representing the given Java class.
      * The managed type may become instantiated as a side-effect.
      */
-    private <V extends ManagedType<?>> V find(Class<?> cls, Map<Class<?>,V> container,  
+    private <V extends ManagedType<?>> V find(Class<?> cls, Map<Class<?>,V> container,
             PersistenceType expected, boolean implFind) {
         if (container.containsKey(cls)) {
             if (implFind || expected != ENTITY || !_embeddables.containsKey(cls)) {
@@ -258,12 +258,12 @@ public class MetamodelImpl implements Metamodel, Resolver {
      * @param container
      * @param expected
      */
-    private <X,V extends ManagedType<?>> void instantiate(Class<X> cls, ClassMetaData meta, 
+    private <X,V extends ManagedType<?>> void instantiate(Class<X> cls, ClassMetaData meta,
             Map<Class<?>,V> container, PersistenceType expected) {
         PersistenceType actual = getPersistenceType(meta);
         if (actual != expected) {
             if (!meta.isEmbeddable() || actual != PersistenceType.ENTITY ||
-                expected != PersistenceType.EMBEDDABLE) 
+                expected != PersistenceType.EMBEDDABLE)
                 throw new IllegalArgumentException( _loc.get("type-wrong-category",
                     cls, actual, expected).getMessage());
         }
@@ -305,10 +305,10 @@ public class MetamodelImpl implements Metamodel, Resolver {
             return CollectionType.COLLECTION;
         if (Map.class.isAssignableFrom(cls))
             return CollectionType.MAP;
-        
+
         throw new InternalException(cls.getName() + " not a collection");
     }
-    
+
     /**
      * Populate the static fields of the canonical type.
      */
@@ -319,14 +319,14 @@ public class MetamodelImpl implements Metamodel, Resolver {
             return;
         StaticMetamodel anno = mcls.getAnnotation(StaticMetamodel.class);
         if (anno == null)
-            throw new IllegalArgumentException(_loc.get("meta-class-no-anno", 
+            throw new IllegalArgumentException(_loc.get("meta-class-no-anno",
                     mcls.getName(), cls.getName(), StaticMetamodel.class.getName()).getMessage());
 
         if (cls != anno.value()) {
             throw new IllegalStateException(_loc.get("meta-class-mismatch",
                     mcls.getName(), cls.getName(), anno.value()).getMessage());
         }
-        
+
         ParameterizedType mfType = null;
         Attribute<? super X, ?> f = null;
         Field[] mfields = AccessController.doPrivileged(J2DoPrivHelper.getDeclaredFieldsAction(mcls));
@@ -347,34 +347,34 @@ public class MetamodelImpl implements Metamodel, Resolver {
             }
         }
     }
-    
+
     /**
-     * Gets the parameterized type of the given field after validating. 
-     * 
+     * Gets the parameterized type of the given field after validating.
+     *
      * @return the field's type as a parameterized type. If the field
-     * is not parameterized type (that can happen for non-canonical 
+     * is not parameterized type (that can happen for non-canonical
      * metamodel or weaving process introducing synthetic fields),
      * returns null.
      */
     ParameterizedType getParameterizedType(Field mf) {
         java.lang.reflect.Type t = mf.getGenericType();
         if (t instanceof ParameterizedType == false) {
-        	repos.getLog().warn(_loc.get("meta-field-not-param", 
+        	repos.getLog().warn(_loc.get("meta-field-not-param",
             mf.getDeclaringClass(), mf.getName(), toTypeName(t)).getMessage());
         	return null;
         }
         ParameterizedType mfType = (ParameterizedType)t;
         java.lang.reflect.Type[] args = mfType.getActualTypeArguments();
         if (args.length < 2) {
-            throw new IllegalStateException(_loc.get("meta-field-less-param", 
+            throw new IllegalStateException(_loc.get("meta-field-less-param",
             mf.getDeclaringClass(), mf.getName(), toTypeName(t)).getMessage());
         }
 
         return mfType;
     }
-    
+
     /**
-     * Pretty prints a Type. 
+     * Pretty prints a Type.
      */
     String toTypeName(java.lang.reflect.Type type) {
         if (type instanceof GenericArrayType) {
@@ -395,29 +395,29 @@ public class MetamodelImpl implements Metamodel, Resolver {
         }
         return tmp.toString();
     }
-    
+
     /**
-     * Validates the given field of the meta class matches the given 
-     * FieldMetaData and 
+     * Validates the given field of the meta class matches the given
+     * FieldMetaData and
      * @param <X>
      * @param <Y>
      * @param mField
      * @param member
      */
     void validate(Field metaField, FieldMetaData fmd) {
-        
+
     }
-    
+
     <X,Y> void validate(Field mField, Member<X, Y> member) {
         if (!ParameterizedType.class.isInstance(mField.getGenericType())) {
-            throw new IllegalArgumentException(_loc.get("meta-bad-field", 
+            throw new IllegalArgumentException(_loc.get("meta-bad-field",
                 mField).getMessage());
         }
         ParameterizedType mfType = (ParameterizedType)mField.getGenericType();
         java.lang.reflect.Type[] args = mfType.getActualTypeArguments();
         java.lang.reflect.Type owner = args[0];
         if (member.getDeclaringType().getJavaType() != owner)
-            throw new IllegalArgumentException(_loc.get("meta-bad-field-owner", 
+            throw new IllegalArgumentException(_loc.get("meta-bad-field-owner",
                     mField, owner).getMessage());
     }
 
@@ -439,5 +439,5 @@ public class MetamodelImpl implements Metamodel, Resolver {
 
     public QueryContext getQueryContext() {
         throw new UnsupportedOperationException();
-    }    
+    }
 }

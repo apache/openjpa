@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -232,7 +232,7 @@ public class XMLPersistenceMappingSerializer
             cols = (List<Column>) secondaryInfo.getSecondaryTableJoinColumns
                 (table);
 
-        boolean print = (cols != null && cols.size() > 0) || 
+        boolean print = (cols != null && cols.size() > 0) ||
             (uniques != null && uniques.length > 0);
         if (table != null
             && (defaultName == null || !defaultName.equals(table))) {
@@ -242,7 +242,7 @@ public class XMLPersistenceMappingSerializer
                 addAttribute("name", table);
             else {
                 Map<String, ClassMetaData> classMetaData = getClassMetaData();
-                Object[] keySet = null; 
+                Object[] keySet = null;
                 if(classMetaData != null)
                 {
                     keySet = classMetaData.keySet().toArray();
@@ -468,7 +468,7 @@ public class XMLPersistenceMappingSerializer
                 addAttribute("column-definition", orderCol.getTypeName());
             startElement("order-column");
             endElement("order-column");
-        }        
+        }
     }
 
     /**
@@ -587,7 +587,7 @@ public class XMLPersistenceMappingSerializer
         }
         endElement("unique-constraint");
     }
-    
+
     @Override
     protected SerializationComparator newSerializationComparator() {
         return new MappingSerializationComparator();

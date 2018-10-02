@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -28,14 +28,14 @@ public abstract class SliceTestCase extends SingleEMFTestCase {
         assertTrue(emf.getClass() + " is not a slice configuration. Check" +
             " that BrokerFactory for the persistence unit is set to slice",
              emf.getConfiguration() instanceof DistributedJDBCConfiguration);
-        
+
     }
-    
+
     int count(Class<?> type) {
         EntityManager em = emf.createEntityManager();
         String query = "SELECT COUNT(p) FROM " + type.getSimpleName() + " p";
         Number number = (Number) em.createQuery(query).getSingleResult();
         return number.intValue();
     }
-    
+
 }

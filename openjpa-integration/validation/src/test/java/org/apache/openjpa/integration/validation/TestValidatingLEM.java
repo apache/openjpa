@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -41,7 +41,7 @@ import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
  *   2) Mode of AUTO will create a ValidatingLifecycleEventManager
  *   3) Map mode of CALLBACK will create a ValidatingLifecycleEventManager
  *   4) Verify a passed in ValidatorFactory is used
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class TestValidatingLEM extends SingleEMFTestCase {
@@ -93,7 +93,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
                 conf.getValidationMode().equalsIgnoreCase("NONE"));
             Class<?> lem = conf.getLifecycleEventManagerInstance().getClass();
             assertNotNull(lem);
-            assertFalse("Expected a LifecycleEventManager instance", 
+            assertFalse("Expected a LifecycleEventManager instance",
                 ValidatingLifecycleEventManager.class.isAssignableFrom(lem));
         } catch (Exception e) {
             fail("Unexpected testValidatingLEM1() exception = " + e);
@@ -129,7 +129,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
                 conf.getValidationMode().equalsIgnoreCase("AUTO"));
             Class<?> lem = conf.getLifecycleEventManagerInstance().getClass();
             assertNotNull(lem);
-            assertTrue("Expected a ValidatingLifecycleEventManager instance", 
+            assertTrue("Expected a ValidatingLifecycleEventManager instance",
                 ValidatingLifecycleEventManager.class.isAssignableFrom(lem));
         } catch (Exception e) {
             fail("Unexpected testValidatingLEM2() exception = " + e);
@@ -171,7 +171,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
                 conf.getValidationMode().equalsIgnoreCase("CALLBACK"));
             Class<?> lem = conf.getLifecycleEventManagerInstance().getClass();
             assertNotNull(lem);
-            assertTrue("Expected a ValidatingLifecycleEventManager instance", 
+            assertTrue("Expected a ValidatingLifecycleEventManager instance",
                 ValidatingLifecycleEventManager.class.isAssignableFrom(lem));
         } catch (Exception e) {
             fail("Unexpected testValidatingLEM3() exception = " + e);
@@ -219,7 +219,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
                 conf.getValidationMode().equalsIgnoreCase("AUTO"));
             Class<?> lem = conf.getLifecycleEventManagerInstance().getClass();
             assertNotNull(lem);
-            assertTrue("Expected a ValidatingLifecycleEventManager instance", 
+            assertTrue("Expected a ValidatingLifecycleEventManager instance",
                 ValidatingLifecycleEventManager.class.isAssignableFrom(lem));
             // verify factory matches
             assertEquals("Expected same ValidatorFactory instance",
@@ -234,7 +234,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
         }
     }
 
-    
+
     /**
      * Helper method to remove entities and close the emf an any open em's.
      * @param emf
@@ -242,6 +242,6 @@ public class TestValidatingLEM extends SingleEMFTestCase {
     private void cleanup(OpenJPAEntityManagerFactorySPI emf) {
         clear(emf);
         closeEMF(emf);
-    }    
+    }
 
 }

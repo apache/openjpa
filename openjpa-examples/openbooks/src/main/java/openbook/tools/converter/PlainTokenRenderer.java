@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package openbook.tools.converter;
 
@@ -22,7 +22,7 @@ package openbook.tools.converter;
 import org.antlr.runtime.Token;
 /**
  * A default implementation of {@linkplain TokenRenderer} that simply prints the token.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -30,7 +30,7 @@ public class PlainTokenRenderer implements TokenRenderer {
     private static final String EMPTY = "";
     private boolean showLineNumber = true;
     private String lineNumberFormat  = "%04d";
-    
+
     public String endLine(int line) {
         return EMPTY;
     }

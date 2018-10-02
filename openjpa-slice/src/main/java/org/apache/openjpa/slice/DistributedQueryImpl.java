@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -28,7 +28,7 @@ import org.apache.openjpa.slice.jdbc.TargetFetchConfiguration;
 
 /**
  * Extension with slice locking policy.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -36,16 +36,16 @@ import org.apache.openjpa.slice.jdbc.TargetFetchConfiguration;
 public class DistributedQueryImpl extends QueryImpl {
     private final ReentrantSliceLock _lock;
     private DistributedConfiguration _conf;
-    
+
     public DistributedQueryImpl(Broker broker, String language, StoreQuery storeQuery) {
         super(broker, language, storeQuery);
         _lock = new ReentrantSliceLock();
         _conf = (DistributedConfiguration)broker.getConfiguration();
     }
-    
+
     /**
      * Overrides to set the query targets via policy, if user has not already set the targets via hint
-     * explicitly on this query. 
+     * explicitly on this query.
      */
     @Override
     public Object execute(Map params) {
@@ -53,7 +53,7 @@ public class DistributedQueryImpl extends QueryImpl {
         if (!fetch.isExplicitTarget()) {
             QueryTargetPolicy policy = _conf.getQueryTargetPolicyInstance();
             if (policy != null) {
-                String[] targets = policy.getTargets(getQueryString(), Collections.unmodifiableMap(params), 
+                String[] targets = policy.getTargets(getQueryString(), Collections.unmodifiableMap(params),
                         getLanguage(), _conf.getActiveSliceNames(), this.getBroker());
                 fetch.setTargets(targets);
             }
@@ -68,7 +68,7 @@ public class DistributedQueryImpl extends QueryImpl {
     public void lock() {
         _lock.lock();
     }
-    
+
     @Override
     public void unlock() {
         _lock.unlock();

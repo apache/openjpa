@@ -23,9 +23,9 @@ import java.util.List;
 public class XMLAssocOverEntityB {
 
     private int id;
-    
+
     private String name;
-    
+
     private List<XMLAssocOverEntityA> eaList;
 
     public void setId(int id) {
@@ -51,5 +51,5 @@ public class XMLAssocOverEntityB {
     public List<XMLAssocOverEntityA> getEaList() {
         return eaList;
     }
-    
+
 }

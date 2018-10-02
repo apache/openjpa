@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
@@ -28,7 +28,7 @@ import javax.persistence.PersistenceException;
 public class EntityWithFailedExternalizer implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     private int iref;
 
@@ -39,33 +39,33 @@ public class EntityWithFailedExternalizer implements Serializable {
     @org.apache.openjpa.persistence.Persistent
     @org.apache.openjpa.persistence.Externalizer("check")
     private TestExternal ext;
-    
+
     public static class TestExternal
     {
         private static final long serialVersionUID = 1L;
         public boolean throwEx=false;
-        
+
         private String value = "test - TE";
 
         public TestExternal() {
             super();
         }
-        
+
         public TestExternal(String s) {
             value = s;
         }
-        
+
         public String check() throws Exception {
             if (throwEx){
                 throw new PersistenceException("test exception externalizer");
             }
-            return value;           
+            return value;
         }
-        
+
         public String getValue() {
             return value;
         }
-        
+
         public void getValue(String s) {
             value = s;
         }
@@ -82,7 +82,7 @@ public class EntityWithFailedExternalizer implements Serializable {
         this.data = data;
         this.ext = new TestExternal();
     }
-    
+
     public int getIref() {
         return this.iref;
     }
@@ -111,9 +111,9 @@ public class EntityWithFailedExternalizer implements Serializable {
         this.ext = te;
         return;
     }
-    
+
     public TestExternal getExt(){
         return this.ext;
-    }   
+    }
 }
 

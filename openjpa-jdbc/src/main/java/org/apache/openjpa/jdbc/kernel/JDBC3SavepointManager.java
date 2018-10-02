@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -29,7 +29,7 @@ import org.apache.openjpa.util.UserException;
  * {@link SavepointManager} implementation that uses JDBC 3 savepoints
  * to store state. This plugin has the side effect of triggering
  * a flush on the {@link Broker}.
- * 
+ *
  * <b>Note that this plugin requires a database and JDBC driver which
  * supports JDBC 3 savepoints</b>
  *

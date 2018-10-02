@@ -28,36 +28,36 @@ body {background-image:url("images/back40.gif");
 </style>
 </head>
 <body>
-  <h1>DNA: Do-Nothing Application</h1>  
+  <h1>DNA: Do-Nothing Application</h1>
   <hr>
-  <span style="font-size:1.2em;color:green;font-weight:bold">DNA application is used to demonstrate </span> 
+  <span style="font-size:1.2em;color:green;font-weight:bold">DNA application is used to demonstrate </span>
   <A HREF="./jest/">JEST</A>.
   <br>
   DNA application is deployed as a HTTP Servlet.<br>
-  
+
   The servlet creates an OpenJPA persistence unit at initialization.<br>
-  
+
   It does nothing else, other than serving this single web page you are reading now.
-  The fact that you are reading this page means the persistence unit has been initialized. 
+  The fact that you are reading this page means the persistence unit has been initialized.
   <p>
-  
-  
+
+
   <h2>Requirement for enabling JEST</h2>
-  
+
   The requirements for an application to enable JEST are
-  
+
   <p>
   &#9658; JEST Servlet must be <A href="#web.xml">deployed</A> within the same module scope of the application.  <br>
   &#9658; The unit name of the persistence unit used by the application must be known to JEST Servlet  <br>
   &#9658; The persistence unit must be configured with <br>
-  &nbsp;&nbsp; <span style="color:green;font-weight:bold;text-align:center;background-color: #EEEEEE"><tt>openjpa.EntityManagerFactoryPool=true</tt></span> 
+  &nbsp;&nbsp; <span style="color:green;font-weight:bold;text-align:center;background-color: #EEEEEE"><tt>openjpa.EntityManagerFactoryPool=true</tt></span>
   <p>
   Once JEST servlet knows the name of the persistence unit, it can <br>
-  
+
   &#9658; browse the domain model<br>
   &#9658; execute query <br>
-  from any web browser in a <em>meta-data driven</em>, <em>generic</em> fashion 
-  i.e. without knowing anything further about he application. 
+  from any web browser in a <em>meta-data driven</em>, <em>generic</em> fashion
+  i.e. without knowing anything further about he application.
   <p>
   <p>
   <hr>
@@ -73,7 +73,7 @@ body {background-image:url("images/back40.gif");
    &lt;servlet-name></span><span style="color:blue;">demo</span><span style="color:gray;font-weight:bold;">&lt;/servlet-name>
  &lt;url-pattern></span><span style="color:blue;">/*</span><span style="color:gray;font-weight:bold;">&lt;/url-pattern>
  &lt;/servlet-mapping>
-  
+
  <span style="color:green;font-weight:bold;">&lt;!-- Deployment descriptor for JESTServlet. --></span>
  &lt;servlet>
    &lt;servlet-name></span><span style="color:red;">jest</span><span style="color:gray;font-weight:bold;">&lt;/servlet-name>

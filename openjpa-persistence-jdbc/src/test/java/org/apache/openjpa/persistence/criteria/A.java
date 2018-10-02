@@ -28,9 +28,9 @@ import javax.persistence.OneToOne;
 public class A {
     @Id
     private long id;
-    
+
     private String name;
-    
+
     @OneToOne(fetch=FetchType.LAZY)
     private B b;
 }

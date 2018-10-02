@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -37,29 +37,29 @@ public class EmployeeId5 implements java.io.Serializable {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
+
     public String getFirstName() {
         return firstName;
     }
-    
+
     public String getLastName() {
         return lastName;
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof EmployeeId5))
             return false;
         EmployeeId5 other = (EmployeeId5) o;
-        if (firstName.equals(other.firstName) && 
+        if (firstName.equals(other.firstName) &&
                 lastName.equals(other.lastName))
             return true;
         return false;
     }
-    
+
     public int hashCode() {
         int ret = 0;
         ret += firstName.hashCode();

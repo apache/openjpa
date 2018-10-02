@@ -130,7 +130,7 @@ public class ManagedClassSubclasser {
         Set<Class<?>> unspecified = null;
         for (Class<?> cls : classes) {
             final Class<?> c = cls;
-            final PCEnhancer enhancer = new PCEnhancer(conf, cls); 
+            final PCEnhancer enhancer = new PCEnhancer(conf, cls);
 
             enhancer.setBytecodeWriter(new BytecodeWriter() {
                 public void write(BCClass bc) throws IOException {
@@ -145,7 +145,7 @@ public class ManagedClassSubclasser {
 
             // set this before enhancement as well as after since enhancement
             // uses a different metadata repository, and the metadata config
-            // matters in the enhancement contract. In order to avoid a 
+            // matters in the enhancement contract. In order to avoid a
             // NullPointerException, check for no metadata and throw an
             // exception if none exists. Otherwise, don't do any warning here,
             // since we'll issue warnings when we do the final metadata
@@ -170,7 +170,7 @@ public class ManagedClassSubclasser {
         }
 
         if (unspecified != null && !unspecified.isEmpty())
-            throw new UserException(_loc.get("unspecified-unenhanced-types", Exceptions.toClassNames(classes), 
+            throw new UserException(_loc.get("unspecified-unenhanced-types", Exceptions.toClassNames(classes),
                     unspecified));
 
         ClassRedefiner.redefineClasses(conf, map);
@@ -280,7 +280,7 @@ public class ManagedClassSubclasser {
         } else {
             if (!enhancer.isAlreadySubclassed()) {
                 debugBytecodes(bc);
-                
+
                 // this is the new subclass
                 ClassLoader loader = GeneratedClasses.getMostDerivedLoader(
                     cls, PersistenceCapable.class);

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
@@ -29,60 +29,60 @@ public class LifeCycleDDEntity
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
-	
+
 	@Basic
 	private String name;
-	
+
 	@Basic
 	private String surname;
-	
+
 	public LifeCycleDDEntity()
 	{}
-	
+
 	public LifeCycleDDEntity(String name, String surname)
 	{
 		this.name = name;
 		this.surname = surname;
 	}
-	
+
 	public void verifyPrePersist()
 	{
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("verifyprp");
 	}
-	
+
 	public void verifyPostPersist()
 	{
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("verifypop");
 	}
-	
+
     public void verifyPreRemove()
     {
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("verifyprr");
     }
-    
+
     public int getId()
     {
     	return id;
     }
-    
+
     public void setName(String name)
     {
     	this.name = name;
     }
-    
+
     public String getName()
     {
     	return name;
     }
-    
+
     public void setSurName(String name)
     {
     	this.surname = name;
     }
-    
+
     public String getSurName()
     {
     	return surname;

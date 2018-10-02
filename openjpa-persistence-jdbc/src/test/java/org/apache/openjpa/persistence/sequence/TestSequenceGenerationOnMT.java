@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.sequence;
 
@@ -33,10 +33,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestSequenceGenerationOnMT extends SingleEMFTestCase {
     public void setUp() {
-        super.setUp(CLEAR_TABLES, GeneratedIdObject.class, 
+        super.setUp(CLEAR_TABLES, GeneratedIdObject.class,
           "openjpa.Multithreaded", "true");
     }
-    
+
     public void testIdGenerationInMultithreadedEnvironment() {
         int nThreads = 5;
         ExecutorService threads = Executors.newFixedThreadPool(nThreads);
@@ -58,10 +58,10 @@ public class TestSequenceGenerationOnMT extends SingleEMFTestCase {
             e.printStackTrace();
             fail("Failed " + e);
         }
-        
+
     }
-    
-    
+
+
     public static class Loader implements Callable<Boolean> {
         EntityManager em;
         Loader(EntityManager em) {

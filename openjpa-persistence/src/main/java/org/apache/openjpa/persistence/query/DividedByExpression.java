@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.query;
 
 /**
  * Denotes e1/e2 Expression.
- * 
+ *
  * @author Pinaki Poddar
  *
  */

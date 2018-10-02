@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -26,32 +26,32 @@ import javax.persistence.*;
 public class ParkingSpot {
     @Id int id;
     String garage;
-    
-    @OneToOne(mappedBy="location.parkingSpot") 
+
+    @OneToOne(mappedBy="location.parkingSpot")
     Employee assignedTo;
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public String getGarage() {
         return garage;
     }
-    
+
     public void setGarage(String garage) {
         this.garage = garage;
     }
-    
+
     public Employee getAssignedTo() {
         return assignedTo;
     }
-    
+
     public void setAssignedTo(Employee assignedTo) {
         this.assignedTo = assignedTo;
     }
-    
+
 }

@@ -25,7 +25,7 @@ import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.MixedLockLevels;
 
 /**
- * Helper methods translate between JPA-defined lock mode and OpenJPA 
+ * Helper methods translate between JPA-defined lock mode and OpenJPA
  * internal lock levels.
  *
  * @author Albert Lee
@@ -52,7 +52,7 @@ public class MixedLockLevelsHelper implements HintValueConverter {
             return MixedLockLevels.LOCK_PESSIMISTIC_WRITE;
         return MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT;
     }
-    
+
     public static int toLockLevel(int mode) {
         switch (mode) {
         case MixedLockLevels.LOCK_OPTIMISTIC:
@@ -114,7 +114,7 @@ public class MixedLockLevelsHelper implements HintValueConverter {
         if (original instanceof Integer) {
             return MixedLockLevelsHelper.toLockLevel((Integer)original);
         }
-        
+
         throw new IllegalArgumentException("can not convert " + original + " of " + original.getClass());
     }
 }

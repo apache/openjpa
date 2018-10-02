@@ -31,26 +31,26 @@ import javax.persistence.Transient;
 @Entity
 @Access(AccessType.FIELD)
 @NamedQueries( {
-    @NamedQuery(name="MixedNestedEmbedEntity.query", 
-        query="SELECT fs FROM MixedNestedEmbedEntity fs WHERE " + 
-        "fs.id = :id AND fs.name = :name AND " + 
+    @NamedQuery(name="MixedNestedEmbedEntity.query",
+        query="SELECT fs FROM MixedNestedEmbedEntity fs WHERE " +
+        "fs.id = :id AND fs.name = :name AND " +
         "fs.eip.innerName = :innerName AND " +
         "fs.eip.outerField.outName = :outerName"),
-    @NamedQuery(name="MixedNestedEmbedEntity.badQuery", 
-        query="SELECT fs FROM MixedNestedEmbedEntity fs WHERE " + 
-        "fs.id = :id AND fs.name = :name AND " + 
+    @NamedQuery(name="MixedNestedEmbedEntity.badQuery",
+        query="SELECT fs FROM MixedNestedEmbedEntity fs WHERE " +
+        "fs.id = :id AND fs.name = :name AND " +
         "fs.eip.innerName = :innerName AND " +
         "fs.eip.outerField.outerName = :outerName") })
 public class MixedNestedEmbedEntity {
 
     @Transient
     private int mid;
-    
+
     private String name;
 
     @Embedded
     private EmbedInnerProp eip;
-    
+
     public void setId(int id) {
         this.mid = id;
     }
@@ -69,7 +69,7 @@ public class MixedNestedEmbedEntity {
     public String getName() {
         return name;
     }
-    
+
     public EmbedInnerProp getEmbedProp() {
         return eip;
     }
@@ -81,7 +81,7 @@ public class MixedNestedEmbedEntity {
     public boolean equals(Object obj) {
         if (obj instanceof MixedNestedEmbedEntity) {
             MixedNestedEmbedEntity ps = (MixedNestedEmbedEntity)obj;
-            return getEmbedProp().equals(ps.getEmbedProp()) 
+            return getEmbedProp().equals(ps.getEmbedProp())
                 && getId() == ps.getId() &&
                 getName().equals(ps.getName());
         }

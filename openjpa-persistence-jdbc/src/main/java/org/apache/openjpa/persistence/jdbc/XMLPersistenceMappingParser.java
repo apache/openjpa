@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -139,18 +139,18 @@ public class XMLPersistenceMappingParser
     private Column _discCol;
     private int _resultIdx = 0;
     private final DBDictionary _dict;
-    
+
     // ForeignKey info
     private Attributes _foreignKeyAttributes = null;
     private List<String> _columnNamesList = null;
     private String[] _columnNames = {};
-    
+
     private List<Column> _versionColumnsList = null;
 
-    private final Map<Class<?>, ArrayList<DeferredEmbeddableOverrides>> 
-        _deferredMappings = new HashMap<Class<?>, 
+    private final Map<Class<?>, ArrayList<DeferredEmbeddableOverrides>>
+        _deferredMappings = new HashMap<Class<?>,
              ArrayList<DeferredEmbeddableOverrides>>();
-    
+
     /**
      * Constructor; supply configuration.
      */
@@ -209,8 +209,8 @@ public class XMLPersistenceMappingParser
         MappingTag tag = _elems.get(name);
         if (tag == null) {
             if ("schema".equals(name)) {
-                _schema = currentText();                
-                getRepository().getMetaDataFactory().getDefaults().setDefaultSchema(_schema);                
+                _schema = currentText();
+                getRepository().getMetaDataFactory().getDefaults().setDefaultSchema(_schema);
             }
             return;
         }
@@ -345,7 +345,7 @@ public class XMLPersistenceMappingParser
                 unq.setIdentifier(DBIdentifier.newConstraint(name, delimit()));
             }
         }
-            
+
         return true;
     }
 
@@ -363,7 +363,7 @@ public class XMLPersistenceMappingParser
             case DISCRIM_VAL:
                 endDiscriminatorValue();
                 break;
-            case ASSOC_OVERRIDE:                
+            case ASSOC_OVERRIDE:
             case ATTR_OVERRIDE:
                 endAttributeOverride();
                 break;
@@ -512,8 +512,8 @@ public class XMLPersistenceMappingParser
         seq.setSequencePlugin(SequenceMapping.IMPL_VALUE_TABLE);
         seq.setTableIdentifier(toTableIdentifier(attrs.getValue("schema"),
             attrs.getValue("table")));
-        seq.setPrimaryKeyColumnIdentifier(DBIdentifier.newColumn(attrs.getValue("pk-column-name"), delimit())); 
-        seq.setSequenceColumnIdentifier(DBIdentifier.newColumn(attrs.getValue("value-column-name"), delimit())); 
+        seq.setPrimaryKeyColumnIdentifier(DBIdentifier.newColumn(attrs.getValue("pk-column-name"), delimit()));
+        seq.setSequenceColumnIdentifier(DBIdentifier.newColumn(attrs.getValue("value-column-name"), delimit()));
         seq.setPrimaryKeyValue(attrs.getValue("pk-column-value"));
         String val = attrs.getValue("initial-value");
         if (val != null)
@@ -534,7 +534,7 @@ public class XMLPersistenceMappingParser
         pushElement(seq);
         return true;
     }
-    
+
     private void endTableGenerator() {
     	popElement();
     }
@@ -688,9 +688,9 @@ public class XMLPersistenceMappingParser
         // setup columns with cached lob and temporal info
         FieldMapping fm = (FieldMapping) field;
         if (_lob || _temporal != null) {
-            int typeCode = fm.isElementCollection() ? fm.getElement().getDeclaredTypeCode() : 
+            int typeCode = fm.isElementCollection() ? fm.getElement().getDeclaredTypeCode() :
                 fm.getDeclaredTypeCode();
-            Class<?> type = fm.isElementCollection() ? fm.getElement().getDeclaredType() : fm.getDeclaredType();  
+            Class<?> type = fm.isElementCollection() ? fm.getElement().getDeclaredType() : fm.getDeclaredType();
             if (_cols == null) {
                 _cols = new ArrayList<Column>(1);
                 _cols.add(new Column());
@@ -794,10 +794,10 @@ public class XMLPersistenceMappingParser
             fm = getAttributeOverride((ClassMapping) elem);
         else {
             FieldMapping basefm = (FieldMapping) elem;
-            
+
             fm = getAttributeOverrideForEmbeddable(basefm, _override, false);
             if (fm == null) {
-                DeferredEmbeddableOverrides dfm = 
+                DeferredEmbeddableOverrides dfm =
                     getDeferredFieldMappingInfo(
                         AnnotationPersistenceMappingParser.
                         getEmbeddedClassType(basefm, _override),
@@ -833,10 +833,10 @@ public class XMLPersistenceMappingParser
     /**
      * Return the proper override.
      */
-    private FieldMapping getAttributeOverrideForEmbeddable(FieldMapping fm, 
-        String attrName, boolean mustExist) 
+    private FieldMapping getAttributeOverrideForEmbeddable(FieldMapping fm,
+        String attrName, boolean mustExist)
     throws SAXException {
-        return AnnotationPersistenceMappingParser.getEmbeddedFieldMapping(fm, 
+        return AnnotationPersistenceMappingParser.getEmbeddedFieldMapping(fm,
             attrName, mustExist);
     }
 
@@ -866,13 +866,13 @@ public class XMLPersistenceMappingParser
             Object elem = currentElement();
             FieldMapping fm = null;
             if (elem instanceof FieldMapping) {
-                fm = (FieldMapping) elem; 
+                fm = (FieldMapping) elem;
                 if (_override != null) {
                     FieldMapping basefm = (FieldMapping) elem;
-                    fm = getAttributeOverrideForEmbeddable(basefm, 
+                    fm = getAttributeOverrideForEmbeddable(basefm,
                         _override, false);
                     if (fm == null) {
-                        DeferredEmbeddableOverrides dfm = 
+                        DeferredEmbeddableOverrides dfm =
                             getDeferredFieldMappingInfo(
                                 AnnotationPersistenceMappingParser.
                                 getEmbeddedClassType(basefm, _override),
@@ -901,10 +901,10 @@ public class XMLPersistenceMappingParser
             fm = (FieldMapping) elem;
             if (_override != null) {
                 FieldMapping basefm = (FieldMapping) elem;
-                fm = getAttributeOverrideForEmbeddable(basefm, _override, 
+                fm = getAttributeOverrideForEmbeddable(basefm, _override,
                     false);
                 if (fm == null) {
-                    DeferredEmbeddableOverrides dfm = 
+                    DeferredEmbeddableOverrides dfm =
                         getDeferredFieldMappingInfo(
                             AnnotationPersistenceMappingParser.
                             getEmbeddedClassType(basefm, _override),
@@ -974,7 +974,7 @@ public class XMLPersistenceMappingParser
             fm.getMappingInfo().setColumns(colList);
             return true;
         }
-        
+
         if (currentParent != JOIN_TABLE)
             return startColumn(attrs);
 
@@ -1045,7 +1045,7 @@ public class XMLPersistenceMappingParser
 
         return retVal;
     }
-    
+
     /**
      * Create a column with the given attributes.
      */
@@ -1097,7 +1097,7 @@ public class XMLPersistenceMappingParser
     /**
      * Sets reference column name of the given column taking into account
      * that the given reference name that begins with a single quote represents
-     * special meaning of a constant join column and hence not to be delimited.  
+     * special meaning of a constant join column and hence not to be delimited.
      * @param col
      * @param refColumnName
      * @see <a href="http://issues.apache.org/jira/browse/OPENJPA-1979">OPENJPA-1979</a>
@@ -1110,7 +1110,7 @@ public class XMLPersistenceMappingParser
     		col.setTargetIdentifier(DBIdentifier.newColumn(refColumnName, delimit()));
     	}
     }
-    
+
     /**
      * Parse collectionTable.
      */
@@ -1127,7 +1127,7 @@ public class XMLPersistenceMappingParser
     private DBIdentifier parseCollectionTable(Attributes attrs) {
         String tVal = attrs.getValue("name");
         String sVal = attrs.getValue("schema");
-        return toTableIdentifier(sVal, tVal); 
+        return toTableIdentifier(sVal, tVal);
     }
 
     /**
@@ -1190,7 +1190,7 @@ public class XMLPersistenceMappingParser
     private boolean startEntityResult(Attributes attrs)
         throws SAXException {
         Class<?> entityClass = classForName(attrs.getValue("entity-class"));
-        String discriminator = DBIdentifier.newColumn(attrs.getValue("discriminator-column"), delimit()).getName(); 
+        String discriminator = DBIdentifier.newColumn(attrs.getValue("discriminator-column"), delimit()).getName();
 
         QueryResultMapping parent = (QueryResultMapping) currentElement();
         QueryResultMapping.PCResult result = parent.addPCResult(entityClass);
@@ -1229,13 +1229,13 @@ public class XMLPersistenceMappingParser
         return true;
     }
 
-    /** 
+    /**
      * Starts processing &lt;unique-constraint&gt; provided the tag occurs
      * within a ClassMapping element and <em>not</em> within a secondary
-     * table. 
+     * table.
      * Pushes the Unique element in the stack.
      */
-    private boolean startUniqueConstraint(Attributes attrs) 
+    private boolean startUniqueConstraint(Attributes attrs)
         throws SAXException {
         Unique unique = new Unique();
 
@@ -1247,12 +1247,12 @@ public class XMLPersistenceMappingParser
         pushElement(unique);
         return true;
     }
-    
+
     /**
      * Ends processing &lt;unique-constraint&gt; provided the tag occurs
      * within a ClassMapping element and <em>not</em> within a secondary
      * table. The stack is popped and the Unique element is added to the
-     * ClassMappingInfo. 
+     * ClassMappingInfo.
      */
     private void endUniqueConstraint() {
         Unique unique = (Unique) popElement();
@@ -1260,7 +1260,7 @@ public class XMLPersistenceMappingParser
         DBIdentifier tableName = DBIdentifier.newTable("?");
         if (ctx instanceof ClassMapping) {
         	ClassMappingInfo info = ((ClassMapping) ctx).getMappingInfo();
-        	tableName = (_secondaryTable == null) 
+        	tableName = (_secondaryTable == null)
         		? info.getTableIdentifier() : DBIdentifier.newTable(_secondaryTable, delimit());
         	info.addUnique(tableName, unique);
         } else if (ctx instanceof FieldMapping) {// JoinTable
@@ -1282,7 +1282,7 @@ public class XMLPersistenceMappingParser
         	throw new InternalException();
         }
     }
-    
+
     /**
      * Ends processing &lt;column-name&gt; tag by adding the column name in
      * the current Unique element that resides in the top of the stack.
@@ -1298,7 +1298,7 @@ public class XMLPersistenceMappingParser
         }
         return false;
     }
-    
+
     /**
      * Track unique column settings.
 	 */
@@ -1307,8 +1307,8 @@ public class XMLPersistenceMappingParser
 		TRUE,
 		FALSE
 	}
-	
-	private void parseDiscriminatorColumn(Attributes attrs) { 
+
+	private void parseDiscriminatorColumn(Attributes attrs) {
 	    String val = attrs.getValue("discriminator-type");
         if (val != null) {
             _discType = Enum.valueOf(DiscriminatorType.class, val);
@@ -1316,9 +1316,9 @@ public class XMLPersistenceMappingParser
         else {
             _discType = DiscriminatorType.STRING;
         }
-            
-	}  
-    
+
+	}
+
     /**
      * Process OrderColumn.
      */
@@ -1343,7 +1343,7 @@ public class XMLPersistenceMappingParser
         String val = attrs.getValue("name");
         if (val != null)
             col.setIdentifier(DBIdentifier.newColumn(val, delimit()));
-        val = attrs.getValue("column-definition"); 
+        val = attrs.getValue("column-definition");
         if (val != null)
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(val));
         val = attrs.getValue("precision");
@@ -1364,26 +1364,26 @@ public class XMLPersistenceMappingParser
         val = attrs.getValue("updatable");
         if (val != null)
             col.setFlag(Column.FLAG_UNUPDATABLE, "false".equals(val));
-        
+
         return col;
     }
-    
+
     /**
-     * Process all deferred embeddable overrides for a given class.  
+     * Process all deferred embeddable overrides for a given class.
      * This should only occur after the embeddable is mapped.
-     * 
-     * @param embedType  embeddable class 
+     *
+     * @param embedType  embeddable class
      * @param access class level access for embeddable
-     * @throws SAXException 
+     * @throws SAXException
      */
     @Override
-    protected void applyDeferredEmbeddableOverrides(Class<?> cls) 
+    protected void applyDeferredEmbeddableOverrides(Class<?> cls)
         throws SAXException {
-        ArrayList<DeferredEmbeddableOverrides> defMappings = 
+        ArrayList<DeferredEmbeddableOverrides> defMappings =
             _deferredMappings.get(cls);
         if (defMappings == null)
             return;
-        
+
         for (DeferredEmbeddableOverrides defMap : defMappings) {
             FieldMapping fm = (FieldMapping)defMap._fm;
             if (defMap == null)
@@ -1413,7 +1413,7 @@ public class XMLPersistenceMappingParser
      */
     private void deferEmbeddableOverrides(
         Class<?> cls, DeferredEmbeddableOverrides defMap) {
-        ArrayList<DeferredEmbeddableOverrides> defMappings = 
+        ArrayList<DeferredEmbeddableOverrides> defMappings =
             _deferredMappings.get(cls);
         if (defMappings == null) {
             defMappings = new ArrayList<DeferredEmbeddableOverrides>();
@@ -1421,7 +1421,7 @@ public class XMLPersistenceMappingParser
         }
         defMappings.add(defMap);
     }
-    
+
     /*
      * Clean up any deferred mappings
      */
@@ -1430,44 +1430,44 @@ public class XMLPersistenceMappingParser
         super.clearDeferredMetaData();
         _deferredMappings.clear();
     }
-    
+
     /*
      * Get embeddable overrides for the specified field mapping.  If create
      * is true, create a new override if one does not exist.
      */
-    private DeferredEmbeddableOverrides 
-        getDeferredFieldMappingInfo(Class<?> cls, FieldMapping fm, 
+    private DeferredEmbeddableOverrides
+        getDeferredFieldMappingInfo(Class<?> cls, FieldMapping fm,
             String attrName, boolean create) {
 
-        ArrayList<DeferredEmbeddableOverrides> defMappings = 
+        ArrayList<DeferredEmbeddableOverrides> defMappings =
             _deferredMappings.get(cls);
-        
+
         if (defMappings == null && create) {
             defMappings = new ArrayList<DeferredEmbeddableOverrides>();
             _deferredMappings.put(cls, defMappings);
         }
-        DeferredEmbeddableOverrides dfm = 
+        DeferredEmbeddableOverrides dfm =
             findDeferredMapping(cls, fm, attrName);
 
         if (dfm == null & create) {
             dfm = new DeferredEmbeddableOverrides(fm, attrName);
             deferEmbeddableOverrides(cls, dfm);
         }
-        return dfm;            
+        return dfm;
     }
 
     /*
      * Find deferred mappings for the given class, fm, and attr name
      */
-    private DeferredEmbeddableOverrides findDeferredMapping(Class<?> cls, 
+    private DeferredEmbeddableOverrides findDeferredMapping(Class<?> cls,
         FieldMapping fm, String attrName) {
-        ArrayList<DeferredEmbeddableOverrides> defMappings = 
+        ArrayList<DeferredEmbeddableOverrides> defMappings =
             _deferredMappings.get(cls);
         if (defMappings == null)
             return null;
-        
+
         for (DeferredEmbeddableOverrides dfm : defMappings) {
-            if (dfm != null && dfm._fm == fm && 
+            if (dfm != null && dfm._fm == fm &&
                 attrName.equals(dfm._attrName))
                 return dfm;
         }
@@ -1490,9 +1490,9 @@ public class XMLPersistenceMappingParser
                 }
             }
         }
-        
-    }    
-    
+
+    }
+
     // Inner class for storing override information
     class DeferredEmbeddableOverrides {
         DeferredEmbeddableOverrides(FieldMapping fm, String attrName) {
@@ -1507,8 +1507,8 @@ public class XMLPersistenceMappingParser
         private DBIdentifier _defTable;
         private String _attrName;
         private EnumSet<UniqueFlag> _unique;
-    }  
-    
+    }
+
     @Override
     protected boolean startDelimitedIdentifiers() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
@@ -1516,7 +1516,7 @@ public class XMLPersistenceMappingParser
         dict.setDelimitIdentifiers(true);
         return true;
     }
-    
+
     @Override
     protected String normalizeSequenceName(String seqName) {
         if (StringUtil.isEmpty(seqName)) {
@@ -1524,7 +1524,7 @@ public class XMLPersistenceMappingParser
         }
         return DBIdentifier.newSequence(seqName, delimit()).getName();
     }
-    
+
     @Override
     protected String normalizeSchemaName(String schName) {
         if (StringUtil.isEmpty(schName)) {
@@ -1544,7 +1544,7 @@ public class XMLPersistenceMappingParser
     private boolean delimit() {
         return _dict.getDelimitIdentifiers();
     }
-    
+
     /**
      * Translate the fetch mode enum value to the internal OpenJPA constant.
      */
@@ -1558,12 +1558,12 @@ public class XMLPersistenceMappingParser
         else
             throw new InternalException();
     }
-    
+
     private boolean startDatastoreIdCol(Attributes attrs)
         throws SAXException {
-        
+
         ClassMapping cm = (ClassMapping) peekElement();
-        
+
         Column col = new Column();
         String name = attrs.getValue("name");
         if (!StringUtil.isEmpty(name));
@@ -1577,23 +1577,23 @@ public class XMLPersistenceMappingParser
         col.setFlag(Column.FLAG_UNINSERTABLE, !Boolean.parseBoolean(attrs.getValue("insertable")));
         col.setFlag(Column.FLAG_UNUPDATABLE, !Boolean.parseBoolean(attrs.getValue("updatable")));
         cm.getMappingInfo().setColumns(Arrays.asList(new Column[]{ col }));
-        
+
         return true;
     }
-    
+
     private boolean startIndex(Attributes attrs)
         throws SAXException {
-        
+
         FieldMapping fm = (FieldMapping) peekElement();
-        
+
         parseIndex(fm.getValueInfo(),
             attrs.getValue("name"),
             Boolean.parseBoolean(attrs.getValue("enabled")),
             Boolean.parseBoolean(attrs.getValue("unique")));
-        
+
         return true;
     }
-    
+
     private void parseIndex(MappingInfo info, String name,
         boolean enabled, boolean unique) {
         if (!enabled) {
@@ -1608,25 +1608,25 @@ public class XMLPersistenceMappingParser
         idx.setUnique(unique);
         info.setIndex(idx);
     }
-    
-    private boolean startForeignKey(Attributes attrs) 
+
+    private boolean startForeignKey(Attributes attrs)
         throws SAXException {
-        
+
         _foreignKeyAttributes = attrs;
-        
+
         return true;
     }
-    
+
     private void endForeignKey() {
         if (_foreignKeyAttributes == null) {
             throw new InternalException();
         }
-        
+
         boolean implicit = Boolean.parseBoolean(_foreignKeyAttributes.getValue("implicit"));
-        
+
         FieldMapping fm = (FieldMapping) peekElement();
         MappingInfo info = fm.getValueInfo();
-        
+
         String name = _foreignKeyAttributes.getValue("name");
         boolean enabled = Boolean.parseBoolean(_foreignKeyAttributes.getValue("enabled"));
         boolean deferred = Boolean.parseBoolean(_foreignKeyAttributes.getValue("deferred"));
@@ -1635,7 +1635,7 @@ public class XMLPersistenceMappingParser
         String updateActionString = _foreignKeyAttributes.getValue("update-action");
         int deleteAction = toForeignKeyInt(deleteActionString);
         int updateAction = toForeignKeyInt(updateActionString);
-        
+
         if (!implicit) {
             parseForeignKey(info, name,
                 enabled,
@@ -1646,13 +1646,13 @@ public class XMLPersistenceMappingParser
             info.setImplicitRelation(true);
             assertDefault(name, enabled, deferred, specified, updateAction, deleteAction);
         }
-        
+
         _columnNamesList = null;
     }
-    
+
     private void parseForeignKey(MappingInfo info, String name, boolean enabled,
         boolean deferred, int deleteAction, int updateAction) {
-        
+
         if (!enabled) {
             info.setCanForeignKey(false);
             return;
@@ -1666,10 +1666,10 @@ public class XMLPersistenceMappingParser
         fk.setDeleteAction(deleteAction);
         fk.setUpdateAction(updateAction);
         info.setForeignKey(fk);
-        
+
     }
-    
-    
+
+
     private int toForeignKeyInt(String action) {
         if (action.equals("RESTRICT")) {
             return org.apache.openjpa.jdbc.schema.ForeignKey.
@@ -1687,14 +1687,14 @@ public class XMLPersistenceMappingParser
         else {
             throw new InternalException();
         }
-        
+
     }
-    
+
     private void assertDefault(String name, boolean enabled, boolean deferred, boolean specified,
         int updateAction, int deleteAction) {
         boolean isDefault = StringUtil.isEmpty(name)
-            && enabled 
-            && !deferred 
+            && enabled
+            && !deferred
                 && deleteAction == org.apache.openjpa.jdbc.schema.ForeignKey.ACTION_RESTRICT
                 && updateAction == org.apache.openjpa.jdbc.schema.ForeignKey.ACTION_RESTRICT
             && _columnNames.length == 0
@@ -1703,47 +1703,47 @@ public class XMLPersistenceMappingParser
             throw new UserException(_loc.get("implicit-non-default-fk", _cls,
                 getSourceFile()).getMessage());
     }
-    
-    private boolean startFKColumnNames(Attributes attrs) 
+
+    private boolean startFKColumnNames(Attributes attrs)
         throws SAXException {
         _columnNamesList = new ArrayList<String>();
         return true;
     }
-    
+
     private void endFKColumnNames() {
         if (_columnNamesList.size() > 0) {
             _columnNames = _columnNamesList.toArray(_columnNames);
             _columnNamesList.removeAll(_columnNamesList);
         }
     }
-    
+
     private void endFKColumnName() {
         _columnNamesList.add(currentText());
     }
-    
+
     private boolean startVersionColumns(Attributes attrs)
         throws SAXException {
-        
+
         _versionColumnsList = new ArrayList<Column>();
-        
+
         return true;
     }
-    
+
     private void endVersionColumns() {
         if (_versionColumnsList == null) {
             throw new InternalException();
         }
-        
+
         if (_versionColumnsList.size() > 0) {
             ClassMapping cm = (ClassMapping)peekElement();
             cm.getVersion().getMappingInfo().setColumns(_versionColumnsList);
             _versionColumnsList= null;
         }
     }
-    
+
     private boolean startVersionColumn(Attributes attrs)
             throws SAXException {
-            
+
         Column col = AnnotationPersistenceMappingParser.newColumn(attrs.getValue("name"),
             Boolean.parseBoolean(attrs.getValue("nullable")),
             Boolean.parseBoolean(attrs.getValue("insertable")),
@@ -1751,19 +1751,19 @@ public class XMLPersistenceMappingParser
             attrs.getValue("columnDefinition"),
             Integer.parseInt(attrs.getValue("length")),
             Integer.parseInt(attrs.getValue("precision")),
-            Integer.parseInt(attrs.getValue("scale")), 
-            attrs.getValue("table"), 
+            Integer.parseInt(attrs.getValue("scale")),
+            attrs.getValue("table"),
             delimit());
-        
+
         _versionColumnsList.add(col);
-        
+
         return true;
         }
 
     @Override
     protected void parseEagerFetchModeAttr(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
-        
+
         FieldMapping fm = (FieldMapping) fmd;
         String eagerFetchMode = attrs.getValue("eager-fetch-mode");
         if (!StringUtil.isEmpty(eagerFetchMode)) {
@@ -1780,7 +1780,7 @@ public class XMLPersistenceMappingParser
     @Override
     protected void parseElementClassCriteriaAttr(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
-        
+
         String elementClassCriteriaString = attrs.getValue("element-class-criteria");
         if (!StringUtil.isEmpty(elementClassCriteriaString)) {
             FieldMapping fm = (FieldMapping) fmd;
@@ -1798,26 +1798,26 @@ public class XMLPersistenceMappingParser
     }
 
     @Override
-    protected boolean startExtendedClass(String elem, Attributes attrs) 
+    protected boolean startExtendedClass(String elem, Attributes attrs)
             throws SAXException {
         ClassMapping mapping = (ClassMapping) currentElement();
-        
+
         String strategy = attrs.getValue("strategy");
         if (!StringUtil.isEmpty(strategy))
             mapping.getMappingInfo().setStrategy(strategy);
-        
+
         String versionStrat = attrs.getValue("version-strategy");
         if (!StringUtil.isEmpty(versionStrat))
             mapping.getVersion().getMappingInfo().setStrategy(versionStrat);
-        
+
         String discrimStrat = attrs.getValue("discriminator-strategy");
         if (!StringUtil.isEmpty(discrimStrat))
             mapping.getDiscriminator().getMappingInfo().setStrategy(discrimStrat);
-        
+
         String subclassFetchMode = attrs.getValue("subclass-fetch-mode");
         if (!StringUtil.isEmpty(subclassFetchMode))
             mapping.setSubclassFetchMode(toEagerFetchModeConstant(subclassFetchMode));
-        
+
         return true;
     }
 }

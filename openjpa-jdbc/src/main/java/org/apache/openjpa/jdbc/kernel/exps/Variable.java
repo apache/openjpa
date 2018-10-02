@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -121,18 +121,18 @@ class Variable
         return ExpState.NULL;
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
     }
 
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
     }
 
@@ -141,7 +141,7 @@ class Variable
         return null;
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         if (_path != null)
             _path.calculateValue(sel, ctx, state, other, otherState);
@@ -151,27 +151,27 @@ class Variable
         return 0;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
     }
 
-    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
     }
 
-    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
     }
 
-    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+    public void appendSize(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
     }
 
-    public void appendIsNull(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
     }
 
-    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
     }
 

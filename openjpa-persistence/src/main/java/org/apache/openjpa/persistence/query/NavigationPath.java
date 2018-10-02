@@ -14,28 +14,28 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 import static org.apache.openjpa.persistence.query.PathOperator.NAVIGATION;
 /**
  * Represents a path resulted by navigation.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 class NavigationPath extends AbstractDomainObject implements PathExpression {
-    protected NavigationPath(QueryDefinitionImpl owner, AbstractPath parent, 
+    protected NavigationPath(QueryDefinitionImpl owner, AbstractPath parent,
 		String attr) {
 		super(owner, parent, NAVIGATION, attr);
 	}
-	
+
 	@Override
 	public String getLastSegment() {
 		return (String)super.getLastSegment();
 	}
-	
+
 	@Override
 	public String getAliasHint(AliasContext ctx) {
 		return getLastSegment();
@@ -48,14 +48,14 @@ class NavigationPath extends AbstractDomainObject implements PathExpression {
             return ctx.getAlias(parent) + NAVIGATION + getLastSegment();
         return getParent().asProjection(ctx) + NAVIGATION + getLastSegment();
 	}
-		
+
 	@Override
 	public String asExpression(AliasContext ctx) {
         return getParent().asExpression(ctx) + NAVIGATION + getLastSegment();
 	}
-	
+
 	/**
-	 * A navigation path is joinable only when it represents domain of a  
+	 * A navigation path is joinable only when it represents domain of a
 	 * subquery.
 	 * @see QueryDefinitionImpl#addSubqueryRoot(PathExpression)
 	 */
@@ -63,7 +63,7 @@ class NavigationPath extends AbstractDomainObject implements PathExpression {
 	public String asJoinable(AliasContext ctx) {
 		return asProjection(ctx) + SPACE + ctx.getAlias(this);
 	}
-	
+
 	public String toString() {
 		return getParent().toString()+ NAVIGATION +getLastSegment();
 	}

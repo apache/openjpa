@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -28,7 +28,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 ///////////////////////////////////////////////////////////////
-// NOTE: when adding a public API method, be sure to add it to 
+// NOTE: when adding a public API method, be sure to add it to
 // JDO and JPA facades!
 ///////////////////////////////////////////////////////////////
 
@@ -216,7 +216,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-    
+
     public boolean getExtendedPathLookup() {
         try {
             return _fetch.getExtendedPathLookup();
@@ -233,7 +233,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-    
+
 
     public Set getFetchGroups() {
         try {
@@ -365,7 +365,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-    
+
     public int getLockTimeout() {
         try {
             return _fetch.getLockTimeout();
@@ -482,7 +482,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-    
+
     public void setHint(String name, Object value, Object original) {
         try {
             _fetch.setHint(name, value, original);
@@ -498,7 +498,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-    
+
     public boolean isDefaultPUFetchGroupConfigurationOnly() {
         try {
             return _fetch.isDefaultPUFetchGroupConfigurationOnly();
@@ -506,7 +506,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-    
+
     public Object getHint(String name) {
         try {
             return _fetch.getHint(name);
@@ -522,7 +522,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-    
+
     public int requiresFetch(FieldMetaData fmd) {
         try {
             return _fetch.requiresFetch(fmd);
@@ -544,7 +544,7 @@ public class DelegatingFetchConfiguration
             return _fetch.traverse(fmd);
         } catch (RuntimeException re) {
             throw translate(re);
-        } 
+        }
     }
 
     public void lock() {
@@ -594,7 +594,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-    
+
     public boolean isFetchConfigurationSQLCacheAdmissible() {
         try {
             return _fetch.isFetchConfigurationSQLCacheAdmissible();

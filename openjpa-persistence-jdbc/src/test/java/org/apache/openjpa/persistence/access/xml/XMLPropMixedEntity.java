@@ -19,13 +19,13 @@
 package org.apache.openjpa.persistence.access.xml;
 
 public class XMLPropMixedEntity {
-    
+
     private int idval;
-    
+
     private String myName;
 
     private XMLEmbedMixedAccess ema;
-    
+
     public void setId(int id) {
         this.setIdval(id);
     }
@@ -54,7 +54,7 @@ public class XMLPropMixedEntity {
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropMixedEntity) {
             XMLPropMixedEntity ps = (XMLPropMixedEntity)obj;
-            return getEmbedProp().equals(ps.getEmbedProp()) 
+            return getEmbedProp().equals(ps.getEmbedProp())
                 && getId() == ps.getId() &&
                 getName().equals(ps.getName());
         }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.log;
 
@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Patrick Linskey
  */
-public class LogFactoryImpl 
+public class LogFactoryImpl
     implements LogFactory, GenericConfigurable, Configurable {
 
     private static Localizer _loc = Localizer.forPackage(LogFactoryImpl.class);
@@ -74,7 +74,7 @@ public class LogFactoryImpl
      * The {@link Log}s that this factory manages, keyed by log channel name.
      */
     private Map<String, LogImpl> _logs =
-        new ConcurrentHashMap<String, LogImpl>(); 
+        new ConcurrentHashMap<String, LogImpl>();
 
     /**
      * The default logging level.
@@ -85,7 +85,7 @@ public class LogFactoryImpl
      * Storage for logging level configuration specified at configuration time.
      */
     private Map<String, Short> _configuredLevels =
-        new HashMap<String, Short>(); 
+        new HashMap<String, Short>();
 
     /**
      * The stream to write to. Defaults to System.err.
@@ -93,12 +93,12 @@ public class LogFactoryImpl
     private PrintStream _out = System.err;
 
     /**
-     * A token to add to all log messages. If <code>null</code>, the 
+     * A token to add to all log messages. If <code>null</code>, the
      * configuration's id will be used.
      */
     private String _diagContext = null;
     private boolean _diagContextComputed = false;
-    
+
     private Configuration _conf;
 
 
@@ -258,11 +258,11 @@ public class LogFactoryImpl
     }
 
     // ---------- Configurable implementation ----------
-    
+
     public void setConfiguration(Configuration conf) {
         _conf = conf;
     }
-    
+
     public void startConfiguration() {
     }
 
@@ -307,7 +307,7 @@ public class LogFactoryImpl
 
         /**
          * Convert <code>message</code> into a string ready to be written to
-         * the log. 
+         * the log.
          *
          * @param t may be null
          */

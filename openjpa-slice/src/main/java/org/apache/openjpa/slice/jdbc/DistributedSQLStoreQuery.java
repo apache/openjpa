@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.jdbc;
 
@@ -43,9 +43,9 @@ import org.apache.openjpa.util.StoreException;
 
 /**
  * A query for distributed databases.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @SuppressWarnings("serial")
 class DistributedSQLStoreQuery extends SQLStoreQuery {
@@ -81,9 +81,9 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 
 	/**
 	 * Executes queries on multiple databases.
-	 * 
+	 *
 	 * @author Pinaki Poddar
-	 * 
+	 *
 	 */
 	public static class ParallelExecutor extends
 			SQLStoreQuery.SQLExecutor {
@@ -105,10 +105,10 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 		 */
 		public ResultObjectProvider executeQuery(StoreQuery q,
 				final Object[] params, final Range range) {
-			List<Future<ResultObjectProvider>> futures = 
+			List<Future<ResultObjectProvider>> futures =
 				new ArrayList<Future<ResultObjectProvider>>();
             final List<Executor> usedExecutors = new ArrayList<Executor>();
-			final List<ResultObjectProvider> rops = 
+			final List<ResultObjectProvider> rops =
 				new ArrayList<ResultObjectProvider>();
 			List<SliceStoreManager> targets = findTargets();
 			QueryContext ctx = q.getContext();
@@ -143,7 +143,7 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 					throw new StoreException(e.getCause());
 				}
 			}
-			
+
 			ResultObjectProvider[] tmp = rops
                     .toArray(new ResultObjectProvider[rops.size()]);
 			ResultObjectProvider result = null;
@@ -247,7 +247,7 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 					.getFetchConfiguration();
 			return owner.getDistributedStore().getTargets(fetch);
 		}
-		
+
 	}
 
 	static class QueryExecutor implements Callable<ResultObjectProvider> {

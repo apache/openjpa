@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -47,8 +47,8 @@ public class Person extends AnnuityPersistebleObject implements IPerson {
 	private Date timeOfBirth;
 	private Byte[] picture;
 	private IContact contact;
-	
-	
+
+
 	@Column(name="DATE_OF_BIRTH")
 	@Temporal(TemporalType.DATE)
 	public Date getDateOfBirth() {
@@ -79,7 +79,7 @@ public class Person extends AnnuityPersistebleObject implements IPerson {
 		this.lastName = lastName;
 	}
 	@Column(name="PICTURE")
-	@Lob	
+	@Lob
 	public Byte[] getPicture() {
 		return picture;
 	}
@@ -94,16 +94,16 @@ public class Person extends AnnuityPersistebleObject implements IPerson {
 	public void setTimeOfBirth(Date timeOfBirth) {
 		this.timeOfBirth = timeOfBirth;
 	}
-	
+
 	@OneToOne(
-			cascade={CascadeType.REFRESH, CascadeType.MERGE}, 
+			cascade={CascadeType.REFRESH, CascadeType.MERGE},
 			targetEntity=Contact.class)
-	@JoinColumn(name="FK_CONTACT_ID")	
+	@JoinColumn(name="FK_CONTACT_ID")
 	public IContact getContact() {
 		return this.contact;
 	}
 	public void setContact(IContact contact) {
 		this.contact = contact;
 	}
-	
+
 }

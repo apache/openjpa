@@ -14,27 +14,27 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 class UnaryOperatorExpression extends ExpressionImpl implements Aggregate {
 	protected final Expression _e;
 	protected final UnaryFunctionalOperator   _op;
-	
+
     public UnaryOperatorExpression(Expression e, UnaryFunctionalOperator op) {
 		_e = e;
 		_op = op;
 	}
-	
+
 	public Expression getOperand() {
 		return _e;
 	}
-	
+
 	public UnaryFunctionalOperator getOperator() {
 		return _op;
 	}
-	
+
 	public Expression distinct() {
 		return new DistinctExpression(this);
 	}
@@ -42,7 +42,7 @@ class UnaryOperatorExpression extends ExpressionImpl implements Aggregate {
 	public String asExpression(AliasContext ctx) {
 		return _op + "(" + ((Visitable)_e).asExpression(ctx) + ")";
 	}
-	
+
 	public String asProjection(AliasContext ctx) {
 		return _op + "(" + ((Visitable)_e).asProjection(ctx) + ")" +
 		    (ctx.hasAlias(this) ? " " + ctx.getAlias(this) : "");

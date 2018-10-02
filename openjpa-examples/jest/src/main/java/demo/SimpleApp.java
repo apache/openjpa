@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package demo;
@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * A very simple servlet that is initialized with some example Actor-Movie records.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -50,8 +50,8 @@ import javax.servlet.http.HttpServletResponse;
 public class SimpleApp extends HttpServlet {
     EntityManagerFactory _emf;
     private static String UNIT_NAME = "jestdemo";
-    
-    @Override 
+
+    @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         config.getServletContext().log("Initializing persistence unit [" + UNIT_NAME + "]");
@@ -65,7 +65,7 @@ public class SimpleApp extends HttpServlet {
         }
         config.getServletContext().log("Initialized with persistence unit [" + UNIT_NAME + "]");
     }
-    
+
     /**
      * The only response by this application is an <code>index.html</code> file.
      */
@@ -78,7 +78,7 @@ public class SimpleApp extends HttpServlet {
             out.write((char)c);
         }
     }
-    
+
     @Override
     public void destroy() {
         if (_emf != null) {

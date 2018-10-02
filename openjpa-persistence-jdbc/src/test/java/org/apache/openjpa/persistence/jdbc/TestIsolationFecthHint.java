@@ -29,14 +29,14 @@ import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestIsolationFecthHint extends SQLListenerTestCase{
-	
+
 	public void setUp(){
 		setUp(AllFieldTypes.class, CLEAR_TABLES);
-		
-	}	
+
+	}
 
     public void testFetchPlanIsolationURHint(){
-    	OpenJPAEntityManagerSPI em = emf.createEntityManager();     
+    	OpenJPAEntityManagerSPI em = emf.createEntityManager();
         try {
         	DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
                     .getDBDictionaryInstance();
@@ -44,7 +44,7 @@ public class TestIsolationFecthHint extends SQLListenerTestCase{
         		 AllFieldTypes allFieldTypes = new AllFieldTypes();
             	allFieldTypes.setStringField("testString");
             	allFieldTypes.setIntField(2012);
-            	
+
             	em.getTransaction().begin();
             	em.persist(allFieldTypes);
             	Query query = em.createQuery("select e from AllFieldTypes e where e.stringField = ?1");

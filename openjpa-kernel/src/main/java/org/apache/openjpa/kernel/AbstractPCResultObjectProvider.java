@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -96,7 +96,7 @@ public abstract class AbstractPCResultObjectProvider
      * manager. Remember to call {@link OpenJPAStateManager#setVersion} to set
      * the optimistic versioning information, if it has any.
      */
-    protected abstract void load(OpenJPAStateManager sm, 
+    protected abstract void load(OpenJPAStateManager sm,
         FetchConfiguration fetch)
         throws Exception;
 

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.delayed;
 
@@ -35,7 +35,7 @@ public class Product implements Serializable, Comparable<Product> {
     private int id;
 
     private String name;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -51,7 +51,7 @@ public class Product implements Serializable, Comparable<Product> {
     public String getName() {
         return name;
     }
-    
+
     @Override
     public int compareTo(Product p) {
         String nameId = name + id;

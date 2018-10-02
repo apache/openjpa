@@ -26,9 +26,9 @@ import javax.persistence.OneToOne;
 
 /**
  * Domain class used by meta-model testing.
- * 
+ *
  * Uses explicit field based access.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -38,7 +38,7 @@ public class Embed0 {
 	private long f1;
 	@OneToOne
 	private ImplicitFieldAccessSubclass entity1;
-	
+
 	public long getF1() {
 		return f1;
 	}

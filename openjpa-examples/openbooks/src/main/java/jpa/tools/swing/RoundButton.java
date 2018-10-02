@@ -30,31 +30,31 @@ import javax.swing.JButton;
 
 /**
  * A Circular Swing Button.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 @SuppressWarnings("serial")
 public class RoundButton extends JButton {
     protected Shape shape, base;
-    
+
     public RoundButton() {
         this(null, null);
     }
-    
+
     public RoundButton(Icon icon) {
         this(null, icon);
     }
-    
+
     public RoundButton(String text) {
         this(text, null);
     }
-    
+
     public RoundButton(Action a) {
         this();
         setAction(a);
     }
-    
+
     public RoundButton(String text, Icon icon) {
         setModel(new DefaultButtonModel());
         init(text, icon);
@@ -74,7 +74,7 @@ public class RoundButton extends JButton {
         setAlignmentY(Component.TOP_ALIGNMENT);
         initShape();
     }
-    
+
     protected void initShape() {
         if(!getBounds().equals(base)) {
             Dimension s = getPreferredSize();
@@ -82,7 +82,7 @@ public class RoundButton extends JButton {
             shape = new Ellipse2D.Float(0, 0, s.width-1, s.height-1);
         }
     }
-    
+
     @Override
     protected void paintBorder(Graphics g) {
         initShape();
@@ -92,7 +92,7 @@ public class RoundButton extends JButton {
         g2.draw(shape);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
-    
+
     @Override
     public boolean contains(int x, int y) {
         initShape();

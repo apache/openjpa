@@ -22,7 +22,7 @@ public class TestFetchGroupStacksXML extends TestFetchGroupStacks {
     public void setUp() {
         super.setUp();
     }
-    
+
     protected String getPersistenceUnitName() {
         return "fetch-groups-xml";
     }

@@ -21,13 +21,13 @@ package org.apache.openjpa.persistence.inheritance.polymorphic;
 import javax.persistence.Entity;
 
 /**
- * A persistent class derived from an abstract persistent class and 
+ * A persistent class derived from an abstract persistent class and
  * using table-per-concrete-class inheritance strategy.
- * 
+ *
  * For a more detailed description of the domain model to which this receiver
  * belongs
  * @see TestTablePerClassInheritanceWithAbstractRoot
- * 
+ *
  * @author Pinaki Poddar
  *
  */

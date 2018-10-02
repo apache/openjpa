@@ -32,14 +32,14 @@ public class Person implements Serializable {
 
     private static final long serialVersionUID = -862917178229746730L;
 
-    private int id; 
-    
+    private int id;
+
     private String firstName;
-    
+
     private String lastName;
 
     private int version;
-    
+
     @Id
     @GeneratedValue
     public int getId() {
@@ -65,7 +65,7 @@ public class Person implements Serializable {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
+
     @Version
     public int getVersion(){
         return version;
@@ -108,5 +108,5 @@ public class Person implements Serializable {
         } else if (!getLastName().equals(other.getLastName()))
             return false;
         return true;
-    } 
+    }
 }

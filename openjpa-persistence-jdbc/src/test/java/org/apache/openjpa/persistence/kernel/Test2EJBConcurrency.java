@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -93,10 +93,10 @@ public class Test2EJBConcurrency extends AbstractTestCase {
 //	public void testOptConcurrency2 ()
 //		throws Exception
 //	{
-//		EntityManager em1 = currentEntityManager();		
+//		EntityManager em1 = currentEntityManager();
 //		startTx(em1);
 //
-//		EntityManager em2 = currentEntityManager();		
+//		EntityManager em2 = currentEntityManager();
 //		startTx(em2);
 //
 //		Entity1 b1 = (Entity1) em1.find (Entity1.class, 3);
@@ -125,14 +125,14 @@ public class Test2EJBConcurrency extends AbstractTestCase {
 //		{
 //			// expected
 //		}
-//		
+//
 //		rollbackTx(em2);
-//		
+//
 //
 //    	b2 = (Entity1) em2.find (Entity1.class, 3);
 //      assertEquals ("b2.getstringField is not STRING2 as exp.", "STRING2",
 //          b2.getStringField ());
-//    	
+//
 //		endEm(em1);
 //		endEm(em2);
 //	}

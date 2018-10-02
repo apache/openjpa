@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jta;
 
@@ -32,16 +32,16 @@ import javax.transaction.TransactionManager;
  * A very simple Transaction Manager for testing JTA resource without a container.
  * <br>
  * Provides a single transaction per-thread model.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class SimpleTransactionManager implements TransactionManager {
     private static ThreadLocal<SimpleTransaction> txns = new ThreadLocal<SimpleTransaction>();
-    
+
     /**
      * Begins a new transaction associated with the current thread.
-     * 
+     *
      */
     public void begin() throws NotSupportedException, SystemException {
         SimpleTransaction txn = getTransaction();
@@ -55,8 +55,8 @@ public class SimpleTransactionManager implements TransactionManager {
 
     /**
      * Commits a transaction associated with the current thread.
-     * Raises IllegalStateException if no transaction is associated with the current thread. 
-     * 
+     * Raises IllegalStateException if no transaction is associated with the current thread.
+     *
      */
     public void commit() throws HeuristicMixedException, HeuristicRollbackException, IllegalStateException,
             RollbackException, SecurityException, SystemException {
@@ -68,7 +68,7 @@ public class SimpleTransactionManager implements TransactionManager {
         } finally {
             txns.set(null);
         }
-        
+
     }
 
     /**
@@ -96,7 +96,7 @@ public class SimpleTransactionManager implements TransactionManager {
     }
 
     /**
-     * Not implemented. 
+     * Not implemented.
      * Raises UnsupportedOperationException.
      */
     public void resume(Transaction arg0) throws IllegalStateException, InvalidTransactionException, SystemException {
@@ -105,8 +105,8 @@ public class SimpleTransactionManager implements TransactionManager {
 
     /**
      * Rolls back a transaction associated with the current thread.
-     * Raises IllegalStateException if no transaction is associated with the current thread. 
-     * 
+     * Raises IllegalStateException if no transaction is associated with the current thread.
+     *
      */
     public void rollback() throws IllegalStateException, SecurityException, SystemException {
         assertActiveTransaction();
@@ -121,8 +121,8 @@ public class SimpleTransactionManager implements TransactionManager {
 
     /**
      * Marks a transaction associated with the current thread for rollback.
-     * Raises IllegalStateException if no transaction is associated with the current thread. 
-     * 
+     * Raises IllegalStateException if no transaction is associated with the current thread.
+     *
      */
     public void setRollbackOnly() throws IllegalStateException, SystemException {
         assertActiveTransaction();
@@ -130,7 +130,7 @@ public class SimpleTransactionManager implements TransactionManager {
     }
 
     /**
-     * Not implemented. 
+     * Not implemented.
      * Raises UnsupportedOperationException.
      */
     public void setTransactionTimeout(int arg0) throws SystemException {
@@ -138,13 +138,13 @@ public class SimpleTransactionManager implements TransactionManager {
     }
 
     /**
-     * Not implemented. 
+     * Not implemented.
      * Raises UnsupportedOperationException.
      */
     public Transaction suspend() throws SystemException {
         throw new UnsupportedOperationException();
     }
-    
+
     void assertActiveTransaction() throws IllegalStateException, SystemException {
         if (getStatus() == Status.STATUS_NO_TRANSACTION)
             throw new IllegalStateException("No transaction on " + Thread.currentThread());

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC5;
 public class TestEJBConstantJoinOnSameRefTable
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int oid;
-	
+
 	public TestEJBConstantJoinOnSameRefTable(String name)
 	{
 		super(name);

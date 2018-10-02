@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -24,24 +24,24 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class ReplicatedChild {
-    @Id 
+    @Id
     private String name;
-    
+
     @ManyToOne
     private ReplicatedParent parent;
 
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public ReplicatedParent getParent() {
         return parent;
     }
-    
+
     void setParent(ReplicatedParent parent) {
         this.parent = parent;
     }

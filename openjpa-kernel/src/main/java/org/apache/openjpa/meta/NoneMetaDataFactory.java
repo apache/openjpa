@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -138,11 +138,11 @@ public class NoneMetaDataFactory
     		int access, boolean scan) {
     	return null;
     }
-    
+
     public Class<? extends Exception> getUnimplementedExceptionType() {
         return null;
     }
-    
+
     public void loadXMLMetaData(Class<?> cls) {
     }
 
@@ -152,7 +152,7 @@ public class NoneMetaDataFactory
     public String getManagedClassName(String metamodelClassName) {
         return null;
     }
-    
+
     public boolean isMetaClass(Class<?> c) {
         return false;
     }
@@ -164,20 +164,20 @@ public class NoneMetaDataFactory
     public boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf) {
         return false;
     }
-    
+
     public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf) {
         return false;
     }
-    
+
     public Boolean isDefaultCascadePersistEnabled() {
         return false;
     }
-    
+
     public void setDefaultCascadePersistEnabled(Boolean bool) {
-        
+
     }
 
     public String getDefaultSchema(){return null;}
-    
+
     public void setDefaultSchema(String schema){}
 }

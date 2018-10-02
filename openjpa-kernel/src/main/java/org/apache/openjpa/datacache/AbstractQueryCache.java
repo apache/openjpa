@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -58,7 +58,7 @@ import org.apache.openjpa.util.Id;
  * @author Abe White
  */
 public abstract class AbstractQueryCache
-    extends AbstractConcurrentEventManager 
+    extends AbstractConcurrentEventManager
     implements QueryCache, Configurable {
 
     private static final Localizer s_loc =
@@ -79,12 +79,12 @@ public abstract class AbstractQueryCache
 
     protected ConcurrentHashMap<String,Long> entityTimestampMap = null;
     private boolean _closed = false;
-    
+
     private String _name = null;
-    
+
     // default evict policy
     public EvictPolicy evictPolicy = EvictPolicy.DEFAULT;
-    
+
     private QueryStatistics<QueryKey> _stats;
     private boolean _statsEnabled = false;
 
@@ -98,22 +98,22 @@ public abstract class AbstractQueryCache
     public QueryStatistics<QueryKey> getStatistics() {
         return _stats;
     }
-    
+
     public void initialize(DataCacheManager manager) {
         if (evictPolicy == EvictPolicy.TIMESTAMP) {
             entityTimestampMap = new ConcurrentHashMap<String,Long>();
-        
+
             // Get all persistence types to pre-load the entityTimestamp Map
             Collection perTypes =
                 conf.getMetaDataRepositoryInstance().getPersistentTypeNames(
                     false,
                     AccessController.doPrivileged(J2DoPrivHelper
                         .getContextClassLoaderAction()));
-            
+
             if(perTypes == null)
                 return;
-            
-            // Pre-load all the entity types into the HashMap to handle 
+
+            // Pre-load all the entity types into the HashMap to handle
             // synchronization on the map efficiently
             for (Object o : perTypes)
                 entityTimestampMap.put((String)o, Long.valueOf(0));
@@ -131,7 +131,7 @@ public abstract class AbstractQueryCache
             } finally {
                 writeUnlock();
             }
-    
+
             QueryKey qk;
                 List<QueryKey> removes = null;
                 for (Object o: keys) {
@@ -146,7 +146,7 @@ public abstract class AbstractQueryCache
                 removeAllInternal(removes);
         } else {
             Collection changedTypes = ev.getTypes();
-            HashMap<String,Long> changedClasses = 
+            HashMap<String,Long> changedClasses =
                 new HashMap<String,Long>();
             Long tstamp = Long.valueOf(System.currentTimeMillis());
             for (Object o: changedTypes) {
@@ -154,7 +154,7 @@ public abstract class AbstractQueryCache
                 if(!changedClasses.containsKey(name)) {
                     changedClasses.put(name, tstamp );
                 }
-            }           
+            }
             // Now update entity timestamp map
             updateEntityTimestamp(changedClasses);
         }
@@ -432,10 +432,10 @@ public abstract class AbstractQueryCache
      * Returns a list of timestamps in the form of Long objects
      * which are the last updated time stamps for the given entities in the
      * keylist.
-     * @param keyList -- List of entity names 
+     * @param keyList -- List of entity names
      * @return -- Returns a list that has the timestamp for the given entities
      */
-    public List<Long> getAllEntityTimestamp(List<String> keyList) { 
+    public List<Long> getAllEntityTimestamp(List<String> keyList) {
         ArrayList<Long> tmval = null;
         if (entityTimestampMap != null) {
             for (String s: keyList) {
@@ -448,7 +448,7 @@ public abstract class AbstractQueryCache
         }
         return tmval;
     }
-    
+
     public void setName(String n) {
         _name = n;
     }
@@ -456,31 +456,31 @@ public abstract class AbstractQueryCache
     public String getName() {
         return _name;
     }
-    
+
     public int count() {
         return keySet().size();
     }
-    
+
     /**
      * A default implementation of query statistics for the Query result cache.
-     * 
+     *
      * Maintains statistics for only a fixed number of queries.
      * Statistical counts are approximate and not exact (to keep thread synchorization overhead low).
-     * 
+     *
      */
     public static class Default<T> implements QueryStatistics<T> {
 
         private static final long serialVersionUID = -7889619105916307055L;
-        
+
         private static final int FIXED_SIZE = 1000;
         private static final float LOAD_FACTOR = 0.75f;
         private static final int CONCURRENCY = 16;
-        
+
         private static final int ARRAY_SIZE = 3;
         private static final int READ  = 0;
         private static final int HIT   = 1;
         private static final int EVICT = 2;
-        
+
         private long[] astat = new long[ARRAY_SIZE];
         private long[] stat  = new long[ARRAY_SIZE];
         private Map<T, long[]> stats;
@@ -566,7 +566,7 @@ public abstract class AbstractQueryCache
             stats.clear();
             since = new Date();
         }
-        
+
         @SuppressWarnings("unchecked")
         public synchronized void clear() {
            astat = new long[ARRAY_SIZE];
@@ -575,14 +575,14 @@ public abstract class AbstractQueryCache
            start  = new Date();
            since  = start;
         }
-        
+
         private void addSample(T query, int index) {
             stat[index]++;
             astat[index]++;
             addSample(stats, query, index);
             addSample(astats, query, index);
         }
-        
+
         private void addSample(Map<T, long[]> target, T query, int i) {
             long[] row = target.get(query);
             if (row == null) {
@@ -591,33 +591,33 @@ public abstract class AbstractQueryCache
             row[i]++;
             target.put(query, row);
         }
-        
+
         public void recordExecution(T query) {
             if (query == null)
                 return;
             addSample(query, READ);
         }
-        
+
         public void recordHit(T query) {
             addSample(query, HIT);
         }
-        
+
         public void recordEviction(T query) {
             if (query == null)
                 return;
             addSample(query, EVICT);
         }
-        
+
         public void dump(PrintStream out) {
             String header = "Query Statistics starting from " + start;
             out.print(header);
             if (since == start) {
                 out.println();
-                out.println("Total Query Execution: " + toString(astat)); 
+                out.println("Total Query Execution: " + toString(astat));
                 out.println("\tTotal \t\tQuery");
             } else {
                 out.println(" last reset on " + since);
-                out.println("Total Query Execution since start " + 
+                out.println("Total Query Execution since start " +
                         toString(astat)  + " since reset " + toString(stat));
                 out.println("\tSince Start \tSince Reset \t\tQuery");
             }
@@ -633,13 +633,13 @@ public abstract class AbstractQueryCache
                 }
             }
         }
-        
+
         long pct(long per, long cent) {
             if (cent <= 0)
                 return 0;
             return (100*per)/cent;
         }
-        
+
         String toString(long[] row) {
             return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) + "%)";
         }

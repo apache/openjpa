@@ -19,10 +19,10 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for USA_Address complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained
  * within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="USA_Address">
  *   &lt;complexContent>
@@ -36,8 +36,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -56,10 +56,10 @@ public class USAAddress
 
     /**
      * Gets the value of the state property.
-     * 
+     *
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getState() {
         return state;
@@ -67,11 +67,11 @@ public class USAAddress
 
     /**
      * Sets the value of the state property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setState(String value) {
         this.state = value;
@@ -79,7 +79,7 @@ public class USAAddress
 
     /**
      * Gets the value of the zip property.
-     * 
+     *
      */
     public int getZIP() {
         return zip;
@@ -87,7 +87,7 @@ public class USAAddress
 
     /**
      * Sets the value of the zip property.
-     * 
+     *
      */
     public void setZIP(int value) {
         this.zip = value;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -72,7 +72,7 @@ public interface FilterListener
      * @return the value of the extension for this candidate; if
      * this extension is an expression, this method should
      * return {@link Boolean#TRUE} or {@link Boolean#FALSE}
-     * @throws org.apache.openjpa.util.UserException if this extension does not 
+     * @throws org.apache.openjpa.util.UserException if this extension does not
      * support in-memory operation
      */
     public Object evaluate(Object target, Class targetClass, Object[] args,

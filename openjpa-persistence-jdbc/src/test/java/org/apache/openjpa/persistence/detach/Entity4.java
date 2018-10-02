@@ -30,7 +30,7 @@ public class Entity4 {
     private String name;
     @OneToOne(cascade=(CascadeType.DETACH))
     private Entity5 e5;
-    
+
     public Entity4() {
     }
 

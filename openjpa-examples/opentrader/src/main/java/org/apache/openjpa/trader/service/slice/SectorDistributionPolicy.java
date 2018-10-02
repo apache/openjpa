@@ -28,11 +28,11 @@ import org.apache.openjpa.trader.domain.Trade;
 import org.apache.openjpa.trader.domain.Trader;
 
 /**
- * An example of {@link DistributionPolicy distribution policy} that distributes each persistent 
+ * An example of {@link DistributionPolicy distribution policy} that distributes each persistent
  * domain instances of OpenTrader model into specific slice based on the {@link Sector} to which
  * a {@link Stock} belongs. This policy demonstrates the use case where data is distributed by
  * a related property of the instance.
- * 
+ *
  * @author Pinaki Poddar
  *
  */

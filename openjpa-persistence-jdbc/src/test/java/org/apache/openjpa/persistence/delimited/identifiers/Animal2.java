@@ -36,7 +36,7 @@ import javax.persistence.Table;
     },
     discriminatorColumn="\"discr col\"")},
     columns={@ColumnResult(name="\"animal age\"")})
-    
+
 @Entity
 @Inheritance
 @DiscriminatorColumn(name="\"discr col\"", columnDefinition="VARCHAR(10)")
@@ -44,16 +44,16 @@ import javax.persistence.Table;
 public class Animal2 {
     @Id
     private int id;
-    
+
     protected String type;
     protected String name;
 
     public Animal2() {}
-    
+
     public Animal2(int id) {
         this.id = id;
     }
-    
+
     /**
      * @return the id
      */

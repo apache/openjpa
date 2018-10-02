@@ -24,9 +24,9 @@ import javax.swing.JTextPane;
 
 /**
  * Displays Properties.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class ConfigurationViewer extends JTextPane {
@@ -46,7 +46,7 @@ public class ConfigurationViewer extends JTextPane {
             replaceSelection(toString(config.get(key)) + "\r\n");
         }
     }
-    
+
     String toString(Object value) {
         if (value == null)
             return "null";

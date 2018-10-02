@@ -14,15 +14,15 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 /** -----------------------------------------------------------------------
- *  Basic layout consists of a left menu section (class='menu')and two  
- *  vertical sections for command specification (class='highlight') and 
+ *  Basic layout consists of a left menu section (class='menu')and two
+ *  vertical sections for command specification (class='highlight') and
  *  JEST response (class='canvas') respectively.
  * --------------------------------------------------------------------- */
- 
+
 /** -----------------------------------------------------------------------
  *  div section containing the command menu.
  *  Lodged on the top-left corner
@@ -35,7 +35,7 @@
 }
 /** -----------------------------------------------------------------------
  * Highlighted blocks appear relative to the menu. The same top position
- * of the menu and shifted to left of the menu by the menu's width+padding. 
+ * of the menu and shifted to left of the menu by the menu's width+padding.
  * --------------------------------------------------------------------- */
 .highlight {
 	position:relative;
@@ -56,7 +56,7 @@
 }
 
 /** -----------------------------------------------------------------------
- * Canvas section appears relative to the menu and the highlighted section. 
+ * Canvas section appears relative to the menu and the highlighted section.
  * The top position is relative to the highlighted section and left position
  * is relative to the menu section.
  * --------------------------------------------------------------------- */
@@ -104,9 +104,9 @@
 
 
 /** -----------------------------------------------------------------------
- * XML Tag 
+ * XML Tag
  * --------------------------------------------------------------------- */
-pre, code { 
+pre, code {
 	background-color: white;
 }
 .tag {
@@ -167,14 +167,14 @@ td select {
 }
 
 /** -----------------------------------------------------------------------
- * Paragraph with smaller line breaks 
+ * Paragraph with smaller line breaks
  * --------------------------------------------------------------------- */
 p.small {
 	line-height:60%;
 }
 
 /** -----------------------------------------------------------------------
- * Error Page 
+ * Error Page
  * --------------------------------------------------------------------- */
 .error-header {
 	color:red;
@@ -245,4 +245,3 @@ p.small {
 }
 
 
-	

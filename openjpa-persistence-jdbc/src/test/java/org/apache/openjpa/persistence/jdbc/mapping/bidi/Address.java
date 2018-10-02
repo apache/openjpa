@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
@@ -26,8 +26,8 @@ import javax.persistence.Table;
 
 /**
  * Demonstrate usage of a JoinTable for a bi-directional one-to-many mapping.
- * 
- * 
+ *
+ *
  * @author Pinaki Poddar
  *
  */
@@ -36,10 +36,10 @@ import javax.persistence.Table;
 public class Address {
 	@Id
 	private String phone;
-	
+
 	private String city;
 	private int zip;
-	
+
     @ManyToOne
     @JoinColumn(table="J_PERSON_ADDRESSES", referencedColumnName="SSN")
     private Person person;

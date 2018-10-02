@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.derivedid;
 
@@ -27,7 +27,7 @@ public class ESQLDateID {
     @Id
     private Date  id;
     private String name;
-    
+
     public ESQLDateID() {}
 
     public ESQLDateID(Date id) {

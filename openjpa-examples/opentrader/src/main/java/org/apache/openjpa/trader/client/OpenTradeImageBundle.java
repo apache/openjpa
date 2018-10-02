@@ -24,19 +24,19 @@ import com.google.gwt.resources.client.ImageResource;
 /**
  * A bundle  of resources (a couple of tiny images for now). However, GWT framework
  * seems to have generalized and added performance boost to handle heavy resources
- * such as images to be loaded from the web server. 
+ * such as images to be loaded from the web server.
  * <br>
  * This sample application does not explore this feature of GWT, only other than
- * applying a singleton pattern. 
- * 
+ * applying a singleton pattern.
+ *
  * @author Pinaki Poddar
  *
  */
 public interface OpenTradeImageBundle extends ClientBundle {
-    
+
     @Source("images/login.gif")
     public ImageResource login();
-    
+
     @Source("images/logo.gif")
     public ImageResource logo();
 }

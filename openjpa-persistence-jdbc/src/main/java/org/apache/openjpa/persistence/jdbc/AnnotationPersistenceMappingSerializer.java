@@ -97,7 +97,7 @@ public class AnnotationPersistenceMappingSerializer
     private boolean _sync = false;
 
     private Map<QueryResultMapping, List<AnnotationBuilder>> _rsmAnnos = null;
-    
+
     /**
      * Constructor. Supply configuration.
      */
@@ -280,7 +280,7 @@ public class AnnotationPersistenceMappingSerializer
                 ab.add("name", table);
             else {
                 Map<String, ClassMetaData> classMetaData = getClassMetaData();
-                Object[] keySet = null; 
+                Object[] keySet = null;
                 if(classMetaData != null)
                 {
                     keySet = classMetaData.keySet().toArray();
@@ -591,7 +591,7 @@ public class AnnotationPersistenceMappingSerializer
                 ab.add(key, abCol);
             } else {
                 addAnnotation(abCol, meta);
-            }                
+            }
         }
     }
 

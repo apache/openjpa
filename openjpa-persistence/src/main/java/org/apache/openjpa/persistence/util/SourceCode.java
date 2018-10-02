@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.util;
@@ -27,26 +27,26 @@ import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * A utility to help writing Java Source code dynamically.
- * 
- * Provides basic elements of Java Source Code e.g. Package, Class, Field, 
+ *
+ * Provides basic elements of Java Source Code e.g. Package, Class, Field,
  * Method, Import, Annotation, Argument.
- * 
- * Mutator methods return the operating element for easy chaining. 
- * 
+ *
+ * Mutator methods return the operating element for easy chaining.
+ *
  * @author Pinaki Poddar
- * 
+ *
  * @since 2.0.0
  *
  */
 public class SourceCode {
 	private static Localizer _loc = Localizer.forPackage(SourceCode.class);
-	
+
 	/**
 	 * List of Java Keywords and primitive types. Populated statically.
 	 */
     private static final ArrayList<String> reserved = new ArrayList<String>();
     private static final ArrayList<String> knownTypes = new ArrayList<String>();
-	
+
 	private static int TABSIZE                = 4;
 	private static final String SPACE         = " ";
 	private static final String BLANK         = "";
@@ -59,34 +59,34 @@ public class SourceCode {
 	private static final Delimiter BLOCK_DELIMITER  = new Delimiter("{}");
 	private static final Delimiter ARGS_DELIMITER   = new Delimiter("()");
     private static final Delimiter PARAMS_DELIMITER = new Delimiter("<>");
-	
+
 	private List<Comment> comments;
 	private final Package pkg;
 	private final Class   cls;
     private final Set<Import> imports = new TreeSet<Import>();
-	
-	
+
+
 	/**
-	 * Create source code for a top-level class with given fully-qualified 
-	 * class name. 
+	 * Create source code for a top-level class with given fully-qualified
+	 * class name.
 	 */
 	public SourceCode(String c) {
 	    ClassName name = getOrCreateImport(c);
 	    this.cls = new Class(c);
         this.pkg = new Package(name.getPackageName());
 	}
-	
+
 	/**
 	 * Gets the top level class represented by this receiver.
 	 */
 	public Class getTopLevelClass() {
 		return cls;
 	}
-	
+
 	public Package getPackage() {
 	    return pkg;
 	}
-	
+
     /**
      * Sets the tab size. Tabs are always written as spaces.
      */
@@ -98,7 +98,7 @@ public class SourceCode {
     /**
      * Adds import to this source code. Adding an import may force the given class name
      * to use its full name if it is hidden by other imports.
-     * 
+     *
      * @param name a ClassName instance
      * @return true if the import is added. ClassName starting with <code>java.lang.</code>
      * is not added.
@@ -113,17 +113,17 @@ public class SourceCode {
 		}
 		return imports.add(new Import(name));
 	}
-	
+
 	/**
 	 * Get the class name instance for the given fully-qualified class name.
 	 * If the given class name is already imported, then use the existing instance.
-	 * Otherwise, creates a new instance and adds it to list of imports. 
-	 * 
+	 * Otherwise, creates a new instance and adds it to list of imports.
+	 *
 	 * @see #addImport(ClassName)
 	 * @see ClassName
-	 * 
+	 *
 	 * @param name fully-qualified name of a class
-	 * @return an existing class name instance or a new one. 
+	 * @return an existing class name instance or a new one.
 	 */
 	public ClassName getOrCreateImport(String name) {
 	    for (Import i : imports) {
@@ -134,12 +134,12 @@ public class SourceCode {
 	    addImport(imp);
 	    return imp;
 	}
-	
-	
+
+
 	public SourceCode addComment(boolean inline, String... lines) {
 	    if (lines == null)
 	        return this;
-		if (comments == null) 
+		if (comments == null)
 		    comments = new ArrayList<Comment>();
 		Comment comment = new Comment();
 		comments.add(comment);
@@ -155,7 +155,7 @@ public class SourceCode {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Prints the class to the given Writer.
 	 * @param out
@@ -178,7 +178,7 @@ public class SourceCode {
 		cls.write(out, 0);
 		out.flush();
 	}
-	
+
 	/**
 	 * Outputs <code>tab</code> number of spaces.
 	 */
@@ -187,7 +187,7 @@ public class SourceCode {
 			out.print(SPACE);
 		}
 	}
-	
+
     /**
      * Wraps the given string into lines of max length width at word boundaries
      */
@@ -209,12 +209,12 @@ public class SourceCode {
         lines.add(line.toString());
         return lines.toArray(new String[lines.size()]);
     }
-	
-    static void writeList(PrintWriter out, String header, List<?> list) { 
+
+    static void writeList(PrintWriter out, String header, List<?> list) {
         writeList(out, header, list, new Delimiter(), false);
     }
-	
-	static void writeList(PrintWriter out, String header, List<?> list, 
+
+	static void writeList(PrintWriter out, String header, List<?> list,
 			Delimiter bracket, boolean writeEmpty) {
 		if (list == null || list.isEmpty()) {
 		    if (writeEmpty)
@@ -230,24 +230,24 @@ public class SourceCode {
 		}
 		out.append(bracket.end);
 	}
-	
+
 	static String capitalize(String s) {
 		return Character.toUpperCase(s.charAt(0))+s.substring(1);
 	}
-	
+
 	static boolean isValidToken(String s) {
-		return s != null && s.length() > 0 && 
+		return s != null && s.length() > 0 &&
 		      !reserved.contains(s) && isJavaIdentifier(s);
 	}
-	
+
 	public static boolean isKnownType(String s) {
 		return knownTypes.contains(s);
 	}
-	
+
 	static boolean isEmpty(String s) {
 		return s == null || s.length()==0;
 	}
-	
+
 	static LinkedList<String> tokenize(String s, String delim) {
 	    StringTokenizer tokenizer = new StringTokenizer(s, delim, false);
 		LinkedList<String> tokens = new LinkedList<String>();
@@ -255,9 +255,9 @@ public class SourceCode {
 			tokens.add(tokenizer.nextToken());
 		return tokens;
 	}
-	
+
 	public static boolean isJavaIdentifier(String s) {
-        if (s == null || s.length() == 0 || 
+        if (s == null || s.length() == 0 ||
         	!Character.isJavaIdentifierStart(s.charAt(0))) {
             return false;
         }
@@ -268,13 +268,13 @@ public class SourceCode {
         }
         return true;
     }
-	
-	
+
+
     public enum ACCESS {PUBLIC, PROTECTED, PRIVATE}
-		
+
 	/**
 	 * Abstract element has a name, optional list of modifiers, annotations
-	 * and arguments. 
+	 * and arguments.
 	 */
 	public abstract class Element<T> implements Comparable<Element<T>> {
 		protected String name;
@@ -285,7 +285,7 @@ public class SourceCode {
 		protected Comment comment;
 		protected List<ClassName> params = new ArrayList<ClassName>();
 		protected List<Annotation> annos = new ArrayList<Annotation>();
-		
+
         protected Element(String name, ClassName type) {
             this.name = name;
             this.type = type;
@@ -294,64 +294,64 @@ public class SourceCode {
         public ClassName getType() {
 			return type;
 		}
-				
+
 		public Annotation addAnnotation(String a) {
 			Annotation an = new Annotation(a);
 			annos.add(an);
 			return an;
 		}
-		
+
 		public Element<T> addParameter(String param) {
 		    params.add(getOrCreateImport(param));
 		    return this;
 		}
-		
+
 		public int compareTo(Element<T> other) {
 			return name.compareTo(other.name);
 		}
-		
+
 		public T addComment(boolean inline, String... lines) {
 			if (comment == null) comment = new Comment();
 			comment.makeInline(inline);
 			for (String line:lines) comment.append(line);
 			return (T)this;
 		}
-		
+
 		public T makePublic() {
 			access = ACCESS.PUBLIC;
 			return (T)this;
 		}
-		
+
 		public T makeProtected() {
 			access = ACCESS.PROTECTED;
 			return (T)this;
 		}
-		
+
 		public T makePrivate() {
 			access = ACCESS.PRIVATE;
 			return (T)this;
 		}
-		
+
 		public T makeStatic() {
 			isStatic = true;
 			return (T)this;
 		}
-		
+
 		public T makeFinal() {
 			isFinal = true;
 			return (T)this;
 		}
-		
+
 		public void write(PrintWriter out, int tab) {
 			if (comment != null) comment.write(out, tab);
 			for (Annotation a:annos)
 				a.write(out, tab);
 			tab(out, tab);
-			if (access != null) 
+			if (access != null)
 			    out.append(access.toString().toLowerCase(Locale.ENGLISH) + SPACE);
-			if (isStatic) 
+			if (isStatic)
 			    out.append("static" + SPACE);
-			if (isFinal) 
+			if (isFinal)
 			    out.append("final" + SPACE);
 		}
 	}
@@ -368,22 +368,22 @@ public class SourceCode {
 	    private Set<Field> fields   = new TreeSet<Field>();
 	    private Set<Method> methods = new TreeSet<Method>();
 	    private Set<Constructor> constructors = new TreeSet<Constructor>();
-		
+
 		public Class(String name) {
 			super(name, getOrCreateImport(name));
 			makePublic();
 		}
-		
+
 		public Class setSuper(String s) {
 			superCls = getOrCreateImport(s);
 			return this;
 		}
-		
+
 		public Class addInterface(String s) {
 			interfaces.add(getOrCreateImport(s));
 			return this;
 		}
-		
+
         public Class makeAbstract() {
             if (isFinal)
                 throw new IllegalArgumentException(_loc.get("src-invalid-modifier").toString());
@@ -398,7 +398,7 @@ public class SourceCode {
             isFinal = true;
             return this;
         }
-		
+
 	    /**
 	     * Adds getters and setters to every non-public field.
 	     */
@@ -411,11 +411,11 @@ public class SourceCode {
         public String getName() {
             return getType().getSimpleName();
         }
-        
+
         public String getPackageName() {
             return getType().getPackageName();
         }
-        
+
         public Field addField(String name, String type) {
             return addField(name, getOrCreateImport(type));
         }
@@ -426,7 +426,7 @@ public class SourceCode {
 	                _loc.get("src-invalid-field",f).toString());
 	        }
 	        Field field = new Field(this, f, type);
-	        
+
 	        if (!fields.add(field))
 	            throw new IllegalArgumentException(_loc.get(
 	                "src-duplicate-field", field, this).toString());
@@ -436,14 +436,14 @@ public class SourceCode {
         public Method addMethod(String m, String retType) {
             return addMethod(m, getOrCreateImport(retType));
         }
-        
+
 	    protected Method addMethod(String m, ClassName retType) {
 	        if (isEmpty(m) || !isValidToken(m)) {
 	            throw new IllegalArgumentException(_loc.get(
 	                "src-invalid-method",m).toString());
 	        }
 	        Method method = new Method(m, retType);
-	        if (!methods.add(method)) 
+	        if (!methods.add(method))
 	            throw new IllegalArgumentException(_loc.get(
 	                "src-duplicate-method", method, this).toString());
 	        return method;
@@ -451,14 +451,14 @@ public class SourceCode {
 
 	    public Constructor addConstructor(){
 	        Constructor c = new Constructor(type.simpleName);
-	           if (!constructors.add(c)) 
+	           if (!constructors.add(c))
 	                throw new IllegalArgumentException(_loc.get(
 	                    "src-duplicate-constructor", c, this).toString());
 	            return c;
 	    }
 	    public void write(PrintWriter out, int tab) {
 			super.write(out, tab);
-			if (isAbstract) 
+			if (isAbstract)
 			    out.append("abstract ");
 			if(isFinal)
 			    out.append("final ");
@@ -469,16 +469,16 @@ public class SourceCode {
 				out.print(" extends " + superCls + SPACE);
 			writeList(out, "implements ", interfaces);
 			out.println(SPACE + BLOCK_DELIMITER.start);
-	        for (Field field:fields) 
+	        for (Field field:fields)
 	            field.write(out, 1);
 	        for(Constructor ctor : constructors){
 	            ctor.write(out, 1);
 	        }
-	        for (Method method:methods) 
+	        for (Method method:methods)
 	            method.write(out, 1);
 	        out.println(BLOCK_DELIMITER.end);
 		}
-	    
+
 	    public String toString() {
 	    	return getType().fullName;
 	    }
@@ -492,13 +492,13 @@ public class SourceCode {
 	    private final Class owner;
 		protected boolean isTransient;
 		protected boolean isVolatile;
-		
+
 		Field(Class owner, String name, ClassName type) {
 			super(name, type);
 			this.owner = owner;
 			makePrivate();
 		}
-		
+
 		/**
 		 * Adds bean-style getter setter method.
 		 */
@@ -507,14 +507,14 @@ public class SourceCode {
 			addSetter();
 			return this;
 		}
-		
+
 		public Field addGetter() {
 			owner.addMethod("get"+ capitalize(name), type)
 			     .makePublic()
 			     .addCodeLine("return "+ name);
 			return this;
 		}
-		
+
 		public Field addSetter() {
 			owner.addMethod("set"+ capitalize(name), "void")
 			     .makePublic()
@@ -522,19 +522,19 @@ public class SourceCode {
 			     .addCodeLine("this."+ name + " = " + name);
 			return this;
 		}
-		
+
         public void makeVolatile() {
-            isVolatile = true; 
+            isVolatile = true;
         }
-        
+
         public void makeTransient() {
-            isTransient = true; 
+            isTransient = true;
         }
-		
+
 		public String toString() {
 			return type + SPACE + name;
 		}
-		
+
 		public void write(PrintWriter out, int tab) {
 			super.write(out, tab);
 			if (isVolatile) out.print("volatile ");
@@ -543,7 +543,7 @@ public class SourceCode {
 			writeList(out, BLANK, params, PARAMS_DELIMITER, false);
 			out.println(SPACE + name + SEMICOLON);
 		}
-		
+
 		public boolean equals(Object other) {
 			if (other instanceof Field) {
 				Field that = (Field)other;
@@ -552,10 +552,10 @@ public class SourceCode {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Represents Method declaration.
-	 * 
+	 *
 	 *
 	 */
 	public class Method extends Element<Method> {
@@ -568,23 +568,23 @@ public class SourceCode {
         Method(String n, String t) {
             this(n, getOrCreateImport(t));
         }
-        
+
         public Method(String name, ClassName returnType) {
             super(name, returnType);
             makePublic();
         }
-		
+
 		public Method addArgument(Argument<ClassName,String> arg) {
 			args.add(arg);
 			return this;
 		}
-		
+
 		public Method addArgument(String className, String argName){
 		    ClassName cn = getOrCreateImport(className);
 		    args.add(new Argument<ClassName, String>(cn, argName," "));
 		    return this;
 		}
-		
+
         public void setTab(boolean inc) {
             if (inc)
                 tabCount++;
@@ -618,21 +618,21 @@ public class SourceCode {
             setTab(tabInc);
             return addCodeLine(line);
         }
-		
+
 		public Method makeAbstract() {
 			if (codeLines.isEmpty())
 				isAbstract = true;
 			else
-                throw new IllegalStateException("method " + name + 
+                throw new IllegalStateException("method " + name +
 				    " can not be abstract. It has a body");
 			return this;
 		}
-		
-		
+
+
 		public String toString() {
 			return type + SPACE + name;
 		}
-		
+
 		public void write(PrintWriter out, int tab) {
 			out.println(BLANK);
 			super.write(out, tab);
@@ -651,7 +651,7 @@ public class SourceCode {
 			tab(out, tab);
 			out.println(BLOCK_DELIMITER.end);
 		}
-		
+
 		public boolean equals(Object other) {
 			if (other instanceof Method) {
 				Method that = (Method)other;
@@ -660,18 +660,18 @@ public class SourceCode {
 			return false;
 		}
 	}
-	
+
 	public class Constructor extends Element<Constructor> {
 	    private List<Argument<ClassName,String>> args = new ArrayList<Argument<ClassName,String>>();
         private List<String> codeLines = new ArrayList<String>();
         int tabCount = 0;
         String tab = "";
-        
+
 	    public Constructor(String name) {
 	        super(name, null);
 	        makePublic();
         }
-        
+
         public Constructor addArgument(Argument<ClassName,String> arg) {
             args.add(arg);
             return this;
@@ -682,7 +682,7 @@ public class SourceCode {
             args.add(new Argument<ClassName, String>(cn, argName, " "));
             return this;
         }
-        
+
         public Constructor addCodeLine(String line) {
             // This doesn't handle try{ ... catch(){ if{
             if (line.endsWith("{") || line.endsWith("}")) {
@@ -701,7 +701,7 @@ public class SourceCode {
             setTab(tabInc);
             return addCodeLine(line);
         }
-        
+
         public void setTab(boolean inc) {
             if (inc)
                 tabCount++;
@@ -712,7 +712,7 @@ public class SourceCode {
                 tab += SPACE;
             }
         }
-        
+
         @Override
         public void write(PrintWriter out, int tab) {
             out.println(BLANK);
@@ -728,7 +728,7 @@ public class SourceCode {
             tab(out, tab);
             out.println(BLOCK_DELIMITER.end);
         }
-	    
+
 	}
 	/**
 	 * Represents <code>import</code> statement.
@@ -736,15 +736,15 @@ public class SourceCode {
 	 */
 	class Import implements Comparable<Import> {
 		private final ClassName name;
-		
+
 		public Import(ClassName name) {
 			this.name = name;
 		}
-		
+
 		public int compareTo(Import other) {
 			return name.compareTo(other.name);
 		}
-		
+
 		public void write(PrintWriter out, int tab) {
 		    if (name.usingFullName())
 		        return;
@@ -753,7 +753,7 @@ public class SourceCode {
 		        return;
 		    out.println("import "+ name.fullName + SEMICOLON);
 		}
-		
+
 		public boolean equals(Object other) {
 			if (other instanceof Import) {
 				Import that = (Import)other;
@@ -761,12 +761,12 @@ public class SourceCode {
 			}
 			return false;
 		}
-		
+
 		ClassName getClassName() {
 		    return name;
 		}
 	}
-	
+
 	/**
 	 * Represents method argument.
 	 *
@@ -775,18 +775,18 @@ public class SourceCode {
 		final private K key;
 		final private V value;
 		final private String connector;
-		
+
 		Argument(K key, V value, String connector) {
 			this.key = key;
 			this.value = value;
 			this.connector = connector;
 		}
-		
+
         public String toString() {
 			return key + connector + value;
 		}
 	}
-	
+
 	/**
 	 * Represents annotation.
 	 *
@@ -794,20 +794,20 @@ public class SourceCode {
 	public class Annotation {
 		private String name;
         private List<Argument<?,?>> args = new ArrayList<Argument<?,?>>();
-		
+
 		Annotation(String n) {
 			name = n;
 		}
-		
+
         public Annotation addArgument(String key, String v, boolean quote) {
-            return addArgument(new Argument<String,String>(key, 
+            return addArgument(new Argument<String,String>(key,
                 quote ? quote(v) : v, EQUAL));
         }
-        
+
         public Annotation addArgument(String key, String v) {
             return addArgument(key, v, true);
         }
-        
+
         public Annotation addArgument(String key, String[] vs) {
             StringBuilder tmp = new StringBuilder(BLOCK_DELIMITER.start);
             for (int i=0; i < vs.length; i++) {
@@ -817,49 +817,49 @@ public class SourceCode {
             tmp.append(BLOCK_DELIMITER.end);
             return addArgument(key, tmp.toString(), false);
         }
-        
+
         public <K,V> Annotation addArgument(Argument<K,V> arg) {
             args.add(arg);
             return this;
         }
-		
+
 		public void write(PrintWriter out, int tab) {
 			tab(out, tab);
 			out.println("@"+name);
 			writeList(out, BLANK, args, ARGS_DELIMITER, false);
 			out.println();
 		}
-		
+
 		String quote(String s) {
 		    return QUOTE + s + QUOTE;
 		}
 	}
-	
+
 	static class Package {
 		private String name;
-		
+
 		Package(String p) {
 			name = p;
 		}
-		
+
         public void write(PrintWriter out, int tab) {
             if (name != null && !name.isEmpty())
                 out.println("package " + name + SEMICOLON);
         }
 	}
-	
+
 	class Comment {
 		List<String> lines = new ArrayList<String>();
 		private boolean inline = false;
-		
+
 		public void append(String line) {
 			lines.add(line);
 		}
-		
+
 		boolean isEmpty() {
 			return lines.isEmpty();
 		}
-		
+
 		void makeInline(boolean flag) {
 			inline = flag;
 		}
@@ -885,10 +885,10 @@ public class SourceCode {
 			}
 		}
 	}
-	
+
 	/**
 	 * Represents fully-qualified name of a Java type.
-	 * 
+	 *
 	 * NOTE: Do not construct directly unless necessary.
 	 * @see SourceCode#getOrCreateImport(String)
 	 */
@@ -898,68 +898,68 @@ public class SourceCode {
         public final String pkgName;
         private String  arrayMarker = BLANK;
         private boolean useFullName = false;
-        
+
 	    ClassName(String name) {
 	    	while (isArray(name)) {
-	    		arrayMarker = arrayMarker + "[]"; 
+	    		arrayMarker = arrayMarker + "[]";
 	    		name = getComponentName(name);
 	    	}
             int start = name.indexOf("<");
             int stop = name.lastIndexOf(">");
             if (start != -1 && stop != -1) {
-                name = name.substring(0, start) + name.substring(stop + 1); 
+                name = name.substring(0, start) + name.substring(stop + 1);
             }
 	        this.fullName = name;
 	        int dot = fullName.lastIndexOf(DOT);
 	        simpleName = (dot == -1) ? fullName : fullName.substring(dot+1);
 	        pkgName = (dot == -1) ? BLANK : fullName.substring(0,dot);
             if (!isValidTypeName(name)) {
-                throw new IllegalArgumentException(_loc.get("src-invalid-type", 
+                throw new IllegalArgumentException(_loc.get("src-invalid-type",
                     name).toString());
             }
 	    }
-	    
+
 	    /**
 	     * Gets fully qualified name of this receiver.
 	     */
 	    public String getFullName() {
 	        return fullName + arrayMarker;
 	    }
-	    
+
         /**
          * Gets simple name of this receiver.
          */
 	    public String getSimpleName() {
 	        return simpleName + arrayMarker;
 	    }
-	    
+
 	    /**
-	     * Gets the package name of this receiver. Default package name is 
+	     * Gets the package name of this receiver. Default package name is
 	     * represented as empty string.
 	     */
 	    public String getPackageName() {
 	        return pkgName;
 	    }
-	    
+
 	    /**
 	     * Gets the full or simple name of this receiver based on useFullName flag.
 	     */
 	    public String toString() {
 	        return (useFullName ? fullName : simpleName) + arrayMarker;
 	    }
-	    
+
 	    /**
 	     * Compares by fully-qualified name.
 	     */
 	    public int compareTo(ClassName other) {
 	        return getFullName().compareTo(other.getFullName());
 	    }
-	    
+
 	    public boolean isValidTypeName(String s) {
-	        return isValidPackageName(pkgName) 
+	        return isValidPackageName(pkgName)
 	            && (isKnownType(s) || isValidToken(simpleName));
 	    }
-	    
+
 	    boolean isValidPackageName(String s) {
 	        if (isEmpty(s)) return true;
 	        LinkedList<String> tokens = tokenize(s, DOT);
@@ -969,35 +969,35 @@ public class SourceCode {
 	        }
 	        return !s.endsWith(DOT);
 	    }
-	    
+
 	    boolean isArray(String name) {
 	    	return name.endsWith("[]");
 	    }
-	    
+
 	    String getComponentName(String name) {
-	    	return (!isArray(name)) ? name : 
+	    	return (!isArray(name)) ? name :
 	    		name.substring(0, name.length()-"[]".length());
 	    }
-	    
+
 	    boolean hides(ClassName other) {
 	        return this.getSimpleName().equals(other.getSimpleName())
 	            && !this.fullName.equals(other.fullName);
 	    }
-	    
+
 	    void useFullName() {
 	        useFullName = true;
 	    }
-	    
+
 	    boolean usingFullName() {
 	        return useFullName;
 	    }
-	    
+
 	}
-	
+
 	static class Delimiter {
 	    final char start;
 	    final char end;
-	    
+
         public Delimiter() {
             this((char)' ', (char)' ');
         }
@@ -1005,14 +1005,14 @@ public class SourceCode {
 	    public Delimiter(String pair) {
 	        this(pair.charAt(0), pair.charAt(1));
 	    }
-	    
+
         public Delimiter(char start, char end) {
             super();
             this.start = start;
             this.end = end;
         }
 	}
-	
+
 	static {
 		reserved.add("abstract");
 		reserved.add("continue");
@@ -1020,7 +1020,7 @@ public class SourceCode {
 		reserved.add("new");
 		reserved.add("switch");
 		reserved.add("assert");
-		reserved.add("default"); 	
+		reserved.add("default");
 		reserved.add("goto");
 		reserved.add("package");
 		reserved.add("synchronized");
@@ -1064,7 +1064,7 @@ public class SourceCode {
 		reserved.add("native");
 		reserved.add("super");
 		reserved.add("while");
-		
+
 		knownTypes.add("boolean");
 		knownTypes.add("byte");
 		knownTypes.add("char");

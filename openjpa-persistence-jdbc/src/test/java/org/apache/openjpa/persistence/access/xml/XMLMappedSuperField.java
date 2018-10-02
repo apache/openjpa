@@ -23,11 +23,11 @@ import java.util.Date;
 public class XMLMappedSuperField {
 
     private int id;
-    
+
     private String name;
 
     protected Date crtDate;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -43,7 +43,7 @@ public class XMLMappedSuperField {
     public String getName() {
         return name;
     }
-        
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLMappedSuperField) {
             XMLMappedSuperField ps = (XMLMappedSuperField)obj;

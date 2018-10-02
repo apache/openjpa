@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.unique;
 
@@ -26,15 +26,15 @@ import javax.persistence.*;
 public class UniqueB {
 	@Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="testGenerator")
-	@TableGenerator(name="testGenerator", table="UNIQUE_GENERATOR", 
+	@TableGenerator(name="testGenerator", table="UNIQUE_GENERATOR",
 			pkColumnName="GEN1", valueColumnName="GEN2",
             uniqueConstraints={@UniqueConstraint(columnNames={"GEN1","GEN2"})})
 	private int bid;
-	
+
 	// Same named field in UniqueA also is defined as unique
 	@Column(unique=true, nullable=false)
 	private int f1;
-	
+
 	@Column(nullable=false)
 	private int f2;
 }

@@ -27,9 +27,9 @@ import javax.persistence.ManyToOne;
 public class D {
     @Id
     private long id;
-    
+
     private String name;
-    
+
     @ManyToOne
     private C c;
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.audit;
 
@@ -27,7 +27,7 @@ import javax.persistence.Id;
 /**
  * A simple persistent entity used to test audit facility.
  * An entity is annotated with {@link Auditable} annotation to qualify for audit.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -36,24 +36,24 @@ import javax.persistence.Id;
 public class X {
 	@Id
 	private long id;
-	
+
 	private String name;
 	private int price;
-	
+
 	private static AtomicLong ID_GENERATOR = new AtomicLong(System.currentTimeMillis());
-	
+
 	public X() {
 		id = ID_GENERATOR.getAndIncrement();
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public int getPrice() {
 		return price;
 	}
@@ -83,7 +83,7 @@ public class X {
 			return false;
 		return true;
 	}
-	
+
 	public String toString() {
 		return "X[" + id + "]";
 	}

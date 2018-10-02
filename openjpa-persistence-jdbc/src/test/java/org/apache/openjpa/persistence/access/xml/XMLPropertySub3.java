@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.access.xml;
 import java.util.Date;
 
 public class XMLPropertySub3 extends XMLSuperFieldEntity {
-    
+
     protected Date crtDate;
 
     public Date getCreateDate() {
@@ -31,7 +31,7 @@ public class XMLPropertySub3 extends XMLSuperFieldEntity {
     public void setCreateDate(Date date) {
         crtDate = date;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropertySub3) {
             XMLPropertySub3 ps = (XMLPropertySub3)obj;
@@ -42,5 +42,5 @@ public class XMLPropertySub3 extends XMLSuperFieldEntity {
         }
         return false;
     }
-    
+
 }

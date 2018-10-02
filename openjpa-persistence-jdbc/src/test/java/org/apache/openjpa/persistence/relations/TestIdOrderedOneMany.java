@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -66,7 +66,7 @@ public class TestIdOrderedOneMany
 
     public void testExplicitOrdering() {
         EntityManager em = emf.createEntityManager();
-        IdOrderedOneManyParent parent = em.find(IdOrderedOneManyParent.class, 
+        IdOrderedOneManyParent parent = em.find(IdOrderedOneManyParent.class,
             id);
         assertNotNull(parent);
         assertEquals("parent", parent.getName());
@@ -81,7 +81,7 @@ public class TestIdOrderedOneMany
 
     public void testImplicitOrdering() {
         EntityManager em = emf.createEntityManager();
-        IdOrderedOneManyParent parent = em.find(IdOrderedOneManyParent.class, 
+        IdOrderedOneManyParent parent = em.find(IdOrderedOneManyParent.class,
             id);
         assertNotNull(parent);
         assertEquals("parent", parent.getName());

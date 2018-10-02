@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta.vertical;
 
@@ -39,17 +39,17 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestSubclassJoinGetObjectById
     extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-    
+
 
     private String _outer = "OUTER";
-    
+
     /** Creates a new instance of TestSubclassJoinGetObjectById */
-    public TestSubclassJoinGetObjectById(String name) 
+    public TestSubclassJoinGetObjectById(String name)
     {
     	super(name);
     }
-    
-    
+
+
     public boolean skipTest() {
         //FIXME
         /*
@@ -59,39 +59,39 @@ public class TestSubclassJoinGetObjectById
          */
         return false;
     }
-    
+
     public void setUpTestCase() {
         // make sure all classes are registered
         Class[] reg = new Class[]{
             Base.class, BaseSub1.class, BaseSub2.class,
             BaseSub1Sub1.class, BaseSub1Sub2.class,
         };
-        
+
         if (((JDBCConfiguration) getConfiguration()).getDBDictionaryInstance().
                 joinSyntax == Join.SYNTAX_DATABASE)
             _outer = "(+)";
-        
+
        deleteAll(Base.class);
     }
-    
+
     public void testBase()
     throws Exception {
         Base pc = new Base();
         pc.setBaseField(1);
         Object oid = persist(pc);
         sql.clear();
-        
+
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        
+
         pc = (Base) pm.getObjectId(oid);
         assertEquals(1, pc.getBaseField());
         assertEquals(Base.class, pc.getClass());
         pm.close();
-        
+
         assertEquals(1, sql.size());
         assertNotSQL(_outer);
         sql.clear();
-        
+
         // should outer join with non-exact oid
         oid = new Id(Base.class, ((Id) oid).getId());
         pm = (OpenJPAEntityManager)currentEntityManager();
@@ -99,18 +99,18 @@ public class TestSubclassJoinGetObjectById
         assertEquals(1, pc.getBaseField());
         assertEquals(Base.class, pc.getClass());
         pm.close();
-        
+
         assertEquals(1, sql.size());
         assertSQL(_outer);
     }
-    
+
     public void testBadId()
     throws Exception {
         Base pc = new Base();
         pc.setBaseField(1);
         Object oid = persist(pc);
         sql.clear();
-        
+
         Id id = new Id(Base.class, -1);
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         try {
@@ -120,7 +120,7 @@ public class TestSubclassJoinGetObjectById
         }
         pm.close();
     }
-    
+
     public void testLeaf()
     throws Exception {
         BaseSub1Sub2 pc = new BaseSub1Sub2();
@@ -129,18 +129,18 @@ public class TestSubclassJoinGetObjectById
         pc.setBaseSub1Sub2Field(6);
         Object oid = persist(pc);
         sql.clear();
-        
+
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pc = (BaseSub1Sub2) pm.getObjectId(oid);
         assertEquals(4, pc.getBaseField());
         assertEquals(5, pc.getBaseSub1Field());
         assertEquals(6, pc.getBaseSub1Sub2Field());
         pm.close();
-        
+
         assertEquals(1, sql.size());
         assertNotSQL(_outer);
         sql.clear();
-        
+
         // should outer join with inexact oid
         oid = new Id(Base.class, ((Id) oid).getId());
         pm = (OpenJPAEntityManager)currentEntityManager();
@@ -149,11 +149,11 @@ public class TestSubclassJoinGetObjectById
         assertEquals(5, pc.getBaseSub1Field());
         assertEquals(6, pc.getBaseSub1Sub2Field());
         pm.close();
-        
+
         assertEquals(1, sql.size());
         assertSQL(_outer);
     }
-    
+
     public void testLeaf2()
     throws Exception {
         BaseSub2 pc = new BaseSub2();
@@ -161,18 +161,18 @@ public class TestSubclassJoinGetObjectById
         pc.setBaseSub2Field(4);
         Object oid = persist(pc);
         sql.clear();
-        
+
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pc = (BaseSub2) pm.getObjectId(oid);
         assertEquals(3, pc.getBaseField());
         assertEquals(4, pc.getBaseSub2Field());
         assertEquals(BaseSub2.class, pc.getClass());
         pm.close();
-        
+
         assertEquals(1, sql.size());
         assertNotSQL(_outer);
         sql.clear();
-        
+
         // should outer join with inexact oid
         oid = new Id(Base.class, ((Id) oid).getId());
         pm = (OpenJPAEntityManager)currentEntityManager();
@@ -181,11 +181,11 @@ public class TestSubclassJoinGetObjectById
         assertEquals(4, pc.getBaseSub2Field());
         assertEquals(BaseSub2.class, pc.getClass());
         pm.close();
-        
+
         assertEquals(1, sql.size());
         assertSQL(_outer);
     }
-    
+
     public void testMid()
     throws Exception {
         BaseSub1 pc = new BaseSub1();
@@ -193,18 +193,18 @@ public class TestSubclassJoinGetObjectById
         pc.setBaseSub1Field(3);
         Object oid = persist(pc);
         sql.clear();
-        
+
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pc = (BaseSub1) pm.getObjectId(oid);
         assertEquals(2, pc.getBaseField());
         assertEquals(3, pc.getBaseSub1Field());
         assertEquals(BaseSub1.class, pc.getClass());
         pm.close();
-        
+
         assertEquals(1, sql.size());
         assertNotSQL(_outer);
         sql.clear();
-        
+
         // should outer join with inexact oid
         oid = new Id(Base.class, ((Id) oid).getId());
         pm = (OpenJPAEntityManager)currentEntityManager();
@@ -213,11 +213,11 @@ public class TestSubclassJoinGetObjectById
         assertEquals(3, pc.getBaseSub1Field());
         assertEquals(BaseSub1.class, pc.getClass());
         pm.close();
-        
+
         assertEquals(1, sql.size());
         assertSQL(_outer);
     }
-    
-    
-    
+
+
+
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -148,7 +148,7 @@ public class Configurations {
 
         Properties props = parseProperties(origProps);
         props.putAll(parseProperties(overrideProps));
-        return getPlugin(cls, serializeProperties(props)); 
+        return getPlugin(cls, serializeProperties(props));
     }
 
     /**
@@ -184,12 +184,12 @@ public class Configurations {
 
     /**
      * Loads the given class name by the given loader.
-     * For efficiency, a cache per class loader is maintained of classes already loader. 
+     * For efficiency, a cache per class loader is maintained of classes already loader.
      * @param clsName
      * @param loader
      */
     static Class<?> loadClass(String clsName, ClassLoader loader) {
-        Class<?> cls = null; 
+        Class<?> cls = null;
         Object key = loader == null ? NULL_LOADER : loader;
         Map<String,Class<?>> loaderCache = (Map<String,Class<?>>) _loaders.get(key);
         if (loaderCache == null) { // We don't have a cache for this loader.
@@ -210,7 +210,7 @@ public class Configurations {
         }
         return cls;
     }
-    
+
     /**
      * Helper method used by members of this package to instantiate plugin
      * values.
@@ -241,7 +241,7 @@ public class Configurations {
             return AccessController.doPrivileged(J2DoPrivHelper.newInstanceAction(cls));
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException) {
-                e = ((PrivilegedActionException) e).getException();   
+                e = ((PrivilegedActionException) e).getException();
             }
             RuntimeException re = new RuntimeException(_loc.get("obj-create", cls).getMessage(), e);
             if (fatal)
@@ -267,7 +267,7 @@ public class Configurations {
             if (ctxLoader != null) {
                 return ctxLoader;
             } else if (conf != null) {
-                return classLoaderOf(conf.getClass()); 
+                return classLoaderOf(conf.getClass());
             } else {
             	return classLoaderOf(Configurations.class);
             }
@@ -278,21 +278,21 @@ public class Configurations {
                 return ctxLoader;
         }
         if (conf != null) {
-            for (ClassLoader parent = classLoaderOf(conf.getClass()); parent != null; 
+            for (ClassLoader parent = classLoaderOf(conf.getClass()); parent != null;
                     parent = parentClassLoaderOf(parent)) {
                 if (parent == loader)
-                    return classLoaderOf(conf.getClass()); 
+                    return classLoaderOf(conf.getClass());
             }
         }
         return loader;
     }
-    
+
     static ClassLoader classLoaderOf(Class<?> cls) {
-    	return AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(cls)); 
+    	return AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(cls));
     }
-    
+
     static ClassLoader parentClassLoaderOf(ClassLoader loader) {
-    	return AccessController.doPrivileged(J2DoPrivHelper.getParentAction(loader)); 
+    	return AccessController.doPrivileged(J2DoPrivHelper.getParentAction(loader));
     }
 
     /**
@@ -356,7 +356,7 @@ public class Configurations {
                 provider.setInto(conf);
             else
                 throw new MissingResourceException(_loc.get("no-provider",
-                    props).getMessage(), Configurations.class.getName(), 
+                    props).getMessage(), Configurations.class.getName(),
                     props);
         } else {
             provider = ProductDerivations.loadDefaults(null);
@@ -376,7 +376,7 @@ public class Configurations {
             path = path.substring(0, idx);
             if (path.length() == 0)
                 throw new MissingResourceException(_loc.get("anchor-only",
-                    props).getMessage(), Configurations.class.getName(), 
+                    props).getMessage(), Configurations.class.getName(),
                     props);
         }
         Map <String, String> result = new HashMap<String, String>();
@@ -486,7 +486,7 @@ public class Configurations {
         Options opts;
         if (properties instanceof Options)
             opts = (Options) properties;
-        else { 
+        else {
             opts = new Options();
             if (properties != null)
                 opts.putAll(properties);
@@ -534,14 +534,14 @@ public class Configurations {
 
     private static Collection<String> findOptionsFor(Class<?> cls) {
         Collection<String> c = Options.findOptionsFor(cls);
-        
-        // remove Configurable.setConfiguration() and 
+
+        // remove Configurable.setConfiguration() and
         // GenericConfigurable.setInto() from the set, if applicable.
         if (Configurable.class.isAssignableFrom(cls))
             c.remove("Configuration");
         if (GenericConfigurable.class.isAssignableFrom(cls))
             c.remove("Into");
-        
+
         return c;
     }
 
@@ -676,7 +676,7 @@ public class Configurations {
         }
         return false;
     }
-    
+
     /**
      * Test whether the map contains the given partial key, prefixed with any
      * possible configuration prefix.
@@ -696,7 +696,7 @@ public class Configurations {
     public static Object getProperty(String partialKey, Map m) {
         if (partialKey == null || m == null || m.isEmpty())
             return null;
-        else 
+        else
             return m.get(ProductDerivations.getConfigurationKey(partialKey, m));
     }
 
@@ -709,7 +709,7 @@ public class Configurations {
             return null;
         if (containsProperty(partialKey, props))
             return props.remove(ProductDerivations.getConfigurationKey(partialKey, props));
-        else 
+        else
             return null;
     }
 
@@ -721,7 +721,7 @@ public class Configurations {
 
     /**
      * Runs <code>runnable</code> against all the anchors in the configuration
-     * pointed to by <code>opts</code>. Each invocation gets a fresh clone of 
+     * pointed to by <code>opts</code>. Each invocation gets a fresh clone of
      * <code>opts</code> with the <code>properties</code> option set
      * appropriately.
      *
@@ -745,7 +745,7 @@ public class Configurations {
         if (anchors.size() == 0) {
             ret = launchRunnable(opts, runnable);
         } else {
-            for(String s : anchors ) { 
+            for(String s : anchors ) {
                 Options clonedOptions = (Options) opts.clone();
                 clonedOptions.setProperty("properties", s);
                 ret &= launchRunnable(clonedOptions, runnable);

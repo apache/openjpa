@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex3;
 
@@ -28,31 +28,31 @@ import javax.persistence.*;
 public class Company {
     @Id
     int id;
-    
+
     @OneToMany(targetEntity=VicePresident.class , mappedBy="co")
     @MapKeyClass(Division.class)
     Map orgs = new HashMap();
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public Map getOrganization() {
         return orgs;
     }
-    
+
     public void addToOrganization(Division division, VicePresident vp) {
         orgs.put(division, vp);
     }
-    
+
     public void removeFromOrganization(Division d) {
         orgs.remove(d);
     }
-    
+
     public VicePresident getOrganization(Division d) {
         return (VicePresident)orgs.get(d);
     }

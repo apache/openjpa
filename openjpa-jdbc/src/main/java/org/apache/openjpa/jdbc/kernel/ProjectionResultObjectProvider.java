@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -45,9 +45,9 @@ class ProjectionResultObjectProvider
      * @param states the query expression states
      * @param ctx the query execution context
      */
-    public ProjectionResultObjectProvider(SelectExecutor sel, 
+    public ProjectionResultObjectProvider(SelectExecutor sel,
         QueryExpressions exps, QueryExpressionsState state, ExpContext ctx) {
-        this(sel, new QueryExpressions[]{ exps }, 
+        this(sel, new QueryExpressions[]{ exps },
             new QueryExpressionsState[]{ state }, ctx);
     }
 
@@ -59,7 +59,7 @@ class ProjectionResultObjectProvider
      * @param states the query expression states
      * @param ctx the query execution context
      */
-    public ProjectionResultObjectProvider(SelectExecutor sel, 
+    public ProjectionResultObjectProvider(SelectExecutor sel,
         QueryExpressions[] exps, QueryExpressionsState[] state, ExpContext ctx){
         super(sel, ctx.store, ctx.fetch);
         _exps = exps;
@@ -75,7 +75,7 @@ class ProjectionResultObjectProvider
         int idx = res.indexOf();
         Object[] arr = new Object[_exps[idx].projections.length];
         for (int i = 0; i < _exps[idx].projections.length; i++)
-            arr[i] = ((Val) _exps[idx].projections[i]).load(_ctx, 
+            arr[i] = ((Val) _exps[idx].projections[i]).load(_ctx,
                 _state[idx].projections[i], res);
         return arr;
     }

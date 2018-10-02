@@ -37,22 +37,22 @@ import javax.swing.JPanel;
  * Hence the view is organized in terms of corresponding views of {@link EntityTypeView entity}
  * and their {@link AttributeView attributes}.
  * <br>
- * This view also draws linkage with A*-algorithm between the derived primary key attributes that 
- * reference other entity types.   
- * 
+ * This view also draws linkage with A*-algorithm between the derived primary key attributes that
+ * reference other entity types.
+ *
  * @author Pinaki Poddar
  *
  */
 @SuppressWarnings("serial")
 public class MetamodelView extends JPanel implements Maze {
-    
+
     private static final int GRID = 8;
     int hgap = 40;
     int vgap = 40;
-    
+
     /**
      * Creates a panel where each {@link EntityTypeView} is placed in a FlowLayout.
-     * Only the entities of the model are ordered based on their primary key 
+     * Only the entities of the model are ordered based on their primary key
      * dependencies, if any.
      */
     @SuppressWarnings("unchecked")
@@ -70,7 +70,7 @@ public class MetamodelView extends JPanel implements Maze {
             add(view);
         }
     }
-    
+
     EntityTypeView<?> findViewByType(EntityType<?> type) {
         if (type == null)
             return null;
@@ -84,7 +84,7 @@ public class MetamodelView extends JPanel implements Maze {
         }
         return null;
     }
-    
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -97,11 +97,11 @@ public class MetamodelView extends JPanel implements Maze {
                 EntityTypeView<?> target = findViewByType(MetamodelHelper.getParentType(id));
                 if (target == null)
                     continue;
-                
+
                 PathFinder runner = new PathFinder(this);
                 Point start = getConnectLocation(view, id);
                 Point finish = target.getLocation();
-                List<Point> path = runner.findPath(start.x/GRID, start.y/GRID, 
+                List<Point> path = runner.findPath(start.x/GRID, start.y/GRID,
                         finish.x/GRID, finish.y/GRID);
                 if (path.isEmpty())
                     continue;
@@ -115,20 +115,20 @@ public class MetamodelView extends JPanel implements Maze {
                 g.setColor(Color.BLACK);
                 int r = 4;
                 g.fillOval(p1.x*GRID -r, p1.y*GRID - r, 2*r, 2*r);
-                
+
             }
         }
     }
-    
+
     /**
-     * Gets the position of the attribute in the entity view relative to this panel. 
+     * Gets the position of the attribute in the entity view relative to this panel.
      */
     Point getConnectLocation(EntityTypeView<?> a, Attribute<?,?> attr) {
         Point p1 = a.getLocation();
         Point p2 = a.getPosition(attr);
         return new Point(p1.x + p2.x, p1.y + p2.y);
     }
-    
+
     // contract for the maze
     @Override
     public boolean isReachable(int x, int y) {
@@ -136,7 +136,7 @@ public class MetamodelView extends JPanel implements Maze {
             Rectangle r = view.getBounds();
             int px = x*GRID;
             int py = y*GRID;
-            if (r.contains(px, py)) 
+            if (r.contains(px, py))
                 return false;
         }
         return true;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -32,49 +32,49 @@ import javax.persistence.Table;
 @Entity
 @Table(name="CR_EMP")
 @Inheritance
-@DiscriminatorColumn(name="EMP_TYPE")  
+@DiscriminatorColumn(name="EMP_TYPE")
 public class Employee {
     @Id
     @GeneratedValue
     private int empId;
-    
+
 	private String name;
 	@Embedded
 	private Contact contactInfo;
 	@ManyToOne
 	private Department department;
-	
+
 	@OneToOne
 	private Employee spouse;
 	@ManyToOne
 	private Manager manager;
-	
+
 	@OneToOne
 	private FrequentFlierPlan frequentFlierPlan;
 
     @Basic
     private long salary;
-    
+
     @Basic
     private int rating;
-    
-	
+
+
     public int getEmpId() {
         return empId;
     }
-    
+
     public void setContactInfo(Contact contactInfo) {
         this.contactInfo = contactInfo;
     }
-    
+
     public Contact getContactInfo() {
         return contactInfo;
     }
-    
+
     public void setDepartment(Department department) {
         this.department = department;
     }
-    
+
     public Department getDepartment() {
         return department;
     }
@@ -82,39 +82,39 @@ public class Employee {
     public void setSpouse(Employee spouse) {
         this.spouse = spouse;
     }
-    
+
     public Employee getSpouse() {
         return spouse;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-	
+
     public void setManager(Manager manager) {
         this.manager = manager;
     }
-    
+
     public Manager getManager() {
         return manager;
     }
-    
+
     public void setSalary(long salary) {
         this.salary = salary;
     }
-    
+
     public long getSalary() {
         return salary;
     }
-    
+
     public void setRating(int rating) {
         this.rating = rating;
     }
-    
+
     public long getRating() {
         return rating;
     }

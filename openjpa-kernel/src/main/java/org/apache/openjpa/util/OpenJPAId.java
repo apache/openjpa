@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -33,7 +33,7 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 public abstract class OpenJPAId
     implements Comparable, Serializable {
     public static final char TYPE_VALUE_SEP = '-';
-    
+
     // cache the types' generated hash codes
     private static ConcurrentReferenceHashMap _typeCache =
         new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD);

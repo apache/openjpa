@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -38,17 +38,17 @@ public class TestQueryExcludingSubclasses
         setUp(ManyOneEntity.class, ManyOneEntitySub.class);
 
         ManyOneEntity e1 = new ManyOneEntity();
-        e1.setName("e1"); 
+        e1.setName("e1");
         ManyOneEntity e2 = new ManyOneEntity();
-        e2.setName("e2"); 
+        e2.setName("e2");
         ManyOneEntity invalid = new ManyOneEntity();
-        invalid.setName("invalid"); 
+        invalid.setName("invalid");
         ManyOneEntitySub esub1 = new ManyOneEntitySub();
-        esub1.setName("esub1"); 
+        esub1.setName("esub1");
         ManyOneEntitySub esub2 = new ManyOneEntitySub();
-        esub2.setName("esub2"); 
+        esub2.setName("esub2");
         ManyOneEntitySub invalidsub = new ManyOneEntitySub();
-        invalidsub.setName("invalidsub"); 
+        invalidsub.setName("invalidsub");
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

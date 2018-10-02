@@ -31,22 +31,22 @@ import javax.persistence.NamedQuery;
 @Entity
 @Access(AccessType.PROPERTY)
 @NamedQueries( {
-    @NamedQuery(name="PropEmbedEntity.query", 
-        query="SELECT fs FROM PropEmbedEntity fs WHERE " + 
+    @NamedQuery(name="PropEmbedEntity.query",
+        query="SELECT fs FROM PropEmbedEntity fs WHERE " +
         "fs.id = :id AND fs.name = :name AND fs.embedProp.fName = :firstName " +
         "AND fs.embedProp.lName = :lastName"),
-    @NamedQuery(name="PropEmbedEntity.badQuery", 
-        query="SELECT fs FROM PropEmbedEntity fs WHERE " + 
+    @NamedQuery(name="PropEmbedEntity.badQuery",
+        query="SELECT fs FROM PropEmbedEntity fs WHERE " +
         "fs.id = :id AND fs.name = :name AND fs.embedProp.firstName = " +
         ":firstName AND fs.embedProp.lastName = :lastName") } )
 public class PropEmbedEntity {
 
     private int id;
-    
+
     private String name;
 
     private EmbedFieldAccess efa;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -65,7 +65,7 @@ public class PropEmbedEntity {
     public String getName() {
         return name;
     }
-    
+
     @Embedded
     public EmbedFieldAccess getEmbedProp() {
         return efa;
@@ -78,7 +78,7 @@ public class PropEmbedEntity {
     public boolean equals(Object obj) {
         if (obj instanceof PropEmbedEntity) {
             PropEmbedEntity ps = (PropEmbedEntity)obj;
-            return getEmbedProp().equals(ps.getEmbedProp()) 
+            return getEmbedProp().equals(ps.getEmbedProp())
                 && getId() == ps.getId() &&
                 getName().equals(ps.getName());
         }

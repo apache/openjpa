@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="ref_guide_remote">
     <title>
@@ -35,8 +35,8 @@
         </see>
     </indexterm>
     <para>
-The standard JPA runtime environment was originally just 
-<emphasis>local</emphasis> and 
+The standard JPA runtime environment was originally just
+<emphasis>local</emphasis> and
 <emphasis>online</emphasis>. It is <emphasis>local</emphasis> in that components
 such as <classname>EntityManager</classname>s and queries connect directly to
 the datastore and execute their actions in the same JVM as the code using them.
@@ -48,10 +48,10 @@ made the standard JPA runtime difficult to incorporate into some enterprise and
 client/server program designs.
     </para>
     <para>
-JPA has now provided <emphasis>offline</emphasis> capability through the 
+JPA has now provided <emphasis>offline</emphasis> capability through the
 detach() and merge() methods on the EntityManager interface. OpenJPA has
 extended this to include additional detach...() and merge...() methods. All of
-these are documented in 
+these are documented in
 <link linkend="ref_guide_detach">Detach and Attach APIs</link>. In addition,
 OpenJPA has added <emphasis>remote</emphasis> capability in the form of
 <link linkend="ref_guide_event">Remote Commit Events</link>. The following
@@ -170,9 +170,9 @@ attached instance's corresponding fields to null.
                     <para>
 If the instance has a <literal>Version</literal> field,
 OpenJPA will consider the object detached if the version field has a non-default
-value, and new otherwise.  Similarly, if the instance has 
+value, and new otherwise.  Similarly, if the instance has
 <literal>GeneratedValue</literal> primary key fields, OpenJPA will consider the
-object detached if any of these fields have non-default values, and new 
+object detached if any of these fields have non-default values, and new
 otherwise.
                     </para>
                     <para>
@@ -311,7 +311,7 @@ will be required for client tiers.
                         </itemizedlist>
                         <para>
 The detached state field is also used to determine when proxies should be
-removed from entities during serialization.  See the 
+removed from entities during serialization.  See the
 <xref linkend="ref_guide_pc_scos_proxy_serial"/> section for more details.
                         </para>
                         <para>
@@ -348,46 +348,46 @@ whenever an unloaded field is accessed. This option is only available when you
 use detached state managers, as determined by the settings above.
                         </para>
                     </listitem>
-                    <listitem>                    
+                    <listitem>
                         <para>
-<literal>LiteAutoDetach</literal>: <emphasis role="bold">This option is ONLY valid for the <literal>loaded</literal> 
-DetachState setting.</emphasis> Detach all fields and relations as described by the loaded 
-property when an explicit detach is requested or when a 
-single Entity is being detached as part of serialization. When the entire 
-persistence context is being auto-detached ( <literal>openjpa.AutoDetach</literal> ), 
-the minimal amount of work will be completed to disassociate all Entities from 
-the persistence context. <emphasis role="bold">It is highly recommended that all Entities have a 
-@Version field when using this property</emphasis>. In addition, care needs to be taken 
-when this value is set to true as the following caveats apply: 
+<literal>LiteAutoDetach</literal>: <emphasis role="bold">This option is ONLY valid for the <literal>loaded</literal>
+DetachState setting.</emphasis> Detach all fields and relations as described by the loaded
+property when an explicit detach is requested or when a
+single Entity is being detached as part of serialization. When the entire
+persistence context is being auto-detached ( <literal>openjpa.AutoDetach</literal> ),
+the minimal amount of work will be completed to disassociate all Entities from
+the persistence context. <emphasis role="bold">It is highly recommended that all Entities have a
+@Version field when using this property</emphasis>. In addition, care needs to be taken
+when this value is set to true as the following caveats apply:
                 <itemizedlist>
                     <listitem>
                         <para>
-A relationship from a managed Entity to an unmanaged Entity which was detached by the lite detach setting will not be persisted.                                       
-                        </para>       
+A relationship from a managed Entity to an unmanaged Entity which was detached by the lite detach setting will not be persisted.
+                        </para>
                     </listitem>
                     <listitem>
                         <para>
-When merging a detached Entity back into the persistence context any lazily loaded fields that were marked to null when detached will not be persisted.                                       
-                        </para>       
-                    </listitem>                
+When merging a detached Entity back into the persistence context any lazily loaded fields that were marked to null when detached will not be persisted.
+                        </para>
+                    </listitem>
                 </itemizedlist>
                         </para>
                     </listitem>
-                    <listitem>                    
+                    <listitem>
                         <para>
-<literal>DetachProxyFields</literal>: <emphasis role="bold">This option is ONLY valid when used in conjunction with the <literal>LiteAutoDetach</literal> 
-DetachState setting.</emphasis> When detaching the persistence context, all proxies will be left in place. Note, that 
+<literal>DetachProxyFields</literal>: <emphasis role="bold">This option is ONLY valid when used in conjunction with the <literal>LiteAutoDetach</literal>
+DetachState setting.</emphasis> When detaching the persistence context, all proxies will be left in place. Note, that
 all <literal>Large Result Sets</literal> will be removed.
                         </para>
                         <itemizedlist>
                             <listitem>
-                            <literal>true(default)</literal>: All proxies will be removed and LRS fields will be removed. 
+                            <literal>true(default)</literal>: All proxies will be removed and LRS fields will be removed.
                         	</listitem>
                             <listitem>
-                            <literal>false</literal>: All proxies will be left in place and LRS fields will be removed. 
-                        	</listitem>                        	
-                        </itemizedlist>                                                    
-                    </listitem>                
+                            <literal>false</literal>: All proxies will be left in place and LRS fields will be removed.
+                        	</listitem>
+                        </itemizedlist>
+                    </listitem>
                 </itemizedlist>
                 <example id="ref_guide_detach_graph_confex">
                     <title>

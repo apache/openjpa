@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -39,36 +39,36 @@ public class TblChild {
 
 	@Id
 	@Column(name = "CHILD_ID",nullable=false)
-	private Integer childId;   
+	private Integer childId;
 
 	@Version
 	@Column(name = "VRS_NBR")
-	private Integer vrsNbr;   
+	private Integer vrsNbr;
 
 	@OneToMany(mappedBy="tblChild",fetch = FetchType.EAGER,
 			cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-	private Collection<TblGrandChild> tblGrandChildren = 
+	private Collection<TblGrandChild> tblGrandChildren =
         new ArrayList<TblGrandChild>();
 
 	@ManyToOne(fetch = FetchType.LAZY,
 			cascade = {CascadeType.PERSIST,CascadeType.MERGE })
 	@JoinColumns({@JoinColumn(name =
-		"PARENT_ID",referencedColumnName="PARENT_ID")})   
+		"PARENT_ID",referencedColumnName="PARENT_ID")})
 	@ForeignKey
 	private TblParent tblParent;
 
 	public Integer getChildId() {
 		return childId;
 	}
-	
+
 	public void setChildId(Integer childId) {
 		this.childId = childId;
 	}
-	
+
 	public Integer getVrsNbr() {
 		return vrsNbr;
 	}
-	
+
 	public void setVrsNbr(Integer vrsNbr) {
 		this.vrsNbr = vrsNbr;
 	}
@@ -76,22 +76,22 @@ public class TblChild {
 	public Collection<TblGrandChild> getTblGrandChildren() {
 		return tblGrandChildren;
 	}
-	
+
 	public void setTblGrandChildren(Collection<TblGrandChild>
         tblGrandChildren) {
 		this.tblGrandChildren = tblGrandChildren;
 	}
-	
+
 	public void addTblGrandChild(TblGrandChild tblGrandChild) {
 		tblGrandChild.setTblChild(this);
 		tblGrandChildren.add(tblGrandChild);
 	}
-	
+
 	public void removeTblGrandChild(TblGrandChild tblGrandChild) {
 		tblGrandChild.setTblChild(null);
 		tblGrandChildren.remove(tblGrandChild);
 	}
-	
+
 	public TblParent getTblParent() {
 		return tblParent;
 	}

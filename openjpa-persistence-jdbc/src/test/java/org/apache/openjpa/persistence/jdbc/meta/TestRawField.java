@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
@@ -35,13 +35,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestRawField
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-    
+
     /** Creates a new instance of TestRawField */
-    public TestRawField(String name) 
+    public TestRawField(String name)
     {
     	super(name);
     }
-    
+
     public void setUp() {
        deleteAll(RawField.class);
     }
@@ -65,5 +65,5 @@ public class TestRawField
         pc = (RawField) pm.getObjectId(oid);
         assertEquals(pc.getString(), "BARFOO", pc.getString());
         pm.close();
-    }    
+    }
 }

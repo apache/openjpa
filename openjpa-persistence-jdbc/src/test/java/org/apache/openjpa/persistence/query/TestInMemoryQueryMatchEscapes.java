@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -31,7 +31,7 @@ public class TestInMemoryQueryMatchEscapes
     public void setUp() {
         setUp(AllFieldTypes.class);
     }
-    
+
     public void testDatabaseEscape() {
         OpenJPAQuery q = escapeHelper(false);
         q.setFlushMode(FlushModeType.AUTO);
@@ -40,7 +40,7 @@ public class TestInMemoryQueryMatchEscapes
         assertEquals("foo_bar", aft.getStringField());
         q.getEntityManager().getTransaction().rollback();
     }
-    
+
     public void testInMemoryEscape() {
         OpenJPAQuery q = escapeHelper(true);
         q.setFlushMode(FlushModeType.COMMIT);
@@ -51,7 +51,7 @@ public class TestInMemoryQueryMatchEscapes
             // expected
         }
     }
-    
+
     private OpenJPAQuery escapeHelper(boolean inMem) {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

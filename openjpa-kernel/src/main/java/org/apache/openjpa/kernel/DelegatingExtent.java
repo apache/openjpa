@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -24,7 +24,7 @@ import java.util.List;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 ///////////////////////////////////////////////////////////////
-// NOTE: when adding a public API method, be sure to add it to 
+// NOTE: when adding a public API method, be sure to add it to
 // JDO and JPA facades!
 ///////////////////////////////////////////////////////////////
 

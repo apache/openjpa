@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -70,7 +70,7 @@ public class SequenceMapping
     private String _primaryKeyValue = null;
     private DBIdentifier[] _uniqueColumns   = null;
     private DBIdentifier _uniqueConstraintName = DBIdentifier.NULL;
-    
+
     /**
      * @deprecated
      * @param name
@@ -82,7 +82,7 @@ public class SequenceMapping
 
     /**
      * Sequence names are a kernel object so DBIdentifiers must be converted to
-     * strings 
+     * strings
      * @param name
      * @param repos
      */
@@ -215,7 +215,7 @@ public class SequenceMapping
     	return _uniqueColumns;
     }
 
-    
+
     protected PluginValue newPluginValue(String property) {
         return new JDBCSeqValue(property);
     }
@@ -229,7 +229,7 @@ public class SequenceMapping
         // properties are intentionally delimited with quotes. So, an extra
         // set preserves the intended ones. While this is an ugly solution,
         // it's less ugly than other ones.
-        
+
         appendProperty(props, PROP_TABLE, addQuotes(_table.getName()));
         appendProperty(props, PROP_SEQUENCE_COL, addQuotes(_sequenceColumn.getName()));
         appendProperty(props, PROP_PK_COL, addQuotes(_primaryKeyColumn.getName()));
@@ -240,12 +240,12 @@ public class SequenceMapping
         if (!DBIdentifier.isNull(_uniqueConstraintName) && _uniqueConstraintName.getName().length() > 0) {
             appendProperty(props, PROP_UNIQUE_CONSTRAINT, addQuotes(_uniqueConstraintName.getName()));
         }
-            
+
         if (_uniqueColumns != null && _uniqueColumns.length > 0) {
             appendProperty(props, PROP_UNIQUE, StringUtil.join(_uniqueColumns, "|"));
         }
     }
-    
+
     private String addQuotes(String name) {
         if (name != null && name.contains(IdentifierUtil.DOUBLE_QUOTE)) {
             return IdentifierUtil.DOUBLE_QUOTE + name + IdentifierUtil.DOUBLE_QUOTE;
@@ -274,6 +274,6 @@ public class SequenceMapping
 
     public DBIdentifier getUniqueConstraintIdentifier() {
         return _uniqueConstraintName == null ? DBIdentifier.NULL : _uniqueConstraintName;
-        
+
     }
 }

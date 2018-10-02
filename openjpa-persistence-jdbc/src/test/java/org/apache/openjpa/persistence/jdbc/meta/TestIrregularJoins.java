@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
@@ -48,7 +48,7 @@ public class TestIrregularJoins
     public TestIrregularJoins(String test) {
         super(test);
     }
-    
+
     /** Creates a new instance of TestIrregularJoins */
     public TestIrregularJoins() {
     }
@@ -117,7 +117,7 @@ public class TestIrregularJoins
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
-        
+
         pm.persist(partial);
         pm.persist(partial3);
         pm.persist(constant2);
@@ -133,7 +133,7 @@ public class TestIrregularJoins
     }
 
     public void testNonPKOneOne() {
-        
+
         nonPKOneOne((OpenJPAEntityManager)currentEntityManager());
     }
 
@@ -156,7 +156,7 @@ public class TestIrregularJoins
     }
 
     public void testEagerPartialOneOne() {
-        
+
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("partial");
         partialOneOne(pm);
@@ -303,7 +303,7 @@ public class TestIrregularJoins
     }
 
     public void testVerticalConstant() {
-        
+
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         ConstantJoinPC2 constant2 =
             (ConstantJoinPC2) pm.getObjectId(_constant2);
@@ -354,7 +354,7 @@ public class TestIrregularJoins
             (nonpks.iterator().next()));
         pm.close();
     }
-    
-    
-    
+
+
+
 }

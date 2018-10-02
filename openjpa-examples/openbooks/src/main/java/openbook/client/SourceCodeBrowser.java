@@ -30,9 +30,9 @@ import jpa.tools.swing.SourceCodeViewer;
  * Browses source code.
  * The source code URI is resolved with respect to a root URI.
  * The source code is expected to be in HTML format.
- * The actual rendering of the source code can be either through an 
- * {@linkplain SourceCodeViewer internal} or an external browser. 
- * 
+ * The actual rendering of the source code can be either through an
+ * {@linkplain SourceCodeViewer internal} or an external browser.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -41,10 +41,10 @@ public class SourceCodeBrowser {
     private SourceCodeViewer _internal = new SourceCodeViewer();
     private URI _rootURI;
     private File _rootDir;
-    
+
     /**
      * Construct a browser.
-     * 
+     *
      * @param root a path to be resolved as an URI to root of source tree.
      * @param useDesktop flags to use external or internal browser.
      */
@@ -52,11 +52,11 @@ public class SourceCodeBrowser {
         _rootURI = convertToURI(root);
         _useExternal = useDesktop;
     }
-    
+
     public URI getRootURI() {
         return _rootURI;
     }
-    
+
     /**
      * Gets the root source directory if the sources are being serverd from a local
      * file system directory.
@@ -72,17 +72,17 @@ public class SourceCodeBrowser {
     public void showPage(String key, String page) {
         showPage(key, URI.create(_rootURI.toString() + page));
     }
-    
+
     public void addPage(String key, String path) {
         _internal.addPage(key, URI.create(_rootURI.toString() + path));
     }
-    
+
     public SourceCodeViewer getViewer() {
         return _internal;
     }
     /**
      * Shows the given page.
-     * 
+     *
      * @param key a user visible moniker for the page.
      * @param uri the URI of the page content.
      */
@@ -98,7 +98,7 @@ public class SourceCodeBrowser {
             e.printStackTrace();
         }
     }
-    
+
     private URI convertToURI(String srcPath) {
         try {
             URI uri = URI.create(srcPath);
@@ -120,7 +120,7 @@ public class SourceCodeBrowser {
         _rootDir = srcDir;
         return convertForWindows(_rootDir.toURI());
     }
-    
+
     URI convertForWindows(URI uri) {
         String os = System.getProperty("os.name");
         boolean windows = os.toLowerCase().indexOf("windows") != -1;

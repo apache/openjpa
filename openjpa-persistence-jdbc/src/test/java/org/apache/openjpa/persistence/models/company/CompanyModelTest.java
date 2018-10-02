@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.models.company;
 
@@ -24,13 +24,13 @@ import java.util.*;
 import junit.framework.*;
 import org.apache.openjpa.persistence.test.*;
 
-/** 
+/**
  * Generic test case that will be extended by a concrete company
  * model subclass.
- *  
+ *
  * @author  Marc Prud'hommeaux
  */
-public abstract class CompanyModelTest 
+public abstract class CompanyModelTest
     extends SingleEMTestCase {
 
     private static Map<Class,Class> factoryClasses;
@@ -63,7 +63,7 @@ public abstract class CompanyModelTest
         factoryClasses = null;
         super.tearDown();
     }
-    
+
     private Class localClass(String name) {
         String pkg = getClass().getPackage().getName();
         try {
@@ -73,7 +73,7 @@ public abstract class CompanyModelTest
         }
     }
 
-    /** 
+    /**
      * Runs through basic queries against all of the properties of all
      * of the known persistent classes. We're just checking here to
      * make sure the queries can be executed without problem. Queries
@@ -260,8 +260,8 @@ public abstract class CompanyModelTest
             "where x.homeAddress.state = 'CA'"));
     }
 
-    /** 
-     * Factory method that is called from the serialized XML. 
+    /**
+     * Factory method that is called from the serialized XML.
      */
     public static Object create(Class intf)
         throws InstantiationException, IllegalAccessException {

@@ -27,9 +27,9 @@ import javax.persistence.OneToOne;
 
 /**
  * Domain class used by meta-model testing.
- * 
+ *
  * Uses implicit field based access.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -39,19 +39,19 @@ public class ImplicitFieldAccessSubclass extends ImplicitFieldAccessBase {
     private ImplicitFieldAccessBase base;
     @ManyToMany
     private Map<Embed0, ExplicitPropertyAccess> mapRelationKeyEmbedded;
-    
+
     public ImplicitFieldAccessBase getBase() {
         return base;
     }
-    
+
     public void setBase(ImplicitFieldAccessBase base) {
         this.base = base;
     }
-    
+
     public Map<Embed0, ExplicitPropertyAccess> getMapRelationKeyEmbedded() {
         return mapRelationKeyEmbedded;
     }
-    
+
     public void setMapRelationKeyEmbedded(
         Map<Embed0, ExplicitPropertyAccess> map) {
         this.mapRelationKeyEmbedded = map;

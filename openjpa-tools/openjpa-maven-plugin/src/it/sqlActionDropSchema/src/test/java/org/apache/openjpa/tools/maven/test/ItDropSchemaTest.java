@@ -28,13 +28,13 @@ public class ItDropSchemaTest extends TestCase {
 
     /** contains the directory where all generated results are placed */
     private final static String TARGET_DIR = "target";
-    
+
     /** the file containing the generated SQL syntax */
     private final static String SQL_FILE = "clear_database.sql";
-    
+
     /** if the SQL generation has been successful, the following result should be in the SQL file */
     private final static String VALID_SQL = "DROP TABLE DropSchemaTestEntity;";
-    
+
     /**
      * check if the generated SQL script is correct.
      * @throws Exception
@@ -46,5 +46,5 @@ public class ItDropSchemaTest extends TestCase {
         String sqlIn = in.readLine();
         assertEquals( VALID_SQL, sqlIn );
     }
-    
+
 }

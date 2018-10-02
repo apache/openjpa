@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.results.cls;
 
@@ -29,25 +29,25 @@ import javax.persistence.NamedNativeQuery;
 import javax.persistence.SqlResultSetMapping;
 
 @NamedNativeQueries({
-@NamedNativeQuery(name = "ResultClsQueryDoubleQuotes", 
+@NamedNativeQuery(name = "ResultClsQueryDoubleQuotes",
     query = "select \"1\",\"2\" FROM ResultClsAnnoEntity",
-    resultSetMapping = "ResultClsRSMapping", 
+    resultSetMapping = "ResultClsRSMapping",
     resultClass = ResultClsAnnotation.class),
-@NamedNativeQuery(name = "ResultClsQueryBackTicks", 
+@NamedNativeQuery(name = "ResultClsQueryBackTicks",
     query = "select `1`,`2` FROM ResultClsAnnoEntity",
-    resultSetMapping = "ResultClsRSMapping", 
+    resultSetMapping = "ResultClsRSMapping",
     resultClass = ResultClsAnnotation.class),
-@NamedNativeQuery(name = "ResultClsQueryBrackets", 
+@NamedNativeQuery(name = "ResultClsQueryBrackets",
     query = "select [1],[2] FROM ResultClsAnnoEntity",
-    resultSetMapping = "ResultClsRSMapping", 
-    resultClass = ResultClsAnnotation.class),   
-@NamedNativeQuery(name = "ResultClsQueryDefault", 
+    resultSetMapping = "ResultClsRSMapping",
+    resultClass = ResultClsAnnotation.class),
+@NamedNativeQuery(name = "ResultClsQueryDefault",
     query = "select * FROM ResultClsAnnoEntity",
-    resultSetMapping = "ResultClsRSMapping", 
+    resultSetMapping = "ResultClsRSMapping",
     resultClass = ResultClsAnnotation.class)
 })
 
-@SqlResultSetMapping(name = "ResultClsRSMapping", 
+@SqlResultSetMapping(name = "ResultClsRSMapping",
     entities = @EntityResult(entityClass = ResultClsAnnotation.class, fields = {
         @FieldResult(name = "id", column = "1"),
         @FieldResult(name = "description", column = "2") }))

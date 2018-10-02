@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
@@ -51,7 +51,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     // =======================================================================
     /**
      * Assert whether the cache contains the expected results.
-     * 
+     *
      * @param cache
      *            The JPA Cache to verify
      * @param expectCacheables
@@ -74,7 +74,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     /**
      * Assert whether the cacheable types are in the cache. This method exits on
      * the first cache 'miss'.
-     * 
+     *
      * @param cache
      *            JPA Cache to verify
      * @param expected
@@ -90,7 +90,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     /**
      * Assert whether the uncacheable types are in the cache. This method exits
      * on the first cache 'miss'.
-     * 
+     *
      * @param cache
      *            JPA Cache to verify
      * @param expected
@@ -106,7 +106,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     /**
      * Assert whether the unspecified types are in the cache. This method exits
      * on the first cache 'miss'.
-     * 
+     *
      * @param cache
      *            JPA Cache to verify
      * @param expected
@@ -119,7 +119,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
 
     /**
      * Assert that no sql is executed when running the supplied Action.
-     * 
+     *
      * @param act
      *            Action to execute.
      */
@@ -130,7 +130,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     /**
      * Assert that <literal>expectedSqls</literal> SQL statements are executed
      * when running <literal>act</literal>
-     * 
+     *
      * @param act
      *            Action to run.
      * @param expectedSqls
@@ -200,7 +200,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
      * <li>is not null</li>
      * </ul>
      * </p>
-     * 
+     *
      */
     public void testRetrieveModeUse() {
         if (getCacheEnabled()) {
@@ -274,7 +274,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
      * CacheStoreMode.REFRESH we may update the cache with the state of
      * CacheableEntity::1.
      * </p>
-     * 
+     *
      * @param tran1StoreMode
      *            CacheStoreMode to use in transaction 1.
      * @param tran2StoreMode
@@ -334,7 +334,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
             entityManagerStoreModeTest(CacheStoreMode.USE, CacheStoreMode.USE, true, true, 1);
         }
     }
-    
+
     public void testRefresh() {
         if (getCacheEnabled()) {
             OpenJPAEntityManagerSPI em = getEntityManagerFactory().createEntityManager();
@@ -404,33 +404,33 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
             entityManagerStoreModeTest(CacheStoreMode.REFRESH, CacheStoreMode.REFRESH, true, true, 1);
         }
     }
-    
-    public void testResultsFromQueryAreInCache() { 
+
+    public void testResultsFromQueryAreInCache() {
         if (getCacheEnabled()) {
             // clear cache
             getEntityManagerFactory().getStoreCache().evictAll();
             getEntityManagerFactory().getQueryResultCache().evictAll();
 
             EntityManager em = getEntityManagerFactory().createEntityManager();
-            String query; 
+            String query;
             for(Class<?> cls : persistentTypes) {
                 query = "Select e from " + getAlias(cls) + " e";
                 List<?> res = em.createQuery(query).getResultList();
                 assertNotNull(String.format("Expected to find some results when running query %s",query), res);
                 assertTrue(String.format("Expected more than 0 results running query %s",query),res.size() != 0 ) ;
             }
-            for(Class<?> cls : getExpectedInCache()) { 
+            for(Class<?> cls : getExpectedInCache()) {
                 assertCached(getEntityManagerFactory().getCache(), cls, 1, true);
             }
-            
-            for(Class<?> cls : getExpectedNotInCache()) { 
+
+            for(Class<?> cls : getExpectedNotInCache()) {
                 assertCached(getEntityManagerFactory().getCache(), cls, 1, false);
             }
             em.close();
         }
     }
-    
-    public void testResultsFromFindAreInCache() { 
+
+    public void testResultsFromFindAreInCache() {
         if (getCacheEnabled()) {
             // clear cache
             getEntityManagerFactory().getStoreCache().evictAll();
@@ -441,17 +441,17 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
                 assertNotNull(String.format("Expected to find %s::%d from database or from cache", cls, 1),
                 		em.find(cls, 1));
             }
-            for(Class<?> cls : getExpectedInCache()) { 
+            for(Class<?> cls : getExpectedInCache()) {
                 assertCached(getEntityManagerFactory().getCache(), cls, 1, true);
             }
 
-            for(Class<?> cls : getExpectedNotInCache()) { 
+            for(Class<?> cls : getExpectedNotInCache()) {
                 assertCached(getEntityManagerFactory().getCache(), cls, 1, false);
             }
             em.close();
         }
     }
-    
+
     private String getAlias(Class<?> cls) {
         ClassMapping mapping =
             (ClassMapping) getEntityManagerFactory().getConfiguration().getMetaDataRepositoryInstance().getMetaData(

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.conf;
 
@@ -93,7 +93,7 @@ public class JDBCConfigurationImpl
     private String firstPass = null;
     private DecoratingDataSource dataSource = null;
     private DecoratingDataSource dataSource2 = null;
-    
+
     private static final Localizer _loc = Localizer.forPackage(JDBCConfigurationImpl.class);
 
     /**
@@ -314,7 +314,7 @@ public class JDBCConfigurationImpl
         seqPlugin.setAliases(JDBCSeqValue.ALIASES);
         seqPlugin.setDefault(JDBCSeqValue.ALIASES[0]);
         seqPlugin.setString(JDBCSeqValue.ALIASES[0]);
-        
+
         // This plug-in is declared in superclass but defined here
         // because PreparedQueryCache is currently available for JDBC
         // backend only
@@ -344,14 +344,14 @@ public class JDBCConfigurationImpl
         finderCachePlugin.setInstantiatingGetter("getFinderCacheInstance");
 
         identifierUtilPlugin = addPlugin("jdbc.IdentifierUtil", true);
-        aliases = new String[] { 
+        aliases = new String[] {
             "default", "org.apache.openjpa.jdbc.identifier.DBIdentifierUtilImpl" };
         identifierUtilPlugin.setAliases(aliases);
         identifierUtilPlugin.setDefault(aliases[0]);
         identifierUtilPlugin.setString(aliases[0]);
         identifierUtilPlugin.setInstantiatingGetter("getIdentifierUtilInstance");
 
-        
+
         // this static initializer is to get past a weird
         // ClassCircularityError that happens only under IBM's
         // JDK 1.3.1 on Linux from within the JRun ClassLoader;
@@ -359,9 +359,9 @@ public class JDBCConfigurationImpl
         // a bug in JRun, and we can get around it by forcing
         // Instruction.class to be loaded and initialized
         // before TypedInstruction.class
-        try { serp.bytecode.lowlevel.Entry.class.getName(); } 
+        try { serp.bytecode.lowlevel.Entry.class.getName(); }
         catch (Throwable t) {}
-        try { serp.bytecode.Instruction.class.getName(); } 
+        try { serp.bytecode.Instruction.class.getName(); }
         catch (Throwable t) {}
 
         supportedOptions().add(OPTION_QUERY_SQL);
@@ -783,18 +783,18 @@ public class JDBCConfigurationImpl
             Object obj = super.getConnectionFactory2();
             DataSource ds = null;
             if (obj != null) {
-                if (obj instanceof DataSource) 
+                if (obj instanceof DataSource)
                     ds = (DataSource) obj;
                 else {
                     Log log = getLog(LOG_JDBC);
                     if (log.isTraceEnabled()) {
                         Localizer loc = Localizer.forPackage(JDBCConfigurationImpl.class);
-                        log.trace(loc.get("unknown-datasource", getConnectionFactory2Name(), 
+                        log.trace(loc.get("unknown-datasource", getConnectionFactory2Name(),
                             obj.getClass().getName()));
                     }
                 }
             }
-                
+
             if (ds == null) {
                 // the driver name is always required, so if not specified,
                 // then no connection factory 2
@@ -839,7 +839,7 @@ public class JDBCConfigurationImpl
 
             return setupConnectionFactory(ds, false);
         }
-        
+
         if (log.isTraceEnabled())
             log.trace("createConnectionFactory: connectionFactory not created yet, attempt JNDI lookup...");
 
@@ -856,31 +856,31 @@ public class JDBCConfigurationImpl
         return setupConnectionFactory(ds, false);
     }
 
-    public DataSource getDataSource(StoreContext ctx) {       
+    public DataSource getDataSource(StoreContext ctx) {
         Log log = getLog(LOG_RUNTIME);
         DataSource ds = null;
-        
+
         if(ctx != null && StringUtil.isNotEmpty(ctx.getConnectionFactoryName())) {
-            ds =  getDataSource(ctx, (DataSource) ctx.getConnectionFactory()); 
+            ds =  getDataSource(ctx, (DataSource) ctx.getConnectionFactory());
             // fail fast if a cfName has been provided, but was not available in JNDI
             if (ds == null) {
                 throw new UserException(_loc.get("invalid-datasource", ctx.getConnectionFactoryName())).setFatal(true);
             }
-            if(! (ds instanceof DecoratingDataSource)) { 
+            if(! (ds instanceof DecoratingDataSource)) {
                 ds = DataSourceFactory.decorateDataSource(ds, this, false);
             }
             if (log.isTraceEnabled()) {
                 log.trace("Found datasource1: " + ds + " from StoreContext using jndiName: "
                     + ctx.getConnectionFactory2Name());
             }
-            return ds; 
+            return ds;
         }
         else {
             ds = getDataSource(ctx, (DataSource) getConnectionFactory());
             if (log.isTraceEnabled()) {
                 log.trace("Found datasource1: " + ds + " from configuration. StoreContext: " + ctx );
             }
-            return ds; 
+            return ds;
         }
     }
 
@@ -892,10 +892,10 @@ public class JDBCConfigurationImpl
         if (ctx != null && StringUtil.isNotEmpty(ctx.getConnectionFactory2Name())) {
             ds = (DataSource) ctx.getConnectionFactory2();
             if (ds == null) {
-                // fail fast. If the non-jta-data-source is configured on the context we want an immediate error. 
+                // fail fast. If the non-jta-data-source is configured on the context we want an immediate error.
                 throw new UserException(_loc.get("invalid-datasource", ctx.getConnectionFactory2Name())).setFatal(true);
             }
-            if(! (ds instanceof DecoratingDataSource)) { 
+            if(! (ds instanceof DecoratingDataSource)) {
                 ds = DataSourceFactory.decorateDataSource(ds, this, false);
             }
             if (log.isTraceEnabled()) {
@@ -906,16 +906,16 @@ public class JDBCConfigurationImpl
         }
 
         // If not set on context or value from context is not available try cf2 from config
-        else{ 
+        else{
             ds = (DataSource) getConnectionFactory2();
             if (log.isTraceEnabled()) {
                 log.trace("Found datasource 2: "+ ds + " from config. StoreContext: " + ctx);
             }
         }
-        
+
         // fallback to cf1 / datasource1
         if (ds == null) {
-            if(log.isTraceEnabled()) { 
+            if(log.isTraceEnabled()) {
                 log.trace("Trying datasource1");
             }
             return getDataSource(ctx);
@@ -986,10 +986,10 @@ public class JDBCConfigurationImpl
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         for (int i = 0; i < prefixes.length; i++)
             if (propName.toLowerCase(Locale.ENGLISH).startsWith(prefixes[i] + ".jdbc"))
-                return true; 
+                return true;
         return false;
     }
-    
+
     public String getIdentifierUtil() {
         return identifierUtilPlugin.getString();
     }

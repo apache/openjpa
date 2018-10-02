@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -55,7 +55,7 @@ public class DynamicSchemaFactory
 
     public void endConfiguration() {
     }
-    
+
     public SchemaGroup readSchema() {
         return this;
     }
@@ -112,14 +112,14 @@ public class DynamicSchemaFactory
 
         // Ensure only valid table name(s) are added to the schema
         if (tableName.getName().length() > _dict.maxTableNameLength) {
-            return schema.addTable(tableName, 
+            return schema.addTable(tableName,
                 _dict.getValidTableName(tableName, getSchema(schemaName)));
         }
 
         return schema.addTable(tableName);
     }
-    
-    
+
+
 //    protected Table newTable(String name, Schema schema) {
 //        return new DynamicTable(name, schema);
 //    }
@@ -177,7 +177,7 @@ public class DynamicSchemaFactory
         public Column getColumn(DBIdentifier name, DBDictionary dict) {
             return getColumn(name, dict, true);
         }
-        
+
         public Column getColumn(DBIdentifier name, DBDictionary dict, boolean create) {
             if (DBIdentifier.isNull(name))
                 return null;
@@ -190,7 +190,7 @@ public class DynamicSchemaFactory
             if ((name.getName().length() > _dict.maxColumnNameLength) ||
                 _dict.getInvalidColumnWordSet().contains(
                     DBIdentifier.toUpper(name).getName())) {
-                return addColumn(name, 
+                return addColumn(name,
                     _dict.getValidColumnName(name, this));
             }
 

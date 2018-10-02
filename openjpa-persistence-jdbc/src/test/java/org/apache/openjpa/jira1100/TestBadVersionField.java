@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jira1100;
 
@@ -31,12 +31,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests that entity with unsupported version type can not be used.
- * Used to ignore such field silently before. 
+ * Used to ignore such field silently before.
  * <BR>
  * For more details refer
- * 
+ *
  *   <A HREF="https://issues.apache.org/jira/browse/OPENJPA-1100">OPENJPA-1100</A>
- *   
+ *
  * @author Pinaki Poddar
  *
  */
@@ -44,19 +44,19 @@ public class TestBadVersionField extends SingleEMFTestCase {
     public void setUp() {
         super.setUp(CLEAR_TABLES, Data.class);
     }
-    
+
     public void testWrongVersionFieldNotSupported() {
         try {
             EntityManager em = emf.createEntityManager();
             fail("Expected to fail with unsupported Version field type");
         } catch (Exception ex) {
-            
+
         }
     }
-    
+
     /**
      * Declares a Version field of unsupported type.
-     *  
+     *
      */
     @Entity
     @Table(name="BadVersionField")
@@ -64,7 +64,7 @@ public class TestBadVersionField extends SingleEMFTestCase {
         @Id
         @GeneratedValue
         private long id;
-        
+
         @Version
         private BigDecimal version;
 

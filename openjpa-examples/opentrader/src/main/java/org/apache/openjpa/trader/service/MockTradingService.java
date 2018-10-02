@@ -43,7 +43,7 @@ public class MockTradingService implements TradingService {
     List<LogStatement> _logs = new ArrayList<LogStatement>();
     int counter = 0;
     private static Random rng = new Random(System.currentTimeMillis());
-    
+
     public MockTradingService() {
         Sector[] sectors = Sector.values();
         for (int i = 0; i < 10; i++) {
@@ -52,7 +52,7 @@ public class MockTradingService implements TradingService {
             _stocks.add(stock);
         }
     }
-    
+
     @Override
     public Ask ask(Trader trader, Stock stock, int volume, double price) {
         Ask ask = new Ask(trader, stock, price, volume);
@@ -112,7 +112,7 @@ public class MockTradingService implements TradingService {
         for (Trader t : _traders) {
             if (t.getName().equals(trader))
                 return t;
-        } 
+        }
         Trader t = new Trader(trader);
         _traders.add(t);
         return t;
@@ -139,7 +139,7 @@ public class MockTradingService implements TradingService {
         }
         return result;
     }
-    
+
     public Tradable refresh(Tradable t) {
         return t;
     }
@@ -149,14 +149,14 @@ public class MockTradingService implements TradingService {
         Trade trade = new Trade(match.getAsk(), match.getBid());
         return trade;
     }
-    
+
     private boolean matches(Ask ask, Bid bid) {
         return ((bid.getStock().getSymbol().equals(ask.getStock().getSymbol()))
                 &&  (!bid.getBuyer().equals(ask.getSeller()))
                 &&  (bid.getPrice() >= ask.getPrice())
                 &&  (bid.getVolume()) <= ask.getVolume());
     }
-    
+
     private void log(String s) {
         _logs.add(new LogStatement("INFO", "Context", "Thread", "Channel", s));
         System.err.println("server log:" + s );
@@ -171,7 +171,7 @@ public class MockTradingService implements TradingService {
     @Override
     public void close() {
     }
-    
+
     public String getServiceURI() {
     	return "Mock";
     }

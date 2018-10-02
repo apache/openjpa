@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -40,7 +40,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
 
     public void setUp() {
         setUp(BidiParent.class, BidiChild.class, CLEAR_TABLES);
-        
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -116,7 +116,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
             + "ORDER BY o.name ASC");
         q.getFetchPlan().addField(BidiParent.class, "oneToOneChild");
         q.getFetchPlan().addField(BidiChild.class, "oneToOneParent");
-        List<BidiParent> res = (List<BidiParent>) q.getResultList(); 
+        List<BidiParent> res = (List<BidiParent>) q.getResultList();
         assertEquals(2, res.size());
         for (int i = 0; i < res.size(); i++) {
             assertEquals("parent" + (i + 1), res.get(i).getName());
@@ -131,7 +131,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
             + "ORDER BY o.name ASC");
         q.getFetchPlan().addField(BidiParent.class, "oneToOneChild");
         q.getFetchPlan().addField(BidiChild.class, "oneToOneParent");
-        List<BidiChild> res = (List<BidiChild>) q.getResultList(); 
+        List<BidiChild> res = (List<BidiChild>) q.getResultList();
         assertEquals(2, res.size());
         for (int i = 0; i < res.size(); i++) {
             assertEquals("child" + (i + 1), res.get(i).getName());

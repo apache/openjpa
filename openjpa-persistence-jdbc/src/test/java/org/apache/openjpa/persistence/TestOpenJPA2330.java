@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -35,7 +35,7 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
     public void setUp() {
         setUp(EntityA.class, EntityB.class, EntityC.class);
     }
-    
+
     public void testOpenJPA2330() {
         final EntityManager em = emf.createEntityManager();
 
@@ -43,7 +43,7 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
         EntityB b = new EntityB(a);
         // set back pointer
         a.getBs().add(b);
-        
+
         EntityC c = new EntityC(b);
         // set back pointer
         b.getCs().add(c);
@@ -51,7 +51,7 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
         em.persist(a);
         em.persist(b);
         em.persist(c);
-        
+
         assertEquals(LoadState.LOADED, OpenJPAPersistenceUtil.isLoaded(b, "center"));
 
         em.close();

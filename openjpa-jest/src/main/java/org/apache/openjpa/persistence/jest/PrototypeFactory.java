@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -29,56 +29,56 @@ import org.apache.openjpa.kernel.Filters;
 
 /**
  * A factory for a specific type of objects registered by a key.
- * The client registers a type indexed by name. 
- * The client can get a new instance of the registered type. 
+ * The client registers a type indexed by name.
+ * The client can get a new instance of the registered type.
  * The requested registered type <em>not</em> necessarily have to have a no-arg
- * constructor. The constructor arguments can be passed during 
+ * constructor. The constructor arguments can be passed during
  * {@link #newInstance(Class, Object...) new instance} request. Based on the
  * arguments, a matching constructor, if any, is located and invoked.
- * 
+ *
  * <K> type of key for this registry
- * <T> base type of the objects to construct 
- * 
+ * <T> base type of the objects to construct
+ *
  * @author Pinaki Poddar
  *
  */
 public class PrototypeFactory<K,T> {
     private Map<K, Class<? extends T>> _registry = new TreeMap<K, Class<? extends T>>();
-    
+
     /**
      * Register the given class with the given key.
-     * 
+     *
      * @param key a non-null key.
      * @param prototype a type.
      */
     public void register(K key, Class<? extends T> prototype) {
         _registry.put(key, prototype);
     }
-    
+
     /**
      * Create a new instance of the type {@linkplain #register(Object, Class) registered} before
      * with the given key, if any.
-     * The given arguments are used to identify a constructor of the registered type and 
+     * The given arguments are used to identify a constructor of the registered type and
      * passed to the constructor of the registered type.
-     * 
+     *
      * @param key a key to identify a registered type.
      * @param args arguments to pass to the constructor of the type.
-     * 
-     * @return null if no type has been registered against the given key.  
+     *
+     * @return null if no type has been registered against the given key.
      */
     public T newInstance(K key, Object... args) {
         return _registry.containsKey(key) ? newInstance(_registry.get(key), args) : null;
     }
-    
+
     /**
      * Gets the keys registered in this factory.
-     * 
+     *
      * @return immutable set of registered keys.
      */
     public Set<K> getRegisteredKeys() {
         return Collections.unmodifiableSet(_registry.keySet());
     }
-    
+
     private T newInstance(Class<? extends T> type, Object... args) {
         try {
             return findConstructor(type, getConstructorParameterTypes(args)).newInstance(args);
@@ -86,7 +86,7 @@ public class PrototypeFactory<K,T> {
             throw new RuntimeException();
         }
     }
-    
+
     Class<?>[] getConstructorParameterTypes(Object... args) {
         if (args == null || args.length == 0) {
             return new Class<?>[0];
@@ -97,7 +97,7 @@ public class PrototypeFactory<K,T> {
         }
         return types;
     }
-    
+
     /**
      * Finds a constructor of the given class with given argument types.
      */

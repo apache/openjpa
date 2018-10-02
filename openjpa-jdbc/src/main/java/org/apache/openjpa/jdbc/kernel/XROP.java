@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -136,7 +136,7 @@ public class XROP implements BatchedResultObjectProvider {
     }
 
     /**
-     * Gets the update count, provided the current result of the statement is not a result set. 
+     * Gets the update count, provided the current result of the statement is not a result set.
      */
     @Override
     public int getUpdateCount() {

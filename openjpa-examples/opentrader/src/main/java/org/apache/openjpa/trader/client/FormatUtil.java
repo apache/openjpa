@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.HTML;
 
 /**
  * A set of static utilities to create decorated HTML labels for price and price changes.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -31,14 +31,14 @@ public class FormatUtil {
     public static final NumberFormat priceFormat  = NumberFormat.getFormat("#,##0.00");
     public static final NumberFormat changeFormat = NumberFormat.getFormat("+#,##0.00;-#,##0.00");
     public static final NumberFormat volumeFormat = NumberFormat.getFormat("#,##0");
-    
+
     /**
      * Creates a HTML for the formatted price without any style.
      */
     public static HTML formatPrice(double price) {
         return formatPrice(price, false);
     }
-    
+
     /**
      * Creates a HTML label for the formatted price with a style based on the signum of the price.
      * The positive and negative values are formatted with CSS styles <code>positive</code> and
@@ -51,7 +51,7 @@ public class FormatUtil {
             label.addStyleName(price >= 0 ? "positive" : "negative");
         return label;
     }
-    
+
     /**
      * Creates a HTML label for the given integer.
      */
@@ -60,11 +60,11 @@ public class FormatUtil {
         label.setText(volumeFormat.format(volume));
         return label;
     }
-    
+
     /**
      * Creates a HTML label for the difference of two given numbers and applies style based
      * on the sign of the difference. Optionally adds percentage change.
-     * 
+     *
      * @param p1 first value
      * @param p2 second value
      * @param pct if true, adds a percentage change
@@ -82,7 +82,7 @@ public class FormatUtil {
         html.addStyleName(style);
         return html;
     }
-    
+
     /**
      * Creates a HTML label for the given value and applies style based on the sign.
      */

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
@@ -30,12 +30,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests GROUP BY in sub query does not get parsed by owning query.
- * 
+ *
  * Further details can be found in <A
  * HREF="https://issues.apache.org/jira/browse/OPENJPA-28">OPENJPA-28</A>
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class TestGroupByQuery extends SingleEMFTestCase {
 	public void setUp() {

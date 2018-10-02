@@ -30,13 +30,13 @@ public class EntityI3 {
     @Column(name="entityI3 id")
     int id;
     String name;
-    
+
     public EntityI3() {}
-    
+
     public EntityI3(int id) {
         this.id = id;
     }
-    
+
     /**
      * @return the id
      */

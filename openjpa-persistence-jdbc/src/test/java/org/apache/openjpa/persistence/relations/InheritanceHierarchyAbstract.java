@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -53,18 +53,18 @@ public abstract class InheritanceHierarchyAbstract implements Serializable {
     @Id
     @GeneratedValue
     private long id;
-   
+
     @ManyToOne
     @JoinColumn
     private InheritanceHierarchyAbstract parent;
 
-	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, 
+	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,
 			fetch=FetchType.EAGER)
     private Set<InheritanceHierarchyAbstract> children;
 
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
 	public Set<InheritanceHierarchyAbstract> getChildren() {

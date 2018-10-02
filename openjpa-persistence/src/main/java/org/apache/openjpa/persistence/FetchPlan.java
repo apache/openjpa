@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -114,8 +114,8 @@ public interface FetchPlan {
      * @deprecated use {@link #setQueryResultCacheEnabled} instead.
      */
     public FetchPlan setQueryResultCache(boolean cache);
-    
-    
+
+
     /**
      * Returns the names of the fetch groups that this component will use
      * when loading objects. Defaults to the
@@ -324,69 +324,69 @@ public interface FetchPlan {
      */
     @Reflectable(false)
     public org.apache.openjpa.kernel.FetchConfiguration getDelegate();
-    
+
     /**
      * Affirms if extended path lookup feature is active.
-     * 
+     *
      * @since 2.0.0
      */
     public boolean getExtendedPathLookup();
-    
+
     /**
      * Sets extended path lookup feature.
      *
      * @since 2.0.0
      */
     public FetchPlan setExtendedPathLookup(boolean flag);
-    
+
     /**
      * Gets the current storage mode for data cache.
-     * 
+     *
      * @since 2.0.0
      */
     public DataCacheStoreMode getCacheStoreMode();
-    
+
     /**
      * Sets the current storage mode for data cache.
-     * 
+     *
      * @since 2.0.0
      */
     public FetchPlan setCacheStoreMode(DataCacheStoreMode mode);
-    
+
     /**
      * Gets the current retrieve mode for data cache.
-     * 
+     *
      * @since 2.0.0
      */
     public DataCacheRetrieveMode getCacheRetrieveMode();
-    
+
     /**
      * Sets the current retrieve mode for data cache.
-     * 
+     *
      * @since 2.0.0
      */
     public FetchPlan setCacheRetrieveMode(DataCacheRetrieveMode mode);
-    
+
     /**
      * Set the hint for the given key to the given value.
-     * 
+     *
      * @param value the value of the hint.
      * @param name the name of the hint.
-     * 
+     *
      * @since 2.0.0
      */
     public void setHint(String key, Object value);
 
     /**
      * Get the hints and their values currently set on this receiver.
-     * 
+     *
      * @return empty map if no hint has been set.
      */
     Map<String, Object> getHints();
-    
+
     /**
      * Get the hint value for the given key.
-     * 
+     *
      * @return null if the key has not been set.
      */
     Object getHint(String key);

@@ -29,9 +29,9 @@ public class VersionEntity {
 
     @Id
     private int id;
-    
+
     private String name;
-    
+
     @Version
     private int version;
 

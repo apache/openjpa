@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -32,14 +32,14 @@ public class Widget {
     @Id
     @GeneratedValue(generator="uuid-hex")
     private String id;
-    
+
     @Basic
     private String name;
-    
+
     @ManyToMany(mappedBy="widgets")
     private Collection<Owner> owners;
 
-    public Widget() {        
+    public Widget() {
     }
 
     public Widget(String name) {
@@ -69,7 +69,7 @@ public class Widget {
     public Collection<Owner> getOwners() {
         return owners;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof Widget) {
             Widget widget = (Widget)obj;

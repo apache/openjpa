@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -113,7 +113,7 @@ public class DataSourceFactory {
                 return (DataSource) Configurations.newInstance(driver,
                     conf, props, AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
-                            DataSource.class))); 
+                            DataSource.class)));
             }
         }
         catch (OpenJPAException ke) {
@@ -205,26 +205,26 @@ public class DataSourceFactory {
             ConfiguringConnectionDecorator ccd =
                 new ConfiguringConnectionDecorator();
             ccd.setTransactionIsolation(conf.getTransactionIsolationConstant());
-            
+
             //OPENJPA-2517: Allow a javax.persistence.query.timeout to apply to all
             //EM operations (not just Query operations).  Convert from milliseconds
-            //to seconds.  See DBDictionary.setQueryTimeout for similar conversions.  
-            //DBDictionary.setQueryTimeout will log warnings for invalid values, 
-            //therefore there is no need to do so again here.  Furthermore, there is no  
+            //to seconds.  See DBDictionary.setQueryTimeout for similar conversions.
+            //DBDictionary.setQueryTimeout will log warnings for invalid values,
+            //therefore there is no need to do so again here.  Furthermore, there is no
             //need to check for -1 here, ConfigurationConnectionDecorator checks for it.
             int timeout = conf.getQueryTimeout();
             if (dict.allowQueryTimeoutOnFindUpdate){
                 if (timeout > 0 && timeout < 1000) {
                     // round up to 1 sec
-                    timeout = 1; 
+                    timeout = 1;
                 }
                 else if (timeout >= 1000){
                     timeout = timeout/1000;
                 }
             }
-            
+
             ccd.setQueryTimeout(timeout);
-            
+
             Log log = conf.getLog(JDBCConfiguration.LOG_JDBC);
             if (factory2 || !conf.isConnectionFactoryModeManaged()) {
                 if (!dict.supportsMultipleNontransactionalResultSets)
@@ -244,7 +244,7 @@ public class DataSourceFactory {
 
             // allow the dbdictionary to decorate the connection further
             ds.addDecorator(dict);
-            
+
             // ensure dbdictionary to process connectedConfiguration()
             if (!factory2)
                 conn = ds.getConnection(conf.getConnectionUserName(), conf
@@ -266,11 +266,11 @@ public class DataSourceFactory {
                 }
         }
     }
-    
-    static OpenJPAException newConnectException(JDBCConfiguration conf, 
+
+    static OpenJPAException newConnectException(JDBCConfiguration conf,
     		boolean factory2, Exception cause) {
-    	return new UserException(_eloc.get("poolds-null", factory2 
-          	  ? new Object[]{conf.getConnection2DriverName(), 
+    	return new UserException(_eloc.get("poolds-null", factory2
+          	  ? new Object[]{conf.getConnection2DriverName(),
           			         conf.getConnection2URL()}
           	  : new Object[]{conf.getConnectionDriverName(),
           		             conf.getConnectionURL()}),

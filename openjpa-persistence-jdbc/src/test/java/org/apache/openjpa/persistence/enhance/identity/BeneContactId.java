@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -28,10 +28,10 @@ import javax.persistence.Enumerated;
 @Embeddable
 public class BeneContactId implements Serializable {
 	private static final long serialVersionUID = -837443719842439462L;
-	ContactType type; 
+	ContactType type;
 
-    String beneficiaryPK; 
-	
+    String beneficiaryPK;
+
 	public boolean equals(Object obj) {
 		if(this == obj) return true;
 		if((obj != null) && (obj instanceof BeneContactId)) {
@@ -41,34 +41,34 @@ public class BeneContactId implements Serializable {
 		}
 		return false;
 	}
-	
+
 	public int hashCode() {
 		String hash = beneficiaryPK + Integer.toString(type.ordinal());
 		return hash.hashCode();
 	}
-	
+
 	public String toString() {
 		return type.toString() + "-" + beneficiaryPK;
 	}
-	
+
     @Column(name="ID")
 	public String getBeneficiaryKey() {
 		return beneficiaryPK;
 	}
-    
+
 	public void setBeneficiaryKey(String id) {
 		beneficiaryPK = id;
 	}
-	
+
     @Enumerated(EnumType.STRING)
     @Column(name="TYPE")
 	public ContactType getContactType() {
 		return type;
 	}
-    
+
 	public void setContactType(ContactType type) {
 		this.type = type;
 	}
-	
+
 	public enum ContactType {HOME, BUSINESS, OTHER;}
 }

@@ -43,28 +43,28 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.Find},
             {Act.SaveVersion},
             {Act.TestEmployee, 1, Default_FirstName},
-            
+
             {Act.FindWithLock, 1, LockModeType.NONE },
             {Act.TestException},
-            
+
             {Act.FindWithLock, 1, LockModeType.READ },
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.FindWithLock, 1, LockModeType.WRITE },
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.FindWithLock, 1, LockModeType.OPTIMISTIC },
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.FindWithLock, 1, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.FindWithLock, 1, LockModeType.PESSIMISTIC_READ},
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.FindWithLock, 1, LockModeType.PESSIMISTIC_WRITE},
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.FindWithLock, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, TransactionRequiredException.class },
             {Act.CloseEm},
@@ -85,7 +85,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.SaveVersion},
             {Act.TestEmployee, 1, Default_FirstName},
             {Act.StartTx},
-      
+
             {Act.FindObject, null, 0, LockModeType.NONE },
             {Act.TestException, 0, IllegalArgumentException.class },
             {Act.FindObject, Object.class, 0, LockModeType.NONE },
@@ -105,7 +105,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.FindObject, LockEmployee.class, Boolean.TRUE,
                 LockModeType.READ },
             {Act.TestException, 0, IllegalArgumentException.class },
-            
+
             {Act.FindObject, null, 0, LockModeType.WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
             {Act.FindObject, Object.class, 0, LockModeType.WRITE },
@@ -115,7 +115,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.FindObject, LockEmployee.class, Boolean.TRUE,
                 LockModeType.WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
-            
+
             {Act.FindObject, null, 0, LockModeType.OPTIMISTIC },
             {Act.TestException, 0, IllegalArgumentException.class },
             {Act.FindObject, Object.class, 0, LockModeType.OPTIMISTIC },
@@ -126,11 +126,11 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.FindObject, LockEmployee.class, Boolean.TRUE,
                 LockModeType.OPTIMISTIC },
             {Act.TestException, 0, IllegalArgumentException.class },
-            
+
             {Act.FindObject, null, 0,
                 LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
-            {Act.FindObject, Object.class, 0, 
+            {Act.FindObject, Object.class, 0,
                 LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
             {Act.FindObject, LockEmployee.class, null,
@@ -139,7 +139,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.FindObject, LockEmployee.class, Boolean.TRUE,
                 LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
-            
+
             {Act.FindObject, null, 0,
                 LockModeType.PESSIMISTIC_READ },
             {Act.TestException, 0, IllegalArgumentException.class },
@@ -152,7 +152,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.FindObject, LockEmployee.class, Boolean.TRUE,
                 LockModeType.PESSIMISTIC_READ },
             {Act.TestException, 0, IllegalArgumentException.class },
-            
+
             {Act.FindObject, null, 0,
                 LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException, 0,
@@ -168,7 +168,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.FindObject, LockEmployee.class, Boolean.TRUE,
                 LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
-            
+
             {Act.FindObject, null, 0,
                 LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0,
@@ -180,7 +180,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.FindObject, LockEmployee.class, null,
                 LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, EntityNotFoundException.class },
-            {Act.FindObject, LockEmployee.class, Boolean.TRUE, 
+            {Act.FindObject, LockEmployee.class, Boolean.TRUE,
                 LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
             {Act.CloseEm}
@@ -188,7 +188,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
         launchActionSequence("testLockIllegalArgrumentExceptions()",
             "Test invalid entity.", threadMainInvEntityIllegalArgTest);
     }
-    
+
     /*
      * If a pessimistic lock mode type is specified and the entity
      * contains a version attribute, the persistence provider must
@@ -214,9 +214,9 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
         commonLockOptimisticLockExceptions(
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, false, true);
     }
-    
+
     public void commonLockOptimisticLockExceptions(LockModeType lockMode,
-        boolean expectingOptLockException1, 
+        boolean expectingOptLockException1,
         boolean expectingOptLockException2) {
         Object[][] threadMainOptLockExTest = {
             {Act.CreateEm},
@@ -224,18 +224,18 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.SaveVersion},
             {Act.TestEmployee, 1, Default_FirstName},
             {Act.Clear},
-            
+
             {Act.NewThread, 1 },
             {Act.StartThread, 1 },
             {Act.Wait},
-            
+
             {Act.StartTx},
             {Act.FindWithLock, 1, lockMode},
             {Act.UpdateEmployee},
             {Act.Notify, 1},
             {Act.Wait},
             {Act.CommitTx},
-            
+
             {Act.WaitAllChildren},
             {Act.TestException, 0, expectingOptLockException1
                 ? OptimisticLockException.class : null},
@@ -249,14 +249,14 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.FindWithLock, 1, LockModeType.OPTIMISTIC},
             {Act.SaveVersion},
             {Act.UpdateEmployee},
-            
+
             {Act.Notify, 0},
             {Act.Wait},
-            
+
             {Act.CommitTx},
             {Act.Notify, 0},
             {Act.CloseEm}
-        };        
+        };
         launchActionSequence("testLockOptimisticLockExceptions()", null,
             threadMainOptLockExTest, thread1OptLockExTest);
     }

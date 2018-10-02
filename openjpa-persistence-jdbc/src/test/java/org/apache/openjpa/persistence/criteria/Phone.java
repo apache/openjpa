@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -30,15 +30,15 @@ import javax.persistence.Table;
 @Entity
 @Table(name="CR_PHN")
 public class Phone {
-    @Id 
+    @Id
     @GeneratedValue
     private int id;
-    
+
     @ManyToMany
     private Collection<Employee> employees = new ArrayList<Employee>();
-    
+
 	private String vendor;
-	
+
     public int getId() {
         return id;
     }
@@ -46,15 +46,15 @@ public class Phone {
     public Collection<Employee> getEmployees() {
         return employees;
     }
-    
+
     public void addEmployees(Employee employee) {
         employees.add(employee);
     }
-    
+
     public String getVendor() {
         return vendor;
     }
-    
+
     public void setVendor(String vendor) {
         this.vendor = vendor;
     }

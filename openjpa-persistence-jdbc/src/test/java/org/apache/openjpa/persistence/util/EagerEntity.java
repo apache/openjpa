@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.util;
 
@@ -34,14 +34,14 @@ public class EagerEntity {
 
     @Id
     private int id;
-    
+
     @Basic
     private String name;
-    
-    @Embedded    
+
+    @Embedded
     private EagerEmbed eagerEmbed;
 
-    @Embedded    
+    @Embedded
     private EagerEmbedRel eagerEmbedRel;
 
     @ElementCollection(fetch=FetchType.EAGER)
@@ -49,7 +49,7 @@ public class EagerEntity {
 
     @OneToMany(fetch=FetchType.EAGER)
     private List<EagerEntity> eagerSelf;
-    
+
     @Transient
     private String transField;
 

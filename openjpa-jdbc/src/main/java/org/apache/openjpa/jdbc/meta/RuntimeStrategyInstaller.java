@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -57,7 +57,7 @@ public class RuntimeStrategyInstaller
 
     public void installStrategy(FieldMapping field) {
         FieldStrategy strategy = null;
-        ClassMapping owner = getOutermostDefiningMapping(field); 
+        ClassMapping owner = getOutermostDefiningMapping(field);
         if (owner != null && !owner.isEmbeddable() && !owner.isAbstract())
             strategy = repos.namedStrategy(field, true);
         if (strategy == null) {
@@ -80,13 +80,13 @@ public class RuntimeStrategyInstaller
         }
         field.setStrategy(strategy, Boolean.FALSE);
     }
-    
+
     private ClassMapping getOutermostDefiningMapping(ValueMetaData vm) {
         if (vm instanceof FieldMapping) {
             ClassMapping owner = ((FieldMapping)vm).getDefiningMapping();
             ValueMetaData val = owner.getEmbeddingMetaData();
             if (val == null)
-                return owner; 
+                return owner;
             return getOutermostDefiningMapping(val);
         } else if (vm instanceof ValueMappingImpl) {
             FieldMapping owner = ((ValueMappingImpl)vm).getFieldMapping();

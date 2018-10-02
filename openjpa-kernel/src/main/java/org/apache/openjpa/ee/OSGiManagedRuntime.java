@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.ee;
 
@@ -33,7 +33,7 @@ import org.osgi.framework.ServiceReference;
  * <p>Implementation of the {@link ManagedRuntime} interface that listens
  * for an OSGi service with interface <code>javax.transaction.TransactionManager</code>
  * to create a {@link TransactionManager} for controlling transactions.</p>
- * 
+ *
  * <p>The support for a transaction manager is usually activated inside an OSGi
  * {@link BundleActivator} implementation using {@link #registerServiceListener(BundleContext)}
  * and {@link #deregisterServiceListener(BundleContext)}.
@@ -48,7 +48,7 @@ public class OSGiManagedRuntime extends AbstractManagedRuntime {
     private static TransactionManager transactionManager;
     private static ServiceReference serviceReference;
     private static ServiceListener listener;
-    
+
     private static final class Listener implements ServiceListener {
 
         final BundleContext bundleContext;
@@ -83,46 +83,46 @@ public class OSGiManagedRuntime extends AbstractManagedRuntime {
             }
         }
     }
-    
+
     /**
      * <p>Register a service listener to the given bundle context by
-     * {@link BundleContext#addServiceListener(ServiceListener,String)} with a filter 
+     * {@link BundleContext#addServiceListener(ServiceListener,String)} with a filter
      *  expression of <code>(objectClass=javax.transaction.TransactionManager)</code>.</p>
-     *  
+     *
      *  <p>The caller is responsible for calling
      *  {@link #deregisterServiceListener(BundleContext)}, when
      *  the bundle context is being stopped.</p>
-     *  
+     *
      * @param bundle The bundle, which is currently being started.
      * @throws InvalidSyntaxException When the filter expression is invalid.
      */
     public static synchronized void registerServiceListener(BundleContext bundleContext)
     throws InvalidSyntaxException {
-        
+
         if (listener != null) {
             throw new InternalException("Another OSGi service listener has already been registered.");
         }
-        
+
         listener = new Listener(bundleContext);
-        
+
         bundleContext.addServiceListener(listener, "(" + Constants.OBJECTCLASS
             + "=javax.transaction.TransactionManager)");
-        
+
         serviceReference = bundleContext.getServiceReference("javax.transaction.TransactionManager");
-        
+
         if (serviceReference != null) {
             transactionManager = (TransactionManager)bundleContext.getService(serviceReference);
         }
     }
-    
+
     /**
      * Remove a service listener previously started inside {@link #registerServiceListener(BundleContext)}.
-     * 
+     *
      * @param bundleContext The bundle context to call
      *          {@link BundleContext#removeServiceListener(ServiceListener)} on.
      */
     public static synchronized void deregisterServiceListener(BundleContext bundleContext) {
-       
+
         try {
             if (serviceReference != null) {
                 bundleContext.ungetService(serviceReference);
@@ -145,23 +145,23 @@ public class OSGiManagedRuntime extends AbstractManagedRuntime {
     @Override
     public TransactionManager getTransactionManager() throws Exception {
         synchronized (OSGiManagedRuntime.class) {
-            
+
             if (transactionManager == null) {
                 throw new InternalException("No javax.transaction.TransactionManager " +
                 		"service is currently registered as an OSGi service.");
             }
-            
+
             return transactionManager;
         }
     }
 
     /* (non-Javadoc)
-     * 
+     *
      * @see org.apache.openjpa.ee.ManagedRuntime#setRollbackOnly(java.lang.Throwable)
      */
     @Override
     public void setRollbackOnly(Throwable cause) throws Exception {
-        
+
         // there is no generic support for setting the rollback cause
         getTransactionManager().getTransaction().setRollbackOnly();
     }

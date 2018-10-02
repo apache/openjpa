@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -35,7 +35,7 @@ public class ConstraintPattern implements Serializable {
 
     @Transient
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue
     private long id;
@@ -48,8 +48,8 @@ public class ConstraintPattern implements Serializable {
     @Basic
     private String zipcode;     // @Pattern([0-9]) constraint is on the getter
 
-    
-    /* 
+
+    /*
      * Some helper methods to create the entities to test with
      */
     public static ConstraintPattern createInvalidString() {
@@ -73,7 +73,7 @@ public class ConstraintPattern implements Serializable {
         return c;
     }
 
-    
+
     /*
      * Main entity code
      */

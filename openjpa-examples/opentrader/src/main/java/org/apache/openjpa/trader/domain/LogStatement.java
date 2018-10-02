@@ -27,11 +27,11 @@ public class LogStatement implements Serializable {
     private String thread;
     private String channel;
     private String message;
-    
+
     protected LogStatement() {
-        
+
     }
-    
+
     public LogStatement(String level, String context, String thread, String channel, String message) {
         super();
         this.level = level;
@@ -60,7 +60,7 @@ public class LogStatement implements Serializable {
     public String getMessage() {
         return message;
     }
-    
+
     public String toString() {
         return level + " [" + context + "] [" + thread + "] [" + channel + "] :" + message;
     }

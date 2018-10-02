@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.procedure;
 
@@ -88,7 +88,7 @@ public class DerbyProcedureList extends AbstractProcedureList {
             DriverManager.getConnection("jdbc:default:connection");
         PreparedStatement ps1 =
             conn
-                .prepareStatement("update APPLICANT set name = 'Charliex' " 
+                .prepareStatement("update APPLICANT set name = 'Charliex' "
                     + "where name = 'Charlie'");
         ps1.executeUpdate();
 
@@ -149,7 +149,7 @@ public class DerbyProcedureList extends AbstractProcedureList {
         return "{ call GET_ALL_APPLICANTS_AND_GAMES () }";
     }
 
-    public static void getAllApplicantsAndGames(ResultSet[] rs1, 
+    public static void getAllApplicantsAndGames(ResultSet[] rs1,
         ResultSet[] rs2)
         throws Exception {
         Connection conn =

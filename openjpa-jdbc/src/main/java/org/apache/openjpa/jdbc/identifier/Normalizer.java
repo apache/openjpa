@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.identifier;
 
@@ -26,15 +26,15 @@ import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
 
 /**
- * Static utility class used for operating on string based identifiers. 
+ * Static utility class used for operating on string based identifiers.
  */
 public class Normalizer {
 
-    private static IdentifierUtil normalizer = 
+    private static IdentifierUtil normalizer =
         new DBIdentifierUtilImpl(new DefaultIdentifierConfiguration());
-    
+
     private static IdentifierRule defaultRule;
-    
+
     static {
         defaultRule = normalizer.getIdentifierConfiguration().getDefaultIdentifierRule();
     }
@@ -42,7 +42,7 @@ public class Normalizer {
     public static IdentifierConfiguration getNamingConfiguration() {
         return normalizer.getIdentifierConfiguration();
     }
-    
+
     /**
      * Normalizes a multi-part name
      * @param name
@@ -69,7 +69,7 @@ public class Normalizer {
         }
         return name;
     }
-    
+
     /**
      * Returns true if the name is delimited with default delimiters
      * @param name
@@ -80,7 +80,7 @@ public class Normalizer {
         }
         return normalizer.isDelimited(defaultRule, name);
     }
-    
+
     /**
      * Splits names into individual components and compares individually
      * for equality
@@ -114,7 +114,7 @@ public class Normalizer {
 
     /**
      * Compares two string names for equality.  If delimited, does a
-     * case comparison.  If not delimited, does a case insensitive 
+     * case comparison.  If not delimited, does a case insensitive
      * comparison.
      * @param name1
      * @param name2
@@ -148,7 +148,7 @@ public class Normalizer {
         }
         return nName;
     }
-    
+
     /**
      * Splits a name into normalized components
      * @param name
@@ -156,8 +156,8 @@ public class Normalizer {
     public static String[] splitName(String name) {
         return normalizer.splitName(defaultRule, name);
     }
-    
-    
+
+
     /**
      * Splits a name into normalized components using the specified
      * name delimiter (ex. schema:table, delim = : --> { schema, table }
@@ -182,7 +182,7 @@ public class Normalizer {
     public static String joinNames(String[] names, String delimiter) {
         return normalizer.joinNames(defaultRule, names, delimiter);
     }
-    
+
     /**
      * Joins two names using the default identifier rules.
      * @param names
@@ -190,7 +190,7 @@ public class Normalizer {
     public static String joinNames(String name1, String name2) {
         return joinNames(new String[] { name1, name2});
     }
-    
+
 
     /**
      * Truncates a name to the specified length while maintaining
@@ -232,7 +232,7 @@ public class Normalizer {
         return normalizer.combineNames(defaultRule, names);
     }
 
-    
+
     /**
      * Appends one string to another using default identifier rules.
      * @param name1
@@ -241,7 +241,7 @@ public class Normalizer {
     public static String append(String name1, String name2) {
         return normalizer.appendNames(defaultRule, name1, name2);
     }
-    
+
     /**
      * Removes Hungarian notation from a string.
      * @param name1

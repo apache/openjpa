@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
@@ -38,12 +38,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestNamedSQLQueries
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-     
-    
+
+
     /** Creates a new instance of TestNamedSQLQueries */
     public TestNamedSQLQueries() {
     }
-    
+
     public TestNamedSQLQueries(String test) {
         super(test);
     }
@@ -102,5 +102,5 @@ public class TestNamedSQLQueries
         pm.close();
          */
     }
-    
+
 }

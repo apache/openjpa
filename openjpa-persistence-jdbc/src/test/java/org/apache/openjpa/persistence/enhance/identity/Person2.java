@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -26,24 +26,24 @@ public class Person2 {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     long ssn;
-    
+
     @OneToOne(mappedBy="patient")
     MedicalHistory2 medical;
-    
+
     String name;
-    
+
     public long getSsn() {
         return ssn;
     }
-    
+
     public void setSsn(long ssn) {
         this.ssn = ssn;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -51,11 +51,11 @@ public class Person2 {
     public MedicalHistory2 getMedical() {
         return medical;
     }
-    
+
     public void setMedical(MedicalHistory2 medical) {
         this.medical = medical;
     }
-    
+
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof Person2)) return false;
@@ -66,12 +66,12 @@ public class Person2 {
         if (ssn != ssn0) return false;
         if (name != name0) return false;
         if (medical != null && medical0 != null && medical.id != medical0.id)
-            return false; 
+            return false;
         if (medical == null && medical0 != null) return false;
         if (medical != null && medical0 == null) return false;
         return true;
     }
-    
+
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + (int) ssn;

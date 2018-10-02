@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -26,7 +26,7 @@ import org.apache.openjpa.kernel.StoreContext;
  *
  * @author Catalina Wei
  */
-public class Coalesce 
+public class Coalesce
     extends Val {
 
     private final Val[] _val;
@@ -84,7 +84,7 @@ public class Coalesce
         return c1;
     }
 
-    public void setImplicitType(Class type) {       
+    public void setImplicitType(Class type) {
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

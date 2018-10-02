@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.enhance;
@@ -28,10 +28,10 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestEmbeddableEntityWithIDAnnotation extends SQLListenerTestCase{
 
     public void setUp() {
-        setUp(EmbeddableEntityWithIDAnnotation.class, IDOwningClassTestEntity.class, CLEAR_TABLES);        
+        setUp(EmbeddableEntityWithIDAnnotation.class, IDOwningClassTestEntity.class, CLEAR_TABLES);
     }
-    
-    //make sure no exception is thrown here. 
+
+    //make sure no exception is thrown here.
     public void testpcNewObjectIdInstanceMethod(){
         EntityManager em = emf.createEntityManager();
         try{
@@ -40,7 +40,7 @@ public class TestEmbeddableEntityWithIDAnnotation extends SQLListenerTestCase{
             em.persist(e);
             em.getTransaction().commit();
             assertTrue(em.createQuery("select count(c) from IDOwningClassTestEntity c", Long.class)
-                    .getSingleResult().longValue() > 0);                    
+                    .getSingleResult().longValue() > 0);
         }finally{
             em.close();
         }

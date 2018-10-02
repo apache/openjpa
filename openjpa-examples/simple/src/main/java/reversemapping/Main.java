@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package reversemapping;
 
@@ -23,9 +23,9 @@ import java.util.*;
 import javax.persistence.*;
 
 
-/** 
+/**
  * A simple program that uses the reverse-mapped classes from the airlines
- * schema to print out a list of schedules flightes and the 
+ * schema to print out a list of schedules flightes and the
  * projected profits from them.
  */
 public class Main {
@@ -110,7 +110,7 @@ public class Main {
 
             print("  total profit: " + NumberFormat.getCurrencyInstance().
                 format(income - totalCost));
-       } 
+       }
 
         // Again, it is always good to clean up after ourselves
         em.close();

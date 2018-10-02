@@ -27,12 +27,12 @@ public class TestIdClass extends SingleEMFTestCase {
 	 public void setUp() {
 	        setUp(IdClassTestMSC.class, IdClassEntity.class);
 	 }
-	 
+
 	 public void test001() {
 		 EntityManager em = emf.createEntityManager();
 		 Query query = em.createQuery("SELECT a from IdClassEntity a");
 		 query.getResultList();
-		 em.close();		 
+		 em.close();
 	}
 }
 

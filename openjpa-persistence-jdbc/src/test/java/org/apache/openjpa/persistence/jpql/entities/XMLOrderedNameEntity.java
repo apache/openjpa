@@ -27,7 +27,7 @@ import javax.persistence.OrderColumn;
 public class XMLOrderedNameEntity implements INameEntity, java.io.Serializable {
 
     private int id;
-    
+
     private String name;
 
     @ManyToMany
@@ -62,7 +62,7 @@ public class XMLOrderedNameEntity implements INameEntity, java.io.Serializable {
     public String toString() {
         return "XMLOrderedNameEntity[" + id + "]=" + name;
     }
-    
+
     public List<IColumnEntity> getColumns() {
         return columns;
     }

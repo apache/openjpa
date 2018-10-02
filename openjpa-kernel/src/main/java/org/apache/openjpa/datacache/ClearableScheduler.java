@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -182,7 +182,7 @@ public class ClearableScheduler implements Runnable {
                 Calendar cal = Calendar.getInstance();
                 int interval = Integer.parseInt(date.substring(1));
                 int currMin = cal.get(Calendar.MINUTE);
-                
+
                 tmin = new int[60/interval];
                 for(int i = 0; i<tmin.length;i++){
                     int temp;
@@ -204,7 +204,7 @@ public class ClearableScheduler implements Runnable {
                 month = WILDCARD;
                 dayOfWeek = WILDCARD;
             }else{
-            
+
                 StringTokenizer token = new StringTokenizer(date, " \t");
                 if (token.countTokens() != 5)
                     throw new UserException(_loc.get("bad-count", date)).setFatal(true);

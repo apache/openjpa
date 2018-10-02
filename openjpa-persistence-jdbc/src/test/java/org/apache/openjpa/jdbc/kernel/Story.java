@@ -33,7 +33,7 @@ public class Story {
 
     @Version
     private int version;
-    
+
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     private Task task;
 
@@ -55,6 +55,6 @@ public class Story {
 
     public int getVersion() {
         return version;
-    } 
+    }
 
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -43,7 +43,7 @@ public class DiscriminatorMappingInfo
     extends MappingInfo {
 
     private String _value = null;
-    
+
     /**
      * Raw discriminator value string.
      */
@@ -68,14 +68,14 @@ public class DiscriminatorMappingInfo
             return discrim.getMappingRepository().getMappingDefaults().
                 getDiscriminatorValue(discrim, adapt);
         }
-        
-        switch(discrim.getJavaType()) { 
+
+        switch(discrim.getJavaType()) {
             case JavaTypes.INT:
                 return Integer.valueOf(_value);
             case JavaTypes.CHAR:
                return Character.valueOf(_value.charAt(_value.indexOf('\'')+1));
             case JavaTypes.STRING:
-            default: 
+            default:
                 return _value;
         }
     }

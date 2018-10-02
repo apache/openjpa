@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -24,9 +24,9 @@ import javax.persistence.*;
 
 /**
  * This is the default bi-directional one-to-many mapping.
- * Foreign key strategy is used. 
+ * Foreign key strategy is used.
  * Exception is thrown if @JoinColumn is used in conjunction
- * with @OneToMany. 
+ * with @OneToMany.
  * @author faywang
  */
 
@@ -41,31 +41,31 @@ public class Bi_1ToM_FK {
 
     @OneToMany(mappedBy="bi1mfk", fetch=FetchType.EAGER)
     private List<EntityC_B1MFK> entityCs = null;
-    
-    public long getId() { 
-        return id; 
+
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public List<EntityC_B1MFK> getEntityCs() { 
-        return entityCs; 
+    public List<EntityC_B1MFK> getEntityCs() {
+        return entityCs;
     }
 
-    public void setEntityCs(List<EntityC_B1MFK> entityCs) { 
-        this.entityCs = entityCs; 
+    public void setEntityCs(List<EntityC_B1MFK> entityCs) {
+        this.entityCs = entityCs;
     }
-    
+
     public int hashCode() {
         return name.hashCode();
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof Bi_1ToM_FK)) return false;
         Bi_1ToM_FK b = (Bi_1ToM_FK)o;

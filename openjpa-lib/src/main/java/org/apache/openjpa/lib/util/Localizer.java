@@ -51,7 +51,7 @@ public class Localizer {
     private static final Map<String,Localizer> _localizers = new ConcurrentHashMap<String,Localizer>();
 
     // list of resource providers to delegate to when locating resources
-    private static final Collection<ResourceBundleProvider> _providers = 
+    private static final Collection<ResourceBundleProvider> _providers =
         new CopyOnWriteArraySet<ResourceBundleProvider>
         (Arrays.asList(new ResourceBundleProvider[]{
             new SimpleResourceBundleProvider(),
@@ -283,7 +283,7 @@ public class Localizer {
             else if (_subs == null || _subs.length == 0)
                 return "localized message key: " + _localizedMessage;
             else
-                return "localized message key: " + _localizedMessage 
+                return "localized message key: " + _localizedMessage
                     + "; substitutions: " + Arrays.asList(_subs).toString();
         }
 

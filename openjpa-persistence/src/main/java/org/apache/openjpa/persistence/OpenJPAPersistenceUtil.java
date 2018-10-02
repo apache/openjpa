@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -54,7 +54,7 @@ public class OpenJPAPersistenceUtil {
      * not have an identifier assigned or is not managed by any of the
      * entity managers of the entity manager factory.
      */
-    public static Object getIdentifier(OpenJPAEntityManagerFactory emf, 
+    public static Object getIdentifier(OpenJPAEntityManagerFactory emf,
         Object entity) {
 
         if (entity instanceof PersistenceCapable) {
@@ -66,10 +66,10 @@ public class OpenJPAPersistenceUtil {
                 }
             }
             StateManager sm = pc.pcGetStateManager();
-            
+
             if (sm != null && sm instanceof OpenJPAStateManager) {
                 OpenJPAStateManager osm = (OpenJPAStateManager)sm;
-                return osm.getObjectId();                
+                return osm.getObjectId();
             }
         }
         return null;
@@ -111,7 +111,7 @@ public class OpenJPAPersistenceUtil {
      * is managed by one of the entity managers.  Use isManagedBy() to
      * determine if an object is managed by a specific entity manager
      * factory.
-     * 
+     *
      * @return LoadState.LOADED - if the attribute is loaded.
      *         LoadState.NOT_LOADED - if the attribute is not loaded or any
      *         EAGER fetch attributes of the entity are not loaded.
@@ -124,7 +124,7 @@ public class OpenJPAPersistenceUtil {
         if (obj == null) {
             return LoadState.UNKNOWN;
         }
-        
+
         // If the object has a state manager, call it directly.
         if (obj instanceof PersistenceCapable) {
             PersistenceCapable pc = (PersistenceCapable)obj;
@@ -132,11 +132,11 @@ public class OpenJPAPersistenceUtil {
             if (sm != null && sm instanceof OpenJPAStateManager) {
                 return isLoaded((OpenJPAStateManager)sm, attr, null);
             }
-        }        
+        }
         return LoadState.UNKNOWN;
     }
 
-    private static LoadState isLoaded(OpenJPAStateManager sm, String attr, 
+    private static LoadState isLoaded(OpenJPAStateManager sm, String attr,
         HashSet<OpenJPAStateManager> pcs) {
         boolean isLoaded = true;
         try {
@@ -174,9 +174,9 @@ public class OpenJPAPersistenceUtil {
             // for detached entities, as LoadState.UNKNOWN
             return LoadState.UNKNOWN;
         }
-        return isLoaded ? LoadState.LOADED : LoadState.NOT_LOADED;        
+        return isLoaded ? LoadState.LOADED : LoadState.NOT_LOADED;
     }
-    
+
     private static boolean requiresFetch(OpenJPAStateManager sm, FieldMetaData fmd) {
         if (sm instanceof StateManagerImpl)
             return ((StateManagerImpl)sm).requiresFetch(fmd);
@@ -195,7 +195,7 @@ public class OpenJPAPersistenceUtil {
     private static boolean isLoadedField(OpenJPAStateManager sm,
         FieldMetaData fmd, HashSet<OpenJPAStateManager> pcs) {
         BitSet loadSet = sm.getLoaded();
-                
+
         // Simple load state check for the field
         if (!loadSet.get(fmd.getIndex()))
             return false;
@@ -208,17 +208,17 @@ public class OpenJPAPersistenceUtil {
         // Prevent circular load state evaluation for this sm.
         if (ofsm != null && pcs.contains(ofsm))
             return true;
-        
+
         // If a collection type, determine if it is loaded
         switch (fmd.getDeclaredTypeCode()) {
-            case JavaTypes.COLLECTION:   
-                return isLoadedCollection(sm, fmd.getElement(), 
+            case JavaTypes.COLLECTION:
+                return isLoadedCollection(sm, fmd.getElement(),
                     (Collection<?>)field, pcs);
             case JavaTypes.MAP:
-                return isLoadedMap(sm, fmd, 
+                return isLoadedMap(sm, fmd,
                     (Map<?,?>)field, pcs);
             case JavaTypes.ARRAY:
-                return isLoadedArray(sm, fmd.getElement(), 
+                return isLoadedArray(sm, fmd.getElement(),
                     (Object[])field, pcs);
         }
         // If other PC type, determine if it is loaded
@@ -228,25 +228,25 @@ public class OpenJPAPersistenceUtil {
         }
 
         return true;
-    } 
-    
-    private static boolean isLoadedCollection(OpenJPAStateManager sm, 
+    }
+
+    private static boolean isLoadedCollection(OpenJPAStateManager sm,
         ValueMetaData vmd, Collection<?> coll, HashSet<OpenJPAStateManager> pcs) {
-        
+
         // This field passed the load state check in isLoadedField, so
         // if any of these conditions are true the collection is loaded.
         if (sm == null || coll == null || coll.size() == 0) {
             return true;
         }
-        
+
         // Convert to array to prevent concurrency issues
         Object[] arr = coll.toArray();
 
         return isLoadedArray(sm, vmd, arr, pcs);
     }
 
-    private static boolean isLoadedArray(OpenJPAStateManager sm, 
-        ValueMetaData vmd, Object[] arr, 
+    private static boolean isLoadedArray(OpenJPAStateManager sm,
+        ValueMetaData vmd, Object[] arr,
         HashSet<OpenJPAStateManager> pcs) {
 
         // This field passed the load state check in isLoadedField, so
@@ -255,11 +255,11 @@ public class OpenJPAPersistenceUtil {
             return true;
         }
 
-        // Not a collection of PC's 
+        // Not a collection of PC's
         if (!vmd.isDeclaredTypePC()) {
           return true;
         }
-        
+
         for (Object pc : arr) {
             OpenJPAStateManager esm = getStateManager(pc);
             if (esm == null) {
@@ -271,9 +271,9 @@ public class OpenJPAPersistenceUtil {
         return true;
     }
 
-    private static boolean isLoadedMap(OpenJPAStateManager sm, 
+    private static boolean isLoadedMap(OpenJPAStateManager sm,
         FieldMetaData fmd, Map<?,?> map, HashSet<OpenJPAStateManager> pcs) {
-                
+
         // This field passed the load state check in isLoadedField, so
         // if any of these conditions are true the map is loaded.
         if (sm == null || map == null || map.size() == 0) {
@@ -287,7 +287,7 @@ public class OpenJPAPersistenceUtil {
         if (!(keyIsPC || valIsPC)) {
           return true;
         }
-        
+
         Object[] arr = map.keySet().toArray();
 
         for (Object key : arr) {
@@ -295,7 +295,7 @@ public class OpenJPAPersistenceUtil {
                 OpenJPAStateManager ksm = getStateManager(key);
                 if (ksm == null) {
                     return true;
-                }                        
+                }
                 if (!(isLoaded(ksm, null, pcs) == LoadState.LOADED))
                     return false;
             }
@@ -304,19 +304,19 @@ public class OpenJPAPersistenceUtil {
                 OpenJPAStateManager vsm = getStateManager(value);
                 if (vsm == null) {
                     return true;
-                }                        
+                }
                 if (!(isLoaded(vsm, null, pcs) == LoadState.LOADED))
-                    return false;                    
+                    return false;
             }
         }
         return true;
     }
 
-    private static OpenJPAStateManager getStateManager(Object obj) {        
+    private static OpenJPAStateManager getStateManager(Object obj) {
         if (obj == null || !(obj instanceof PersistenceCapable)) {
             return null;
         }
-        
+
         PersistenceCapable pc = (PersistenceCapable)obj;
         StateManager sm = pc.pcGetStateManager();
         if (sm == null || !(sm instanceof OpenJPAStateManager)) {

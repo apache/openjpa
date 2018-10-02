@@ -44,7 +44,7 @@ import javax.persistence.Version;
             , query="SELECT c FROM LSE1x1LfJT c WHERE c.firstName LIKE :firstName"
             , lockMode=LockModeType.PESSIMISTIC_WRITE
             , hints={@QueryHint(name="javax.persistence.lock.scope",value="EXTENDED")}
-            ) 
+            )
         }
     )
 
@@ -58,7 +58,7 @@ public class LSE1x1LfJT implements Externalizable {
     private int version;
 
     private String firstName;
-    
+
     @OneToOne
     @JoinTable(name="Uni1x1LfJT_Uni1x1RT")
     private LSE1x1Rt uniRightJT;
@@ -74,11 +74,11 @@ public class LSE1x1LfJT implements Externalizable {
     public String getFirstName() {
         return firstName;
     }
-    
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    
+
     public LSE1x1Rt getUniRightJT() {
         return uniRightJT;
     }
@@ -93,7 +93,7 @@ public class LSE1x1LfJT implements Externalizable {
 
     public String toString() {
         return this.getClass().getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + "[id=" + getId()
-                + ", ver=" + getVersion() + ", firstName=" + firstName + "]" 
+                + ", ver=" + getVersion() + ", firstName=" + firstName + "]"
                 + " uniRightJT=" + getUniRightJT()
                 ;
     }

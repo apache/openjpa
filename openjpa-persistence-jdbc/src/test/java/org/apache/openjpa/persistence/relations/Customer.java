@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -41,13 +41,13 @@ public class Customer {
         public String toString() {
             return countryCode+"/"+id;
         }
-        
+
         @Override
         public boolean equals(Object obj){
             if (obj==this) return true;
             if ( ! (obj instanceof CustomerKey) ) return false;
             CustomerKey key = (CustomerKey)obj;
-            if (key.countryCode.equals(this.countryCode) && 
+            if (key.countryCode.equals(this.countryCode) &&
                     key.id==this.id) return true;
             return false;
         }
@@ -102,13 +102,13 @@ public class Customer {
     public Collection<Order> getOrders() {
         return orders;
     }
-    
+
     public void setOrders(Collection<Order> orders) {
         this.orders = orders;
     }
-    
+
     public String toString() {
-        return "Customer:"+cid+" name:"+name; 
+        return "Customer:"+cid+" name:"+name;
     }
 
     public CustomerKey getCid() {

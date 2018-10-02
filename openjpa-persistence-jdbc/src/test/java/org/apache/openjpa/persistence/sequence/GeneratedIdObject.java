@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.sequence;
 
@@ -25,7 +25,7 @@ import javax.persistence.Id;
 /**
  * An entity that uses generated value for its primary key.
  * Used to demonstrate OPENJPA_SEQUENCE_TABLE failure under multi-threaded environment.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -34,7 +34,7 @@ public class GeneratedIdObject {
     @Id
     @GeneratedValue
     private long id;
-    
+
     public long getId() {
         return id;
     }

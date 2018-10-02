@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -52,7 +52,7 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.util.ClassResolver;
 
 /**
- * Implementation of the {@link PersistenceUnitInfo} interface used by OpenJPA 
+ * Implementation of the {@link PersistenceUnitInfo} interface used by OpenJPA
  * when parsing persistence configuration information.
  *
  */
@@ -60,7 +60,7 @@ public class PersistenceUnitInfoImpl
     implements PersistenceUnitInfo, SourceTracker {
 
     public static final String PERSISTENCE_VERSION = "PersistenceVersion";
-    
+
 
     private static final Localizer s_loc = Localizer.forPackage
         (PersistenceUnitInfoImpl.class);
@@ -201,7 +201,7 @@ public class PersistenceUnitInfoImpl
     }
 
     public List<URL> getJarFileUrls() {
-        if (_jarFiles == null) 
+        if (_jarFiles == null)
             return Collections.emptyList();
         return _jarFiles;
     }
@@ -235,7 +235,7 @@ public class PersistenceUnitInfoImpl
             _jarFileNames.clear();
         }
     }
-    
+
     public void validateJarFileName(String name) {
         ClassLoader contextClassLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
         MultiClassLoader loader = AccessController
@@ -251,7 +251,7 @@ public class PersistenceUnitInfoImpl
         }
 
         // jar file is not a resource; check classpath
-        String classPath = null;        
+        String classPath = null;
 
         //first check if the classpath is set from ant class loader
         if (contextClassLoader instanceof MultiClassLoader) {
@@ -259,14 +259,14 @@ public class PersistenceUnitInfoImpl
                 try {
                     Method getClassPathMethod = classLoader.getClass().getMethod("getClasspath", new Class[]{});
                     classPath = (String) getClassPathMethod.invoke(classLoader, new Object[]{});
-                    if (classPath != null) 
+                    if (classPath != null)
                         break;
                 } catch (Exception e) {
                     //do nothing
-                } 
-            }                
-        }                
-        
+                }
+            }
+        }
+
         if (classPath == null) {
             classPath = AccessController.doPrivileged(
                     J2DoPrivHelper.getPropertyAction("java.class.path"));
@@ -363,7 +363,7 @@ public class PersistenceUnitInfoImpl
                 }
             } else if (JPAProperties.VALIDATE_MODE.equals(key)) {
                 setValidationMode(JPAProperties.getEnumValue(ValidationMode.class, val));
-            } else if (JPAProperties.CACHE_MODE.equals(key)) { 
+            } else if (JPAProperties.CACHE_MODE.equals(key)) {
                 setSharedCacheMode(JPAProperties.getEnumValue(SharedCacheMode.class, val));
             } else {
                 _props.put(key, val);
@@ -399,7 +399,7 @@ public class PersistenceUnitInfoImpl
             hasJta = true;
         } else if (info instanceof PersistenceUnitInfoImpl
             && ((PersistenceUnitInfoImpl) info).getJtaDataSourceName() != null){
-            replaceAsOpenJPAProperty(map, added, "ConnectionFactoryName", 
+            replaceAsOpenJPAProperty(map, added, "ConnectionFactoryName",
                     ((PersistenceUnitInfoImpl)info).getJtaDataSourceName());
             replaceAsOpenJPAProperty(map, added, "ConnectionFactoryMode", "managed");
             hasJta = true;
@@ -411,7 +411,7 @@ public class PersistenceUnitInfoImpl
         } else if (info instanceof PersistenceUnitInfoImpl
             && ((PersistenceUnitInfoImpl) info).getNonJtaDataSourceName() != null) {
             String nonJtaName = ((PersistenceUnitInfoImpl) info).getNonJtaDataSourceName();
-            replaceAsOpenJPAProperty(map, added, hasJta ? "ConnectionFactory2Name" : "ConnectionFactoryName", 
+            replaceAsOpenJPAProperty(map, added, hasJta ? "ConnectionFactory2Name" : "ConnectionFactoryName",
                     nonJtaName);
         }
 
@@ -435,9 +435,9 @@ public class PersistenceUnitInfoImpl
 
         if (!Configurations.containsProperty("Id", map))
             map.put("openjpa.Id", info.getPersistenceUnitName());
-        
+
         Properties metaFactoryProps = new Properties();
-        if (info.getManagedClassNames() != null 
+        if (info.getManagedClassNames() != null
             && !info.getManagedClassNames().isEmpty()) {
             StringBuilder types = new StringBuilder();
             for (String type : info.getManagedClassNames()) {
@@ -489,11 +489,11 @@ public class PersistenceUnitInfoImpl
             map.put(key, Configurations.combinePlugins((String) map.get(key),
                 Configurations.serializeProperties(metaFactoryProps)));
         }
-        
+
         // always record provider name for product derivations to access
         if (info.getPersistenceProviderClassName() != null)
             map.put(JPAProperties.PROVIDER, info.getPersistenceProviderClassName());
-        
+
         // convert validation-mode enum to a StringValue
         if (info.getValidationMode() != null)
             map.put(JPAProperties.VALIDATE_MODE, info.getValidationMode());
@@ -501,11 +501,11 @@ public class PersistenceUnitInfoImpl
         if (info.getPersistenceXMLSchemaVersion() != null) {
             map.put(PERSISTENCE_VERSION, info.getPersistenceXMLSchemaVersion());
         }
-        
-        if (info.getSharedCacheMode() != null) { 
+
+        if (info.getSharedCacheMode() != null) {
             map.put(JPAProperties.CACHE_MODE, info.getSharedCacheMode());
         }
-        
+
         return map;
     }
 
@@ -538,11 +538,11 @@ public class PersistenceUnitInfoImpl
     public int getSourceType() {
         return SRC_XML;
     }
-    
+
     public int getLineNumber() {
         return 0;
     }
-        
+
     public int getColNumber() {
         return 0;
     }
@@ -579,7 +579,7 @@ public class PersistenceUnitInfoImpl
     public ValidationMode getValidationMode() {
         return _validationMode;
     }
-    
+
     public void setValidationMode(ValidationMode mode) {
         _validationMode = mode;
     }
@@ -587,8 +587,8 @@ public class PersistenceUnitInfoImpl
     public SharedCacheMode getSharedCacheMode() {
         return _sharedCacheMode;
     }
-    
-    public void setSharedCacheMode(SharedCacheMode mode) { 
+
+    public void setSharedCacheMode(SharedCacheMode mode) {
         _sharedCacheMode = mode;
     }
 }

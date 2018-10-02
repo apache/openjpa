@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -123,7 +123,7 @@ public interface StoreContext {
 
     /**
      * Return the instance for the given oid/object , or null if not
-     * found in the L1 cache. 
+     * found in the L1 cache.
      *
      * @param oid the object's id
      * @return the cached object, or null if not cached
@@ -182,8 +182,8 @@ public interface StoreContext {
 
     /**
      * Return an iterator over all instances of the given type. The iterator
-     * should be closed with {@link org.apache.openjpa.util.ImplHelper#close} 
-     * when no longer needed. This method delegates to 
+     * should be closed with {@link org.apache.openjpa.util.ImplHelper#close}
+     * when no longer needed. This method delegates to
      * {@link StoreManager#executeExtent}.
      */
     public Iterator<Object> extentIterator(Class<?> cls, boolean subs,
@@ -484,50 +484,50 @@ public interface StoreContext {
     public String getConnectionFactory2Name();
 
     /**
-     * Set the 'NonJTA' ConnectionFactoryName. 
+     * Set the 'NonJTA' ConnectionFactoryName.
      */
     public void setConnectionFactory2Name(String connectionFactory2Name);
 
     /**
      * Return the 'JTA' ConnectionFactory, looking it up from JNDI if needed.
-     * 
+     *
      * @return the JTA connection factory or null if connectionFactoryName is blank.
      */
     public Object getConnectionFactory();
 
     /**
      * Return the 'NonJTA' ConnectionFactory, looking it up from JNDI if needed.
-     * 
+     *
      * @return the NonJTA connection factory or null if connectionFactoryName is blank.
      */
     public Object getConnectionFactory2();
-    
+
     /**
      * Indicate whether the oid can be found in the StoreContext's L1 cache or in the StoreManager cache.
      * @param oid List of ObjectIds for PersistenceCapables which may be found in memory.
      * @return true if the oid is available in memory (cached) otherwise false.
-     * @since 2.0.0. 
+     * @since 2.0.0.
      */
     public boolean isCached(List<Object> oid);
-    
+
     /**
-     * Affirms if this context will allow its managed instances to refer instances 
-     * that are managed by other contexts. 
+     * Affirms if this context will allow its managed instances to refer instances
+     * that are managed by other contexts.
      * <B>Note</B>: Some specification (such as JPA) does not warranty predictable
-     * behavior when strict group-like property of a persistent context (where managed 
+     * behavior when strict group-like property of a persistent context (where managed
      * instances can only refer to instances managed by the <em>same</em> context).
      * Please be aware of consequences when the flag is set to true.
-     * 
+     *
      * @since 2.1
      */
     public void setAllowReferenceToSiblingContext(boolean flag);
-    
+
     /**
-     * Affirms if this context will allow its managed instances to refer instances 
-     * that are managed by other contexts. 
-     * 
+     * Affirms if this context will allow its managed instances to refer instances
+     * that are managed by other contexts.
+     *
      * @return false by default.
-     * 
+     *
      * @since 2.1
      */
     public boolean getAllowReferenceToSiblingContext();

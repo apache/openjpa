@@ -29,9 +29,9 @@ public class TestDelimIdSeqGen extends SQLListenerTestCase {
     JDBCConfiguration conf;
     DBDictionary dict;
     boolean supportsNativeSequence = false;
-    
+
     EntityB entityB;
-    
+
     @Override
     public void setUp() throws Exception {
         setSupportedDatabases(
@@ -40,20 +40,20 @@ public class TestDelimIdSeqGen extends SQLListenerTestCase {
         if (isTestsDisabled()) {
             return;
         }
-        
+
         super.setUp(EntityB.class, DROP_TABLES);
         assertNotNull(emf);
-        
+
         conf = (JDBCConfiguration) emf.getConfiguration();
         dict = conf.getDBDictionaryInstance();
         supportsNativeSequence = dict.nextSequenceQuery != null;
-        
+
         if (supportsNativeSequence) {
             em = emf.createEntityManager();
             assertNotNull(em);
         }
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
@@ -67,21 +67,21 @@ public class TestDelimIdSeqGen extends SQLListenerTestCase {
     protected OpenJPAEntityManagerFactorySPI createEMF(final Object... props) {
         return createNamedEMF("delimited-identifiers", props);
     }
-    
+
     public void createEntityB() {
         entityB = new EntityB("b name");
     }
-    
+
     public void testSeqGen() {
         if (!supportsNativeSequence) {
             return;
         }
         createEntityB();
-        
+
         em.getTransaction().begin();
         em.persist(entityB);
         em.getTransaction().commit();
-        
+
         int genId = entityB.getId();
         em.clear();
         em.getTransaction().begin();

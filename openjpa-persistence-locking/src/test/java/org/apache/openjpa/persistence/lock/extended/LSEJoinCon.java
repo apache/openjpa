@@ -40,7 +40,7 @@ import javax.persistence.QueryHint;
             , query="SELECT c FROM LSEJoinCon c WHERE c.firstName LIKE :firstName"
             , lockMode=LockModeType.PESSIMISTIC_WRITE
             , hints={@QueryHint(name="javax.persistence.lock.scope",value="EXTENDED")}
-            ) 
+            )
         }
     )
 
@@ -59,7 +59,7 @@ public class LSEJoinCon extends LSEJoinAbs implements Externalizable {
 
     public String toString() {
         return this.getClass().getName() + '@'
-            + Integer.toHexString(System.identityHashCode(this)) + super.toString() 
+            + Integer.toHexString(System.identityHashCode(this)) + super.toString()
             + ", last=" + getLastName();
     }
 

@@ -53,7 +53,7 @@ public class TestLazyFields extends SingleEMFTestCase {
             // Since o2 is in the context, it should be ignored... but the merge will needs to be cascaded
             // to loaded fields.
             Outer mergedO2 = em.merge(o2);
-            
+
             // Make sure that the merge operation didn't return a different outer.
             assertEquals(mergedO2, o2);
 
@@ -66,7 +66,7 @@ public class TestLazyFields extends SingleEMFTestCase {
 
             // We're checking that the merge didn't cascade to the unloaded field and wipe out all Inners
             assertTrue(o3.getInners().size() > 0);
-            
+
             em.getTransaction().commit();
             em.clear();
 

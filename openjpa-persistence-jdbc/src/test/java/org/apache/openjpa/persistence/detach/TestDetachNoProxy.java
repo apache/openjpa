@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.detach;
 
@@ -33,17 +33,17 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestDetachNoProxy extends SingleEMFTestCase {
-    
+
     private static final int numEntities = 3;
     private static final String PROXY = new String("$proxy");
     private Log _log;
-    
+
     public void setUp() {
         setUp(DROP_TABLES, Entity20.class);
         _log = emf.getConfiguration().getLog("test");
         createEntities(numEntities);
     }
-    
+
     private void createEntities(int count) {
         Entity20 e20 = null;
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -55,13 +55,13 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
-    /* 
+
+    /*
      * Verify that an in-place detached entity does not use the proxy classes.
      */
     public void testDetach20() {
         Integer id = new Integer(0);
-        OpenJPAEntityManagerFactorySPI emf2 = 
+        OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy2New", "org/apache/openjpa/persistence/detach/persistence2.xml");
         assertNotNull(emf2);
@@ -69,7 +69,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         Log log = emf2.getConfiguration().getLog("test");
         if (log.isTraceEnabled())
             log.trace("***** testDetach20() *****");
-        
+
         if (log.isTraceEnabled()) {
             Compatibility compat = emf2.getConfiguration().getCompatibilityInstance();
             assertNotNull(compat);
@@ -82,14 +82,14 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
 
         OpenJPAEntityManager em = emf2.createEntityManager();
         em.clear();
-        
+
         Entity20 e20 = em.find(Entity20.class, id);
         if (log.isTraceEnabled())
             log.trace("** testDetach20() - after find");
         assertTrue(em.contains(e20));
         assertFalse(em.isDetached(e20));
         verifySerializable(e20, true, false);
-        
+
         // new openjpa-2.0.0 behavior, where detach() doesn't return updated entity, but does it in-place
         em.detach(e20);
         if (log.isTraceEnabled())
@@ -98,17 +98,17 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         assertFalse(em.contains(e20));
         assertTrue(em.isDetached(e20));
         verifySerializable(e20, true, false);
-               
+
         em.close();
         closeEMF(emf2);
     }
 
-    /* 
+    /*
      * Verify that a detachCopy() returned entity does not contain any proxy classes.
      */
     public void testDetachCopy20() {
         Integer id = new Integer(0);
-        OpenJPAEntityManagerFactorySPI emf2 = 
+        OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy2New", "org/apache/openjpa/persistence/detach/persistence2.xml");
         assertNotNull(emf2);
@@ -116,7 +116,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         Log log = emf2.getConfiguration().getLog("test");
         if (log.isTraceEnabled())
             log.trace("***** testDetachCopy20() *****");
-        
+
         if (log.isTraceEnabled()) {
             Compatibility compat = emf2.getConfiguration().getCompatibilityInstance();
             assertNotNull(compat);
@@ -136,7 +136,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         assertTrue(em.contains(e20));
         assertFalse(em.isDetached(e20));
         verifySerializable(e20, true, false);
-        
+
         // Test new detachCopy() method added in 2.0.0
         Entity20 e20copy = em.detachCopy(e20);
         if (log.isTraceEnabled())
@@ -149,7 +149,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         assertFalse(em.contains(e20copy));
         assertTrue(em.isDetached(e20copy));
         verifySerializable(e20copy, false, false);
-        
+
         em.close();
         closeEMF(emf2);
     }
@@ -158,7 +158,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that in-place detachAll entities do not use the proxy classes.
      */
     public void testDetachAll20() {
-        OpenJPAEntityManagerFactorySPI emf2 = 
+        OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy2New", "org/apache/openjpa/persistence/detach/persistence2.xml");
         assertNotNull(emf2);
@@ -166,7 +166,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         Log log = emf2.getConfiguration().getLog("test");
         if (log.isTraceEnabled())
             log.trace("***** testDetachAll20() *****");
-        
+
         if (log.isTraceEnabled()) {
             Compatibility compat = emf2.getConfiguration().getCompatibilityInstance();
             assertNotNull(compat);
@@ -188,7 +188,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
                 log.trace("** testDetachAll20() - after find Entity20(" + i + ")");
             assertTrue(em.contains(e20));
             assertFalse(em.isDetached(e20));
-            verifySerializable(e20, true, false);            
+            verifySerializable(e20, true, false);
         }
 
         // new openjpa-2.0.0 behavior, where detachAll() updates entities in-place
@@ -213,7 +213,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that after EM.clear() entities still contain proxy classes for 1.0 apps.
      */
     public void testClear10Compat() {
-        OpenJPAEntityManagerFactorySPI emf1 = 
+        OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy1Compat", "org/apache/openjpa/persistence/detach/persistence1.xml");
         assertNotNull(emf1);
@@ -221,7 +221,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         Log log = emf1.getConfiguration().getLog("test");
         if (log.isTraceEnabled())
             log.trace("***** testClear10Compat() *****");
-        
+
         if (log.isTraceEnabled()) {
             Compatibility compat = emf1.getConfiguration().getCompatibilityInstance();
             assertNotNull(compat);
@@ -243,7 +243,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
                 log.trace("** testClear10Compat() - after find Entity20(" + i + ")");
             assertTrue(em.contains(e20));
             assertFalse(em.isDetached(e20));
-            verifySerializable(e20, true, false);            
+            verifySerializable(e20, true, false);
         }
 
         em.clear();
@@ -267,7 +267,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that after EM.clear() entities still contain proxy classes for 1.0 apps.
      */
     public void testClear20Compat() {
-        OpenJPAEntityManagerFactorySPI emf2 = 
+        OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy2Compat", "org/apache/openjpa/persistence/detach/persistence2.xml");
         assertNotNull(emf2);
@@ -275,7 +275,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         Log log = emf2.getConfiguration().getLog("test");
         if (log.isTraceEnabled())
             log.trace("***** testClear20Compat() *****");
-        
+
         if (log.isTraceEnabled()) {
             Compatibility compat = emf2.getConfiguration().getCompatibilityInstance();
             assertNotNull(compat);
@@ -297,7 +297,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
                 log.trace("** testClear20Compat() - after find Entity20(" + i + ")");
             assertTrue(em.contains(e20));
             assertFalse(em.isDetached(e20));
-            verifySerializable(e20, true, false);            
+            verifySerializable(e20, true, false);
         }
 
         em.clear();
@@ -321,7 +321,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that after EM.clear() entities do not contain proxy classes for 2.0 apps.
      */
     public void testClear20New() {
-        OpenJPAEntityManagerFactorySPI emf2 = 
+        OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy2New", "org/apache/openjpa/persistence/detach/persistence2.xml");
         assertNotNull(emf2);
@@ -329,7 +329,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         Log log = emf2.getConfiguration().getLog("test");
         if (log.isTraceEnabled())
             log.trace("***** testClear20New() *****");
-        
+
         if (log.isTraceEnabled()) {
             Compatibility compat = emf2.getConfiguration().getCompatibilityInstance();
             assertNotNull(compat);
@@ -351,7 +351,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
                 log.trace("** testClear20New() - after find Entity20(" + i + ")");
             assertTrue(em.contains(e20));
             assertFalse(em.isDetached(e20));
-            verifySerializable(e20, true, false);            
+            verifySerializable(e20, true, false);
         }
 
         em.clear();
@@ -385,7 +385,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = null;
         byte[] e20bytes = null;
-        
+
         if (_log.isTraceEnabled())
             _log.trace("verifySerializable() - before serialize");
         verifyEntities(e20, usesProxyBefore);
@@ -404,7 +404,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             } catch (IOException e) {
             }
         }
-        
+
         // then deserialize and assert no $proxy classes exist
         ByteArrayInputStream bais = new ByteArrayInputStream(e20bytes);
         ObjectInputStream ois = null;
@@ -440,9 +440,9 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             usesProxy == e20.getTime().getClass().getCanonicalName().endsWith(PROXY));
         assertTrue("Expected sqlTimestamp endsWith($proxy) to return " + usesProxy,
             usesProxy == e20.getTimestamp().getClass().getCanonicalName().endsWith(PROXY));
-        
+
     }
-    
+
     private void printClassNames(Entity20 e20) {
         if (_log.isTraceEnabled()) {
             _log.trace("sqlDate = " + e20.getDate().getClass().getCanonicalName());

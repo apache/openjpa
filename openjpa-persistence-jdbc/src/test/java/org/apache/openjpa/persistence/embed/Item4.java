@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -31,35 +31,35 @@ import javax.persistence.MapKeyEnumerated;
 public class Item4 {
     @Id
     int id;
-    
+
     @ElementCollection
     @MapKeyEnumerated(EnumType.STRING)
     Map<Catagory, FileName4> images = new HashMap<Catagory, FileName4>();
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public Map<Catagory, FileName4> getImages() {
         return images;
     }
-    
+
     public void addImage(Catagory cat, FileName4 fileName) {
         images.put(cat, fileName);
     }
-    
+
     public void removeImage(Catagory cat) {
         images.remove(cat);
     }
-    
+
     public FileName4 getImage(Catagory cat) {
         return images.get(cat);
     }
-    
+
     public enum Catagory { A1, A2, A3, A4 };
-    
+
 }

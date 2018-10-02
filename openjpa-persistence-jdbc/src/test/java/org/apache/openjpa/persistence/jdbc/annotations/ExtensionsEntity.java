@@ -41,7 +41,7 @@ public class ExtensionsEntity {
     @GeneratedValue(generator = "uuid-hex")
     @Column(name = "UUID_HEX")
     private String uuid;
-    
+
     @GeneratedValue(generator = "uuid-string")
     @Column(name = "UUID_STRING")
     private String uuidString;

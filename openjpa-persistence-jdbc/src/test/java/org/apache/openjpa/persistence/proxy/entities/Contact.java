@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -36,7 +36,7 @@ public class Contact extends AnnuityPersistebleObject implements IContact {
 	private String email;
 	private String phone;
 	private ContactType contactType;
-	
+
 	@Transient
 	public IAddress getAddress() {
 		return (IAddress) this.getTheAddress();
@@ -60,7 +60,7 @@ public class Contact extends AnnuityPersistebleObject implements IContact {
 	private  void setTheAddress(Address address) {
 		this.theAddress = address;
 	}
-	
+
 	@Column(name="EMAIL")
 	public String getEmail() {
 		return email;
@@ -83,5 +83,5 @@ public class Contact extends AnnuityPersistebleObject implements IContact {
 	public void setContactType(ContactType contactType) {
 		this.contactType = contactType;
 	}
-	
+
 }

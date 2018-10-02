@@ -22,14 +22,14 @@
 @rem
 @rem Usage
 @rem   $ mmg.bat <class.list>
-@rem 
+@rem
 @rem The canonical meta-model classes can be generated during compilation of
-@rem domain classes. This batch file compiles a set of classes (X.java) listed 
+@rem domain classes. This batch file compiles a set of classes (X.java) listed
 @rem in <class.list> file. The compiler discoveres the annotation
 @rem processor if openjpa classes are in classpath. The discovered annotation
-@rem processor, however, is active only if -Aopenjpa.metamodel=true is set.  
-@rem 
-@rem See also 
+@rem processor, however, is active only if -Aopenjpa.metamodel=true is set.
+@rem
+@rem See also
 @rem    domain-class.list : The domain classes to be compiled
 @rem ---------------------------------------------------------------------------
 @echo off
@@ -37,7 +37,7 @@ setlocal
 set JAVAC=%JAVA_HOME%\bin\javac
 
 @rem ---------------------------------------------------------------------------
-@rem Compiler classpath shown for a typical OpenJPA development environment in Windows. 
+@rem Compiler classpath shown for a typical OpenJPA development environment in Windows.
 @rem The essential aspect is openjpa libraries must be in the compiler's classpath.
 set M_REPO="%USERPROFILE%\.m2\repository"
 set SPEC=geronimo-jpa_2.1_spec
@@ -56,7 +56,7 @@ echo Using Java Compiler %JAVAC%
 %JAVAC% -version
 
 @rem ---------------------------------------------------------------------------
-@rem Root directory for of the generated source files. Specified as -s option 
+@rem Root directory for of the generated source files. Specified as -s option
 set GEN_DIR=%~dp0\..\openjpa-persistence-jdbc\src\test\java
 
 @rem Only one option is shown for logging. Other available options are documented in

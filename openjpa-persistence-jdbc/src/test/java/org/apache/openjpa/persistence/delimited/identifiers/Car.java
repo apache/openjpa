@@ -32,7 +32,7 @@ import javax.persistence.Table;
 public class Car {
     @Id
     private int id;
-    
+
     @Column(name="car model")
     protected String model;
     @Column(name="car color")
@@ -41,11 +41,11 @@ public class Car {
     protected String modelYear;
 
     public Car() {}
-    
+
     public Car(int id) {
         this.id = id;
     }
-    
+
     /**
      * @return the id
      */

@@ -31,9 +31,9 @@ public class EntityG  {
 	@Id private int id;
 
 	@ForeignKey(deleteAction=ForeignKeyAction.CASCADE)
-	@ManyToOne (cascade=CascadeType.MERGE)	
+	@ManyToOne (cascade=CascadeType.MERGE)
 	private EntityF entityF;
-	
+
 	public EntityF getEntityF() {
 		return entityF;
 	}

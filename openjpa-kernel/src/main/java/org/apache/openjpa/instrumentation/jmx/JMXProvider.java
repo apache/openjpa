@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation.jmx;
 
@@ -37,26 +37,26 @@ import org.apache.openjpa.util.UserException;
  */
 public class JMXProvider
     extends AbstractInstrumentationProvider {
-    
+
     // Aliases for built-in JMX Instrumentation
     public static final String[] JMX_INSTRUMENT_ALIASES = {
         "DataCache", "org.apache.openjpa.instrumentation.jmx.DataCacheJMXInstrument",
         "QueryCache", "org.apache.openjpa.instrumentation.jmx.QueryCacheJMXInstrument",
         "QuerySQLCache", "org.apache.openjpa.instrumentation.jmx.PreparedQueryCacheJMXInstrument"
     };
-    
+
     /**
      * The MBean domain for OpenJPA
      */
     public static final String MBEAN_DOMAIN = "org.apache.openjpa";
-    
+
     private Set<MBeanServer> _mbs = null;
 
     /**
      * Register an MBean with the mbean server.
      */
     protected void registerMBean(JMXInstrument mBean) {
-        Set<MBeanServer> mbs = getMBeanServer(); 
+        Set<MBeanServer> mbs = getMBeanServer();
         try {
             for (MBeanServer s : mbs) {
                 s.registerMBean(mBean, mBean.getObjectName());
@@ -97,8 +97,8 @@ public class JMXProvider
     }
 
     /**
-     * Stops all instruments registered with this provider and releases the 
-     * reference to the Platform MBean server instance. 
+     * Stops all instruments registered with this provider and releases the
+     * reference to the Platform MBean server instance.
      */
     @Override
     public void stop() {
@@ -109,9 +109,9 @@ public class JMXProvider
                     stopInstrument(inst);
                 }
             }
-            // The MBean server factory does appear to ref count properly so the 
-            // platform server cannot released from the factory once it is acquired.  
-            // Multiple attempts to capture and release the server will result in a 
+            // The MBean server factory does appear to ref count properly so the
+            // platform server cannot released from the factory once it is acquired.
+            // Multiple attempts to capture and release the server will result in a
             // runtime exception.
             // MBeanServerFactory.releaseMBeanServer(getMBeanServer());
             // _mbs = null;
@@ -126,7 +126,7 @@ public class JMXProvider
      * @return the JMX object name
      * @throws Exception a generic JMX-type exception
      */
-    public static ObjectName createObjectName(JMXInstrument instrument, Map<String,String> props) 
+    public static ObjectName createObjectName(JMXInstrument instrument, Map<String,String> props)
         throws Exception {
         // Construct the base name
         StringBuilder sbName = new StringBuilder(MBEAN_DOMAIN);
@@ -178,7 +178,7 @@ public class JMXProvider
             }
         }
     }
-    
+
     /**
      * Returns aliases for built-in instruments.
      */

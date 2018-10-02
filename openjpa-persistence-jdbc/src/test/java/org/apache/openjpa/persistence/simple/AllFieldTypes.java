@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.simple;
 
@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.PersistentCollection;
 public class AllFieldTypes {
 
     public static enum EnumType {Value1, Value2};
-    
+
     // @Basic types
     private short shortField;
     private int intField;
@@ -69,7 +69,7 @@ public class AllFieldTypes {
     private Character[] wCharacterLob;
     private EnumType enumField;
     private Serializable serializableField;
-    
+
     // Additional types
     private Set<String> setOfStrings = new HashSet<String>();
     private String[] arrayOfStrings;
@@ -350,7 +350,7 @@ public class AllFieldTypes {
     public AllFieldTypes getSelfOneOne() {
         return selfOneOne;
     }
-    
+
     public void setSelfOneOne(AllFieldTypes selfOneOne) {
         this.selfOneOne = selfOneOne;
     }

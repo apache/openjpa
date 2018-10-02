@@ -32,11 +32,11 @@ import javax.persistence.NamedQuery;
 @Inheritance
 @Access(AccessType.FIELD)
 @NamedQueries( {
-    @NamedQuery(name="SuperFieldEntity.query", 
-        query="SELECT sfe FROM SuperFieldEntity sfe WHERE " + 
+    @NamedQuery(name="SuperFieldEntity.query",
+        query="SELECT sfe FROM SuperFieldEntity sfe WHERE " +
         "sfe.id = :id AND sfe.name = :name"),
-    @NamedQuery(name="SuperFieldEntity.badQuery", 
-        query="SELECT sfe FROM SuperFieldEntity sfe WHERE " + 
+    @NamedQuery(name="SuperFieldEntity.badQuery",
+        query="SELECT sfe FROM SuperFieldEntity sfe WHERE " +
         "sfe.id = :id AND sfe.name = :name AND sfe.crtDate = :crtDate") } )
 public class SuperFieldEntity {
 
@@ -44,7 +44,7 @@ public class SuperFieldEntity {
     @GeneratedValue
     @Access(AccessType.FIELD)
     private int id;
-    
+
     @Basic
     private String name;
 
@@ -63,7 +63,7 @@ public class SuperFieldEntity {
     public String getName() {
         return name;
     }
-        
+
     public boolean equals(Object obj) {
         if (obj instanceof SuperFieldEntity) {
             SuperFieldEntity sfe = (SuperFieldEntity)obj;

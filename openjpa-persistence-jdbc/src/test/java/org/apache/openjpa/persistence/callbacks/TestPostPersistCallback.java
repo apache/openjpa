@@ -24,74 +24,74 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests when PostPersist is invoked can be configured.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestPostPersistCallback extends SingleEMFTestCase {
-    
+
     public void testPostPersistCalledAfterFlush() {
         super.setUp(CLEAR_TABLES, PostPersistEntity.class);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         PostPersistEntity pc = new PostPersistEntity();
-        
+
         em.persist(pc);
-        
+
         // nor is postPersist() callback invoked
         assertEquals(0, pc.postPersistCallbackCount);
         assertEquals(0, pc.idOnCallback);
-        
+
         em.flush();
-        
+
         // postPersist() callback invoked
         assertFalse(pc.getId() == 0);
         assertEquals(1, pc.postPersistCallbackCount);
         assertEquals(pc.getId(), pc.idOnCallback);
-        
+
         em.getTransaction().commit();
-        
+
         assertFalse(pc.getId() == 0);
         assertEquals(1, pc.postPersistCallbackCount);
         assertEquals(pc.getId(), pc.idOnCallback);
         em.close();
     }
-    
+
     public void testPostPersistCalledAfterCommit() {
         super.setUp(CLEAR_TABLES, PostPersistEntity.class);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         PostPersistEntity pc = new PostPersistEntity();
-        
+
         em.persist(pc);
-        
+
         assertEquals(0, pc.postPersistCallbackCount);
         assertEquals(0, pc.idOnCallback);
-        
+
         em.getTransaction().commit();
-        
+
         assertFalse(pc.getId() == 0);
         assertEquals(1, pc.postPersistCallbackCount);
         assertEquals(pc.getId(), pc.idOnCallback);
         em.close();
     }
-    
+
     public void testPostPersistCalledAfterPersist() {
-        super.setUp(CLEAR_TABLES, PostPersistEntity.class, 
+        super.setUp(CLEAR_TABLES, PostPersistEntity.class,
             "openjpa.Callbacks", "PostPersistCallbackImmediate=true");
         assertTrue(emf.getConfiguration().getCallbackOptionsInstance()
             .getPostPersistCallbackImmediate());
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         PostPersistEntity pc = new PostPersistEntity();
-        
+
         em.persist(pc);
-        
+
         assertEquals(1, pc.postPersistCallbackCount);
         assertEquals(pc.getId(), pc.idOnCallback);
-        
+
         em.getTransaction().commit();
-        
+
         assertEquals(1, pc.postPersistCallbackCount);
         assertEquals(pc.getId(), pc.idOnCallback);
         em.close();

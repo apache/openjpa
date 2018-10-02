@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation;
 
@@ -26,12 +26,12 @@ public interface PreparedQueryCacheInstrument {
     /**
      * Returns number of total exec requests since start.
      */
-    public long getTotalExecutionCount(); 
+    public long getTotalExecutionCount();
 
     /**
      * Returns number of total exec requests since start.
      */
-    public long getTotalExecutionCount(String query); 
+    public long getTotalExecutionCount(String query);
 
     /**
      * Returns number of total execution requests since last reset
@@ -44,13 +44,13 @@ public interface PreparedQueryCacheInstrument {
     public long getExecutionCount(String query);
 
     /**
-     * Returns number of total read requests that have been found in cache since 
+     * Returns number of total read requests that have been found in cache since
      * last reset.
      */
     public long getHitCount();
 
     /**
-     * Returns number of total read requests that have been found in cache since 
+     * Returns number of total read requests that have been found in cache since
      * last reset.
      */
     public long getHitCount(String query);
@@ -69,7 +69,7 @@ public interface PreparedQueryCacheInstrument {
      * Resets cache statistics
      */
     public void reset();
-    
+
     /**
      * Returns date since cache statistics collection were last reset.
      */
@@ -79,7 +79,7 @@ public interface PreparedQueryCacheInstrument {
      * Returns date cache statistics collection started.
      */
     public Date startDate();
-    
+
     /**
      * Returns all queries currently tracked in the cache.
      */

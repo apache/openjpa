@@ -64,7 +64,7 @@ public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
         }
         super.tearDown();
     }
-    
+
     protected OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         return emf;
     }

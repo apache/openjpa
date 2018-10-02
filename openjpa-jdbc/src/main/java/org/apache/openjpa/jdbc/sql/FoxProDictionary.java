@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -82,7 +82,7 @@ public class FoxProDictionary
         // the max character literal length is actually 254, but for primary
         // keys, it is 240; default to that length so users can add PKs later
         characterColumnSize = 240;
-        
+
         // OpenJPA-2045: NAME has been removed from common reserved words to
         // only specific dictionaries
         reservedWordSet.add("NAME");
@@ -146,7 +146,7 @@ public class FoxProDictionary
         return getColumns(meta, DBIdentifier.newCatalog(catalog), DBIdentifier.newSchema(schemaName),
             DBIdentifier.newTable(tableName), DBIdentifier.newColumn(columnName), conn);
     }
-    
+
     @Override
     public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
         DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)

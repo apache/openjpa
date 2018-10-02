@@ -26,10 +26,10 @@ public class UnorderedNameEntity implements INameEntity, java.io.Serializable {
 
     @Id
     private int id;
-    
+
     private String name;
 
-    
+
     public UnorderedNameEntity() {
     }
 

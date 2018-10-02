@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -83,7 +83,7 @@ public class ResultPacker {
     private final Member[] _sets;
     private final Method _put;
     private final Constructor<?> _constructor;
-    
+
     /**
      * Protected constructor to bypass this implementation but allow extension.
      */
@@ -118,8 +118,8 @@ public class ResultPacker {
      */
     private ResultPacker(Class<?> candidate, Class<?>[] types, String[] aliases, Class<?> resultClass) {
         _aliases = aliases;
-        if (candidate == resultClass || isInterface(resultClass, candidate) 
-         ||(types != null && types.length == 1 && types[0] == resultClass) 
+        if (candidate == resultClass || isInterface(resultClass, candidate)
+         ||(types != null && types.length == 1 && types[0] == resultClass)
          || resultClass.isArray()) {
             _resultClass = resultClass;
             _sets = null;
@@ -170,7 +170,7 @@ public class ResultPacker {
             _constructor = null;
         }
     }
-    
+
     boolean isInterface(Class<?> intf, Class<?> actual) {
         if (actual != null) {
             Class<?>[] intfs = actual.getInterfaces();

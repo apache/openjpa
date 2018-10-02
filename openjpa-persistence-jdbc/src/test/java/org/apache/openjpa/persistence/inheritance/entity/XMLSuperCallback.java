@@ -24,13 +24,13 @@ package org.apache.openjpa.persistence.inheritance.entity;
 public class XMLSuperCallback {
 
     private int id;
-    
+
     private String name;
-    
-    public transient static int postPersistCount = 0;    
-    
+
+    public transient static int postPersistCount = 0;
+
     public void superPostPersist() {
-        postPersistCount++;    
+        postPersistCount++;
     }
 
     public void setId(int id) {

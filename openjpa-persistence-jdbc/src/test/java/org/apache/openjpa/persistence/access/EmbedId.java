@@ -28,27 +28,27 @@ public class EmbedId {
 
     private long id;
     private String code;
-    
+
     public long getId() {
         return id;
     }
-    
+
     public void setId(long lid) {
         id = lid;
     }
-    
+
     public String getCode() {
         return code;
     }
-    
+
     public void setCode(String c) {
         code = c;
     }
-    
+
     public int hashCode() {
         return super.hashCode();
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof EmbedId) {
             EmbedId eid = (EmbedId)obj;

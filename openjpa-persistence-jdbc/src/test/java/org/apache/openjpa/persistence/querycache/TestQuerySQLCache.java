@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.querycache;
 
@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestQuerySQLCache extends SQLListenerTestCase {
     EntityManager em;
-    
+
     public void setUp() {
         super.setUp(
             DROP_TABLES,
@@ -37,28 +37,28 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
             QCEntity.class
             );
         em = emf.createEntityManager();
-        
+
         em.getTransaction().begin();
         QCEntity qc1 = new QCEntity("pk1", "description", Long.valueOf(1));
         QCEntity qc2 = new QCEntity("pk2", "description-2", Long.valueOf(1));
         QCEntity qc3 = new QCEntity("pk3", null, null);
-        
+
         em.persist(qc1);
         em.persist(qc2);
         em.persist(qc3);
-        
+
         em.getTransaction().commit();
-        
+
         em.clear();
     }
-    
+
     public void testNullParamsWithNumericPosition01() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
         assertTrue(eml.getQuerySQLCache());
-               
+
         Query q = em.createQuery("SELECT o from QCEntity o WHERE o.amount=?1");
-        
+
         // Test with NULL parameter, SQL should contain a IS NULL predicate
         resetSQL();
         q.setParameter(1, null);
@@ -66,22 +66,22 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertTrue((getLastSQL(sql) != null) && (getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNull1A);
         assertEquals(1, resultListNull1A.size());
-        
+
         resetSQL();
         q.setParameter(1, null);
         List resultListNull1B = q.getResultList();
         assertTrue((getLastSQL(sql) != null) && (getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNull1B);
         assertEquals(1, resultListNull1B.size());
-        
+
         // Test with non-NULL paramter, SQL should contain the = predicate
         resetSQL();
         q.setParameter(1, new Long(1));
         List resultListNotNull = q.getResultList();
         assertTrue((getLastSQL(sql) != null) && !(getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNotNull);
-        assertEquals(2, resultListNotNull.size());      
-        
+        assertEquals(2, resultListNotNull.size());
+
         // Test again with NULL parameter, SQL should contain a IS NULL predicate
         resetSQL();
         q.setParameter(1, null);
@@ -90,12 +90,12 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertNotNull(resultListNull2);
         assertEquals(1, resultListNull2.size());
     }
-    
+
     public void testNullParamsWithNumericPosition02() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
         assertTrue(eml.getQuerySQLCache());
-                      
+
         // Test with NULL parameter, SQL should contain a IS NULL predicate
         resetSQL();
         Query q1 = em.createQuery("SELECT o from QCEntity o WHERE o.amount=?1");
@@ -104,7 +104,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertTrue((getLastSQL(sql) != null) && (getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNull1A);
         assertEquals(1, resultListNull1A.size());
-        
+
         resetSQL();
         Query q2 = em.createQuery("SELECT o from QCEntity o WHERE o.amount=?1");
         q2.setParameter(1, null);
@@ -112,7 +112,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertTrue((getLastSQL(sql) != null) && (getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNull1B);
         assertEquals(1, resultListNull1B.size());
-        
+
         // Test with non-NULL paramter, SQL should contain the = predicate
         resetSQL();
         Query q3 = em.createQuery("SELECT o from QCEntity o WHERE o.amount=?1");
@@ -120,8 +120,8 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         List resultListNotNull = q3.getResultList();
         assertTrue((getLastSQL(sql) != null) && !(getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNotNull);
-        assertEquals(2, resultListNotNull.size());      
-        
+        assertEquals(2, resultListNotNull.size());
+
         // Test again with NULL parameter, SQL should contain a IS NULL predicate
         resetSQL();
         Query q4 = em.createQuery("SELECT o from QCEntity o WHERE o.amount=?1");
@@ -131,22 +131,22 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertNotNull(resultListNull2);
         assertEquals(1, resultListNull2.size());
     }
-    
+
     public void testNullParamsWithNamedQuery01() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
-        assertTrue(eml.getQuerySQLCache());        
-        
+        assertTrue(eml.getQuerySQLCache());
+
         Query q = em.createNamedQuery("QCEntity.getByAmount");
-        
-        resetSQL();       
+
+        resetSQL();
         q.setParameter("amount", null);
         List resultListNull1A = q.getResultList();
         assertTrue((getLastSQL(sql) != null) && (getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNull1A);
         assertEquals(1, resultListNull1A.size());
         em.clear();
-        
+
         // Test with NULL parameter, SQL should contain a IS NULL predicate
         resetSQL();
         q.setParameter("amount", null);
@@ -155,7 +155,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertNotNull(resultListNull1B);
         assertEquals(1, resultListNull1B.size());
         em.clear();
-        
+
         // Test with non-NULL parameter, SQL should contain the = predicate
         resetSQL();
         q.setParameter("amount", new Long(1));
@@ -164,7 +164,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertNotNull(resultListNotNull);
         assertEquals(2, resultListNotNull.size());
         em.clear();
-        
+
         // Test again with NULL parameter, SQL should contain a IS NULL predicate
         resetSQL();
         q.setParameter("amount", null);
@@ -174,12 +174,12 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertEquals(1, resultListNull2.size());
         em.clear();
     }
-    
+
     public void testNullParamsWithNamedQuery02() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
-        assertTrue(eml.getQuerySQLCache());        
-        
+        assertTrue(eml.getQuerySQLCache());
+
         resetSQL();
         Query q1A = em.createNamedQuery("QCEntity.getByAmount");
         q1A.setParameter("amount", null);
@@ -188,7 +188,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertNotNull(resultListNull1A);
         assertEquals(1, resultListNull1A.size());
         em.clear();
-        
+
         // Test with NULL parameter, SQL should contain a IS NULL predicate
         resetSQL();
         Query q1B = em.createNamedQuery("QCEntity.getByAmount");
@@ -198,7 +198,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertNotNull(resultListNull1B);
         assertEquals(1, resultListNull1B.size());
         em.clear();
-        
+
         // Test with non-NULL parameter, SQL should contain the = predicate
         resetSQL();
         Query q2 = em.createNamedQuery("QCEntity.getByAmount");
@@ -208,7 +208,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertNotNull(resultListNotNull);
         assertEquals(2, resultListNotNull.size());
         em.clear();
-        
+
         // Test again with NULL parameter, SQL should contain a IS NULL predicate
         resetSQL();
         Query q3 = em.createNamedQuery("QCEntity.getByAmount");

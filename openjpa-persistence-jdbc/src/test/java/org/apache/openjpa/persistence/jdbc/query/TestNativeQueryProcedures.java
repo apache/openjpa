@@ -34,16 +34,16 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Tests that Native queries use only 1-based positional parameters and 
+ * Tests that Native queries use only 1-based positional parameters and
  * disallows named parameters.
- * 
- * Originally reported in 
+ *
+ * Originally reported in
  * <A HRE="http://issues.apache.org/jira/browse/OPENJPA-918>OPENJPA-918</A>
- *  
+ *
  */
 public class TestNativeQueryProcedures extends SingleEMFTestCase {
     AbstractProcedureList procedureList = null;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp(Applicant.class, Game.class, CLEAR_TABLES);
@@ -55,7 +55,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
         if (conf.getDBDictionaryInstance() instanceof DerbyDictionary) {
             procedureList = new DerbyProcedureList();
         }
-        
+
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
             List<String> createList = procedureList.getCreateProcedureList();
@@ -161,7 +161,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
             // verify one changed and one didn't
             assertEquals("Charliex", applicant1.getName());
             assertEquals("Snoopy", applicant2.getName());
-        
+
             em.clear();
             em.close();
         }
@@ -239,13 +239,13 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
             // verify one changed and one didn't
             assertEquals("Charliex", applicant1.getName());
             assertEquals("Snoopy", applicant2.getName());
-        
+
             em.clear();
             em.close();
         }
     }
 
-    
+
     public void testOneReturnNoParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
@@ -276,7 +276,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
             em.getTransaction().begin();
             em.persist(applicant2);
             em.getTransaction().commit();
-            
+
             try {
                 em.getTransaction().begin();
                 Query query = em.createNativeQuery(sql, Applicant.class);
@@ -352,7 +352,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
             em.getTransaction().begin();
             em.persist(applicant2);
             em.getTransaction().commit();
-            
+
             try {
                 em.getTransaction().begin();
                 Query query = em.createNativeQuery(sql, Applicant.class);

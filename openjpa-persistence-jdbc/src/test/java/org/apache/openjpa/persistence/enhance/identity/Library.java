@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -30,12 +30,12 @@ import javax.persistence.OneToMany;
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
 
 /**
- * Entity used to test compound primary keys using entity as relationship to 
+ * Entity used to test compound primary keys using entity as relationship to
  * more than one level.
- * 
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-207">OPENJPA-207</A>
- *  
+ *
  * @author Jeffrey Blattman
  * @author Pinaki Poddar
  *
@@ -46,20 +46,20 @@ public class Library implements Serializable {
     @Id
     @Column(name="LIBRARY_NAME", nullable = false)
     private String name;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "library")
     private Set<Book> books = new HashSet<Book>();
-    
+
     private String location;
-    
+
 	public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Set<Book> getBooks() {
 		return books;
 	}
@@ -70,7 +70,7 @@ public class Library implements Serializable {
                 return b;
             }
         }
-        
+
         return null;
     }
 
@@ -78,7 +78,7 @@ public class Library implements Serializable {
         book.setLibrary(this);
         books.add(book);
     }
-    
+
 	public String getLocation() {
 		return location;
 	}
@@ -91,13 +91,13 @@ public class Library implements Serializable {
         if (!(o instanceof Library)) {
             return false;
         }
-        
+
         Library other = (Library)o;
-        
+
         if (!getName().equals(other.getName())) {
             return false;
         }
-        
+
         return true;
     }
 

@@ -36,11 +36,11 @@ public class MixedMappedSuper {
     @GeneratedValue
     @Access(AccessType.FIELD)
     private int mid;
-    
+
     private String mname;
 
     protected Date crtDate;
-    
+
     public void setId(int id) {
         this.mid = id;
     }
@@ -59,7 +59,7 @@ public class MixedMappedSuper {
     public String getName() {
         return mname;
     }
-        
+
     public boolean equals(Object obj) {
         if (obj instanceof MixedMappedSuper) {
             MixedMappedSuper ps = (MixedMappedSuper)obj;

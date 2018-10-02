@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.DataCache;
 @DataCache(timeout=100000)
 @Table(name="Usage1")
 public class Usage {
-    @Id  
+    @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     int id;
     int quantity;
@@ -48,7 +48,7 @@ public class Usage {
         subpart.getUsedIn().add(this);
     }
 
-    // JPA entity needs a public no-arg constructor ! 
+    // JPA entity needs a public no-arg constructor !
     public Usage() {}
 
 

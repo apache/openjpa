@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestDelimIdResultSetAnnotations 
+public class TestDelimIdResultSetAnnotations
         extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
@@ -36,7 +36,7 @@ public class TestDelimIdResultSetAnnotations
     Car2 car2;
     Pontiac2 pontiac2;
     Chevrolet2 chevrolet2;
-    
+
     @Override
     public void setUp() throws Exception {
         setSupportedDatabases(
@@ -45,7 +45,7 @@ public class TestDelimIdResultSetAnnotations
         if (isTestsDisabled()) {
             return;
         }
-        
+
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.Car.class,
             org.apache.openjpa.persistence.delimited.identifiers.Pontiac.class,
@@ -55,11 +55,11 @@ public class TestDelimIdResultSetAnnotations
             org.apache.openjpa.persistence.delimited.identifiers.Chevrolet2.class,
             DROP_TABLES);
         assertNotNull(emf);
-        
+
         em = emf.createEntityManager();
         assertNotNull(em);
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
@@ -93,29 +93,29 @@ public class TestDelimIdResultSetAnnotations
         createPontiac(id);
         id++;
         createChevrolet(id);
-        
+
         em.getTransaction().begin();
         em.persist(pontiac);
         em.persist(chevrolet);
         em.getTransaction().commit();
-        
+
         runQueries();
     }
-    
+
     private void runQueries() {
         em.clear();
         resultSetQuery();
     }
-    
+
     private void resultSetQuery() {
-        String query = 
+        String query =
             "SELECT c.\"id\", c.\"car model\", c.\"car color\", " +
             "c.\"discr col\", c.\"model year\" " +
             "FROM \"Car\" c ";
         Query q = em.createNativeQuery(query,"AnnoCarResultSet");
         List<Object[]> results = (List<Object[]>)q.getResultList();
         assertEquals(2,results.size());
-        
+
         for (Object[] result : results) {
             assertEquals(2, result.length);
             assertTrue(result[0] instanceof Car2);

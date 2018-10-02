@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.conf;
 
@@ -136,12 +136,12 @@ public class TestOpenJPAConfiguration
             try {
                 assertNotNull(pds[i].getShortDescription());
                 assertNotNull(pds[i].getDisplayName());
-                
+
                 // skip the EntityManagerFactory property added by
                 // product derivation code as it has no accessor methods
                 if ("EntityManagerFactory".equals(values[i].getProperty()))
                         continue;
-                        
+
                 Method getter = pds[i].getReadMethod();
                 Method setter = pds[i].getWriteMethod();
                 assertNotNull(getter);

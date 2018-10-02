@@ -33,7 +33,7 @@ public class TradeConfig {
 
     // added by OpenJPA
     public static Log log = null;
-    
+
     /* Trade Runtime Configuration Parameters */
     public static final int UNKNOWN = -1;
 
@@ -46,7 +46,7 @@ public class TradeConfig {
     public static final int JDBC = 3;
     public static final int JPA = 4;
     public static int runTimeMode = JPA;
-	
+
     /* Trade JPA Layer parameters */
 	public static String[] jpaLayerNames = {"OpenJPA", "Hibernate"};
 	public static final int OPENJPA = 0;
@@ -82,7 +82,7 @@ public class TradeConfig {
 	public static final int COMMAND_CACHING = 1;
 	public static final int NO_CACHING = 2;
 	public static int cachingType = NO_CACHING;
-	
+
 	/* Trade Database Scaling parameters*/
 	private static int MAX_USERS = 500;
 	private static int MAX_QUOTES = 1000;
@@ -121,12 +121,12 @@ public class TradeConfig {
 	private static int primIterations = 1;
 	private static boolean longRun = true;
 	private static boolean publishQuotePriceChange = false;
-	
+
 	/**
 	 *   -1 means every operation
 	 *    0 means never perform a market summary
 	 *  > 0 means number of seconds between summaries.  These will be
-	 *      synchronized so only one transaction in this period will create a summary and 
+	 *      synchronized so only one transaction in this period will create a summary and
 	 *      will cache its results.
 	 */
 	private static int  marketSummaryInterval = 20;
@@ -162,8 +162,8 @@ public class TradeConfig {
 		MAXIMUM_STOCK_SPLIT_MULTIPLIER.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
-	/* Trade Scenario actions mixes. Each of the array rows represents a specific Trade Scenario Mix. 
-	   The columns give the percentages for each action in the column header. Note: "login" is always 0. 
+	/* Trade Scenario actions mixes. Each of the array rows represents a specific Trade Scenario Mix.
+	   The columns give the percentages for each action in the column header. Note: "login" is always 0.
 	   logout represents both login and logout (because each logout operation will cause a new login when
 	   the user context attempts the next action.
 	 */
@@ -227,18 +227,18 @@ public class TradeConfig {
 				"/orderImg.jsp",
 				"/config.jsp",
 				"/runStats.jsp" },
-		//JSP Interface	
+		//JSP Interface
 	};
 
-	// These are the property settings the VAJ access beans look for.	
+	// These are the property settings the VAJ access beans look for.
 	private static final String NAMESERVICE_TYPE_PROPERTY =
 		"java.naming.factory.initial";
 	private static final String NAMESERVICE_PROVIDER_URL_PROPERTY =
 		"java.naming.provider.url";
 
 	// FUTURE:
-	// If a "trade2.properties" property file is supplied, reset the default values 
-	// to match those specified in the file. This provides a persistent runtime 
+	// If a "trade2.properties" property file is supplied, reset the default values
+	// to match those specified in the file. This provides a persistent runtime
 	// property mechanism during server startup
 
 	/**
@@ -267,7 +267,7 @@ public class TradeConfig {
 
 	/**
 	 * Return a Trade UI Web page based on the current configuration
-	 * This may return a JSP page or a Servlet page 
+	 * This may return a JSP page or a Servlet page
 	 * Creation date: (3/14/2000 9:08:34 PM)
 	 */
 
@@ -474,7 +474,7 @@ public class TradeConfig {
 
 	}
 
-	//Trade implements a card deck approach to selecting 
+	//Trade implements a card deck approach to selecting
 	// users for trading with tradescenarioservlet
 	private static ArrayList deck = null;
 	private static int card = 0;
@@ -493,7 +493,7 @@ public class TradeConfig {
 	 * from servlet initialization parameters. The servlet provides the init param and its
 	 * value as strings. This method then parses the parameter, converts the value to the
 	 * correct type and sets the corresponding TradeConfig parameter to the converted value
-	 * 
+	 *
 	 */
 	public static void setConfigParam(String parm, String value) {
 	    if (log.isTraceEnabled())
@@ -546,7 +546,7 @@ public class TradeConfig {
 						+ orderProcessingModeNames[orderProcessingMode],
 					e);
 			} // If the value is bad, simply revert to current
-		} else if (parm.equalsIgnoreCase("accessMode")) {		
+		} else if (parm.equalsIgnoreCase("accessMode")) {
 			try {
 				for (int i = 0; i < accessModeNames.length; i++) {
 					if (value.equalsIgnoreCase(accessModeNames[i])) {
@@ -572,7 +572,7 @@ public class TradeConfig {
 					"TradeConfig.setConfigParm(..): minor exception caught"
 						+ "Setting web services endpoint",
 					e);
-			} //On error, revert to saved		
+			} //On error, revert to saved
 		} else if (parm.equalsIgnoreCase("workloadMix")) {
 			try {
 				for (int i = 0; i < workloadMixNames.length; i++) {
@@ -589,7 +589,7 @@ public class TradeConfig {
 						+ "reverting to current value: "
 						+ workloadMixNames[workloadMix],
 					e);
-			} // If the value is bad, simply revert to current		
+			} // If the value is bad, simply revert to current
 		} else if (parm.equalsIgnoreCase("WebInterface")) {
 			try {
 				for (int i = 0; i < webInterfaceNames.length; i++) {
@@ -636,7 +636,7 @@ public class TradeConfig {
 						+ "revering to current value: "
 						+ MAX_USERS,
 					e);
-			} //On error, revert to saved		
+			} //On error, revert to saved
 		} else if (parm.equalsIgnoreCase("maxQuotes")) {
 			try {
 				MAX_QUOTES = Integer.parseInt(value);
@@ -650,7 +650,7 @@ public class TradeConfig {
 						+ MAX_QUOTES,
 					e);
 				//<<rjm
-			} //On error, revert to saved		
+			} //On error, revert to saved
 		} else if (parm.equalsIgnoreCase("primIterations")) {
 			try {
 				primIterations = Integer.parseInt(value);
@@ -663,7 +663,7 @@ public class TradeConfig {
 						+ primIterations,
 					e);
 			} //On error, revert to saved
-		}		
+		}
 	}
 
 	/**
@@ -840,20 +840,20 @@ public class TradeConfig {
 	public static void setUpdateQuotePrices(boolean updateQuotePrices) {
 		TradeConfig.updateQuotePrices = updateQuotePrices;
 	}
-	
+
 	public static String getSoapURL() {
 		return SoapURL;
 	}
-	
+
 	public static void setSoapURL(String value) {
 		SoapURL = value;
 //		TradeWebSoapProxy.updateServicePort();
 	}
-	
+
 	public static int getAccessMode() {
 		return accessMode;
 	}
-	
+
 	public static void setAccessMode(int value) {
 		accessMode = value;
 //		TradeWebSoapProxy.updateServicePort();
@@ -862,7 +862,7 @@ public class TradeConfig {
     public static int getRunTimeMode() {
         return runTimeMode;
     }
-    
+
     public static void setRunTimeMode(int value) {
         runTimeMode = value;
     }
@@ -870,10 +870,10 @@ public class TradeConfig {
 	public static int getPrimIterations() {
 		return primIterations;
 	}
-	
+
 	public static void setPrimIterations(int iter) {
 		primIterations = iter;
-	}	
+	}
 
     public static boolean getLongRun() {
         return longRun;
@@ -886,7 +886,7 @@ public class TradeConfig {
     public static void setPublishQuotePriceChange(boolean publishQuotePriceChange) {
         TradeConfig.publishQuotePriceChange = publishQuotePriceChange;
     }
-    
+
     public static boolean getPublishQuotePriceChange() {
         return publishQuotePriceChange;
     }
@@ -894,11 +894,11 @@ public class TradeConfig {
     public static void setMarketSummaryInterval(int seconds) {
         TradeConfig.marketSummaryInterval = seconds;
     }
-    
+
     public static  int getMarketSummaryInterval() {
         return TradeConfig.marketSummaryInterval;
     }
-    
+
     /**
 	 * Return the list of JPA Layer names
 	 * Creation date: (01/10/2009)

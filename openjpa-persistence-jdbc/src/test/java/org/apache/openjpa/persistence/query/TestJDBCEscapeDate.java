@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -56,9 +56,9 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         em.persist(e);
         tran.begin();
         tran.commit();
-        em.close();        
+        em.close();
     }
-    
+
     public void testJDBCEscape() {
         populate();
         EntityManager em = emf.createEntityManager();
@@ -84,15 +84,15 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         } else if ((dict instanceof SybaseDictionary)) {
             jpql = new String[] {
                 "select a from Employee a where a.hireDate >= {d '2009-08-25'}",
-                "select a from Employee a where a.hireDate >= {d '2009-8-5'}",    
-                "select a from Employee a where a.hireTime >= {t '00:00:00'}",  
+                "select a from Employee a where a.hireDate >= {d '2009-8-5'}",
+                "select a from Employee a where a.hireTime >= {t '00:00:00'}",
                 "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00'}",
                 "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.0'}",
                 "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1'}",
                 "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12'}",
                 "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123'}",
                 "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1234'}",
-                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12345'}", 
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12345'}",
                 "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123456'}",
                 "select {t '00:00:00'}, a.empId from Employee a",
             };
@@ -127,14 +127,14 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
                     "select {t '00:00:00'}, a.empId from Employee a",
                 };
         }
-        
+
 
         for (int i = 0; i < jpql.length; i++) {
             Query q = em.createQuery(jpql[i]);
             List results = q.getResultList();
             Assert.assertEquals("For jpql["+i+"]", 1, results.size());
         }
-        
+
         // Test support in HAVING clause.
         String[] havingJpql = {
             "select a from Employee a group by a.hireTime having a.hireTime >= {t '00:00:00'}",
@@ -161,21 +161,21 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         Assert.assertEquals(1, updateCnt);
         em.close();
     }
-    
+
     /*
      * Added for OJ-2286.  The test executes the same query multiple times.  Prior
-     * to the JIRA fix, upon the second exception an exception would occur.  
+     * to the JIRA fix, upon the second exception an exception would occur.
      */
     public void testMultipleQueryExecutionWithDateLiteral() {
         populate();
         EntityManager em = emf.createEntityManager();
-        
-        Query q = em.createQuery("SELECT e FROM Employee e WHERE e.hireTimestamp > {ts '2001-01-01 00:00:00'}");        
+
+        Query q = em.createQuery("SELECT e FROM Employee e WHERE e.hireTimestamp > {ts '2001-01-01 00:00:00'}");
         Assert.assertEquals("First assertion", 1, q.getResultList().size());
         // Prior to JIRA OJ-2286, an exception would occur here:
         Assert.assertEquals("Second assertion", 1, q.getResultList().size());
         // For good measure execute it a couple more times.  :)
         Assert.assertEquals("Third assertion", 1, q.getResultList().size());
         Assert.assertEquals("Fourth assertion", 1, q.getResultList().size());
-    }    
+    }
 }

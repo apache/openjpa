@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package openbook.tools.converter;
 
@@ -34,17 +34,17 @@ import org.antlr.runtime.debug.DebugEventListener;
 
 /**
  * Renders Java Source Code.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public abstract class SourceRenderer {
-    public final static char FORWARD_SLASH = '/'; 
-    public final static String DOT         = "."; 
-    public final static String CURRENT_DIRECTORY = "."; 
-    
+    public final static char FORWARD_SLASH = '/';
+    public final static String DOT         = ".";
+    public final static String CURRENT_DIRECTORY = ".";
+
     private File _sourceDir, _destinationDir;
-    
+
     boolean verbose = false;
     /**
      * Renders the given source files. The syntax of the command is
@@ -54,27 +54,27 @@ public abstract class SourceRenderer {
      * <pre> $ java SourceRenderer -stylesheet mystyle.css -sourcepath test
      *  -d generated/html acme/foo/SomeClass.java</pre>
      * <p>
-     * 
+     *
      * Recognized options are<br>
      * <table>
-     * <TR><TD><pre>-format</pre></TD> <TD>the format of the converted output. Recognized monikers are 
+     * <TR><TD><pre>-format</pre></TD> <TD>the format of the converted output. Recognized monikers are
      * <code>html</code> and <code>text</code>. A fully qualified class name that implements {@link TokenRenderer} is
-     * allowed. Default is <code>html</code></TD></tr> 
-     * <TR><TD><pre>-sourcepath</pre><TD>the root of the source files. Default is the current directory</tr> 
-     * <TR><TD><pre>-d</pre><TD>the root of the generated files. Default is the current directory</tr> 
+     * allowed. Default is <code>html</code></TD></tr>
+     * <TR><TD><pre>-sourcepath</pre><TD>the root of the source files. Default is the current directory</tr>
+     * <TR><TD><pre>-d</pre><TD>the root of the generated files. Default is the current directory</tr>
      * </table>
      * Besides these options, a renderer can accept more options. Any option <code>-someProperty</code>
      * will configure the renderer if a bean-style setter method <code>setSomeProperty(String|boolean|int)</code>
      * is available. See available documentation on the specific {@link HTMLTokenRenderer renderer}.
-     * <br>  
+     * <br>
      * Stylesheet file must be under destination directory.
      * <pre>-stylesheet</pre> is relative to destination directory.
-     * 
+     *
      * @param args command-line arguments.
-     * 
+     *
      * @throws Exception
      */
-    
+
     protected final void run(String[] args) throws Exception {
         CommandProcessor options = new CommandProcessor();
         options.register(true, "-sourcepath").setDefault(CURRENT_DIRECTORY);
@@ -82,9 +82,9 @@ public abstract class SourceRenderer {
         options.register(true, "-extension").setDefault("");
         options.register(true, "-verbose").setDefault("false");
         registerOptions(options);
-        
-        String[] inputs = options.setFrom(args); 
-        
+
+        String[] inputs = options.setFrom(args);
+
         _sourceDir  = new File(options.getValue("-sourcepath"));
         _destinationDir = new File(options.getValue("-d"));
         verbose = "true".equalsIgnoreCase(options.getValue("-verbose"));
@@ -94,7 +94,7 @@ public abstract class SourceRenderer {
             if (fin == null) {
                 continue;
             }
-            
+
             File outFile = new File(_destinationDir, suffix(path, options.getValue("-extension")));
             FileOutputStream fout = createOutput(outFile);
             if (fout == null) {
@@ -112,7 +112,7 @@ public abstract class SourceRenderer {
             out.close();
         }
     }
-    
+
     public File getDestinationDirectory() {
         return _destinationDir;
     }
@@ -121,7 +121,7 @@ public abstract class SourceRenderer {
     }
     public abstract void registerOptions(CommandProcessor options);
     public abstract TokenRenderer createRenderer(CommandProcessor options, File outFile);
-    
+
     private void render(InputStream is, TokenRenderer renderer, PrintStream out) throws Exception {
         ANTLRInputStream input = new ANTLRInputStream(is);
         JavaLexer lexer = new JavaLexer(input);
@@ -131,15 +131,15 @@ public abstract class SourceRenderer {
         // launch the parser starting at compilation unit
         parser.compilationUnit();
     }
-    
+
     /**
      * Gets the input stream.
-     * 
+     *
      * @param srcDir the root source directory.
      * @param path the path to input file.
      */
     protected InputStream getInputStream(File srcDir, String path) {
-        File file = new File(srcDir, path); 
+        File file = new File(srcDir, path);
         if (!file.exists()) {
             warn("Input file " + file.getAbsolutePath() + " does not exist");
             return null;
@@ -151,7 +151,7 @@ public abstract class SourceRenderer {
         }
         return null;
     }
-    
+
     /**
      * Gets the output stream to write to.
      */
@@ -169,21 +169,21 @@ public abstract class SourceRenderer {
         }
         return null;
     }
-    
-    
+
+
     private String suffix(String s, String suffix) {
         if (suffix == null || suffix.isEmpty())
             return s;
-        if (suffix.startsWith(".")) 
+        if (suffix.startsWith("."))
             return s + suffix;
         return s + "." + suffix;
     }
-    
+
     protected void verbose(String s) {
         if (verbose)
             System.err.println(s);
     }
-    
+
     protected void warn(String s) {
         System.err.println(s);
     }

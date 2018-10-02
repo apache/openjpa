@@ -14,16 +14,16 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
  * Enumeration of functional operator that operates on ordered pair of
  * expression to generate another expression.
- * 
+ *
  * @see BinaryOperatorExpression
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -35,13 +35,13 @@ public enum BinaryFunctionalOperator {
 	PLUS("+"),
 	RANGE(","),
 	TIMES("*");
-	
+
 	private final String _symbol;
-	
+
 	BinaryFunctionalOperator(String symbol) {
 		_symbol = symbol;
 	}
-	
+
 	public String toString() {
 		return _symbol;
 	}

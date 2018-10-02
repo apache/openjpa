@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -31,14 +31,14 @@ import org.apache.openjpa.util.InternalException;
  * <br>
  * A parameter in CriteriaQuery is always a named parameter but can be constructed with a null name.
  * Positional parameters are not allowed in CriteraQuery.
- * <br> 
- * 
+ * <br>
+ *
  * @author Pinaki Poddar
  * @author Fay wang
- * 
+ *
  * @param <T> the type of value held by this parameter.
  */
-class ParameterExpressionImpl<T> extends ExpressionImpl<T> 
+class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     implements ParameterExpression<T>, BindableParameter {
     private String _name;
     private int _index = 0; // index of the parameter as seen by the kernel, not position
@@ -64,24 +64,24 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     public final String getName() {
         return _name;
     }
-    
+
     /**
      * Raises an internal exception because parameters of CriteriaQuery
-     * are not positional. 
+     * are not positional.
      */
     public final Integer getPosition() {
         throw new InternalException(this + " must not be asked for its position");
     }
-    
+
     void setIndex(int index) {
         _index = index;
     }
-    
+
     public String toString() {
         StringBuilder buf = new StringBuilder("ParameterExpression");
         buf.append("<" + getJavaType().getSimpleName() + ">");
         if (_name != null)
-            buf.append("('"+ _name +"')"); 
+            buf.append("('"+ _name +"')");
 
         return buf.toString();
     }
@@ -101,19 +101,19 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         Class<?> clzz = getJavaType();
         Object paramKey = _name == null ? _index : _name;
         boolean isCollectionValued  = Collection.class.isAssignableFrom(clzz);
-        org.apache.openjpa.kernel.exps.Parameter param = isCollectionValued 
-            ? factory.newCollectionValuedParameter(paramKey, clzz) 
+        org.apache.openjpa.kernel.exps.Parameter param = isCollectionValued
+            ? factory.newCollectionValuedParameter(paramKey, clzz)
             : factory.newParameter(paramKey, clzz);
         param.setIndex(_index);
-        
+
         return param;
-    }   
-    
+    }
+
     @Override
     public StringBuilder asValue(AliasContext q) {
         return Expressions.asValue(q, ":", _name == null ? "param" : _name);
     }
-    
+
     public Class<T> getParameterType() {
         return getJavaType();
     }

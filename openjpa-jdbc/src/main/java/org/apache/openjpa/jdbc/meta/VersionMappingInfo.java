@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -61,9 +61,9 @@ public class VersionMappingInfo
             (version, table, templates);
         return createColumns(version, null, templates, table, adapt);
     }
-    
+
     /**
-     * Return the columns set for this version when the columns are spread 
+     * Return the columns set for this version when the columns are spread
      * across multiple tables.
      */
     public Column[] getMultiTableColumns(Version vers, Column[] templates,
@@ -76,7 +76,7 @@ public class VersionMappingInfo
     	for (Column col : templates) {
     	    DBIdentifier tableName = col.getTableIdentifier();
     	    Table table;
-    		if (DBIdentifier.isEmpty(tableName) 
+    		if (DBIdentifier.isEmpty(tableName)
     		  || tableName.equals(primaryTable.getIdentifier())) {
     			table = primaryTable;
     		} else if (secondaryTableNames.contains(tableName)) {
@@ -103,7 +103,7 @@ public class VersionMappingInfo
     	}
     	return result.toArray(new Column[result.size()]);
     }
-    
+
     /**
      * Return the index to set on the version columns, or null if none.
      */
@@ -143,12 +143,12 @@ public class VersionMappingInfo
             && cls.getJoinablePCSuperclassMapping() == null))
             setStrategy(strat);
     }
-    
+
     /**
      * Affirms if the given columns belong to more than one tables.
      */
     boolean spansMultipleTables(Column[] cols) {
-    	if (cols == null || cols.length <= 1) 
+    	if (cols == null || cols.length <= 1)
     		return false;
     	Set<DBIdentifier> tables = new HashSet<DBIdentifier>();
     	for (Column col : cols)
@@ -156,12 +156,12 @@ public class VersionMappingInfo
     			return true;
     	return false;
     }
-    
+
     /**
      * Gets the table where this version columns are mapped.
      */
     private Table getSingleTable(Version version, Column[] cols) {
-    	if (cols == null || cols.length == 0 
+    	if (cols == null || cols.length == 0
     	 || DBIdentifier.isEmpty(cols[0].getTableIdentifier()))
     		return version.getClassMapping().getTable();
     	return version.getClassMapping().getTable().getSchema()

@@ -7,36 +7,36 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-	targetNamespace="http://openjpa.apache.org/ns/orm" 
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://openjpa.apache.org/ns/orm"
 	xmlns:openjpa-orm="http://openjpa.apache.org/ns/orm"
-	xmlns:extendable-orm="http://openjpa.apache.org/ns/orm/extendable" 
+	xmlns:extendable-orm="http://openjpa.apache.org/ns/orm/extendable"
 	xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
 	elementFormDefault="qualified"
 	attributeFormDefault="unqualified"
 	version="1.0">
-	
+
 	<xsd:import namespace="http://openjpa.apache.org/ns/orm/extendable"/>
 	<xsd:import namespace="http://java.sun.com/xml/ns/persistence/orm"/>
-	
+
 	<!-- **************************************************** -->
 	<xsd:element name="openjpa-version" substitutionGroup="extendable-orm:ext-version"
 		type="openjpa-orm:version-type"/>
-	
+
 	<xsd:complexType name="version-type">
     	<xsd:attribute name="version" type="orm:versionType"
     		fixed="1.0" use="required"/>
-    </xsd:complexType> 
+    </xsd:complexType>
     <!-- **************************************************** -->
 	<xsd:element name="entity" substitutionGroup="extendable-orm:ext-entity"
 		type="openjpa-orm:entity-type"/>
@@ -71,7 +71,7 @@
 		<xsd:attribute name="discriminator-strategy" type="xsd:string" />
 		<!-- not tested -->
 		<xsd:attribute name="subclass-fetch-mode" type="openjpa-orm:fetch-mode-type" />
-	</xsd:complexType>	
+	</xsd:complexType>
 	<!-- **************************************************** -->
 	<!-- incomplete -->
 	<xsd:element name="mapped-superclass" substitutionGroup="extendable-orm:ext-mapped-superclass"
@@ -99,7 +99,7 @@
 	<!-- **************************************************** -->
 	<xsd:element name="attributes" substitutionGroup="extendable-orm:ext-attributes"
 		type="openjpa-orm:attributes-type"/>
-		
+
 	<xsd:complexType name="attributes-type">
 		<xsd:sequence>
 			<xsd:element name="persistent" type="openjpa-orm:persistent-type"
@@ -111,11 +111,11 @@
 			<xsd:element name="persistent-map" type="openjpa-orm:persistent-map-type"
 				minOccurs="0"/>
 		</xsd:sequence>
-	</xsd:complexType>			
+	</xsd:complexType>
 	<!-- **************************************************** -->
 	<xsd:element name="basic" substitutionGroup="extendable-orm:ext-basic"
 		type="openjpa-orm:basic-type"/>
-	
+
 	<!-- incomplete -->
 	<xsd:complexType name="basic-type">
 		<xsd:complexContent>
@@ -132,7 +132,7 @@
 				<xsd:attribute name="type" type="xsd:string"/>
 			</xsd:extension>
 		</xsd:complexContent>
-	</xsd:complexType>	
+	</xsd:complexType>
 	<!-- **************************************************** -->
 	<xsd:complexType name="common-type">
 		<xsd:sequence>
@@ -152,7 +152,7 @@
 	<!-- **************************************************** -->
 	<xsd:element name="embedded" substitutionGroup="extendable-orm:ext-embedded"
 		type="openjpa-orm:embedded-type"/>
-	
+
 	<!-- incomplete -->
 	<xsd:complexType name="embedded-type">
 		<xsd:complexContent>
@@ -174,11 +174,11 @@
 				<xsd:attribute name="dependent" type="xsd:boolean"/>
 			</xsd:extension>
 		</xsd:complexContent>
-	</xsd:complexType>	
+	</xsd:complexType>
 	<!-- **************************************************** -->
 	<xsd:element name="element-collection" substitutionGroup="extendable-orm:ext-element-collection"
 		type="openjpa-orm:element-collection-type"/>
-	
+
 	<!-- incomplete -->
 	<xsd:complexType name="element-collection-type">
 		<xsd:complexContent>
@@ -200,11 +200,11 @@
 				<xsd:attribute name="lrs" type="xsd:boolean"/>
 			</xsd:extension>
 		</xsd:complexContent>
-	</xsd:complexType>	
+	</xsd:complexType>
 	<!-- **************************************************** -->
 	<xsd:element name="many-to-one" substitutionGroup="extendable-orm:ext-many-to-one"
 		type="openjpa-orm:many-to-one-type"/>
-	
+
 	<!-- incomplete -->
     <xsd:complexType name="many-to-one-type">
     	<xsd:complexContent>
@@ -236,7 +236,7 @@
     <!-- **************************************************** -->
     <xsd:element name="one-to-one" substitutionGroup="extendable-orm:ext-one-to-one"
 		type="openjpa-orm:one-to-one-type"/>
-    
+
     <!-- incomplete -->
     <xsd:complexType name="one-to-one-type">
     	<xsd:complexContent>
@@ -266,7 +266,7 @@
     <!-- **************************************************** -->
     <xsd:element name="one-to-many" substitutionGroup="extendable-orm:ext-one-to-many"
 		type="openjpa-orm:one-to-many-type"/>
-    
+
     <!-- incomplete -->
     <xsd:complexType name="one-to-many-type">
     	<xsd:complexContent>
@@ -294,7 +294,7 @@
 					<!-- TODO: code - make sure not specified with order-by -->
 					<!-- not tested -->
 					<xsd:element name="order-column" type="openjpa-orm:order-column"
-						minOccurs="0"/>						
+						minOccurs="0"/>
 				</xsd:sequence>
 				<!-- not tested -->
 				<xsd:attribute name="dependent" type="xsd:boolean"/>
@@ -318,7 +318,7 @@
     <!-- **************************************************** -->
     <xsd:element name="many-to-many" substitutionGroup="extendable-orm:ext-many-to-many"
 		type="openjpa-orm:many-to-many-type"/>
-    
+
     <!-- incomplete -->
     <xsd:complexType name="many-to-many-type">
     	<xsd:complexContent>
@@ -345,7 +345,7 @@
 			</xsd:extension>
 		</xsd:complexContent>
     </xsd:complexType>
-    <!-- **************************************************** -->		
+    <!-- **************************************************** -->
 	<xsd:complexType name="fetch-groups-type">
 		<xsd:sequence>
 			<xsd:element name="fetch-group" type="openjpa-orm:fetch-group-type"
@@ -401,7 +401,7 @@
 	</xsd:complexType>
 	<!-- **************************************************** -->
 	<xsd:complexType name="read-only-type">
-		<xsd:annotation> 
+		<xsd:annotation>
 			<xsd:documentation>
 				@Target({ METHOD, FIELD }) @Retention(RUNTIME)
 				UpdateAction value() default UpdateAction.RESTRICT;
@@ -535,7 +535,7 @@
 			    boolean insertable() default true;
 			    boolean updatable() default true;
 			    String columnDefinition() default "";
-			    String table() default "";    			
+			    String table() default "";
     		</xsd:documentation>
     	</xsd:annotation>
         <xsd:attribute name="name" type="xsd:string" default=""/>
@@ -547,7 +547,7 @@
         <xsd:attribute name="updatable" type="xsd:boolean" default="true"/>
         <xsd:attribute name="column-definition" type="xsd:string" default=""/>
         <xsd:attribute name="table" type="xsd:string" default=""/>
-    </xsd:complexType>	
+    </xsd:complexType>
     <!-- **************************************************** -->
     <xsd:complexType name="persistent-type">
     	<xsd:annotation>
@@ -557,7 +557,7 @@
 			    CascadeType[] cascade() default {};
 			    boolean optional() default true;
 			    boolean embedded() default false;
-			    FetchType fetch() default FetchType.EAGER;    		
+			    FetchType fetch() default FetchType.EAGER;
     		</xsd:documentation>
     	</xsd:annotation>
     	<xsd:complexContent>
@@ -572,7 +572,7 @@
                 	<xsd:choice>
 						<xsd:element name="columns" type="openjpa-orm:columns-type"
 							minOccurs="0"/>
-						<xsd:element name="column" type="orm:column" 
+						<xsd:element name="column" type="orm:column"
 							minOccurs="0"/>
 					</xsd:choice>
 					<!-- not implemented -->
@@ -726,7 +726,7 @@
 					<xsd:element name="element-index" type="openjpa-orm:element-index-type"
 						minOccurs="0"/>
 					<xsd:element name="order-column" type="openjpa-orm:order-column"
-						minOccurs="0"/>	
+						minOccurs="0"/>
 				</xsd:sequence>
 				<xsd:attribute name="name" type="xsd:string" use="required" />
 				<!-- not tested -->
@@ -748,7 +748,7 @@
 				<xsd:attribute name="element-nonpolymorphic" type="openjpa-orm:nonpolymorphic-type"/>
 			</xsd:extension>
 		</xsd:complexContent>
-	</xsd:complexType>	
+	</xsd:complexType>
 	<!-- **************************************************** -->
 	<xsd:complexType name="index-type">
 		<xsd:attribute name="name" type="xsd:string" default=""/>
@@ -833,7 +833,7 @@
         <xsd:attribute name="column-definition" type="xsd:string" />
     </xsd:complexType>
     <!-- **************************************************** -->
-    <!-- not implemented -->	
+    <!-- not implemented -->
     <xsd:complexType name="mapping-overrides-type">
     	<xsd:sequence>
     		<xsd:element name="mapping-override" type="openjpa-orm:mapping-override-type"
@@ -885,7 +885,7 @@
     			minOccurs="0"/>
 			<xsd:element name="join-foreign-key" type="openjpa-orm:foreign-key-type"
 				minOccurs="0"/>
-			<xsd:element name="join-index"  type="openjpa-orm:index-type"/>  			
+			<xsd:element name="join-index"  type="openjpa-orm:index-type"/>
     	</xsd:sequence>
     	<xsd:attribute name="name" type="xsd:string"/>
     	<xsd:attribute name="catalog" type="xsd:string"/>
@@ -963,7 +963,7 @@
 			    String columnDefinition() default "";
 			    int length() default 255;
 			    int precision() default 0; // decimal precision
-			    int scale() default 0; // decimal scale    		
+			    int scale() default 0; // decimal scale
     		</xsd:documentation>
     	</xsd:annotation>
     	<xsd:attribute name="name" type="xsd:string" default=""/>
@@ -1074,7 +1074,7 @@
    				minOccurs="0"/>
     	</xsd:sequence>
     	<xsd:attribute name="name" type="xsd:string" default=""/>
-    </xsd:complexType>			
+    </xsd:complexType>
 	<!-- **************************************************** -->
 	<xsd:simpleType name="nonpolymorphic-type">
 		<xsd:restriction base="xsd:token">

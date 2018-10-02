@@ -5,7 +5,7 @@
 	<!ELEMENT table (column|index|pk|fk|unique)+>
 	<!ATTLIST table name CDATA #REQUIRED>
 	<!ELEMENT column EMPTY>
-	<!ATTLIST column name CDATA #REQUIRED> 
+	<!ATTLIST column name CDATA #REQUIRED>
  	<!ATTLIST column type (array|bigint|binary|bit|blob|char|clob|date|decimal|distinct|double|float|integer|java_object|longvarbinary|longvarchar|null|numeric|other|real|ref|smallint|struct|time|timestamp|tinyint|varbinary|varchar) #REQUIRED>
 	<!ATTLIST column type-name CDATA #IMPLIED>
 	<!ATTLIST column not-null (true|false) #IMPLIED>

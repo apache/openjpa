@@ -32,12 +32,12 @@ public class TestManualDelimInheritance extends SQLListenerTestCase {
     int id = 0;
     Dog dog;
     Cat cat;
-    
+
     @Override
     public void setUp() throws Exception {
-        // NOTE: This test is only configured to run on DB2 and Derby since 
-        // those DBs handle non-default schemas without additional authority or 
-        // configuration  
+        // NOTE: This test is only configured to run on DB2 and Derby since
+        // those DBs handle non-default schemas without additional authority or
+        // configuration
         setSupportedDatabases(DB2Dictionary.class, DerbyDictionary.class);
         if (isTestsDisabled())
             return;
@@ -48,11 +48,11 @@ public class TestManualDelimInheritance extends SQLListenerTestCase {
             org.apache.openjpa.persistence.delimited.identifiers.Cat.class,
             DROP_TABLES);
         assertNotNull(emf);
-        
+
         em = emf.createEntityManager();
         assertNotNull(em);
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
@@ -67,34 +67,34 @@ public class TestManualDelimInheritance extends SQLListenerTestCase {
         dog.setName("Spot");
         dog.setType("dog");
     }
-    
+
     private void createCat(int id) {
         cat = new Cat(id);
         cat.setName("Puff");
         cat.setType("cat");
     }
-    
+
     public void testCreate() {
         id++;
         createDog(id);
         id++;
         createCat(id);
-        
+
         em.getTransaction().begin();
         em.persist(dog);
         em.persist(cat);
         em.getTransaction().commit();
-        
+
         runQueries();
     }
-    
+
     private void runQueries() {
         em.clear();
         queryCat();
         em.clear();
         queryDog();
     }
-    
+
     private void queryCat() {
         String query =
             "SELECT DISTINCT a " +
@@ -104,10 +104,10 @@ public class TestManualDelimInheritance extends SQLListenerTestCase {
         List<Animal> results = (List<Animal>)q.getResultList();
         assertEquals(1,results.size());
     }
-    
+
     // Use native query
     private void queryDog() {
-        String query = 
+        String query =
             "SELECT * " +
             "FROM \"Animal\" a " +
             "WHERE a.\"discr col\" = 'Dog'";

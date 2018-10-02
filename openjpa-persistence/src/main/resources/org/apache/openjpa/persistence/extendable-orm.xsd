@@ -7,32 +7,32 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://openjpa.apache.org/ns/orm/extendable"
 	xmlns:extendable-orm="http://openjpa.apache.org/ns/orm/extendable"
-	xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" 
+	xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
 	elementFormDefault="qualified"
 	attributeFormDefault="unqualified"
 	version="1.0">
-	
+
 	<xsd:import namespace="http://java.sun.com/xml/ns/persistence/orm"/>
-	
+
     <!-- **************************************************** -->
     <xsd:element name="entity-mappings">
         <xsd:complexType>
             <xsd:annotation>
 	            <xsd:documentation>
-	            	See the entity-mappings type in the schema for namespace 
+	            	See the entity-mappings type in the schema for namespace
 	            	http://java.sun.com/xml/ns/persistence/orm.
 	            </xsd:documentation>
         </xsd:annotation>
@@ -73,13 +73,13 @@
                 fixed="2.0" use="required" />
         </xsd:complexType>
     </xsd:element>
-    <!-- **************************************************** --> 
+    <!-- **************************************************** -->
     <xsd:element name="ext-version" abstract="true"/>
     <!-- **************************************************** -->
     <xsd:complexType name="entity">
         <xsd:annotation>
             <xsd:documentation>
-            	See the entity type in the schema for namespace 
+            	See the entity type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -138,7 +138,7 @@
             <xsd:element name="attributes" type="extendable-orm:attributes"
                 minOccurs="0" />
 			<xsd:element ref="extendable-orm:ext-entity"
-				minOccurs="0" maxOccurs="unbounded"/>               
+				minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" />
         <xsd:attribute name="class" type="xsd:string" use="required" />
@@ -146,13 +146,13 @@
         <xsd:attribute name="cacheable" type="xsd:boolean" />
         <xsd:attribute name="metadata-complete" type="xsd:boolean" />
     </xsd:complexType>
-    <!-- **************************************************** --> 
+    <!-- **************************************************** -->
     <xsd:element name="ext-entity" abstract="true"/>
-    <!-- **************************************************** --> 
+    <!-- **************************************************** -->
     <xsd:complexType name="mapped-superclass">
         <xsd:annotation>
             <xsd:documentation>
-                See the mapped-superclass type in the schema for namespace 
+                See the mapped-superclass type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -192,11 +192,11 @@
     </xsd:complexType>
     <!-- **************************************************** -->
     <xsd:element name="ext-mapped-superclass" abstract="true"/>
-    <!-- **************************************************** --> 
+    <!-- **************************************************** -->
     <xsd:complexType name="embeddable">
         <xsd:annotation>
             <xsd:documentation>
-            	See the embeddable type in the schema for namespace 
+            	See the embeddable type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -214,12 +214,12 @@
     </xsd:complexType>
     <!-- **************************************************** -->
     <xsd:element name="ext-embeddable" abstract="true"/>
-    <!-- **************************************************** -->             
-     
+    <!-- **************************************************** -->
+
     <xsd:complexType name="attributes">
         <xsd:annotation>
             <xsd:documentation>
-                See the attributes type in the schema for namespace 
+                See the attributes type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -251,16 +251,16 @@
             <xsd:element name="transient" type="orm:transient"
                 minOccurs="0" maxOccurs="unbounded" />
             <xsd:element ref="extendable-orm:ext-attributes"
-						minOccurs="0" maxOccurs="unbounded"/> 
+						minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
-    <!-- **************************************************** -->	
+    <!-- **************************************************** -->
     <xsd:element name="ext-attributes" abstract="true"/>
     <!-- **************************************************** -->
     <xsd:complexType name="basic">
     	<xsd:annotation>
             <xsd:documentation>
-            	See the basic type in the schema for namespace 
+            	See the basic type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -268,18 +268,18 @@
 			<xsd:extension base="orm:basic">
 				<xsd:sequence>
 					<xsd:element ref="extendable-orm:ext-basic"
-						minOccurs="0" maxOccurs="unbounded"/> 
+						minOccurs="0" maxOccurs="unbounded"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
     </xsd:complexType>
-    <!-- **************************************************** -->	
+    <!-- **************************************************** -->
     <xsd:element name="ext-basic" abstract="true"/>
-    <!-- **************************************************** --> 
+    <!-- **************************************************** -->
     <xsd:complexType name="many-to-one">
     	<xsd:annotation>
             <xsd:documentation>
-            	See the many-to-one type in the schema for namespace 
+            	See the many-to-one type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -287,18 +287,18 @@
 			<xsd:extension base="orm:many-to-one">
 				<xsd:sequence>
 					<xsd:element ref="extendable-orm:ext-many-to-one"
-						minOccurs="0" maxOccurs="unbounded"/> 
+						minOccurs="0" maxOccurs="unbounded"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
     </xsd:complexType>
     <!-- **************************************************** -->
-    <xsd:element name="ext-many-to-one" abstract="true"/>	
+    <xsd:element name="ext-many-to-one" abstract="true"/>
     <!-- **************************************************** -->
     <xsd:complexType name="many-to-many">
     	<xsd:annotation>
             <xsd:documentation>
-            	See the many-to-many type in the schema for namespace 
+            	See the many-to-many type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -306,7 +306,7 @@
 			<xsd:extension base="orm:many-to-many">
 				<xsd:sequence>
 					<xsd:element ref="extendable-orm:ext-many-to-many"
-						minOccurs="0" maxOccurs="unbounded"/> 
+						minOccurs="0" maxOccurs="unbounded"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -317,7 +317,7 @@
     <xsd:complexType name="one-to-many">
     	<xsd:annotation>
             <xsd:documentation>
-            	See the one-to-many type in the schema for namespace 
+            	See the one-to-many type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -325,18 +325,18 @@
 			<xsd:extension base="orm:one-to-many">
 				<xsd:sequence>
 					<xsd:element ref="extendable-orm:ext-one-to-many"
-						minOccurs="0" maxOccurs="unbounded"/> 
+						minOccurs="0" maxOccurs="unbounded"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
     </xsd:complexType>
     <!-- **************************************************** -->
     <xsd:element name="ext-one-to-many" abstract="true"/>
-    <!-- **************************************************** --> 
+    <!-- **************************************************** -->
     <xsd:complexType name="one-to-one">
     	<xsd:annotation>
             <xsd:documentation>
-            	See the one-to-one type in the schema for namespace 
+            	See the one-to-one type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -344,7 +344,7 @@
 			<xsd:extension base="orm:one-to-one">
 				<xsd:sequence>
 					<xsd:element ref="extendable-orm:ext-one-to-one"
-						minOccurs="0" maxOccurs="unbounded"/> 
+						minOccurs="0" maxOccurs="unbounded"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -355,7 +355,7 @@
     <xsd:complexType name="element-collection">
     	<xsd:annotation>
             <xsd:documentation>
-            	See the element-collection type in the schema for namespace 
+            	See the element-collection type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -363,18 +363,18 @@
 			<xsd:extension base="orm:element-collection">
 				<xsd:sequence>
 					<xsd:element ref="extendable-orm:ext-element-collection"
-						minOccurs="0" maxOccurs="unbounded"/> 
+						minOccurs="0" maxOccurs="unbounded"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
     </xsd:complexType>
     <!-- **************************************************** -->
     <xsd:element name="ext-element-collection" abstract="true"/>
-    <!-- **************************************************** --> 
+    <!-- **************************************************** -->
     <xsd:complexType name="embedded">
     	<xsd:annotation>
             <xsd:documentation>
-            	See the embedded type in the schema for namespace 
+            	See the embedded type in the schema for namespace
             	http://java.sun.com/xml/ns/persistence/orm.
             </xsd:documentation>
         </xsd:annotation>
@@ -382,12 +382,12 @@
 			<xsd:extension base="orm:embedded">
 				<xsd:sequence>
 					<xsd:element ref="extendable-orm:ext-embedded"
-						minOccurs="0" maxOccurs="unbounded"/> 
+						minOccurs="0" maxOccurs="unbounded"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
     </xsd:complexType>
     <!-- **************************************************** -->
     <xsd:element name="ext-embedded" abstract="true"/>
-    <!-- **************************************************** -->     
+    <!-- **************************************************** -->
 </xsd:schema>

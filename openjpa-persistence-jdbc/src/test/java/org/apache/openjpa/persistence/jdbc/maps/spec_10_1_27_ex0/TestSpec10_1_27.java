@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex0;
 
@@ -58,14 +58,14 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
-    
+
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
-    public void setCandidate(Query q, Class<?> clz) 
+    public void setCandidate(Query q, Class<?> clz)
         throws Exception {
-        org.apache.openjpa.persistence.QueryImpl<?> q1 = 
+        org.apache.openjpa.persistence.QueryImpl<?> q1 =
             (org.apache.openjpa.persistence.QueryImpl<?>) q;
         org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
         org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
@@ -81,7 +81,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         String query = "select KEY(e) from Compny1 c, " +
             " in (c.orgs) e order by c.id";
         Query q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Compny1.class);
         List<?> rs = q.getResultList();
         Division d = (Division) rs.get(0);
@@ -91,17 +91,17 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         query = "select ENTRY(e) from Compny1 c, " +
         " in (c.orgs) e order by c.id";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Compny1.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()) || d2.equals(me.getKey()));
-        
+
         query = "select KEY(e) from Compny2 c, " +
             " in (c.orgs) e order by c.id";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Compny2.class);
         rs = q.getResultList();
         d = (Division) rs.get(0);
@@ -111,41 +111,41 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         query = "select ENTRY(e) from Compny2 c, " +
             " in (c.orgs) e order by c.id";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Compny2.class);
         rs = q.getResultList();
         me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()) || d2.equals(me.getKey()));
-        
+
         // new tests for element collection
         em.clear();
         query = "select im from Item1 i, in (i.images) im " +
             " order by VALUE(im)";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Item1.class);
         rs = q.getResultList();
         assertEquals(numItems * numImagesPerItem, rs.size());
-        
+
         em.clear();
         query = "select im from Item1 i, in (i.images) im " +
             " where VALUE(im) = 'file11'";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Item1.class);
         rs = q.getResultList();
         assertEquals(1, rs.size());
-        
+
         em.clear();
         query = "select im from Item1 i, in (i.images) im " +
             " group by im " +
             " having VALUE(im) like 'file1%'";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Item1.class);
         rs = q.getResultList();
-        assertEquals(numImagesPerItem, rs.size());       
+        assertEquals(numImagesPerItem, rs.size());
 
         em.close();
     }
@@ -282,7 +282,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         int id = c.getId();
         Map<Division, VicePresident> organization = c.getOrganization();
         Assert.assertEquals(2,organization.size());
-    }    
+    }
 
     public void assertDivision(Division d) {
         int id = d.getId();
@@ -362,5 +362,5 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         }
         tran.commit();
         em.close();
-    }    
+    }
 }

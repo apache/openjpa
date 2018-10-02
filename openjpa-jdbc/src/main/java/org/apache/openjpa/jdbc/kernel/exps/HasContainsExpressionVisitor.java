@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -23,10 +23,10 @@ import org.apache.openjpa.kernel.exps.Expression;
 
 /**
  * Determines whether the visited expressions include a "contains" expression.
- * 
+ *
  * @author Abe White
  */
-class HasContainsExpressionVisitor 
+class HasContainsExpressionVisitor
     extends AbstractExpressionVisitor {
 
     private boolean _found = false;
@@ -41,7 +41,7 @@ class HasContainsExpressionVisitor
 
     public void enter(Expression exp) {
         if (!_found)
-            _found = exp instanceof ContainsExpression 
+            _found = exp instanceof ContainsExpression
                 || exp instanceof BindVariableAndExpression;
     }
-} 
+}

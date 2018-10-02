@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.auto;
 
@@ -54,21 +54,21 @@ public class TestAutoIncrement extends SingleEMTestCase {
         em.getTransaction().commit();
         assertNotEquals(null, e2.getId());
     }
-    
+
     public void testMergeNewEntity() {
         if (disabled) {
             return;
         }
         AutoIncrementEntity e2 = new AutoIncrementEntity();
-        
+
         em.getTransaction().begin();
         AutoIncrementEntity e3 = em.merge(e2);
         em.getTransaction().commit();
-        
+
         assertNotNull(e3);
-        
+
     }
-    
+
     /**
      * A private worker method that will synthesize an Entity which has an auto generated id that starts at zero.
      */

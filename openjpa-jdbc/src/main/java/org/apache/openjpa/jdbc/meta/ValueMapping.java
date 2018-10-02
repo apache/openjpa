@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -178,7 +178,7 @@ public interface ValueMapping
      */
     public void setForeignKey(Row row, OpenJPAStateManager rel)
         throws SQLException;
-    
+
     /**
      * Sets this value's foreign key to the given related object. The object
      * may be null. If the object is one of2or more foreign keys with the
@@ -202,9 +202,9 @@ public interface ValueMapping
     public ClassMapping[] getIndependentTypeMappings();
 
     /**
-     * Return the {@link org.apache.openjpa.sql.Select} subclasses constant 
-     * for loading this relation, based on how the related type is mapped, 
-     * whether this relation is polymorphic, and whether it is configured to 
+     * Return the {@link org.apache.openjpa.sql.Select} subclasses constant
+     * for loading this relation, based on how the related type is mapped,
+     * whether this relation is polymorphic, and whether it is configured to
      * use class criteria.
      */
     public int getSelectSubclasses();

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -75,15 +75,15 @@ public class SequenceMetaData
 
     private MetaDataRepository _repos;
     private SequenceFactory _factory = null;
-    
+
     private final String _name;
     private int _type = Seq.TYPE_DEFAULT;
     private String _plugin = IMPL_NATIVE;
     private File _source = null;
     private Object _scope = null;
     private int _srcType = SRC_OTHER;
-    private int _lineNum = 0;  
-    private int _colNum = 0;  
+    private int _lineNum = 0;
+    private int _colNum = 0;
     private String[] _comments = null;
     private String _sequence = null;
     private int _increment = -1;
@@ -150,7 +150,7 @@ public class SequenceMetaData
     public void setColNumber(int colNum) {
         _colNum = colNum;
     }
-    
+
     public String getResourceName() {
         return _name;
     }
@@ -287,7 +287,7 @@ public class SequenceMetaData
                 // Fall back to the envLoader to try load the class.
                 cls = Class.forName(clsName, true, envLoader);
             }
-            
+
             StringBuilder props = new StringBuilder();
             if (plugin.getProperties() != null)
                 props.append(plugin.getProperties());
@@ -323,13 +323,13 @@ public class SequenceMetaData
      * Set/Get the schema name
      */
     public void setSchema(String schema) {
-        // If the schema name is empty, check to see if a system 
+        // If the schema name is empty, check to see if a system
         // level default exists and if so use it.
         if (schema == null || "".equals(schema)){
             String tmp = getRepository().getMetaDataFactory().getDefaults().getDefaultSchema();
-            schema = (tmp != null ? tmp : ""); 
+            schema = (tmp != null ? tmp : "");
         }
-        
+
         this._schema = schema;
     }
 
@@ -367,7 +367,7 @@ public class SequenceMetaData
         appendProperty(props, PROP_SCHEMA, wrapValue(_schema));
         appendProperty(props, PROP_CATALOG, wrapValue(_catalog));
     }
-    
+
     /**
      * Wraps property values that may contain spaces or other special characters
      * in double quotes so they are processed as a single valued argument.
@@ -429,12 +429,12 @@ public class SequenceMetaData
     public void setComments(String[] comments) {
         _comments = comments;
     }
-    
+
     /**
      * Allow facades to supply adapters from a spec sequence type to the
      * OpenJPA sequence type.
      */
-    public static interface SequenceFactory 
+    public static interface SequenceFactory
         extends Serializable {
 
         /**

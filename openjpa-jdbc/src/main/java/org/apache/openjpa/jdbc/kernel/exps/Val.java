@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -42,19 +42,19 @@ public interface Val
     /**
      * Initialization flag indicating to join into any relation path.
      */
-    public final int JOIN_REL = 2 << 1; 
+    public final int JOIN_REL = 2 << 1;
 
     /**
-     * Initialization flag indicating to force an outer join into any relation 
+     * Initialization flag indicating to force an outer join into any relation
      * path.
      */
-    public final int FORCE_OUTER = 2 << 2; 
+    public final int FORCE_OUTER = 2 << 2;
 
     /**
-     * Initialization flag indicating to this value is for compare/equal 
+     * Initialization flag indicating to this value is for compare/equal
      * path.
      */
-    public final int CMP_EQUAL = 2 << 3; 
+    public final int CMP_EQUAL = 2 << 3;
 
     public final int VAL = 0;
     public final int MATH_VAL = 1;
@@ -78,7 +78,7 @@ public interface Val
 
     /**
      * Initialize the value. This method should recursively initialize any
-     * sub-values. 
+     * sub-values.
      */
     public ExpState initialize(Select sel, ExpContext ctx, int flags);
 
@@ -86,7 +86,7 @@ public interface Val
      * Return the datastore value of the given object in the context of this
      * value.
      */
-    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state,
         Object val);
 
     /**
@@ -97,7 +97,7 @@ public interface Val
     /**
      * Select just the columns for this value.
      */
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks);
 
     /**
@@ -108,7 +108,7 @@ public interface Val
     /**
      * Order by this value.
      */
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc);
 
     /**
@@ -123,7 +123,7 @@ public interface Val
      *
      * @param other the value being compared to, or null if not a comparison
      */
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState);
 
     /**
@@ -134,52 +134,52 @@ public interface Val
     /**
      * Append the <code>index</code>th SQL element to the given buffer.
      */
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
-        SQLBuffer sql, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
+        SQLBuffer sql,
         int index);
 
     /**
      * Append the SQL testing whether this value is empty to the given buffer.
      */
-    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql);
 
     /**
      * Append the SQL testing whether this value is not empty to
      * the given buffer.
      */
-    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql);
 
     /**
      * Append the SQL checking the index of this value.
      */
-    public void appendIndex(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIndex(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql);
 
     /**
      * Append the SQL checking the type of this value.
      */
-    public void appendType(Select sel, ExpContext ctx, ExpState state, 
+    public void appendType(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql);
 
     /**
      * Append the SQL checking the size of this value.
      */
-    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+    public void appendSize(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql);
 
     /**
      * Append the SQL testing whether this value is null to the given buffer.
      */
-    public void appendIsNull(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql);
 
     /**
      * Append the SQL testing whether this value is not null to the given
      * buffer.
      */
-    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql);
 
     public int getId();

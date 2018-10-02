@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -41,33 +41,33 @@ public class Order {
 	@Column(name="CNT")
 	private int count;
 	private String name;
-	
+
 	@ManyToOne
 	private Customer customer;
-	
+
 	@OneToMany(mappedBy="order")
 	private List<LineItem> lineItems;
-	
+
     private boolean delivered;
-	
+
     private Timestamp orderTs;
 
     public double getTotalCost() {
         return totalCost;
     }
-    
+
     public void setTotalCost(double totalCost) {
         this.totalCost = totalCost;
     }
-    
+
     public Customer getCustomer() {
         return customer;
     }
-    
+
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -79,19 +79,19 @@ public class Order {
     public void setLineitems(List<LineItem> lineItems) {
         this.lineItems = lineItems;
     }
-    
+
     public int getQuantity() {
         return quantity;
     }
-    
+
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-	
+
     public boolean isDelivered() {
         return delivered;
     }
-    
+
     public void setDelivered(boolean delivered) {
         this.delivered = delivered;
     }
@@ -99,7 +99,7 @@ public class Order {
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -107,7 +107,7 @@ public class Order {
     public Timestamp getOrderTs() {
         return orderTs;
     }
-    
+
     public void setOrderTs(Timestamp orderTs) {
         this.orderTs = orderTs;
     }

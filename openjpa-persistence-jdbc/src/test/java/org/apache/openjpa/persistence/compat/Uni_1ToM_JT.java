@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -24,8 +24,8 @@ import javax.persistence.*;
 
 /**
  * This is the default uni-directional one-to-many mapping.
- * Join table strategy is used. 
- *  
+ * Join table strategy is used.
+ *
  * @author faywang
  */
 
@@ -45,33 +45,33 @@ public class Uni_1ToM_JT {
             @JoinColumn(name="Uni1MJT_ID", referencedColumnName="ID"),
         inverseJoinColumns=
             @JoinColumn(name="C_ID", referencedColumnName="ID")
-    )    
+    )
     private List<EntityC> entityCs = null;
-    
-    public long getId() { 
-        return id; 
+
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public List<EntityC> getEntityCs() { 
-        return entityCs; 
+    public List<EntityC> getEntityCs() {
+        return entityCs;
     }
 
-    public void setEntityCs(List<EntityC> entityAs) { 
-        this.entityCs = entityAs; 
+    public void setEntityCs(List<EntityC> entityAs) {
+        this.entityCs = entityAs;
     }
 
     public int hashCode() {
         return name.hashCode();
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof Uni_1ToM_JT)) return false;
         Uni_1ToM_JT b = (Uni_1ToM_JT)o;

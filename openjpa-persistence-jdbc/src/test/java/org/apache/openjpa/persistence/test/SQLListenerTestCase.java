@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.test;
 
@@ -42,7 +42,7 @@ public abstract class SQLListenerTestCase
         System.arraycopy(props, 0, copy, 0, props.length);
         copy[copy.length - 2] = "openjpa.jdbc.JDBCListeners";
         copy[copy.length - 1] = new JDBCListener[] { new FilteringJDBCListener(sql) };
-        super.setUp(copy); 
+        super.setUp(copy);
     }
 
     @Override
@@ -62,10 +62,10 @@ public abstract class SQLListenerTestCase
                 return;
         }
 
-        fail("Expected regular expression\r\n <" + sqlExp 
+        fail("Expected regular expression\r\n <" + sqlExp
            + ">\r\n to have existed in SQL statements: \r\n" + toString(sql));
     }
-    
+
     /**
      * Confirm that the specified SQL has not been executed.
      *
@@ -102,7 +102,7 @@ public abstract class SQLListenerTestCase
      * Confirm the list of expected SQL expressions have been executed in the
      * order specified. I.e. additional SQL statements can be executed in
      * between expected SQLs.
-     * 
+     *
      * @param expected
      *            SQL expressions. E.g., ("SELECT FOO .*", "UPDATE .*")
      */
@@ -113,7 +113,7 @@ public abstract class SQLListenerTestCase
     /**
      * Confirm the list of expected SQL expressions have been executed in the
      * exact number and order specified.
-     * 
+     *
      * @param expected
      *            SQL expressions. E.g., ("SELECT FOO .*", "UPDATE .*")
      */
@@ -152,7 +152,7 @@ public abstract class SQLListenerTestCase
 
     /**
      * Confirm the list of expected SQL expressions have executed in any order.
-     * 
+     *
      * @param expected
      *            SQL expressions. E.g., ("SELECT FOO .*", "UPDATE .*")
      */
@@ -165,7 +165,7 @@ public abstract class SQLListenerTestCase
     /**
      * Confirm the list of expected SQL expressions have not executed in any
      * order.
-     * 
+     *
      * @param expected
      *            SQL expressions. E.g., ("SELECT FOO .*", "UPDATE .*")
      */
@@ -177,7 +177,7 @@ public abstract class SQLListenerTestCase
 
     /**
      * Confirm the any of expected SQL expressions have executed in any order.
-     * 
+     *
      * @param expected
      *            SQL expressions. E.g., ("SELECT FOO .*", "UPDATE .*")
      */
@@ -192,14 +192,14 @@ public abstract class SQLListenerTestCase
             + toString(Arrays.asList(expected)) + ">\r\n to be"
             + " contained in SQL statements: \r\n" + toString(sql));
     }
-    
+
     /**
      * Gets the number of SQL issued since last reset.
      */
     public int getSQLCount() {
         return sql.size();
     }
-    
+
     /**
      * Resets SQL count.
      * @return number of SQL counted since last reset.
@@ -220,7 +220,7 @@ public abstract class SQLListenerTestCase
     /**
      * Returns the last SQL executed or the empty string if the list is
      * empty.
-    */ 
+    */
     public String getLastSQL(List<String> list) {
         if (list != null && list.size() > 0)
             return list.get(list.size() -1);
@@ -228,7 +228,7 @@ public abstract class SQLListenerTestCase
     }
 
     public enum SQLAssertType {
-        SQL, NotSQL, ContainsSQL, AllSQLInOrder, AllExactSQLInOrder, 
+        SQL, NotSQL, ContainsSQL, AllSQLInOrder, AllExactSQLInOrder,
         AllSQLAnyOrder, NoneSQLAnyOrder, AnySQLAnyOrder
     };
 

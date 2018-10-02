@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation.jmx;
 
@@ -30,15 +30,15 @@ import org.apache.openjpa.util.UserException;
 /**
  * A JMX-specific instrument for the query cache
  */
-public class PreparedQueryCacheJMXInstrument extends AbstractPreparedQueryCacheInstrument 
+public class PreparedQueryCacheJMXInstrument extends AbstractPreparedQueryCacheInstrument
     implements JMXInstrument, PreparedQueryCacheJMXInstrumentMBean {
-    
+
     private static Localizer _loc = Localizer.forPackage(PreparedQueryCacheJMXInstrument.class);
 
     private static final String MBEAN_TYPE = "QuerySQLCache";
-    
+
     private ObjectName _objName = null;
-    
+
     @Override
     public String getName() {
         return MBEAN_TYPE;
@@ -49,17 +49,17 @@ public class PreparedQueryCacheJMXInstrument extends AbstractPreparedQueryCacheI
         return InstrumentationLevel.FACTORY;
     }
 
-    
+
     @Override
     public void initialize() {
-        
+
         OpenJPAConfiguration conf = (OpenJPAConfiguration)getProvider().getConfiguration();
         PreparedQueryCache pqc = conf.getQuerySQLCacheInstance();
-        
+
         if (pqc == null) {
             throw new UserException(_loc.get("prep-query-cache-not-found"));
         }
-        
+
         setPreparedQueryCache(pqc);
         setConfigId(conf.getId());
         setContextRef(Integer.toString(System.identityHashCode(getContext())));
@@ -69,7 +69,7 @@ public class PreparedQueryCacheJMXInstrument extends AbstractPreparedQueryCacheI
         if (_objName != null) {
             return _objName;
         }
-        
+
         try {
             _objName = JMXProvider.createObjectName(this, null);
             return _objName;
@@ -77,7 +77,7 @@ public class PreparedQueryCacheJMXInstrument extends AbstractPreparedQueryCacheI
             throw new UserException(_loc.get("unable-to-create-object-name", getName()), t);
         }
     }
-    
+
     public void start() {
         getProvider().startInstrument(this);
     }

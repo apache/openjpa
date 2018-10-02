@@ -14,11 +14,11 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 /**
  * The stylesheet for OpenTrader sample application.
- * 
+ *
 **/
 
 /**
@@ -69,7 +69,7 @@
  *  ---------------------------------------------------------------------------
 **/
 
-.cbg-RP { 
+.cbg-RP {
    background-color:#005B9A;
    border-color: #005B9A;
 }
@@ -122,7 +122,7 @@
   float:right;
   text-align:right;
   margin-right:1em;
-  
+
 }
 .error-message {
    color:red;
@@ -149,7 +149,7 @@
   color: #0000FF;
 /*  vertical-align:-25%; */
 }
-/** Panel on top-right corner displays current Trader details **/ 
+/** Panel on top-right corner displays current Trader details **/
 #TraderPanel {
   position: absolute;
   top:10px;

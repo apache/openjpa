@@ -44,23 +44,23 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  * The server side implementation of the GWT RPC service.
  * <p>
  * This implementation delegates to original implementation, thereby blocking the GWT Servlet
- * dependency to the original implementation of the service. This implementation being a 
- * servlet allows us to switch the delegate during {@#init(ServletConfig) initialization}  
+ * dependency to the original implementation of the service. This implementation being a
+ * servlet allows us to switch the delegate during {@#init(ServletConfig) initialization}
  * to either a {@link Exchange real JPA-based } implementation or a {@link MockTradingService simple in-memory}
  * implementation of the {@link TradingService service interface}.
  * <p>
  * The other important advantage of such delegation is to translate exception. The underlying service
  * exceptions are translated by an {@link ExceptionAdapter exception translator} that ensures that
- * the translated exceptions are serializable and hence accessible to the browser-based client. 
- *   
+ * the translated exceptions are serializable and hence accessible to the browser-based client.
+ *
  * @author Pinaki Poddar
  */
 @SuppressWarnings("serial")
 public class TradingServiceAdapterImpl extends RemoteServiceServlet implements TradingServiceAdapter {
-    
+
     private TradingService _del;
     private ExceptionAdapter _translator = new ExceptionAdapter();
-    
+
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         String unit = config.getInitParameter("persistence.unit");
@@ -69,12 +69,12 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
         _del = ("true".equalsIgnoreCase(mock)) ? new MockTradingService() : new Exchange(unit);
         _translator.setPrintServerSideStackTrace("true".equalsIgnoreCase(serverTrace));
     }
-    
+
     public void destroy() {
         _del.close();
         super.destroy();
     }
-    
+
     public Ask ask(Trader trader, Stock stock, int volume, double price) {
         try {
             return _del.ask(trader, stock, volume, price);
@@ -82,7 +82,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public Bid bid(Trader trader, Stock stock, int volume, double price) {
         try {
             return _del.bid(trader, stock, volume, price);
@@ -90,7 +90,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public Tradable withdraw(Tradable t) {
         try {
             return _del.withdraw(t);
@@ -98,7 +98,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public Tradable refresh(Tradable t) {
         try {
             return _del.refresh(t);
@@ -106,7 +106,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public Stock getStock(String symbol) {
         try {
             return _del.getStock(symbol);
@@ -114,7 +114,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public List<Stock> getStocks() {
         try {
             return new ArrayList<Stock>(_del.getStocks());
@@ -122,7 +122,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public List<Trade> getTrades(Timestamp from, Timestamp to) {
         try {
             return _del.getTrades(from, to);
@@ -130,7 +130,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public List<Trade> getTrades(Trader trader, Boolean boughtOrsold, Timestamp from, Timestamp to) {
         try {
             return _del.getTrades(trader, boughtOrsold, from, to);
@@ -138,7 +138,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public Trader login(String trader) throws RuntimeException {
         try {
             return _del.login(trader);
@@ -146,7 +146,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public List<Match> matchAsk(Ask ask) {
         try {
             return new ArrayList<Match>(_del.matchAsk(ask));
@@ -154,7 +154,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public List<Match> matchBid(Bid bid) {
         try {
             return new ArrayList<Match>(_del.matchBid(bid));
@@ -162,7 +162,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public Trade trade(Match match) {
         try {
             return _del.trade(match);
@@ -170,7 +170,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     @Override
     public List<LogStatement> getLog() {
         try {
@@ -179,7 +179,7 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
-    
+
     public String getServiceURI() {
         try {
             return _del.getServiceURI();

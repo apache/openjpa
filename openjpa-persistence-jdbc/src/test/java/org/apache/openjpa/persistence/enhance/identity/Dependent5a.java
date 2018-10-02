@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 import java.io.Serializable;
@@ -28,7 +28,7 @@ public class Dependent5a implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     String name;
-    
+
     @Id
     @JoinColumns({
        @JoinColumn(name="FIRSTNAME", referencedColumnName="xFIRSTNAME"),
@@ -45,5 +45,5 @@ public class Dependent5a implements Serializable {
     public Dependent5a(DependentId5 dId, Employee5 emp){
         this.name = dId.getName();
         this.emp = emp;
-    } 
+    }
 }

@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   2) An invalid ValidationFactory with mode of NONE will not cause exception
  *   3) An invalid ValidationFactory with mode of AUTO will not cause exception
  *   4) An invalid ValidationFactory with mode of CALLBACK will cause exception
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class TestValidationFactory extends SingleEMFTestCase {
@@ -58,7 +58,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
         // verify default validation mode
         OpenJPAConfiguration conf = emf.getConfiguration();
         assertNotNull(conf);
-        assertEquals("Default ValidationFactory", 
+        assertEquals("Default ValidationFactory",
             null,
             conf.getValidationFactoryInstance());
         closeEMF(emf);
@@ -88,7 +88,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
         // verify same "validation factory" object is returned
         OpenJPAConfiguration conf = emf.getConfiguration();
         assertNotNull(conf);
-        assertEquals("ValidationFactory", 
+        assertEquals("ValidationFactory",
             this.getClass(),
             conf.getValidationFactoryInstance());
         closeEMF(emf);
@@ -118,7 +118,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
         // verify same "validation factory" object is returned
         OpenJPAConfiguration conf = emf.getConfiguration();
         assertNotNull(conf);
-        assertEquals("ValidationFactory", 
+        assertEquals("ValidationFactory",
             this.getClass(),
             conf.getValidationFactoryInstance());
         closeEMF(emf);
@@ -151,7 +151,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode", 
+            assertEquals("Validation mode",
                 String.valueOf(ValidationMode.CALLBACK),
                 conf.getValidationMode());
             fail("Expected an exception when ValidationMode=CALLBACK and " +

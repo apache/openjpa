@@ -23,7 +23,7 @@ public class XMLFieldAccess {
     private int id;
 
     private int version;
-    
+
     private String strField;
 
     public void setId(int id) {
@@ -48,8 +48,8 @@ public class XMLFieldAccess {
 
     public String getStringField() {
         return getStrField();
-    }  
-    
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLFieldAccess) {
             XMLFieldAccess fa = (XMLFieldAccess)obj;

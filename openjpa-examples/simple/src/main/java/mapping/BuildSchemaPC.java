@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package mapping;
 
@@ -40,15 +40,15 @@ public class BuildSchemaPC {
     @Basic
     @Column(name = "chain", length = 50)
     private String stringField = null;
-        
-    
+
+
     public BuildSchemaPC() {}
-    
+
     public BuildSchemaPC(String chain)
     {
         stringField = chain;
     }
-    
+
     public String getStringField() {
         return stringField;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -40,10 +40,10 @@ public enum JavaVendors {
             _vendor = OTHER;
         }
     }
-    
+
     private static final JavaVendors _vendor;
     private String _virtualMachineClass = null;
-    
+
     private JavaVendors(String vmClass) {
         _virtualMachineClass = vmClass;
     }
@@ -54,7 +54,7 @@ public enum JavaVendors {
     public static JavaVendors getCurrentVendor() {
         return _vendor;
     }
-    
+
     /**
      * This static worker method returns <b>true</b> if the current implementation is IBM.
      */
@@ -68,7 +68,7 @@ public enum JavaVendors {
     public boolean isSun() {
         return _vendor == SUN;
     }
-    
+
     public String getVirtualMachineClassName() {
         return _virtualMachineClass;
     }

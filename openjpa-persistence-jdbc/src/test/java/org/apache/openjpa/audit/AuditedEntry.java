@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.audit;
 
@@ -45,11 +45,11 @@ import org.apache.openjpa.persistence.Type;
  * sense i.e. it does not know the exact type of the audited entity, but merely that
  * it is a {@link PersistenceCapable} instance.
  * <br>
- * OpenJPA supports such reference by annotating with the {@link #audited reference field} as 
+ * OpenJPA supports such reference by annotating with the {@link #audited reference field} as
  * <tt>@Type(PersistenceCapable.class)</tt>.
  * <br>
  * The audit operation is also represented as a {@link #operation enumerated field}.
- *    
+ *
  * @author Pinaki Poddar
  *
  */
@@ -58,20 +58,20 @@ public class AuditedEntry {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	@ManyToOne(cascade=CascadeType.MERGE)
 	@Type(PersistenceCapable.class)
 	private Object audited;
-	
+
 	@Enumerated(EnumType.STRING)
 	private AuditableOperation operation;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	private Timestamp ts;
-	
+
 	@ElementCollection
 	private List<String> updatedFields;
-	
+
 	/**
 	 * Constructs using an {@link Audited audited} instance.
 	 * <br>
@@ -84,7 +84,7 @@ public class AuditedEntry {
 	 * copy of the actual persistence instance but in a state as it were when it entered the managed context
 	 * i.e. when it was persisted or loaded from the database.
 	 * <br>
-	 * The {@link Audited} instance also knows the fields that were updated.    
+	 * The {@link Audited} instance also knows the fields that were updated.
 	 * @param a an audited instance.
 	 */
 	public AuditedEntry(Audited a) {
@@ -94,7 +94,7 @@ public class AuditedEntry {
 		if (operation == AuditableOperation.UPDATE) {
 			updatedFields = Arrays.asList(a.getUpdatedFields());
 		}
-		
+
 	}
 
 	public Object getAudited() {
@@ -112,7 +112,7 @@ public class AuditedEntry {
 	public long getId() {
 		return id;
 	}
-	
+
 	public List<String> getUpdatedFields() {
 		return updatedFields;
 	}

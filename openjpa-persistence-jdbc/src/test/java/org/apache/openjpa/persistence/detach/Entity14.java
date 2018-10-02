@@ -25,17 +25,17 @@ import javax.persistence.Id;
 public class Entity14 {
     @Id
     private long id;
-    
+
     private String name;
 
     public Entity14() {
     }
-    
+
     public Entity14(long id, String name) {
         this.id = id;
         this.name = name;
     }
-    
+
     public long getId() {
         return id;
     }

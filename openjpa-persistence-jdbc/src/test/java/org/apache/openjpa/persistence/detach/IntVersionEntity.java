@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.detach;
 
@@ -29,21 +29,21 @@ import javax.persistence.Version;
 
 @Entity
 public class IntVersionEntity implements Serializable {
-    
+
     @Id
     private int id;
     private String name;
-    
+
     @Version
     private int version;
-    
+
     public int getVersion() {
         return version;
     }
 
     @OneToOne(cascade=CascadeType.PERSIST, fetch=FetchType.EAGER)
     private TimestampVersionEntity e2;
-    
+
     public IntVersionEntity(int id) {
         this.id = id;
     }
@@ -74,7 +74,7 @@ public class IntVersionEntity implements Serializable {
 
     public IntVersionEntity() {
     }
-    
+
     public void printE2() {
         System.out.println("e2 - " + e2);
     }

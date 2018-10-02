@@ -21,12 +21,12 @@ package org.apache.openjpa.persistence.delimited.identifiers.xml;
 public class EntityB {
     private int id;
     private String name;
-    
+
     public EntityB(String name) {
         this.name = name;
     }
-    
-    
+
+
     /**
      * @return the id
      */

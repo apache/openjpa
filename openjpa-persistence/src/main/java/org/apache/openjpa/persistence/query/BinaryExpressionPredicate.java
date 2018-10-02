@@ -14,44 +14,44 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
- * Binary predicate combines two expressions with an operator. 
- * 
+ * Binary predicate combines two expressions with an operator.
+ *
  * @author Pinaki Poddar
  *
  */
-class BinaryExpressionPredicate extends AbstractVisitable 
+class BinaryExpressionPredicate extends AbstractVisitable
     implements Predicate, Visitable {
 	protected final Expression _e1;
 	protected final Expression _e2;
 	protected final BinaryConditionalOperator   _op;
 	private final BinaryConditionalOperator   _nop;
 	private static final StringBuffer SPACE = new StringBuffer(" ");
-	
-	BinaryExpressionPredicate(Expression e1, BinaryConditionalOperator op, 
+
+	BinaryExpressionPredicate(Expression e1, BinaryConditionalOperator op,
 		BinaryConditionalOperator nop, Expression e2) {
 		_e1 = e1;
 		_e2 = e2;
 		_op = op;
 		_nop = nop;
 	}
-	
+
 	public final Expression getOperand() {
 		return _e1;
 	}
-	
+
 	public final Expression getOperand2() {
 		return _e2;
 	}
-	
+
 	public final BinaryConditionalOperator getOperator() {
 		return _op;
 	}
-	
+
 	public Predicate and(Predicate predicate) {
 		return new AndPredicate(this, predicate);
 	}
@@ -59,7 +59,7 @@ class BinaryExpressionPredicate extends AbstractVisitable
 	public Predicate or(Predicate predicate) {
 		return new OrPredicate(this, predicate);
 	}
-	
+
 	public Predicate not() {
 		if (  _nop == null)
             throw new UnsupportedOperationException(this.toString());
@@ -67,11 +67,11 @@ class BinaryExpressionPredicate extends AbstractVisitable
 	}
 
 	public String asExpression(AliasContext ctx) {
-		return asExpression((Visitable)_e1, ctx)  
+		return asExpression((Visitable)_e1, ctx)
 		     + SPACE + _op + SPACE
 		     + asExpression((Visitable)_e2, ctx);
 	}
-	
+
 	String asExpression(Visitable v, AliasContext ctx) {
 		String result = v.asExpression(ctx);
 		if (v instanceof QueryDefinitionImpl)

@@ -62,11 +62,11 @@ extends AbstractCachedEMFTestCase {
         clear(emf2);
         closeEMF(emf2);
     }
-        
+
     public void testSJVMRemoteCommitProvider() {
         assertNotSame(JPAFacadeHelper.toBrokerFactory(emf1),
             JPAFacadeHelper.toBrokerFactory(emf2));
-        
+
         emf1.getConfiguration().getRemoteCommitEventManager()
             .getRemoteCommitProvider().broadcast(
                 new RemoteCommitEvent(RemoteCommitEvent.PAYLOAD_OIDS,

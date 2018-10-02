@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 /**
  * An operating context provides a {@link EntityManage persistence context} and utility functions within
  * which all JEST commands execute.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -38,38 +38,38 @@ public interface JPAServletContext {
      * Get the persistence context of the operational context.
      */
     public OpenJPAEntityManager getPersistenceContext();
-    
+
     /**
      * Get the persistence unit name.
      */
     public String getPersistenceUnitName();
-    
+
     /**
      * Get the HTTP Request.
      */
     public HttpServletRequest getRequest();
-    
+
     /**
      * Get the HTTP Response.
      */
     public HttpServletResponse getResponse();
-    
+
     /**
-     * Get the requested URI. 
+     * Get the requested URI.
      */
     public String getRequestURI();
-    
+
     /**
      * Resolve the given alias to meta-data of the persistent type.
      * @param alias a moniker for the Java type. It can be fully qualified type name or entity name
      * or simple name of the actual persistent Java class.
-     * 
-     * @return meta-data for the given name. 
+     *
+     * @return meta-data for the given name.
      * @exception raises runtime exception if the given name can not be identified to a persistent
      * Java type.
      */
     public ClassMetaData resolve(String alias);
-    
+
     /**
      * Logging message.
      * @param level OpenJPA defined {@link Log#INFO log levels}. Invalid levels will print the message on console.

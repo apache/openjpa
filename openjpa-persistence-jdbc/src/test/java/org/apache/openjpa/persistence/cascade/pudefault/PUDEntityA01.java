@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.cascade.pudefault;
 
@@ -36,22 +36,22 @@ public class PUDEntityA01 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    
+
     @Basic
     private String strData;
-    
+
     @ManyToMany
     private Collection<PUDEntityB> colM2M;
-    
+
     @OneToMany
     private Collection<PUDEntityB> colO2M;
-    
+
     @ManyToOne
     private PUDEntityB m2o;
-    
+
     @OneToOne
     private PUDEntityB o2o;
-    
+
     public PUDEntityA01() {
         colM2M = new ArrayList<PUDEntityB>();
         colO2M = new ArrayList<PUDEntityB>();
@@ -111,6 +111,6 @@ public class PUDEntityA01 {
             + colM2M + ", colO2M=" + colO2M + ", m2o=" + m2o + ", o2o=" + o2o
             + "]";
     }
-    
-    
+
+
 }

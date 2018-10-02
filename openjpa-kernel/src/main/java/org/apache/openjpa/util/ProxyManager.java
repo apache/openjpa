@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -113,14 +113,14 @@ public interface ProxyManager {
      * @since 0.2.5
      */
     public Proxy newCustomProxy (Object obj, boolean autoOff);
-    
+
     /**
      * Returns whether this proxy manager is enabled for delayed collection
      * loading.  Delayed collection loading provides the ability to do simple,
-     * non-indexed add or remove operations on a lazy collection without 
+     * non-indexed add or remove operations on a lazy collection without
      * loading the collection.  The collection is loaded when necessary, such
      * as iteration, indexed operations, isEmpty, or size.
-     *  
+     *
      * @since 2.2.1
      */
     public boolean getDelayCollectionLoading();

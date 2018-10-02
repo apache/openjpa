@@ -32,16 +32,16 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
- * An abstract utility for JPA based service. 
+ * An abstract utility for JPA based service.
  * This thin wrapper over a {@link EntityManagerFactory Persistence Unit} maintains
  * <LI>per-thread persistence context
- * <LI>relinquishes direct transaction control under a managed environment 
- * 
+ * <LI>relinquishes direct transaction control under a managed environment
+ *
  * @see #getEntityManager()
  * @see #newEntityManager()
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @SuppressWarnings("serial")
 public abstract class PersistenceService extends Observable implements Serializable {
@@ -49,14 +49,14 @@ public abstract class PersistenceService extends Observable implements Serializa
     private final String unitName;
     private final boolean isManaged;
     private final PersistenceContextType scope;
-    
+
     private ThreadLocal<EntityManager> thread = new ThreadLocal<EntityManager>();
     private ReentrantLock lock = new ReentrantLock();
 
     protected PersistenceService(String unit) {
         this(unit, false, PersistenceContextType.EXTENDED, null);
     }
-    
+
     protected PersistenceService(String unit, boolean managed, PersistenceContextType scope,
             Map<String,Object> config) {
         this.emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(unit, config));
@@ -64,7 +64,7 @@ public abstract class PersistenceService extends Observable implements Serializa
         this.isManaged = managed;
         this.scope     = scope;
     }
-    
+
     public final OpenJPAEntityManagerFactory getUnit() {
         return emf;
     }
@@ -72,11 +72,11 @@ public abstract class PersistenceService extends Observable implements Serializa
     public final String getUnitName() {
         return unitName;
     }
-    
+
     public final boolean isManaged() {
         return isManaged;
     }
-    
+
     public final PersistenceContextType getContextType() {
         return scope;
     }
@@ -86,7 +86,7 @@ public abstract class PersistenceService extends Observable implements Serializa
      * current thread is not associated with any entity manager or the
      * associated entity manager has been closed, creates a new entity manager
      * and associates with the current thread.
-     * 
+     *
      * @return an entity manager associated with the current thread.
      */
     protected EntityManager getEntityManager() {
@@ -117,7 +117,7 @@ public abstract class PersistenceService extends Observable implements Serializa
      * If the thread is not associated with a persistence context, then a new
      * context is created, associated with the thread, new transaction is
      * started.
-     * 
+     *
      * @see #getEntityManager()
      */
     protected EntityManager begin() {
@@ -166,7 +166,7 @@ public abstract class PersistenceService extends Observable implements Serializa
             lock.lock();
             EntityManager em = getEntityManager();
             if (isManaged) {
-                
+
             } else {
                 em.getTransaction().rollback();
             }
@@ -177,7 +177,7 @@ public abstract class PersistenceService extends Observable implements Serializa
             lock.unlock();
         }
     }
-    
+
     public void close() {
         try {
             EntityManager em = thread.get();
@@ -188,9 +188,9 @@ public abstract class PersistenceService extends Observable implements Serializa
             thread.set(null);
             emf.close();
         } finally {
-            
+
         }
-        
+
     }
 
     /**
@@ -202,7 +202,7 @@ public abstract class PersistenceService extends Observable implements Serializa
         assertTrue("No persistent context is associated with " + thread, em != null);
         assertTrue("Persistent context " + em + " associated with " + thread + " has been closed", em.isOpen());
         if (!isManaged) {
-            assertTrue("Persistent context " + em + " associated with " + thread + " has no active transaction", 
+            assertTrue("Persistent context " + em + " associated with " + thread + " has no active transaction",
                     em.getTransaction().isActive());
         }
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.delayed.lhset;
 
@@ -34,14 +34,14 @@ public class TestDelayedLinkedHashSetProxyDetachLite extends TestDelayedLinkedHa
         super.setUp(
                 "openjpa.DetachState", "loaded(LiteAutoDetach=true,detachProxyFields=false)");
     }
-    
+
     /*
      * Verify that a collection can be loaded post detachment
      */
     @Override
     public void testPostDetach() {
         EntityManager em = emf.createEntityManager();
-        
+
         // Create a new department and an employee
         IDepartment d = createDepartment();
         IEmployee e = createEmployee();
@@ -50,17 +50,17 @@ public class TestDelayedLinkedHashSetProxyDetachLite extends TestDelayedLinkedHa
         Collection<IEmployee> emps = createEmployees();
         emps.add(e);
         d.setEmployees(emps);
-        
+
         em.getTransaction().begin();
         em.persist(d);
         em.getTransaction().commit();
         resetSQL();
         em.clear();
-        
+
         d = findDepartment(em, d.getId());
         emps = d.getEmployees();
         em.close();
-        
+
         // assert there was no select on the employee table
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
         assertTrue(emps instanceof DelayedLinkedHashSetProxy);

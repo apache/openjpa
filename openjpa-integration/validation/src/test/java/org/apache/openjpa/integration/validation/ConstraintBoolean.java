@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -47,8 +47,8 @@ public class ConstraintBoolean implements Serializable {
     @Basic
     private Boolean falseRequired;  // @AssertFalse constraint is on the getter
 
-    
-    /* 
+
+    /*
      * Some helper methods to create the entities to test with
      */
     public static ConstraintBoolean createInvalidTrue() {
@@ -57,7 +57,7 @@ public class ConstraintBoolean implements Serializable {
         c.setFalseRequired(Boolean.FALSE);
         return c;
     }
-    
+
     public static ConstraintBoolean createInvalidFalse() {
         ConstraintBoolean c = new ConstraintBoolean();
         c.setTrueRequired(Boolean.TRUE);
@@ -72,7 +72,7 @@ public class ConstraintBoolean implements Serializable {
         return c;
     }
 
-    
+
     /*
      * Main entity code
      */
@@ -90,7 +90,7 @@ public class ConstraintBoolean implements Serializable {
     public void setTrueRequired(Boolean b) {
         trueRequired = b;
     }
-    
+
     @AssertFalse
     public Boolean getFalseRequired() {
         return falseRequired;

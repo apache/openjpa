@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -46,9 +46,9 @@ class ProxySetupStateManager
     public void setProxyData(PersistenceCapable pc, ClassMetaData meta) {
         FieldMetaData[] fmds = meta.getFields();
         for (int i = 0; i < fmds.length; i++) {
-            // This method only gets called for concrete types. We need to do this processing for fields that might 
-            // not be owned by pc. 
-            
+            // This method only gets called for concrete types. We need to do this processing for fields that might
+            // not be owned by pc.
+
             switch (fmds[i].getDeclaredTypeCode()) {
                 case JavaTypes.CALENDAR:
                     pc.pcProvideField(fmds[i].getIndex());

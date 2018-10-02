@@ -74,7 +74,7 @@ public class DepthFirstAnalysis {
     /**
      * Visit a node.  See Introduction to Algorithms book for details.
      */
-    private int visit(Graph graph, Object node, NodeInfo info, int time, 
+    private int visit(Graph graph, Object node, NodeInfo info, int time,
         List<Edge> path) {
         // discover node
         info.color = NodeInfo.COLOR_GRAY;
@@ -134,7 +134,7 @@ public class DepthFirstAnalysis {
      * as if edges creating the cycles did not exist.
      */
     public List<Object> getSortedNodes() {
-        Map.Entry<Object,NodeInfo>[] entries = 
+        Map.Entry<Object,NodeInfo>[] entries =
         	_nodeInfo.entrySet().toArray(new Map.Entry[_nodeInfo.size()]);
         Arrays.sort(entries, new NodeInfoComparator(_comp));
         return new NodeList(entries);
@@ -156,10 +156,10 @@ public class DepthFirstAnalysis {
                 }
             }
         }
-        if(typed == null ) { 
+        if(typed == null ) {
             typed = Collections.emptyList();
         }
-        return typed; 
+        return typed;
     }
 
     /**
@@ -174,7 +174,7 @@ public class DepthFirstAnalysis {
     }
 
     /**
-     * Returns a list of graph edges forming a cycle. The cycle begins 
+     * Returns a list of graph edges forming a cycle. The cycle begins
      * with a type {@link Edge#TYPE_BACK} edge.
      * @param backEdge "Starting" edge of the cycle
      * @param path Continuous list of graph edges, may be null
@@ -193,8 +193,8 @@ public class DepthFirstAnalysis {
 
     /**
      * Computes the list of edges forming a cycle. The cycle always exists for
-     * a type {@link Edge#TYPE_BACK} edge. This method should only be called 
-     * for type {@link Edge#TYPE_BACK} edges. 
+     * a type {@link Edge#TYPE_BACK} edge. This method should only be called
+     * for type {@link Edge#TYPE_BACK} edges.
      * @param edge Edge where the cycle was detected
      * @param path Path consisting of edges to the edge's starting node
      * @return Cycle starting with a type {@link Edge#TYPE_BACK} edge
@@ -203,25 +203,25 @@ public class DepthFirstAnalysis {
         if (edge.getType() != Edge.TYPE_BACK) {
             return null;
         }
-        
+
         int pos = 0;
         if (path != null && !edge.getFrom().equals(edge.getTo())) {
             // Not a single edge loop
             pos = findNodeInPath(edge.getTo(), path);
             assert (pos >= 0): _loc.get("node-not-on-path", edge, edge.getTo());
         } else {
-            assert (edge.getFrom().equals(edge.getTo())): 
+            assert (edge.getFrom().equals(edge.getTo())):
                 _loc.get("edge-no-loop", edge).getMessage();
             path = null;
         }
-        List<Edge> cycle = buildCycle(edge, path, pos); 
+        List<Edge> cycle = buildCycle(edge, path, pos);
         assert (cycle != null): _loc.get("cycle-null", edge).getMessage();
         return cycle;
     }
 
     /**
-     * Computes the cycle of edges including node cycleTo. The cycle must not 
-     * necessarily exist. This method should only be called for type 
+     * Computes the cycle of edges including node cycleTo. The cycle must not
+     * necessarily exist. This method should only be called for type
      * {@link Edge#TYPE_FORWARD} edges.
      * @param graph Graph
      * @param node Current node
@@ -231,7 +231,7 @@ public class DepthFirstAnalysis {
      * the <code>path</code> parameter.
      */
     private boolean cycleForForwardEdge(Graph graph, Object node,
-        Object cycleTo, List<Edge> path) {                   
+        Object cycleTo, List<Edge> path) {
         boolean found = false;
         Collection<Edge> edges = graph.getEdgesFrom(node);
         for (Edge edge : edges) {
@@ -248,16 +248,16 @@ public class DepthFirstAnalysis {
                     found = cycleForForwardEdge(graph, other, cycleTo, path);
                     if (!found) {
                         // Remove edge again
-                        path.remove(edge);                    
+                        path.remove(edge);
                     }
                 }
             }
         }
         return found;
     }
-    
+
     /**
-     * Finds the position of the edge starting from a particular node in the 
+     * Finds the position of the edge starting from a particular node in the
      * continuous list of edges.
      * @param node Node on the cycle.
      * @param path Continuous list of graph edges.
@@ -295,7 +295,7 @@ public class DepthFirstAnalysis {
         }
         return true;
     }
-    
+
     /**
      * Comparator for topologically sorting entries in the node info map.
      */

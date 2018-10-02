@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -27,7 +27,7 @@ public class Person {
 	private long id;
 
 	private String name;
-	
+
 	@Version
 	private long version;
 
@@ -37,11 +37,11 @@ public class Person {
 	public Person() {
 		this("?");
 	}
-	
+
 	public Person(String name) {
 		setName(name);
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -62,7 +62,7 @@ public class Person {
 	public long getId() {
 		return id;
 	}
-	
+
 	public String toString() {
 		return name;
 	}

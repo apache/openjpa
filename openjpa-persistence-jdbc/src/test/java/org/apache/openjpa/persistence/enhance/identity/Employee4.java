@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -29,20 +29,20 @@ public class Employee4 {
     @Column(name = "id", insertable = false, updatable = false,
             nullable = false)
 	private long id;
-	
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
 	private List<Dependent4> children = new ArrayList<Dependent4>();
-	
+
     private int age;
-    
+
     public int getAge() {
     	return age;
     }
-    
+
     public void setAge(int age) {
     	this.age = age;
     }
-    
+
     public long getId() {
         return id;
     }

@@ -34,13 +34,13 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
     private JProgressBar memoryBar;
     private JLabel messageText;
     private TaskProgress task;
-    
+
     public StatusBar() {
         progressBar = new JProgressBar();
         memoryBar = new JProgressBar();
-        
+
         messageText = new JLabel();
-        
+
         setLayout(new GridLayout(1,0));
         add(messageText);
         add(Box.createHorizontalGlue());
@@ -50,11 +50,11 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
         MemoryDisplay memory = new MemoryDisplay(memoryBar);
         new Timer(100, memory).start();
     }
-    
+
     public void showMessage(String text) {
         messageText.setText(text);
     }
-    
+
     public void startTimer(long duration, int interval, TimeUnit unit) {
         progressBar.setEnabled(true);
         if (duration > 0) {
@@ -72,17 +72,17 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
             task.execute();
         }
     }
-    
+
     /**
      * Invoked when task's progress property changes.
      */
     public void propertyChange(PropertyChangeEvent evt) {
         if ("progress".equals(evt.getPropertyName())) {
             progressBar.setValue((Integer)evt.getNewValue());
-        } 
+        }
     }
 
-    
+
     public void stopTimer() {
         if (task != null) {
             task.cancel(true);
@@ -92,7 +92,7 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
         progressBar.setString("");
         progressBar.setEnabled(false);
     }
-    
+
     /*
      * Emits progress property from a background thread.
      */
@@ -100,7 +100,7 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
         private long startTimeInMillis;
         private long _total = 100;
         private int _interval = 100;
-        
+
         public TaskProgress(long total, int interval) {
             _total    = Math.max(total, 1);
             _interval = Math.max(interval, 1);
@@ -122,7 +122,7 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
             return null;
         }
     }
-    
+
     public class MemoryDisplay implements ActionListener {
         JProgressBar bar;
         public MemoryDisplay(JProgressBar bar) {
@@ -141,16 +141,16 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
             bar.setValue((int)usedPct);
             bar.setString(usedPct + "% (" + mb(usedMemory) + "/" + mb(totalMemory) + "MB) ");
         }
-        
+
         private long mb(long m) {
             return m/1000000;
         }
-        
+
         Color getColor(int pct) {
             int red = 255*pct/100;
             int green = 255*(100-pct)/100;
             return new Color(red, green, 0);
         }
     }
-    
+
 }

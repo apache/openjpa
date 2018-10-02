@@ -189,7 +189,7 @@ public abstract class GroupingTestCase
         DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
         if (dict instanceof SolidDBDictionary)
             return;
-        
+
         // this is an extension of JPQL
         Query q = em.createQuery("select substring(o.stringField, 1, 1), " +
             "count(o) from AllFieldTypes o " +

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * This is a variation of TestMultipleLevelDerivedIdentity Using
  * MapsId annotations.
  * @author Fay Wang
- * 
+ *
  */
 @SuppressWarnings("unchecked")
 public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
@@ -42,19 +42,19 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 
     public void setUp() throws Exception {
         setSupportedDatabases(org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-            org.apache.openjpa.jdbc.sql.DB2Dictionary.class, 
+            org.apache.openjpa.jdbc.sql.DB2Dictionary.class,
             org.apache.openjpa.jdbc.sql.OracleDictionary.class);
-        
+
         if (isTestsDisabled()) {
             return;
         }
-        
+
         super.setUp(DROP_TABLES, Library1.class, Book1.class, Page1.class,
             BookId1.class, PageId1.class, Line1.class, LineId1.class,
             "openjpa.RuntimeUnenhancedClasses", "unsupported");
         create();
     }
-    
+
 	public void testPersist() {
 	    sql.clear();
 		create();
@@ -70,12 +70,12 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		BookId1 bid = new BookId1(BOOK_NAME, lib.getName());
 		Book1 b = lib.getBook(bid);
 		assertNotNull(b);
-		
+
 		Page1 p = b.getPage(new PageId1(1, bid));
 		assertNotNull(p);
 		em.close();
 	}
-	
+
 	public void testQueryIntermediateLevel() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
@@ -95,7 +95,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		}
 		em.close();
 	}
-	
+
 	public void testQueryLeafLevel() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
@@ -125,11 +125,11 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		assertNotNull(b.getPage(pid));
 		em.close();
 	}
-	
+
 	public void testFindIntermediateNode() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
-		
+
 		BookId1 bookId = new BookId1();
 		bookId.setLibrary(LIBRARY_NAME);
 		bookId.setName(BOOK_NAME);
@@ -137,11 +137,11 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		assertNotNull(book);
 		em.close();
 	}
-	
+
 	public void testFindLeafNode() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
-		
+
 		BookId1 bookId = new BookId1();
 		bookId.setLibrary(LIBRARY_NAME);
 		bookId.setName(BOOK_NAME);
@@ -152,7 +152,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		assertNotNull(page);
 		em.close();
 	}
-	
+
 	public void testUpdate() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
@@ -166,7 +166,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		em.getTransaction().commit();
 		em.close();
 	}
-	
+
 	public void testDeleteRoot() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
@@ -174,13 +174,13 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		Library1 lib = em.find(Library1.class, LIBRARY_NAME);
 		em.remove(lib);
 		em.getTransaction().commit();
-		
+
 	    assertEquals(0, count(Library1.class));
 	    assertEquals(0, count(Book1.class));
 	    assertEquals(0, count(Page1.class));
 	    em.close();
 	}
-	
+
 	public void testDeleteLeafObtainedByQuery() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
@@ -191,13 +191,13 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		assertNotNull(page);
 		em.remove(page);
 		em.getTransaction().commit();
-		
+
 	    assertEquals(1, count(Library1.class));
 	    assertEquals(1, count(Book1.class));
 	    assertEquals(NUM_PAGES-1, count(Page1.class));
 	    em.close();
 	}
-	
+
 	public void testDeleteLeafObtainedByFind() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
@@ -212,7 +212,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		assertNotNull(page);
 		em.remove(page);
 		em.getTransaction().commit();
-		
+
 	    assertEquals(1, count(Library1.class));
 	    assertEquals(1, count(Book1.class));
 	    assertEquals(NUM_PAGES-1, count(Page1.class));
@@ -227,18 +227,18 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
         assertSQLFragnments(sql, "ORDER BY", "t1.LIBRARY_NAME ASC, t1.BOOK_NAME ASC");
         em.close();
     }
-    
+
 	/**
 	 * Create a Library with a Book and three Pages.
 	 */
 	public void create() {
 		if (count(Library1.class) > 0)
 			return;
-		
+
 		EntityManager em = null;
 		em = emf.createEntityManager();
 		em.getTransaction().begin();
-		
+
 		Library1 lib = new Library1();
 		lib.setName(LIBRARY_NAME);
 
@@ -258,7 +258,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 			    LineId1 lid = new LineId1(j, pid);
 			    line.setLid(lid);
 			    page.addLine(line);
-			    
+
 			}
 		}
 		em.persist(lib);
@@ -275,7 +275,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
     void assertSQLFragnments(List<String> list, String... keys) {
         if (SQLSniffer.matches(list, keys))
             return;
-        fail("None of the following " + sql.size() + " SQL \r\n" + 
+        fail("None of the following " + sql.size() + " SQL \r\n" +
                 toString(sql) + "\r\n contains all keys \r\n"
                 + toString(Arrays.asList(keys)));
     }

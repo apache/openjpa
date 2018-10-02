@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.graph;
 
@@ -22,17 +22,17 @@ import java.util.AbstractSet;
 import java.util.Set;
 
 /**
- * Abstract implementation of a {@linkplain Graph} borrows from {@link AbstractSet abstract} implementation of 
- * {@link Set}. The extended {@link Set#remove(Object) remove()} semantics accounts for 
+ * Abstract implementation of a {@linkplain Graph} borrows from {@link AbstractSet abstract} implementation of
+ * {@link Set}. The extended {@link Set#remove(Object) remove()} semantics accounts for
  * {@link Graph#delink(Object, Object) removal} of all relationship to the removed element.
- * 
+ *
  * @author Pinaki Poddar
  *
  * @param <E> type of element of the graph.
  */
 public abstract class AbstractGraph<E> extends AbstractSet<E> implements Graph<E> {
     /**
-     * Removing an element from this graph has the side effect of removing all 
+     * Removing an element from this graph has the side effect of removing all
      * relations directed to the removed element.
      */
     @Override

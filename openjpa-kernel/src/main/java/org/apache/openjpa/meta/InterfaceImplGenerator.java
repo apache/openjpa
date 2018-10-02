@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -54,7 +54,7 @@ class InterfaceImplGenerator {
     private final MetaDataRepository _repos;
     private final Map<Class<?>,Class<?>> _impls = new WeakHashMap<Class<?>,Class<?>>();
     private final Project _project = new Project();
- 
+
     // distinct project / loader for enhanced version of class
     private final Project _enhProject = new Project();
 
@@ -78,7 +78,7 @@ class InterfaceImplGenerator {
             return impl;
 
         ClassLoader parentLoader = AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(iface)); 
+            J2DoPrivHelper.getClassLoaderAction(iface));
         BCClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_project,
                 parentLoader));
@@ -99,7 +99,7 @@ class InterfaceImplGenerator {
 
         FieldMetaData[] fields = meta.getDeclaredFields();
         Set<Method> methods = new HashSet<Method>();
-        for (int i = 0; i < fields.length; i++) 
+        for (int i = 0; i < fields.length; i++)
             addField(bc, iface, fields[i], methods);
         invalidateNonBeanMethods(bc, iface, methods);
 
@@ -108,23 +108,23 @@ class InterfaceImplGenerator {
         try {
             meta.setInterfaceImpl(Class.forName(bc.getName(), true, loader));
         } catch (Throwable t) {
-            throw new InternalException(_loc.get("interface-load", iface, 
+            throw new InternalException(_loc.get("interface-load", iface,
                 loader), t).setFatal(true);
         }
         // copy the BCClass<?> into the enhancer project.
-        bc = _enhProject.loadClass(new ByteArrayInputStream(bc.toByteArray()), 
+        bc = _enhProject.loadClass(new ByteArrayInputStream(bc.toByteArray()),
             loader);
         PCEnhancer enhancer = new PCEnhancer(_repos, bc, meta);
 
         int result = enhancer.run();
         if (result != PCEnhancer.ENHANCE_PC)
-            throw new InternalException(_loc.get("interface-badenhance", 
+            throw new InternalException(_loc.get("interface-badenhance",
                 iface)).setFatal(true);
         try {
             // load the Class<?> for real.
             impl = Class.forName(bc.getName(), true, enhLoader);
         } catch (Throwable t) {
-            throw new InternalException(_loc.get("interface-load2", iface, 
+            throw new InternalException(_loc.get("interface-load2", iface,
                 enhLoader), t).setFatal(true);
         }
         // cache the generated impl.
@@ -136,7 +136,7 @@ class InterfaceImplGenerator {
      * Add bean getters and setters, also recording seen methods
      * into the given set.
      */
-    private void addField (BCClass bc, Class<?> iface, FieldMetaData fmd, 
+    private void addField (BCClass bc, Class<?> iface, FieldMetaData fmd,
         Set<Method> methods) {
         String name = fmd.getName();
         Class<?> type = fmd.getDeclaredType();
@@ -172,10 +172,10 @@ class InterfaceImplGenerator {
     /**
      * Invalidate methods on the interface which are not managed.
      */
-    private void invalidateNonBeanMethods(BCClass bc, Class<?> iface, 
+    private void invalidateNonBeanMethods(BCClass bc, Class<?> iface,
         Set<Method> methods) {
         Method[] meths = (Method[]) AccessController.doPrivileged(
-            J2DoPrivHelper.getDeclaredMethodsAction(iface)); 
+            J2DoPrivHelper.getDeclaredMethodsAction(iface));
         BCMethod meth;
         Code code;
         Class<?> type = _repos.getMetaDataFactory().getDefaults().
@@ -183,7 +183,7 @@ class InterfaceImplGenerator {
         for (int i = 0; i < meths.length; i++) {
             if (methods.contains(meths[i]))
                 continue;
-            meth = bc.declareMethod(meths[i].getName(), 
+            meth = bc.declareMethod(meths[i].getName(),
                 meths[i].getReturnType(), meths[i].getParameterTypes());
             meth.makePublic();
             code = meth.getCode(true);

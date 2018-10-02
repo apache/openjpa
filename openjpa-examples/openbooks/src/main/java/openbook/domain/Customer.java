@@ -23,12 +23,12 @@ import javax.persistence.Version;
 
 /**
  * A persistent entity represents a Customer.
- * 
+ *
  * <br><b>Persistent Identity</b>: auto-generated identity.
  * <br><b>Mapping</b>:
- * 
+ *
  * <br><b>Design Notes</b>: No setter for identity value.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -40,22 +40,22 @@ public class Customer implements Serializable {
     private long id;
     private String name;
     private String email;
-    
+
     public Customer() {
     }
-    
+
     public long getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getEmail() {
         return email;
     }
@@ -63,21 +63,21 @@ public class Customer implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
     /**
      * Create a {@link ShoppingCart} for this customer.
      */
     public ShoppingCart newCart() {
         return new ShoppingCart(this);
     }
-    
+
     public String toString() {
         return name;
     }
-    
+
     @Version
     private int version;
-    
+
     public int getVersion() {
         return version;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
@@ -28,21 +28,21 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**
  * Tests that find() queries that use non-primary keys can be cached.
- * 
+ *
  * SQL Query Cache caches SQL queries generated to select single entity.
  * However, single instance queries may also join to other relations. Hence,
  * primary key and foreign keys are normally the parameters to these queries
  * which cached query binds again when being reused.
- * 
+ *
  * The test verifies the case where non-primary keys are used as query
  * parameters. The test employs a inheritance hierarchy mapped to SINGLE_TABLE.
  * When derived instances are used in relationship, the discriminator values
  * must be used in to join to the target type.
- * 
+ *
  * For further details, refer <A
  * HREF="https://issues.apache.org/jira/browse/OPENJPA-660">OPENJPA-660</A>
- * 
- * 
+ *
+ *
  * @author Pinaki Poddar
  * @author Vikram Bhatia
  * @author David Blevins
@@ -106,7 +106,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 				.size());
 
 		assertSQL(".* AND t0.TYPE = .*");
-		
+
         Invoice invoice = em.find(Invoice.class, new InvoiceKey(1, "Red"));
         List<LineItem> list = invoice.getLineItems();
         assertEquals(LINEITEM_PER_INVOICE, list.size());
@@ -163,7 +163,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 		em.close();
 
 	}
-	
+
     private void createInvoice() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -177,6 +177,6 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
         }
         em.flush();
         tran.commit();
-        em.close();        
-    }	
+        em.close();
+    }
 }

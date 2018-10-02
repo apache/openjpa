@@ -28,10 +28,10 @@ public class BaseClass {
 
     @Id
     private int id;
-    
+
     @Version
     private int version;
-    
+
     @Basic
     private String name;
 
@@ -58,9 +58,9 @@ public class BaseClass {
     public String getName() {
         return name;
     }
-    
+
     public String toString() {
-        return "Id=" + id + 
+        return "Id=" + id +
                ";Version=" + version +
                ";Name=" + name;
     }

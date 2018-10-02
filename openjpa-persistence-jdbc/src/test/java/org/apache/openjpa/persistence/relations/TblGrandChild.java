@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -35,31 +35,31 @@ public class TblGrandChild {
 
 	@Id
 	@Column(name = "GC_ID",nullable=false)
-	private Integer grandChildId;   
+	private Integer grandChildId;
 
 	@Version
 	@Column(name = "VRS_NBR")
-	private Integer vrsNbr;   
+	private Integer vrsNbr;
 
 	@ManyToOne(fetch = FetchType.LAZY,
 		cascade = {CascadeType.PERSIST,CascadeType.MERGE })
 	@JoinColumns({@JoinColumn(name =
-		"CHILD_ID",referencedColumnName="CHILD_ID")})   
+		"CHILD_ID",referencedColumnName="CHILD_ID")})
 	@ForeignKey
 	private TblChild tblChild;
-	
+
 	public Integer getGrandChildId() {
 		return grandChildId;
 	}
-	
+
 	public void setGrandChildId(Integer grandChildId) {
 		this.grandChildId = grandChildId;
 	}
-	
+
 	public Integer getVrsNbr() {
 		return vrsNbr;
 	}
-	
+
 	public void setVrsNbr(Integer vrsNbr) {
 		this.vrsNbr = vrsNbr;
 	}
@@ -67,7 +67,7 @@ public class TblGrandChild {
 	public TblChild getTblChild() {
 		return tblChild;
 	}
-	
+
 	public void setTblChild(TblChild tblChild) {
 		this.tblChild = tblChild;
 	}

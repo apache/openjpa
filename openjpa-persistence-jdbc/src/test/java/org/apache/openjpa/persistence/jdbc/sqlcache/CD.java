@@ -26,16 +26,16 @@ import javax.persistence.ManyToOne;
 @DiscriminatorValue("CD")
 public class CD extends Merchandise {
     private String label;
-    
-    private int status; 
-    
+
+    private int status;
+
     @ManyToOne
     private Singer singer;
 
     public CD() {
         this("?");
     }
-    
+
     public CD(String label) {
         super();
         setLabel(label);
@@ -56,12 +56,12 @@ public class CD extends Merchandise {
         this.singer = singer;
         singer.addCd(this);
     }
-    
+
     public int getStatus() {
         return status;
     }
-    
+
     public void setStatus(int status) {
         this.status = status;
-    }     
+    }
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -64,7 +64,7 @@ public class PointbaseDictionary
         supportsAutoAssign = true;
         lastGeneratedKeyQuery = "SELECT MAX({0}) FROM {1}";
         autoAssignTypeName = "BIGINT IDENTITY";
-        
+
         // OpenJPA-2045: NAME has been removed from common reserved words to
         // only specific dictionaries
         reservedWordSet.add("NAME");
@@ -103,7 +103,7 @@ public class PointbaseDictionary
 
     @Override
     public String getFullName(Index index) {
-        return toDBName(getNamingUtil().append(DBIdentifierType.INDEX, 
+        return toDBName(getNamingUtil().append(DBIdentifierType.INDEX,
             getFullIdentifier(index.getTable(), false), index.getIdentifier()));
     }
 

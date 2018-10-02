@@ -31,7 +31,7 @@ public class TestMappingDefaultsImpl extends TestCase {
     }
 
     /**
-     * For databases that accept only short column names, test avoidance of 
+     * For databases that accept only short column names, test avoidance of
      * duplicate column names when populating the table with long column names.
      */
     public void testPopulateWithLongColumnNames() {

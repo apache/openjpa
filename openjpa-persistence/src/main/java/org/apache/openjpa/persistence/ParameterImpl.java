@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -22,28 +22,28 @@ import javax.persistence.Parameter;
 
 /**
  * A user-defined parameter of a query.
- * 
+ *
  * A parameter is uniquely identified within the scope of a query by either
  * its name or integral position. The integral position refers to the integer
  * key as specified by the user. The index of this parameter during execution
- * in a datastore query may be different.  
+ * in a datastore query may be different.
  * <br>
  * A value can be bound to this parameter. This behavior of a parameter carrying
  * its own value is a change from earlier versions (where no explicit abstraction
- * existed for a query parameter).   
- * 
+ * existed for a query parameter).
+ *
  * @author Pinaki Poddar
- * 
+ *
  * @since 2.0.0
- * 
+ *
  * @param <T> type of value carried by this parameter.
- * 
+ *
  */
 public class ParameterImpl<T> implements Parameter<T> {
     private final String _name;
     private final Integer _position;
     private final Class<T> _expectedValueType;
-    
+
     /**
      * Construct a positional parameter with the given position as key and
      * given expected value type.
@@ -53,7 +53,7 @@ public class ParameterImpl<T> implements Parameter<T> {
         _position = position;
         _expectedValueType = expectedValueType;
     }
-    
+
     /**
      * Construct a named parameter with the given name as key and
      * given expected value type.
@@ -63,19 +63,19 @@ public class ParameterImpl<T> implements Parameter<T> {
         _position = null;
         _expectedValueType = expectedValueType;
     }
-    
+
     public final String getName() {
         return _name;
     }
-        
+
     public final Integer getPosition() {
         return _position;
     }
-    
+
     public Class<T> getParameterType() {
       return _expectedValueType;
     }
-    
+
     /**
      * Equals if the other parameter has the same name or position.
      */
@@ -96,9 +96,9 @@ public class ParameterImpl<T> implements Parameter<T> {
     @Override
     public int hashCode() {
         return _expectedValueType.hashCode() ^ ((_name != null) ? _name.hashCode() : 0)
-            ^ ((_position != null) ? _position.hashCode() : 0); 
+            ^ ((_position != null) ? _position.hashCode() : 0);
     }
-    
+
     public String toString() {
         StringBuilder buf = new StringBuilder("Parameter");
         buf.append("<" + getParameterType().getSimpleName() + ">");

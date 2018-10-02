@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.qualified.path;
 
@@ -31,7 +31,7 @@ import javax.persistence.Table;
 public class Division {
     @Id
     private int id;
-    
+
     @ElementCollection
     private Map<Employee, String> employees = new HashMap<Employee, String>();
 

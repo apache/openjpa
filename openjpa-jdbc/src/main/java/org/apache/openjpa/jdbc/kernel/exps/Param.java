@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -114,9 +114,9 @@ public class Param
         public ClassMapping mapping = null;
         public Discriminator disc = null;
         public Object discValue = null;
-    } 
+    }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
         Object val = getValue(ctx.params);
@@ -142,11 +142,11 @@ public class Param
             pstate.sqlValue = val;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         ParamExpState pstate = (ParamExpState) state;
         if (pstate.otherLength > 1)
-            sql.appendValue(((Object[]) pstate.sqlValue)[index], 
+            sql.appendValue(((Object[]) pstate.sqlValue)[index],
                 pstate.getColumn(index), this);
         else if (pstate.cols != null)
             sql.appendValue(pstate.sqlValue, pstate.getColumn(index), this);

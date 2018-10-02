@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.annotations;
 
@@ -69,11 +69,11 @@ public class TestEnumerated extends AnnotationTestCase
         assertEquals(JavaTypes.STRING, fm.getColumns()[0].getJavaType());
     }*/
 
-    public void testBehavior() 
+    public void testBehavior()
     {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
-        
+
         AnnoTest1 pc = new AnnoTest1(1);
         assertNotNull("pc is null", pc);
         assertNotNull("InheritanceType.TABLE_PER_CLASS is null",
@@ -87,9 +87,9 @@ public class TestEnumerated extends AnnotationTestCase
         endEm(em);
 
         em = (OpenJPAEntityManager) currentEntityManager();
-        OpenJPAQuery q = em.createQuery("SELECT o FROM AnnoTest1 o"); 
+        OpenJPAQuery q = em.createQuery("SELECT o FROM AnnoTest1 o");
         assertEquals(1, q.getResultList().size());
-        
+
 //        AnnoTest1 pc2 = em.find(AnnoTest1.class, new Long(1));
         AnnoTest1 pc2 = (AnnoTest1) q.getSingleResult();
         assertNotNull("pc2 is null", pc2);
@@ -106,7 +106,7 @@ public class TestEnumerated extends AnnotationTestCase
 
         em = (OpenJPAEntityManager) currentEntityManager();
 //        pc2 = em.find(AnnoTest1.class, new Long(1));
-        q = em.createQuery("SELECT o FROM AnnoTest1 o"); 
+        q = em.createQuery("SELECT o FROM AnnoTest1 o");
         pc2 = (AnnoTest1) q.getSingleResult();
         assertEquals(InheritanceType.JOINED, pc2.getEnumeration());
         assertEquals(InheritanceType.JOINED, pc2.getOrdinalEnumeration());
@@ -114,5 +114,5 @@ public class TestEnumerated extends AnnotationTestCase
                 pc2.getStringEnumeration());
         endEm(em);
     }
-    
+
 }

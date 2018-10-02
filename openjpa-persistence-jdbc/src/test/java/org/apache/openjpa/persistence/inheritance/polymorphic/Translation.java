@@ -26,14 +26,14 @@ import javax.persistence.Table;
 @Entity
 @Table(name="TRANSLATIONS")
 /**
- * An persistent class that refers to a polymorphic uni-cardinality relation. 
+ * An persistent class that refers to a polymorphic uni-cardinality relation.
  * The polymorphic relation itself derives from an abstract class that uses
  * table-per-class inheritance strategy.
- *   
+ *
  * For a more detailed description of the domain model to which this receiver
  * belongs
  * @see TestTablePerClassInheritanceWithAbstractRoot
- * 
+ *
  * @author Pinaki Poddar
  *
  */

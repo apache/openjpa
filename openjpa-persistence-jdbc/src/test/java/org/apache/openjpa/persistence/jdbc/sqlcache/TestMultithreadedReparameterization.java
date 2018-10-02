@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jdbc.sqlcache;
@@ -35,13 +35,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
- * Test reparameterization of cached query under heavy load. 
- * 
+ * Test reparameterization of cached query under heavy load.
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestMultithreadedReparameterization extends TestCase {
-    private static String RESOURCE = "META-INF/persistence.xml"; 
+    private static String RESOURCE = "META-INF/persistence.xml";
     private static String UNIT_NAME = "PreparedQuery";
     protected static OpenJPAEntityManagerFactory emf;
 
@@ -72,7 +72,7 @@ public class TestMultithreadedReparameterization extends TestCase {
         }
         em.getTransaction().commit();
 
-        String jpql = "select p from Person p " 
+        String jpql = "select p from Person p "
                     + "where p.id=:id and p.firstName=:first and p.lastName=:last and p.age=:age";
         int nRepeats = 20;
         Thread[] threads = new Thread[nThreads];
@@ -107,8 +107,8 @@ public class TestMultithreadedReparameterization extends TestCase {
      *  the hard and the soft cache maps. It is important for this test that the max cache size
      *  is set to a number much smaller than the default (1000) to force swapping between hard
      *  and soft maps. During this swapping interval, it is possible that another thread will
-     *  attempt to read from the maps and cause either NPE or CCE. 
-     *  
+     *  attempt to read from the maps and cause either NPE or CCE.
+     *
      * @see OPENJPA-2646
      * @throws Exception
      */
@@ -129,9 +129,9 @@ public class TestMultithreadedReparameterization extends TestCase {
                     @Override public void run() {
                         try {
                             EntityManager em = emf.createEntityManager();
-                            // Since the cache (CacheMap) is set to a size of '2' all threads will 
-                            // fill up the cache and constantly cause query strings to move 
-                            // to/from the main cache and soft cache, eventually causing a 
+                            // Since the cache (CacheMap) is set to a size of '2' all threads will
+                            // fill up the cache and constantly cause query strings to move
+                            // to/from the main cache and soft cache, eventually causing a
                             // "cache miss" by a thread.
                             String qStr = "select p from Person p where p.firstName=:first and p.id = ";
                             for (int j = 0; j < nQueries; j++) {
@@ -175,7 +175,7 @@ public class TestMultithreadedReparameterization extends TestCase {
 
     /**
      * Each thread executes same query with same parameters repeatedly.
-     * 
+     *
      * @author Pinaki Poddar
      *
      */

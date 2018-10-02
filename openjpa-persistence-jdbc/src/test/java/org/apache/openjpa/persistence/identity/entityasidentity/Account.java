@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity.entityasidentity;
 
@@ -34,22 +34,22 @@ public class Account {
     @Id
     @Column(name="account_id")
     private Integer accountId;
-    
+
     @Id
     @Column(name="group_id")
     private Integer groupId;
-    
+
     @Id
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="accountHolder_id")
     private Person accountHolder;
-    
+
     private long balanceInDollars;
     private int  balanceInCents;
     private boolean accountLocked;
-    
+
     public Account() {
-        
+
     }
 
     public Integer getAccountId() {
@@ -99,6 +99,6 @@ public class Account {
     public void setAccountLocked(boolean accountLocked) {
         this.accountLocked = accountLocked;
     }
-    
-    
+
+
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
@@ -27,11 +27,11 @@ import javax.persistence.Version;
 
 /**
  * Persistent entity with unidirectional one-to-one relation.
- * 
+ *
  * Used in
  * @see
  * org.apache.openjpa.persistence.query.TestProjectionQueryWithIdenticalResult
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -40,12 +40,12 @@ public class UnidirectionalOneToOneOwner {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private String marker;
-	
+
 	@Version
 	private int version;
-	
+
 	@OneToOne(cascade=CascadeType.ALL)
 	private UnidirectionalOneToOneOwned owned;
 

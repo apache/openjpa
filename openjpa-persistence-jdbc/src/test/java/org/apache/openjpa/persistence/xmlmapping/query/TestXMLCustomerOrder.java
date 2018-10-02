@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.xmlmapping.query;
 
@@ -44,18 +44,18 @@ import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.USAAddres
  * Test query with predicates on persistent field mapped to XML column.
  * Samples of platform specific sqls are under resources in
  * TestXMLCustomerOrder.[dbname] files.
- * 
+ *
  * DB2 requires some special options on the database creation to allow for
  * native XML support:
  * create database test using codeset utf-8 territory us
- * 
+ *
  * @author Catalina Wei
  * @author Milosz Tylenda
  * @since 1.0.0
  */
 public class TestXMLCustomerOrder
     extends SingleEMFTestCase {
-    
+
     private static final int ORDER_1_OID = 10;
     private static final double ORDER_1_AMOUNT = 850;
     private static final boolean ORDER_1_DELIVERED = false;
@@ -78,7 +78,7 @@ public class TestXMLCustomerOrder
             getLog().trace("TestXMLCustomerOrder() - Skipping all tests - No XML Column support");
             return;
         }
-        
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         persistEntities(em);
@@ -92,39 +92,39 @@ public class TestXMLCustomerOrder
         List<Address> addrs = em.createQuery(
             "select o.shipAddress from Order o order by o.oid")
             .getResultList();
-        
+
         assertEquals(2, addrs.size());
-        
+
         Address addressFromDb = addrs.get(0);
         Address address = createUSAAddress("Harry's Auto");
         assertEquals(address.toString(), addressFromDb.toString());
-        
+
         addressFromDb = addrs.get(1);
         address = createCANAddress("A&J Auto");
         assertEquals(address.toString(), addressFromDb.toString());
-        
+
         em.close();
     }
-    
+
     @SuppressWarnings("unchecked")
     public void testXMLFieldInEntity() {
         EntityManager em = emf.createEntityManager();
         List<Order> orders = em.createQuery(
             "select o from Order o order by o.oid")
             .getResultList();
-        
+
         assertEquals(2, orders.size());
-        
+
         Order orderFromDb = orders.get(0);
         Address addressFromDb = orderFromDb.getShipAddress();
         Address address = createUSAAddress("Harry's Auto");
         assertEquals(address.toString(), addressFromDb.toString());
-        
+
         orderFromDb = orders.get(1);
         addressFromDb = orderFromDb.getShipAddress();
         address = createCANAddress("A&J Auto");
         assertEquals(address.toString(), addressFromDb.toString());
-        
+
         em.close();
     }
 
@@ -135,7 +135,7 @@ public class TestXMLCustomerOrder
             "select o, o2 from Order o, Order o2 where o.shipAddress.city " +
             "= o2.shipAddress.city order by o.oid")
             .getResultList();
-        
+
         assertEquals(2, orders.size());
 
         Object[] ordersFromDb = orders.get(0);
@@ -149,7 +149,7 @@ public class TestXMLCustomerOrder
         order2 = (Order) ordersFromDb[1];
         assertEquals(ORDER_2_OID, order1.getOid());
         assertOrdersEqual(order1, order2);
-        
+
         em.close();
     }
 
@@ -160,11 +160,11 @@ public class TestXMLCustomerOrder
             "select o from Order o, Customer c where o.shipAddress.city " +
             "= c.address.city")
             .getResultList();
-        
+
         assertEquals(1, orders.size());
         Order order = orders.get(0);
         assertEquals(ORDER_1_OID, order.getOid());
-        
+
         em.close();
     }
 
@@ -174,11 +174,11 @@ public class TestXMLCustomerOrder
         List<Order> orders = em.createQuery(
             "select o from Order o where o.shipAddress.city = 'San Jose'")
             .getResultList();
-        
+
         assertEquals(1, orders.size());
         Order order = orders.get(0);
         assertEquals(ORDER_1_OID, order.getOid());
-        
+
         em.close();
     }
 
@@ -193,7 +193,7 @@ public class TestXMLCustomerOrder
         assertEquals(1, orders.size());
         Order order = orders.get(0);
         assertEquals(ORDER_1_OID, order.getOid());
-        
+
         em.close();
     }
 
@@ -208,7 +208,7 @@ public class TestXMLCustomerOrder
         assertEquals(1, orders.size());
         Order order = orders.get(0);
         assertEquals(ORDER_1_OID, order.getOid());
-        
+
         em.close();
     }
 
@@ -231,7 +231,7 @@ public class TestXMLCustomerOrder
         address = (USAAddress) order.getShipAddress();
         assertEquals("Cupertino", address.getCity());
         assertEquals(95014, address.getZIP());
-        
+
         em.getTransaction().commit();
         em.close();
     }
@@ -252,7 +252,7 @@ public class TestXMLCustomerOrder
         order = em.find(Order.class, ORDER_1_OID);
         Address address = order.getShipAddress();
         assertNull(address);
-        
+
         em.getTransaction().commit();
         em.close();
     }
@@ -347,7 +347,7 @@ public class TestXMLCustomerOrder
         closeEMF(emf);
         return dict.supportsXMLColumn;
     }
-    
+
     private USAAddress createUSAAddress(String name) {
         USAAddress address = new ObjectFactory().createUSAAddress();
         address.setName(name);
@@ -368,7 +368,7 @@ public class TestXMLCustomerOrder
         address.setProvince("ON");
         return address;
     }
-    
+
     private void assertOrdersEqual(Order o1, Order o2) {
         assertEquals(o1.getOid(), o2.getOid());
         assertEquals(o1.getAmount(), o2.getAmount());

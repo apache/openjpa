@@ -24,7 +24,7 @@
     <package>org.apache.openjpa.persistence.cache.jpa.model</package>
 <!--    <mapped-superclass class="BaseEntity"/>-->
     <entity class="CacheableEntity"/>
-    <entity class="UncacheableEntity"/> 
+    <entity class="UncacheableEntity"/>
     <entity class="UnspecifiedEntity"/>
     <entity class="NegatedCachableEntity" cacheable="false" />
     <entity class="NegatedUncacheableEntity" cacheable="true"/>

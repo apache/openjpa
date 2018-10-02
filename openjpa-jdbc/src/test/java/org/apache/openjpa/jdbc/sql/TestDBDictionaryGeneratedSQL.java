@@ -49,14 +49,14 @@ public class TestDBDictionaryGeneratedSQL {
                 allowing(mockConfiguration);
             }
         });
-        
+
         DBDictionary dict = new DBDictionary();
         dict.setConfiguration(mockConfiguration);
         dict.maxTableNameLength = 10;
 
         Table table = new Table();
         table.setIdentifier(DBIdentifier.newTable("NameIsTooLong"));
-        
+
         try {
             dict.getCreateTableSQL(table);
             fail("Expected a UserException");
@@ -81,7 +81,7 @@ public class TestDBDictionaryGeneratedSQL {
                 allowing(mockConfiguration);
             }
         });
-        
+
         DBDictionary dict = new DBDictionary();
         dict.setConfiguration(mockConfiguration);
         dict.maxTableNameLength = 10;
@@ -89,14 +89,14 @@ public class TestDBDictionaryGeneratedSQL {
         Table table = new Table();
         table.setIdentifier(DBIdentifier.newTable("NameIsTooLong"));
         table.setSchemaIdentifier(DBIdentifier.newSchema("IAmASchema"));
-        
+
         try {
             dict.getCreateTableSQL(table);
             fail("Expected a UserException");
         } catch (UserException ue) {
             // expected - check message in case a different UserException is thrown.
             assertTrue(ue.getMessage().contains("Table name \"IAmASchema.NameIsTooLong\""));
-        } 
+        }
     }
 
     @Test
@@ -113,7 +113,7 @@ public class TestDBDictionaryGeneratedSQL {
                 allowing(mockConfiguration);
             }
         });
-        
+
         DBDictionary dict = new DBDictionary();
         dict.setConfiguration(mockConfiguration);
         dict.maxTableNameLength = 12;
@@ -121,7 +121,7 @@ public class TestDBDictionaryGeneratedSQL {
         Table table = new Table();
         table.setIdentifier(DBIdentifier.newTable("NameIsRight"));
         table.setSchemaIdentifier(DBIdentifier.newSchema("IAmASchema"));
-        
+
         String[] sqls = dict.getCreateTableSQL(table);
         assertEquals(1, sqls.length);
         assertTrue(sqls[0].contains("NameIsRight"));
@@ -142,7 +142,7 @@ public class TestDBDictionaryGeneratedSQL {
                 allowing(mockConfiguration);
             }
         });
-        
+
         DBDictionary dict = new DBDictionary();
         dict.setConfiguration(mockConfiguration);
         dict.tableLengthIncludesSchema=true;
@@ -151,14 +151,14 @@ public class TestDBDictionaryGeneratedSQL {
         Table table = new Table();
         table.setIdentifier(DBIdentifier.newTable("NameIsTooLong"));
         table.setSchemaIdentifier(DBIdentifier.newSchema("IAmASchema"));
-        
+
         try {
             dict.getCreateTableSQL(table);
             fail("Expected a UserException");
         } catch (UserException ue) {
             // expected - check message in case a different UserException is thrown.
             assertTrue(ue.getMessage().contains("Table name \"IAmASchema.NameIsTooLong\""));
-        } 
+        }
     }
 
     @Test
@@ -175,7 +175,7 @@ public class TestDBDictionaryGeneratedSQL {
                 allowing(mockConfiguration);
             }
         });
-        
+
         DBDictionary dict = new DBDictionary();
         dict.setConfiguration(mockConfiguration);
         dict.tableLengthIncludesSchema=true;
@@ -184,7 +184,7 @@ public class TestDBDictionaryGeneratedSQL {
         Table table = new Table();
         table.setIdentifier(DBIdentifier.newTable("NameIsRight"));
         table.setSchemaIdentifier(DBIdentifier.newSchema("schema"));
-        
+
         String[] sqls = dict.getCreateTableSQL(table);
         assertEquals(1, sqls.length);
         assertTrue(sqls[0].contains("NameIsRight"));

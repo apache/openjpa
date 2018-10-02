@@ -34,16 +34,16 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
  * Test hints using EntityManager interface.
  */
 public class TestEmLockMode extends SequencedActionsTest {
-    private static String NON_SUPPORTED_OPTIMISTIC_SQL = 
+    private static String NON_SUPPORTED_OPTIMISTIC_SQL =
         "SELECT .* FROM LockEmployee .*";
     private static String NON_SUPPORTED_FOR_UPDATE_SQL = "" ; // append lock clause from dict
-    private static String VERSION_UPDATE_SQL = 
+    private static String VERSION_UPDATE_SQL =
         "UPDATE LockEmployee SET version .* WHERE .*";
-    private static String DB2_OPTIMISTIC_SQL = 
+    private static String DB2_OPTIMISTIC_SQL =
         "SELECT .* FROM LockEmployee .* WHERE .*";
-    private static String DB2_PESSIMISTIC_RS_SQL = 
+    private static String DB2_PESSIMISTIC_RS_SQL =
         "SELECT .* FROM LockEmployee .* WITH RS USE .*";
-    private static String DB2_PESSIMISTIC_RR_SQL = 
+    private static String DB2_PESSIMISTIC_RR_SQL =
         "SELECT .* FROM LockEmployee .* WITH RR USE .*";
 
     public void setUp() {
@@ -51,9 +51,9 @@ public class TestEmLockMode extends SequencedActionsTest {
         commonSetUp();
         NON_SUPPORTED_FOR_UPDATE_SQL = NON_SUPPORTED_OPTIMISTIC_SQL + " " + escapeRegex(getForUpdateClause()) + ".*";
     }
-    
+
     private String escapeRegex(String clause) {
-        // escape an update clause for use in a regex. 
+        // escape an update clause for use in a regex.
         // only handling ( ) for now
         String rval = clause.replace("(", "\\(");
         rval = rval.replace(")", "\\)");
@@ -112,7 +112,7 @@ public class TestEmLockMode extends SequencedActionsTest {
         resetSQL();
         int beforeIsolation = fConfig.getIsolation();
         em.find(LockEmployee.class, 1, lockMode);
-        if (dict.supportsIsolationForUpdate() && 
+        if (dict.supportsIsolationForUpdate() &&
             dict instanceof DB2Dictionary) {
             assertEquals(expectedSupportSQLCount, getSQLCount());
             assertAllSQLInOrder(expectedSupportSQL);
@@ -173,7 +173,7 @@ public class TestEmLockMode extends SequencedActionsTest {
         String expectedNonSupportSQL, int expectedVersionUpdateCount,
         String expectedVersionUpdateSQL) {
         OpenJPAEntityManager oem = (OpenJPAEntityManager) em.getDelegate();
-        JDBCFetchConfigurationImpl fConfig = (JDBCFetchConfigurationImpl) 
+        JDBCFetchConfigurationImpl fConfig = (JDBCFetchConfigurationImpl)
             ((EntityManagerImpl) oem).getBroker().getFetchConfiguration();
         DBDictionary dict = ((JDBCConfiguration) ((OpenJPAEntityManagerSPI) oem)
             .getConfiguration()).getDBDictionaryInstance();
@@ -183,7 +183,7 @@ public class TestEmLockMode extends SequencedActionsTest {
         resetSQL();
         int beforeIsolation = fConfig.getIsolation();
         em.refresh(employee, lockMode);
-        if (dict.supportsIsolationForUpdate() && 
+        if (dict.supportsIsolationForUpdate() &&
             dict instanceof DB2Dictionary) {
             assertEquals(expectedSupportSQLCount, getSQLCount());
             assertAllSQLInOrder(expectedSupportSQL);
@@ -251,7 +251,7 @@ public class TestEmLockMode extends SequencedActionsTest {
         resetSQL();
         int beforeIsolation = fConfig.getIsolation();
         em.lock(employee, lockMode);
-        if (dict.supportsIsolationForUpdate() && 
+        if (dict.supportsIsolationForUpdate() &&
             dict instanceof DB2Dictionary) {
             assertEquals(expectedSupportSQLCount, getSQLCount());
             if (expectedSupportSQL != null)
@@ -261,7 +261,7 @@ public class TestEmLockMode extends SequencedActionsTest {
             if (expectedNonSupportSQL != null)
                 assertAllSQLInOrder(expectedNonSupportSQL);
         }
-        
+
         resetSQL();
         em.flush();
         assertEquals(expectedVersionUpdateCount, getSQLCount());
@@ -291,7 +291,7 @@ public class TestEmLockMode extends SequencedActionsTest {
             assertEquals("getLockMode only allows in transaction.",LockModeType.NONE, em.getLockMode(employee));
         } catch (Exception e){
             fail("Do not expecting any exception.");
-        }        
+        }
         em.getTransaction().rollback();
 
         em.clear();
@@ -303,7 +303,7 @@ public class TestEmLockMode extends SequencedActionsTest {
         } catch (IllegalArgumentException iae) {
         } catch (Exception e){
             fail("Expecting IllegalArgumentException for getLockMode on a detached entity in an active transaction.");
-        }        
+        }
         em.getTransaction().rollback();
 
         em.getTransaction().begin();
@@ -313,7 +313,7 @@ public class TestEmLockMode extends SequencedActionsTest {
                     .getLockMode(employee));
         } catch (Exception e){
             fail("Do not expecting any exception.");
-        }        
+        }
         em.getTransaction().rollback();
 
         em.close();

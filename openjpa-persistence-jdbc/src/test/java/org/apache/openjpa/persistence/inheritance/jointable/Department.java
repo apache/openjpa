@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.inheritance.jointable;
 
@@ -37,7 +37,7 @@ import javax.persistence.Table;
 public class Department {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="JWTGen")
-    private long OID; 
+    private long OID;
 
     @Basic
     private String description;
@@ -45,13 +45,13 @@ public class Department {
 	@Column(name="DeptProp1",length=10)
     @Basic
     private String deptProp1;
-  
+
     @OneToMany(mappedBy="dept",cascade={CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH},fetch=FetchType.LAZY)
     private java.util.Collection<Contractor> ctrs;
-    
+
 	public Department() {
 	}
-	
+
 	public Department(String desc) {
         setDescription(desc);
     }
@@ -63,16 +63,16 @@ public class Department {
     public String getDescription() {
         return description;
     }
-    
+
     public long getOID() {
         return OID;
     }
-    
+
     public void setOID(long oid) {
         this.OID = oid;
     }
 
-	
+
 	public String getDeptProp1() {
 		return deptProp1;
 	}

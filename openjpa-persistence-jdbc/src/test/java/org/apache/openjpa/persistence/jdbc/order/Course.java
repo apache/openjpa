@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -34,42 +34,42 @@ import javax.persistence.Table;
 @Entity
 @Table(name="OCCourse")
 public class Course {
-    
+
     private int id;
 
     private String name;
-    
+
     private Set<Student> students;
     private List<Student> waitList;
-    
-    public Course() {        
+
+    public Course() {
     }
-    
+
     public Course(String name) {
         this.name = name;
     }
-    
+
     @ManyToMany(cascade=CascadeType.PERSIST)
     @JoinTable(name="COURSE_ENROLLMENT")
     public Set<Student> getStudents() {
         return students;
     }
-    
+
     public void setStudents(Set<Student> students) {
         this.students = students;
     }
-    
+
     @ManyToMany(cascade=CascadeType.PERSIST)
     @JoinTable(name="WAIT_LIST")
     @OrderColumn(name="WAITLIST_ORDER")
     public List<Student> getWaitList() {
         return waitList;
     }
-    
+
     public void setWaitList(List<Student> list) {
         waitList = list;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
@@ -25,14 +25,14 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 public class TestCacheModeInvalid extends AbstractCacheTestCase {
-    
+
     @Override
     public void setUp() {}
-    
+
     public void testInvalidElement() {
         boolean exceptionCaught = false;
         try {
-            Map<String, Object> propertiesMap = getPropertiesMap(persistentTypes, 
+            Map<String, Object> propertiesMap = getPropertiesMap(persistentTypes,
                 "openjpa.jdbc.JDBCListeners", new JDBCListener [] { getListener() });
             emf = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory("cache-mode-invalid",
                 "META-INF/caching-persistence-invalid.xml", propertiesMap );
@@ -54,5 +54,5 @@ public class TestCacheModeInvalid extends AbstractCacheTestCase {
     public JDBCListener getListener() {
         return null;
     }
- 
+
 }

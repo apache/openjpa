@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.meta;
 
@@ -91,10 +91,10 @@ public class TestClassMetaData
     public void testGetProxyFields(){
         FieldMetaData[] proxies = _metaTest3.getProxyFields();
         assertEquals(2, proxies.length);
-        
+
         proxies = _metaTest1.getProxyFields();
         assertEquals(2, proxies.length);
-        
+
         proxies = _metaTest5.getProxyFields();
         assertEquals(0, proxies.length);
 

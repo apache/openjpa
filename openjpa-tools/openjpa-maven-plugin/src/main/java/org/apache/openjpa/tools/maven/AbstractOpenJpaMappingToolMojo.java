@@ -41,13 +41,13 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
- * Processes Application model classes and generate the DDL by running the 
+ * Processes Application model classes and generate the DDL by running the
  * OpenJPA MappingTool.
- * 
+ *
  * We have to split the generation of the SQL files and the mapping info
- * into 2 separate mojos, since the MappingTool struggles to generate both 
+ * into 2 separate mojos, since the MappingTool struggles to generate both
  * in one step.
- * 
+ *
  * @version $Id$
  * @since 1.0
  */

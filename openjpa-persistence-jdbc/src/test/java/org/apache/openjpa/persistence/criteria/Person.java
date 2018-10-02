@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -36,15 +36,15 @@ public class Person {
     private int id;
 
     private String name;
-    
+
 	@ElementCollection
 	@CollectionTable(name="CR_PSN_NICKNAMES")
 	private Set<String> nickNames;
-	
+
 	protected Person() {
 	    this("?");
 	}
-	
+
 	public Person(String name) {
 	    setName(name);
 	}
@@ -56,7 +56,7 @@ public class Person {
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -64,11 +64,11 @@ public class Person {
     public Set<String> getNickNames() {
         return nickNames;
     }
-    
+
     public void setNickNames(Set<String> nickNames) {
         this.nickNames = nickNames;
     }
-    
+
     public void addNickName(String nickName) {
         nickNames.add(nickName);
     }

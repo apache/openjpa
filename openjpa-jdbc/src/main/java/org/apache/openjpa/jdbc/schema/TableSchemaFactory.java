@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -140,7 +140,7 @@ public class TableSchemaFactory
     public void endConfiguration() {
         buildTable();
     }
-    
+
     public synchronized SchemaGroup readSchema() {
         String schema = null;
         try {
@@ -233,7 +233,7 @@ public class TableSchemaFactory
             DBDictionary dict = _conf.getDBDictionaryInstance();
             stmnt = conn.prepareStatement("INSERT INTO "
                 + dict.getFullName(_pkColumn.getTable(), false)
-                + " (" + dict.getColumnDBName(_pkColumn) + ", " + 
+                + " (" + dict.getColumnDBName(_pkColumn) + ", " +
                 dict.getColumnDBName(_schemaColumn) + ") VALUES (?, ?)");
             dict.setInt(stmnt, 1, 1, _pkColumn);
             dict.setNull(stmnt, 2, _schemaColumn.getType(), _schemaColumn);

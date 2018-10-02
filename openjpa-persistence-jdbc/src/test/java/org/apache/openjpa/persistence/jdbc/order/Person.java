@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -27,10 +27,10 @@ public abstract class Person {
 
     @Id
     @GeneratedValue(generator="uuid-type4-hex")
-    private String id;    
-    
+    private String id;
+
     private String name;
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -38,7 +38,7 @@ public abstract class Person {
     public String getName() {
         return name;
     }
-    
+
     public void setId(String id) {
         this.id = id;
     }
@@ -46,11 +46,11 @@ public abstract class Person {
     public String getId() {
         return id;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof Player) {
             Player player = (Player)obj;
-            return getId().equalsIgnoreCase(player.getId()) && 
+            return getId().equalsIgnoreCase(player.getId()) &&
                 player.getName().equals(getName());
         }
         return false;

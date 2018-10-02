@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -107,7 +107,7 @@ class ConstPath
         return new ConstPathExpState(_constant.initialize(sel, ctx, 0));
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
         ConstPathExpState cstate = (ConstPathExpState) state;
@@ -170,18 +170,18 @@ class ConstPath
             cstate.value = null;
 
         if (other != null) {
-            cstate.sqlValue = other.toDataStoreValue(sel, ctx, otherState, 
+            cstate.sqlValue = other.toDataStoreValue(sel, ctx, otherState,
                 cstate.value);
             cstate.otherLength = other.length(sel, ctx, otherState);
         } else
             cstate.sqlValue = cstate.value;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         ConstPathExpState cstate = (ConstPathExpState) state;
         if (cstate.otherLength > 1)
-            sql.appendValue(((Object[]) cstate.sqlValue)[index], 
+            sql.appendValue(((Object[]) cstate.sqlValue)[index],
                 cstate.getColumn(index));
         else
             sql.appendValue(cstate.sqlValue, cstate.getColumn(index));
@@ -196,7 +196,7 @@ class ConstPath
     /**
      * Expression state.
      */
-    private static class ConstPathExpState 
+    private static class ConstPathExpState
         extends ConstExpState {
 
         public final ExpState constantState;
@@ -208,7 +208,7 @@ class ConstPath
             this.constantState = constantState;
         }
     }
-    
+
     public void get(FieldMetaData fmd, XMLMetaData meta) {
     }
 
@@ -221,11 +221,11 @@ class ConstPath
 
     public void setSchemaAlias(String schemaAlias) {
     }
-    
+
     public String getSchemaAlias() {
         return null;
     }
-    
+
     public void setSubqueryContext(Context conext, String correlationVar) {
     }
 

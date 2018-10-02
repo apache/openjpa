@@ -201,7 +201,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
     protected void setChangeTracker(CollectionChangeTracker ct) {
         changeTracker = ct;
     }
-    
+
     @Override
     public Object copy(Object paramObject) {
         if (isDelayLoad()) {

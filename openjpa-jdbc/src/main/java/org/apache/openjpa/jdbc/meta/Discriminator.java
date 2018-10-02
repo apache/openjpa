@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -65,8 +65,8 @@ public class Discriminator
     private Index _idx = null;
     private boolean _subsLoaded = false;
     private Object _value = null;
-    
-    private int _javaType = -1; 
+
+    private int _javaType = -1;
 
     /**
      * Constructor. Supply owning mapping.
@@ -402,7 +402,7 @@ public class Discriminator
         return assertStrategy().hasClassConditions(base, subs);
     }
 
-    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+    public SQLBuffer getClassConditions(Select sel, Joins joins,
         ClassMapping base, boolean subs) {
         return assertStrategy().getClassConditions(sel, joins, base, subs);
     }
@@ -416,16 +416,16 @@ public class Discriminator
     public String toString() {
         return _mapping + "<discriminator>";
     }
-    
+
     public void setJavaType(int javaType) {
         _javaType = javaType;
     }
-    
+
     public int getJavaType() {
         if (_javaType == -1) {
             ClassMapping superMapping = _mapping.getPCSuperclassMapping();
 
-            if (superMapping != null && 
+            if (superMapping != null &&
                 superMapping.getDiscriminator() != null) {
                 _javaType = superMapping.getDiscriminator().getJavaType();
             }

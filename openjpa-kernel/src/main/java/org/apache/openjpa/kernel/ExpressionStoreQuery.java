@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -157,7 +157,7 @@ public class ExpressionStoreQuery
     public Object getCompilation() {
         return _parsed;
     }
-    
+
     public void populateFromCompilation(Object comp) {
         _parser.populate(comp, this);
     }
@@ -171,7 +171,7 @@ public class ExpressionStoreQuery
     }
 
     public Executor newInMemoryExecutor(ClassMetaData meta, boolean subs) {
-        return new InMemoryExecutor(this, meta, subs, _parser,  
+        return new InMemoryExecutor(this, meta, subs, _parser,
         		ctx.getCompilation(), new InMemoryExpressionFactory());
     }
 
@@ -331,17 +331,17 @@ public class ExpressionStoreQuery
         }
 
         public final void validate(StoreQuery q) {
-            QueryExpressions exps = assertQueryExpression();    
-            ValidateGroupingExpressionVisitor.validate(q.getContext(), exps); 
+            QueryExpressions exps = assertQueryExpression();
+            ValidateGroupingExpressionVisitor.validate(q.getContext(), exps);
         }
-        
+
 
         public void getRange(StoreQuery q, Object[] params, Range range) {
             QueryExpressions exps = assertQueryExpression();
             if (exps.range.length == 0)
                 return;
 
-            if (exps.range.length == 2 
+            if (exps.range.length == 2
                 && exps.range[0] instanceof Constant
                 && exps.range[1] instanceof Constant) {
                 try {
@@ -363,7 +363,7 @@ public class ExpressionStoreQuery
         public final Class<?> getResultClass(StoreQuery q) {
             return assertQueryExpression().resultClass;
         }
-        
+
         public final ResultShape<?> getResultShape(StoreQuery q) {
             return assertQueryExpression().shape;
         }
@@ -379,7 +379,7 @@ public class ExpressionStoreQuery
         public final String[] getProjectionAliases(StoreQuery q) {
             return assertQueryExpression().projectionAliases;
         }
-        
+
         public Class<?>[] getProjectionTypes(StoreQuery q) {
             return null;
         }
@@ -391,7 +391,7 @@ public class ExpressionStoreQuery
         public final boolean isAggregate(StoreQuery q) {
             return assertQueryExpression().isAggregate();
         }
-        
+
         public final boolean isDistinct(StoreQuery q) {
             return assertQueryExpression().isDistinct();
         }
@@ -416,12 +416,12 @@ public class ExpressionStoreQuery
             int base = positionalParameterBase(userParams.keySet());
             for(Entry<?, Class<?>> entry : paramTypes.entrySet()){
                 Object key = entry.getKey();
-                int idx = (key instanceof Integer) 
-                    ? ((Integer)key).intValue() - base 
+                int idx = (key instanceof Integer)
+                    ? ((Integer)key).intValue() - base
                     : paramTypes.indexOf(key);
                 if (idx >= arr.length || idx < 0)
-                        throw new UserException(_loc.get("gap-query-param", 
-                            new Object[]{q.getContext().getQueryString(), key, 
+                        throw new UserException(_loc.get("gap-query-param",
+                            new Object[]{q.getContext().getQueryString(), key,
                             userParams.size(), userParams}));
                 Object value = userParams.get(key);
                 validateParameterValue(key, value, (Class)entry.getValue());
@@ -429,7 +429,7 @@ public class ExpressionStoreQuery
             }
             return arr;
         }
-        
+
         /**
          * Return the base (generally 0 or 1) to use for positional parameters.
          */
@@ -450,25 +450,25 @@ public class ExpressionStoreQuery
             }
             return low;
         }
-        
-        private static void validateParameterValue(Object key, Object value, 
+
+        private static void validateParameterValue(Object key, Object value,
             Class expected) {
             if (expected == null)
                 return;
-            
+
             if (value == null) {
-                if (expected.isPrimitive()) 
-                    throw new UserException(_loc.get("null-primitive-param", 
+                if (expected.isPrimitive())
+                    throw new UserException(_loc.get("null-primitive-param",
                         key, expected));
             } else {
                 Class actual = value.getClass();
                 boolean strict = true;
-                if (!Filters.canConvert(actual, expected, strict)) 
-                    throw new UserException(_loc.get("param-value-mismatch", 
+                if (!Filters.canConvert(actual, expected, strict))
+                    throw new UserException(_loc.get("param-value-mismatch",
                         new Object[]{key, expected, value, actual}));
             }
         }
-        
+
         public final Map getUpdates(StoreQuery q) {
             return assertQueryExpression().updates;
         }
@@ -491,12 +491,12 @@ public class ExpressionStoreQuery
         public boolean isPacking(StoreQuery q) {
             return false;
         }
-        
+
         /**
-         * Throws an exception if select or having clauses contain 
+         * Throws an exception if select or having clauses contain
          * non-aggregate, non-grouped paths.
          */
-        private static class ValidateGroupingExpressionVisitor 
+        private static class ValidateGroupingExpressionVisitor
             extends AbstractExpressionVisitor {
 
             private final QueryContext _ctx;
@@ -507,12 +507,12 @@ public class ExpressionStoreQuery
             /**
              * Throw proper exception if query does not meet validation.
              */
-            public static void validate(QueryContext ctx, 
+            public static void validate(QueryContext ctx,
                 QueryExpressions exps) {
                 if (exps.grouping.length == 0)
                     return;
 
-                ValidateGroupingExpressionVisitor visitor = 
+                ValidateGroupingExpressionVisitor visitor =
                     new ValidateGroupingExpressionVisitor(ctx);
                 visitor._grouping = true;
                 for (int i = 0; i < exps.grouping.length; i++)
@@ -534,7 +534,7 @@ public class ExpressionStoreQuery
                         // skip
                     } catch (InvocationTargetException ite) {
                         // skip
-                    } 
+                    }
                     if (value2 != null && value2 instanceof Subquery)
                         ;  // complex having with subquery, validation is performed by DBMS
                     else
@@ -556,12 +556,12 @@ public class ExpressionStoreQuery
                         _grouped.add(val);
                     }
                 } else if (_agg == null) {
-                    if (val.isAggregate()) 
+                    if (val.isAggregate())
                         _agg = val;
-                    else if (val instanceof Path 
+                    else if (val instanceof Path
                         && (_grouped == null || !_grouped.contains(val))) {
                         throw new UserException(_loc.get("bad-grouping",
-                            _ctx.getCandidateType(), _ctx.getQueryString())); 
+                            _ctx.getCandidateType(), _ctx.getQueryString()));
                     }
                 }
             }
@@ -707,7 +707,7 @@ public class ExpressionStoreQuery
         /**
          * Throws an exception if a variable is found.
          */
-        private static class AssertNoVariablesExpressionVisitor 
+        private static class AssertNoVariablesExpressionVisitor
             extends AbstractExpressionVisitor {
 
             private final QueryContext _ctx;
@@ -719,7 +719,7 @@ public class ExpressionStoreQuery
             public void enter(Value val) {
                 if (!val.isVariable())
                     return;
-                throw new UnsupportedException(_loc.get("inmem-agg-proj-var", 
+                throw new UnsupportedException(_loc.get("inmem-agg-proj-var",
                     _ctx.getCandidateType(), _ctx.getQueryString()));
             }
         }

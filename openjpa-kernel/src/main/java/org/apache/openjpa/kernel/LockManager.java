@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -63,7 +63,7 @@ public interface LockManager
      * to the persistence context, if any; lock managers
      * specific to a certain back end may be able to take
      * advantage of this; others should ignore it
-     * @throws org.apache.openjpa.util.LockException if a lock cannot be 
+     * @throws org.apache.openjpa.util.LockException if a lock cannot be
      * obtained in the given number of milliseconds
      * @see OpenJPAStateManager#setLock
      */
@@ -72,11 +72,11 @@ public interface LockManager
 
     /**
      * Perform the same function as previous lock method and has the option
-     * to perform a version check after the lock function has completed. 
+     * to perform a version check after the lock function has completed.
      */
     public void refreshLock(OpenJPAStateManager sm, int level, int timeout,
         Object sdata);
-    
+
     /**
      * Obtain locks on the specified objects.
      *

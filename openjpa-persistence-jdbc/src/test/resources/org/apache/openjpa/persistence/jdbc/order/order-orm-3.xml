@@ -24,9 +24,9 @@
     <package>
         org.apache.openjpa.persistence.jdbc.order
     </package>
-    <entity name="BaseTestTableElement" class="BaseTestElement3" 
+    <entity name="BaseTestTableElement" class="BaseTestElement3"
         access="PROPERTY">
-        <table name="BTTEL"/>        
+        <table name="BTTEL"/>
         <attributes>
             <id name="id">
                 <generated-value/>
@@ -40,7 +40,7 @@
             <id name="id">
                 <generated-value/>
             </id>
-            <one-to-many name="one2Melems">              
+            <one-to-many name="one2Melems">
                 <order-column name="one2MOrder" />
                 <join-table name="xml_o2m_table"/>
                 <cascade>
@@ -55,12 +55,12 @@
                     <cascade-all/>
                 </cascade>
             </many-to-many>
-            
+
             <element-collection name="collelems">
                 <order-column/>
                 <collection-table name="xml_coll_table"/>
             </element-collection>
-            
-        </attributes>    
+
+        </attributes>
     </entity>
 </entity-mappings>

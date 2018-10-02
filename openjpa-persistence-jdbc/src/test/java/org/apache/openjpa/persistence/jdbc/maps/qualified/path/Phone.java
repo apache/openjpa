@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.qualified.path;
 
@@ -28,18 +28,18 @@ public class Phone {
     public final static String HOME= "home";
     public final static String OFFICE = "office";
     public final static String MOBILE = "mobile";
-    
+
     @Id
     private int id;
-    
+
     private String type;
-    
+
     private int number;
 
     public int getId() {
         return id;
     }
-    
+
     public Phone(int id, String type, int number) {
         setId(id);
         setType(type);

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -99,11 +99,11 @@ public interface StoreCache extends Cache {
      * Clear the cache.
      */
     public void evictAll();
-    
+
     /**
      * Gets the number of read/write/hit on this receiver in total and per
      * class basis.
-     * 
+     *
      * @since 1.3.0
      */
     public CacheStatistics getStatistics();

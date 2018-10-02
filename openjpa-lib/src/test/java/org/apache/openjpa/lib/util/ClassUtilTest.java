@@ -51,7 +51,7 @@ public class ClassUtilTest {
     public void nonExistingClass() {
         toClass("does.not.Exist");
     }
-    
+
     private Class toClass(String clazz) {
         return ClassUtil.toClass(clazz, false, this.getClass().getClassLoader());
     }

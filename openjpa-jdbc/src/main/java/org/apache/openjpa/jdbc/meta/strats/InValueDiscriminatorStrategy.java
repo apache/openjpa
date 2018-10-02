@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -111,7 +111,7 @@ public abstract class InValueDiscriminatorStrategy
 
     public Class getClass(JDBCStore store, ClassMapping base, Result res)
         throws SQLException, ClassNotFoundException {
-        if (isFinal 
+        if (isFinal
                 || !useDiscrimColumn(base, res)
                 || (base.getPCSuperclass() == null && base.getJoinablePCSubclassMappings().length == 0)) {
             return base.getDescribedType();
@@ -120,7 +120,7 @@ public abstract class InValueDiscriminatorStrategy
         Object cls = res.getObject(disc.getColumns()[0], disc.getJavaType(), null);
         return getClass(cls, store);
     }
-    
+
     private boolean useDiscrimColumn(ClassMapping base, Result res) throws SQLException {
         if (res.getBaseMapping() != null && base != null) {
             // check whether the result type is assignable to the base mapping.
@@ -147,7 +147,7 @@ public abstract class InValueDiscriminatorStrategy
         return true;
     }
 
-    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+    public SQLBuffer getClassConditions(Select sel, Joins joins,
         ClassMapping base, boolean subclasses) {
         Column col = disc.getColumns()[0];
         SQLBuffer sql = new SQLBuffer(sel.getConfiguration().

@@ -30,15 +30,15 @@ public class Hardware {
 
     @Id
     private String serial;
-    
+
     @Id
     private String model;
-    
+
     private String description;
 
     public Hardware() {
     }
-    
+
     public void setSerial(String serial) {
         this.serial = serial;
     }

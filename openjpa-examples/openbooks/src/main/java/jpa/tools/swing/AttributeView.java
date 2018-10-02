@@ -20,21 +20,21 @@ import javax.swing.JLabel;
 
 /**
  * View of a persistent attribute as a JLabel.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 @SuppressWarnings("serial")
 public class AttributeView extends JLabel {
     private final Attribute<?,?> _attr;
-    
+
     public AttributeView(Attribute<?,?> attr) {
         _attr = attr;
         Color color = MetamodelHelper.getColor(attr);
         setForeground(color);
         setText(MetamodelHelper.getDisplayName(attr));
     }
-    
+
     public Attribute<?,?> getAttribute() {
         return _attr;
     }

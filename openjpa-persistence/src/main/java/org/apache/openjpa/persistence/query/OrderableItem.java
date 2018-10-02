@@ -14,35 +14,35 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
  * Denotes an item of ORDER BY clause.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
-public class OrderableItem extends AbstractVisitable 
+public class OrderableItem extends AbstractVisitable
     implements OrderByItem, Visitable {
 	private final Boolean _asc;
 	private final ExpressionImpl _e;
-	
+
 	OrderableItem(ExpressionImpl path) {
 		this(path, null);
 	}
-	
+
 	public ExpressionImpl getExpression() {
 		return _e;
 	}
-	
+
 	OrderableItem(ExpressionImpl path, Boolean asc) {
 		super();
 		this._asc = asc;
 		this._e = path;
 	}
-	
+
 	public String asExpression(AliasContext ctx) {
         return (ctx.hasAlias(_e) ? ctx.getAlias(_e) : _e.asExpression(ctx))
 		    + (_asc == null ? "" : (_asc ? " ASC " : " DESC"));

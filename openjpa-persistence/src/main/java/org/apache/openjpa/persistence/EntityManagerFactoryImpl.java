@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -68,7 +68,7 @@ public class EntityManagerFactoryImpl
     private transient StoreCache _cache = null;
     private transient QueryResultCache _queryCache = null;
     private transient MetamodelImpl _metaModel;
-    
+
     /**
      * Default constructor provided for auto-instantiation.
      */
@@ -100,7 +100,7 @@ public class EntityManagerFactoryImpl
     public OpenJPAConfiguration getConfiguration() {
         return _factory.getConfiguration();
     }
-    
+
     public Map<String,Object> getProperties() {
         Map<String,Object> props = _factory.getProperties();
         // convert to user readable values
@@ -165,9 +165,9 @@ public class EntityManagerFactoryImpl
 
     /**
      * Creates and configures a entity manager with the given properties.
-     *  
+     *
      * The property keys in the given map can be either qualified or not.
-     * 
+     *
      * @return list of exceptions raised or empty list.
      */
     public OpenJPAEntityManagerSPI createEntityManager(SynchronizationType synchronizationType, Map props) {
@@ -221,18 +221,18 @@ public class EntityManagerFactoryImpl
         }
 
         // javax.persistence.jtaDataSource and openjpa.ConnectionFactory name are equivalent.
-        // prefer javax.persistence for now. 
-        String cfName = (String) Configurations.removeProperty("jtaDataSource", props);  
+        // prefer javax.persistence for now.
+        String cfName = (String) Configurations.removeProperty("jtaDataSource", props);
         if(cfName == null) {
             cfName = (String) Configurations.removeProperty("ConnectionFactoryName", props);
         }
-        
-        String cf2Name = (String) Configurations.removeProperty("nonJtaDataSource", props); 
-        
-        if(cf2Name == null) { 
+
+        String cf2Name = (String) Configurations.removeProperty("nonJtaDataSource", props);
+
+        if(cf2Name == null) {
             cf2Name = (String) Configurations.removeProperty("ConnectionFactory2Name", props);
         }
-        
+
         if (log != null && log.isTraceEnabled()) {
             if(StringUtil.isNotEmpty(cfName)) {
                 log.trace("Found ConnectionFactoryName from props: " + cfName);
@@ -244,12 +244,12 @@ public class EntityManagerFactoryImpl
         validateCfNameProps(conf, cfName, cf2Name);
 
         Broker broker = _factory.newBroker(user, pass, managed, retainMode, false, cfName, cf2Name);
-            
+
         // add autodetach for close and rollback conditions to the configuration
         broker.setAutoDetach(AutoDetach.DETACH_CLOSE, true);
         broker.setAutoDetach(AutoDetach.DETACH_ROLLBACK, true);
         broker.setDetachedNew(false);
-        
+
         OpenJPAEntityManagerSPI em = newEntityManagerImpl(broker);
 
         // allow setting of other bean properties of EM
@@ -330,7 +330,7 @@ public class EntityManagerFactoryImpl
                     getStoreManager().getInnermostDelegate().getClass();
                 Class cls = _factory.getConfiguration().
                     getStoreFacadeTypeRegistry().
-                    getImplementation(FetchPlan.class, storeType, 
+                    getImplementation(FetchPlan.class, storeType,
                     		FetchPlanImpl.class);
                 _plan = cls.getConstructor(FetchConfiguration.class);
             }
@@ -351,7 +351,7 @@ public class EntityManagerFactoryImpl
     public OpenJPACriteriaBuilder getCriteriaBuilder() {
         return new CriteriaBuilderImpl().setMetaModel(getMetamodel());
     }
-    
+
     public OpenJPAQueryBuilder getDynamicQueryBuilder() {
         return new QueryBuilderImpl(this);
     }
@@ -415,7 +415,7 @@ public class EntityManagerFactoryImpl
         return (OpenJPAPersistenceUtil.isManagedBy(this, entity) &&
                 (OpenJPAPersistenceUtil.isLoaded(entity, attribute) == LoadState.LOADED));
     }
-    
+
     private void validateCfNameProps(OpenJPAConfiguration conf, String cfName, String cf2Name) {
         if (StringUtil.isNotEmpty(cfName) || StringUtil.isNotEmpty(cf2Name)) {
             if (conf.getDataCache() != "false" && conf.getDataCache() != null) {
@@ -432,7 +432,7 @@ public class EntityManagerFactoryImpl
                     cf2Name }), null, null, true);
             }
             Object syncMap = conf.toProperties(false).get("openjpa.jdbc.SynchronizeMappings");
-            if(syncMap != null) { 
+            if(syncMap != null) {
                 throw new ArgumentException(_loc.get("invalid-cfname-prop", new Object[] {
                     "openjpa.jdbc.SynchronizeMappings",
                     cfName,

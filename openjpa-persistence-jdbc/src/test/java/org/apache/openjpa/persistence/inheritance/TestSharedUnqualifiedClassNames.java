@@ -25,14 +25,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Test that entities, mapped superclasses, and embeddables can all share
  * the same short names without any collisions.
- * 
+ *
  * This test is modified to ignore conflict of alias between MappedSuperclass
  * and derived Entity. This earlier assertion is no more valid after the
  * changes introduced to allow MappedSuperclass to be used in query.
  * That feature seemed more significant than the feature asserted by this test.
  * The details of the change can be found at
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-1049">JIRA</A>
- * 
+ *
  */
 public class TestSharedUnqualifiedClassNames
     extends SingleEMFTestCase {

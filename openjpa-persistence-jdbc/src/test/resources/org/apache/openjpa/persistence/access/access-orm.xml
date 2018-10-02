@@ -73,15 +73,15 @@
                 <generated-value/>
             </id>
             <basic name="name" access="PROPERTY"/>
-            <transient name="id"/>            
+            <transient name="id"/>
         </attributes>
     </mapped-superclass>
 
-    <entity name="XMLFieldAccess" 
-            class="org.apache.openjpa.persistence.access.xml.XMLFieldAccess" 
+    <entity name="XMLFieldAccess"
+            class="org.apache.openjpa.persistence.access.xml.XMLFieldAccess"
             access="FIELD">
         <named-query name="XMLFieldAccess.query">
-            <query>SELECT xfa FROM XMLFieldAccess xfa WHERE 
+            <query>SELECT xfa FROM XMLFieldAccess xfa WHERE
             xfa.id = :id AND xfa.strField = :strVal
             </query>
         </named-query>
@@ -92,12 +92,12 @@
             <basic name="strField"/>
             <version name="version"/>
         </attributes>
-    </entity>    
-    <entity name="XMLPropAccess" 
-            class="org.apache.openjpa.persistence.access.xml.XMLPropAccess" 
+    </entity>
+    <entity name="XMLPropAccess"
+            class="org.apache.openjpa.persistence.access.xml.XMLPropAccess"
             access="PROPERTY">
         <named-query name="XMLPropAccess.query">
-            <query>SELECT xpa FROM XMLPropAccess xpa WHERE 
+            <query>SELECT xpa FROM XMLPropAccess xpa WHERE
             xpa.id = :id AND xpa.strProp = :strVal
             </query>
         </named-query>
@@ -105,21 +105,21 @@
             <id name="id">
                 <generated-value/>
             </id>
-            <basic name="strProp"/>            
+            <basic name="strProp"/>
             <version name="version"/>
         </attributes>
-    </entity>    
+    </entity>
     <entity name="XMLDFMPA"
         class=
         "org.apache.openjpa.persistence.access.xml.XMLDefFieldMixedPropAccess"
         access="FIELD">
         <named-query name="XMLDFMPA.query">
-            <query>SELECT df FROM XMLDFMPA df WHERE 
+            <query>SELECT df FROM XMLDFMPA df WHERE
             df.id = :id AND df.stringField = :strVal
             </query>
         </named-query>
         <named-query name="XMLDFMPA.badQuery">
-            <query>SELECT p FROM XMLDFMPA p WHERE 
+            <query>SELECT p FROM XMLDFMPA p WHERE
             p.id = :id AND p.strField = :strVal
             </query>
         </named-query>
@@ -127,22 +127,22 @@
             <id name="id">
                 <generated-value/>
             </id>
-            <basic name="stringField" access="PROPERTY"/>            
+            <basic name="stringField" access="PROPERTY"/>
             <version name="version"/>
             <transient name="strField"/>
         </attributes>
-    </entity>    
+    </entity>
     <entity name="XMLDPMFA"
         class=
         "org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess"
         access="PROPERTY">
         <named-query name="XMLDPMFA.query">
-            <query>SELECT dp FROM XMLDPMFA dp WHERE 
+            <query>SELECT dp FROM XMLDPMFA dp WHERE
             dp.id = :id AND dp.strField = :strVal
             </query>
         </named-query>
         <named-query name="XMLDPMFA.badQuery">
-            <query>SELECT p FROM XMLDPMFA p WHERE 
+            <query>SELECT p FROM XMLDPMFA p WHERE
             p.id = :id AND p.strProp = :strVal
             </query>
         </named-query>
@@ -150,12 +150,12 @@
             <id name="id">
                 <generated-value/>
             </id>
-            <basic name="strField" access="FIELD"/>            
+            <basic name="strField" access="FIELD"/>
             <version name="version"/>
             <transient name="strProp"/>
         </attributes>
-    </entity>    
-    
+    </entity>
+
     <entity name="XMLPropertySub"
         class="org.apache.openjpa.persistence.access.xml.XMLPropertySub"
         access="PROPERTY">
@@ -198,7 +198,7 @@
         class="org.apache.openjpa.persistence.access.xml.XMLPropertySub2"
         access="PROPERTY">
         <named-query name="XMLPropertySub2.query">
-            <query>SELECT ps FROM XMLPropertySub2 ps WHERE 
+            <query>SELECT ps FROM XMLPropertySub2 ps WHERE
             ps.id = :id AND ps.name = :name AND ps.createDate = :crtDate
             </query>
         </named-query>
@@ -217,7 +217,7 @@
         class="org.apache.openjpa.persistence.access.xml.XMLFieldSub2"
         access="FIELD">
         <named-query name="XMLFieldSub2.query">
-            <query>SELECT ps FROM XMLFieldSub2 ps WHERE 
+            <query>SELECT ps FROM XMLFieldSub2 ps WHERE
             ps.id = :id AND ps.name = :name AND ps.crtDate = :crtDate
             </query>
         </named-query>
@@ -236,7 +236,7 @@
         class="org.apache.openjpa.persistence.access.xml.XMLMixedFieldSub"
         access="FIELD">
         <named-query name="XMLMixedFieldSub.query">
-            <query>SELECT fs FROM XMLMixedFieldSub fs WHERE 
+            <query>SELECT fs FROM XMLMixedFieldSub fs WHERE
             fs.mid = :id AND fs.name = :name AND fs.createDate = :crtDate
             AND fs.myField = :myField
             </query>
@@ -252,7 +252,7 @@
                 <temporal>TIMESTAMP</temporal>
             </basic>
             <transient name="crtDate"/>
-        </attributes>        
+        </attributes>
     </entity>
     <entity name="XMLSuperPropertyEntity"
         class="org.apache.openjpa.persistence.access.xml.XMLSuperPropertyEntity"
@@ -264,7 +264,7 @@
             </query>
         </named-query>
         <named-query name="XMLSuperPropertyEntity.badQuery">
-            <query>SELECT sfe FROM XMLSuperPropertyEntity sfe WHERE 
+            <query>SELECT sfe FROM XMLSuperPropertyEntity sfe WHERE
             sfe.id = :id AND sfe.name = :name AND sfe.crtDate = :crtDate
             </query>
         </named-query>
@@ -273,19 +273,19 @@
                 <generated-value/>
             </id>
             <basic name="name" access="PROPERTY"/>
-        </attributes>                
+        </attributes>
     </entity>
     <entity name="XMLFieldSub3"
         class="org.apache.openjpa.persistence.access.xml.XMLFieldSub3"
         access="FIELD">
         <inheritance/>
         <named-query name="XMLFieldSub3.query">
-            <query>SELECT ps FROM XMLFieldSub3 ps WHERE 
+            <query>SELECT ps FROM XMLFieldSub3 ps WHERE
             ps.id = :id AND ps.name = :name AND ps.crtDate = :crtDate
             </query>
         </named-query>
         <named-query name="XMLFieldSub3.badQuery">
-            <query>SELECT ps FROM XMLFieldSub3 ps WHERE 
+            <query>SELECT ps FROM XMLFieldSub3 ps WHERE
             ps.id = :id AND ps.name = :name AND ps.createDate = :crtDate
             </query>
         </named-query>
@@ -305,7 +305,7 @@
             </query>
         </named-query>
         <named-query name="XMLSuperFieldEntity.badQuery">
-            <query>SELECT sfe FROM XMLSuperFieldEntity sfe WHERE 
+            <query>SELECT sfe FROM XMLSuperFieldEntity sfe WHERE
             sfe.id = :id AND sfe.name = :name AND sfe.crtDate = :crtDate
             </query>
         </named-query>
@@ -314,19 +314,19 @@
                 <generated-value/>
             </id>
             <basic name="name"/>
-        </attributes>                
+        </attributes>
     </entity>
     <entity name="XMLPropertySub3"
         class="org.apache.openjpa.persistence.access.xml.XMLPropertySub3"
         access="PROPERTY">
         <inheritance/>
         <named-query name="XMLPropertySub3.query">
-            <query>SELECT ps FROM XMLPropertySub3 ps WHERE 
+            <query>SELECT ps FROM XMLPropertySub3 ps WHERE
             ps.id = :id AND ps.name = :name AND ps.createDate = :crtDate
             </query>
         </named-query>
         <named-query name="XMLPropertySub3.badQuery">
-            <query>SELECT ps FROM XMLPropertySub3 ps WHERE 
+            <query>SELECT ps FROM XMLPropertySub3 ps WHERE
             ps.id = :id AND ps.name = :name AND ps.crtDate = :crtDate
             </query>
         </named-query>
@@ -340,14 +340,14 @@
         class="org.apache.openjpa.persistence.access.xml.XMLPropEmbedEntity"
         access="PROPERTY">
         <named-query name="XMLPropEmbedEntity.query">
-            <query>SELECT fs FROM XMLPropEmbedEntity fs WHERE 
-            fs.id = :id AND fs.name = :name AND fs.embedProp.fName = :firstName 
+            <query>SELECT fs FROM XMLPropEmbedEntity fs WHERE
+            fs.id = :id AND fs.name = :name AND fs.embedProp.fName = :firstName
             AND fs.embedProp.lName = :lastName
             </query>
         </named-query>
         <named-query name="XMLPropEmbedEntity.badQuery">
-            <query>SELECT fs FROM XMLPropEmbedEntity fs WHERE 
-            fs.id = :id AND fs.name = :name AND fs.embedProp.firstName = 
+            <query>SELECT fs FROM XMLPropEmbedEntity fs WHERE
+            fs.id = :id AND fs.name = :name AND fs.embedProp.firstName =
             :firstName AND fs.embedProp.lastName = :lastName
             </query>
         </named-query>
@@ -357,20 +357,20 @@
             </id>
             <basic name="name"/>
             <embedded name="embedProp"/>
-        </attributes>        
+        </attributes>
     </entity>
     <entity name="XMLFieldEmbedEntity"
         class="org.apache.openjpa.persistence.access.xml.XMLFieldEmbedEntity"
         access="FIELD">
         <named-query name="XMLFieldEmbedEntity.query">
-            <query>SELECT fs FROM XMLFieldEmbedEntity fs WHERE 
-            fs.id = :id AND fs.name = :name AND fs.epa.firstName = :firstName  
+            <query>SELECT fs FROM XMLFieldEmbedEntity fs WHERE
+            fs.id = :id AND fs.name = :name AND fs.epa.firstName = :firstName
             AND fs.epa.lastName = :lastName
             </query>
         </named-query>
         <named-query name="XMLFieldEmbedEntity.badQuery">
-            <query>SELECT fs FROM XMLFieldEmbedEntity fs WHERE 
-            fs.id = :id AND fs.name = :name AND fs.epa.fName = :firstName 
+            <query>SELECT fs FROM XMLFieldEmbedEntity fs WHERE
+            fs.id = :id AND fs.name = :name AND fs.epa.fName = :firstName
             AND fs.epa.lName = :lastName
             </query>
         </named-query>
@@ -380,24 +380,24 @@
             </id>
             <basic name="name"/>
             <embedded name="epa" access="FIELD"/>
-        </attributes>        
+        </attributes>
     </entity>
     <entity name="XMLPropMixedEntity"
         class="org.apache.openjpa.persistence.access.xml.XMLPropMixedEntity"
         access="PROPERTY">
         <named-query name="XMLPropMixedEntity.query">
-            <query>SELECT fs FROM XMLPropMixedEntity fs WHERE 
-            fs.idval = :id AND fs.name = :name AND 
+            <query>SELECT fs FROM XMLPropMixedEntity fs WHERE
+            fs.idval = :id AND fs.name = :name AND
             fs.ema.firstName = :firstName
-            AND fs.ema.lastName = :lastName AND 
+            AND fs.ema.lastName = :lastName AND
             fs.ema.mName = :middleName
            </query>
         </named-query>
         <named-query name="XMLPropMixedEntity.badQuery">
-            <query>SELECT fs FROM XMLPropMixedEntity fs WHERE 
-            fs.idval = :id AND fs.name = :name AND 
-            fs.ema.firstName = :firstName AND 
-            fs.ema.lastName = :lastName AND 
+            <query>SELECT fs FROM XMLPropMixedEntity fs WHERE
+            fs.idval = :id AND fs.name = :name AND
+            fs.ema.firstName = :firstName AND
+            fs.ema.lastName = :lastName AND
             fs.ema.middleName = :middleName
             </query>
         </named-query>
@@ -410,8 +410,8 @@
             <transient name="id"/>
             <transient name="embedProp"/>
         </attributes>
-    </entity>   
-    
+    </entity>
+
     <embeddable
         class="org.apache.openjpa.persistence.access.xml.XMLEmbedFieldAccess"
         access="FIELD">
@@ -419,7 +419,7 @@
             <basic name="fName"/>
             <basic name="lName"/>
         </attributes>
-    </embeddable>    
+    </embeddable>
     <embeddable
         class="org.apache.openjpa.persistence.access.xml.XMLEmbedPropAccess"
         access="PROPERTY">

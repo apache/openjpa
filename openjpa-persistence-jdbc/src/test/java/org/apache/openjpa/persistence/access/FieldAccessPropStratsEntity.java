@@ -50,19 +50,19 @@ public class FieldAccessPropStratsEntity {
 
     @Transient
     private Collection<FieldAccess> one2m;
-    
+
     @Transient
     private PropAccess one2one;
-    
+
     @Transient
     private Collection<EmbedPropAccess> ecoll;
-    
+
     @Transient
     private EmbedFieldAccess embed;
-    
+
     @Transient
     private int ver;
-    
+
     @Transient
     private Collection<PropAccess> m2m;
 
@@ -75,27 +75,27 @@ public class FieldAccessPropStratsEntity {
     public void setElementCollection(Collection<EmbedPropAccess> coll) {
         ecoll = coll;
     }
-    
+
     @Embedded
     @Access(AccessType.PROPERTY)
     public EmbedFieldAccess getEmbedField() {
         return embed;
     }
-    
+
     public void setEmbedField(EmbedFieldAccess efa) {
         embed = efa;
     }
-    
+
     @Version
     @Access(AccessType.PROPERTY)
     public int getVersion() {
         return ver;
     }
-    
+
     public void setVersion(int version) {
         ver = version;
     }
-    
+
     @ManyToOne(cascade=CascadeType.ALL)
     @Access(AccessType.PROPERTY)
     public PropAccess getManyToOne() {
@@ -121,11 +121,11 @@ public class FieldAccessPropStratsEntity {
     public PropAccess getOneToOne() {
         return one2one;
     }
-    
+
     public void setOneToOne(PropAccess pa) {
         one2one = pa;
     }
-    
+
     @ManyToMany(cascade=CascadeType.ALL)
     @Access(AccessType.PROPERTY)
     public Collection<PropAccess> getManyToMany() {
@@ -135,13 +135,13 @@ public class FieldAccessPropStratsEntity {
     public void setManyToMany(Collection<PropAccess> many) {
         m2m = many;
     }
-    
+
     @Basic
     @Access(AccessType.PROPERTY)
     public String getName() {
         return name;
     }
-    
+
     public void setName(String n) {
         name = n;
     }

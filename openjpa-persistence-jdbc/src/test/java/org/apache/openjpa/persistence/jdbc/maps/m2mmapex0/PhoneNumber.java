@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex0;
 
@@ -60,7 +60,7 @@ public class PhoneNumber {
             (Collection<Map.Entry<Division, Employee>>) emps.entrySet();
         for (Map.Entry<Division, Employee> entry : entries) {
             Division key = entry.getKey();
-            Employee e = entry.getValue(); 
+            Employee e = entry.getValue();
             Employee e0 = map.get(key);
             if (e.getEmpId() != e0.getEmpId())
                 return false;

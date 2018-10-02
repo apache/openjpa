@@ -7,9 +7,9 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -125,10 +125,10 @@
                 <!-- See OPENJPA-1176 for details. -->
                 <para>
                     In 1.x.x releases of OpenJPA, if property access was used,
-                    private properties were considered persistent. This is 
-                    contrary to the JPA specification, which states that 
+                    private properties were considered persistent. This is
+                    contrary to the JPA specification, which states that
                     persistent properties must be public or protected.  In
-                    OpenJPA 2.0 and later, private properties will not be 
+                    OpenJPA 2.0 and later, private properties will not be
                     persistent by default.
                 </para>
                 <para>
@@ -136,10 +136,10 @@
                     automatically maintain OpenJPA 1.x.x behavior. It is
                     possible for a version 2.0 application to revert back to
                     the 1.x.x behavior by setting the value of the
-                    <literal>openjpa.Compatibility</literal> 
-                    property <literal>PrivatePersistentProperties</literal> to 
-                    <literal>true</literal>.  If compile time enhancement is 
-                    used, this property must be specified at the time of 
+                    <literal>openjpa.Compatibility</literal>
+                    property <literal>PrivatePersistentProperties</literal> to
+                    <literal>true</literal>.  If compile time enhancement is
+                    used, this property must be specified at the time of
                     enhancement and at runtime.
                 </para>
             </section>
@@ -150,9 +150,9 @@
                 <!-- See OPENJPA-1213 for details. -->
                 <para>
                     The Query interface setParameter() method behavior has
-                    changed to throw an IllegalArgumentException (as required 
-                    by the JPA specification) if more parameter substitutions 
-                    are supplied than defined in the createQuery(), 
+                    changed to throw an IllegalArgumentException (as required
+                    by the JPA specification) if more parameter substitutions
+                    are supplied than defined in the createQuery(),
                     createNamedQuery(), or createNativeQuery() invocation.
                     OpenJPA 1.2.x and prior versions silently ignored these
                     extraneous parameter substitutions and allowed the Query
@@ -185,11 +185,11 @@
                 <para>
                     Starting with OpenJPA 2.0, this behavior has been
                     modified, so that by default all proxies will be removed
-                    during serialization.  See 
-                    <xref linkend="ref_guide_pc_scos_proxy_serial"/> 
-                    on how the behavior changes based on the 
-                    <literal>DetachedStateField</literal> setting along with 
-                    <xref linkend="ref_guide_detach_state"/> 
+                    during serialization.  See
+                    <xref linkend="ref_guide_pc_scos_proxy_serial"/>
+                    on how the behavior changes based on the
+                    <literal>DetachedStateField</literal> setting along with
+                    <xref linkend="ref_guide_detach_state"/>
                     for more details on how to override the default
                     <literal>DetachedStateField</literal> setting.
                 </para>
@@ -215,7 +215,7 @@
                     value <literal>all</literal> to never drop items from the
                     cache, but this option is no longer supported and will cause
                     a PersistenceException with a root cause of a ParseException
-                    to be thrown.  See 
+                    to be thrown.  See
                     <xref linkend="ref_guide_cache_querysql"/>
                     for details on the available configuration values.
                 </para>
@@ -255,7 +255,7 @@
                 applications that did not use or depend upon OpenJPA specific
                 APIs or behavior.
             </para>
-            
+
             <section id="prePostUpdate">
                 <title>
                     PreUpdate/PostUpdate Life Cycle Callbacks
@@ -263,7 +263,7 @@
                 <!-- See OPENJPA-1182 for details. -->
                 <para>
                     If an entity was updated between the persist()
-                    and commit() operations in OpenJPA 1.x, then 
+                    and commit() operations in OpenJPA 1.x, then
                     any PreUpdate and PostUpdate life cycle callback
                     methods would be executed.  Starting in OpenJPA
                     1.3 and 2.0, these callbacks will not get executed.
@@ -286,7 +286,7 @@
                     The JPA 2.0 specification section on
                     "Bootstrapping in Java SE Environments" states
                     that persistence providers must return null
-                    if they are not a qualified provider for the 
+                    if they are not a qualified provider for the
                     given persistence unit.
                 </para>
                 <para>
@@ -408,56 +408,56 @@
             </section>
             <section id="jpa_2.2_metamodelArrays">
                 <title>
-                    MetaModel Attributes for Arrays  
+                    MetaModel Attributes for Arrays
                 </title>
                 <!-- See OPENJPA-2025 for details. -->
                 <para>
-                    In previous releases OpenJPA's MetaModel implementation generated a ListAttribute for every array. This behavior is correct if the array 
-                    is annotated as a PersistentCollection, but not correct for un-annotated arrays (e.g. byte[], char[]). In OpenJPA 2.2.0 this behavior was corrected 
-                    so that arrays which are not stored as PersistentCollections will use a SingularAttribute instead of a ListAttribute. 
+                    In previous releases OpenJPA's MetaModel implementation generated a ListAttribute for every array. This behavior is correct if the array
+                    is annotated as a PersistentCollection, but not correct for un-annotated arrays (e.g. byte[], char[]). In OpenJPA 2.2.0 this behavior was corrected
+                    so that arrays which are not stored as PersistentCollections will use a SingularAttribute instead of a ListAttribute.
                 </para>
                 <para>
                     If your application uses the MetaModel API and your entities contain arrays of any of the following types: byte[], Byte[], char[], Character[] and
                     do not use the @PersistentCollection annotation with those fields you will need to update your application to use OpenJPA 2.2.0.
                 </para>
-                <para> In order for the existing applications to work with OpenJPA you may: 
+                <para> In order for the existing applications to work with OpenJPA you may:
                     <itemizedlist>
                         <listitem>
                             <para> Regenerate the canonical metamodel classes</para>
                         </listitem>
                         <listitem>
-                            <para> Set the Compatibility property <literal>UseListAttributeForArrays</literal> to <literal>true</literal> in persistence.xml 
+                            <para> Set the Compatibility property <literal>UseListAttributeForArrays</literal> to <literal>true</literal> in persistence.xml
                                 <programlisting> &lt;property name="openjpa.Compatibility" value="UseListAttributeForArrays=true"/&gt;</programlisting>
                             </para>
                         </listitem>
-                    </itemizedlist>    
+                    </itemizedlist>
                 </para>
             </section>
             <section id="jpa_2.2_SupportsSetClob">
                 <title>
-                    supportsSetClob Property.  
+                    supportsSetClob Property.
                 </title>
                 <!-- See OPENJPA-1691 for details. -->
                 <para>
                     In OpenJPA 2.2.0, code was added to allow the setting of CLOB or XML data larger than 4000 bytes.  This functionality
-                    was eventually back ported to previous releases, and enabled by the <literal>supportsSetClob</literal> property on the OracleDictionary.  Setting this property 
+                    was eventually back ported to previous releases, and enabled by the <literal>supportsSetClob</literal> property on the OracleDictionary.  Setting this property
                     has no effect in 2.2.0 and later releases and any occurrence of it should be removed.
                 </para>
-            </section>            
+            </section>
             <section id="jpa_2.2_UseNativeSequenceCache">
                 <title>
-                    useNativeSequenceCache Property.  
+                    useNativeSequenceCache Property.
                 </title>
                 <!-- See OPENJPA-1376 for details. -->
                 <para>
-                    In OpenJPA 2.2.0, code was added which changed the way sequences were generated, please see 
-                    <xref linkend="jpa_2.2_allocationSize"/> for details.  This functionality was eventually back ported 
-                    to previous releases, and enabled by the <literal>useNativeSequenceCache</literal> property on the DBDictionary.  Setting this property 
+                    In OpenJPA 2.2.0, code was added which changed the way sequences were generated, please see
+                    <xref linkend="jpa_2.2_allocationSize"/> for details.  This functionality was eventually back ported
+                    to previous releases, and enabled by the <literal>useNativeSequenceCache</literal> property on the DBDictionary.  Setting this property
                     has no effect in 2.2.0 and later releases and any occurrence of it should be removed.  If previous behavior is
-                    desired (i.e. <literal>useNativeSequenceCache=true</literal>), please see the details described in section 
+                    desired (i.e. <literal>useNativeSequenceCache=true</literal>), please see the details described in section
                     <xref linkend="jpa_2.2_allocationSize"/>.
                 </para>
-            </section>            
+            </section>
         	<section id="jpa_2.2_cascadePersist">
                 <title>
                     Cascade persist behavior
@@ -479,18 +479,18 @@
             </section>
             <section id="jpa_2.2_LifecycleEventManager">
                 <title>
-                    Life Cycle Event Manager Callback Behavior 
+                    Life Cycle Event Manager Callback Behavior
                 </title>
                 <!-- See OPENJPA-2163 for details. -->
                 <para>
                     Life cycle event manager is used to manage entity's life cycle event callback.
                     In previous releases, Life cycle event manager is scoped to EntityManagerFactory.
                     This means listeners registered to an individual EntityManager may get life cycle
-                    event callbacks for entity that it does not manage. 
+                    event callbacks for entity that it does not manage.
                 </para>
                 <para>
                     From 2.2.1 release, the default callback behavior of the life cycle event manager
-                    is changed to scope to each EntityManager.                     
+                    is changed to scope to each EntityManager.
                     To revert this behavior to the previous release, set the
                     value of the <literal>openjpa.Compatibility</literal>
                     property <literal>SingletonLifecycleEventManager</literal>
@@ -503,11 +503,11 @@
                 </title>
                 <!-- See OPENJPA-1532 for details. -->
                 <para>
-                     In the previous release, when the shared-cache-mode is enabled and the DataCache property is not set 
+                     In the previous release, when the shared-cache-mode is enabled and the DataCache property is not set
                      or set to false, there will be no data caching.
                 </para>
                 <para>
-                     From 2.2.2 release, the caching will be turned on if the shared-cache-mode is enabled. Please see the 
+                     From 2.2.2 release, the caching will be turned on if the shared-cache-mode is enabled. Please see the
                      details described in section <xref linkend="ref_guide_shared_cache_mode_integration"/>.
                 </para>
             </section>
@@ -522,7 +522,7 @@
        	    <para>
                 The following sections indicate changes that are incompatible
                 between OpenJPA 2.2.x releases and the 2.3.0 release.
-            </para>    
+            </para>
             <section id="jpa_2.3_MappingTool">
                 <title>
                     MappingTool Behavior for DB2 and Derby
@@ -544,27 +544,27 @@
                 </title>
                 <!-- See OPENJPA-2282 for details. -->
                 <para>
-                    In previous releases, the default value for the property RequiresSearchStringEscapeForLike is true and caused the 
+                    In previous releases, the default value for the property RequiresSearchStringEscapeForLike is true and caused the
                     unexpected escape clause appended to the SQL statement.
                     For example, user created a named query like this:
                     <programlisting> SELECT o.computerName FROM CompUser o WHERE o.name LIKE ?</programlisting>
-                    At run time the following query is generated: 
-                    <programlisting> SELECT t0.computerName FROM CompUser t0 WHERE (t0.name LIKE ? ESCAPE '\')</programlisting>                     
+                    At run time the following query is generated:
+                    <programlisting> SELECT t0.computerName FROM CompUser t0 WHERE (t0.name LIKE ? ESCAPE '\')</programlisting>
                     ESCAPE '\' shouldn't be appended to the query.
                 </para>
                 <para>
-                    From the 2.3.0 release, RequiresSearchStringEscapeForLike property is set to false by default. You can configure 
-                    RequiresSearchStringEscapeForLike property to be true if the old behavior is desired. 
+                    From the 2.3.0 release, RequiresSearchStringEscapeForLike property is set to false by default. You can configure
+                    RequiresSearchStringEscapeForLike property to be true if the old behavior is desired.
                 </para>
             </section>
             <section id="ReturnNullOnEmptyAggregateResult">
                 <title>
-                    Return value of aggregate functions in SELECT clause 
+                    Return value of aggregate functions in SELECT clause
                 </title>
                 <!-- See OPENJPA-1794 for details. -->
                 <para>
                     The JPA specification states "If SUM, AVG, MAX, or MIN is used, and there are no values to which the aggregate function can be
-                    applied, the result of the aggregate function is NULL."  Prior to this update, OpenJPA incorrectly returned 0 for SUM, AVG, MIN, 
+                    applied, the result of the aggregate function is NULL."  Prior to this update, OpenJPA incorrectly returned 0 for SUM, AVG, MIN,
                     and MAX when a state field being aggregated is numeric.  This behavior affects both JPQL and Criteria queries.  With this update,
                     OpenJPA will return a null result value for these aggregate functions when a query returns no result.
                 </para>

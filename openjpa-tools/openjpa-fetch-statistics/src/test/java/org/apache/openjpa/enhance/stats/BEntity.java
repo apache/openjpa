@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.enhance.stats;
@@ -31,11 +31,11 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy=InheritanceType.JOINED)
 @Access(AccessType.PROPERTY)
 public class BEntity {
-    
+
     private int id;
     private String name;
     private boolean bool;
-    
+
     @Id
     public int getId() {
         return id;
@@ -43,7 +43,7 @@ public class BEntity {
 
     public void setId(int id) {
         this.id = id;
-    } 
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -55,30 +55,30 @@ public class BEntity {
 
     @Access(AccessType.FIELD)
     private String desc;
-    
+
     public String getName() {
         return name;
     }
-    
+
     public String getCustomDesc(){
         return desc;
     }
-    
+
     public BEntity(int id, String name, String desc) {
         super();
         setId(id);
         setName(name);
         setDesc(desc);
     }
-    
+
     public BEntity() {
         super();
-    }    
-    
+    }
+
     public void setBool(boolean b){
         bool = b;
     }
-    
+
     @Basic
     public boolean isBool(){
         return bool;

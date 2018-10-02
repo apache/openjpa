@@ -27,16 +27,16 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     JDBCConfiguration conf;
     DBDictionary dict;
-    
+
     EntityE2 entityE2;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp(EntityE2.class,DROP_TABLES);
         assertNotNull(emf);
         conf = (JDBCConfiguration) emf.getConfiguration();
         dict = conf.getDBDictionaryInstance();
-        boolean supportsNativeSequence = dict.nextSequenceQuery != null;       
+        boolean supportsNativeSequence = dict.nextSequenceQuery != null;
         setTestsDisabled(!supportsNativeSequence);
         if (supportsNativeSequence) {
             em = emf.createEntityManager();
@@ -46,17 +46,17 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
                 " does not support native sequences.");
         }
     }
-    
+
     public void createEntityE2() {
         entityE2 = new EntityE2("e name");
     }
-    
+
     public void testGetIdGeneratorSeqGen() {
         createEntityE2();
         em.getTransaction().begin();
         em.persist(entityE2);
         em.getTransaction().commit();
-        int genId = entityE2.getId();        
+        int genId = entityE2.getId();
         int nextId = (int)((Long)em.getIdGenerator(EntityE2.class).next()).longValue();
         assertTrue("Next value should depend on previous genid", nextId >= genId + 1);
         em.close();

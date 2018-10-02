@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -25,9 +25,9 @@ import javax.persistence.EntityManager;
 /**
  * Tests that parent-child relation both replicated are stored in all replicated
  * slices.
- * 
+ *
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-981">OPENJPA-981</A>
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -42,7 +42,7 @@ public class TestReplication extends SingleEMFTestCase {
     protected String getPersistenceUnitName() {
         return "replication";
     }
-    
+
     void createData() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -57,7 +57,7 @@ public class TestReplication extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.clear();
     }
-    
+
     public void testPersistInReplicatedSlices() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -90,7 +90,7 @@ public class TestReplication extends SingleEMFTestCase {
             .getSingleResult();
         assertNotNull(cTwo);
     }
-    
+
     public void testQuery() {
         EntityManager em = emf.createEntityManager();
         String jpql = "select p from ReplicatedParent p where p.name=:name";
@@ -103,16 +103,16 @@ public class TestReplication extends SingleEMFTestCase {
         assertNotNull(children);
         assertEquals(CHILD_COUNT, children.size());
     }
-    
+
     public void testAggregateQuery() {
         EntityManager em = emf.createEntityManager();
         String jpql = "select count(p) from ReplicatedParent p";
         long pCount = (Long) em.createQuery(jpql).getSingleResult();
         assertEquals(1, pCount);
-        
+
         jpql = "select count(p) from ReplicatedChild p";
         long cCount = (Long) em.createQuery(jpql).getSingleResult();
         assertEquals(CHILD_COUNT, cCount);
     }
-    
+
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
@@ -29,7 +29,7 @@ import junit.framework.Assert;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestAssocOverrides  extends SQLListenerTestCase { 
+public class TestAssocOverrides  extends SQLListenerTestCase {
     public int numEmployees = 2;
     public int numPhoneNumbers = numEmployees + 1;
     public int numEmployeesPerPhoneNumber = 2;
@@ -43,7 +43,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
     public int pId = 1;
 
     public void setUp() throws Exception {
-        super.setUp(DROP_TABLES, Address.class, ContactInfo.class, 
+        super.setUp(DROP_TABLES, Address.class, ContactInfo.class,
             EmergencyContactInfo.class, Employee.class, JobInfo.class,
             PhoneNumber.class, ProgramManager.class, Zipcode.class,
             AbstractEmployee.class, PartTimeEmployee.class, Project.class);
@@ -73,7 +73,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         assertMappingOverrides("PART_EMP_ASSOC");
         assertMappingOverrides("PART_EMP_PROJECTS");
    }
-    
+
 	public void createObj1() {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction tran = em.getTransaction();
@@ -89,7 +89,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         Employee e = new Employee();
         e.setEmpId(id);
         ContactInfo contactInfo = new ContactInfo();
-        for (int i = 0; i < numPhoneNumbersPerEmployee; i++) { 
+        for (int i = 0; i < numPhoneNumbersPerEmployee; i++) {
             PhoneNumber phoneNumber = createPhoneNumber(em);
             contactInfo.addPhoneNumber(phoneNumber);
             e.setContactInfo(contactInfo);
@@ -107,7 +107,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         addr.setZipcode(zip);
         em.persist(addr);
         contactInfo.setAddress(addr);
-                
+
         EmergencyContactInfo ecInfo = new EmergencyContactInfo();
         ecInfo.setFName("fName_" + id);
         ecInfo.setLName("lName_" + id);
@@ -128,7 +128,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         PhoneNumber phoneNumber = createPhoneNumber(em);
         ecInfo.setPhoneNumber(phoneNumber);
         em.persist(eaddr);
-        
+
         for (int i = 0; i < numJobsPerEmployee; i++) {
         	JobInfo job = new JobInfo();
         	job.setJobDescription("job_" + id + "_" + i);
@@ -142,21 +142,21 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         em.persist(e);
         return e;
     }
-	
+
     public PhoneNumber createPhoneNumber(EntityManager em) {
     	PhoneNumber p = new PhoneNumber();
     	p.setPhNumber(phoneId++);
     	em.persist(p);
     	return p;
-    }    
-    
+    }
+
 	public void findObj1() {
         EntityManager em = emf.createEntityManager();
  	    Employee e = em.find(Employee.class, 1);
 	    assertEmployee(e);
 	    em.close();
 	}
-	
+
 	public void queryObj1() {
 	    EntityManager em = emf.createEntityManager();
 	    EntityTransaction tran = em.getTransaction();
@@ -185,7 +185,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
             i++;
         }
     }
-	
+
     public void assertPhoneNumber(PhoneNumber p, int empId) {
         int number = p.getPhNumber();
         Collection<Employee> es = p.getEmployees();
@@ -244,7 +244,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         tran.commit();
         em.close();
     }
-    
+
     public void assertMappingOverrides(String tableName) {
         boolean found = false;
         for (String sqlStr : sql) {
@@ -280,7 +280,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
                     found = true;
                 }
                 break;
-            } 
+            }
         }
         if (!found) {
             fail();

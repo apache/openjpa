@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -190,10 +190,10 @@ public class CandidatePath
 
     public void get(FieldMetaData fmd, XMLMetaData meta) {
     }
-    
+
     public void get(XMLMetaData meta, String name) {
     }
-    
+
     public XMLMetaData getXmlMapping() {
         return null;
     }
@@ -204,7 +204,7 @@ public class CandidatePath
     public String getSchemaAlias() {
         return null;
     }
-    
+
     public void setSubqueryContext(Context conext, String correlationVar) {
     }
 

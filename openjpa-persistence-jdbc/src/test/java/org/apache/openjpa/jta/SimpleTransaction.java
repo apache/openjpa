@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jta;
 
@@ -34,7 +34,7 @@ import javax.transaction.xa.XAResource;
 
 /**
  * A transaction for testing.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -42,7 +42,7 @@ public class SimpleTransaction implements Transaction {
     private final Set<Synchronization> synchs = new HashSet<Synchronization>();
     private Throwable rollbackCause;
     private volatile int status = Status.STATUS_UNKNOWN;
-    
+
     /**
      * Commits this transaction.
      */
@@ -94,11 +94,11 @@ public class SimpleTransaction implements Transaction {
     public int getStatus() throws SystemException {
         return status;
     }
-    
+
     void setStatus(int newStatus) throws SystemException {
         status = newStatus;
     }
-    
+
 
     /**
      * Registers the given synchronization element.
@@ -121,7 +121,7 @@ public class SimpleTransaction implements Transaction {
                 errors.add(t);
             }
         }
-        
+
         for (Synchronization synch : synchs) {
             try {
                 synch.afterCompletion(Status.STATUS_ROLLEDBACK);
@@ -130,7 +130,7 @@ public class SimpleTransaction implements Transaction {
             }
         }
         status = errors.isEmpty() ? Status.STATUS_ROLLEDBACK : Status.STATUS_UNKNOWN;
-        if (!errors.isEmpty()) 
+        if (!errors.isEmpty())
             throw new RuntimeException(errors.get(0));
     }
 
@@ -140,7 +140,7 @@ public class SimpleTransaction implements Transaction {
     public void setRollbackOnly() throws IllegalStateException, SystemException {
         setRollbackOnly(null);
     }
-    
+
     /**
      * Marks this transaction for rollback only with the given underlying cause.
      */
@@ -148,15 +148,15 @@ public class SimpleTransaction implements Transaction {
         rollbackCause = cause;
         status = Status.STATUS_MARKED_ROLLBACK;
     }
-    
+
     Throwable getRollbackCause() {
         return rollbackCause;
     }
-    
+
     public String toString() {
         return "TXN:"+hashCode() +"["+statusCode()+"]";
     }
-    
+
     String statusCode() {
         switch (status) {
         case Status.STATUS_ACTIVE          : return "active";

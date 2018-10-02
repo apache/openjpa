@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.policy;
 
@@ -32,9 +32,9 @@ import org.apache.openjpa.slice.PObject;
  * value is uniformly distributed, this policy will persist these
  * instances such that
  * <LI>each slice will have N/M instances
- * <LI>the identity of the instances in the {@code i}-th slice 
+ * <LI>the identity of the instances in the {@code i}-th slice
  * will be divisible by {@code i}.
- * 
+ *
  * @author Pinaki Poddar
  *
  */

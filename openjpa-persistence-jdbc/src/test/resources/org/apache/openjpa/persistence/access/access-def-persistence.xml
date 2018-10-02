@@ -20,7 +20,7 @@
 <persistence
     xmlns="http://java.sun.com/xml/ns/persistence"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
         http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
     version="2.0" >
     <persistence-unit name="Access-EMPropDef" transaction-type="RESOURCE_LOCAL">
@@ -36,8 +36,8 @@
             org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess2
         </class>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
-                value="buildSchema"/> 
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema"/>
         </properties>
     </persistence-unit>
 
@@ -54,8 +54,8 @@
             org.apache.openjpa.persistence.access.xml.XMLDefFieldMixedPropAccess2
         </class>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
-                value="buildSchema"/> 
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema"/>
         </properties>
     </persistence-unit>
 </persistence>

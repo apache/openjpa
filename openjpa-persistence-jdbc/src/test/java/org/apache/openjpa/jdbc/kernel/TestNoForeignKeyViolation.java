@@ -40,7 +40,7 @@ public class TestNoForeignKeyViolation
     private EntityD entityD;
 
     public void setUp() {
-        setUp(EntityA.class, EntityB.class, EntityC.class, EntityD.class, 
+        setUp(EntityA.class, EntityB.class, EntityC.class, EntityD.class,
               EntityE.class, EntityF.class, EntityG.class);
         createTestData();
     }

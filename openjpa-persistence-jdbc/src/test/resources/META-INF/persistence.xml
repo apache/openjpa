@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -110,7 +110,7 @@
                   value="buildSchema(ForeignKeys=true)"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="msclistener-pu">
         <class>org.apache.openjpa.persistence.callbacks.MSCListenerEntity</class>
         <class>org.apache.openjpa.persistence.callbacks.EntityListenerMappedSuperClass</class>
@@ -119,7 +119,7 @@
                   value="buildSchema(ForeignKeys=true)"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="test-unique-constraint">
         <mapping-file>org/apache/openjpa/persistence/jdbc/unique/orm.xml</mapping-file>
         <class>org.apache.openjpa.persistence.jdbc.unique.UniqueA</class>
@@ -129,7 +129,7 @@
     <persistence-unit name="test-metadata-complete">
         <mapping-file>org/apache/openjpa/persistence/annotations/xml/orm.xml</mapping-file>
     </persistence-unit>
-    
+
     <persistence-unit name="embed-pu">
         <mapping-file>org/apache/openjpa/persistence/embed/embed-orm.xml</mapping-file>
         <class>org.apache.openjpa.persistence.embed.EntityA_Coll_StringXml</class>
@@ -141,7 +141,7 @@
         <class>org.apache.openjpa.persistence.embed.attrOverrides.AddressXml</class>
         <class>org.apache.openjpa.persistence.embed.attrOverrides.ZipcodeXml</class>
         <class>org.apache.openjpa.persistence.embed.attrOverrides.XMLOverEntity</class>
-        <class>org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed</class>        
+        <class>org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed</class>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>
@@ -188,11 +188,11 @@
         <class>org.apache.openjpa.persistence.access.xml.XMLSuperFieldEntity</class>
         <class>org.apache.openjpa.persistence.access.xml.XMLSuperPropertyEntity</class>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
-                value="buildSchema"/> 
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="test-persistence-xml-orm">
         <mapping-file>org/apache/openjpa/persistence/orm.xml</mapping-file>
         <class>org.apache.openjpa.persistence.Security1</class>
@@ -201,14 +201,14 @@
         <class>org.apache.openjpa.persistence.Country</class>
         <class>org.apache.openjpa.persistence.Embed</class>
         <properties>
-            <property name="openjpa.DynamicEnhancementAgent" 
-                value="false"/> 
+            <property name="openjpa.DynamicEnhancementAgent"
+                value="false"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="PreparedQuery" transaction-type="RESOURCE_LOCAL">
         <description>PU for PreparedQueryCache testing</description>
-        
+
         <class>org.apache.openjpa.persistence.jdbc.sqlcache.Address</class>
 		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Author</class>
 		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Book</class>
@@ -222,7 +222,7 @@
         <class>org.apache.openjpa.persistence.jdbc.sqlcache.OrderJPA</class>
         <class>org.apache.openjpa.persistence.jdbc.sqlcache.Parent</class>
         <class>org.apache.openjpa.persistence.jdbc.sqlcache.Child</class>
-		
+
 		<properties>
 		  <property name="openjpa.jdbc.QuerySQLCache"
                     value="true(excludes='select count(p) from Company p;select count(p) from Department p')"/>
@@ -237,11 +237,11 @@
         <class>org.apache.openjpa.persistence.inheritance.entity.XMLCallback</class>
         <class>org.apache.openjpa.persistence.inheritance.entity.XMLSuperCallback</class>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
-                value="buildSchema"/> 
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema"/>
         </properties>
-    </persistence-unit>    
-    
+    </persistence-unit>
+
     <persistence-unit name="NamedUniqueConstraintTest" transaction-type="RESOURCE_LOCAL">
         <description>PU for order named unique constraint testing</description>
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
@@ -249,19 +249,19 @@
         <class>org.apache.openjpa.persistence.jdbc.unique.NamedUniqueA</class>
         <class>org.apache.openjpa.persistence.jdbc.unique.NamedUniqueB</class>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>    
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
         </properties>
-    </persistence-unit>    
+    </persistence-unit>
 
     <persistence-unit name="testStrategy" transaction-type="RESOURCE_LOCAL">
         <class>org.apache.openjpa.persistence.jdbc.strategy.Person</class>
         <class>org.apache.openjpa.persistence.jdbc.strategy.Address</class>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" 
+            <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(SchemaAction='drop,add')"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="post-remove" transaction-type="JTA">
         <class>org.apache.openjpa.persistence.event.PostRemoveCallbackEntity</class>
         <properties>
@@ -269,11 +269,11 @@
             <property name="openjpa.ManagedRuntime" value="org.apache.openjpa.jta.JTAManagedRuntime"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="mdr-pu">
         <class>org.apache.openjpa.persistence.meta.MdrTestEntity</class>
-    </persistence-unit>    
-    
+    </persistence-unit>
+
     <persistence-unit name="mapsId-pu">
         <mapping-file>org/apache/openjpa/persistence/enhance/identity/mapsId-orm.xml</mapping-file>
         <class>org.apache.openjpa.persistence.enhance.identity.Employee1Xml</class>
@@ -282,8 +282,8 @@
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>
-           <property name="openjpa.DynamicEnhancementAgent" 
-                value="true"/> 
+           <property name="openjpa.DynamicEnhancementAgent"
+                value="true"/>
         </properties>
     </persistence-unit>
 
@@ -294,7 +294,7 @@
                 value="buildSchema"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="delimited-identifiers-xml">
     	<mapping-file>META-INF/delimited-identifiers-xml-orm.xml</mapping-file>
     	<properties>
@@ -302,7 +302,7 @@
                   value="buildSchema"/>
         </properties>
     </persistence-unit>
-	
+
     <persistence-unit name="delimited-identifiers-seq-gen-xml">
     	<mapping-file>META-INF/delimited-identifiers-seq-gen-xml-orm.xml</mapping-file>
     	<properties>
@@ -310,7 +310,7 @@
                   value="buildSchema"/>
         </properties>
     </persistence-unit>
-	
+
     <persistence-unit name="delimited-identifiers-inheritance-xml">
     	<mapping-file>META-INF/delimited-identifiers-inheritance-xml-orm.xml</mapping-file>
     	<properties>
@@ -318,7 +318,7 @@
                   value="buildSchema"/>
         </properties>
     </persistence-unit>
-	
+
     <persistence-unit name="delimited-identifiers-joins-xml">
     	<mapping-file>META-INF/delimited-identifiers-joins-orm.xml</mapping-file>
     	<properties>
@@ -326,7 +326,7 @@
                   value="buildSchema"/>
         </properties>
     </persistence-unit>
-	
+
     <persistence-unit name="delimited-identifiers-result-set-xml">
     	<mapping-file>META-INF/delimited-identifiers-result-set-orm.xml</mapping-file>
     	<properties>
@@ -377,8 +377,8 @@
             <property name="openjpa.jdbc.Schema" value="EJB30" />
             -->
         </properties>
-    </persistence-unit>    
-    
+    </persistence-unit>
+
     <persistence-unit name="TestCfSwitching">
         <class>org.apache.openjpa.persistence.conf.Person</class>
     </persistence-unit>
@@ -390,7 +390,7 @@
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema"/>
         </properties>
-    </persistence-unit>   
+    </persistence-unit>
     <persistence-unit name="arrays">
         <mapping-file>META-INF/arrays-orm.xml</mapping-file>
         <properties>
@@ -404,37 +404,37 @@
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>
 	</persistence-unit>
-	
+
 	<persistence-unit name="nonstandard-mapping-xml">
         <mapping-file>META-INF/nonstandard-orm.xml</mapping-file>
-        
+
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="fetch-groups-xml">
         <mapping-file>META-INF/fetch-groups-orm.xml</mapping-file>
-        
+
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="foreign-key-xml">
         <mapping-file>META-INF/foreign-key-orm.xml</mapping-file>
-        
+
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="version-columns-xml">
         <mapping-file>META-INF/version-columns-orm.xml</mapping-file>
-        
+
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>
@@ -492,10 +492,10 @@
         <mapping-file>META-INF/pudefaults-orm.xml</mapping-file>
         <mapping-file>META-INF/pudefaults2-orm.xml</mapping-file>
     <properties>
-    
+
                     <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
-                
+
     </properties>
 </persistence-unit>
 
@@ -526,7 +526,7 @@
         <class>org.apache.openjpa.persistence.cascade.pudefault.AnEmbeddable</class>
         <class>org.apache.openjpa.persistence.cascade.pudefault.EmbeddableWithRelationships</class>
         <properties>
-            <property name="openjpa.ConnectionFactoryProperties" value="MaxActive=110, MaxIdle=10, ValidationTimeout=50000, 
+            <property name="openjpa.ConnectionFactoryProperties" value="MaxActive=110, MaxIdle=10, ValidationTimeout=50000,
                                                                      MaxCachedStatements=10, ValidationSQL='', MaxWait=10000, TestOnBorrow=true" />
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
         </properties>

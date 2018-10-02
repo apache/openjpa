@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -67,7 +67,7 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         tmpCol.setIdentifier(fieldName);
         tmpCol.setType(fieldType);
         tmpCol.setJavaType(field.getTypeCode());
-        
+
         tmpCol.setSize(-1);
 
         Column[] cols = vinfo.getColumns(field, fieldName,
@@ -88,7 +88,7 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         Select sel = createSelect(sm, store);
         store.getDBDictionary().deleteStream(store, sel);
     }
-    
+
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Object ob = toDataStoreValue(sm.fetchObjectField
@@ -123,7 +123,7 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
             }
         }
     }
-    
+
     public Boolean isCustomUpdate(OpenJPAStateManager sm, JDBCStore store) {
         return null;
     }
@@ -220,5 +220,5 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         sel.setLob(true);
         return sel;
     }
-    
+
 }

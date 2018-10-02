@@ -28,13 +28,13 @@ import javax.swing.text.Document;
 
 /**
  * A TextPane where text that scrolls as new text is appended.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 @SuppressWarnings("serial")
 public class ScrollingTextPane extends JTextPane {
-    
+
     public void appendText(String text) {
         if (text == null)
             return;
@@ -47,21 +47,21 @@ public class ScrollingTextPane extends JTextPane {
                 scrollRectToVisible(r);
             }
         } catch (Exception e) {
-            
+
         }
     }
-    
+
     public static void main(String[] args) throws Exception {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         final ScrollingTextPane test = new ScrollingTextPane();
         f.getContentPane().add(new JScrollPane(test));
         f.pack();
         f.setSize(600,450);
         f.setVisible(true);
-        
+
         Timer timer = new Timer(1000, new ActionListener() {
             SimpleDateFormat fmt = new SimpleDateFormat("HH:mm:ss");
             @Override

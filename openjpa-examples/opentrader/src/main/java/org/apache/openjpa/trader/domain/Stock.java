@@ -26,8 +26,8 @@ import javax.persistence.Id;
 
 /**
  * A stock is a typical financial instrument that is bought and sold by {@linkplain Trader}.
- * A stock is mostly an immutable entity, except its price. 
- * 
+ * A stock is mostly an immutable entity, except its price.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -37,32 +37,32 @@ public class Stock implements Serializable {
     /**
      * The primary identity of a Stock.
      * The uniqueness of the primary keys are often warranted by the persistence provider.
-     * In this case, unique of a Stock symbol is ensured by an external agency.   
+     * In this case, unique of a Stock symbol is ensured by an external agency.
      */
     @Id
     private String symbol;
-    
+
     /**
      * The name of the company represented by this financial instrument.
      */
     private String company;
-    
+
     private Sector sector;
-    
+
     @Column(precision=10,scale=2)
     private double price;
-    
+
     @Column(precision=10,scale=2)
     private double lastPrice;
-    
+
     /**
-     * A no-arg constructor to comply to both GWT compiler and OpenJPA 
+     * A no-arg constructor to comply to both GWT compiler and OpenJPA
      * bytecode enhancer.
      */
     protected Stock() {
-        
+
     }
-    
+
     public Stock(String symbol, String company, Sector sector, double price) {
         super();
         this.symbol = symbol;
@@ -71,28 +71,28 @@ public class Stock implements Serializable {
         this.price  = price;
         this.lastPrice = price;
     }
-    
+
     public String getSymbol() {
         return symbol;
     }
-    
+
     public String getCompany() {
         return company;
     }
-    
+
     public Sector getSector() {
         return sector;
     }
-    
+
     public double getMarketPrice() {
         return price;
     }
-    
+
     public void setMarketPrice(double newPrice) {
         this.lastPrice = this.price;
         this.price     = newPrice;
     }
-    
+
     public double getLastPrice() {
         return lastPrice;
     }

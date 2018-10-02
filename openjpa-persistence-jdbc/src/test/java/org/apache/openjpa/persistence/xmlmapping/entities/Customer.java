@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.xmlmapping.entities;
 
@@ -25,19 +25,19 @@ import java.util.ArrayList;
 @Entity
 @Table(name="TCUSTOMER")
 public class Customer {
-	
+
 	@Embeddable
 	public static class CustomerKey {
 		public String countryCode;
 		public int id;
-		
+
 		public CustomerKey(){}
-		
+
 		public  CustomerKey(String cc, int id){
 			countryCode=cc;
 			this.id=id;
 		}
-		
+
 		public String toString() {
 			return countryCode+"/"+id;
 		}
@@ -53,14 +53,14 @@ public class Customer {
                 return true;
 			return false;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return this.countryCode.hashCode()
 				^ this.id;
 		}
 	}
-	
+
 	public enum CreditRating { POOR, GOOD, EXCELLENT };
 
 	@EmbeddedId
@@ -73,18 +73,18 @@ public class Customer {
 	EAddress address;
 	@Version
 	long version;
-	
+
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="customer")
 	private Collection<Order> orders = new ArrayList<Order>();
-		
-	public Customer() {   
+
+	public Customer() {
     }
-	
+
 	public Customer(CustomerKey cid, String name, CreditRating rating) {
 		this.cid=cid;
 		this.name=name;
 		this.creditRating=rating;
-	}	
+	}
 
 	public String getName() {
 		return name;
@@ -108,9 +108,9 @@ public class Customer {
 	public void setOrders(Collection<Order> orders) {
 		this.orders = orders;
 	}
-	
+
 	public String toString() {
-		return "Customer:" + cid + " name:" + name; 
+		return "Customer:" + cid + " name:" + name;
 	}
 
 	public CustomerKey getCid() {

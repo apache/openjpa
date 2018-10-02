@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -42,7 +42,7 @@ public class MetaDataPlusMappingFactory
 
     private final MetaDataFactory _map;
 
-    
+
     /**
      * Constructor; supply delegates.
      */
@@ -50,13 +50,13 @@ public class MetaDataPlusMappingFactory
         this(meta, map, null);
 
     }
-    
+
     /**
-     * Constructor, supply delegates and Configuration. 
-     * 
+     * Constructor, supply delegates and Configuration.
+     *
      * @param meta MetaFactory delegate, should not be null.
      * @param map  MappingFactory delegate, should not be null.
-     * @param conf Configuration in use. Used to determine whether delegates should use strict mode. 
+     * @param conf Configuration in use. Used to determine whether delegates should use strict mode.
      */
     public MetaDataPlusMappingFactory(MetaDataFactory meta, MetaDataFactory map, OpenJPAConfiguration conf) {
         super(meta);

@@ -45,7 +45,7 @@ import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * This Widget allows the user to enter the details of a trade order (an Ask or
- * Bid) and call the {@link TradingServiceAdapterAsync Trading Service} via asynchronous RPC 
+ * Bid) and call the {@link TradingServiceAdapterAsync Trading Service} via asynchronous RPC
  * callback to record the order.
  * <br>
  * The widget demonstrates the aspect where a displayed element can change either
@@ -54,11 +54,11 @@ import com.google.gwt.user.client.ui.TextBox;
  * change as the user enters a different price. It can also change if the market
  * price of the stock has changed externally. The former changes are handled by adding
  * event handlers to the widget elements (such as onKeyUp in a text box), the later
- * changes are notified by this widget registering to the {@link OpenTrader main application}.   
- * 
- * 
+ * changes are notified by this widget registering to the {@link OpenTrader main application}.
+ *
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
     private final OpenTrader session;
@@ -79,7 +79,7 @@ class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
         setStyleName("TradeOrderWindow");
 
         session.registerHandler(ServiceEvent.StockUpdated.TYPE, this);
-        
+
         marketPrice.setReadOnly(true);
         margin.setReadOnly(true);
         gain.setReadOnly(true);
@@ -150,7 +150,7 @@ class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
                 gain.setText(FormatUtil.changeFormat.format(diff * volume));
             }
         });
-        
+
         List<Stock> stocks = session.getTradedStocks();
         int n = stocks.size();
         for (int i = 0; i < n; i++) {
@@ -171,10 +171,10 @@ class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
             public void onClick(ClickEvent ce) {
                 if (!validateData())
                     return;
-                session.getService().ask(session.getTrader(), 
-                        getSelectedStock(), 
+                session.getService().ask(session.getTrader(),
+                        getSelectedStock(),
                         Integer.parseInt(userVolume.getText()),
-                        Double.parseDouble(userPrice.getText()), 
+                        Double.parseDouble(userPrice.getText()),
                         new AskCallback());
             }
         });
@@ -183,10 +183,10 @@ class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
             public void onClick(ClickEvent ce) {
                 if (!validateData())
                     return;
-                session.getService().bid(session.getTrader(), 
-                        getSelectedStock(), 
+                session.getService().bid(session.getTrader(),
+                        getSelectedStock(),
                         Integer.parseInt(userVolume.getText()),
-                        Double.parseDouble(userPrice.getText()), 
+                        Double.parseDouble(userPrice.getText()),
                         new BidCallback());
             }
         });
@@ -196,8 +196,8 @@ class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
     /**
      * Sets the content of the widgets based on the given stock. The widget
      * content depends on the current stock price as well as user entered
-     * values. 
-     * 
+     * values.
+     *
      * @param stock
      * @param retainUserValue
      */
@@ -214,11 +214,11 @@ class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
             gain.setText(FormatUtil.priceFormat.format(0));
         }
     }
-    
+
     public void addHelp(final String url) {
         HelpLink help = new HelpLink(url);
         setWidget(0, 6, help);
-        getCellFormatter().setAlignment(0, 6, 
+        getCellFormatter().setAlignment(0, 6,
                 HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE);
     }
 
@@ -251,7 +251,7 @@ class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
     double calculateDiff(double p1, double p2) {
         return truncate(Math.abs(p1-p2));
     }
-    
+
     private static double truncate (double x){
         double fract;
         double whole;
@@ -264,8 +264,8 @@ class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
         }
         return whole + fract;
       }
-    
-    
+
+
     /**
      * ---------------------------------------------------------------------------------
      * Service Event Response Management
@@ -278,22 +278,22 @@ class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
             initialize(updated, true);
         }
     }
-    
+
     /**
      * ---------------------------------------------------------------------------------
      * Asynchronous RPC service callbacks
      * ---------------------------------------------------------------------------------
      */
-    
+
     /**
      * Updates display once the offer to sell has been successfully placed.
-     * 
+     *
      */
     class AskCallback implements AsyncCallback<Ask> {
         public void onSuccess(Ask result) {
             session.fireEvent(new ServiceEvent.TradableAdded(result));
         }
-        
+
         public void onFailure(Throwable caught) {
             session.handleError(caught);
         }
@@ -301,13 +301,13 @@ class TradeOrderWindow extends FlexTable implements UpdateStockHandler {
 
     /**
      * Updates display once the offer to buy has been successfully placed.
-     * 
+     *
      */
     class BidCallback implements AsyncCallback<Bid> {
        public void onSuccess(Bid result) {
             session.fireEvent(new ServiceEvent.TradableAdded(result));
        }
-       
+
        public void onFailure(Throwable caught) {
            session.handleError(caught);
        }

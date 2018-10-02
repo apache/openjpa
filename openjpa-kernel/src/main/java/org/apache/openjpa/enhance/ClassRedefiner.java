@@ -72,7 +72,7 @@ public class ClassRedefiner {
                         return classes.get(classBeingRedefined);
                     }
                 };
-                
+
                 // these are Java 6 methods, and we don't have a Java 6 build
                 // module yet. The cost of reflection here is negligible
                 // compared to the redefinition / enhancement costs in total,

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.test;
 
@@ -24,14 +24,14 @@ import java.util.List;
 
 /**
  * Generates combinations given multiple choices in each dimension.
- * 
+ *
  * Usage:
  * <code>
  *    CombinationGenerator combo = new CombinationGenerator();
  *    combo.addDimension(new String[]{"A","B","C"});
  *    combo.addDimension(new int[]{1,2});
  *    List[] combos = combo.generate();
- * </code>   
+ * </code>
  * will generate 3*2=6 combinations
  * <code>
  *    combos[0] => List("A",1);
@@ -41,13 +41,13 @@ import java.util.List;
  *    combos[4] => List("B",2);
  *    combos[5] => List("C",2);
  * </code>
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class CombinationGenerator {
 	private List<List> dimensions = new ArrayList();
-	
+
 	/**
 	 * Adds a dimension. null or empty argument has no effect.
 	 */
@@ -55,9 +55,9 @@ public class CombinationGenerator {
 		if (dim == null || dim.isEmpty())
 			return;
 		dimensions.add(dim);
-		
+
 	}
-	
+
 	/**
 	 * Adds a dimension. null or empty argument has no effect.
 	 */
@@ -66,10 +66,10 @@ public class CombinationGenerator {
 			return;
 		dimensions.add(Arrays.asList(dim));
 	}
-	
+
 	/**
 	 * Generates all combinations.
-	 * Each array element is a list which has elements in the same order as 
+	 * Each array element is a list which has elements in the same order as
 	 * the dimensions were added.
 	 */
 	public List[] generate() {
@@ -94,15 +94,15 @@ public class CombinationGenerator {
 		}
 		return result;
 	}
-	
+
 	/**
-	 * Gets the total number of combinations generated. The total number is 
-	 * the product of cardinality of each dimension. 
-	 * 
+	 * Gets the total number of combinations generated. The total number is
+	 * the product of cardinality of each dimension.
+	 *
 	 */
 	public int getSize() {
 		int size = 1;
-		for (List d : dimensions) 
+		for (List d : dimensions)
 			size *= d.size();
 		return size;
 	}

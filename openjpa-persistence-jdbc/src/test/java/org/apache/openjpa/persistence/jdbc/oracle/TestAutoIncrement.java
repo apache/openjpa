@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.oracle;
 
@@ -33,14 +33,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * with auto-increment capabilities. As Oracle does not natively support
  * auto-increment, the same effect is achieved by a combination of a database
  * sequence and a pre-insert database trigger [1].
- * 
+ *
  * This test verifies that a persistent entity using IDENTITY generation type
  * is allocating identities in monotonic sequence on Oracle platform.
- * 
+ *
  * [1] http://jen.fluxcapacitor.net/geek/autoincr.html
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 
 @DatabasePlatform("oracle.jdbc.driver.OracleDriver")
@@ -105,7 +105,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
             Query q = em.createNativeQuery("CREATE SEQUENCE " + sequence + " START WITH 1");
             q.executeUpdate();
             em.getTransaction().commit();
-        } catch (PersistenceException e) {          
+        } catch (PersistenceException e) {
             // Sequence probably exists.
             em.getTransaction().rollback();
         }

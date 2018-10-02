@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
@@ -31,13 +31,13 @@ import javax.persistence.OneToMany;
 import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 
 /**
- * Parent in a logically bidirectional but actually unidirectional parent-child 
- * relationship where Child holds reference to Parent via primary key and not 
+ * Parent in a logically bidirectional but actually unidirectional parent-child
+ * relationship where Child holds reference to Parent via primary key and not
  * via object reference.
- * Parent identity is assigned by the application. Hence, Parent sets the 
- * children's reference to Parent whenever its identity is set by the 
- * application or a new child is added. 
- * 
+ * Parent identity is assigned by the application. Hence, Parent sets the
+ * children's reference to Parent whenever its identity is set by the
+ * application or a new child is added.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -45,13 +45,13 @@ import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 public class ParentWithAppIdentity implements IParent {
 	@Id
 	private long id;
-	
+
 	private String name;
-	
+
 	/**
      * This field is <em>not</em> mapped by the child. The child's table will
      * hold an <em>implicit</em> foreign key linking to the primary key of this
-	 * Parent's table. 
+	 * Parent's table.
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @ElementJoinColumn(name="FK_PARENT_APP_ID", referencedAttributeName="id")
@@ -60,7 +60,7 @@ public class ParentWithAppIdentity implements IParent {
 	public long getId() {
 		return id;
 	}
-	
+
 	public void setId(long id) {
 		this.id = id;
 		postIdSet();
@@ -84,11 +84,11 @@ public class ParentWithAppIdentity implements IParent {
 		children.add(child);
 		child.setAppParentId(this.id);
 	}
-	
+
 	public boolean removeChild(Child child) {
 		return children != null && children.remove(child);
 	}
-	
+
 	/**
 	 * This method will be called when application has assigned identity
 	 * to this instance.

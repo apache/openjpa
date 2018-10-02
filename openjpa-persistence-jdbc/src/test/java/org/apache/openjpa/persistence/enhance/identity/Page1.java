@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -37,12 +37,12 @@ import javax.persistence.Table;
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
 
 /**
- * Entity used to test compound primary keys using entity as relationship to 
+ * Entity used to test compound primary keys using entity as relationship to
  * more than one level.
- * 
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-207">OPENJPA-207</A>
- *  
+ *
  * @author Jeffrey Blattman
  * @author Pinaki Poddar
  *
@@ -59,13 +59,13 @@ public class Page1 implements Serializable {
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name="LIBRARY_NAME", referencedColumnName="LIBRARY_NAME"),
-        @JoinColumn(name="BOOK_NAME", referencedColumnName="BOOK_NAME")    
+        @JoinColumn(name="BOOK_NAME", referencedColumnName="BOOK_NAME")
     })
     private Book1 book;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "page")
     private Set<Line1> lines = new HashSet<Line1>();
-        
+
     public PageId1 getPid() {
         return pid;
     }
@@ -80,12 +80,12 @@ public class Page1 implements Serializable {
 
     public void setBook(Book1 book) {
         this.book = book;
-    }    
+    }
 
     public Set<Line1> getLines() {
         return lines;
     }
-    
+
     public Line1 getLine(LineId1 lid) {
         for (Line1 l: lines) {
             if (l.getLid().equals(lid)) {
@@ -94,7 +94,7 @@ public class Page1 implements Serializable {
         }
         return null;
     }
-    
+
     public void addLine(Line1 l) {
         l.setPage(this);
         lines.add(l);

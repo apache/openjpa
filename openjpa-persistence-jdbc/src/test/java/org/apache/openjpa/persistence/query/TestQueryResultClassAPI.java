@@ -84,7 +84,7 @@ public class TestQueryResultClassAPI extends SingleEMFTestCase {
 
         em.close();
     }
-    
+
     PreparedQueryCache getPreparedQueryCache() {
         return emf.getConfiguration().getQuerySQLCacheInstance();
     }

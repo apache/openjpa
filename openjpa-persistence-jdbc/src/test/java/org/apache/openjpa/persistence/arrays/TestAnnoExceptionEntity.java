@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.arrays;
 
@@ -26,15 +26,15 @@ import org.apache.openjpa.persistence.arrays.model.AnnoExceptionEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestAnnoExceptionEntity extends SingleEMFTestCase {
-    
+
     public void setUp() {
         super.setUp(AnnoExceptionEntity.class);
     }
-    
+
     public void testExceptionArrayAsLob() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        
+
         AnnoExceptionEntity e = new AnnoExceptionEntity();
         e.setId(1);
         em.persist(e);
@@ -42,26 +42,26 @@ public class TestAnnoExceptionEntity extends SingleEMFTestCase {
         e.getExceptions().add(new Exception("Exception 1"));
         e.getExceptions().add(new Exception("Exception 2"));
         em.getTransaction().commit();
-        
-        em.clear(); 
+
+        em.clear();
         e = em.find(AnnoExceptionEntity.class, 1);
-        
+
         assertNotNull(e);
-        assertNotNull(e.getExceptions()); 
+        assertNotNull(e.getExceptions());
         assertEquals(2, e.getExceptions().size());
         // we don't really care about ordering for this example.
-        
+
         em.getTransaction().begin();
         em.remove(e);
         em.getTransaction().commit();
-        
+
         em.close();
     }
-    
+
     public void testExceptionPersistentCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        
+
         AnnoExceptionEntity e = new AnnoExceptionEntity();
         e.setId(1);
         em.persist(e);
@@ -69,26 +69,26 @@ public class TestAnnoExceptionEntity extends SingleEMFTestCase {
         e.getPersCollExceptions().add(new Exception("Exception 1"));
         e.getPersCollExceptions().add(new Exception("Exception 2"));
         em.getTransaction().commit();
-        
-        em.clear(); 
+
+        em.clear();
         e = em.find(AnnoExceptionEntity.class, 1);
-        
+
         assertNotNull(e);
-        assertNotNull(e.getPersCollExceptions()); 
+        assertNotNull(e.getPersCollExceptions());
         assertEquals(2, e.getPersCollExceptions().size());
         // we don't really care about ordering for this example.
-        
+
         em.getTransaction().begin();
         em.remove(e);
         em.getTransaction().commit();
-        
+
         em.close();
     }
 
     public void testExceptionElementCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        
+
         AnnoExceptionEntity e = new AnnoExceptionEntity();
         e.setId(1);
         em.persist(e);
@@ -96,20 +96,20 @@ public class TestAnnoExceptionEntity extends SingleEMFTestCase {
         e.getElemCollExceptions().add(new Exception("Exception 1").toString());
         e.getElemCollExceptions().add(new Exception("Exception 2").toString());
         em.getTransaction().commit();
-        
-        em.clear(); 
+
+        em.clear();
         e = em.find(AnnoExceptionEntity.class, 1);
-        
+
         assertNotNull(e);
-        assertNotNull(e.getElemCollExceptions()); 
+        assertNotNull(e.getElemCollExceptions());
         assertEquals(2, e.getElemCollExceptions().size());
         // we don't really care about ordering for this example.
-        
+
         em.getTransaction().begin();
         em.remove(e);
         em.getTransaction().commit();
-        
+
         em.close();
     }
-    
+
 }

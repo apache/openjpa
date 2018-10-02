@@ -21,13 +21,13 @@ package org.apache.openjpa.persistence.delimited.identifiers.xml;
 public class EntityI4 {
     int id;
     String name;
-    
+
     public EntityI4() {}
-    
+
     public EntityI4(int id) {
         this.id = id;
     }
-    
+
     /**
      * @return the id
      */

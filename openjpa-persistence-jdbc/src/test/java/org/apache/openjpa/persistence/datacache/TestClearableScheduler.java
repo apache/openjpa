@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -72,20 +72,20 @@ public class TestClearableScheduler extends SingleEMFTestCase {
 
         // Schedule eviction to happen every mintue on cache 1
         scheduler.scheduleEviction(cache1, ("+1"));
-        
+
         Thread.currentThread().sleep(61000);
         assertEquals(1,cache1.getClearCount());
         assertEquals(1,cache2.getClearCount());
-        
+
         Thread.currentThread().sleep(60000);
         assertEquals(2,cache1.getClearCount());
         assertEquals(2,cache2.getClearCount());
-        
+
         Thread.currentThread().sleep(60000);
         assertEquals(3,cache1.getClearCount());
         assertEquals(2,cache2.getClearCount());
     }
-    
+
 // Comment this test out while investigating OPENJPA-1692
 //    public void testMultithreadedInitialization() throws Exception {
 //        final OpenJPAConfiguration conf =  emf.getConfiguration();

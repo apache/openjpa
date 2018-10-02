@@ -25,12 +25,12 @@ import org.apache.openjpa.kernel.QueryStatistics;
 class QueryStatisticsModel extends AbstractTableModel {
     QueryStatistics<String> _stats;
     private List<String> _keys = new ArrayList<String>();
-    
+
     QueryStatisticsModel(QueryStatistics<String> stats) {
         _stats = stats;
         sortKeys(stats);
     }
-    
+
     @Override
     public int getColumnCount() {
         return 3;
@@ -41,7 +41,7 @@ class QueryStatisticsModel extends AbstractTableModel {
         sortKeys(_stats);
         return _keys.size();
     }
-    
+
     @Override
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
@@ -62,7 +62,7 @@ class QueryStatisticsModel extends AbstractTableModel {
         default : return null;
         }
     }
-    
+
     void sortKeys(QueryStatistics<String> stats) {
         if (_stats.keys().size() != _keys.size()) {
             _keys = new ArrayList<String>(_stats.keys());

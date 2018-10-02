@@ -29,17 +29,17 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 
 /**
  * Tests different styles for query by example.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestQueryByExample extends CriteriaTest {
     DBDictionary dict = null;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
+
         // If using an Oracle DB, use sql92 syntax in order to get a correct
         // comparison of SQL.  This may not work on Oracle JDBC drivers
         // prior to 10.x
@@ -50,122 +50,122 @@ public class TestQueryByExample extends CriteriaTest {
             dict.setJoinSyntax("sql92");
         }
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         dict = null;
         super.tearDown();
     }
-    
+
     public void testBasicFieldsWithNonDefaultValue() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100";
-        
+
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
-        
+
         Employee example = new Employee();
         example.setSalary(1000+100);
         example.setRating(1);
-        
+
         ComparisonStyle style = null;
         Attribute<?,?>[] excludes = null;
         q.where(cb.qbe(q.from(Employee.class), example, style, excludes));
-        
+
         assertEquivalence(q, jpql);
     }
-    
+
     public void testExcludeBasicFieldWithNonDefaultValue() {
         String jpql = "SELECT e FROM Employee e WHERE e.salary=1100";
-        
+
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
-        
+
         Employee example = new Employee();
         example.setSalary(1000+100);
         example.setRating(1);
-        
+
         ComparisonStyle style = null;
         Attribute<?,?>[] excludes = {Employee_.rating};
         q.where(cb.qbe(q.from(Employee.class), example, style, excludes));
-        
+
         assertEquivalence(q, jpql);
     }
-    
+
     public void testBasicFieldWithDefaultValueExcludedByDefaultStyle() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1";
-        
+
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
-        
+
         Employee example = new Employee();
         example.setRating(1);
-        
+
         ComparisonStyle style = null;
         Attribute<?,?>[] excludes = null;
         q.where(cb.qbe(q.from(Employee.class), example, style, excludes));
-        
-        executeAndCompareSQL(q, "WHERE (t0.rating = ?)");        
+
+        executeAndCompareSQL(q, "WHERE (t0.rating = ?)");
         assertEquivalence(q, jpql);
     }
-    
+
     public void testBasicFieldWithDefaultValueCanBeIncludedByStyle() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100";
-        
+
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
-        
+
         Employee example = new Employee();
         example.setRating(1);
-        
+
         ComparisonStyle style = cb.qbeStyle();
         Attribute<?,?>[] excludes = null;
         q.where(cb.qbe(q.from(Employee.class), example, style.setExcludeDefault(false), excludes));
-        
+
         executeAndCompareSQL(q, "WHERE (t0.rating = ? AND t0.salary = ?)");
         assertEquivalence(q, jpql);
     }
-    
+
     public void testRelationFieldWithNonDefaultValue() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100 AND e.department.name='ExampleDept'";
-        
+
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
-        
+
         Employee example = new Employee();
         example.setSalary(1100);
         example.setRating(1);
         Department dept = new Department();
         dept.setName("ExampleDept");
         example.setDepartment(dept);
-        
-        
+
+
         ComparisonStyle style = cb.qbeStyle();
         Attribute<?,?>[] excludes = null;
         q.where(cb.qbe(q.from(Employee.class), example, style, excludes));
-        
+
         executeAndCompareSQL(q, "WHERE (t1.name = ? AND t0.rating = ? AND t0.salary = ?)");
     }
-    
+
     public void testRelationFieldWithNullValueIncluded() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100 AND e.department IS NULL";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
-        
+
         Employee example = new Employee();
         example.setName("ExampleEmployee");
         example.setSalary(1100);
         example.setRating(1);
         example.setDepartment(null);
-        
+
         ComparisonStyle style = cb.qbeStyle();
         Attribute<?,?>[] excludes = {Employee_.frequentFlierPlan, Employee_.manager, Employee_.spouse};
-        q.where(cb.qbe(q.from(Employee.class), example, style.setExcludeNull(false).setExcludeDefault(false), 
+        q.where(cb.qbe(q.from(Employee.class), example, style.setExcludeNull(false).setExcludeDefault(false),
                 excludes));
-        
-        executeAndCompareSQL(q, "WHERE (1 <> 1 AND t0.DEPARTMENT_DEPTNO IS NULL " 
+
+        executeAndCompareSQL(q, "WHERE (1 <> 1 AND t0.DEPARTMENT_DEPTNO IS NULL "
                 + "AND t0.name = ? AND t0.rating = ? AND t0.salary = ?)");
     }
-    
+
     public void testEmbeddedField() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100 AND e.department IS NULL";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
-        
+
         Employee example = new Employee();
         example.setName("ExampleEmployee");
         example.setSalary(1100);
@@ -177,16 +177,16 @@ public class TestQueryByExample extends CriteriaTest {
         address.setCountry("USA");
         contact.setAddress(address);
         example.setContactInfo(contact);
-        
+
         ComparisonStyle style = cb.qbeStyle();
-        Attribute<?,?>[] excludes = {Employee_.department, Employee_.frequentFlierPlan, 
+        Attribute<?,?>[] excludes = {Employee_.department, Employee_.frequentFlierPlan,
                 Employee_.manager, Employee_.spouse};
         q.where(cb.qbe(q.from(Employee.class), example, style, excludes));
-        
-        executeAndCompareSQL(q, "WHERE (t1.city = ? AND t1.country = ? AND t1.state = ? " 
+
+        executeAndCompareSQL(q, "WHERE (t1.city = ? AND t1.country = ? AND t1.state = ? "
                 + "AND t0.name = ? AND t0.rating = ? AND t0.salary = ?)");
     }
-    
+
     void executeAndCompareSQL(CriteriaQuery<?> q, String expected) {
         auditor.clear();
         em.createQuery(q).getResultList();
@@ -196,7 +196,7 @@ public class TestQueryByExample extends CriteriaTest {
             return;
         assertEquals(expected, actual);
     }
-    
+
     String extract(String key, String s) {
         int index = s.indexOf(key);
         return index == -1 ? "" : s.substring(index);

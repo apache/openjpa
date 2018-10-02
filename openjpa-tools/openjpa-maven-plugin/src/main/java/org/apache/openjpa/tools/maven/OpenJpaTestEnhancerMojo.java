@@ -29,7 +29,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 /**
  * Processes Application model test classes and enhances them by running OpenJPA
  * Enhancer tool.
- * 
+ *
  * @version $Id: OpenJpaTestEnhancerMojo.java 9137 2009-02-28 21:55:03Z struberg $
  * @since 1.1
  */

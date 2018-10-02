@@ -33,29 +33,29 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name="Entity20_detach")
 public class Entity20 implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
 
     @Id
     private Integer id;
-    
-    @Column(name = "sqldate" ) 
-    @Temporal(TemporalType.DATE) 
-    private Date sqlDate; 
 
-    @Column(name = "sqltime") 
+    @Column(name = "sqldate" )
+    @Temporal(TemporalType.DATE)
+    private Date sqlDate;
+
+    @Column(name = "sqltime")
     @Temporal(TemporalType.TIME)
-    private Time sqlTime; 
+    private Time sqlTime;
 
-    @Column(name = "sqltimestamp") 
+    @Column(name = "sqltimestamp")
     @Temporal(TemporalType.TIMESTAMP)
-    private Timestamp sqlTimestamp; 
+    private Timestamp sqlTimestamp;
 
     private String name;
 
     public Entity20() {
     }
-    
+
     public Entity20(int id) {
         this.id = new Integer(id);
         this.name = this.id.toString();
@@ -64,7 +64,7 @@ public class Entity20 implements Serializable {
         this.sqlDate = new Date(time);
         this.sqlTimestamp = new Timestamp(time);
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -84,23 +84,23 @@ public class Entity20 implements Serializable {
     public void setDate(Date d) {
         sqlDate = d;
     }
-    
+
     public Date getDate() {
         return sqlDate;
     }
-    
+
     public void setTime(Time t) {
         sqlTime = t;
     }
-    
+
     public Time getTime() {
         return sqlTime;
     }
-    
+
     public void setTimestamp(Timestamp t) {
         sqlTimestamp = t;
     }
-    
+
     public Timestamp getTimestamp() {
         return sqlTimestamp;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.delayed.llist;
 
@@ -44,18 +44,18 @@ import org.apache.openjpa.persistence.proxy.delayed.Product;
 
 @Entity
 @Table(name="DC_DEPARTMENT")
-public class Department implements IDepartment, Serializable { 
+public class Department implements IDepartment, Serializable {
 
     private static final long serialVersionUID = -6923551949033215888L;
 
     @Id
     @GeneratedValue
     private int id;
-    
+
     @OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.LAZY, targetEntity=Employee.class)
     @JoinTable(name="DC_DEP_EMP")
     private Queue<IEmployee> employees;
-    
+
     @OrderColumn
     @OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.LAZY)
     @JoinTable(name="DC_DEP_LOC")
@@ -64,7 +64,7 @@ public class Department implements IDepartment, Serializable {
     @OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
     @JoinTable(name="DC_DEP_PRD")
     private Queue<Product> products;
-    
+
     @ElementCollection(fetch=FetchType.LAZY)
     @CollectionTable(name="DC_DEP_CERT")
     private Queue<Certification> certifications;
@@ -72,7 +72,7 @@ public class Department implements IDepartment, Serializable {
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(name="DC_DEP_AWD")
     private LinkedList<Award> awards;
-    
+
     @Override
     public void setEmployees(Collection<IEmployee> employees) {
         this.employees = (Queue<IEmployee>)employees;
@@ -82,7 +82,7 @@ public class Department implements IDepartment, Serializable {
     public Collection<IEmployee> getEmployees() {
         return employees;
     }
-    
+
     @Override
     public void setId(int id) {
         this.id = id;

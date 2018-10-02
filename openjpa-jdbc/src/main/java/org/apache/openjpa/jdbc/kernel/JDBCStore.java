@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -68,11 +68,11 @@ public interface JDBCStore {
      * method is implemented as a no-op.
      */
     public Connection getConnection();
-    
+
     /**
      * Return a new SQL connection to the database.
      * This is used when the current connection still has a open result set
-     * and a new database operation needs to be done. 
+     * and a new database operation needs to be done.
      * The <code>close</code> method should always be called on the connection
      * to free any resources it is using. When appropriate, the close
      * method is implemented as a no-op.

@@ -346,7 +346,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
             seen.add(pc.getClass());
         }
         assertEquals(2, seen.size());
-        
+
         // Changes of OPENJPA-485 had the positive (but unintended) consequence
         // of making this case pass, which was failing before as reported in
         // OPENJPA-481

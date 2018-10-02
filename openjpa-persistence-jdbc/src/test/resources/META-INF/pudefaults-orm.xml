@@ -22,13 +22,13 @@
 
 <!-- This file contains some mappings, and its close cousin, pudefaults2-orm.xml, contains some mappings as
      well to verify that mappings can be spread accross multiple mapping files. -->
-     
+
 	<persistence-unit-metadata>
 		<persistence-unit-defaults>
 			<schema>schemaInPUDefaults</schema>
 		</persistence-unit-defaults>
 	</persistence-unit-metadata>
-	
+
 	<entity class="org.apache.openjpa.persistence.pudefaults.PUSchemaInTableMappingEntity">
 		<table name="PUSchemaInTableMappingEntity" schema="schemaInTableMapping"></table>
 	</entity>

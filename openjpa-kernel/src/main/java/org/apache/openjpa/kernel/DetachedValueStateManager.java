@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -594,17 +594,17 @@ public class DetachedValueStateManager
     public Object replaceObjectField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
     public boolean isDelayed(int field) {
         return false;
     }
-    
+
     @Override
     public void setDelayed(int field, boolean delay) {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
     public void loadDelayedField(int field) {
         throw new UnsupportedOperationException();

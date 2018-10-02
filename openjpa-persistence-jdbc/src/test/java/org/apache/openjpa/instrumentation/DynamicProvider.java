@@ -24,7 +24,7 @@ import org.apache.openjpa.lib.instrumentation.Instrument;
 public class DynamicProvider extends AbstractInstrumentationProvider {
 
     public static final String[] DYNAMIC_INSTRUMENT_ALIASES = { };
-    
+
     public void start() {
         setStarted(true);
     }
@@ -43,7 +43,7 @@ public class DynamicProvider extends AbstractInstrumentationProvider {
     public void stopInstrument(Instrument instrument, boolean force) {
         instrument.stop();
     }
-    
+
     @Override
     public String[] getInstrumentAliases() {
         return DYNAMIC_INSTRUMENT_ALIASES;

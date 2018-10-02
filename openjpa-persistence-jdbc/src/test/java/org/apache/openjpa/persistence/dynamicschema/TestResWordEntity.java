@@ -24,11 +24,11 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * <b>TestResWordEntity</b> is used to test the case where reserved words are 
- * translated when multiple schema factories are invoked. In this test the 
- * SynchronizeMapping setting will cause the DynamicSchemaFactory to be 
+ * <b>TestResWordEntity</b> is used to test the case where reserved words are
+ * translated when multiple schema factories are invoked. In this test the
+ * SynchronizeMapping setting will cause the DynamicSchemaFactory to be
  * invoked, and the SchemaFactory setting will cause the LazySchemaFactory to
- * be invoked. 
+ * be invoked.
  */
 public class TestResWordEntity extends SingleEMFTestCase {
 
@@ -36,9 +36,9 @@ public class TestResWordEntity extends SingleEMFTestCase {
     }
 
     public void testMultipleSchemafactories1() {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
-            "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)", 
+            "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)",
             "openjpa.jdbc.SchemaFactory","native(ForeignKeys=true)");
 
         EntityManager em = emf.createEntityManager();
@@ -61,7 +61,7 @@ public class TestResWordEntity extends SingleEMFTestCase {
     }
 
     public void testMultipleSchemafactories2() {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SchemaFactory","native(ForeignKeys=true)",
             "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)");
@@ -86,7 +86,7 @@ public class TestResWordEntity extends SingleEMFTestCase {
     }
 
     public void testMultipleSchemafactories3() {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)");
 
@@ -110,7 +110,7 @@ public class TestResWordEntity extends SingleEMFTestCase {
     }
 
     public void testMultipleSchemafactories4() {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SchemaFactory","native(ForeignKeys=true)");
 

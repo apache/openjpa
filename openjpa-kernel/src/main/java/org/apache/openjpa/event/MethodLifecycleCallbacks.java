@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.event;
 
@@ -105,7 +105,7 @@ public class MethodLifecycleCallbacks
         Class currentClass = cls;
         do {
             Method[] methods = (Method[]) AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredMethodsAction(currentClass)); 
+                J2DoPrivHelper.getDeclaredMethodsAction(currentClass));
             for (int i = 0; i < methods.length; i++) {
                 if (!method.equals(methods[i].getName()))
                     continue;
@@ -120,9 +120,9 @@ public class MethodLifecycleCallbacks
                 method, args == null ? null : Arrays.asList(args)));
 	}
 
-    /** 
+    /**
      * Returns true if all parameters in the from array are assignable
-     * from the corresponding parameters of the to array. 
+     * from the corresponding parameters of the to array.
      */
     private static boolean isAssignable(Class[] from, Class[] to) {
         if (from == null)
@@ -156,5 +156,5 @@ public class MethodLifecycleCallbacks
         out.writeObject(_callback.getClass());
         out.writeObject(_callback.getName());
         out.writeBoolean(_arg);
-    } 
+    }
 }

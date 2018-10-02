@@ -24,16 +24,16 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests OpenJPA's support for the GeneratedValue annotation
- * applied to a non-ID field in interaction with the PostPersist callback.  
- * 
+ * applied to a non-ID field in interaction with the PostPersist callback.
+ *
  * @author David Ezzio
  */
-public class TestEntityWithGeneratedValueAndPostPersist 
+public class TestEntityWithGeneratedValueAndPostPersist
         extends SingleEMFTestCase implements ValueCache {
 
     private int cache;
-    
-    public void setUp() { 
+
+    public void setUp() {
         setUp(EntityWithGeneratedValueAndPostPersist.class, CLEAR_TABLES);
         cache = 0;
     }
@@ -42,15 +42,15 @@ public class TestEntityWithGeneratedValueAndPostPersist
     public void setValue(int val) {
         cache = val;
     }
-    
+
     public void testValueCapturedInPostPersistAfterCommit() {
-        
+
         // get EM and start tx
         EntityManager em = getEM();
         em.getTransaction().begin();
 
         // create a new entity
-        EntityWithGeneratedValueAndPostPersist pc = 
+        EntityWithGeneratedValueAndPostPersist pc =
                 new EntityWithGeneratedValueAndPostPersist(1);
         pc.setName("TestEntityWithGeneratedValueAndPostPersist-commit");
         pc.setCache(this);
@@ -58,21 +58,21 @@ public class TestEntityWithGeneratedValueAndPostPersist
         // persist and commit
         em.persist(pc);
         em.getTransaction().commit();
-        
+
         // check the value captured by the PostPersist callback
         assertEquals("Entity's current value does not match value captured " +
         		"in postPersist", pc.getBingo(), cache);
         closeEM(em);
     }
-    
+
     public void testValueCapturedInPostPersistAfterFlush() {
-        
+
         // get EM and start tx
         EntityManager em = getEM();
         em.getTransaction().begin();
 
         // create a new Thingamabob
-        EntityWithGeneratedValueAndPostPersist pc = 
+        EntityWithGeneratedValueAndPostPersist pc =
                 new EntityWithGeneratedValueAndPostPersist(1);
         pc.setName("TestEntityWithGeneratedValueAndPostPersist-flush");
         pc.setCache(this);
@@ -84,16 +84,16 @@ public class TestEntityWithGeneratedValueAndPostPersist
         // check the value captured by the PostPersist callback
         assertEquals("Entity's current value does not match value captured " +
         		"in postPersist", pc.getBingo(), cache);
-        
+
         // commit
         em.getTransaction().commit();
-        
+
         // check the value captured by the PostPersist callback
         assertEquals("Entity's current value does not match value captured " +
         		"in postPersist", pc.getBingo(), cache);
         closeEM(em);
     }
-    
+
     private EntityManager getEM() {
         return emf.createEntityManager();
     }

@@ -35,7 +35,7 @@ public class LSE1x1Rt implements Externalizable {
 
     @Version
     private int version;
-    
+
     private String lastName;
 
     public int getId() {
@@ -49,11 +49,11 @@ public class LSE1x1Rt implements Externalizable {
     public String getLastName() {
         return lastName;
     }
-    
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
+
     public int getVersion() {
         return version;
     }

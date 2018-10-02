@@ -37,24 +37,24 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Test that makes sure the number of foreign keys are same on a table after
  * calling loadNameFromDB method of ForeignKey class.
- * 
+ *
  */
 public class TestForeignKeyCountViolation extends SingleEMFTestCase {
 
     private JDBCConfiguration _conf;
-    
+
     public void setUp() {
         super.setUp(EntityF.class, EntityG.class);
         Map props = new HashMap(System.getProperties());
         _conf = (JDBCConfiguration) emf.getConfiguration();
     }
-    
+
     public void testFKCount() throws SQLException {
         EntityManager em = emf.createEntityManager();
         Table tableG = getMapping(EntityG.class).getTable();
         tableG.addForeignKey();
         int b4Count = tableG.getForeignKeys().length;
-        
+
         EntityF f = new EntityF();
         f.setId(1);
 
@@ -87,28 +87,28 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
         em.persist(g3);
         em.persist(g4);
         em.getTransaction().commit();
-        
+
         ForeignKey fks[] = tableG.getForeignKeys();
-        
+
         DataSource ds = (DataSource) _conf.getConnectionFactory();
         Connection c = ds.getConnection(_conf.getConnectionUserName(),
             _conf.getConnectionPassword());
-        
+
         for (int i=0; i< fks.length; i++) {
             fks[i].loadNameFromDB(
                 _conf.getDBDictionaryInstance(), c);
         }
-        
+
         assertEquals(b4Count, tableG.getForeignKeys().length);
         em.close();
     }
-    
+
     public void testFKNamefromDB()throws SQLException {
-        
+
         EntityManager em = emf.createEntityManager();
         Table tableG = getMapping(EntityG.class).getTable();
         tableG.addForeignKey();
-        
+
         EntityF f = new EntityF();
         f.setId(1);
 
@@ -141,42 +141,42 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
         em.persist(g3);
         em.persist(g4);
         em.getTransaction().commit();
-            
+
         DataSource ds = (DataSource) _conf.getConnectionFactory();
         Connection c = ds.getConnection(_conf.getConnectionUserName(),
             _conf.getConnectionPassword());
-        
+
         ForeignKey fkfromDB[] = _conf.getDBDictionaryInstance().getImportedKeys(
             c.getMetaData(), c.getCatalog() , tableG.getSchemaName()
             , tableG.getName(), c);
-        
-        
+
+
         ArrayList<String> fkListfromDB = new ArrayList<String>();
         ArrayList<String> fkListfromTable = new ArrayList<String>();
-        
+
         for (int i=0; i< fkfromDB.length; i++) {
             fkListfromDB.add(fkfromDB[i].getName());
         }
-        
-        ForeignKey fks[] = tableG.getForeignKeys();    
+
+        ForeignKey fks[] = tableG.getForeignKeys();
         for (int i=0; i< fks.length; i++) {
             String fkNamefromDB =fks[i].loadNameFromDB(
                 _conf.getDBDictionaryInstance(), c);
             if( fkNamefromDB != null)
                 fkListfromTable.add(fkNamefromDB);
         }
-        
+
         assertEquals(fkListfromDB.toArray().length,
             fkListfromTable.toArray().length);
-        
+
         Collections.sort(fkListfromTable);
         Collections.sort(fkListfromDB);
-        
+
         for(int i=0; i< fkListfromDB.size(); i++)
         {
             assertEquals(fkListfromDB.get(i),fkListfromTable.get(i));
         }
-        
+
         em.close();
     }
 

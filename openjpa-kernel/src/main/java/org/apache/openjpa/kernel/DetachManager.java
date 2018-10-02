@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -69,7 +69,7 @@ public class DetachManager
     private final boolean _failFast;
     private boolean _flushed = false;
     private boolean _flushBeforeDetach;
-    private boolean _cascadeWithDetach; 
+    private boolean _cascadeWithDetach;
     private boolean _reloadOnDetach;
 
     // if we're not detaching full, we need to track all detached objects;
@@ -161,7 +161,7 @@ public class DetachManager
         else if (detachMode == DETACH_ALL)
             loadMode = StateManagerImpl.LOAD_ALL;
         try {
-            if (detachMode != DETACH_LOADED || 
+            if (detachMode != DETACH_LOADED ||
                     reloadOnDetach ||
                     (!reloadOnDetach && !full)) {
                 sm.load(broker.getFetchConfiguration(), loadMode, exclude,
@@ -181,7 +181,7 @@ public class DetachManager
 
             // clear lrs fields
             FieldMetaData[] fmds = sm.getMetaData().getFields();
-            for (int i = 0; i < fmds.length; i++) 
+            for (int i = 0; i < fmds.length; i++)
                 if (fmds[i].isLRS())
                     idxs.clear(i);
         }
@@ -252,7 +252,7 @@ public class DetachManager
                 idxs.set(i);
         }
     }
-    
+
 
     /**
      * Constructor.
@@ -282,7 +282,7 @@ public class DetachManager
             _detached = new IdentityHashMap();
             _fullFM = null;
         }
-        Compatibility compatibility = 
+        Compatibility compatibility =
             broker.getConfiguration().getCompatibilityInstance();
         _flushBeforeDetach = compatibility.getFlushBeforeDetach();
         _reloadOnDetach = compatibility.getReloadOnDetach();
@@ -445,7 +445,7 @@ public class DetachManager
             }
             _flushed = true;
         }
-        
+
         BitSet fields = new BitSet();
         preDetach(_broker, sm, fields, _full,
             _reloadOnDetach);
@@ -628,7 +628,7 @@ public class DetachManager
                     detachField(from, pks[i].getIndex(), true);
                 detachVersion();
                 for (int i = 0; i < fmds.length; i++)
-                    if (!fmds[i].isPrimaryKey() && !fmds[i].isVersion()) 
+                    if (!fmds[i].isPrimaryKey() && !fmds[i].isVersion())
                         detachField(from, i, fgfields.get(i));
             } finally {
                 // clear the StateManager from the target object
@@ -720,18 +720,18 @@ public class DetachManager
                 return null;
 
             FieldMetaData fmd = sm.getMetaData().getField(field);
-            
+
             boolean cascade = false;
             if(_cascadeWithDetach
-                || fmd.getCascadeDetach() == 
+                || fmd.getCascadeDetach() ==
                     ValueMetaData.CASCADE_IMMEDIATE
-                || fmd.getKey().getCascadeDetach() == 
-                    ValueMetaData.CASCADE_IMMEDIATE 
-                || fmd.getElement().getCascadeDetach() == 
+                || fmd.getKey().getCascadeDetach() ==
+                    ValueMetaData.CASCADE_IMMEDIATE
+                || fmd.getElement().getCascadeDetach() ==
                     ValueMetaData.CASCADE_IMMEDIATE) {
                 cascade = true;
             }
-            
+
             Object newVal = null;
             switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.ARRAY:

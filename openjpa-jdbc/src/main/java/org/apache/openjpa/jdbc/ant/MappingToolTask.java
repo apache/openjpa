@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.ant;
 
@@ -66,7 +66,7 @@ public class MappingToolTask
     protected String sqlFile;
     protected String sqlEncode;
     protected boolean tmpClassLoader = true;
-    
+
     /**
      * Set the enumerated MappingTool action type.
      */
@@ -178,7 +178,7 @@ public class MappingToolTask
     public void setSQLEncode(String sqlEncode) {
         this.sqlEncode = sqlEncode;
     }
-    
+
     /**
      * Sets the characters used to terminate a generated SQL.
      * By default, a semicolon.
@@ -215,7 +215,7 @@ public class MappingToolTask
             resolver.addClassLoader(loader);
         }
         resolver.addClassLoader(toolLoader);
-            
+
         if (flags.meta && MappingTool.ACTION_ADD.equals(flags.action))
             flags.metaDataFile = Files.getFile(file, loader);
         else
@@ -226,7 +226,7 @@ public class MappingToolTask
 
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         conf.setClassResolver(resolver);
-        
+
         if (!MappingTool.run(conf, files, flags, loader))
             throw new BuildException(_loc.get("bad-conf", "MappingToolTask")
                 .getMessage());
@@ -257,7 +257,7 @@ public class MappingToolTask
      * Set whether a temporary ClassLoader should be used by the MappingTool.
      * The default value is true
      * </P>
-     * 
+     *
      * @param tmpClassLoader
      *            Whether the temporary ClassLoader should be used.
      */

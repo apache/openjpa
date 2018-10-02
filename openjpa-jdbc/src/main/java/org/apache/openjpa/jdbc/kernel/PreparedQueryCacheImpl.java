@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -43,16 +43,16 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.CacheMap;
 
 /**
- * An implementation of the cache of {@link PreparedQuery prepared queries}. 
- * 
+ * An implementation of the cache of {@link PreparedQuery prepared queries}.
+ *
  * @author Pinaki Poddar
  *
  * @since 2.0.0
- * 
+ *
  */
 public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private static final String PATTERN_SEPARATOR = "\\;";
-	// Key: Query identifier 
+	// Key: Query identifier
 	private final Map<String, PreparedQuery> _delegate;
 	// Key: Query identifier Value: Reason why excluded
 	private final Map<String, Exclusion> _uncachables;
@@ -64,21 +64,21 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private Lock _readLock;
 	private Log _log;
     private static Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
-    
+
 	public PreparedQueryCacheImpl() {
 		_delegate = new CacheMap();
 		_uncachables = new CacheMap();
 		_exclusionPatterns = new ArrayList<Exclusion>();
-		
+
 		ReentrantReadWriteLock _rwl = new ReentrantReadWriteLock();
         _writeLock = _rwl.writeLock();
         _readLock = _rwl.readLock();
 	}
-	
+
     public Boolean register(String id, Query query, FetchConfiguration hints) {
-        if (id == null 
-            || query == null 
-            || QueryLanguages.LANG_SQL.equals(query.getLanguage()) 
+        if (id == null
+            || query == null
+            || QueryLanguages.LANG_SQL.equals(query.getLanguage())
             || QueryLanguages.LANG_METHODQL.equals(query.getLanguage())
             || isHinted(hints, QueryHints.HINT_IGNORE_PREPARED_QUERY)
             || isHinted(hints, QueryHints.HINT_INVALIDATE_PREPARED_QUERY))
@@ -88,11 +88,11 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         PreparedQuery cached = get(id);
         if (cached != null)
             return null; // implies that it is already cached
-        
-        PreparedQuery newEntry = new PreparedQueryImpl(id, query); 
+
+        PreparedQuery newEntry = new PreparedQueryImpl(id, query);
         return cache(newEntry);
 	}
-	
+
 	public Map<String,String> getMapView() {
 		lock(false);
 		try {
@@ -104,7 +104,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			unlock(false);
 		}
 	}
-	
+
 	/**
 	 * Cache the given query keyed by its identifier. Does not cache if the
 	 * identifier matches any exclusion pattern or has been marked as
@@ -140,20 +140,20 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			unlock(false);
 		}
 	}
-	
+
     public PreparedQuery initialize(String key, Object result) {
         PreparedQuery pq = get(key);
         if (pq == null)
             return null;
-        
+
         Exclusion exclusion = pq.initialize(result);
         if (exclusion != null) {
             markUncachable(key, exclusion);
             return null;
-        } 
+        }
         return pq;
     }
-	
+
 	public boolean invalidate(String id) {
 		lock(false);
 		try {
@@ -168,7 +168,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			unlock(false);
 		}
 	}
-	
+
     public PreparedQuery get(String id) {
         lock(true);
         try {
@@ -177,7 +177,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
             unlock(true);
         }
     }
-    
+
 	public Boolean isCachable(String id) {
 		lock(true);
 		try {
@@ -190,12 +190,12 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			unlock(true);
 		}
 	}
-	
+
 	public PreparedQuery markUncachable(String id, Exclusion exclusion) {
 		lock(false);
 		try {
 			if (_uncachables.put(id, exclusion) == null) {
-			    if (_log != null && _log.isTraceEnabled()) 
+			    if (_log != null && _log.isTraceEnabled())
 			        _log.trace(_loc.get("prepared-query-uncache", id, exclusion));
 			}
 			PreparedQuery pq = _delegate.remove(id);
@@ -207,11 +207,11 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			unlock(false);
 		}
 	}
-	
+
 	public Exclusion isExcluded(String id) {
 		return getMatchedExclusionPattern(id);
 	}
-	
+
 	public void setExcludes(String excludes) {
 		lock(false);
 		try {
@@ -228,7 +228,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	public List<Exclusion> getExcludes() {
 		return Collections.unmodifiableList(_exclusionPatterns);
 	}
-	
+
 	/**
      * Adds a pattern for exclusion. Any query cached currently whose identifier
      * matches the given pattern will be marked invalidated as a side-effect.
@@ -248,9 +248,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			unlock(false);
 		}
 	}
-	
+
 	/**
-	 * Removes a pattern for exclusion. Any query identifier marked as not 
+	 * Removes a pattern for exclusion. Any query identifier marked as not
      * cachable due to the given pattern will now be removed from the list of
 	 * uncachables as a side-effect.
 	 */
@@ -269,11 +269,11 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			unlock(false);
 		}
 	}
-	
+
 	public QueryStatistics<String> getStatistics() {
 		return _stats;
 	}
-	
+
 	/**
 	 * Gets the pattern that matches the given identifier.
 	 */
@@ -283,9 +283,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 				return pattern;
 		return null;
 	}
-	
+
 	/**
-	 * Gets the keys of the given map whose values match the given pattern. 
+	 * Gets the keys of the given map whose values match the given pattern.
 	 */
 	private Collection<String> getMatchedKeys(String pattern, Map<String,Exclusion> map) {
         List<String> result = new ArrayList<String>();
@@ -297,9 +297,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 		return result;
 	}
-	
+
 	/**
-	 * Gets the elements of the given list which match the given pattern. 
+	 * Gets the elements of the given list which match the given pattern.
 	 */
 	private Collection<String> getMatchedKeys(String pattern, Collection<String> coll) {
 		List<String> result = new ArrayList<String>();
@@ -314,7 +314,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	/**
      * Note: Care needs to be taken so that a read lock is <b>never</b> held while requesting a write lock. This will
      * result in a deadlock.
-     * 
+     *
      * @param readOnly
      *            - If true, a read lock will be acquired. Else a write lock will be acquired.
      */
@@ -337,28 +337,28 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
             _writeLock.unlock();
         }
     }
-    
+
     boolean matches(String pattern, String target) {
-    	return target != null && (target.equals(pattern) 
+    	return target != null && (target.equals(pattern)
     	  || target.matches(pattern));
     }
-    
+
     boolean isHinted(FetchConfiguration fetch, String hint) {
         if (fetch == null)
             return false;
         Object result = fetch.getHint(hint);
         return result != null && "true".equalsIgnoreCase(result.toString());
     }
-    
+
     public void clear() {
         _delegate.clear();
         _stats.clear();
     }
-    
+
     public void setEnableStatistics(boolean enable){
         _statsEnabled = enable;
     }
-    
+
     public boolean getEnableStatistics(){
         return _statsEnabled;
     }
@@ -385,7 +385,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         _stats = _statsEnabled ? new QueryStatistics.Default<String>() :
                                  new QueryStatistics.None<String>();
     }
-    
+
     /**
      * An immutable abstract pattern for exclusion.
      *
@@ -394,11 +394,11 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         private final boolean _strong;
         private final String  _pattern;
         private final String  _reason;
-        
+
         private static Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
         private static String STRONG = _loc.get("strong-exclusion").getMessage();
         private static String WEAK   = _loc.get("weak-exclusion").getMessage();
-        
+
         public ExclusionPattern(boolean strong, String pattern, String reason) {
             super();
             this._strong = strong;
@@ -421,7 +421,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         public boolean matches(String id) {
             return _pattern != null && (_pattern.equals(id) || _pattern.matches(id));
         }
-        
+
         /**
          * Equals by strength and pattern (not by reason).
          */
@@ -432,16 +432,16 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
             if (!(other instanceof Exclusion))
                 return false;
             Exclusion that = (Exclusion)other;
-            return this._strong == that.isStrong() 
+            return this._strong == that.isStrong()
                 && Objects.equals(this._pattern, that.getPattern());
         }
-        
+
         @Override
         public int hashCode() {
-            return (_strong ? 1 : 0) 
+            return (_strong ? 1 : 0)
                  + (_pattern == null ? 0 : _pattern.hashCode());
         }
-        
+
         public String toString() {
             StringBuilder buf = new StringBuilder();
             buf.append(" ").append(_strong ? STRONG : WEAK).append(". ");
@@ -450,7 +450,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
             return buf.toString();
         }
     }
-    
+
     /**
      * Strong exclusion.
      *
@@ -461,7 +461,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
             super(true, pattern, reason);
         }
     }
-    
+
     /**
      * Weak exclusion.
      *

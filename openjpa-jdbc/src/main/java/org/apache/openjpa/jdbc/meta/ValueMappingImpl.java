@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -50,7 +50,7 @@ import org.apache.openjpa.util.MetaDataException;
 public class ValueMappingImpl
     extends ValueMetaDataImpl
     implements ValueMapping {
-    
+
     private static final long serialVersionUID = 6440545965133775709L;
 
     private static final Localizer _loc = Localizer.forPackage
@@ -79,7 +79,7 @@ public class ValueMappingImpl
         _info.setUseClassCriteria(owner.getMappingRepository().
             getMappingDefaults().useClassCriteria());
     }
-    
+
     /**
      * Constructor for deserialization.
      */
@@ -166,12 +166,12 @@ public class ValueMappingImpl
             return getValueMappedByMapping().getForeignKey(target);
         if (target == null)
             return _fk;
-        ClassMapping embeddedMeta = (ClassMapping)getEmbeddedMetaData(); 
+        ClassMapping embeddedMeta = (ClassMapping)getEmbeddedMetaData();
         if (embeddedMeta != null) {
             FieldMapping[] fields = embeddedMeta.getFieldMappings();
             int j = 0;
             for (int i = 0; i < fields.length; i++) {
-                ValueMapping val = fields[i].getValueMapping(); 
+                ValueMapping val = fields[i].getValueMapping();
                 if (val.getDeclaredTypeMapping() == target)
                     if (targetNumber == j)
                     return val.getForeignKey();
@@ -459,7 +459,7 @@ public class ValueMappingImpl
         _unq = _info.getUnique(this, name, adapt);
         _idx = _info.getIndex(this, name, adapt);
     }
-    
+
     public void clearMapping() {
         _handler = null;
         _cols = Schemas.EMPTY_COLUMNS;
@@ -481,7 +481,7 @@ public class ValueMappingImpl
                 embed.syncMappingInfo();
         }
     }
-    
+
     public void copy(ValueMetaData vmd) {
         super.copy(vmd);
         copyMappingInfo((ValueMapping)vmd);

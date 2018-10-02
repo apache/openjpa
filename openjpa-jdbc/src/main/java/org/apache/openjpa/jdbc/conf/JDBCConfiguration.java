@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.conf;
 
@@ -577,7 +577,7 @@ public interface JDBCConfiguration
     public MappingRepository getMappingRepositoryInstance();
 
     /**
-     * Return a new empty mapping repository of the configured type.  
+     * Return a new empty mapping repository of the configured type.
      * Convenience method to cast from metadata repository.
      */
     public MappingRepository newMappingRepositoryInstance();
@@ -610,7 +610,7 @@ public interface JDBCConfiguration
      * @see #getDataSource
      */
     public DataSource getDataSource2(StoreContext ctx);
-    
+
     /**
      * Gets the String constant that matches the {@link IdentifierUtil}
      * @return String-based name of the {@link IdentifierUtil}
@@ -622,7 +622,7 @@ public interface JDBCConfiguration
      * @return DBIdentifierUtil
      */
     public DBIdentifierUtil getIdentifierUtilInstance();
-    
+
     /**
      * Sets the {@link DBIdentifierUtil}
      * @param util instance of the identifier utility

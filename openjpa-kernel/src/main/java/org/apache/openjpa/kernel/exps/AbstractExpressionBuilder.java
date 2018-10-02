@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -251,7 +251,7 @@ public abstract class AbstractExpressionBuilder {
     protected Value traversePath(Path path, String field) {
         return traversePath(path, field, false, false);
     }
-    
+
     protected Value traverseXPath(Path path, String field) {
         XMLMetaData meta = path.getXmlMapping();
         if (meta.getFieldMapping(field) == null) {
@@ -293,8 +293,8 @@ public abstract class AbstractExpressionBuilder {
             	String[] all = meta.getFieldNames();
             	Class<?> cls = meta.getDescribedType();
                 throw parseException(EX_USER, "no-field",
-                    new Object[] {field, cls.getSimpleName(), 
-                    StringDistance.getClosestLevenshteinDistance(field, all), 
+                    new Object[] {field, cls.getSimpleName(),
+                    StringDistance.getClosestLevenshteinDistance(field, all),
                 	cls.getName(), Arrays.toString(all)}, null);
             }
 
@@ -318,7 +318,7 @@ public abstract class AbstractExpressionBuilder {
             }
         }
 
-        if (meta != null || !pcOnly) 
+        if (meta != null || !pcOnly)
             path.get(fmd, allowNull);
 
         return path;
@@ -335,7 +335,7 @@ public abstract class AbstractExpressionBuilder {
             return null;
         }
     }
-    
+
     private boolean isMultiValuedTraversalAttempt(Path path, String field) {
         if (path == null) return false;
         if (path.last() == null) return false;
@@ -403,7 +403,7 @@ public abstract class AbstractExpressionBuilder {
 //    }
 //
 //    private static boolean canDownTypeValue(Object val, Class<?> fromType, Class<?> toType) {
-//        long testVal = ( fromType == Character.TYPE || fromType == TYPE_CHAR_OBJ ) 
+//        long testVal = ( fromType == Character.TYPE || fromType == TYPE_CHAR_OBJ )
 //            ? ((Character)val).charValue()
 //            : ((Number)val).longValue();
 //        long min;

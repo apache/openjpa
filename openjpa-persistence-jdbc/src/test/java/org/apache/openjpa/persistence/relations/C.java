@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.jdbc.ForeignKey;
 @IdClass(C.CId.class)
 @Table(name="C4_REL")
 public class C {
-	
+
 	@Id
 	private String cId;
 
@@ -48,7 +48,7 @@ public class C {
 
     public C() {
     }
-    
+
     public String getCId() {
         return cId;
     }
@@ -72,19 +72,19 @@ public class C {
 	public void setDs(Set<D> ds) {
 		this.ds = ds;
 	}
-    
+
     public static class CId{
     	String cId;
     	CM.CMId  cm;
-    	
+
 		public String getCId() {
 			return cId;
 		}
 		public void setCId(String id) {
 			cId = id;
 		}
-    	
-		
+
+
 		public CM.CMId getCm() {
 			return cm;
 		}
@@ -96,15 +96,15 @@ public class C {
 			if (this == obj) return true;
 			if (obj == null || !(obj instanceof CId))
 				return false;
-			
+
 			CId id = (CId) obj;
-			
+
             return (this.getCId() == id.getCId() || (this.getCId() != null &&
                 this.getCId().equals(id.getCId())))
                 && (this.getCm() == id.getCm() || (this.getCm() != null &&
                 this.getCm().equals(id.getCm())));
 		}
-		
+
 		@Override
 		public int hashCode() {
             return ((this.getCId() != null) ? this.getCId().hashCode():0)

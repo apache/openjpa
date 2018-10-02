@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance.stats;
 
@@ -23,18 +23,18 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class AEntity { 
+public class AEntity {
 
     @Id
     private int id;
     private String name;
     private String desc;
-    private boolean checked;    
+    private boolean checked;
     private EEntity extraInfo;
-    
+
     @ManyToOne
     private BEntity referredBEntity;
-    
+
 
     public AEntity(int id, String name, String desc, BEntity bEntity) {
         super();
@@ -44,22 +44,22 @@ public class AEntity {
         referredBEntity = bEntity;
         extraInfo = new EEntity("extra " + desc, "E" + id);
     }
-    
+
     public String getFullInfo(){
         return name + desc;
     }
-    
-    
+
+
     public boolean isChecked(){
         return checked;
     }
-    
+
     public String getReferredBEntityName(){
         return referredBEntity.getName();
     }
-    
+
     public String getExtraInfo(){
         return extraInfo.getExtraDesc();
     }
-    
+
 }

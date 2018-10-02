@@ -29,8 +29,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /*
- * An entity which has a @Table annotation which contains a schema name, 
- * as such schema in the annotation should take precedence over the 
+ * An entity which has a @Table annotation which contains a schema name,
+ * as such schema in the annotation should take precedence over the
  * persistence-unit-default schema (see pudefaults-orm.xml file).
  */
 @Entity

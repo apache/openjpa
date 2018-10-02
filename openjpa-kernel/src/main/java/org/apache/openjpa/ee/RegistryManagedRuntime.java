@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.ee;
 
@@ -35,7 +35,7 @@ import javax.transaction.xa.XAResource;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * Implementation of the {@link ManagedRuntime} interface that uses 
+ * Implementation of the {@link ManagedRuntime} interface that uses
  * the {@link TransactionSynchronizationRegistry} interface (new in JTA 1.1)
  * to create a {@link TransactionManager} facade for controlling transactions.
  *
@@ -47,7 +47,7 @@ public class RegistryManagedRuntime
     private String _registryName =
         "java:comp/TransactionSynchronizationRegistry";
     private TransactionManagerRegistryFacade _tm = null;
-    
+
     private static Localizer _loc =
         Localizer.forPackage(RegistryManagedRuntime.class);
 
@@ -92,13 +92,13 @@ public class RegistryManagedRuntime
         return _tm.getTransactionKey();
     }
 
-    /** 
+    /**
      *  A {@link TransactionManager} and {@link Transaction} facade
      *  that delegates the appropriate methods to the internally-held
      *  {@link TransactionSynchronizationRegistry}. Since the
      *  registry is not able to start or end transactions, all transaction
      *  control methods will just throw a {@link SystemException}.
-     *  
+     *
      *  @author  Marc Prud'hommeaux
      */
     public class TransactionManagerRegistryFacade
@@ -192,7 +192,7 @@ public class RegistryManagedRuntime
             throw new SystemException();
         }
     }
-    
+
     /**
      * <P>
      * RegistryManagedRuntime cannot suspend transactions.

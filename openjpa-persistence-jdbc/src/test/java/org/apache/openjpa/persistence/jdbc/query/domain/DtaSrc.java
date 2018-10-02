@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * The persistent class for the DtaSrc database table.
- * 
+ *
  */
 @Entity
 public class DtaSrc implements Serializable {

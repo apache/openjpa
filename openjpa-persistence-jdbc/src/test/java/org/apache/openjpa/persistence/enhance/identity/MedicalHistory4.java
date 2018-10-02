@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -25,26 +25,26 @@ import javax.persistence.*;
 @IdClass(PersonId4.class)
 public class MedicalHistory4 {
     String name;
-    
+
     @Id
     @OneToOne Person4 patient;
-    
+
     public Person4 getPatient() {
         return patient;
     }
-    
+
     public void setPatient(Person4 p) {
         this.patient = p;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof MedicalHistory4)) return false;
@@ -57,7 +57,7 @@ public class MedicalHistory4 {
         if (patient == null && p0 != null) return false;
         return true;
     }
-    
+
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + name.hashCode();
@@ -65,5 +65,5 @@ public class MedicalHistory4 {
         ret = ret * 31 + patient.id.lastName.hashCode();
         return ret;
     }
-    
+
 }

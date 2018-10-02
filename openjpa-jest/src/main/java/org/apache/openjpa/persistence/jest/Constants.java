@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -22,7 +22,7 @@ package org.apache.openjpa.persistence.jest;
 
 /**
  * Static String constants
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -32,7 +32,7 @@ public interface Constants {
      */
     public static final String QUALIFIER_FORMAT      = "format";
     public static final String QUALIFIER_PLAN        = "plan";
-    
+
     /**
      * Mime Types
      */
@@ -41,16 +41,16 @@ public interface Constants {
     public static final String MIME_TYPE_CSS   = "text/css";
     public static final String MIME_TYPE_XML   = "text/xml";
     public static final String MIME_TYPE_JSON  = "application/json";
-     
-   
+
+
     /**
      * Dojo Toolkit URL and Themes
      */
     public static final String DOJO_BASE_URL = "http://ajax.googleapis.com/ajax/libs/dojo/1.5";
     public static final String DOJO_THEME    = "claro";
-    
-    
-      
+
+
+
     /**
      * Root element of XML instances. Must match the name defined in <A href="jest-instance.xsd>jest-instance.xsd</A>.
      */
@@ -68,7 +68,7 @@ public interface Constants {
     public static final String ATTR_MEMBER_TYPE    = "member-type";
     public static final String ATTR_KEY_TYPE       = "key-type";
     public static final String ATTR_VALUE_TYPE     = "value-type";
-    
+
     /**
      * Elements and attributes in properties XML.
      */
@@ -76,18 +76,18 @@ public interface Constants {
     public static final String ELEMENT_PROPERTY     = "property";
     public static final String ATTR_PROPERTY_KEY     = "name";
     public static final String ATTR_PROPERTY_VALUE     = "value";
-    
-    
+
+
     public static final String ROOT_ELEMENT_ERROR      = "error";
     public static final String ELEMENT_ERROR_HEADER    = "error-header";
     public static final String ELEMENT_ERROR_MESSAGE   = "error-message";
     public static final String ELEMENT_ERROR_TRACE     = "stacktrace";
-    
+
     /**
      * Root element of XML meta-model. Must match the name defined in <A href="jest-model.xsd>jest-model.xsd</A>.
      */
     public static final String ROOT_ELEMENT_MODEL      = "metamodel";
-    
+
     public static final String ELEMENT_INSTANCE      = "instance";
     public static final String ELEMENT_URI           = "uri";
     public static final String ELEMENT_DESCRIPTION   = "description";
@@ -98,16 +98,16 @@ public interface Constants {
     public static final String ELEMENT_ENTRY_KEY     = "key";
     public static final String ELEMENT_ENTRY_VALUE   = "value";
 
-    
-    
+
+
     /**
      * JEST resources
      */
     public static final String JEST_INSTANCE_XSD       = "jest-instance.xsd";
-    
+
     static final String JAXP_SCHEMA_SOURCE      = "http://java.sun.com/xml/jaxp/properties/schemaSource";
     static final String JAXP_SCHEMA_LANGUAGE    = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-    
+
     public static final String NULL_VALUE          = "null";
 
 

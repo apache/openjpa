@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -24,9 +24,9 @@ import javax.persistence.*;
 
 /**
  * This is the non-default uni-directional one-to-many mapping.
- * Foreign key strategy is used. 
+ * Foreign key strategy is used.
  * @JoinColumn is required for this strategy (see Spec 11.1.36, Ex 3)
- * with @OneToMany. 
+ * with @OneToMany.
  * @author faywang
  */
 
@@ -42,31 +42,31 @@ public class Uni_1ToM_FK {
     @OneToMany(fetch=FetchType.EAGER)
     @JoinColumn(name="Uni1MFK_ID")
     private List<EntityC_U1MFK> entityCs = null;
-    
-    public long getId() { 
-        return id; 
+
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public List<EntityC_U1MFK> getEntityCs() { 
-        return entityCs; 
+    public List<EntityC_U1MFK> getEntityCs() {
+        return entityCs;
     }
 
-    public void setEntityCs(List<EntityC_U1MFK> entityCs) { 
-        this.entityCs = entityCs; 
+    public void setEntityCs(List<EntityC_U1MFK> entityCs) {
+        this.entityCs = entityCs;
     }
 
     public int hashCode() {
         return name.hashCode();
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof Uni_1ToM_FK)) return false;
         Uni_1ToM_FK b = (Uni_1ToM_FK)o;

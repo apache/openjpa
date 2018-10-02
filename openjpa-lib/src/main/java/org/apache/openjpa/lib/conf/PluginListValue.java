@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -110,7 +110,7 @@ public class PluginListValue extends ObjectValue {
         for (int i = 0; i < _names.length; i++) {
             if (i > 0)
                 buf.append(", ");
-            buf.append(Configurations.getPlugin(alias(_names[i]), 
+            buf.append(Configurations.getPlugin(alias(_names[i]),
             		(i<_props.length) ? _props[i] : null));
         }
         if (buf.length() == 0)
@@ -169,7 +169,7 @@ public class PluginListValue extends ObjectValue {
         List<String> names = new ArrayList<String>();
         List<String> props = new ArrayList<String>();
         String clsName;
-        for(String s : plugins) { 
+        for(String s : plugins) {
             clsName = unalias(Configurations.getClassName(s));
             if (clsName != null) {
                 names.add(clsName);

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -40,7 +40,7 @@ import org.apache.openjpa.util.OptimisticException;
  * Batch prepared statement manager implementation. This prepared statement
  * manager will utilize the JDBC addBatch() and exceuteBatch() to batch the SQL
  * statements together to improve the execution performance.
- * 
+ *
  * @author Teresa Kan
  */
 
@@ -95,7 +95,7 @@ public class BatchingPreparedStatementManagerImpl extends
             case 0:
                 break;
             case 1:
-                // single entry in cache, direct SQL execution. 
+                // single entry in cache, direct SQL execution.
                 try {
                     super.flushAndUpdate((RowImpl) _batchedRows.get(0));
                 } finally {
@@ -134,7 +134,7 @@ public class BatchingPreparedStatementManagerImpl extends
         }
         return rtnVal;
     }
-    
+
     /**
      * flush all cached up statements to be executed as a single or batched
      * prepared statements.
@@ -199,7 +199,7 @@ public class BatchingPreparedStatementManagerImpl extends
                 if (sqex == null){
                     sqex = se;
                 }
-                
+
                 if (se instanceof ReportingSQLException){
                   int index = ((ReportingSQLException) se).getIndexOfFirstFailedObject();
 
@@ -209,24 +209,24 @@ public class BatchingPreparedStatementManagerImpl extends
                   if (batchSize == 1){
                       index = 0;
                   }
-                  
+
                   //index should not be less than 0 in this path, but if for some reason it is, lets
                   //resort to the 'old way' and simply pass the 'ps' as the failed object.
-                  if (index < 0){ 
+                  if (index < 0){
                       throw SQLExceptions.getStore(se, ps, _dict);
                   }
                   else{
-                      if(_batchedRows.size() == 0) { 
-                          if(_log.isTraceEnabled()) { 
-                              _log.trace("No batched rows found. The failed object may not be reliable"); 
+                      if(_batchedRows.size() == 0) {
+                          if(_log.isTraceEnabled()) {
+                              _log.trace("No batched rows found. The failed object may not be reliable");
                           }
                           throw SQLExceptions.getStore(se, ps, _dict);
                       }
                       throw SQLExceptions.getStore(se, (_batchedRows.get(index)).getFailedObject(), _dict);
-                  }                    
+                  }
                 }
                 else{
-                	//per comments above, use 'sqex' rather than 'se'. 
+                	//per comments above, use 'sqex' rather than 'se'.
                     throw SQLExceptions.getStore(sqex, ps, _dict);
                 }
             } finally {
@@ -269,7 +269,7 @@ public class BatchingPreparedStatementManagerImpl extends
     private void checkUpdateCount(int[] count, int batchedRowsBaseIndex,
         PreparedStatement ps)
         throws SQLException {
-        // value in int[] count  returned from executeBatch: 
+        // value in int[] count  returned from executeBatch:
         //               Update          Delete        Insert
         // ===============================================================
         //               OK / Error      OK / Error    OK / Error
@@ -291,7 +291,7 @@ public class BatchingPreparedStatementManagerImpl extends
                 else if (row.getAction() == Row.ACTION_INSERT)
                     throw new SQLException(_loc.get(
                         "update-failed-no-failed-obj",
-                        String.valueOf(count[i]), 
+                        String.valueOf(count[i]),
                         row.getSQL(_dict)).getMessage());
                 break;
             case Statement.SUCCESS_NO_INFO: // -2
@@ -308,12 +308,12 @@ public class BatchingPreparedStatementManagerImpl extends
                     else if (row.getAction() == Row.ACTION_INSERT)
                         throw new SQLException(_loc.get(
                             "update-failed-no-failed-obj",
-                            String.valueOf(count[i]), 
+                            String.valueOf(count[i]),
                             row.getSQL(_dict)).getMessage());
                 }
                 if (_log.isTraceEnabled())
                     _log.trace(_loc.get("batch_update_info",
-                        String.valueOf(cnt), 
+                        String.valueOf(cnt),
                         row.getSQL(_dict)).getMessage());
                 break;
             case 0: // no row is inserted, treats it as failed
@@ -324,7 +324,7 @@ public class BatchingPreparedStatementManagerImpl extends
                 else if (row.getAction() == Row.ACTION_INSERT)
                     throw new SQLException(_loc.get(
                         "update-failed-no-failed-obj",
-                        String.valueOf(count[i]), 
+                        String.valueOf(count[i]),
                         row.getSQL(_dict)).getMessage());
             }
         }
@@ -354,12 +354,12 @@ public class BatchingPreparedStatementManagerImpl extends
         return _batchedSql;
     }
 
-    protected void addBatch(PreparedStatement ps, RowImpl row, 
+    protected void addBatch(PreparedStatement ps, RowImpl row,
             int count) throws SQLException {
         ps.addBatch();
     }
 
-    protected int[] executeBatch(PreparedStatement ps) 
+    protected int[] executeBatch(PreparedStatement ps)
     throws SQLException {
         return ps.executeBatch();
     }

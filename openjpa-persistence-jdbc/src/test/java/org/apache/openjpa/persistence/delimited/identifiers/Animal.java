@@ -32,7 +32,7 @@ import javax.persistence.Table;
 public class Animal {
     @Id
     private int id;
-    
+
     @Column(name="\"animal type\"")
     protected String type;
     @Column(name="\"animal name\"")
@@ -41,11 +41,11 @@ public class Animal {
     protected int age;
 
     public Animal() {}
-    
+
     public Animal(int id) {
         this.id = id;
     }
-    
+
     /**
      * @return the id
      */

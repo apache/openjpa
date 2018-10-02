@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.cascade;
 
@@ -69,7 +69,7 @@ public class TestCascadePersist extends SQLListenerTestCase {
         // Since cpe1 is managed, it should be ignored by the cascaded persist operation.
         em.getTransaction().commit();
     }
-    
+
     /*
      * Prior to OPENJPA-1986, an extra SELECT was executed in this scenario.
      */
@@ -88,10 +88,10 @@ public class TestCascadePersist extends SQLListenerTestCase {
         em.persist(cpe);
 
         em.getTransaction().commit();
-        em.close();        
+        em.close();
 
         //There should be no selects at this point, only
         //inserts.
         assertNotSQL("SELECT .*");
-    }    
+    }
 }

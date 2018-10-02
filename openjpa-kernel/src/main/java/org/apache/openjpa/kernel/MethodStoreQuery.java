@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -90,7 +90,7 @@ public class MethodStoreQuery
     public boolean requiresCandidateType() {
         return false;
     }
-    
+
     /**
      * Parse the parameter declarations.
      */
@@ -261,7 +261,7 @@ public class MethodStoreQuery
         public OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return ((MethodStoreQuery) q).bindParameterTypes();
 		}
-        
+
         public Object[] toParameterArray(StoreQuery q, Map userParams) {
             if (userParams == null || userParams.isEmpty())
                 return StoreQuery.EMPTY_OBJECTS;
@@ -270,18 +270,18 @@ public class MethodStoreQuery
             Object[] arr = new Object[userParams.size()];
             int base = positionalParameterBase(userParams.keySet());
             for (Object key : paramTypes.keySet()) {
-                int idx = (key instanceof Integer) 
-                    ? ((Integer)key).intValue() - base 
+                int idx = (key instanceof Integer)
+                    ? ((Integer)key).intValue() - base
                     : paramTypes.indexOf(key);
                 if (idx >= arr.length || idx < 0)
-                        throw new UserException(_loc.get("gap-query-param", 
-                            new Object[]{q.getContext().getQueryString(), key, 
+                        throw new UserException(_loc.get("gap-query-param",
+                            new Object[]{q.getContext().getQueryString(), key,
                             userParams.size(), userParams}));
                     arr[idx] = userParams.get(key);
             }
             return arr;
         }
-        
+
         /**
          * Return the base (generally 0 or 1) to use for positional parameters.
          */

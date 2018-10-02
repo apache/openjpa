@@ -32,18 +32,18 @@ public class Device {
     @Id
     @Column(name="DEV_ID")
     private int id;
-    
+
     @Id
     @Column(name="DEV_TYPE")
     private int type;
-    
+
     @Column(name="DEV_DESC")
     private String description;
 
     public Device() {
-        
+
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }

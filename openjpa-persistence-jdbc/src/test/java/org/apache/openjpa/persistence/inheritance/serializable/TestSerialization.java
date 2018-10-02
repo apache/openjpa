@@ -39,7 +39,7 @@ public class TestSerialization extends SingleEMFTestCase {
      * Simulates detaching and sending an entity to a remote client. The remote
      * client updates the detached entity and sends it back to the server. The
      * server merges the entity back into a persistence context and commits the
-     * changes. 
+     * changes.
      */
     public void testDetachedUpdate() {
         Employee emp = new Employee();
@@ -92,7 +92,7 @@ public class TestSerialization extends SingleEMFTestCase {
                     .toByteArray());
             ois = new ObjectInputStream(bais);
 
-            deserialized = ois.readObject();            
+            deserialized = ois.readObject();
         } catch (Exception e) {
             fail(e.toString());
         } finally {

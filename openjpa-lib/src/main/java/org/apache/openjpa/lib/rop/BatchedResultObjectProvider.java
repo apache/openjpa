@@ -14,13 +14,13 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.rop;
 
 
 /**
- * A provider for multiple result sets. 
+ * A provider for multiple result sets.
  * This provider acts as a container of other result providers. The underlying  providers
  * contain the actual data and are {@link ResultObjectProvider#getResultObject() iterated}
  * for the results, while this provider iterates over its underlying providers.
@@ -37,7 +37,7 @@ package org.apache.openjpa.lib.rop;
  */
 public interface BatchedResultObjectProvider extends ResultObjectProvider {
     /**
-     * Gets the next result object provider from its batch. 
+     * Gets the next result object provider from its batch.
      */
     ResultObjectProvider getResultObject() throws Exception;
 
@@ -47,14 +47,14 @@ public interface BatchedResultObjectProvider extends ResultObjectProvider {
     boolean hasMoreResults();
 
     /**
-     * Gets the result of executing the underlying JDBC statement. 
-     * @return a boolean value whose semantics is same as {@link java.sql.PreparedStatement#execute()}. 
+     * Gets the result of executing the underlying JDBC statement.
+     * @return a boolean value whose semantics is same as {@link java.sql.PreparedStatement#execute()}.
      */
     boolean getExecutionResult();
 
 
     /**
-     * Gets the count of  records updated by the underlying JDBC statement. 
+     * Gets the count of  records updated by the underlying JDBC statement.
      * @return an integer value whose semantics is same as {@link java.sql.CallableStatement#getUpdateCount()}.
      */
     int getUpdateCount();

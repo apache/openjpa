@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -34,23 +34,23 @@ import org.apache.openjpa.meta.JavaTypes;
 
 /**
  * Computes closure of a collection of managed objects.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class Closure implements Iterable<OpenJPAStateManager> {
     private Set<OpenJPAStateManager> _visited = new LinkedHashSet<OpenJPAStateManager>();
-    
+
     public Closure(OpenJPAStateManager root) {
         this(Collections.singleton(root));
     }
-    
+
     public Closure(Collection<OpenJPAStateManager> roots) {
         for (OpenJPAStateManager sm : roots) {
             visit(sm);
         }
     }
-    
+
     private void visit(OpenJPAStateManager sm) {
         if (sm == null)
             return;
@@ -89,7 +89,7 @@ public class Closure implements Iterable<OpenJPAStateManager> {
             }
         }
     }
-    
+
     OpenJPAStateManager toStateManager(Object o) {
         if (o instanceof PersistenceCapable) {
             return (OpenJPAStateManager)((PersistenceCapable)o).pcGetStateManager();
@@ -100,7 +100,7 @@ public class Closure implements Iterable<OpenJPAStateManager> {
     public Iterator<OpenJPAStateManager> iterator() {
         return _visited.iterator();
     }
-    
+
     String ior(OpenJPAStateManager sm) {
         return sm.getMetaData().getDescribedType().getSimpleName()+'-'+sm.getObjectId();
     }

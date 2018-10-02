@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -96,15 +96,15 @@ public class TestIsolationLevelOverride
                     }
                     else if (db2server == DB2Dictionary.db2ISeriesV5R4OrLater) {
                         assertEquals(1, sql.size());
-                        assertContainsSQL(" FOR READ ONLY WITH RR USE AND KEEP" 
+                        assertContainsSQL(" FOR READ ONLY WITH RR USE AND KEEP"
                             + " EXCLUSIVE LOCKS");
-                    }    
+                    }
                     else {
-                        fail("OpenJPA currently only supports " 
-                            +"per-query isolation level configuration on the" 
+                        fail("OpenJPA currently only supports "
+                            +"per-query isolation level configuration on the"
                             +" following databases: DB2");
                     }
-                }    
+                }
             } else {
                 ((JDBCFetchPlan) em.getFetchPlan())
                     .setIsolation(IsolationLevel.SERIALIZABLE);
@@ -127,15 +127,15 @@ public class TestIsolationLevelOverride
                     else if (db2server == DB2Dictionary.db2ISeriesV5R4OrLater) {
                         assertEquals(1, sql.size());
                         assertContainsSQL(" optimize for 1 row"
-                            + " FOR READ ONLY WITH RR USE AND KEEP EXCLUSIVE" 
+                            + " FOR READ ONLY WITH RR USE AND KEEP EXCLUSIVE"
                             + " LOCKS");
-                    }    
+                    }
                     else {
-                        fail("OpenJPA currently only supports per-query" 
-                            +" isolation level configuration on the following" 
+                        fail("OpenJPA currently only supports per-query"
+                            +" isolation level configuration on the following"
                             +" databases: DB2");
                     }
-                }    
+                }
             }
         } catch (InvalidStateException pe) {
             // if we're not using DB2, we expect an InvalidStateException.

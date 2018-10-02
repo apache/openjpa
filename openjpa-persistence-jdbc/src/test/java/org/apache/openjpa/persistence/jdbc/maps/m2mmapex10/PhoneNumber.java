@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex10;
 
@@ -31,7 +31,7 @@ public class PhoneNumber {
     @ManyToMany(mappedBy="phones")
     Map<EmployeePK, Employee> emps = new HashMap<EmployeePK, Employee>();
 
-    int room;    
+    int room;
 
     public PhonePK getPhonePK() {
         return phonePK;
@@ -78,7 +78,7 @@ public class PhoneNumber {
                 return false;
         }
         return true;
-    }    
-    
-    
+    }
+
+
 }

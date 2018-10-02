@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -48,7 +48,7 @@ public class QueryExpressions
     public static final int DISTINCT_TRUE = 2 << 1;
     public static final int DISTINCT_FALSE = 2 << 2;
     public static final Value[] EMPTY_VALUES = new Value[0];
-    
+
     /**
      * Map of {@link FieldMetaData},{@link Value} for update statements.
      */
@@ -78,7 +78,7 @@ public class QueryExpressions
     public Object state;
     public ResultShape<?> shape;
     public boolean hasInExpression;
-    
+
     /**
      * Set reference to the JPQL query contexts.
      */
@@ -98,20 +98,20 @@ public class QueryExpressions
      */
     public boolean isAggregate() {
         if (projections.length == 0)
-            return false; 
+            return false;
         if (_aggregate == null)
             _aggregate = (AggregateExpressionVisitor.isAggregate(projections))
                 ? Boolean.TRUE : Boolean.FALSE;
-        return _aggregate.booleanValue();    
+        return _aggregate.booleanValue();
     }
-    
+
     public boolean isDistinct() {
         return distinct != DISTINCT_FALSE;
     }
-    
+
     /**
      * Gets the fields that are bound to parameters.
-     * 
+     *
      * @return empty if the query has no filtering condition or no parameters.
      */
     public List<FieldMetaData> getParameterizedFields() {
@@ -132,7 +132,7 @@ public class QueryExpressions
      */
     private static class AggregateExpressionVisitor
         extends AbstractExpressionVisitor {
-        
+
         private Value _sub = null;
         private boolean _agg = false;
 
@@ -163,7 +163,7 @@ public class QueryExpressions
                 _sub = null;
         }
     }
-    
+
     /**
      * Visits the expression tree to find the parameter nodes.
      * @author Pinaki Poddar
@@ -179,14 +179,14 @@ public class QueryExpressions
             if (val instanceof Parameter) {
                 if (_parameterized != null) {
                     _collected.add(_parameterized);
-                } 
+                }
             } else if (val instanceof Path) {
                 _parameterized = ((Path)val).last();
             } else {
                 _parameterized = null;
             }
         }
-        
+
         public static List<FieldMetaData> collectParameterizedFields(Expression e) {
             if (e == null) {
                 return Collections.emptyList();
@@ -195,6 +195,6 @@ public class QueryExpressions
             e.acceptVisit(visitor);
             return visitor._collected;
         }
-        
+
     }
 }

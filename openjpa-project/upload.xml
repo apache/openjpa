@@ -37,7 +37,7 @@
                 <include name="**/schema/**"/>
             </patternset>
         </unzip>
-        
+
         <zip destfile="target/site/tempDocs/docs.zip">
             <fileset dir="target/site/tempDocs">
                 <include name="**/javadoc/**"/>

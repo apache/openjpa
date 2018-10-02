@@ -21,12 +21,12 @@ import java.util.Set;
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 /**
  * Utility to test validity of identifier or parameter name.
- * 
+ *
  * @author Pinaki Poddar
  * @since 2.0.0
  *
@@ -35,40 +35,40 @@ public class ReservedWords {
     public static final Set<String> KEYWORDS = new HashSet<String>();
     static {
         KEYWORDS.addAll(Arrays.asList(
-            "ABS", "ALL", "AND", "ANY", "AS", "ASC", "AVG", 
-            "BETWEEN", "BIT_LENGTH", "BOTH", "BY", 
-            "CASE", "CHAR_LENGTH", "CHARACTER_LENGTH", "CLASS", "COALESCE", "CONCAT", "COUNT", 
+            "ABS", "ALL", "AND", "ANY", "AS", "ASC", "AVG",
+            "BETWEEN", "BIT_LENGTH", "BOTH", "BY",
+            "CASE", "CHAR_LENGTH", "CHARACTER_LENGTH", "CLASS", "COALESCE", "CONCAT", "COUNT",
             "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP",
-            "DELETE", "DESC", "DISTINCT", 
-            "ELSE", "EMPTY", "END", "ENTRY", "ESCAPE", "EXISTS", 
-            "FALSE", "FETCH", "FROM", 
-            "GROUP", 
-            "HAVING", 
-            "IN", "INDEX", "INNER", "IS", 
-            "JOIN", 
-            "KEY", 
-            "LEADING", "LEFT", "LENGTH", "LIKE", "LOCATE", "LOWER", 
-            "MAX", "MEMBER", "MIN", "MOD", 
-            "NEW", "NOT", "NULL", "NULLIF", 
-            "OBJECT", "OF", "OR", "ORDER", "OUTER", 
-            "POSITION", 
-            "SELECT", "SET", "SIZE", "SOME", "SQRT", "SUBSTRING", "SUM", 
-            "THEN", "TRAILING", "TRIM", "TRUE", "TYPE", 
-            "UNKNOWN[50]", "UPDATE", "UPPER", 
-            "VALUE", 
+            "DELETE", "DESC", "DISTINCT",
+            "ELSE", "EMPTY", "END", "ENTRY", "ESCAPE", "EXISTS",
+            "FALSE", "FETCH", "FROM",
+            "GROUP",
+            "HAVING",
+            "IN", "INDEX", "INNER", "IS",
+            "JOIN",
+            "KEY",
+            "LEADING", "LEFT", "LENGTH", "LIKE", "LOCATE", "LOWER",
+            "MAX", "MEMBER", "MIN", "MOD",
+            "NEW", "NOT", "NULL", "NULLIF",
+            "OBJECT", "OF", "OR", "ORDER", "OUTER",
+            "POSITION",
+            "SELECT", "SET", "SIZE", "SOME", "SQRT", "SUBSTRING", "SUM",
+            "THEN", "TRAILING", "TRIM", "TRUE", "TYPE",
+            "UNKNOWN[50]", "UPDATE", "UPPER",
+            "VALUE",
             "WHEN", "WHERE"));
     };
-    
+
     /**
      * Affirms if the given string matches any of the JPA reserved words in a case-insensitive manner.
      */
     public static boolean isKeyword(String name) {
         return name != null && KEYWORDS.contains(name.toUpperCase(Locale.ENGLISH));
     }
-    
+
     /**
      * Returns the special character contained in the given name if any.
-     * 
+     *
      * @return null if no character in the given name is a special character.
      */
     public static Character hasSpecialCharacter(String name) {

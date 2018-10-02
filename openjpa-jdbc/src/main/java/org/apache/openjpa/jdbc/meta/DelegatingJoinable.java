@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -92,7 +92,7 @@ public class DelegatingJoinable
         return _join.getFieldIndex();
     }
 
-    public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk, 
+    public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
         JDBCStore store, Joins joins)
         throws SQLException {
         return _join.getPrimaryKeyValue(res, cols, fk, store, joins);

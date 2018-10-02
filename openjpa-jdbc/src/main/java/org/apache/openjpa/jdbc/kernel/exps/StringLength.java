@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -49,13 +49,13 @@ public class StringLength
         _cast = type;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf, int index) {
         DBDictionary dict = ctx.store.getDBDictionary();
         String func = dict.stringLengthFunction;
         dict.assertSupport(func != null, "StringLengthFunction");
         func = dict.getCastFunction(getValue(), func);
-        
+
         int idx = func.indexOf("{0}");
         buf.append(func.substring(0, idx));
         getValue().appendTo(sel, ctx, state, buf, index);

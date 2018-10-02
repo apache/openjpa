@@ -27,7 +27,7 @@
         <class>org.apache.openjpa.integration.daytrader.OrderDataBean</class>
         <class>org.apache.openjpa.integration.daytrader.QuoteDataBean</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
+
         <properties>
             <property name="openjpa.DynamicEnhancementAgent" value="false"/>
             <property name="openjpa.BrokerImpl" value="non-finalizing" />

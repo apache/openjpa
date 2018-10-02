@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -85,8 +85,8 @@ public class HandlerStrategies {
 
     /**
      * Set the given value into the given row.
-     * Return false if the given value can not be set, for example, due to 
-     * null constraints on the columns. 
+     * Return false if the given value can not be set, for example, due to
+     * null constraints on the columns.
      */
     public static boolean set(ValueMapping vm, Object val, JDBCStore store,
         Row row, Column[] cols, ColumnIO io, boolean nullNone)

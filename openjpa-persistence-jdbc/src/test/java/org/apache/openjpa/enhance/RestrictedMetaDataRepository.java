@@ -26,9 +26,9 @@ import org.apache.openjpa.meta.MetaDataRepository;
 
 /**
  * A simple metadata repository wrapper which removes selected types
- * from the set of names returned by getPersistentTypeNames. 
- * This MDR provides a simple method to skip extraneous and more important, 
- * purposefully erroneous classes during enhancement.  This 
+ * from the set of names returned by getPersistentTypeNames.
+ * This MDR provides a simple method to skip extraneous and more important,
+ * purposefully erroneous classes during enhancement.  This
  * especially useful in the case where all pu's are enhanced generically,
  * automatically picking up all entities in the classpath.
  */
@@ -36,18 +36,18 @@ import org.apache.openjpa.meta.MetaDataRepository;
 public class RestrictedMetaDataRepository extends MetaDataRepository {
 
     private Set<String> _excludedTypes = new HashSet<String>();
-    
+
     public String getExcludedTypes() {
         return _excludedTypes.toString();
     }
-    
+
     public void setExcludedTypes(String types) {
         StringTokenizer strTok = new StringTokenizer(types,",");
         while (strTok.hasMoreTokens()) {
             _excludedTypes.add(strTok.nextToken());
         }
     }
-    
+
     public Set<String> getPersistentTypeNames(boolean devpath, ClassLoader envLoader) {
         Set<String> types = super.getPersistentTypeNames(devpath, envLoader);
         String[] typeArray = types.toArray(new String[types.size()]);

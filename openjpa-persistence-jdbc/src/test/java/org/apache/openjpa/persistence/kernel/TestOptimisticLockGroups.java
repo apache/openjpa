@@ -22,7 +22,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -207,16 +207,16 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
 //        pc1.setDefaultLockGroupStringField("pm1 value");
 //        pc1.setLockGroup0IntField(1);
 //        pc1.setUnlockedStringField("pm1 value");
-//        
+//
 //        OpenJPAEntityManager pm2 = getPM(false, false);
 //        startTx(pm2,());
 //        LockGroupPC pc2 = (LockGroupPC) pm2.find(LockGroupPC.class,oid);
 //        pc2.setLockGroup1RelationField(new RuntimeTest1());
 //        pc2.setUnlockedStringField("pm2 value");
-//        
+//
 //        endTx(pm1,());
 //        endEm(pm1);
-//        
+//
 //        endTx(pm2,());
 //        endEm(pm2);
 //    }
@@ -342,7 +342,7 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
 //        startTx(pm,());
 //        pm.persist(pc);
 //        endTx(pm,());
-//        
+//
 //        startTx(pm,());
 //        pc.setKnownSubclassStringField("foo");
 //        endTx(pm,());

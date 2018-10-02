@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -22,7 +22,7 @@ import java.io.Serializable;
 
 /**
  * Describe metadata about an xml type.
- * 
+ *
  * @author Catalina Wei
  * @since 1.0.0
  */
@@ -49,14 +49,14 @@ public interface XMLMetaData extends Serializable {
      * Return true if mapping on an XmlAttribute.
      */
     public boolean isXmlAttribute();
-    
+
     /**
      * Return XMLMapping for a given field.
      * @param name the field name.
      * @return XMLMapping.
      */
-    public XMLMetaData getFieldMapping(String name); 
-    
+    public XMLMetaData getFieldMapping(String name);
+
     /**
      * Set type.
      */
@@ -115,8 +115,8 @@ public interface XMLMetaData extends Serializable {
      * @return xmltype
      */
     public int getXmltype();
-    
+
     public void setXmlRootElement(boolean isXmlRootElement);
-    
+
     public void addField(String name, XMLMetaData field);
 }

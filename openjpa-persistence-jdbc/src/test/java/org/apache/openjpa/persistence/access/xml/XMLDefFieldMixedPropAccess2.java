@@ -23,7 +23,7 @@ public class XMLDefFieldMixedPropAccess2 {
     private int id;
 
     private int version;
-    
+
     private String strField;
 
     public void setId(int id) {
@@ -48,8 +48,8 @@ public class XMLDefFieldMixedPropAccess2 {
 
     public String getStringField() {
         return strField;
-    }  
-    
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLDefFieldMixedPropAccess2) {
             XMLDefFieldMixedPropAccess2 fa = (XMLDefFieldMixedPropAccess2)obj;

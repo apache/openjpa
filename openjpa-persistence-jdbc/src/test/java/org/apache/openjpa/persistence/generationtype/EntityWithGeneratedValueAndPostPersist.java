@@ -24,46 +24,46 @@ import javax.persistence.*;
 public class EntityWithGeneratedValueAndPostPersist {
     @Id
     private long id;
-    
+
     @Basic
     @GeneratedValue
     private int bingo;
-    
+
     @Basic
     private String name;
-    
+
     @Transient
     private ValueCache cache;
-    
+
     public EntityWithGeneratedValueAndPostPersist(long id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public long getId() {
         return id;
     }
-    
+
     public int getBingo() {
         return bingo;
     }
-    
+
     public void setCache(ValueCache cache) {
         this.cache = cache;
     }
-    
+
     @PostPersist
     private void postPersistCallback() {
         if (cache == null)
             throw new IllegalStateException("Expected a cache");
-        
+
         cache.setValue(bingo);
     }
 }

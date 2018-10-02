@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.inheritance.jointable.onetomany;
 
@@ -25,7 +25,7 @@ import javax.persistence.Entity;
 @Entity
 public class UMLClass extends UMLType implements Serializable {
 
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public UMLClass() {

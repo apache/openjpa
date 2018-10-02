@@ -14,39 +14,39 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
 import java.math.BigDecimal;
 import javax.persistence.*;
 
-@Embeddable 
+@Embeddable
 public class PropertyInfo {
     protected Integer parcelNumber;
     protected Integer size;
     protected BigDecimal tax;
-    
+
     public Integer getParcelNumber() {
     	return parcelNumber;
     }
-    
+
     public void setParcelNumber(Integer p) {
     	parcelNumber = p;
     }
-    
+
     public Integer getSize() {
     	return size;
     }
-    
+
     public void setSize(Integer size) {
     	this.size = size;
     }
-    
+
     public BigDecimal getTax() {
     	return tax;
     }
-    
+
     public void setTax(BigDecimal tax) {
     	this.tax = tax;
     }

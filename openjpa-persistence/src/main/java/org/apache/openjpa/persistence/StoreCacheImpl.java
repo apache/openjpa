@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -34,13 +34,13 @@ import org.apache.openjpa.meta.MetaDataRepository;
  * @author Abe White
  * @since 0.4.1
  */
-public class StoreCacheImpl 
+public class StoreCacheImpl
 	implements StoreCache {
 
     private final MetaDataRepository _repos;
     private final DelegatingDataCache _cache;
 
-    
+
     /**
      * Constructor; supply delegate.
      */
@@ -163,7 +163,7 @@ public class StoreCacheImpl
             return true;
         if ((other == null) || (other.getClass() != this.getClass()))
             return false;
-        if (_cache == null) 
+        if (_cache == null)
             return false;
       return _cache.equals (((StoreCacheImpl) other)._cache);
 	}

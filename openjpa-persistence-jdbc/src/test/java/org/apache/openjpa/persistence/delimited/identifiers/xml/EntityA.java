@@ -26,20 +26,20 @@ import java.util.Set;
 public class EntityA {
     private int id;
     private String name;
-    
+
     private String secName;
-    
+
     private Set<String> delimSet = new HashSet<String>();
-    private Map<String, String> delimMap = 
+    private Map<String, String> delimMap =
         new HashMap<String, String>();
-    
+
     public EntityA(){
     }
-    
+
     public EntityA(int id, String name) {
         this.name=name;
     }
-    
+
     /**
      * @return the id
      */
@@ -86,7 +86,7 @@ public class EntityA {
     public void setDelimSet(Set<String> collectionDelimSet) {
         this.delimSet = collectionDelimSet;
     }
-    
+
     public void addDelimSet(String item) {
         this.delimSet.add(item);
     }
@@ -104,7 +104,7 @@ public class EntityA {
     public void setDelimMap(Map<String, String> delimMap) {
         this.delimMap = delimMap;
     }
-    
+
     public void addDelimMap(String key, String value) {
         this.delimMap.put(key, value);
     }

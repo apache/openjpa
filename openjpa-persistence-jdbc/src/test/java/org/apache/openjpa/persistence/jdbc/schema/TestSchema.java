@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
@@ -40,7 +40,7 @@ public class TestSchema
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private Schema _schema = new SchemaGroup().addSchema("schema");
-    
+
     /** Creates a new instance of TestSchema */
     public TestSchema() {
     }
@@ -317,5 +317,5 @@ public class TestSchema
     public static void main(String[] args) {
         //main(TestSchema.class);
 	}
-    
+
 }

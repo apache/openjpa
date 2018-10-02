@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.conf;
 
@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests dynamic modification of configuration property.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -37,16 +37,16 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 	public void setUp() throws Exception {
 		super.setUp(PObject.class);
 	}
-	
+
     public void testConfigurationIsEqualByValueAndHashCode() {
 		OpenJPAEntityManagerFactorySPI emf1 = createEMF(FRESH_EMF);
 		assertNotNull(emf1);
 		OpenJPAConfiguration conf1 = emf1.getConfiguration();
-		
+
 		OpenJPAEntityManagerFactorySPI emf2 = createEMF(FRESH_EMF);
 		assertNotNull(emf2);
 		OpenJPAConfiguration conf2 = emf2.getConfiguration();
-		
+
 		try {
 	        assertFalse(emf1==emf2);
 	        assertFalse(emf1.equals(emf2));
@@ -61,18 +61,18 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
             closeEMF(emf2);
 		}
 	}
-	
+
 	public void testConfigurationIsReadOnlyAfterFirstConstruction() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 		assertFalse(conf.isReadOnly());
 		emf.createEntityManager();
 		assertTrue(conf.isReadOnly());
 	}
-	
+
 	public void testNonDynamicValuesCanNotBeChanged() {
 		emf.createEntityManager();
 		OpenJPAConfiguration conf = emf.getConfiguration();
-		
+
 		String oldValue = conf.getConnectionURL();
 		String newValue = "jdbc://mydb:8087/DBDoesNotExist";
 		try {
@@ -82,61 +82,61 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 			assertEquals(oldValue, conf.getConnectionURL());
 		}
 	}
-	
+
 	public void testDynamicValuesCanBeChanged() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
-		
+
 		int oldValue = conf.getLockTimeout();
 		int newValue = oldValue + 10;
-		
+
 		conf.setLockTimeout(newValue);
 		assertEquals(newValue, conf.getLockTimeout());
 	}
 
 	public void testDynamicValuesAreCorrectlySet() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
-		
+
 		Value lockTimeoutValue = conf.getValue("LockTimeout");
 		assertNotNull(lockTimeoutValue);
 		assertTrue(lockTimeoutValue.isDynamic());
-		
+
 		Value connectionURLValue = conf.getValue("ConnectionURL");
 		assertNotNull(connectionURLValue);
 		assertFalse(connectionURLValue.isDynamic());
 	}
-	
+
 	public void testDynamicChangeDoesNotChangeHashCode() {
 		OpenJPAConfiguration conf1 = emf.getConfiguration();
-		
+
 		int oldValue = conf1.getLockTimeout();
 		int newValue = oldValue+10;
 		int oldHash = conf1.hashCode();
 		conf1.setLockTimeout(newValue);
 		int newHash = conf1.hashCode();
-		
+
 		assertEquals(oldHash, newHash);
 	}
-	
+
 	public void testClassMetaDataRecognizesDataCacheTimeoutValueChange() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
-		
+
 		// ensure that PObject is in metadata repository
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		PObject pc = new PObject();
 		em.persist(pc);
-		
+
 		int oldValue = conf.getDataCacheTimeout();
-		
+
 		ClassMetaData meta = conf.getMetaDataRepositoryInstance()
 			.getCachedMetaData(PObject.class);
 		assertNotNull(meta);
 		assertEquals(oldValue, meta.getDataCacheTimeout());
-		
+
 		int newValue = oldValue + 10;
 		conf.setDataCacheTimeout(newValue);
 		assertEquals(newValue, conf.getDataCacheTimeout());
 		assertEquals(newValue, meta.getDataCacheTimeout());
-		
+
 	}
 }

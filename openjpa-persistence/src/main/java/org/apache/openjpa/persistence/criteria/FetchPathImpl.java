@@ -32,7 +32,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.apache.openjpa.persistence.meta.Members;
 
 /**
- *  
+ *
  * @author Pinaki Poddar
  *
  * @param <Z> type of parent
@@ -41,21 +41,21 @@ import org.apache.openjpa.persistence.meta.Members;
 class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
     protected Set<Fetch<?,?>> _fetches;
     protected JoinType joinType;
-    
-    
+
+
     FetchPathImpl(FetchParent<?,Z> parent, Members.Member<? super Z,X> member) {
         this(parent, member, JoinType.INNER);
     }
-    
+
     FetchPathImpl(FetchParent<?,Z> parent, Members.Member<? super Z,X> member, JoinType type) {
         super((PathImpl<?,Z>)parent, member, member.getJavaType());
         this.joinType = type;
     }
-    
+
     public JoinType getJoinType() {
         return joinType;
     }
-    
+
     /**
      * Return the metamodel attribute corresponding to the fetch join.
      * @return metamodel attribute for the join
@@ -63,11 +63,11 @@ class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
     public Attribute<Z, X> getAttribute() {
         return (Attribute<Z, X>)_member;
     }
-    
+
     public FetchParent<?, Z> getParent() {
         return (FetchParent<?, Z>)_parent;
     }
-    
+
     public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc) {
         return addFetch((Members.Member<? super X,Y>)assoc, JoinType.INNER);
     }
@@ -100,7 +100,7 @@ class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
         }
         return result;
     }
-    
+
     private <X,Y> Fetch<X,Y> addFetch(Members.Member<? super X, Y> member, JoinType jt) {
         Fetch<X,Y> fetch = new FetchPathImpl(this, member, jt);
         if (_fetches == null)

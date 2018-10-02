@@ -36,7 +36,7 @@
         <class>org.apache.openjpa.persistence.proxy.entities.Person</class>
         <class>org.apache.openjpa.persistence.proxy.entities.Rider</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>			
+        <properties>
             <property name="openjpa.DetachState" value="fgs(DetachedStateField=true)" />
             <!-- <property name="openjpa.jdbc.Schema" value="EJB30"/> -->
             <property name="openjpa.jdbc.SynchronizeMappings"

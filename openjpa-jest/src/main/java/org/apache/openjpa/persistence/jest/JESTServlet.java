@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -41,14 +41,14 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  * unit and is supplied to this servlet during its initialization. The component using
  * the persistent unit and this servlet must be within the same module scope.
  * <p>
- * The syntax of the request URL is described in 
+ * The syntax of the request URL is described in
  * <a href="https://cwiki.apache.org/openjpa/jest-syntax.html">OpenJPA web site</a>.
  * <p>
- * The response to a resource request is represented in various format, namely  
+ * The response to a resource request is represented in various format, namely
  * XML, JSON or a JavaScript that will dynamically render in the browser. The format
- * can be controlled via the initialization parameter <code>response.format</code> in 
- * <code>&lt;init-param&gt;</code> clause or per request basis via <code>format=xml|dojo|json</code> 
- * encoded in the path expression of the Request URI. 
+ * can be controlled via the initialization parameter <code>response.format</code> in
+ * <code>&lt;init-param&gt;</code> clause or per request basis via <code>format=xml|dojo|json</code>
+ * encoded in the path expression of the Request URI.
  * <p>
  * Servlet initialization parameter
  * <table cellspacing="20px">
@@ -67,13 +67,13 @@ public class JESTServlet extends HttpServlet  {
      */
     public static final String INIT_PARA_UNIT       = "persistence.unit";
     public static final String INIT_PARA_STANDALONE = "standalone";
-    
-    
+
+
     private String _unit;
     private boolean _debug;
     private OpenJPAEntityManagerFactory _emf;
     protected static Localizer _loc = Localizer.forPackage(JESTServlet.class);
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -95,10 +95,10 @@ public class JESTServlet extends HttpServlet  {
             config.getServletContext().log(_loc.get("servlet-not-init", _unit).toString());
         }
     }
-    
+
     /**
      * Peeks into the servlet path of the request to create appropriate {@link JESTCommand JEST command}.
-     * Passes the request on to the command which is responsible for generating a response. 
+     * Passes the request on to the command which is responsible for generating a response.
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -112,12 +112,12 @@ public class JESTServlet extends HttpServlet  {
             }
         } else {
             throw new ServletException(_loc.get("no-persistence-unit", _unit).toString());
-        } 
+        }
     }
-    
+
     protected void createPersistenceUnit() throws ServletException {
         // START - ALLOW PRINT STATEMENTS
-        try {            
+        try {
             System.err.println("Creating Standalone Persistent Unit  " + _unit);
             _emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(_unit));
             System.err.println("Created Standalone Persistent Unit  " + _unit + ":" + _emf);
@@ -125,10 +125,10 @@ public class JESTServlet extends HttpServlet  {
             System.err.println("Can not creating Standalone Persistent Unit  " + _unit);
             e.printStackTrace();
             throw new ServletException(_loc.get("no-persistence-unit-standalone", _unit).toString(), e);
-        } 
+        }
         // STOP - ALLOW PRINT STATEMENTS
     }
-    
+
     protected boolean findPersistenceUnit() {
         // START - ALLOW PRINT STATEMENTS
         if (_emf == null) {
@@ -142,7 +142,7 @@ public class JESTServlet extends HttpServlet  {
         // STOP - ALLOW PRINT STATEMENTS
         return _emf != null;
     }
-    
+
     protected void handleError(JPAServletContext ctx, Throwable t) throws IOException {
         if (t instanceof ProcessingException) {
             ((ProcessingException)t).printStackTrace();
@@ -156,7 +156,7 @@ public class JESTServlet extends HttpServlet  {
         _emf = null;
         _unit = null;;
     }
-    
+
     private void debug(HttpServletRequest r) {
         if (!_debug) return;
 //        log("-----------------------------------------------------------");
@@ -168,7 +168,7 @@ public class JESTServlet extends HttpServlet  {
 //        log("Path Info      = [" + request.getPathInfo() + "]");
 //        log("Path Translated = [" + request.getPathTranslated() + "]");
     }
-    
+
     public void log(String s) {
         // START - ALLOW PRINT STATEMENTS
         System.err.println(s);

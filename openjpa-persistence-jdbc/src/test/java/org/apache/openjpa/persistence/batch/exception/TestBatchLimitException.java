@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.batch.exception;
 
@@ -33,7 +33,7 @@ import org.apache.openjpa.util.ExceptionInfo;
 //batch limit was -1 or a value greater than 1.  Also, they found that the
 //'params' listed in the prepared statement were missing.  This test will set
 //various batch limits and verify that with the fix to 1550, the correct
-//'failed object' and prepared statement is returned. 
+//'failed object' and prepared statement is returned.
 public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
     static Ent1 expectedFailedObject;
@@ -47,10 +47,10 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
     public EntityManagerFactory newEmf(String batchLimit) {
         OpenJPAEntityManagerFactorySPI emf =
-            createEMF(Ent1.class, 
-                "openjpa.jdbc.SynchronizeMappings", 
+            createEMF(Ent1.class,
+                "openjpa.jdbc.SynchronizeMappings",
                 "buildSchema(ForeignKeys=true)",
-                "openjpa.jdbc.DBDictionary", batchLimit, 
+                "openjpa.jdbc.DBDictionary", batchLimit,
                 "openjpa.ConnectionFactoryProperties", "PrintParameters=true",
                 CLEAR_TABLES);
 
@@ -94,7 +94,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         em2.persist(new Ent1(3, "three"));
         em2.persist(new Ent1(1, "one"));
         em2.persist(new Ent1(5, "five"));
-        
+
         try {
             em2.getTransaction().commit();
         } catch (Throwable excp) {
@@ -128,7 +128,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
         em2.getTransaction().begin();
         em2.persist(new Ent1(200, "twohundred"));
-        
+
         try {
             em2.getTransaction().commit();
         } catch (Throwable excp) {
@@ -176,7 +176,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
         // Put the duplicate object/row as the first element in the second batch.
         em2.persist(new Ent1(200, "twohundred"));
-        
+
         try {
             em2.getTransaction().commit();
         } catch (Throwable excp) {
@@ -224,7 +224,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         em2.persist(expectedFailedObjectOracle);    // 18
         em2.persist(new Ent1(i, "name" + i++));     // 19
         em2.persist(new Ent1(i, "name" + i++));     // 20
-        em2.persist(new Ent1(i, "name" + i++));     // 21        
+        em2.persist(new Ent1(i, "name" + i++));     // 21
         // Put the duplicate row in the 3rd batch.
         em2.persist(new Ent1(200, "twohundred"));
         // Put a few more objects into the batch.
@@ -315,7 +315,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         em2.persist(new Ent1(6, "six"));
         em2.persist(new Ent1(200, "twohundred"));
         em2.persist(new Ent1(7, "seven"));
-        
+
         try {
             em2.getTransaction().commit();
         } catch (Throwable excp) {
@@ -351,7 +351,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
                 assertEquals(expectedFailedObject, failedObject);
             } else {
                 // special case, as Oracle returns all statements in the batch
-                assertEquals(expectedFailedObjectOracle, failedObject);                
+                assertEquals(expectedFailedObjectOracle, failedObject);
             }
         }
         else {

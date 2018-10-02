@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
@@ -42,16 +42,16 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class BaseJDBCTest
         extends org.apache.openjpa.persistence.common.utils.AbstractTestCase {
-    
-    
+
+
     private static Map _sysprops = new HashMap();
-    
-    
+
+
     /** Creates a new instance of BaseJDBCTest */
     public BaseJDBCTest() {
     }
-    
-    public BaseJDBCTest(String name) 
+
+    public BaseJDBCTest(String name)
     {
         super(name, "jdbccactusapp");
     }
@@ -61,11 +61,11 @@ public class BaseJDBCTest
         return "org/apache/openjpa/persistence/jdbc/common" +
             "/apps/META-INF/persistence.xml";
     }
-    
+
     protected OpenJPAEntityManager getPM() {
         return (OpenJPAEntityManager)currentEntityManager();
     }
-    
+
     protected OpenJPAEntityManager getPM(boolean optimistic,
             boolean retainValues) {
         OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
@@ -74,21 +74,21 @@ public class BaseJDBCTest
         em.setOptimistic(optimistic);
         return em;
     }
-    
+
     /**
      * Delete all instances of the given class.
      */
     protected  int deleteAll(Broker broker, Class clazz) {
         return deleteAll(broker, clazz, true);
     }
-    
+
     /**
      * Delete all instances of the given class.
      */
     protected int deleteAll(Broker broker, Class clazz,
             boolean subclasses) {
         final boolean useDeleteByQuery = false;
-        
+
         if (useDeleteByQuery) {
             org.apache.openjpa.kernel.Query query = broker.newQuery(
                     JPQLParser.LANG_JPQL, clazz, "");
@@ -103,14 +103,14 @@ public class BaseJDBCTest
             return size;
         }
     }
-    
+
     /**
      * Delete all instances of the given class.
      */
     protected int deleteAll(OpenJPAEntityManager pm, Class clazz) {
         return deleteAll(JPAFacadeHelper.toBroker(pm), clazz);
     }
-    
+
     /**
      * Delete all instances of the given class.
      */
@@ -118,8 +118,8 @@ public class BaseJDBCTest
             boolean subclasses) {
         return deleteAll(JPAFacadeHelper.toBroker(pm), clazz, subclasses);
     }
-    
-    
+
+
     protected Object persist(Object ob) {
         Broker broker = getBrokerFactory().newBroker();
         broker.begin();
@@ -129,11 +129,11 @@ public class BaseJDBCTest
         broker.close();
         return id;
     }
-    
+
     protected Properties getProperties() {
         return getProperties(null);
     }
-    
+
     /**
      * Return the runtime properties, optionally overriding or setting
      * some via the given array, which should be in the form
@@ -149,14 +149,14 @@ public class BaseJDBCTest
                 loaded = new Properties();
                 ConfigurationProvider cp = (ConfigurationProvider)
                         Configurations.getProperty(str, null);
-                
+
                 if (cp != null)
                     loaded.putAll(cp.getProperties());
                 _sysprops.put(str, loaded);
             }
             p.putAll(loaded);
         }
-        
+
         for (int i = 0; props != null && i < props.length; i += 2) {
             if (props[i + 1] != null) {
                 // remove any duplicate kodo/openjpa property so we don't clash
@@ -164,7 +164,7 @@ public class BaseJDBCTest
                     p.remove("openjpa." + props[i].substring(5));
                 else if (props[i].startsWith("openjpa."))
                     p.remove("openjpa." + props[i].substring(8));
-                
+
                 p.setProperty(props[i], props[i + 1]);
             } else {
                 p.remove(props[i]);
@@ -172,9 +172,9 @@ public class BaseJDBCTest
         }
         return p;
     }
-    
-    
-    
-    
-    
+
+
+
+
+
 }

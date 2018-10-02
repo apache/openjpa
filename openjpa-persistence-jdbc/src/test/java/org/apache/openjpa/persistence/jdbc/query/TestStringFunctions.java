@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
@@ -40,13 +40,13 @@ public class TestStringFunctions
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private OpenJPAEntityManager _pm = null;
     private QueryTest1 _match = null;
-    
+
     /** Creates a new instance of TestStringFunctions */
-    public TestStringFunctions(String name) 
+    public TestStringFunctions(String name)
     {
     	super(name);
     }
-    
+
     public void setUp() {
        deleteAll(QueryTest1.class);
 
@@ -116,5 +116,5 @@ public class TestStringFunctions
         assertEquals(_match, res.iterator().next());
         q.closeAll();
     }
-    
+
 }

@@ -42,25 +42,25 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * Trading Window allows the user to buy/sell a {@link Tradable tradable} or withdraw it.
  * <br>
- * This widget demonstrates combination of both read-only and updatable visual elements 
+ * This widget demonstrates combination of both read-only and updatable visual elements
  * as well as active widgets such as a button.
  * <br>
  * Both the user actions (such as when a tradable is withdrawn) or other events such
- * as a Stock price change changes the expected gain/loss of a tradable,  
+ * as a Stock price change changes the expected gain/loss of a tradable,
  * <br>
  * The complexity arises from the fact that a displayed tradable may have been consumed
  * by a matching tradable in another session. A tradable undergoes a state transition when
  * it is traded. Thus the displayed tradable can be an inconsistent state than its original
  * state in the server. Though all the displayed tradables are periodically refreshed, the
- * latency still exists.  
- *   
- *   
+ * latency still exists.
+ *
+ *
  * @author Pinaki Poddar
  *
  */
-public class TradingWindow extends ScrollableTable<Tradable> 
+public class TradingWindow extends ScrollableTable<Tradable>
        implements ServiceEventHandler.AddTradableHandler,
-                  ServiceEventHandler.RemoveTradableHandler, 
+                  ServiceEventHandler.RemoveTradableHandler,
                   ServiceEventHandler.UpdateStockHandler {
     private final OpenTrader session;
     private Timer refreshTimer;
@@ -246,7 +246,7 @@ public class TradingWindow extends ScrollableTable<Tradable>
                 session.fireEvent(new ServiceEvent.TradeCommitted(result.getTrade()));
             }
         }
-        
+
         @Override
         public void onFailure(Throwable t) {
             session.handleError(t);

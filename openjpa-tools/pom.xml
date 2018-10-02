@@ -53,7 +53,7 @@
             <properties>
                 <policy.file>${basedir}/../../openjpa-persistence-jdbc/src/test/resources/j2.security.test.policy</policy.file>
             </properties>
-        </profile>    
+        </profile>
     </profiles>
 
 </project>

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -128,7 +128,7 @@ public class ValueMappingInfo
         }
         return table;
     }
-    
+
     /**
      * Return the join from the related type to this value.
      * @deprecated
@@ -370,7 +370,7 @@ public class ValueMappingInfo
         if (_canNull)
             _canNull = vinfo.canIndicateNull();
     }
-    
+
     /**
      * Raw column data.
      */
@@ -380,7 +380,7 @@ public class ValueMappingInfo
         }
         return  _mapsIdCols;
     }
-    
+
     /**
      * Raw column data.
      */

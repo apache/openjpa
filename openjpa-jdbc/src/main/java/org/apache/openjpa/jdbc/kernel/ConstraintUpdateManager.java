@@ -87,7 +87,7 @@ public class ConstraintUpdateManager
         Collection<PrimaryRow> inserts = rmimpl.getInserts();
         Collection<PrimaryRow> updates = rmimpl.getUpdates();
         Collection<PrimaryRow> deletes = rmimpl.getDeletes();
-    
+
         Graph[] graphs = new Graph[2];    // insert graph, delete graph
         analyzeForeignKeys(inserts, updates, deletes, rmimpl, graphs);
 
@@ -326,13 +326,13 @@ public class ConstraintUpdateManager
         boolean recalculate;
 
         // Handle circular constraints:
-        // - if deleted row A has a ciricular fk to deleted row B, 
-        //   then use an update statement to null A's fk to B before flushing, 
+        // - if deleted row A has a ciricular fk to deleted row B,
+        //   then use an update statement to null A's fk to B before flushing,
         //   and then flush
         // - if inserted row A has a circular fk to updated/inserted row B,
         //   then null the fk in the B row object, then flush,
         //   and after flushing, use an update to set the fk back to A
-        // Depending on where circular dependencies are broken, the  
+        // Depending on where circular dependencies are broken, the
         // topological order of the graph nodes has to be re-calculated.
         recalculate = resolveCycles(graph, dfa.getEdges(Edge.TYPE_BACK),
                 deleteUpdates, insertUpdates);
@@ -359,12 +359,12 @@ public class ConstraintUpdateManager
 
     /**
      * Break a circular dependency caused by delete operations.
-     * If deleted row A has a ciricular fk to deleted row B, then use an update 
+     * If deleted row A has a ciricular fk to deleted row B, then use an update
      * statement to null A's fk to B before deleting B, then delete A.
      * @param edge Edge in the dependency graph corresponding to a foreign key
      * constraint. This dependency is broken by nullifying the foreign key.
      * @param deleteUpdates Collection of update statements that are executed
-     * before the delete operations are flushed 
+     * before the delete operations are flushed
      */
     private void addDeleteUpdate(Edge edge, Collection deleteUpdates)
         throws SQLException {
@@ -394,7 +394,7 @@ public class ConstraintUpdateManager
      * @param edge Edge in the dependency graph corresponding to a foreign key
      * constraint. This dependency is broken by nullifying the foreign key.
      * @param insertUpdates Collection of update statements that are executed
-     * after the insert/update operations are flushed 
+     * after the insert/update operations are flushed
      */
     private void addInsertUpdate(PrimaryRow row, Edge edge,
         Collection insertUpdates) throws SQLException {
@@ -428,7 +428,7 @@ public class ConstraintUpdateManager
     }
 
     /**
-     * Finds a nullable foreign key by walking the dependency cycle. 
+     * Finds a nullable foreign key by walking the dependency cycle.
      * Circular dependencies can be broken at this point.
      * @param cycle Cycle in the dependency graph.
      * @return Edge corresponding to a nullable foreign key.
@@ -454,7 +454,7 @@ public class ConstraintUpdateManager
     }
 
     /**
-     * Re-calculates the DepthFirstSearch analysis of the graph 
+     * Re-calculates the DepthFirstSearch analysis of the graph
      * after some of the edges have been removed. Ensures
      * that the dependency graph is cycle free.
      * @param graph The graph of statements to be walked
@@ -476,15 +476,15 @@ public class ConstraintUpdateManager
      * Resolve circular dependencies by identifying and breaking
      * a nullable foreign key.
      * @param graph Dependency graph.
-     * @param edges Collection of edges. Each edge indicates a possible 
+     * @param edges Collection of edges. Each edge indicates a possible
      * circular dependency
-     * @param deleteUpdates Collection of update operations (nullifying 
-     * foreign keys) to be filled. These updates will be executed before 
+     * @param deleteUpdates Collection of update operations (nullifying
+     * foreign keys) to be filled. These updates will be executed before
      * the rows in the dependency graph are flushed
-     * @param insertUpdates CCollection of update operations (nullifying 
-     * foreign keys) to be filled. These updates will be executed after 
+     * @param insertUpdates CCollection of update operations (nullifying
+     * foreign keys) to be filled. These updates will be executed after
      * the rows in the dependency graph are flushed
-     * @return Depending on where circular dependencies are broken, the  
+     * @return Depending on where circular dependencies are broken, the
      * topological order of the graph nodes has to be re-calculated.
      */
     private boolean resolveCycles(Graph graph, Collection edges,

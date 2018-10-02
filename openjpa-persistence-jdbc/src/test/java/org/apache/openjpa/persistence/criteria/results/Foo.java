@@ -24,7 +24,7 @@ import javax.persistence.OneToOne;
 
 /**
  * A simple class for testing select projections.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -38,11 +38,11 @@ public class Foo {
     private int fint;
     @OneToOne
     private Bar bar;
-    
+
     protected Foo() {
-        
+
     }
-    
+
     public Foo(long fid, long flong, int fint) {
         super();
         this.fid = fid;
@@ -61,7 +61,7 @@ public class Foo {
         this.fid = fid;
         this.fint = fint;
     }
-    
+
     public long getFid() {
         return fid;
     }

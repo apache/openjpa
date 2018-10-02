@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.annotations;
 
@@ -40,7 +40,7 @@ public class TestMappedSuperClass extends AnnotationTestCase {
     public static String pstr = "TestParty";
     public static int ikey = 1501;
     public static PartyId pid = new PartyId(pstr, ikey);
-    
+
     public TestMappedSuperClass(String name) {
         super(name, "annotationMappedSuperclassApp");
     }
@@ -67,7 +67,7 @@ public class TestMappedSuperClass extends AnnotationTestCase {
         boolean persistSuccess = true;
         try{
             startTx(em);
-    
+
             Site s = new Site();
             s.setPartyId(pkey);
             s.setSiteName("San Jose");
@@ -75,9 +75,9 @@ public class TestMappedSuperClass extends AnnotationTestCase {
             s.setStatus("2");
             s.setArchiveStatus("2");
             s.setCreateDate(new Date());
-    
+
             em.persist(s);
-    
+
             endTx(em);
         }catch(Exception e) {
             persistSuccess = false;
@@ -92,9 +92,9 @@ public class TestMappedSuperClass extends AnnotationTestCase {
         boolean persistSuccess = true;
         try{
             startTx(em);
-    
+
             Site site = em.find(Site.class, pkey);
-    
+
             Store store = new Store();
             store.setPartyId(pkey);
             store.setStoreDescription("storeDescription");
@@ -104,11 +104,11 @@ public class TestMappedSuperClass extends AnnotationTestCase {
             store.setCreateDate(new Date());
             store.setSiteId(site.getPartyId());
             store.setSite(site);
-    
+
             List<Store> stores = new ArrayList<Store>();
             stores.add(store);
             site.setStores(stores);
-    
+
             em.persist(store);
             endTx(em);
         }catch(Exception e) {
@@ -124,7 +124,7 @@ public class TestMappedSuperClass extends AnnotationTestCase {
         boolean persistSuccess = true;
         try{
             startTx(em);
-    
+
             Site1 s = new Site1();
             s.setId(ikey);
             s.setPartyName(pstr);
@@ -133,9 +133,9 @@ public class TestMappedSuperClass extends AnnotationTestCase {
             s.setStatus("2");
             s.setArchiveStatus("2");
             s.setCreateDate(new Date());
-    
+
             em.persist(s);
-    
+
             endTx(em);
         }catch(Exception e) {
             persistSuccess = false;
@@ -150,9 +150,9 @@ public class TestMappedSuperClass extends AnnotationTestCase {
         boolean persistSuccess = true;
         try{
             startTx(em);
-    
+
             Site1 site = em.find(Site1.class, pid);
-    
+
             Store1 store = new Store1();
             store.setId(ikey);
             store.setPartyName(pstr);
@@ -162,11 +162,11 @@ public class TestMappedSuperClass extends AnnotationTestCase {
             store.setArchiveStatus("1");
             store.setCreateDate(new Date());
             store.setSite(site);
-    
+
             List<Store1> stores = new ArrayList<Store1>();
             stores.add(store);
             site.setStores(stores);
-    
+
             em.persist(store);
             endTx(em);
     }catch(Exception e) {

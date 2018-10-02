@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -333,7 +333,7 @@ public class DelegatingQuery
             throw translate(re);
         }
     }
-    
+
     public boolean isDistinct() {
         try {
             return _query.isDistinct();
@@ -422,7 +422,7 @@ public class DelegatingQuery
         }
     }
 
-    public Number deleteInMemory(StoreQuery q, StoreQuery.Executor ex, 
+    public Number deleteInMemory(StoreQuery q, StoreQuery.Executor ex,
         Object[] params) {
         try {
             return _query.deleteInMemory(q, ex, params);
@@ -431,7 +431,7 @@ public class DelegatingQuery
         }
     }
 
-    public Number updateInMemory(StoreQuery q, StoreQuery.Executor ex, 
+    public Number updateInMemory(StoreQuery q, StoreQuery.Executor ex,
         Object[] params) {
         try {
             return _query.updateInMemory(q, ex, params);

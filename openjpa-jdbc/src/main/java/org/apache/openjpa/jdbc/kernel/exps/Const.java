@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -101,14 +101,14 @@ abstract class Const
         }
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         if (other instanceof PCPath)
             ((ConstExpState) state).cols = ((PCPath) other).
                 getColumns(otherState);
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
@@ -120,7 +120,7 @@ abstract class Const
         return buf;
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
     }
 
@@ -128,7 +128,7 @@ abstract class Const
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
@@ -142,7 +142,7 @@ abstract class Const
         return 1;
     }
 
-    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         Object obj = getValue(ctx, state);
         if (obj instanceof Collection && ((Collection) obj).isEmpty())
@@ -153,7 +153,7 @@ abstract class Const
             sql.append(FALSE);
     }
 
-    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql){
         Object obj = getValue(ctx, state);
         if (obj instanceof Collection && ((Collection) obj).isEmpty())
@@ -164,7 +164,7 @@ abstract class Const
             sql.append(TRUE);
     }
 
-    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+    public void appendSize(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         Object obj = getValue(ctx, state);
         if (obj instanceof Collection)
@@ -175,7 +175,7 @@ abstract class Const
             sql.append("1");
     }
 
-    public void appendIsNull(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         if (isSQLValueNull(sel, ctx, state))
             sql.append(TRUE);
@@ -183,7 +183,7 @@ abstract class Const
             sql.append(FALSE);
     }
 
-    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         if (!isSQLValueNull(sel, ctx, state))
             sql.append(TRUE);

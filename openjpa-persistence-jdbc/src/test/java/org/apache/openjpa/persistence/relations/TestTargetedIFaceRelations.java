@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -42,7 +42,7 @@ public class TestTargetedIFaceRelations
         TargetedIFaceRelationParent child = new TargetedIFaceRelationParent();
         child.setName("child");
         parent.setIFace(child);
-        
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(parent);
@@ -57,7 +57,7 @@ public class TestTargetedIFaceRelations
         assertEquals("parent", parent.getName());
         assertNotNull(parent.getIFace());
         assertEquals("child", parent.getIFace().getName());
-        assertEquals(TargetedIFaceRelationParent.class, 
+        assertEquals(TargetedIFaceRelationParent.class,
             parent.getIFace().getClass());
         assertNull(((TargetedIFaceRelationParent) parent.getIFace()).
             getIFace());

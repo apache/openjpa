@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -42,7 +42,7 @@ public class BeneContact {
 	private BeneContactId id;
 
 	private Beneficiary beneficiary;
-	
+
 	private String email;
 
 	private String phone;
@@ -50,7 +50,7 @@ public class BeneContact {
     private Date lastUpdateDate;
 
     private int version;
-    
+
     @Version
     public int getVersion() {
         return version;
@@ -68,12 +68,12 @@ public class BeneContact {
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
-	
+
     @Column(name="EMAIL")
 	public String getEmail() {
 		return email;
 	}
-    
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -82,16 +82,16 @@ public class BeneContact {
 	public String getPhone() {
 		return phone;
 	}
-    
+
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	
+
     @EmbeddedId
 	public BeneContactId getId() {
 		return id;
 	}
-    
+
 	public void setId(BeneContactId id) {
 		this.id = id;
 	}
@@ -102,7 +102,7 @@ public class BeneContact {
 	public Beneficiary getBeneficiary() {
 		return beneficiary;
 	}
-    
+
 	public void setBeneficiary(Beneficiary beneficiary) {
 		this.beneficiary = beneficiary;
 	}

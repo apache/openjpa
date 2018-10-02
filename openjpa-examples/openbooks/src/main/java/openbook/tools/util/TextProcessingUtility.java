@@ -14,14 +14,14 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package openbook.tools.util;
 
 public class TextProcessingUtility {
     /**
      * Replaces special characters &lt; and &gt; in a string.
-     * The complexity is <em>not</em> to replace if the tags represent a hyperlink. 
+     * The complexity is <em>not</em> to replace if the tags represent a hyperlink.
      */
     public static String replaceHTMLSpecialCharacters(String txt) {
         boolean inHyperlink = false;

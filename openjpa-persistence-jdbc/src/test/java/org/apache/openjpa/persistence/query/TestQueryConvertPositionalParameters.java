@@ -42,10 +42,10 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
     @Override
     public void setUp() {
         super.setUp(SimpleEntity.class, "openjpa.Compatibility", "ConvertPositionalParametersToNamed=true"
-//        ,"openjpa.Log","SQL=trace"    
+//        ,"openjpa.Log","SQL=trace"
         );
         _em = emf.createEntityManager();
-        
+
         _em.getTransaction().begin();
         SimpleEntity se1 = new SimpleEntity();
         _name1 = "name1";
@@ -55,7 +55,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
         _em.persist(se1);
         _id1 = se1.getId();
         _em.getTransaction().commit();
-        
+
         _em.getTransaction().begin();
         SimpleEntity se2 = new SimpleEntity();
         _name2 = "name2";

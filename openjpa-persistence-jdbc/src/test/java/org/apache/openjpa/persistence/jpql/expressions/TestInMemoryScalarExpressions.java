@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
@@ -35,11 +35,11 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
     private int userid1, userid2, userid3, userid4, userid5, userid6;
 
     /**
-     * Some databases trim the whitespace from a string upon insert. Store Shannon's name for 
+     * Some databases trim the whitespace from a string upon insert. Store Shannon's name for
      * asserts later in the testcase.
      */
     private String expectedShannonName = "Shannon ";
-    
+
     public TestInMemoryScalarExpressions(String name) {
         super(name, "jpqlclausescactusapp");
     }
@@ -78,10 +78,10 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         userid6 = user6.getUserid();
 
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
-        if(dict instanceof SybaseDictionary) { 
+        if(dict instanceof SybaseDictionary) {
             expectedShannonName="Shannon";
         }
-        
+
         endTx(em);
         endEm(em);
     }
@@ -94,14 +94,14 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         String query = "SELECT e.name as name, " +
                 " COALESCE (e.address.country, 'Unknown')" +
                 " FROM CompUser e ORDER BY name";
-        org.apache.openjpa.persistence.QueryImpl q1 = 
+        org.apache.openjpa.persistence.QueryImpl q1 =
             (org.apache.openjpa.persistence.QueryImpl) em.createQuery(query);
         Query q2 = q1.getDelegate();
         Query qi = (QueryImpl) q2;
         qi.setCandidateCollection(rsall);
         List rs = q1.getResultList();
         Object[] result = (Object[]) rs.get(0);
-        assertEquals("the name is not famzy", "Famzy", result[0]);        
+        assertEquals("the name is not famzy", "Famzy", result[0]);
         assertEquals("Unknown", result[1]);
 
         endEm(em);
@@ -117,16 +117,16 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
             " e.address.country as res " +
             " FROM CompUser e ORDER BY res";
 
-        org.apache.openjpa.persistence.QueryImpl q1 = 
+        org.apache.openjpa.persistence.QueryImpl q1 =
             (org.apache.openjpa.persistence.QueryImpl) em.createQuery(query);
         Query q2 = q1.getDelegate();
         Query qi = (QueryImpl) q2;
         qi.setCandidateCollection(rsall);
         List rs = q1.getResultList();
         Object[] result = (Object[]) rs.get(2);
-        assertEquals("the name is not shannon ", expectedShannonName, result[0]);        
+        assertEquals("the name is not shannon ", expectedShannonName, result[0]);
         assertNull("is not null", result[1]);
-        
+
         endEm(em);
     }
 
@@ -142,16 +142,16 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
             " e.address.country " +
             " FROM CompUser e order by d2";
 
-        org.apache.openjpa.persistence.QueryImpl q1 = 
+        org.apache.openjpa.persistence.QueryImpl q1 =
             (org.apache.openjpa.persistence.QueryImpl) em.createQuery(query);
         Query q2 = q1.getDelegate();
         Query qi = (QueryImpl) q2;
         qi.setCandidateCollection(rsall);
         List rs = q1.getResultList();
         Object[] result = (Object[]) rs.get(5);
-        assertEquals("the name is not shannon ", expectedShannonName, result[0]);        
+        assertEquals("the name is not shannon ", expectedShannonName, result[0]);
         assertEquals("is not 'us'", "us", result[1]);
-        
+
         endEm(em);
     }
 
@@ -167,8 +167,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
             " END, " +
             " e.age " +
             " FROM CompUser e ORDER BY name";
-        
-        org.apache.openjpa.persistence.QueryImpl q1 = 
+
+        org.apache.openjpa.persistence.QueryImpl q1 =
             (org.apache.openjpa.persistence.QueryImpl) em.createQuery(query);
         Query q2 = q1.getDelegate();
         Query qi = (QueryImpl) q2;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -40,10 +40,10 @@ public class ClassResolverImpl
         ClassLoader contextLoader = null;
         if (contextClass != null) {
             contextLoader = AccessController.doPrivileged(
-                J2DoPrivHelper.getClassLoaderAction(contextClass)); 
+                J2DoPrivHelper.getClassLoaderAction(contextClass));
             if (contextLoader == null)
                 contextLoader = AccessController.doPrivileged(
-                    J2DoPrivHelper.getSystemClassLoaderAction()); 
+                    J2DoPrivHelper.getSystemClassLoaderAction());
         }
 
         // if there is only one unique loader, just return it

@@ -46,10 +46,10 @@ public class TestInsertOrder extends SQLListenerTestCase {
      * children. The inserts should be executed in this order, Employee, Task,
      * Story.
      * </P>
-     * 
-     * <P> 
-     * Originally this test would pass in some scenarios. I believe the order 
-     * relied on the hashcode of the underlying entities. 
+     *
+     * <P>
+     * Originally this test would pass in some scenarios. I believe the order
+     * relied on the hashcode of the underlying entities.
      * </P>
      */
     public void testCascadePersist() {
@@ -63,7 +63,7 @@ public class TestInsertOrder extends SQLListenerTestCase {
         assertAllSQLInOrder("INSERT INTO " + empTableName + ".*", "INSERT INTO "
             + taskTableName + ".*", "INSERT INTO " + storyTableName + ".*");
     }
-    
+
     /**
      * Merge an Employee entity and allow the cascade to insert the children.
      * The inserts should be executed in this order, Employee, Task, Story.
@@ -83,7 +83,7 @@ public class TestInsertOrder extends SQLListenerTestCase {
 
     /**
      * Helper to create a tree of entities
-     * 
+     *
      * @param id
      *            ID for the entities.
      * @return an unmanaged Employee instance with the appropriate relationships

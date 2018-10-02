@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
@@ -39,7 +39,7 @@ import javax.persistence.Version;
 @Entity
 @Table(name="mapappentity_1")
 @Inheritance(strategy=InheritanceType.JOINED)
-@SqlResultSetMapping(name="NativeTestResult", 
+@SqlResultSetMapping(name="NativeTestResult",
     entities=@EntityResult(entityClass=Entity1.class))
 @NamedNativeQuery(name="SQLWithHints", query="SELECT * FROM mapappentity_1",
     hints={@QueryHint(name="XYZ", value="abc")})

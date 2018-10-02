@@ -13,7 +13,7 @@
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 -- KIND, either express or implied.  See the License for the
 -- specific language governing permissions and limitations
--- under the License.    
+-- under the License.
 
 SELECT t0.shipAddress, t0.oid FROM TORDERXML t0 ORDER BY t0.oid ASC
 SELECT t0.oid, t1.oid FROM TORDERXML t0 CROSS JOIN TORDERXML t1 WHERE (CAST((xpath('/*/City/text()',t0.shipAddress))[1] AS VARCHAR) = CAST((xpath('/*/City/text()',t1.shipAddress))[1] AS VARCHAR)) ORDER BY t0.oid ASC

@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  * Test hints using EntityManager interface.
  */
 public class TestEmLockTimeout extends SequencedActionsTest {
-    
+
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -48,7 +48,7 @@ public class TestEmLockTimeout extends SequencedActionsTest {
             , "openjpa.LockManager", "mixed"
             , "javax.persistence.lock.timeout", "13"
             );
-        
+
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();
         JDBCFetchPlan fPlan = (JDBCFetchPlan) oem.getFetchPlan();
@@ -72,7 +72,7 @@ public class TestEmLockTimeout extends SequencedActionsTest {
             , "openjpa.LockTimeout", 122
             , "javax.persistence.lock.timeout", "133"
             );
-        
+
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();
         JDBCFetchPlan fPlan = (JDBCFetchPlan) oem.getFetchPlan();
@@ -93,18 +93,18 @@ public class TestEmLockTimeout extends SequencedActionsTest {
             , "openjpa.LockManager", "mixed"
             , "javax.persistence.lock.timeout", "13"
             );
-        
+
         EntityManager em = emf.createEntityManager();
-        
+
         Map<String,Object> props2 = new HashMap<String,Object>();
         props2.put("javax.persistence.lock.timeout", 3333);
         em.find(LockEmployee.class, 1, props2);
-        
+
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();
         JDBCFetchPlan fPlan = (JDBCFetchPlan) oem.getFetchPlan();
         int lockTmo3 = fPlan.getLockTimeout();
         assertEquals(13, lockTmo3);
-        
+
         em.close();
         emf.close();
     }

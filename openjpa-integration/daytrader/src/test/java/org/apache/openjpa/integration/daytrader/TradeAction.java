@@ -34,7 +34,7 @@ import org.apache.openjpa.lib.log.Log;
  * HttpRequests/HttpResponse objects and forwarding results to the appropriate
  * JSP page for the web interface. TradeServletAction invokes
  * {@link TradeAction} methods to actually perform each trading operation.
- * 
+ *
  */
 public class TradeAction extends TradeJPADirect {
 
@@ -45,7 +45,7 @@ public class TradeAction extends TradeJPADirect {
     /**
      * Display User Profile information such as address, email, etc. for the
      * given Trader Dispatch to the Trade Account JSP for display
-     * 
+     *
      */
     void doAccount(StringBuilder sb, String userID, String results)
             throws RuntimeException, java.io.IOException {
@@ -79,7 +79,7 @@ public class TradeAction extends TradeJPADirect {
      * Update User Profile information such as address, email, etc. for the
      * given Trader Dispatch to the Trade Account JSP for display If any in put
      * is incorrect revert back to the account page w/ an appropriate message
-     * 
+     *
      */
     void doAccountUpdate(StringBuilder sb, String userID, String password,
             String cpassword, String fullName, String address,
@@ -125,7 +125,7 @@ public class TradeAction extends TradeJPADirect {
     /**
      * Buy a new holding of shares for the given trader Dispatch to the Trade
      * Portfolio JSP for display
-     * 
+     *
      */
     void doBuy(StringBuilder sb, String userID, String symbol,
             String quantity) throws RuntimeException, IOException {
@@ -157,7 +157,7 @@ public class TradeAction extends TradeJPADirect {
     /**
      * Create the Trade Home page with personalized information such as the
      * traders account balance Dispatch to the Trade Home JSP for display
-     * 
+     *
      */
     void doHome(StringBuilder sb, String userID, String results)
             throws RuntimeException, java.io.IOException {
@@ -207,7 +207,7 @@ public class TradeAction extends TradeJPADirect {
 
     /**
      * Login a Trade User. Dispatch to the Trade Home JSP for display
-     * 
+     *
      */
     boolean doLogin(StringBuilder sb, String userID, String passwd)
             throws RuntimeException, java.io.IOException {
@@ -248,7 +248,7 @@ public class TradeAction extends TradeJPADirect {
 
     /**
      * Logout a Trade User Dispatch to the Trade Welcome JSP for display
-     * 
+     *
      */
     void doLogout(StringBuilder sb, String userID) throws RuntimeException,
             IOException {
@@ -275,7 +275,7 @@ public class TradeAction extends TradeJPADirect {
     /**
      * Retrieve the current portfolio of stock holdings for the given trader
      * Dispatch to the Trade Portfolio JSP for display
-     * 
+     *
      */
     void doPortfolio(StringBuilder sb, String userID, String results)
             throws RuntimeException, IOException {
@@ -319,7 +319,7 @@ public class TradeAction extends TradeJPADirect {
     /**
      * Retrieve the current Quote for the given stock symbol Dispatch to the
      * Trade Quote JSP for display
-     * 
+     *
      */
     void doQuotes(StringBuilder sb, String userID, String symbols)
             throws RuntimeException, IOException {
@@ -330,7 +330,7 @@ public class TradeAction extends TradeJPADirect {
         // Quote.jsp. This makes each Quote a
         // standalone "fragment", and thus is a candidate for
         // Edge caching.
-        //			
+        //
         // requestDispatch(ctx, req, resp, userID, TradeConfig.getPage(TradeConfig.QUOTE_PAGE));
         try {
             Collection<OrderDataBean> closedOrders = getClosedOrders(userID);
@@ -355,7 +355,7 @@ public class TradeAction extends TradeJPADirect {
     /**
      * Register a new trader given the provided user Profile information such as
      * address, email, etc. Dispatch to the Trade Home JSP for display
-     * 
+     *
      */
     void doRegister(StringBuilder sb, String userID, String passwd,
             String cpasswd, String fullname, String ccn,
@@ -398,7 +398,7 @@ public class TradeAction extends TradeJPADirect {
     /**
      * Sell a current holding of stock shares for the given trader. Dispatch to
      * the Trade Portfolio JSP for display
-     * 
+     *
      */
     void doSell(StringBuilder sb, String userID, Integer holdingID)
             throws RuntimeException, IOException {
@@ -447,7 +447,7 @@ public class TradeAction extends TradeJPADirect {
         resp.sendRedirect(resp.encodeRedirectURL(page));
     }
     */
-    
+
     private void setAttribute(StringBuilder sb, String attribute, Object value) {
         if (log != null && log.isTraceEnabled()) {
             sb.append(attribute);

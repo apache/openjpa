@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.property;
 
@@ -22,35 +22,35 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestAccessMods 
+public class TestAccessMods
     extends SingleEMFTestCase {
 
         public void setUp() {
             setUp("openjpa.Compatibility", "PrivatePersistentProperties=false",
                 DROP_TABLES, AccessModsEntity.class);
         }
-        
+
         /**
-         * Verifies that when the PrivatePersistentProperties compat option 
-         * is false, non-transient public and protected properties should be 
+         * Verifies that when the PrivatePersistentProperties compat option
+         * is false, non-transient public and protected properties should be
          * persistent.  Private should not be persistent.
          */
         public void testAccessMods() {
-            EntityManager em = emf.createEntityManager();            
-            
+            EntityManager em = emf.createEntityManager();
+
             AccessModsEntity ame = new AccessModsEntity();
-            
+
             // Set all properties
             ame.setPubString("Public");
             ame.setProtString("Protected");
-            ame.setPubPrivString("Private"); 
+            ame.setPubPrivString("Private");
             // Persist the entity.  Public and protected properties should
             // get persisted.  Private should not.
             em.getTransaction().begin();
             em.persist(ame);
             em.getTransaction().commit();
             em.clear();
-            
+
             ame = em.find(AccessModsEntity.class, ame.getId());
             assertNotNull(ame);
             assertEquals("Public", ame.getPubString());

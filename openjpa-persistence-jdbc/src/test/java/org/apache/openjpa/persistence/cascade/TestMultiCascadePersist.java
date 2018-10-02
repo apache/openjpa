@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.cascade;
 
@@ -29,13 +29,13 @@ import javax.persistence.TypedQuery;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestMultiCascadePersist extends SingleEMFTestCase {    
+public class TestMultiCascadePersist extends SingleEMFTestCase {
 
     @Override
     public void setUp() throws Exception {
       setUp(DROP_TABLES, Vertex.class, VertexType.class, Edge.class);
     }
-    
+
     public void testSingleTransaction() {
         OpenJPAEntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
@@ -58,7 +58,7 @@ public class TestMultiCascadePersist extends SingleEMFTestCase {
 
         Vertex src = new Vertex( defaultType );
         Vertex target = new Vertex( specialType );
-        
+
         Edge t = src.newEdge( target );
         assertNotNull( t );
 
@@ -91,7 +91,7 @@ public class TestMultiCascadePersist extends SingleEMFTestCase {
             return null;
         }
     }
-    
+
     public List<VertexType> findAllVertexType(EntityManager em) {
         try {
             TypedQuery<VertexType> query = em.createNamedQuery( "VertexType.findAll",
@@ -101,7 +101,7 @@ public class TestMultiCascadePersist extends SingleEMFTestCase {
             return Collections.emptyList();
         }
     }
-    
+
     public List<Vertex> findAllVertex(EntityManager em) {
         try {
             TypedQuery<Vertex> query = em.createNamedQuery( "Vertex.findAll",
@@ -110,7 +110,7 @@ public class TestMultiCascadePersist extends SingleEMFTestCase {
         } catch ( NoResultException nre ) {
             return Collections.emptyList();
         }
-    }    
+    }
 }
 
 

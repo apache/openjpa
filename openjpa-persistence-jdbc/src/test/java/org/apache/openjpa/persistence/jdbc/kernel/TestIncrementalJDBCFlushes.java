@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
@@ -36,31 +36,31 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 
 public class TestIncrementalJDBCFlushes
         extends BaseJDBCTest {
-    
+
     private EntityManagerFactory emf;
-    
+
 
 //    private boolean  = true;
-//    
-    
+//
+
     public TestIncrementalJDBCFlushes(String str) {
         super(str);
     }
-    
-    
+
+
     public void setUp() {
         emf = getEmf(getProps());
-        
+
         EntityManager em =emf.createEntityManager();
        deleteAll(RuntimeTest1.class,em);
-        
+
     }
-    
-    
+
+
     public void testFlushHappened() throws java.sql.SQLException{
-        
-        
-        
+
+
+
         EntityManager em =emf.createEntityManager();
         startTx(em);
         RuntimeTest1 a = new RuntimeTest1("a-name", 10);
@@ -85,10 +85,10 @@ public class TestIncrementalJDBCFlushes
         assertEquals(1, count);
         rollbackTx(em);
         endEm(em);
-        
-        
+
+
     }
-    
+
     private StoreManager getStoreManager(EntityManager em, boolean innermost) {
         DelegatingStoreManager mgr =
             JPAFacadeHelper.toBroker(em).getStoreManager();
@@ -96,7 +96,7 @@ public class TestIncrementalJDBCFlushes
             return mgr.getInnermostDelegate();
         return mgr;
     }
-    
+
     private Map getProps() {
         Map props=new HashMap();
         props.put("openjpa.DataCache", "true");
@@ -107,5 +107,5 @@ public class TestIncrementalJDBCFlushes
         //CacheTestBroker.class.getName());
         return props;
     }
-    
+
 }

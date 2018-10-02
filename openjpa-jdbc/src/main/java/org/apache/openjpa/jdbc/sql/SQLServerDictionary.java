@@ -5,9 +5,9 @@
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -85,7 +85,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
             }
             if (meta.getDatabaseMajorVersion() >= 11) {
                 //SQLServer 2012 supports range select
-                rangePosition = RANGE_POST_SELECT;      
+                rangePosition = RANGE_POST_SELECT;
                 supportsSelectStartIndex = true;
                 supportsSelectEndIndex = true;
             }
@@ -137,7 +137,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         // warn about not using cursors for pre-2.0 MS driver
         // as connectURL includes selectMethod=direct
         if (((VENDOR_MICROSOFT.equalsIgnoreCase(driverVendor) &&
-            requiresWarnings) || 
+            requiresWarnings) ||
             VENDOR_DATADIRECT.equalsIgnoreCase(driverVendor)) &&
             (url.toLowerCase(Locale.ENGLISH).indexOf("selectmethod=cursor") == -1))
             log.warn(_loc.get("sqlserver-cursor", url));
@@ -200,7 +200,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
     /**
      * If this dictionary supports XML type, use this method to append xml
      * predicate.
-     * 
+     *
      * @param buf the SQL buffer to write the comparison
      * @param op the comparison operation to perform
      * @param lhs the left hand side of the comparison
@@ -221,7 +221,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
 
     /**
      * Append an xml comparison predicate
-     * 
+     *
      * @param buf the SQL buffer to write the comparison
      * @param op the comparison operation to perform
      * @param lhs the left hand side of the comparison (maps to xml column)
@@ -252,7 +252,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
 
     /**
      * Append an xml comparison predicate (both operands map to xml column)
-     * 
+     *
      * @param buf the SQL buffer to write the comparison
      * @param op the comparison operation to perform
      * @param lhs the left hand side of the comparison (maps to xml column)
@@ -293,7 +293,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         // MS SQL Server requires XML data in UTF-16 or UCS-2 instead of JAXB default of UTF-8
         super.setXMLTypeEncoding("UTF-16");
     }
-    
+
     @Override
     public boolean isFatalException(int subtype,  SQLException ex) {
         String errorState = ex.getSQLState();

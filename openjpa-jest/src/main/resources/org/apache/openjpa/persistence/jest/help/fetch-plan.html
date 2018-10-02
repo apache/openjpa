@@ -24,23 +24,23 @@ under the License.
 
 Specify one or more named fetch plan. Separate multiple names with comma, e.g.
 <p align="center">
-myPlanA, mYPlanB 
-</p> 
+myPlanA, mYPlanB
+</p>
 There are two pre-defined plans named: <b>default</b> and <b>all</b>. The <b>default</b> plan that fetches
-all properties of basic type (i.e. <tt>String, int, Date</tt> etc.) and uni-cardinality relations, are 
+all properties of basic type (i.e. <tt>String, int, Date</tt> etc.) and uni-cardinality relations, are
 active by default. As the plans are additive, to exclude the default plan, you can specify
 <p align="center">
 myPlanA, -default
-</p> 
+</p>
 
 
 Fetch Plan determines which properties will be fetched when an entity instance is accessed from the data store.
 A plan can traverse relationship path into other entities at arbitrary depth. By default, when an entity
 is fetched, all properties of basic type (i.e. <tt>String, int, Date</tt> etc.) and uni-cardinality relations are
-fetched. 
+fetched.
 <br>
-JPA specification allows <tt>@Fetch.LAZY</tt> and <tt>@Fetch.EAGER</tt> annotation on persistent properties to control 
-fetch behavior. But only <em>statically</em> i.e. at class definition. 
+JPA specification allows <tt>@Fetch.LAZY</tt> and <tt>@Fetch.EAGER</tt> annotation on persistent properties to control
+fetch behavior. But only <em>statically</em> i.e. at class definition.
 <p>
 OpenJPA, on the other hand, provides a far richer syntax and semantics to its user to define the
 properties to be fetched through its dynamic Fetch Plan facility. And, more importantly, these

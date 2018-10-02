@@ -30,7 +30,7 @@ import java.util.Set;
  * CREATE INDEX I_NCKNTBL_ENTITYA_ ON NickNames_Tbl (ENTITYA_COLL_STRING_ID)
  * INSERT INTO EntityA_Coll_String (id, age, name) VALUES (?, ?, ?)
  * INSERT INTO NickNames_Tbl (ENTITYA_COLL_STRING_ID, nicknames1) VALUES (?, ?)
- * SELECT t0.age, t0.name FROM EntityA_Coll_String t0 WHERE t0.id = ? 
+ * SELECT t0.age, t0.name FROM EntityA_Coll_String t0 WHERE t0.id = ?
  *     optimize for 1 row
  * SELECT t0.nicknames1 FROM NickNames_Tbl t0
  *     WHERE t0.ENTITYA_COLL_STRING_ID = ?
@@ -40,11 +40,11 @@ import java.util.Set;
 
 public class EntityA_Coll_StringXml implements Serializable {
     // contains a collection of basic types
-    
+
     Integer id;
 
     String name;
-    
+
     int age;
 
     protected Set<String> nickNames = new HashSet<String>();
@@ -76,7 +76,7 @@ public class EntityA_Coll_StringXml implements Serializable {
     public Set<String> getNickNames() {
         return nickNames;
     }
-    
+
     public void addNickName(String nickName) {
         nickNames.add(nickName);
     }

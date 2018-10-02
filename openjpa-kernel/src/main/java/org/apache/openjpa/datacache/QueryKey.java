@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -202,7 +202,7 @@ public class QueryKey
             meta = metas[i];
             accessPathClassNames.add(meta.getDescribedType().getName());
             while (meta.getPCSuperclass() != null) {
-                meta = meta.getPCSuperclassMetaData(); 
+                meta = meta.getPCSuperclassMetaData();
             }
 
             accessPathClassNames.add(meta.getDescribedType().getName());
@@ -466,7 +466,7 @@ public class QueryKey
         _rangeEnd = in.readLong ();
 		_timeout = in.readInt ();
 	}
-    
+
     /**
      * Returns the set of the accessPathClassnames that exists in the query
      * @return -- Returns a set of accesspath classnames.

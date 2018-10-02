@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.jdbc;
 
@@ -34,25 +34,25 @@ import org.apache.openjpa.lib.jdbc.DecoratingDataSource;
 
 /**
  * A virtual datasource that contains many physical datasources.
- * 
- * @author Pinaki Poddar 
+ *
+ * @author Pinaki Poddar
  *
  */
 public class DistributedDataSource extends DecoratingDataSource implements
 		Iterable<DataSource> {
 	private List<DataSource> real = new ArrayList<DataSource>();
 	private DataSource master;
-	
+
 	public DistributedDataSource(List<DataSource> dataSources) {
 		super(dataSources.get(0));
 		real = dataSources;
 		master = dataSources.get(0);
 	}
-	
+
 	public void addDataSource(DataSource ds) {
 	    real.add(ds);
 	}
-	
+
 	Connection getConnection(DataSource ds) throws SQLException {
 		if (ds instanceof DecoratingDataSource)
 			return getConnection(((DecoratingDataSource)ds)
@@ -61,8 +61,8 @@ public class DistributedDataSource extends DecoratingDataSource implements
             return ((XADataSource)ds).getXAConnection().getConnection();
 		return ds.getConnection();
 	}
-	
-	Connection getConnection(DataSource ds, String user, String pwd) 
+
+	Connection getConnection(DataSource ds, String user, String pwd)
 	    throws SQLException {
 		if (ds instanceof DecoratingDataSource)
 			return getConnection(((DecoratingDataSource)ds)

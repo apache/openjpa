@@ -42,33 +42,33 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
             {Act.Find},
             {Act.SaveVersion},
             {Act.TestEmployee, 1, Default_FirstName},
-            
+
             {Act.Lock, 1, LockModeType.NONE },
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.Lock, 1, LockModeType.READ },
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.Lock, 1, LockModeType.WRITE },
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.Lock, 1, LockModeType.OPTIMISTIC },
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.Lock, 1, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.Lock, 1, LockModeType.PESSIMISTIC_READ},
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.Lock, 1, LockModeType.PESSIMISTIC_WRITE},
             {Act.TestException, 0, TransactionRequiredException.class },
-            
+
             {Act.Lock, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, TransactionRequiredException.class },
             {Act.CloseEm}
         };
-        
+
         launchActionSequence("testLockTxReqExceptions()",
             null, threadMainTxReqTest);
     }
@@ -85,12 +85,12 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
             {Act.SaveVersion},
             {Act.TestEmployee, 1, Default_FirstName},
             {Act.StartTx},
-      
+
             {Act.LockObject, null, LockModeType.NONE },
             {Act.TestException, 0, IllegalArgumentException.class },
             {Act.LockObject, "null", LockModeType.NONE },
             {Act.TestException, 0, IllegalArgumentException.class },
-            
+
             {Act.LockObject, null, LockModeType.READ },
             {Act.TestException, 0, IllegalArgumentException.class },
             {Act.LockObject, "null", LockModeType.READ },
@@ -129,7 +129,7 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
        };
         launchActionSequence("testLockIllegalArgrumentExceptions()",
             "Test invalid entity.", threadMainInvEntityIllegalArgTest);
-        
+
         // Test detached entity argument throws IllegalArgumentException.
         Object[][] threadMainDetachEntityIllegalArgTest = {
             {Act.CreateEm},
@@ -138,13 +138,13 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
             {Act.TestEmployee, 1, Default_FirstName},
             {Act.StartTx},
             {Act.Detach, 1, 2},
-            
+
             {Act.Lock, 2, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
-            
+
             {Act.Lock, 2, LockModeType.NONE },
             {Act.TestException, 0, IllegalArgumentException.class },
-          
+
             {Act.Lock, 2, LockModeType.READ },
             {Act.TestException, 0, IllegalArgumentException.class },
 
@@ -170,7 +170,7 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
         launchActionSequence("testLockIllegalArgrumentExceptions()",
             "Test detached entity.", threadMainDetachEntityIllegalArgTest);
 
-        // Test detached argument from serialized entity throws 
+        // Test detached argument from serialized entity throws
         //  IllegalArgumentException.
         Object[][] threadMainDetachSerializeIllegalArgTest = {
             {Act.CreateEm},
@@ -179,10 +179,10 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
             {Act.TestEmployee, 1, Default_FirstName},
             {Act.StartTx},
             {Act.DetachSerialize, 1, 2},
-            
+
             {Act.Lock, 2, LockModeType.NONE },
             {Act.TestException, 0, IllegalArgumentException.class },
-        
+
             {Act.Lock, 2, LockModeType.READ },
             {Act.TestException, 0, IllegalArgumentException.class },
 
@@ -204,11 +204,11 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
             {Act.Lock, 2, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
             {Act.CloseEm}
-        };        
+        };
         launchActionSequence("testLockIllegalArgrumentExceptions()",
             "Test detached entity using serialization.",
             threadMainDetachSerializeIllegalArgTest);
-        
+
         Object[][] threadMainRemoveIllegalArgTest = {
             {Act.CreateEm},
             {Act.Find},
@@ -219,7 +219,7 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
 
             {Act.Lock, 1, LockModeType.NONE },
             {Act.TestException},
-      
+
             {Act.Lock, 1, LockModeType.READ },
             {Act.TestException},
 
@@ -240,7 +240,7 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
 
             {Act.Lock, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException},
-            
+
             {Act.RollbackTx},
             {Act.CloseEm}
         };
@@ -250,7 +250,7 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
                 +"in the context.",
             threadMainRemoveIllegalArgTest);
     }
-    
+
     /*
      * If a pessimistic lock mode type is specified and the entity
      * contains a version attribute, the persistence provider must
@@ -276,7 +276,7 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
         commonLockOptimisticLockExceptions(
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, true);
     }
-    
+
     public void commonLockOptimisticLockExceptions(LockModeType lockMode,
         boolean expectingOptLockException) {
         Object[][] threadMainOptLockExTest = {
@@ -285,21 +285,21 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
             {Act.SaveVersion},
             {Act.TestEmployee, 1, Default_FirstName},
             {Act.Clear},
-            
+
             {Act.NewThread, 1 },
             {Act.StartThread, 1 },
             {Act.Wait},
-            
+
             {Act.StartTx},
             {Act.Find},
             {Act.Notify, 1},
-            
+
             {Act.Wait},
             {Act.Lock, 1, lockMode},
             {Act.WaitAllChildren},
             {Act.TestException, 0, expectingOptLockException
                 ? OptimisticLockException.class : null},
-            
+
             {Act.RollbackTx},
             {Act.CloseEm}
         };
@@ -308,15 +308,15 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
             {Act.StartTx},
             {Act.Find},
             {Act.SaveVersion},
-            
+
             {Act.Notify, 0},
             {Act.Wait},
             {Act.UpdateEmployee},
-            
+
             {Act.CommitTx},
             {Act.Notify, 0},
             {Act.CloseEm}
-        };        
+        };
         launchActionSequence("testLockOptimisticLockExceptions()", null,
             threadMainOptLockExTest, thread1OptLockExTest);
     }

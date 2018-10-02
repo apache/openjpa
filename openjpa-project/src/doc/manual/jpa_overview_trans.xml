@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="jpa_overview_trans">
     <title>
@@ -298,7 +298,7 @@ of hanging due to deadlock.
 OpenJPA uses optimistic semantics by default, but supports both optimistic and
 datastore transactions. OpenJPA also offers advanced locking and versioning APIs
 for fine-grained control over database resource allocation and object
-versioning. See <xref linkend="ref_guide_locking"/> of the Reference Guide for 
+versioning. See <xref linkend="ref_guide_locking"/> of the Reference Guide for
 details on locking. <xref linkend="jpa_overview_meta_version"/>
 of this document covers standard object versioning, while
 <xref linkend="ref_guide_mapping_jpa"/> of the Reference Guide discusses

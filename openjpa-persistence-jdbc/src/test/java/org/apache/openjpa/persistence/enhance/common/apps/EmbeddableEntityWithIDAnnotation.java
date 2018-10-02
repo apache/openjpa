@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.enhance.common.apps;
@@ -51,9 +51,9 @@ public class EmbeddableEntityWithIDAnnotation implements java.io.Serializable
         this.seqNo = seqNo;
     }
 
-    // Property accessors   
+    // Property accessors
     @Id
-    @Column(unique=true, nullable=false, precision=12, scale=0)  
+    @Column(unique=true, nullable=false, precision=12, scale=0)
     public Long getId()
     {
         return this.id;
@@ -85,11 +85,11 @@ public class EmbeddableEntityWithIDAnnotation implements java.io.Serializable
             return false;
         EmbeddableEntityWithIDAnnotation castOther = ( EmbeddableEntityWithIDAnnotation ) other;
 
-        return ( ( this.getId( ) == castOther.getId( ) ) 
-        		|| ( this.getId( ) != null && castOther.getId( ) != null 
+        return ( ( this.getId( ) == castOther.getId( ) )
+        		|| ( this.getId( ) != null && castOther.getId( ) != null
         		&& this.getId( ).equals( castOther.getId( ) ) ) )
-                && ( ( this.getSeqNo( ) == castOther.getSeqNo( ) ) 
-                		|| ( this.getSeqNo( ) != null && castOther.getSeqNo( ) != null 
+                && ( ( this.getSeqNo( ) == castOther.getSeqNo( ) )
+                		|| ( this.getSeqNo( ) != null && castOther.getSeqNo( ) != null
                 		&& this.getSeqNo( ).equals( castOther.getSeqNo( ) ) ) );
     }
 

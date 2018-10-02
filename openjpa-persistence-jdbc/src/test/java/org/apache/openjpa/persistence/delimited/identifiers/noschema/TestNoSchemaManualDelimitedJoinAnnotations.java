@@ -39,15 +39,15 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
     EntityD4 entityD4;
     JDBCConfiguration conf;
     DBDictionary dict;
-    
+
     @Override
     public void setUp() throws Exception {
-        
+
         setUnsupportedDatabases(MariaDBDictionary.class);
         setUnsupportedDatabases(MySQLDictionary.class);
         if (isTestsDisabled())
             return;
-        
+
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.noschema.EntityC.class,
             org.apache.openjpa.persistence.delimited.identifiers.noschema.EntityD.class,
@@ -56,14 +56,14 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
             org.apache.openjpa.persistence.delimited.identifiers.noschema.EntityD4.class,
             DROP_TABLES);
         assertNotNull(emf);
-        
+
         em = emf.createEntityManager();
         assertNotNull(em);
-        
+
         conf = (JDBCConfiguration) emf.getConfiguration();
         dict = conf.getDBDictionaryInstance();
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
@@ -79,35 +79,35 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         entityC = new EntityC(id);
         entityC.setName("ec");
         entityC.setSecName("secName1");
-        
+
         entityD = new EntityD(id);
         entityD.setName("ed");
-        
+
         entityD2 = new EntityD2(id);
         entityD2.setName("ed2");
-        
+
         entityD3 = new EntityD3(id);
         entityD3.setName("ed3");
-        
+
         entityD4 = new EntityD4(id);
         entityD4.setName("ed4");
-        
+
         entityC.addEntityD(entityD);
         entityD.addEntityC(entityC);
-        
+
         entityC.setEntityD2(entityD2);
-        
+
         entityC.addMapValues(entityD3, entityD4);
         entityC.addMap2Values(entityD4, entityD3);
-        
+
         entityD2.setEntityD3(entityD3);
     }
-    
+
     public void testCreate() {
         id++;
         createCandD(id);
         // TODO: Maybe create another one.
-        
+
         em.getTransaction().begin();
         em.persist(entityC);
         em.persist(entityD);
@@ -115,10 +115,10 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         em.persist(entityD3);
         em.persist(entityD4);
         em.getTransaction().commit();
-        
+
         runQueries();
     }
-    
+
     private void runQueries() {
         em.clear();
         queryJoinTable();
@@ -129,7 +129,7 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         em.clear();
         queryMapValue();
     }
-    
+
     private void queryJoinTable() {
         String query =
             "SELECT c " +
@@ -139,9 +139,9 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         List<EntityC> results = (List<EntityC>)q.getResultList();
         assertEquals(1,results.size());
     }
-    
+
     private void queryJoinColumn() {
-        String query = 
+        String query =
             "SELECT c " +
             "FROM EntityC c JOIN c.entityD2 d2 " +
             "WHERE d2.name = 'ed2'";
@@ -149,9 +149,9 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         List<EntityC> results = (List<EntityC>)q.getResultList();
         assertEquals(1,results.size());
     }
-    
+
     private void querySecondaryTableValue() {
-        String query = 
+        String query =
             "SELECT c " +
             "FROM EntityC c " +
             "WHERE c.secName = 'secName1'";
@@ -159,7 +159,7 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         List<EntityC> results = (List<EntityC>)q.getResultList();
         assertEquals(1,results.size());
     }
-    
+
     private void queryMapValue() {
         String query =
             "SELECT c " +
@@ -169,6 +169,6 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         List<EntityC> results = (List<EntityC>)q.getResultList();
         assertEquals(1,results.size());
     }
-        
-      
+
+
 }

@@ -14,16 +14,16 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
- * Enumeration of conditional operator that operates on ordered pair of  
+ * Enumeration of conditional operator that operates on ordered pair of
  * expression to generate a predicate.
- * 
+ *
  * @see BinaryExpressionPredicate
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -42,13 +42,13 @@ public enum BinaryConditionalOperator {
 	LIKE_NOT("NOT LIKE"),
 	MEMBER("MEMBER OF"),
 	MEMBER_NOT("NOT MEMBER OF");
-	
+
 	private final String _symbol;
-	
+
 	BinaryConditionalOperator(String symbol) {
 		_symbol = symbol;
 	}
-	
+
 	public String toString() {
 		return _symbol;
 	}

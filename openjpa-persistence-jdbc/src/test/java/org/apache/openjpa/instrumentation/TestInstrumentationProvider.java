@@ -37,14 +37,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestInstrumentationProvider extends SingleEMFTestCase {
 
-    public static final String SINGLE_PROVIDER = 
+    public static final String SINGLE_PROVIDER =
         "org.apache.openjpa.instrumentation.SimpleProvider(Instrument='DataCache,QueryCache,QuerySQLCache')";
 
-    public static final String MULTI_PROVIDER = 
+    public static final String MULTI_PROVIDER =
         "org.apache.openjpa.instrumentation.SimpleProvider(Instrument='DataCache,QueryCache,QuerySQLCache'), " +
         "org.apache.openjpa.instrumentation.SecondProvider(Instrument='DataCache,QuerySQLCache')";
 
-    public static final String DC_PROVIDER = 
+    public static final String DC_PROVIDER =
         "org.apache.openjpa.instrumentation.SimpleProvider(Instrument='DataCache')";
 
     public void setUp() throws Exception {
@@ -73,19 +73,19 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         // Verify an instrumentation manager is available
         InstrumentationManager mgr = emf.getConfiguration().getInstrumentationManagerInstance();
         assertNotNull(mgr);
-        
+
         // Verify the manager is managing the correct provider
         Set<InstrumentationProvider> providers = mgr.getProviders();
         assertNotNull(providers);
         assertEquals(1, providers.size());
         InstrumentationProvider provider = providers.iterator().next();
         assertEquals(provider.getClass(), SimpleProvider.class);
-        
+
         // Verify the provider has instruments registered for the caches
         Set<Instrument> instruments = provider.getInstruments();
         assertNotNull(instruments);
         assertEquals(3,instruments.size());
-        
+
         // Lightweight verification of the instruments
         Instrument inst = provider.getInstrumentByName(DCInstrument.NAME);
         assertNotNull(inst);
@@ -99,10 +99,10 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         assertNotNull(inst);
         assertTrue(inst instanceof PreparedQueryCacheInstrument);
     }
-    
+
     /**
      * Verifies configuring and adding an instrument to a provider after the provider
-     * has been initialized within the persistence unit. 
+     * has been initialized within the persistence unit.
      */
     public void testDynamicInstrumentConfig() {
         InstrumentationManager mgr = emf.getConfiguration().getInstrumentationManagerInstance();
@@ -138,10 +138,10 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         // provider
         BrokerLevelInstrument bli = new BrokerLevelInstrument();
         provider.addInstrument(bli);
-        // Verify instrument has not been initialized or started 
+        // Verify instrument has not been initialized or started
         assertFalse(bli.isInitialized());
         assertFalse(bli.isStarted());
-        
+
         // Create a new EM/Broker
         EntityManager em = emf.createEntityManager();
         // Vfy the instrument has been initialized and started
@@ -152,7 +152,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         // Vfy the instrument has stopped
         assertFalse(bli.isStarted());
     }
-    
+
     /**
      * Verifies the data cache metrics are available through simple instrumentation.
      */
@@ -174,7 +174,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         // Verify an instrumentation manager is available
         InstrumentationManager mgr = oemf.getConfiguration().getInstrumentationManagerInstance();
         assertNotNull(mgr);
-        
+
         // Get the data cache instrument
         Set<InstrumentationProvider> providers = mgr.getProviders();
         assertNotNull(providers);
@@ -186,20 +186,20 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         assertTrue(inst instanceof DataCacheInstrument);
         DataCacheInstrument dci = (DataCacheInstrument)inst;
         assertEquals(dci.getCacheName(), "default");
-        
+
         OpenJPAEntityManagerSPI oem = oemf.createEntityManager();
-        
+
         CacheableEntity ce = new CacheableEntity();
         int id = new Random().nextInt();
         ce.setId(id);
-        
+
         oem.getTransaction().begin();
         oem.persist(ce);
         oem.getTransaction().commit();
         oem.clear();
         assertTrue(oemf.getCache().contains(CacheableEntity.class, id));
         ce = oem.find(CacheableEntity.class, id);
-        
+
         assertTrue(dci.getHitCount() > 0);
         assertTrue(dci.getReadCount() > 0);
         assertTrue(dci.getWriteCount() > 0);
@@ -208,7 +208,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         assertTrue(dci.getReadCount(CacheableEntity.class.getName()) > 0);
         assertTrue(dci.getWriteCount(CacheableEntity.class.getName()) > 0);
 
-        
+
         closeEMF(oemf);
     }
 
@@ -217,7 +217,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
      */
     public void testMultipleProviderConfig() {
         OpenJPAEntityManagerFactorySPI oemf = createEMF(
-            "openjpa.Instrumentation", 
+            "openjpa.Instrumentation",
             MULTI_PROVIDER,
             "openjpa.DataCache",
             "true(EnableStatistics=true)",
@@ -225,7 +225,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
             "true",
             "openjpa.RemoteCommitProvider",
             "sjvm");
-        
+
         // Verify an EMF was created with the supplied instrumentation
         assertNotNull(oemf);
 
@@ -236,7 +236,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         // Verify an instrumentation manager is available
         InstrumentationManager mgr = oemf.getConfiguration().getInstrumentationManagerInstance();
         assertNotNull(mgr);
-        
+
         // Verify the manager is managing the correct provider
         Set<InstrumentationProvider> providers = mgr.getProviders();
         assertNotNull(providers);

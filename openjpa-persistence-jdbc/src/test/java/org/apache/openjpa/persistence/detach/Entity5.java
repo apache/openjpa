@@ -29,7 +29,7 @@ public class Entity5 {
     private String name;
     @OneToOne
     private Entity6 e6;
-    
+
     public Entity5() {
     }
 

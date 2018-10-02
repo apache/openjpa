@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -27,7 +27,7 @@ import org.apache.openjpa.jdbc.sql.SelectExecutor;
 /**
  * A Select-oriented Result Object Provider whose Select has been executed
  * outside its own scope.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -41,12 +41,12 @@ public class PreparedResultObjectProvider extends InstanceResultObjectProvider {
      * @param res the result of the given select
      */
     public PreparedResultObjectProvider(SelectExecutor sel,
-        ClassMapping mapping, JDBCStore store, JDBCFetchConfiguration fetch, 
+        ClassMapping mapping, JDBCStore store, JDBCFetchConfiguration fetch,
         Result res) {
         super(sel, mapping, store, fetch);
         _res = res;
     }
-    
+
     public void open() throws SQLException {
         // do nothing
     }

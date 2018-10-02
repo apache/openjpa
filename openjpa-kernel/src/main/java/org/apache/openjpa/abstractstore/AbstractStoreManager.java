@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.abstractstore;
 
@@ -200,7 +200,7 @@ public abstract class AbstractStoreManager
      * object. The ID and least-derived type information for the instance
      * to load can be obtained by invoking
      * <code>sm.getObjectId()</code> and <code>sm.getMetaData()</code>.
-     * 
+     *
      *  When implementing this method, load the data for this object from
      * the data store, determine the most-derived subclass of the newly-loaded
      * data, and then use the {@link OpenJPAStateManager#initialize} method to
@@ -373,7 +373,7 @@ public abstract class AbstractStoreManager
      * manager, this might be the result set that is being iterated over. If
      * this argument is <code>null</code>, then the {@link #initialize} or
      * {@link #load} method will have to issue another command to the data
-     * store in order to fetch the data to be loaded. 
+     * store in order to fetch the data to be loaded.
      */
     public abstract ResultObjectProvider executeExtent(ClassMetaData meta,
         boolean subs, FetchConfiguration fetch);

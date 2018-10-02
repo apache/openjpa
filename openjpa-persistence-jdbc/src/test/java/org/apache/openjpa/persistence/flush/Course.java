@@ -45,10 +45,10 @@ public class Course implements Serializable {
     @SequenceGenerator(name="courseIdSeq", sequenceName="FL_COURSE_SEQ")
     @GeneratedValue(generator="courseIdSeq", strategy=GenerationType.SEQUENCE)
     protected Long courseId;
-    
+
     @Column(name="COURSE_TEXT")
     protected String courseText;
-    
+
     @OneToMany(mappedBy="course", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @ElementDependent(true)
     protected Set<ClassPeriod> classPeriods;

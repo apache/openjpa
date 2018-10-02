@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="ref_guide_runtime">
     <title>
@@ -172,14 +172,14 @@ Defaults to <literal>false</literal>.
             <para>
 Additionally, some advanced users may want to add capabilities to OpenJPA's
 internal <ulink url="../../apidocs/org/apache/openjpa/kernel/BrokerImpl.html">
-<classname>org.apache.openjpa.kernel.BrokerImpl</classname></ulink>. You can 
-configure OpenJPA to use a custom subclass of <classname>BrokerImpl</classname> 
+<classname>org.apache.openjpa.kernel.BrokerImpl</classname></ulink>. You can
+configure OpenJPA to use a custom subclass of <classname>BrokerImpl</classname>
 with the <link linkend="openjpa.BrokerImpl"><literal>openjpa.BrokerImpl
-</literal></link> configuration property. Set this property to the full class 
+</literal></link> configuration property. Set this property to the full class
 name of your custom subclass. When implementing your subclass, consider the
-finalization issues mentioned in 
+finalization issues mentioned in
 <xref linkend="ref_guide_runtime_broker_finalization"/>. It may be appropriate
-to create a subtype of both 
+to create a subtype of both
 <ulink url="../../apidocs/org/apache/openjpa/kernel/BrokerImpl.html">
 <classname>org.apache.openjpa.kernel.BrokerImpl</classname></ulink> and
 <ulink url="../../apidocs/org/apache/openjpa/kernel/FinalizingBrokerImpl.html">
@@ -196,7 +196,7 @@ The following sections outline the runtime interfaces you can use to access
 OpenJPA-specific functionality from JPA. Each interface contains services and
 convenience methods missing from the JPA specification. OpenJPA strives to use
 the same naming conventions and API patterns as standard JPA methods in all
-extensions, so that OpenJPA extension APIs feel as much as possible like 
+extensions, so that OpenJPA extension APIs feel as much as possible like
 standard JPA.
         </para>
         <para>
@@ -207,14 +207,14 @@ Some application server vendors may proxy OpenJPA's JPA implementation,
 preventing a straight cast. <classname>OpenJPAPersistence</classname>'s
 <methodname>cast</methodname> methods work around these proxies.
         </para>
-<programlisting> 
+<programlisting>
 public static OpenJPAEntityManagerFactory cast(EntityManagerFactory emf);
 public static OpenJPAEntityManager cast(EntityManager em);
 public static OpenJPAQuery cast(Query q);
 </programlisting>
         <para>
 We provide additional information on the <classname>OpenJPAPersistence
-</classname> helper <link linkend="ref_guide_runtime_openjpapersistence"> 
+</classname> helper <link linkend="ref_guide_runtime_openjpapersistence">
 below</link>.
         </para>
         <section id="ref_guide_runtime_emfactory">
@@ -242,7 +242,7 @@ The <classname>org.apache.openjpa.persistence.OpenJPAEntityManagerFactory
 </classname> interface extends the basic <classname>
 javax.persistence.EntityManagerFactory</classname> with OpenJPA-specific
 features. The <classname>OpenJPAEntityManagerFactory</classname> offers APIs to
-access the OpenJPA data and query caches and to perform other OpenJPA-specific 
+access the OpenJPA data and query caches and to perform other OpenJPA-specific
 operations. See the
 <ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html">
 interface Javadoc</ulink> for details.
@@ -361,10 +361,10 @@ for (Magazine m : mags)
                 </primary>
             </indexterm>
             <para>
-In addition to the <classname>EntityManager</classname> object cache the JPA 
-specification provides access to a second level cache via the 
-javax.persistence.Cache interface. OpenJPA provides further extensions via 
-the org.apache.openjpa.persistence.StoreCache interface documented at 
+In addition to the <classname>EntityManager</classname> object cache the JPA
+specification provides access to a second level cache via the
+javax.persistence.Cache interface. OpenJPA provides further extensions via
+the org.apache.openjpa.persistence.StoreCache interface documented at
 <ulink url="../../apidocs/org/apache/openjpa/persistence/StoreCache.html">
 <classname>org.apache.openjpa.persistence.StoreCache</classname></ulink>.
 <xref linkend="ref_guide_cache"/> has detailed information on OpenJPA's
@@ -383,7 +383,7 @@ data caching system, including the <classname>StoreCache</classname> facade.
             <para>
 OpenJPA can cache query results as well as persistent object data. The
 <ulink url="../../apidocs/org/apache/openjpa/persistence/QueryResultCache.html">
-<classname>org.apache.openjpa.persistence.QueryResultCache</classname></ulink> 
+<classname>org.apache.openjpa.persistence.QueryResultCache</classname></ulink>
 is an JPA-flavored facade to OpenJPA's internal query cache. See
 <xref linkend="ref_guide_cache_query"/> for details on query caching in
 OpenJPA.
@@ -418,7 +418,7 @@ groups</link>, and <link linkend="ref_guide_locking">lock levels</link>.
 OpenJPA goes one step further, extending <classname>FetchPlan</classname> with
 <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/JDBCFetchPlan.html">
 <classname>org.apache.openjpa.persistence.jdbc.JDBCFetchPlan</classname></ulink>
-to add additional JDBC-specific tuning methods. Unless you have customized 
+to add additional JDBC-specific tuning methods. Unless you have customized
 OpenJPA to use a non-relational back-end (see
 <xref linkend="ref_guide_enterprise_abstractstore"/> ), all <classname>
 FetchPlan</classname>s in OpenJPA implement <classname>
@@ -471,7 +471,7 @@ commit and rollback features.
             <para>
 <ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAPersistence.html">
 <classname>org.apache.openjpa.persistence.OpenJPAPersistence</classname></ulink>
-is a static helper class that adds OpenJPA-specific utility methods to 
+is a static helper class that adds OpenJPA-specific utility methods to
 <classname>javax.persistence.Persistence</classname>.
             </para>
         </section>
@@ -526,7 +526,7 @@ through the <link linkend="openjpa.ReadLockLevel"><literal>
 openjpa.ReadLockLevel</literal></link> and
 <link linkend="openjpa.WriteLockLevel"><literal>openjpa.WriteLockLevel</literal>
 </link> configuration properties. Each property accepts a value of <literal>
-none</literal>, <literal>read</literal>, <literal>write</literal>, 
+none</literal>, <literal>read</literal>, <literal>write</literal>,
 <literal>optimistic</literal>, <literal>optimistic-force-increment</literal>,
 <literal>pessimistic-read</literal>, <literal>pessimistic-write</literal>,
 <literal>pessimistic-force-increment</literal>, or a number
@@ -907,9 +907,9 @@ database transaction until you flush or the optimistic transaction commits. This
 allows for very long-lived transactions without consuming database resources.
 When using the pessimistic lock manager, however, OpenJPA must begin a database
 transaction whenever you decide to lock an object during an optimistic
-transaction. This is because the pessimistic lock manager uses database locks, 
-and databases cannot lock rows without a transaction in progress. OpenJPA will 
-log an INFO message to the <literal>openjpa.Runtime</literal> logging channel 
+transaction. This is because the pessimistic lock manager uses database locks,
+and databases cannot lock rows without a transaction in progress. OpenJPA will
+log an INFO message to the <literal>openjpa.Runtime</literal> logging channel
 when it begins a datastore transaction just to lock an object.
                     </para>
                 </listitem>
@@ -924,15 +924,15 @@ locks the object. The only way to positively guarantee that the object is locked
 and has the most recent state to refresh the object after locking it.
                     </para>
                     <para>
-When using the pessimistic lock manager, the case above can only occur when 
-OpenJPA cannot issue the state-loading SELECT as a locking statement due to 
-database limitations. For example, some databases cannot lock SELECTs that use 
+When using the pessimistic lock manager, the case above can only occur when
+OpenJPA cannot issue the state-loading SELECT as a locking statement due to
+database limitations. For example, some databases cannot lock SELECTs that use
 joins. The pessimistic lock manager will log an INFO message to the <literal>
-openjpa.Runtime</literal> logging channel whenever it cannot lock the initial 
-SELECT due to database limitations. By paying attention to these log messages, 
-you can see where you might consider using an object refresh to guarantee that 
+openjpa.Runtime</literal> logging channel whenever it cannot lock the initial
+SELECT due to database limitations. By paying attention to these log messages,
+you can see where you might consider using an object refresh to guarantee that
 you have the most recent state, or where you might rethink the way you load the
-state in question to circumvent the database limitations that prevent OpenJPA 
+state in question to circumvent the database limitations that prevent OpenJPA
 from issuing a locking SELECT in the first place.
                     </para>
                 </listitem>
@@ -948,12 +948,12 @@ WARN   [main] openjpa.MetaData - Encountered a read lock level less than LockMod
 If you are using the pessimistic lock manager and you truly do want to set the lock mode to NONE for a
 given query, you can use a fetch plan to do so.
 <programlisting>
-OpenJPAQuery q = em.createNamedQuery("findEmployeeById"); 
+OpenJPAQuery q = em.createNamedQuery("findEmployeeById");
 FetchPlan fp = q.getFetchPlan();
 fp.setReadLockMode(LockModeType.NONE);
 </programlisting>
                     </para>
-                </listitem>                
+                </listitem>
             </itemizedlist>
         </section>
     </section>
@@ -982,7 +982,7 @@ changes. This chapter describes how to use and configure OpenJPA savepoints.
                 Using Savepoints
             </title>
             <para>
-OpenJPA's 
+OpenJPA's
 <ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink> have the following
 methods to control savepoint behavior. Note that the savepoints work in tandem
@@ -1013,8 +1013,8 @@ still set new savepoints. Savepoints will also be cleared after the current
 transaction is committed or rolled back.
             </para>
             <para>
-If a savepoint is no longer needed, you can release any resources it is 
-consuming resources by calling <methodname>releaseSavepoint</methodname>. This 
+If a savepoint is no longer needed, you can release any resources it is
+consuming resources by calling <methodname>releaseSavepoint</methodname>. This
 method should not be called for savepoints that have been
 released automatically through other means, such as commit of a transaction or
 rollback to a prior savepoint. While savepoints made after this savepoint will
@@ -1062,7 +1062,7 @@ oem.getTransaction().commit();
                 Configuring Savepoints
             </title>
             <para>
-OpenJPA uses the 
+OpenJPA uses the
 <ulink url="../../apidocs/org/apache/openjpa/kernel/SavepointManager">
 <classname>org.apache.openjpa.kernel.SavepointManager</classname></ulink>
 <link linkend="ref_guide_conf_plugins">plugin</link> to handle preserving the
@@ -1403,9 +1403,9 @@ import org.apache.openjpa.persistence.*;
 // the method query language is 'openjpa.MethodQL'.
 // set the query string to the target method to execute, prefixed by fullly-
 // qualified class name.
-// If a candidate class has been specified for the query, then if the class is 
-// in the candidate class' package or in the query imports, you can omit the 
-// package. If the method is in the candidate class, you can omit the class name 
+// If a candidate class has been specified for the query, then if the class is
+// in the candidate class' package or in the query imports, you can omit the
+// package. If the method is in the candidate class, you can omit the class name
 // and just specify the method name.
 
   OpenJPAEntityManager oem = OpenJPAPersistence.cast(emf);
@@ -1414,7 +1414,7 @@ import org.apache.openjpa.persistence.*;
 // parameters are passed the same way as in standard queries
 // but you have to declare the parameters with their types on the implementation
 
-// Unwrap the implementation and declare parameters with types in a 
+// Unwrap the implementation and declare parameters with types in a
 // comma-separated list
   q.unwrap(org.apache.openjpa.kernel.Query.class)
    .declareParameters("String firstName, String lastName");
@@ -1424,9 +1424,9 @@ import org.apache.openjpa.persistence.*;
 // this executes the target method to get the results
   List results = q.getResultList();
 
-// The result is returned as a list but the element(s) in the list is determined 
+// The result is returned as a list but the element(s) in the list is determined
 // by the returned value of the target method
- 
+
 </programlisting>
             <para>
 For datastore queries, the method must have the following signature:
@@ -1504,7 +1504,7 @@ to store a global sequence number. If the table does not already exist, it is
 created the first time you run the
 <link linkend="ref_guide_mapping_mappingtool">mapping tool</link> on a class
 that requires it. You can also use the class's <methodname>main</methodname>
-method to manipulate the table; see the 
+method to manipulate the table; see the
 <methodname>TableJDBCSeq.main</methodname> method Javadoc for usage details.
                 </para>
                 <para>
@@ -1514,9 +1514,9 @@ This <classname>Seq</classname> has the following properties:
                     <listitem>
                         <para>
 <literal>Table</literal>: The name of the sequence number table to use.
-Defaults to <literal>OPENJPA_SEQUENCE_TABLE</literal>. If the entities are 
-mapped to the same table name but with different schema name within one 
-PersistenceUnit, one <literal>OPENJPA_SEQUENCE_TABLE</literal> is created 
+Defaults to <literal>OPENJPA_SEQUENCE_TABLE</literal>. If the entities are
+mapped to the same table name but with different schema name within one
+PersistenceUnit, one <literal>OPENJPA_SEQUENCE_TABLE</literal> is created
 for each schema.
                         </para>
                     </listitem>
@@ -1693,14 +1693,14 @@ suitable for single-JVM environments.
 You can use JPA <literal>SequenceGenerator</literal>s to describe any built-in
 <classname>Seq</classname>s or your own <classname>Seq</classname>
 implementation. Set the <literal>sequenceName</literal> attribute to a plugin
-string describing your choice. 
+string describing your choice.
 </para>
 
 <blockquote>
 <para>
-If specifying your own class name, you must include parentheses at the end of 
+If specifying your own class name, you must include parentheses at the end of
 the class name, even if you have no plugin properties to configure.
-(E.g., <literal>sequenceName="com.example.SeqImpl()"</literal>. 
+(E.g., <literal>sequenceName="com.example.SeqImpl()"</literal>.
 </para>
 </blockquote>
 
@@ -1708,7 +1708,7 @@ the class name, even if you have no plugin properties to configure.
 See <xref linkend="jpa_overview_mapping_sequence"/> in the JPA Overview for
 details on defining <literal>SequenceGenerator</literal>s.
 </para>
-        
+
         <para>
 See <xref linkend="ref_guide_conf_plugins"/> for plugin string formatting.
         </para>
@@ -1726,7 +1726,7 @@ public class Author {
     @SequenceGenerator(name="AuthorSeq", sequenceName="table(Table=AUTO_SEQ)", allocationSize=100)
     @Column(name="AID")
     private long id;
- 
+
     ...
 }
 </programlisting>
@@ -1740,7 +1740,7 @@ a sequence name in the <literal>SequenceGenerator.sequenceName</literal> attribu
 </programlisting>
         </example>
         <para>
-<!-- OPENJPA-1343: It seems that this only works with the time and 
+<!-- OPENJPA-1343: It seems that this only works with the time and
 sjvm aliases. This due to an issue that was brought up in OPENJPA-1642
 Custom sequences may or may not work depending on their nature.-->
 OpenJPA maintains a <emphasis>system</emphasis> sequence to generate datastore
@@ -1788,7 +1788,7 @@ OpenJPA allows you to access named generators at runtime through the
 public Generator getNamedGenerator(String name);
 </programlisting>
             <para>
-The returned 
+The returned
 <ulink url="../../apidocs/org/apache/openjpa/persistence/Generator.html">
 <classname>org.apache.openjpa.persistence.Generator</classname></ulink> is a
 facade over an internal OpenJPA <classname>Seq</classname>.
@@ -1832,7 +1832,7 @@ public void addTransactionListener(Object listener);
 public void removeTransactionListener(Object listener);
 </programlisting>
         <para>
-These <classname>OpenJPAEntityManagerSPI</classname> methods allow you to add 
+These <classname>OpenJPAEntityManagerSPI</classname> methods allow you to add
 and remove listeners. These methods are outside the bounds of the published OpenJPA APIs, and are subject to change in the future.
         </para>
         <para>

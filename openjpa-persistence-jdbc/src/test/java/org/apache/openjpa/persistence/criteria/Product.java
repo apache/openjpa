@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 import javax.persistence.*;
@@ -22,12 +22,12 @@ import javax.persistence.*;
 @Entity
 @Table(name="CR_PRD")
 public class Product {
-	@Id 
+	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int pid;
-	
+
 	private String productType;
-	
+
 	@Version
 	private long version;
 

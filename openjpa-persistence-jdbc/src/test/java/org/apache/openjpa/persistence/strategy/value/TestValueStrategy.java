@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.strategy.value;
 
@@ -30,7 +30,7 @@ public class TestValueStrategy extends SQLListenerTestCase {
 
         create();
     }
-    
+
     public void testIt() {
         EntityManager em = emf.createEntityManager();
         ValueStrategyEntity se = em.find(ValueStrategyEntity.class, "id1");

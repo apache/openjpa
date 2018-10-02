@@ -21,9 +21,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
     version="2.0">
-    
-    <entity name="Automobile" 
-            class="org.apache.openjpa.persistence.detach.xml.Automobile" 
+
+    <entity name="Automobile"
+            class="org.apache.openjpa.persistence.detach.xml.Automobile"
             access="FIELD">
         <attributes>
             <id name="id">
@@ -34,25 +34,25 @@
             <many-to-one name="owner">
                 <cascade>
                     <cascade-persist/>
-                    <cascade-detach/>                    
+                    <cascade-detach/>
                 </cascade>
             </many-to-one>
             <one-to-one name="primaryDriver">
                 <cascade>
                     <cascade-persist/>
-                    <cascade-detach/>                    
+                    <cascade-detach/>
                 </cascade>
             </one-to-one>
             <many-to-many name="passengers">
                 <cascade>
                     <cascade-persist/>
-                    <cascade-detach/>                    
+                    <cascade-detach/>
                 </cascade>
             </many-to-many>
         </attributes>
-    </entity>    
-    <entity name="Driver" 
-            class="org.apache.openjpa.persistence.detach.xml.Driver" 
+    </entity>
+    <entity name="Driver"
+            class="org.apache.openjpa.persistence.detach.xml.Driver"
             access="FIELD">
         <attributes>
             <id name="id">
@@ -62,13 +62,13 @@
             <one-to-one name="auto">
                 <cascade>
                     <cascade-persist/>
-                    <cascade-detach/>                    
+                    <cascade-detach/>
                 </cascade>
             </one-to-one>
         </attributes>
     </entity>
-    <entity name="Passenger" 
-            class="org.apache.openjpa.persistence.detach.xml.Passenger" 
+    <entity name="Passenger"
+            class="org.apache.openjpa.persistence.detach.xml.Passenger"
             access="FIELD">
         <attributes>
             <id name="id">
@@ -78,13 +78,13 @@
             <many-to-many name="autos">
                 <cascade>
                     <cascade-persist/>
-                    <cascade-detach/>                    
+                    <cascade-detach/>
                 </cascade>
             </many-to-many>
         </attributes>
     </entity>
-    <entity name="Owner" 
-            class="org.apache.openjpa.persistence.detach.xml.Owner" 
+    <entity name="Owner"
+            class="org.apache.openjpa.persistence.detach.xml.Owner"
             access="FIELD">
         <attributes>
             <id name="id">
@@ -94,9 +94,9 @@
             <one-to-many name="autos">
                 <cascade>
                     <cascade-persist/>
-                    <cascade-detach/>                    
+                    <cascade-detach/>
                 </cascade>
             </one-to-many>
         </attributes>
-    </entity>    
+    </entity>
 </entity-mappings>

@@ -33,23 +33,23 @@ public class LineItem {
 	@Id
 	@Column( name = "ORDER_ID", nullable = false )
 	private Long orderId;
-	
+
 	@Id
 	@Column( name = "ITEM_ID", nullable = false )
 	private Long itemId;
-	
+
 	@Column( name = "PRODUCT_NAME", nullable = false )
 	private String productName;
-	
+
 	@Column( name = "QUANTITY", nullable = false )
 	private int quantity;
-	
+
 	@Column( name = "PRICE", nullable = false )
 	private float price;
-	
+
 	public LineItem() {
 	}
-	
+
 	public LineItem( String productName, int quantity, float price ) {
 		this();
 		this.productName = productName;
@@ -138,5 +138,5 @@ public class LineItem {
         if (quantity != other.quantity)
             return false;
         return true;
-    }	
+    }
 }

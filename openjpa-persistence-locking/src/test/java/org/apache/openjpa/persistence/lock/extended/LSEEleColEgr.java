@@ -46,7 +46,7 @@ import javax.persistence.Version;
             , query="SELECT c FROM LSEEleColEgr c WHERE c.firstName LIKE :firstName"
             , lockMode=LockModeType.PESSIMISTIC_WRITE
             , hints={@QueryHint(name="javax.persistence.lock.scope",value="EXTENDED")}
-            ) 
+            )
         }
     )
 
@@ -60,10 +60,10 @@ public class LSEEleColEgr implements Externalizable {
     private int version;
 
     private String firstName;
-    
+
     @ElementCollection(fetch=FetchType.EAGER)
     protected Set<String> collection = new HashSet<String>();
-    
+
     public int getId() {
         return id;
     }

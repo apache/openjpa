@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -62,7 +62,7 @@ public class ProductDerivations {
         _derivationErrors = new Throwable[_derivationNames.length];
         List<ProductDerivation> derivations =
             new ArrayList<ProductDerivation>(_derivationNames.length);
-        boolean errors = false; 
+        boolean errors = false;
         for (int i = 0; i < _derivationNames.length; i++) {
             try {
                 ProductDerivation d = (ProductDerivation)
@@ -80,11 +80,11 @@ public class ProductDerivations {
         }
 
         // must be at least one product derivation to define metadata factories,
-        // etc. 
+        // etc.
         if (derivations.isEmpty()) {
             throw new MissingResourceException(_loc.get
                 ("no-product-derivations", ProductDerivation.class.getName(),
-                derivationErrorsToString()).getMessage(), 
+                derivationErrorsToString()).getMessage(),
                 ProductDerivations.class.getName(),"derivations");
         }
 
@@ -131,39 +131,39 @@ public class ProductDerivations {
     }
 
     /**
-     * Set the configuration prefix array. This is package-visible for 
+     * Set the configuration prefix array. This is package-visible for
      * testing purposes.
-     * 
+     *
      * @since 0.9.7
      */
     static void setConfigurationPrefixes(String[] prefixes) {
         _prefixes = prefixes;
     }
-    
+
     /**
-     * Determine the full key name for <code>partialKey</code>, given the 
+     * Determine the full key name for <code>partialKey</code>, given the
      * registered prefixes and the entries in <code>map</code>. This method
-     * computes the appropriate configuration prefix to use by looking 
+     * computes the appropriate configuration prefix to use by looking
      * through <code>map</code> for a key starting with any of the known
      * configuration prefixes and ending with <code>partialKey</code> and, if a
      * value is found, using the prefix of that key. Otherwise, it uses
-     * the first registered prefix. 
-     * 
+     * the first registered prefix.
+     *
      * The given <code>partialKey</code> is first tested for containment in the
      * given map without any prefix.
-     *  
+     *
      * @since 0.9.7
      */
     public static String getConfigurationKey(String partialKey, Map map) {
-        String firstKey = (map != null && map.containsKey(partialKey)) 
+        String firstKey = (map != null && map.containsKey(partialKey))
             ? partialKey : null;
         for (int i = 0; map != null && i < _prefixes.length; i++) {
             String fullKey = _prefixes[i] + "." + partialKey;
             if (map.containsKey(fullKey)) {
-                if (firstKey == null) 
+                if (firstKey == null)
                     firstKey = fullKey;
                 else {
-                    // if we've already found a property with a previous 
+                    // if we've already found a property with a previous
                     // prefix, then this is a collision.
                     throw new IllegalStateException(_loc.get(
                         "dup-with-different-prefixes", firstKey, fullKey)
@@ -171,7 +171,7 @@ public class ProductDerivations {
                 }
             }
         }
-        
+
         if (firstKey == null)
             return _prefixes[0] + "." + partialKey;
         else
@@ -236,9 +236,9 @@ public class ProductDerivations {
     }
 
     /**
-     * Called as the first step of a Configuration's close() method. 
+     * Called as the first step of a Configuration's close() method.
      * Exceptions are swallowed.
-     * 
+     *
      * @since 0.9.7
      */
     public static void beforeClose(Configuration conf) {
@@ -258,7 +258,7 @@ public class ProductDerivations {
      * @param anchor optional named anchor within a multiple-configuration
      * resource
      */
-    public static ConfigurationProvider load(String resource, String anchor, 
+    public static ConfigurationProvider load(String resource, String anchor,
         ClassLoader loader) {
         if (StringUtil.isEmpty(resource))
             return null;
@@ -294,7 +294,7 @@ public class ProductDerivations {
      *
      * @param anchor optional named anchor within a multiple-configuration file
      */
-    public static ConfigurationProvider load(File file, String anchor, 
+    public static ConfigurationProvider load(File file, String anchor,
         ClassLoader loader) {
         if (file == null)
             return null;
@@ -325,7 +325,7 @@ public class ProductDerivations {
         ex.initCause(err);
         throw ex;
     }
-   
+
     /**
      * Return a {@link ConfigurationProvider} that has parsed system defaults.
      */
@@ -339,16 +339,16 @@ public class ProductDerivations {
     public static ConfigurationProvider loadGlobals(ClassLoader loader) {
         return load(loader, true);
     }
-            
+
     /**
      * Load a built-in resource location.
      */
-    private static ConfigurationProvider load(ClassLoader loader, 
+    private static ConfigurationProvider load(ClassLoader loader,
        boolean globals) {
         if (loader == null)
             loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
-        
+
         ConfigurationProvider provider = null;
         StringBuilder errs = null;
         String type = (globals) ? "globals" : "defaults";
@@ -356,7 +356,7 @@ public class ProductDerivations {
         // most specific to least
         for (int i = _derivations.length - 1; i >= 0; i--) {
             try {
-                provider = (globals) ? _derivations[i].loadGlobals(loader) 
+                provider = (globals) ? _derivations[i].loadGlobals(loader)
                     : _derivations[i].loadDefaults(loader);
                 if (provider != null)
                    return provider;
@@ -369,7 +369,7 @@ public class ProductDerivations {
         reportErrors(errs, type, err);
         return null;
     }
- 
+
     /**
      * Thrown proper exception for given errors.
      */
@@ -444,8 +444,8 @@ public class ProductDerivations {
                 collection.add(fqLoc);
         }
     }
-    
-    
+
+
     public static Set<String> getSupportedQueryHints() {
         Set<String> result = new TreeSet<String>();
         // most specific to least

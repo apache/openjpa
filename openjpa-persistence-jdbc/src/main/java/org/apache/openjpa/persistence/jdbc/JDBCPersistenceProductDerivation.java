@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -43,11 +43,11 @@ import org.apache.openjpa.persistence.PersistenceProductDerivation;
  *
  * @author Abe White
  */
-public class JDBCPersistenceProductDerivation 
-    extends AbstractProductDerivation 
+public class JDBCPersistenceProductDerivation
+    extends AbstractProductDerivation
     implements OpenJPAProductDerivation {
-    
-    
+
+
     public void putBrokerFactoryAliases(Map<String,String> m) {
     }
 
@@ -67,7 +67,7 @@ public class JDBCPersistenceProductDerivation
     public boolean beforeConfigurationLoad(Configuration c) {
         if (c instanceof OpenJPAConfiguration) {
             ((OpenJPAConfiguration) c).getStoreFacadeTypeRegistry().
-                registerImplementation(FetchPlan.class, JDBCStoreManager.class, 
+                registerImplementation(FetchPlan.class, JDBCStoreManager.class,
                 JDBCFetchPlanImpl.class);
         }
         if (!(c instanceof JDBCConfigurationImpl))
@@ -91,9 +91,9 @@ public class JDBCPersistenceProductDerivation
             PersistenceMappingDefaults.class.getName());
         conf.mappingDefaultsPlugin.setAlias(jpa.getName(),
             PersistenceMappingDefaults.class.getName());
-        
+
         conf.lockManagerPlugin.setAlias("mixed", "org.apache.openjpa.jdbc.kernel.MixedLockManager");
-        
+
         return true;
     }
 
@@ -105,14 +105,14 @@ public class JDBCPersistenceProductDerivation
         Specification jpa = PersistenceProductDerivation.SPEC_JPA;
         if (!jpa.getName().equals(conf.getSpecificationInstance().getName()))
             return false;
-        
+
         conf.mappingDefaultsPlugin.setDefault(jpa.getName());
         conf.mappingDefaultsPlugin.setString(jpa.getName());
         conf.lockManagerPlugin.setDefault("mixed");
         conf.lockManagerPlugin.setString("mixed");
         return true;
-    } 
-    
+    }
+
     /**
      * Hint keys correspond to some (not all) bean-style mutable property name in JDBCFetchConfiguration.
      * The fully qualified key is prefixed with <code>openjpa.jdbc</code>.
@@ -126,11 +126,11 @@ public class JDBCPersistenceProductDerivation
         _hints.add("openjpa.FetchPlan.LRSSize");
         _hints.add("openjpa.FetchPlan.ResultSetType");
         _hints.add("openjpa.FetchPlan.SubclassFetchMode");
-        
+
         _hints.add(MariaDBDictionary.SELECT_HINT);
         _hints.add(MySQLDictionary.SELECT_HINT);
         _hints.add(OracleDictionary.SELECT_HINT);
-        
+
         _hints = Collections.unmodifiableSet(_hints);
     }
 

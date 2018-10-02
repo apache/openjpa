@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.identifier;
 
@@ -43,11 +43,11 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * Shortens the given name to the given maximum length, then checks that
      * it is not a reserved word. If it is reserved, appends a "0". If
      * the name conflicts with an existing schema component and uniqueness
-     * checking is enabled, the last character is replace with '0', then 
-     * '1', etc. 
-     * Note that the given max len may be 0 if the database metadata is 
+     * checking is enabled, the last character is replace with '0', then
+     * '1', etc.
+     * Note that the given max len may be 0 if the database metadata is
      * incomplete.
-     * 
+     *
      * Note: If the name is delimited, make sure the ending delimiter is
      * not stripped off.
      */
@@ -58,11 +58,11 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * Shortens the given name to the given maximum length, then checks that
      * it is not a reserved word. If it is reserved, appends a "0". If
      * the name conflicts with an existing schema component and uniqueness
-     * checking is enabled, the last character is replace with '0', then 
-     * '1', etc. 
-     * Note that the given max len may be 0 if the database metadata is 
+     * checking is enabled, the last character is replace with '0', then
+     * '1', etc.
+     * Note that the given max len may be 0 if the database metadata is
      * incomplete.
-     * 
+     *
      * Note: If the name is delimited, make sure the ending delimiter is
      * not stripped off.
      */
@@ -77,9 +77,9 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param maxLen
      * @param checkForUniqueness
      */
-    public DBIdentifier getValidColumnIdentifier(DBIdentifier name, Table table, int maxLen, 
+    public DBIdentifier getValidColumnIdentifier(DBIdentifier name, Table table, int maxLen,
         boolean checkForUniqueness);
-    
+
     /**
      * Returns a valid index identifier, based upon the configuration and
      * provided parameters.
@@ -99,7 +99,7 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param checkForUniqueness
      */
     public DBIdentifier getValidSequenceIdentifier(DBIdentifier name, Schema schema, int maxLen);
-    
+
     /**
      * Returns a valid table identifier, based upon the configuration and provided
      * parameters.
@@ -135,7 +135,7 @@ public interface DBIdentifierUtil extends IdentifierUtil {
     public String toDBName(DBIdentifier name);
 
     /**
-     * Converts the specified identifier to a format required by the database, 
+     * Converts the specified identifier to a format required by the database,
      * optionally delimiting the name.
      * @param name
      * @param delimit

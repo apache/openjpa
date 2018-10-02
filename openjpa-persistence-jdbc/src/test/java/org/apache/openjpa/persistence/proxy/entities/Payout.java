@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -31,24 +31,24 @@ import javax.persistence.ManyToOne;
 
 @Entity
 @AttributeOverride(name="lastUpdateDate", column=@Column(name="LAST_UPDATE_TS"))
-public class Payout extends AnnuityPersistebleObject implements IPayout {	
+public class Payout extends AnnuityPersistebleObject implements IPayout {
 	private static final long serialVersionUID = 2837981324963617180L;
 	private BigDecimal taxableAmount;
 	private Calendar startDate;
 	private Calendar endDate;
 	private IAnnuity annuity;
-		
+
 	@Column(name="TAXABLE_AMOUNT")
-	public BigDecimal getTaxableAmount() {		
+	public BigDecimal getTaxableAmount() {
 		return this.taxableAmount;
 	}
-	public void setTaxableAmount(BigDecimal payoutTaxableAmt) {		
+	public void setTaxableAmount(BigDecimal payoutTaxableAmt) {
 		this.taxableAmount = payoutTaxableAmt;
 		if (payoutTaxableAmt != null) {
 			DecimalFormat df = new DecimalFormat("#.##");
-			this.taxableAmount = new BigDecimal(df.format(payoutTaxableAmt)); 				
+			this.taxableAmount = new BigDecimal(df.format(payoutTaxableAmt));
 		}
-		
+
 	}
 	@Column(name="START_DATE")
 	public Calendar getStartDate() {
@@ -57,25 +57,25 @@ public class Payout extends AnnuityPersistebleObject implements IPayout {
 	public void setStartDate(Calendar startDate) {
 		this.startDate = startDate;
 	}
-	
+
 	@Column(name="END_DATE")
 	public Calendar getEndDate() {
 		return endDate;
 	}
-	
+
 	public void setEndDate(Calendar payoutEndDate) {
 		this.endDate = payoutEndDate;
 	}
-			
+
 	@ManyToOne(targetEntity=Annuity.class,
 			fetch=FetchType.EAGER)
-	@JoinColumn(name="FK_ANNUITY_ID")	
+	@JoinColumn(name="FK_ANNUITY_ID")
 	public IAnnuity getAnnuity() {
 		return this.annuity;
 	}
 	public void setAnnuity(IAnnuity annuity) {
 		this.annuity = annuity;
-		
+
 	}
 
 }

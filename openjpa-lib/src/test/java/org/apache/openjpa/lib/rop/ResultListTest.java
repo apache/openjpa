@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.rop;
 
@@ -38,11 +38,11 @@ public abstract class ResultListTest extends AbstractTestCase {
     private ResultList[] _lists = null;
 
     protected boolean subListSupported = false;
-    
+
     public ResultListTest(String test) {
         super(test);
     }
-    
+
     public ResultListTest(String test, boolean supportSubList) {
         super(test);
         subListSupported = supportSubList;

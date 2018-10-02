@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -129,7 +129,7 @@ public class QueryImpl
 
     // remember the list of all the results we have returned so we
     // can free their resources when close or closeAll is called
-    private transient final Collection<RemoveOnCloseResultList> _resultLists = 
+    private transient final Collection<RemoveOnCloseResultList> _resultLists =
         new ReferenceHashSet(ReferenceStrength.WEAK);
 
     private boolean _printParameters = false;
@@ -236,7 +236,7 @@ public class QueryImpl
     }
 
     public Collection<FilterListener> getFilterListeners() {
-        if (_filtListeners == null) 
+        if (_filtListeners == null)
             return Collections.emptyList();
         else
             return _filtListeners.values();
@@ -287,7 +287,7 @@ public class QueryImpl
     }
 
     public Collection<AggregateListener> getAggregateListeners() {
-        if (_aggListeners == null) 
+        if (_aggListeners == null)
             return Collections.emptyList();
         else
             return _aggListeners.values();
@@ -474,7 +474,7 @@ public class QueryImpl
             unlock();
         }
     }
-    
+
     /**
      * Affirms if this query has originated by parsing a string-based query.
      */
@@ -672,7 +672,7 @@ public class QueryImpl
             return comp;
         }
     }
-    
+
     /**
      * Create and populate a new compilation.
      */
@@ -878,7 +878,7 @@ public class QueryImpl
             } catch (OpenJPAException ke) {
                 throw ke;
             } catch (Exception e) {
-                throw new UserException(_loc.get("query-execution-error", 
+                throw new UserException(_loc.get("query-execution-error",
                 		_query), e);
             } finally {
                 _broker.endOperation();
@@ -916,32 +916,32 @@ public class QueryImpl
     /**
      * Converts the values of given <code>params</code> Map into an array in
      * consultation of the <code>paramTypes</code> Map.
-     * 
-     * The indexing of the resultant array is significant for following 
+     *
+     * The indexing of the resultant array is significant for following
      * interrelated but tacit assumptions:
      * The values in the returned Object[] is consumed by {@link Parameter}
      * expressions. Query parsing creates these Parameters and sets their
      * key and index. The index set on the Parameter by the parser is the
      * same index used to access the Object[] elements returned by this method.
-     * 
+     *
      * {@link JPQLExpressionBuilder} creates and populates parameters as
-     * follows: 
-     * The parameter key is not the token encountered by the parser, but 
-     * converted to Integer or String based on the context in which the token 
-     * appeared. 
-     * The index for positional (Integer) parameter is the value of the key   
-     * minus 1. 
-     * The index for named (String) parameter is the order in which the  
-     * token appeared to parser during scanning. 
-     * 
-     * 
+     * follows:
+     * The parameter key is not the token encountered by the parser, but
+     * converted to Integer or String based on the context in which the token
+     * appeared.
+     * The index for positional (Integer) parameter is the value of the key
+     * minus 1.
+     * The index for named (String) parameter is the order in which the
+     * token appeared to parser during scanning.
+     *
+     *
      * The first LinkedMap argument to this method is the result of parsing.
-     * This LinkedMap contains the parameter key and their expected 
-     * (if determinable) value types. That it is a LinkedMap points to the 
-     * fact that an ordering is implicit. The ordering of the keys in this Map 
+     * This LinkedMap contains the parameter key and their expected
+     * (if determinable) value types. That it is a LinkedMap points to the
+     * fact that an ordering is implicit. The ordering of the keys in this Map
      * is the same as the order in which parser encountered the parameter
      * tokens.
-     * 
+     *
      * For example, parsing result of the following two JPQL queries
      *   a) UPDATE CompUser e SET e.name= ?1, e.age = ?2 WHERE e.userid = ?3
      *   b) UPDATE CompUser e SET e.name= :name, e.age = :age WHERE e.userid =
@@ -952,14 +952,14 @@ public class QueryImpl
      * following key and index:
      *    a) 1:0, 2:1, 3:2
      *    b) name:1, age:2, id:0
-     *    
+     *
      * The purpose of this method is to produce an Object[] with an indexing
      * scheme that matches the indexing of the Parameter Expression.
      * The user map (the second argument) should produce the following Object[]
      * in two above-mentioned cases
      *   a) {1:"Shannon",2:29,3:5032} --> ["Shannon", 29, 5032]
      *   b) {"name":"Shannon", "age":29, "id":5032} --> [5032, "Shannon", 29]
-     *   
+     *
      */
 
     /**
@@ -998,7 +998,7 @@ public class QueryImpl
      * values. All other execute methods delegate to this one or to
      * {@link #execute(int, Map)} after validation and locking.
      */
-    private Object execute(StoreQuery q, StoreQuery.Executor ex, 
+    private Object execute(StoreQuery q, StoreQuery.Executor ex,
         Object[] params)
         throws Exception {
         // if this is an impossible result range, return null / empty list
@@ -1233,7 +1233,7 @@ public class QueryImpl
     /**
      * Return the query result for the given result object provider.
      */
-    protected Object toResult(StoreQuery q, StoreQuery.Executor ex, 
+    protected Object toResult(StoreQuery q, StoreQuery.Executor ex,
         ResultObjectProvider rop, StoreQuery.Range range)
         throws Exception {
         if (rop instanceof BatchedResultObjectProvider) {
@@ -1326,7 +1326,7 @@ public class QueryImpl
      * Extract an expected single result from the given provider. Used when
      * the result is an ungrouped aggregate or the unique flag is set to true.
      */
-    private Object singleResult(ResultObjectProvider rop, 
+    private Object singleResult(ResultObjectProvider rop,
         StoreQuery.Range range)
         throws Exception {
         rop.open();
@@ -1344,7 +1344,7 @@ public class QueryImpl
                     throw new NonUniqueResultException(_loc.get("not-unique",
                         _class, _query));
             } else if (_unique == Boolean.TRUE)
-                throw new NoResultException(_loc.get("no-result", 
+                throw new NoResultException(_loc.get("no-result",
                     _class, _query));
 
             // if unique set to false, use collection
@@ -1354,7 +1354,7 @@ public class QueryImpl
                 // Collections.singletonList is JDK 1.3, so...
                 return Arrays.asList(new Object[]{ single });
             }
-            
+
             // return single result
             return single;
         } finally {
@@ -1552,7 +1552,7 @@ public class QueryImpl
             unlock();
         }
     }
-    
+
     public boolean isDistinct() {
         lock();
         try {
@@ -1591,7 +1591,7 @@ public class QueryImpl
             unlock();
         }
     }
-    
+
     public LinkedMap getParameterTypes() {
         lock();
         try {
@@ -1622,19 +1622,19 @@ public class QueryImpl
         if (_lock != null)
             _lock.unlock();
     }
-    
+
     public synchronized void startLocking() {
     	if (_lock == null) {
     		_lock = new ReentrantLock();
     	}
     }
-    
+
     public synchronized void stopLocking() {
     	if (_lock != null && !_broker.getMultithreaded())
     		_lock = null;
     }
-    
-    
+
+
 
     /////////
     // Utils
@@ -1649,7 +1649,7 @@ public class QueryImpl
         // first check the aliases map in the MetaDataRepository
         ClassLoader loader = (_class == null) ? _loader
             : AccessController.doPrivileged(
-                J2DoPrivHelper.getClassLoaderAction(_class)); 
+                J2DoPrivHelper.getClassLoaderAction(_class));
         ClassMetaData meta = _broker.getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(name, loader, false);
         if (meta != null)
@@ -1734,7 +1734,7 @@ public class QueryImpl
      * Check that we are in a state to be able to perform a bulk operation;
      * also flush the current modfications if any elements are currently dirty.
      */
-    private void assertBulkModify(StoreQuery q, StoreQuery.Executor ex, 
+    private void assertBulkModify(StoreQuery q, StoreQuery.Executor ex,
         Object[] params) {
         _broker.assertActiveTransaction();
         if (_startIdx != 0 || _endIdx != Long.MAX_VALUE)
@@ -1750,7 +1750,7 @@ public class QueryImpl
     /**
      * Checks that the passed parameters match the declarations.
      */
-    protected void assertParameters(StoreQuery q, StoreQuery.Executor ex, 
+    protected void assertParameters(StoreQuery q, StoreQuery.Executor ex,
         Object[] params) {
         if (!q.requiresParameterDeclarations() || !isParsedQuery())
             return;
@@ -1769,7 +1769,7 @@ public class QueryImpl
                 throw new UserException(_loc.get("null-primitive-param", entry.getKey()));
         }
     }
-    
+
     protected void assertParameters(StoreQuery q, StoreQuery.Executor ex, Map params) {
         if (!q.requiresParameterDeclarations())
             return;
@@ -1787,7 +1787,7 @@ public class QueryImpl
         }
 
         for (Entry<Object, Class<?>> entry : paramTypes.entrySet()) {
-            if (entry.getValue().isPrimitive() 
+            if (entry.getValue().isPrimitive()
                 && params.get(entry.getKey()) == null)
                 throw new UserException(_loc.get("null-primitive-param", entry.getKey()));
         }
@@ -1887,7 +1887,7 @@ public class QueryImpl
         public MergedExecutor(StoreQuery.Executor[] executors) {
             _executors = executors;
         }
-        
+
         public QueryExpressions[] getQueryExpressions() {
             return _executors[0].getQueryExpressions();
         }
@@ -1920,7 +1920,7 @@ public class QueryImpl
 
             // if there is a lower bound, wrap in range rop
             if (range.start != 0)
-                rop = new RangeResultObjectProvider(rop, range.start, 
+                rop = new RangeResultObjectProvider(rop, range.start,
                     range.end);
             return rop;
         }
@@ -1959,7 +1959,7 @@ public class QueryImpl
             _executors[0].validate(q);
         }
 
-        public void getRange(StoreQuery q, Object[] params, 
+        public void getRange(StoreQuery q, Object[] params,
             StoreQuery.Range range) {
             _executors[0].getRange(q, params, range);
         }
@@ -1991,7 +1991,7 @@ public class QueryImpl
         public ResultShape<?> getResultShape(StoreQuery q) {
             return _executors[0].getResultShape(q);
         }
-        
+
         public Class[] getProjectionTypes(StoreQuery q) {
             return _executors[0].getProjectionTypes(q);
         }
@@ -2024,7 +2024,7 @@ public class QueryImpl
                 q.getContext().getCandidateType(),
                 q.getContext().getQueryString()));
         }
-        
+
         public boolean isDistinct(StoreQuery q) {
             return _executors[0].isDistinct(q);
         }
@@ -2040,11 +2040,11 @@ public class QueryImpl
         public OrderedMap<Object,Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return _executors[0].getOrderedParameterTypes(q);
         }
-        
+
         public LinkedMap getParameterTypes(StoreQuery q) {
             return _executors[0].getParameterTypes(q);
         }
-        
+
         public Object[] toParameterArray(StoreQuery q, Map userParams) {
             return _executors[0].toParameterArray(q, userParams);
         }
@@ -2121,7 +2121,7 @@ public class QueryImpl
         public void handleCheckedException(Exception e) {
             _delegate.handleCheckedException(e);
         }
-        
+
         public ResultObjectProvider getDelegate() {
             return _delegate;
         }
@@ -2147,11 +2147,11 @@ public class QueryImpl
         public boolean isProviderOpen() {
             return _res.isProviderOpen();
         }
-        
+
         public Object getUserObject() {
             return _res.getUserObject();
         }
-        
+
         public void setUserObject(Object opaque) {
             _res.setUserObject(opaque);
         }

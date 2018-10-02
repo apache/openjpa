@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -58,7 +58,7 @@ public class LogicalUnion
     protected final ClassMapping[] mappings;
     protected final BitSet desc = new BitSet();
     private boolean _distinct = true;
-   
+
 
     /**
      * Constructor.
@@ -107,7 +107,7 @@ public class LogicalUnion
     public Select[] getSelects() {
         return sels;
     }
-   
+
     public boolean isUnion() {
         return false;
     }
@@ -130,7 +130,7 @@ public class LogicalUnion
     public SQLBuffer toSelect(boolean forUpdate, JDBCFetchConfiguration fetch) {
         return dict.toSelect(sels[0], forUpdate, fetch);
     }
-    
+
     public SQLBuffer getSQL() {
         return sels.length == 1 ? sels[0].getSQL() : null;
     }
@@ -168,7 +168,7 @@ public class LogicalUnion
     public int getExpectedResultCount() {
         return sels[0].getExpectedResultCount();
     }
-    
+
     public void setExpectedResultCount(int expectedResultCount,
         boolean force) {
         for (int i = 0; i < sels.length; i++)
@@ -322,7 +322,7 @@ public class LogicalUnion
         protected final int pos;
         protected int orders = 0;
         protected List orderIdxs = null;
-       
+
         public UnionSelect(SelectImpl sel, int pos) {
             this.sel = sel;
             this.pos = pos;
@@ -358,7 +358,7 @@ public class LogicalUnion
             JDBCFetchConfiguration fetch) {
             return sel.toSelect(forUpdate, fetch);
         }
-        
+
         public SQLBuffer getSQL() {
             return sel.getSQL();
         }
@@ -446,11 +446,11 @@ public class LogicalUnion
         public void setHasSubselect(boolean hasSub) {
             sel.setHasSubselect(hasSub);
         }
-        
+
         public boolean getHasSubselect() {
-            return sel.getHasSubselect();    
+            return sel.getHasSubselect();
         }
-        
+
         public Select getFromSelect() {
             return null;
         }
@@ -824,12 +824,12 @@ public class LogicalUnion
             sel.groupBy(cols, joins);
         }
 
-        public void groupBy(ClassMapping mapping, int subclasses, 
+        public void groupBy(ClassMapping mapping, int subclasses,
             JDBCStore store, JDBCFetchConfiguration fetch) {
             sel.groupBy(mapping, subclasses, store, fetch);
         }
 
-        public void groupBy(ClassMapping mapping, int subclasses, 
+        public void groupBy(ClassMapping mapping, int subclasses,
             JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
             sel.groupBy(mapping, subclasses, store, fetch, joins);
         }
@@ -885,7 +885,7 @@ public class LogicalUnion
             return sel.getExpectedResultCount();
         }
 
-        public void setExpectedResultCount(int expectedResultCount, 
+        public void setExpectedResultCount(int expectedResultCount,
             boolean force) {
             sel.setExpectedResultCount(expectedResultCount, force);
         }
@@ -903,15 +903,15 @@ public class LogicalUnion
         }
 
         public void logEagerRelations() {
-            sel.logEagerRelations();            
+            sel.logEagerRelations();
         }
-        public void setTablePerClassMeta(ClassMapping meta) {            
+        public void setTablePerClassMeta(ClassMapping meta) {
         }
 
         public ClassMapping getTablePerClassMeta() {
             return sel.getTablePerClassMeta();
         }
-        
+
         public void setJoinedTableClassMeta(List meta) {
             sel.setJoinedTableClassMeta(meta);
         }
@@ -919,7 +919,7 @@ public class LogicalUnion
         public List getJoinedTableClassMeta() {
             return sel.getJoinedTableClassMeta();
         }
-        
+
         public void setExcludedJoinedTableClassMeta(List meta) {
             sel.setExcludedJoinedTableClassMeta(meta);
         }
@@ -927,9 +927,9 @@ public class LogicalUnion
         public List getExcludedJoinedTableClassMeta() {
             return sel.getExcludedJoinedTableClassMeta();
         }
-        
-        public DBDictionary getDictionary() { 
-            return dict; 
+
+        public DBDictionary getDictionary() {
+            return dict;
         }
     }
 

@@ -24,9 +24,9 @@ import javax.persistence.EntityTransaction;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /*
- * OPENJPA-2494: This test verifies that a schema defined in an orm's 
+ * OPENJPA-2494: This test verifies that a schema defined in an orm's
  * persistence-unit-default is used in certain scenarios, and overridden
- * in other scenarios.  
+ * in other scenarios.
  */
 public class TestSchemaPUDefault extends SQLListenerTestCase {
 
@@ -71,7 +71,7 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
         // The Table SQL should use the schema defined in the annotation
         assertContainsSQL("INSERT INTO schemaInTableAnnotation.PUSchemaInTable");
     }
-    
+
     public void testSchemaInTableMapping() {
         persist(new PUSchemaInTableMappingEntity());
 
@@ -89,7 +89,7 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
         // The Table SQL should use the schema defined in the PU default schema
         assertContainsSQL("INSERT INTO schemaInPUDefaults.PUSchemaInSequenceMappingEntity");
     }
-    
+
     public void persist(Object ent){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
@@ -97,5 +97,5 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
         em.persist(ent);
         tx.commit();
         em.close();
-    }    
+    }
 }

@@ -23,11 +23,11 @@ import java.util.Date;
 public class XMLMixedMappedSuper {
 
     private int mid;
-    
+
     private String mname;
 
     protected Date crtDate;
-    
+
     public void setId(int id) {
         this.setMid(id);
     }
@@ -43,7 +43,7 @@ public class XMLMixedMappedSuper {
     public String getName() {
         return mname;
     }
-        
+
     public boolean equals(Object obj) {
         if (obj instanceof XMLMixedMappedSuper) {
             XMLMixedMappedSuper ps = (XMLMixedMappedSuper)obj;

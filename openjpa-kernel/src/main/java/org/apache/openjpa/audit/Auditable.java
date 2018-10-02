@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.audit;
 
@@ -27,8 +27,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Annotates a persistent type for {@link Auditor audit}.
  * <br>
  * A type can be audited for specific {@link AuditableOperation operations}.
- * By default, this annotation enables all operations. 
- * 
+ * By default, this annotation enables all operations.
+ *
  * @author Pinaki Poddar
  * @since 2.2.0
  *

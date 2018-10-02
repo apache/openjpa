@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -75,9 +75,9 @@ public class H2Dictionary extends DBDictionary {
             "GROUP", "HAVING", "INNER", "INTERSECT", "IS", "JOIN", "LIKE",
             "MINUS", "NATURAL", "NOT", "NULL", "ON", "ORDER", "PRIMARY",
             "ROWNUM", "SELECT", "SYSDATE", "SYSTIME", "SYSTIMESTAMP", "TODAY",
-            "TRUE", "UNION", "WHERE" 
+            "TRUE", "UNION", "WHERE"
             }));
-        
+
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
         invalidColumnWordSet.addAll(Arrays.asList(new String[]{
@@ -117,9 +117,9 @@ public class H2Dictionary extends DBDictionary {
 
     @Override
     public String[] getAddColumnSQL(Column column) {
-        return new String[] { 
-            "ALTER TABLE " + getFullName(column.getTable(), false) 
-                + " ADD COLUMN " + getDeclareColumnSQL(column, true) 
+        return new String[] {
+            "ALTER TABLE " + getFullName(column.getTable(), false)
+                + " ADD COLUMN " + getDeclareColumnSQL(column, true)
         };
     }
 
@@ -174,7 +174,7 @@ public class H2Dictionary extends DBDictionary {
         }
         return name.getName().toUpperCase(Locale.ENGLISH).startsWith("SYSTEM_");
     }
-    
+
     @Override
     protected String getSequencesSQL(String schemaName, String sequenceName) {
         return getSequencesSQL(DBIdentifier.newSchema(schemaName), DBIdentifier.newSequence(sequenceName));
@@ -209,7 +209,7 @@ public class H2Dictionary extends DBDictionary {
     public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
         DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
         throws SQLException {
-        Column[] cols = super.getColumns(meta, catalog, schemaName, tableName, 
+        Column[] cols = super.getColumns(meta, catalog, schemaName, tableName,
             columnName, conn);
         return cols;
     }
@@ -243,7 +243,7 @@ public class H2Dictionary extends DBDictionary {
     @Override
     public boolean isFatalException(int subtype, SQLException ex) {
         int errorCode = ex.getErrorCode();
-        if ((subtype == StoreException.QUERY || subtype == StoreException.LOCK) 
+        if ((subtype == StoreException.QUERY || subtype == StoreException.LOCK)
             && (57014 == errorCode || 50200 == errorCode)) {
             return false;
         }

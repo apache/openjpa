@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
@@ -44,13 +44,13 @@ public class TestEfficientAttach extends TestSQLListenerTestCase {
 
 
 //    private boolean  = true;//Boolean.valueOf(bool);
-    
+
     /** Creates a new instance of TestEfficientAttach */
-    public TestEfficientAttach(String name) 
+    public TestEfficientAttach(String name)
     {
     	super(name);
     }
-    
+
     public void testAttachWithDetachedStateManager() {
         Class[] clss = new Class[]{
             AttachA.class, AttachB.class, AttachC.class, AttachD.class,
@@ -95,7 +95,7 @@ public class TestEfficientAttach extends TestSQLListenerTestCase {
         endTx(pm);;
         //FIXME jthomas - could not find equivalent for detachCopy()
         //attachCopy() etc
-/*      
+/*
         e = (AttachE) pm.detachCopy(e);
         pm.close();
 
@@ -116,5 +116,5 @@ public class TestEfficientAttach extends TestSQLListenerTestCase {
     public static void main(String[] args) {
         //main();
     }
-    
+
 }

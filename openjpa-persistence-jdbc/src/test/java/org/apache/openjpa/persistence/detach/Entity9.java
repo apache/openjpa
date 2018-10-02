@@ -26,7 +26,7 @@ public class Entity9 {
     @Id
     private long id;
     private String name;
-    
+
     public Entity9() {
     }
 

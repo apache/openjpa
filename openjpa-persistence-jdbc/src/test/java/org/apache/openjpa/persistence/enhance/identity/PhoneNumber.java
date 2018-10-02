@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -25,11 +25,11 @@ import javax.persistence.*;
 public class PhoneNumber {
     @Id
     int phNumber;
-    
+
     @OneToOne(fetch=FetchType.LAZY)
     Employee emp;
-    
-    
+
+
     public int getPhNumber() {
         return phNumber;
     }
@@ -37,11 +37,11 @@ public class PhoneNumber {
     public void setPhNumber(int number) {
         this.phNumber = number;
     }
-    
+
     public Employee getEmp() {
         return emp;
     }
-    
+
     public void setEmp(Employee emp) {
         this.emp = emp;
     }

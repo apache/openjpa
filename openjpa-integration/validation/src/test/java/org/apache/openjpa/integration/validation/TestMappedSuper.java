@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -36,14 +36,14 @@ public class TestMappedSuper extends AbstractPersistenceTestCase {
      * Verify constraints defined via XML on a mapped superclass are validated.
      */
     public void testMappedSuperXMLConstraint() {
-        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI) 
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
                 "XMLConstraintPU",
                 "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
         OpenJPAEntityManager em = emf.createEntityManager();
         assertNotNull(em);
-        
+
         XMLBase be = new XMLBase();
         try {
             em.getTransaction().begin();
@@ -65,14 +65,14 @@ public class TestMappedSuper extends AbstractPersistenceTestCase {
             closeEMF(emf);
         }
     }
-    
+
     private void checkCVE(ConstraintViolationException e,
         String... vioProperties) {
         Set<ConstraintViolation<?>>cvs = e.getConstraintViolations();
         if (vioProperties.length == 0 && cvs == null)
             return;
         assertEquals(vioProperties.length, cvs.size());
-        Iterator<ConstraintViolation<?>> i = 
+        Iterator<ConstraintViolation<?>> i =
             (Iterator<ConstraintViolation<?>>) cvs.iterator();
         while (i.hasNext()) {
             ConstraintViolation<?> v = (ConstraintViolation<?>)i.next();
@@ -84,7 +84,7 @@ public class TestMappedSuper extends AbstractPersistenceTestCase {
                 }
             }
             if (!found) {
-                fail("Unexpected ConstraintViolation for: " + 
+                fail("Unexpected ConstraintViolation for: " +
                     v.getPropertyPath());
             }
         }

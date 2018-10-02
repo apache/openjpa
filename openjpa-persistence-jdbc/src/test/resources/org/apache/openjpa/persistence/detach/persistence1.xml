@@ -26,7 +26,7 @@
     <persistence-unit name="NoProxy1Compat">
         <class>org.apache.openjpa.persistence.detach.Entity20</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>			
+        <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
         </properties>

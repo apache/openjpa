@@ -28,7 +28,7 @@ public class M2MEntityF  {
 	@ManyToMany(mappedBy="entityf")
 	@MapKey(name="name")
 	private Map<String, M2MEntityE> entitye;
-	
+
 	public M2MEntityF() {
 		entitye = new HashMap<String,M2MEntityE>();
 	}

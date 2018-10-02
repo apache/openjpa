@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -38,7 +38,7 @@ public class D {
 
 	@Id
 	private String id;
-	
+
 	private String a;
 
 	@ManyToOne
@@ -55,7 +55,7 @@ public class D {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public String getA() {
 		return a;
 	}
@@ -79,27 +79,27 @@ public class D {
 	public void setVc(VC vc) {
 		this.vc = vc;
 	}
-	
-	
+
+
 	public static class CId{
 		private String id;
-		
+
 		private VC.VCId vc;
-		
+
 		public VC.VCId getVc() {
 			return vc;
 		}
 		public void setVc(VC.VCId vc) {
 			this.vc = vc;
 		}
-		
+
 		public String getId() {
 			return id;
 		}
 		public void setId(String id) {
 			this.id = id;
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
@@ -112,13 +112,13 @@ public class D {
                 && (this.getVc() == id.getVc() || (this.getVc() != null &&
                 this.getVc().equals(id.getVc())));
 		}
-		
+
 		@Override
 		public int hashCode() {
             return (this.getId() != null ? this.getId().hashCode():0)
                     ^ (this.getVc() != null ? this.getVc().hashCode():0);
 		}
-				
+
 	}
 
 }

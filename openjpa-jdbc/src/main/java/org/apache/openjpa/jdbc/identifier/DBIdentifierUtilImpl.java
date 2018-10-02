@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.identifier;
 
@@ -36,16 +36,16 @@ import org.apache.openjpa.lib.identifier.IdentifierUtilImpl;
 
 public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdentifierUtil,
     Configurable {
-    
+
     private JDBCConfiguration _conf = null;
 
     public DBIdentifierUtilImpl() {
     }
-    
+
     public DBIdentifierUtilImpl(IdentifierConfiguration config) {
         super(config);
     }
-    
+
     public DBIdentifier getValidColumnIdentifier(DBIdentifier name, Table table,
         int maxLen, boolean checkForUniqueness) {
         if (DBIdentifier.isNull(name)) {
@@ -57,7 +57,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         DBIdentifier sName = DBIdentifier.removeLeading(name, IdentifierUtil.UNDERSCORE);
         return makeIdentifierValid(sName, table, maxLen, checkForUniqueness);
     }
-    
+
     public DBIdentifier getValidForeignKeyIdentifier(DBIdentifier name, Table table, Table toTable, int maxLen) {
         if (DBIdentifier.isNull(name)) {
             return name;
@@ -70,7 +70,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
             maxLen, true);
     }
 
-    
+
     public DBIdentifier getValidUniqueIdentifier(DBIdentifier name, Table table, int maxLen) {
         if (DBIdentifier.isNull(name)) {
             return name;
@@ -114,7 +114,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         maxLen = getMaxLen(rule, name, maxLen);
 
         DBIdentifier sName = makeName(rule, name, null);
-        
+
         return makeIdentifierValid(sName, schema.getSchemaGroup(),
             maxLen, true);
     }
@@ -140,7 +140,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         boolean checkForUniqueness) {
         DBIdentifier validName = sname;
         String rule = sname.getType().name();
-        
+
         maxLen = getMaxLen(rule, validName, maxLen);
 
         int nameLen = validName.getName().length();
@@ -181,11 +181,11 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
                 if (nameLen + chars > maxLen) {
                     validName = DBIdentifier.truncate(validName, nameLen + chars - maxLen);
                 }
-                validName = DBIdentifier.append(validName, Integer.toString(version)); 
+                validName = DBIdentifier.append(validName, Integer.toString(version));
                 nameLen = validName.getName().length();
             }
         }
-        
+
         if (validName.isDelimited()) {
             String delimCase = getIdentifierConfiguration().getDelimitedCase();
             if (delimCase.equals(CASE_LOWER)) {
@@ -203,25 +203,25 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
 
     /**
      *  Converts the name to a name which can be used within a SQL statement.  Uses
-     *  the appropriate delimiters and separators. 
+     *  the appropriate delimiters and separators.
      *  @parm name a DBIdentifier
      */
     public String toDBName(DBIdentifier name) {
         return toDBName(name, true);
     }
-    
+
     /**
      *  Converts the name to a name which can be used within a SQL statement.  Uses
-     *  the appropriate delimiters and separators. 
+     *  the appropriate delimiters and separators.
      *  @parm name a DBIdentifier
-     *  @param delimit If true, allows the name to be delimited, if necessary.  
+     *  @param delimit If true, allows the name to be delimited, if necessary.
      *  Otherwise, the identifier is not delimited.
      */
     public String toDBName(DBIdentifier name, boolean delimit) {
         if (DBIdentifier.isNull(name)) {
             return null;
         }
-        if (getIdentifierConfiguration().getSupportsDelimitedIdentifiers() && delimit 
+        if (getIdentifierConfiguration().getSupportsDelimitedIdentifiers() && delimit
             && getIdentifierConfiguration().delimitAll() && !name.isDelimited()) {
             return delimit(name, true);
         }
@@ -259,7 +259,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (name == null) {
             return null;
         }
-        if (getIdentifierConfiguration().getSupportsDelimitedIdentifiers() && delimit && 
+        if (getIdentifierConfiguration().getSupportsDelimitedIdentifiers() && delimit &&
             getIdentifierConfiguration().delimitAll() && !Normalizer.isDelimited(name)) {
             return delimit(rule, name, true);
         }
@@ -268,7 +268,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
 
     /**
      * Creates a new identifier of a given type based upon the name returned
-     * from the database.  
+     * from the database.
      */
     public DBIdentifier fromDBName(String name, DBIdentifierType id) {
         if (name == null) {
@@ -280,14 +280,14 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         String delimCase = getIdentifierConfiguration().getDelimitedCase();
         String nonDelimCase = getIdentifierConfiguration().getSchemaCase();
         String caseName = name;
-        
-        // If delimited and non-delimited case are the same, don't change 
+
+        // If delimited and non-delimited case are the same, don't change
         // case or try to determine whether delimiting is required.  Let the
         // normalizer figure it out using standard rules.
         if (delimCase.equals(nonDelimCase)) {
             return DBIdentifier.newIdentifier(name, id, false, false, !delimCase.equals(CASE_PRESERVE));
         }
-        
+
         // Otherwise, try to determine whether to delimit based on an expected vs.
         // actual name comparison.
         if (delimCase.equals(CASE_PRESERVE)) {
@@ -305,9 +305,9 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
                 caseName = name.toLowerCase();
             }
         }
-        
+
         boolean delimit = !caseName.equals(name) || getIdentifierConfiguration().delimitAll();
-        return DBIdentifier.newIdentifier((delimit ? name : caseName), id, false, delimit, 
+        return DBIdentifier.newIdentifier((delimit ? name : caseName), id, false, delimit,
             !delimCase.equals(CASE_PRESERVE));
     }
 
@@ -321,7 +321,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         }
         return sName;
     }
-    
+
     public String appendColumns(Column[] columns) {
         if (columns == null || columns.length == 0) {
             return "";
@@ -338,7 +338,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         }
         return colsb.toString();
     }
-    
+
     public String delimit(DBIdentifier name, boolean force) {
         String rule = name.getType().name();
         // If this is a compound path, each item must be delimited
@@ -364,11 +364,11 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         }
         return delimit(rule, name.getName(), force);
     }
-    
+
     public String shorten(String name, int targetLength) {
         return DBDictionary.shorten(name, targetLength);
     }
-    
+
     public DBIdentifier getGeneratedKeySequenceName(Column col, int maxLen) {
         DBIdentifier tname = col.getTableIdentifier();
         DBIdentifier cname = col.getIdentifier();
@@ -382,7 +382,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         }
         return DBIdentifier.combine(DBIdentifierType.SEQUENCE, tsname, cname.getName(), "SEQ");
     }
-    
+
     /**
      * Convert the specified schema name to a name that the database will
      * be able to understand in metadata operations.
@@ -401,7 +401,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
             else if (CASE_LOWER.equals(delimCase)) {
                 sName = DBIdentifier.toLower(sName,true);
             }
-            
+
             return DBIdentifier.removeDelimiters(sName);
         }
         if (!getIdentifierConfiguration().delimitAll()) {
@@ -415,7 +415,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         }
         return sName;
     }
-    
+
     /**
      * Converts a column alias to use the appropriate delimiters
      */
@@ -440,10 +440,10 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         DBIdentifier sName = DBIdentifier.removeLeading(name, IdentifierUtil.UNDERSCORE);
         String tableName = tbl.getIdentifier().getName();
         int len = Math.min(tableName.length(), 7);
-        
-        // Combine the names using the normalized configuration.  
-        String str = combineNames(Normalizer.getNamingConfiguration(), rule, 
-            new String[] { prefix == null ? "" : prefix, 
+
+        // Combine the names using the normalized configuration.
+        String str = combineNames(Normalizer.getNamingConfiguration(), rule,
+            new String[] { prefix == null ? "" : prefix,
             shorten(tableName, len), sName.getName() });
         sName.setName(str);
         return sName;
@@ -467,10 +467,10 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         if (config.delimitAll() || name.isDelimited()) {
             maxLen = maxLen - (config.getLeadingDelimiter().length() + config.getTrailingDelimiter().length());
         }
-        
+
         return maxLen;
     }
-    
+
     /**
      * System configuration.
      */

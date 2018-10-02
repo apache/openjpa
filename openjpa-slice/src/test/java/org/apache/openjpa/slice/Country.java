@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -25,9 +25,9 @@ import javax.persistence.Version;
 /**
  * A persistence entity to be replicated across multiple databases. A
  * non-replicated entity can refer to a replicated entity.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @Entity
 public class Country {

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -34,7 +34,7 @@ public class TestTimestampPKDeletion extends SQLListenerTestCase {
     }
 
     public void testTimestampPKDeletion() {
-        EntityWithTimestampPK testEntity = new EntityWithTimestampPK("test");        
+        EntityWithTimestampPK testEntity = new EntityWithTimestampPK("test");
 
         EntityManager em = emf.createEntityManager();
 
@@ -42,16 +42,16 @@ public class TestTimestampPKDeletion extends SQLListenerTestCase {
         em.persist(testEntity);
         em.getTransaction().commit();
         em.close();
-        
+
         em = emf.createEntityManager();
         final EntityTransaction tx = em.getTransaction();
-        tx.begin();       
+        tx.begin();
         final Query q = em.createQuery("SELECT testEntity FROM EntityWithTimestampPK testEntity ");
-       
+
         final List<EntityWithTimestampPK> testEntities = q.getResultList();
         for (EntityWithTimestampPK t : testEntities) {
               em.remove(t);
-        }         
+        }
         tx.commit();
         em.close();
     }

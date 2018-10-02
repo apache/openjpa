@@ -34,9 +34,9 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 /**
  * Tests MethodQL.
- * 
+ *
  * The 'user method' is simply echos the parameters set on the query.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -52,7 +52,7 @@ public class TestMethodQLQuery
         String methodName = getClass().getName()+ "." + method;
         return em.createQuery(QueryLanguages.LANG_METHODQL, methodName);
     }
-    
+
     public void testMethodQLWithParameters() {
         OpenJPAQuery q = createMethodQuery("echo");
         Query kernelQ = q.unwrap(Query.class);
@@ -91,7 +91,7 @@ public class TestMethodQLQuery
             // expected
         }
     }
-    
+
     /**
      * Returns the list whose element is the Map of input parameters.
      */

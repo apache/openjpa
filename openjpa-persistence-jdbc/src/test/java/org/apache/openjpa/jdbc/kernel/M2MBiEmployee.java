@@ -29,17 +29,17 @@ import javax.persistence.Version;
 
 @Entity
 public class M2MBiEmployee {
-    
-    @Id    
+
+    @Id
     public String empid;
-    
+
     @Version
     private int version;
-    
+
     @ManyToMany(fetch=FetchType.EAGER)
     public Collection<M2MBiDepartment> departments = new ArrayList
         <M2MBiDepartment>();
-    
+
     public String name;
 
     public float salary;

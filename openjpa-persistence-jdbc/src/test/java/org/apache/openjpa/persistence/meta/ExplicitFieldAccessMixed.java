@@ -27,9 +27,9 @@ import javax.persistence.Transient;
 
 /**
  * Domain class used by meta-model testing.
- * 
+ *
  * Uses explicit field based access mixed with property access.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -42,7 +42,7 @@ public class ExplicitFieldAccessMixed {
 	private ImplicitFieldAccessBase f4;
     private ImplicitFieldAccessBase f5;
 	private transient ImplicitFieldAccessBase f6;
-	
+
 	public long getF1() {
 		return f1;
 	}
@@ -67,7 +67,7 @@ public class ExplicitFieldAccessMixed {
 	public void setF4(ImplicitFieldAccessBase f4) {
 		this.f4 = f4;
 	}
-	
+
 	@Access(AccessType.PROPERTY)
 	@OneToOne
 	public ImplicitFieldAccessBase getF5() {
@@ -76,7 +76,7 @@ public class ExplicitFieldAccessMixed {
 	public void setF5(ImplicitFieldAccessBase f5) {
 		this.f5 = f5;
 	}
-	
+
 	public ImplicitFieldAccessBase getF6() {
 		return f6;
 	}

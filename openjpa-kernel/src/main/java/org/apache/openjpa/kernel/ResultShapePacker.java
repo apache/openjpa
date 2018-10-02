@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -25,7 +25,7 @@ import org.apache.openjpa.util.ProxyCalendar;
 
 /**
  * Packs result by delegation to a ResultShape.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -39,12 +39,12 @@ public class ResultShapePacker extends ResultPacker {
         _types = types;
         _aliases = aliases;
     }
-    
+
     @Override
     public Object pack(Object o) {
         return pack(new Object[]{o});
     }
-    
+
     @Override
     public Object pack(Object[] values) {
         // Check for proxied calenders and cleanup if any are found.

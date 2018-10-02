@@ -20,17 +20,17 @@ package org.apache.openjpa.persistence.delimited.identifiers.xml;
 
 public class Car {
     private int id;
-    
+
     protected String model;
     protected String color;
     protected String modelYear;
 
     public Car() {}
-    
+
     public Car(int id) {
         this.id = id;
     }
-    
+
     /**
      * @return the id
      */

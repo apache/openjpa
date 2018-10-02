@@ -24,22 +24,22 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
 version="2.0">
 	<package>embeddableXml</package>
 
-    <entity name="EntityA_Coll_StringXml" 
-            class="org.apache.openjpa.persistence.embed.EntityA_Coll_StringXml" 
+    <entity name="EntityA_Coll_StringXml"
+            class="org.apache.openjpa.persistence.embed.EntityA_Coll_StringXml"
             access="FIELD">
         <table name="EntityA_Coll_String_XML" />
-        
+
         <attributes>
             <id name="id">
             </id>
-            
+
             <basic name="name">
                 <column length="30" />
             </basic>
-            
+
             <basic name="age" fetch="LAZY">
             </basic>
-            
+
             <element-collection name="nickNames">
               <column name="nickName_xml" length="20"/>
               <collection-table name="NickNames_xml">
@@ -52,9 +52,9 @@ version="2.0">
 	        </element-collection>
         </attributes>
     </entity>
-     
-    <entity name="EntityA_Coll_Embed_EmbedXml" 
-            class="org.apache.openjpa.persistence.embed.EntityA_Coll_Embed_EmbedXml" 
+
+    <entity name="EntityA_Coll_Embed_EmbedXml"
+            class="org.apache.openjpa.persistence.embed.EntityA_Coll_Embed_EmbedXml"
             access="FIELD">
         <table name="EntityA_Coll_Embed_EmbedXML" />
         <attributes>
@@ -69,7 +69,7 @@ version="2.0">
             </element-collection>
         </attributes>
     </entity>
- 
+
  	<entity name="DepartmentXml"
 		class="org.apache.openjpa.persistence.embed.DepartmentXml"
 		access="FIELD">
@@ -167,8 +167,8 @@ version="2.0">
 		</attributes>
 	</entity>
 
-    <entity name="CustomerXml1" 
-        class="org.apache.openjpa.persistence.embed.attrOverrides.CustomerXml" 
+    <entity name="CustomerXml1"
+        class="org.apache.openjpa.persistence.embed.attrOverrides.CustomerXml"
         access="FIELD">
         <attributes>
             <id name="id"><column length="12"/></id>
@@ -199,7 +199,7 @@ version="2.0">
             </element-collection>
         </attributes>
     </entity>
-    
+
     <entity name="XMLOverEntity"
         class="org.apache.openjpa.persistence.embed.attrOverrides.XMLOverEntity"
         access="FIELD">
@@ -214,7 +214,7 @@ version="2.0">
                 </attribute-override>
             </embedded>
         </attributes>
-    </entity>    
+    </entity>
 
 	<entity class="org.apache.openjpa.persistence.embed.FeatureXml">
 		<table name="features" />
@@ -227,7 +227,7 @@ version="2.0">
 				</collection-table>
 			</element-collection>
 		</attributes>
-	</entity>     
+	</entity>
 
 	<embeddable class="org.apache.openjpa.persistence.embed.AttributeXml">
 		<attributes>
@@ -243,8 +243,8 @@ version="2.0">
 		</attributes>
 	</embeddable>
 
-    <embeddable 
-        class="org.apache.openjpa.persistence.embed.attrOverrides.AddressXml" 
+    <embeddable
+        class="org.apache.openjpa.persistence.embed.attrOverrides.AddressXml"
         access="FIELD">
         <attributes>
             <basic name="street"><column length="12"/>
@@ -255,8 +255,8 @@ version="2.0">
         </attributes>
     </embeddable>
 
-    <embeddable 
-        class="org.apache.openjpa.persistence.embed.attrOverrides.ZipcodeXml" 
+    <embeddable
+        class="org.apache.openjpa.persistence.embed.attrOverrides.ZipcodeXml"
         access="FIELD">
         <attributes>
             <basic name="zip"><column length="12"/></basic>
@@ -294,5 +294,5 @@ version="2.0">
                 <column name="shouldNotExist" />
             </basic>
         </attributes>
-    </embeddable>    
+    </embeddable>
 </entity-mappings>

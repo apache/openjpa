@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -114,12 +114,12 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     private transient PersistenceCapable _pc = null;
     protected transient ClassMetaData _meta = null;
     protected BitSet _loaded = null;
-    
+
     // Care needs to be taken when accessing these fields as they will can be null if no fields are
     // dirty, or have been flushed.
     private BitSet _dirty = null;
     private BitSet _flush = null;
-    
+
     private BitSet _delayed = null;
     private int _flags = 0;
 
@@ -157,11 +157,11 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     private Object _ownerId = null;
     private int _ownerIndex = -1;
     private List<FieldMetaData> _mappedByIdFields = null;
-    
+
     private transient ReentrantLock _instanceLock = null;
 
     private int _datePrecision = -1;
-        
+
     /**
      * <p>set to <code>false</code> to prevent the postLoad method from
      * sending lifecycle callback events.</p>
@@ -189,7 +189,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
      * new PersistenceCapable instance will be created and associated with the
      * new StateManager. All fields will be copied into the ne PC instance as
      * well as the dirty, loaded, and flushed bitsets.
-     * 
+     *
      * @param sm A statemanager instance which will effectively be cloned.
      */
     public StateManagerImpl(StateManagerImpl sm) {
@@ -199,18 +199,18 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     /**
      * Create a new StateManager instance, optionally overriding the state
      * (FLUSHED, DELETED, etc) of the underlying PersistenceCapable instance).
-     * 
+     *
      * @param sm
      *            A statemanager instance which will effectively be cloned.
      * @param newState
      *            The new state of the underlying persistence capable object.
      */
-    public StateManagerImpl(StateManagerImpl sm, PCState newState) { 
+    public StateManagerImpl(StateManagerImpl sm, PCState newState) {
         this(sm.getId(), sm.getMetaData(), sm.getBroker());
 
         PersistenceCapable origPC = sm.getPersistenceCapable();
         _pc = origPC.pcNewInstance(sm, false);
-        
+
         int[] fields = new int[sm.getMetaData().getFields().length];
         for (int i = 0; i < fields.length; i++) {
             fields[i] = i;
@@ -219,16 +219,16 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         _pc.pcReplaceStateManager(this);
         _state = newState;
 
-        // clone the field bitsets. 
+        // clone the field bitsets.
         _dirty=(BitSet)sm.getDirty().clone();
         _loaded = (BitSet)sm.getLoaded().clone();
         _flush = (BitSet) sm.getFlushed().clone();
         _version = sm.getVersion();
-        
-        _oid = sm.getObjectId(); 
+
+        _oid = sm.getObjectId();
         _id = sm.getId();
-        
-        // more data may need to be copied. 
+
+        // more data may need to be copied.
     }
 
     /**
@@ -357,14 +357,14 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
         FieldMetaData[] fmds = _meta.getFields();
         _loaded = new BitSet(fmds.length);
-        
+
         // mark primary key and non-persistent fields as loaded
         for(int i : _meta.getPkAndNonPersistentManagedFmdIndexes()){
             _loaded.set(i);
         }
-            
+
         _mappedByIdFields = _meta.getMappyedByIdFields();
-        
+
         // record whether there are any managed inverse fields
         if (_broker.getInverseManager() != null && _meta.hasInverseManagedFields())
             _flags |= FLAG_INVERSES;
@@ -377,7 +377,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
         // initialize our state and add ourselves to the broker's cache
         setPCState(state);
-        if ( _oid == null ||  
+        if ( _oid == null ||
             _broker.getStateManagerImplById(_oid, false) == null) {
         	_broker.setStateManager(_id, this, BrokerImpl.STATUS_INIT);
         }
@@ -404,7 +404,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     public boolean isIntercepting() {
         if (getMetaData().isIntercepting())
             return true;
-        // TODO:JRB Intercepting 
+        // TODO:JRB Intercepting
         if (AccessCode.isProperty(getMetaData().getAccessType())
             && _pc instanceof DynamicPersistenceCapable)
             return true;
@@ -523,7 +523,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                     load = !fmds[i].isTransient();
                     break;
                 case LOAD_FGS:
-                    load = fetch == null || fetch.requiresFetch(fmds[i]) 
+                    load = fetch == null || fetch.requiresFetch(fmds[i])
                         != FetchConfiguration.FETCH_NONE;
                     break;
                 default: // LOAD_ALL
@@ -609,7 +609,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
      * @param recache whether to recache ourself on the new oid
      */
     private void assertObjectIdAssigned(boolean recache) {
-        if (!isNew() || isDeleted() || isProvisional() 
+        if (!isNew() || isDeleted() || isProvisional()
             || (_flags & FLAG_OID_ASSIGNED) != 0)
             return;
         if (_oid == null) {
@@ -673,7 +673,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         // Just return if there's no value generation strategy
         if (fmd.getValueStrategy() == ValueStrategies.NONE)
             return false;
-        
+
         // Throw exception if field already has a value assigned.
         // @GeneratedValue overrides POJO initial values and setter methods
         if (!fmd.isValueGenerated() && !isDefaultValue(field))
@@ -719,7 +719,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     public void setNextVersion(Object version) {
         assignVersionField(version);
     }
-    
+
     public static Timestamp roundTimestamp(Timestamp val, int datePrecision) {
         // ensure that we do not insert dates at a greater precision than
         // that at which they will be returned by a SELECT
@@ -736,7 +736,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         val.setNanos(nanos);
         return val;
     }
-    
+
     private void assignVersionField(Object version) {
 
         if (version instanceof Timestamp) {
@@ -1142,7 +1142,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     void commit() {
         // release locks before oid updated
         releaseLocks();
- 
+
         // update version and oid information
         setVersion(_version);
         _flags &= ~FLAG_FLUSHED;
@@ -1375,7 +1375,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 _broker.addDereferencedDependent(this);
         }
     }
-    
+
     void setDereferencedEmbedDependent(boolean deref) {
         if (!deref && (_flags & FLAG_EMBED_DEREF) > 0) {
             _flags &= ~FLAG_EMBED_DEREF;
@@ -1383,7 +1383,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             _flags |= FLAG_EMBED_DEREF;
         }
     }
-    
+
     public boolean getDereferencedEmbedDependent() {
         return ((_flags & FLAG_EMBED_DEREF) == 0 ? false : true);
     }
@@ -1481,7 +1481,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             if (_meta.isDetachable())
                 return DetachManager.preSerialize(this);
 
-            load(_broker.getFetchConfiguration(), LOAD_SERIALIZE, null, null, 
+            load(_broker.getFetchConfiguration(), LOAD_SERIALIZE, null, null,
                 false);
             return false;
         } catch (RuntimeException re) {
@@ -1560,8 +1560,8 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
     public Object fetchObjectId() {
         try {
-            if (hasGeneratedKey() && _state instanceof PNewState && 
-                _oid == null) 
+            if (hasGeneratedKey() && _state instanceof PNewState &&
+                _oid == null)
                 return _oid;
             assignObjectId(true);
             if (_oid == null || !_broker.getConfiguration().
@@ -1575,7 +1575,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             throw translate(re);
         }
     }
-    
+
     private boolean hasGeneratedKey() {
         FieldMetaData[] pkFields = _meta.getPrimaryKeyFields();
         for (int i = 0; i < pkFields.length; i++) {
@@ -1596,7 +1596,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         if (relmeta.getIdentityType() == ClassMetaData.ID_DATASTORE
             && fmd.getObjectIdFieldTypeCode() == JavaTypes.LONG)
             pk = _broker.getStoreManager().newDataStoreId(pk, relmeta);
-        else if (relmeta.getIdentityType() == ClassMetaData.ID_APPLICATION 
+        else if (relmeta.getIdentityType() == ClassMetaData.ID_APPLICATION
             && fmd.getObjectIdFieldType() != relmeta.getObjectIdType())
             pk = ApplicationIds.fromPKValues(new Object[] { pk }, relmeta);
         return _broker.find(pk, false, null);
@@ -1619,7 +1619,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             // TODO -- what about version fields? Could probably UT this
             if(_loaded.get(field) && !_meta.getField(field).isPrimaryKey())
                 return;
-                
+
             beforeRead(field);
             beforeAccessField(field);
         } catch (RuntimeException re) {
@@ -2091,16 +2091,16 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                             //if (newVal != null && newVal.equals(curVal))
                             //    return;
                             //else {
-                                if (curVal != null && newVal != null && 
+                                if (curVal != null && newVal != null &&
                                     curVal instanceof PersistenceCapable && newVal instanceof PersistenceCapable) {
                                     PersistenceCapable curPc = (PersistenceCapable) curVal;
                                     PersistenceCapable newPc = (PersistenceCapable) newVal;
                                     if (curPc.pcFetchObjectId().equals(newPc.pcFetchObjectId()))
                                         return;
-                                    
+
                                 }
                             //}
-                        } else     
+                        } else
                             break;
                     default:
                         if (newVal != null && newVal.equals(curVal))
@@ -3154,7 +3154,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             // we do this even if no fields were loaded -- could be that this
             // method is being called after a field is set)
             // If the _loadVersion field is null AND the version field has been loaded, skip calling sync version.
-            // This indicates that the DB has a null value for the version column. 
+            // This indicates that the DB has a null value for the version column.
             FieldMetaData versionMeta = _meta != null ? _meta.getVersionField() : null;
             if (_loadVersion == null && (versionMeta != null && !_loaded.get(versionMeta.getIndex()))) {
                 syncVersion(sdata);
@@ -3191,7 +3191,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         // check for load fetch group
         String lfg = fmd.getLoadFetchGroup();
         boolean lfgAdded = false;
-        if (lfg != null) {  
+        if (lfg != null) {
             FieldMetaData[] fmds = _meta.getFields();
             for (int i = 0; i < fmds.length; i++) {
                 if (!_loaded.get(i) && (i == field
@@ -3315,7 +3315,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         // is this field a post-load field?
         if (field != -1) {
             FieldMetaData fmd = _meta.getField(field);
-            if (fmd.isInDefaultFetchGroup() 
+            if (fmd.isInDefaultFetchGroup()
                 && fetch.hasFetchGroup(FetchGroup.NAME_DEFAULT)
                 && postLoad(FetchGroup.NAME_DEFAULT, fetch))
                 return;
@@ -3324,7 +3324,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 if (fetch.hasFetchGroup(fgs[i]) && postLoad(fgs[i], fetch))
                     return;
         } else {
-            for (Iterator itr = fetch.getFetchGroups().iterator(); 
+            for (Iterator itr = fetch.getFetchGroups().iterator();
                 itr.hasNext();) {
                 if (postLoad((String) itr.next(), fetch))
                     return;
@@ -3487,15 +3487,15 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         pc.pcReplaceStateManager(this);
         return pc;
     }
-    
+
     public List<FieldMetaData> getMappedByIdFields() {
         return _mappedByIdFields;
     }
-    
+
     public boolean requiresFetch(FieldMetaData fmd) {
         return (_broker.getFetchConfiguration().requiresFetch(fmd) != FetchConfiguration.FETCH_NONE);
     }
-    
+
     public void setPc(PersistenceCapable pc) {
         _pc = pc;
     }
@@ -3555,7 +3555,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     }
 
     public String toString() {
-    	return "SM[" + _meta.getDescribedType().getSimpleName() + "]:" + getObjectId(); 
+    	return "SM[" + _meta.getDescribedType().getSimpleName() + "]:" + getObjectId();
     }
 
 }

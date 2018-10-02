@@ -14,12 +14,12 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.xmlmapping.entities;
 import javax.persistence.*;
 
-/* 
+/*
  * example of an JPA embeddable class.
  * This class is used in Customer Entity.
  */
@@ -34,9 +34,9 @@ public class EAddress {
 	String state;
 	@Column(columnDefinition="char(9)")
 	String zip;
-	
+
 	public EAddress() {}
-	
+
 	public EAddress(String street, String city, String state, String zip){
 		this.street = street;
 		this.city = city;
@@ -67,7 +67,7 @@ public class EAddress {
 	public void setZip(String zip) {
 		this.zip = zip;
 	}
-	
+
 	public void modifyCity(String value){
 		city=value;
 	}

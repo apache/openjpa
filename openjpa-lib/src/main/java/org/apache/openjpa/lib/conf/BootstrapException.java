@@ -14,19 +14,19 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 /**
  * Exception recognized by {@link ProductDerivations bootstrap} framework.
- * 
+ *
  * @author Pinaki Poddar
  * @since 0.4.1.4
  *
  */
 public class BootstrapException extends RuntimeException {
     private boolean _fatal = false;
-	
+
 	public BootstrapException() {
 		super();
 	}
@@ -42,12 +42,12 @@ public class BootstrapException extends RuntimeException {
 	public BootstrapException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 	public BootstrapException setFatal(boolean fatal) {
 		_fatal = fatal;
 		return this;
 	}
-	
+
 	public boolean isFatal() {
 		return _fatal;
 	}

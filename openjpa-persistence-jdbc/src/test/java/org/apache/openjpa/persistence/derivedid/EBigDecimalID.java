@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.derivedid;
 
@@ -30,7 +30,7 @@ public class EBigDecimalID {
     private BigDecimal  id;
 
     private String name;
-    
+
     public EBigDecimalID() {}
 
     public EBigDecimalID(BigDecimal id) {
@@ -52,5 +52,5 @@ public class EBigDecimalID {
 
     public void setName(String name) {
         this.name = name;
-    }   
+    }
 }

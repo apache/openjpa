@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf.test;
 
@@ -32,7 +32,7 @@ import org.apache.openjpa.lib.test.AbstractTestCase;
  * in a sub-package so that it can have its own localizer.properties
  * properties, which are required for the bean descriptors used by the
  * configuration framework {@link Value}.
- * 
+ *
  * This test assumes a <code>"test.properties"</code> file available in
  * classpath and also system property <code>"openjpatest.properties"</code>
  * is set to <code>"test.properties"</code>.
@@ -240,7 +240,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
         assertEquals("java.lang.StringBuffer", copy2.getPluginKey());
         assertEquals("", copy2.getPluginKeyInstance().toString());
     }
-    
+
     public void testProductDerivationCloseCallback() {
         // toggle the static. This will be reset by the close invocation.
         ConfigurationTestProductDerivation.closed = false;
@@ -316,11 +316,11 @@ public class TestConfigurationImpl extends AbstractTestCase {
         public void deriveObjectKey(Object val) {
             _objectKey.set(val, true);
         }
-        
+
         protected boolean isInvalidProperty(String s) {
             if ("openjpatest.properties".equals(s))
                 return false;
-            else 
+            else
                 return super.isInvalidProperty(s);
         }
     }

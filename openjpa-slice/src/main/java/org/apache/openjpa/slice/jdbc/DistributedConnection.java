@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.jdbc;
 
@@ -40,9 +40,9 @@ import java.util.concurrent.Executor;
 
 /**
  * A virtual connection that contains multiple physical connections.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class DistributedConnection implements Connection {
 
@@ -55,7 +55,7 @@ public class DistributedConnection implements Connection {
 		real = connections;
 		master = connections.get(0);
 	}
-    
+
 	public boolean contains(Connection c) {
 		return real.contains(c);
 	}
@@ -337,25 +337,25 @@ public class DistributedConnection implements Connection {
         throws SQLClientInfoException {
         throw new UnsupportedOperationException();
     }
-    
+
     // Java 7 methods follow
-    
+
     public void abort(Executor executor) throws SQLException {
     	throw new UnsupportedOperationException();
     }
-    
+
     public int getNetworkTimeout() throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public String getSchema() throws SQLException {
-    	throw new UnsupportedOperationException(); 
+    	throw new UnsupportedOperationException();
     }
-    
+
     public void setSchema(String schema)throws SQLException {
     	throw new UnsupportedOperationException();
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.jdbc.ElementClassCriteria;
 /**
  * Persistent entity with collection whose element type belongs to inheritance
  * hierarchy mapped to a SINGLE_TABLE. Hence relationship loading will require
- * 
+ *
  */
 @Entity
 @Table(name = "DEPT")

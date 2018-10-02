@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -58,12 +58,12 @@ public class QueryMetaData
     private List _hintKeys;
     private List _hintVals;
     private String _resultSetMappingName;
-    private int _lineNum;  
+    private int _lineNum;
     private int _colNum;
-    private String _srcName; 
+    private String _srcName;
     private boolean _convertPositionalParametersToNamed;
     private OrderedMap<Object,Class<?>> _paramTypes;
-    
+
     /**
      * Construct with the given name.
      */
@@ -200,7 +200,7 @@ public class QueryMetaData
     public void setResultSetMappingName(String setMappingName) {
         _resultSetMappingName = setMappingName;
     }
-    
+
     /**
      * Set query template information into the given concrete
      * query instance. However, the language, query string, and
@@ -287,7 +287,7 @@ public class QueryMetaData
     public String getResourceName() {
         return (_class == null) ? _name : _class.getName () + ":" + _name;
 	}
-    
+
     public int getLineNumber() {
         return _lineNum;
     }
@@ -303,7 +303,7 @@ public class QueryMetaData
     public void setColNumber(int colNum) {
         _colNum = colNum;
     }
-    
+
     public String getSourceName() {
         return _srcName;
     }

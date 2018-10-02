@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.meta;
 
@@ -48,17 +48,17 @@ import org.apache.openjpa.meta.JavaTypes;
 
 /**
  * Implements the managed persistent type and its attributes.
- * 
+ *
  * Provides identity and version attribute facilities for Identifiable type but does not
  * implement it.
- * 
+ *
  * @author Pinaki Poddar
  *
- * @param <X> the 
+ * @param <X> the
  */
-public abstract class AbstractManagedType<X> extends Types.BaseType<X> 
+public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     implements ManagedType<X> {
-    
+
     private static final Localizer _loc = Localizer.forPackage(AbstractManagedType.class);
     public final MetamodelImpl model;
     public final ClassMetaData meta;
@@ -68,7 +68,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     private final DeclaredAttributeFilter<X> declaredAttributeFilter;
     private final SingularAttributeFilter<X> singularAttributeFilter;
     private final SingularAttributeFilter<X> pluralAttributeFilter;
-    
+
     /**
      * A protected constructor for creating psudo-managed types.
      */
@@ -80,12 +80,12 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         singularAttributeFilter = null;
         pluralAttributeFilter   = null;
     }
-    
+
     /**
      * Construct a managed type. The supplied metadata must be resolved i.e. all
      * its fields populated. Because this receiver will populate its attributes
      * corresponding to the available fields of the metadata.
-     * 
+     *
      */
     public AbstractManagedType(ClassMetaData meta, MetamodelImpl model) {
         super((Class<X>) meta.getDescribedType());
@@ -162,7 +162,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                 if(compat.getUseListAttributeForArrays() || f.isPersistentCollection()) {
                     attrs.add(new Members.ListAttributeImpl(this, f));
                 }
-                else { 
+                else {
                     attrs.add(new Members.SingularAttributeImpl(this, f));
                 }
                 break;
@@ -197,7 +197,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns all the attributes of the managed type including attributes of the super type.
-     * 
+     *
      */
     public java.util.Set<Attribute<? super X, ?>> getAttributes() {
         return Collections.unmodifiableSet(attrs);
@@ -205,7 +205,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns all the attributes declared by this managed type only.
-     * 
+     *
      */
     public java.util.Set<Attribute<X, ?>> getDeclaredAttributes() {
         return filter(attrs, new TreeSet<Attribute<X, ?>>(),
@@ -214,7 +214,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the single-valued attributes of the managed type.
-     * 
+     *
      */
     public java.util.Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
         return filter(attrs, new TreeSet<SingularAttribute<? super X, ?>>(),
@@ -223,17 +223,17 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the single-valued attributes declared by the managed type.
-     * 
+     *
      */
     public java.util.Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
         return filter(attrs, new TreeSet<SingularAttribute<X, ?>>(),
-                declaredAttributeFilter, 
+                declaredAttributeFilter,
                 singularAttributeFilter);
     }
 
     /**
      * Returns the attribute of the given name and Java type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public <Y> Attribute<? super X, Y> getAttribute(String name, Class<Y> type) {
@@ -242,51 +242,51 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                 new AttributeTypeFilter<X, Y>(type));
         if (result == null)
             notFoundException("attr-not-found", name, type);
-        
+
         return (Attribute<? super X, Y>)result;
     }
-    
+
     /**
      * Returns the single-valued attribute of the given name and Java type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
         Attribute<? super X, ?> result = pick(attrs,
                 new AttributeNameFilter<X>(name),
-                new AttributeTypeFilter<X, Y>(type), 
+                new AttributeTypeFilter<X, Y>(type),
                 singularAttributeFilter);
         if (result == null)
             notFoundException("attr-not-found-single", name, type);
-         
+
         return (SingularAttribute<? super X, Y>) result;
     }
-    
+
     /**
      * Returns the declared attribute of the given name and Java type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public <Y> Attribute<X, Y> getDeclaredAttribute(String name, Class<Y> type) {
         Attribute<? super X, ?> result = pick(attrs,
                 new AttributeNameFilter<X>(name),
-                new AttributeTypeFilter<X, Y>(type), 
+                new AttributeTypeFilter<X, Y>(type),
                 declaredAttributeFilter);
         if (result == null)
             notFoundException("attr-not-found-decl-single",name, type);
-            
+
         return (Attribute<X, Y>) result;
     }
 
     /**
      * Returns the declared single-valued attribute of the given name and Java type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type) {
         Attribute<? super X, ?> result = pick(attrs,
                 new AttributeNameFilter<X>(name),
-                new AttributeTypeFilter<X, Y>(type), 
+                new AttributeTypeFilter<X, Y>(type),
                 declaredAttributeFilter,
                 singularAttributeFilter);
         if (result == null)
@@ -297,7 +297,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns all collection-valued attributes of the managed type.
-     * 
+     *
      */
     public java.util.Set<PluralAttribute<? super X, ?, ?>> getPluralAttributes() {
         return filter(attrs, new HashSet<PluralAttribute<? super X, ?, ?>>(),
@@ -306,18 +306,18 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Return all collection-valued attributes declared by the managed type.
-     * 
+     *
      */
     public java.util.Set<PluralAttribute<X, ?, ?>> getDeclaredPluralAttributes() {
         return filter(attrs, new HashSet<PluralAttribute<X, ?, ?>>(),
-                declaredAttributeFilter, 
+                declaredAttributeFilter,
                 pluralAttributeFilter);
     }
 
     /**
      * Returns the attribute of the given name, of type java.util.Collection and contains the
      * given element type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
@@ -334,7 +334,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     /**
      * Returns the attribute of the given name, of type java.util.Set and contains the
      * given element type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public <E> SetAttribute<? super X, E> getSet(String name, Class<E> elementType) {
@@ -351,7 +351,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     /**
      * Returns the attribute of the given name, of type java.util.List and contains the
      * given element type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
@@ -368,10 +368,10 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     /**
      * Returns the attribute of the given name, of type java.util.Map and contains the
      * given key/value type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
-    public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, 
+    public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType,
         Class<V> valueType) {
         Attribute<? super X, ?> result = pick(attrs,
                 new AttributeNameFilter<X>(name),
@@ -384,13 +384,13 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     }
 
     /**
-     * Returns the declared attribute of the given name, of type java.util.Collection and contains 
+     * Returns the declared attribute of the given name, of type java.util.Collection and contains
      * the given element type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name,  Class<E> elementType) {
-        Attribute<? super X, ?> result = pick(attrs, 
+        Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
                 new PluralCategoryFilter<X>(CollectionType.COLLECTION),
                 new ElementTypeFilter<X, E>(elementType),
@@ -402,13 +402,13 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     }
 
     /**
-     * Returns the declared attribute of the given name, of type java.util.Set and contains 
+     * Returns the declared attribute of the given name, of type java.util.Set and contains
      * the given element type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType) {
-        Attribute<? super X, ?> result = pick(attrs, 
+        Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
                 new PluralCategoryFilter<X>(CollectionType.SET),
                 new AttributeNameFilter<X>(name));
@@ -419,13 +419,13 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     }
 
     /**
-     * Returns the declared attribute of the given name, of type java.util.List and contains 
+     * Returns the declared attribute of the given name, of type java.util.List and contains
      * the given element type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
-        Attribute<? super X, ?> result = pick(attrs, 
+        Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
                 new PluralCategoryFilter<X>(CollectionType.LIST),
                 new ElementTypeFilter<X, E>(elementType),
@@ -437,12 +437,12 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     }
 
     /**
-     * Returns the declared attribute of the given name, of type java.util.Map and contains 
+     * Returns the declared attribute of the given name, of type java.util.Map and contains
      * the given key/value type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
-    public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, 
+    public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType,
         Class<V> valueType) {
         Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
@@ -458,10 +458,10 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     // ==============================================================================
     // No type checking
     // ==============================================================================
-    
+
     /**
      * Returns the attribute of the given name of any type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public Attribute<? super X, ?> getAttribute(String name) {
@@ -470,7 +470,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the declared attribute of the given name of any type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public Attribute<X, ?> getDeclaredAttribute(String name) {
@@ -479,7 +479,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the single-valued attribute of the given name of any type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public SingularAttribute<? super X, ?> getSingularAttribute(String name) {
@@ -488,7 +488,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the declared, single-valued attribute of the given name of any type.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public SingularAttribute<X, ?> getDeclaredSingularAttribute(String name) {
@@ -497,7 +497,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the attribute of the given name and of type java.util.Collection.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public CollectionAttribute<? super X, ?> getCollection(String name) {
@@ -506,7 +506,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the attribute of the given name and of type java.util.Set.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public SetAttribute<? super X, ?> getSet(String name) {
@@ -515,7 +515,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the attribute of the given name and of type java.util.List.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public ListAttribute<? super X, ?> getList(String name) {
@@ -524,7 +524,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the attribute of the given name and of type java.util.Map.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public MapAttribute<? super X, ?, ?> getMap(String name) {
@@ -533,7 +533,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the declared attribute of the given name and of type java.util.Collection.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
@@ -542,7 +542,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the declared attribute of the given name and of type java.util.Set.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public SetAttribute<X, ?> getDeclaredSet(String name) {
@@ -551,7 +551,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the declared attribute of the given name and of type java.util.List.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public ListAttribute<X, ?> getDeclaredList(String name) {
@@ -560,7 +560,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
     /**
      * Returns the declared attribute of the given name and of type java.util.Map.
-     * 
+     *
      * @throws IllegalArgumentException  if no such attribute exists
      */
     public MapAttribute<X, ?, ?> getDeclaredMap(String name) {
@@ -572,75 +572,75 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     //--------------------------------------------------------------------------
     /**
      *   Returns the attributes corresponding to the id class of the identifiable type.
-     *   
+     *
      *   @throws IllegalArgumentException if the this type is not using an id class
      */
     public final java.util.Set<SingularAttribute<? super X, ?>> getIdClassAttributes() {
         if (meta.isOpenJPAIdentity())
-            throw new IllegalArgumentException(meta + " does not use IdClass. Object Id type = " + 
+            throw new IllegalArgumentException(meta + " does not use IdClass. Object Id type = " +
                 meta.getObjectIdType() + " Identity Type = " + meta.getIdentityType());
         return filter(attrs, new HashSet<SingularAttribute<? super X, ?>>(),
                 new IdAttributeFilter<X>());
     }
-    
+
     /**
-     *  Returns the attribute of given type that corresponds to the id attribute of this 
+     *  Returns the attribute of given type that corresponds to the id attribute of this
      *  identifiable managed type.
-     *  
+     *
      *  @throws IllegalArgumentException if no such attribute exists
      */
      public final <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
-         Attribute<? super X, ?> result =  pick(attrs, 
-                 new AttributeTypeFilter<X, Y>(type), 
+         Attribute<? super X, ?> result =  pick(attrs,
+                 new AttributeTypeFilter<X, Y>(type),
                  new IdAttributeFilter<X>());
          if (result != null)
              return (SingularAttribute<? super X, Y>) result;
          throw new IllegalArgumentException();
      }
-     
+
      /**
-      *  Returns the declared attribute of given type that corresponds to the id attribute of this 
+      *  Returns the declared attribute of given type that corresponds to the id attribute of this
       *  identifiable managed type.
-      *  
+      *
       *  @throws IllegalArgumentException if no such attribute exists
       */
      public final <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
-         Attribute<? super X, ?> result =  pick(attrs, 
+         Attribute<? super X, ?> result =  pick(attrs,
                  declaredAttributeFilter,
-                 new AttributeTypeFilter<X, Y>(type), 
+                 new AttributeTypeFilter<X, Y>(type),
                  new IdAttributeFilter<X>());
          if (result != null)
              return (SingularAttribute<X, Y>) result;
          throw new IllegalArgumentException();
      }
-     
+
      /**
-      *  Returns the attribute of given type that corresponds to the version attribute of this 
+      *  Returns the attribute of given type that corresponds to the version attribute of this
       *  managed type.
-      *  
+      *
       *  @throws IllegalArgumentException if no such attribute exists
       */
      public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
-         Attribute<? super X, ?> result = pick(attrs, 
-                 new VersionAttributeFilter<X>(), 
+         Attribute<? super X, ?> result = pick(attrs,
+                 new VersionAttributeFilter<X>(),
                  new AttributeTypeFilter<X,Y>(type));
-         if (result == null) 
+         if (result == null)
              notFoundException("version-not-found", "", type);
          return (SingularAttribute<? super X, Y>)result;
      }
 
      /**
-      *  Returns the declared attribute of given type that corresponds to the version attribute of 
+      *  Returns the declared attribute of given type that corresponds to the version attribute of
       *  this managed type.
-      *  
+      *
       *  @throws IllegalArgumentException if no such attribute exists
       */
      public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
          Attribute<? super X, ?> result = pick(attrs,
                  declaredAttributeFilter,
-                 new VersionAttributeFilter<X>(), 
+                 new VersionAttributeFilter<X>(),
                  new AttributeTypeFilter<X,Y>(type));
-         if (result == null) 
+         if (result == null)
              notFoundException("decl-version-not-found", "", type);
          return (SingularAttribute<X, Y>)result;
      }
@@ -664,7 +664,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     /**
      * Get the field of the given name after validating the conditions. null
      * value on any condition implies not to validate.
-     * 
+     *
      * @param name simple name i.e. without the class name
      * @param type the expected type of the field.
      * @param element
@@ -673,10 +673,10 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *            the expected key type of the field.
      * @param declared
      *            is this field declared in this receiver
-     * 
+     *
      * @exception IllegalArgumentException
      *                if any of the validation fails.
-     * 
+     *
      */
     FieldMetaData getField(String name, Class<?> type, Class<?> elementType,
             Class<?> keyType, boolean decl) {
@@ -733,7 +733,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         }
         return c;
     }
-    
+
     // -------------------------------------------------------------------------
     // Exception handling
     // -------------------------------------------------------------------------
@@ -741,10 +741,10 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         throw new IllegalArgumentException(
             _loc.get(msg, name, (t1 == null ? "any" : t1.getName()), meta).getMessage());
     }
-    
+
     private void notFoundException(String msg, String name, Class<?> t1, Class<?> t2) {
         throw new IllegalArgumentException(
-            _loc.get(msg, new Object[]{name, (t1 == null ? "any" : t1.getName()), 
+            _loc.get(msg, new Object[]{name, (t1 == null ? "any" : t1.getName()),
                     (t2 == null ? "any" : t1.getName()), meta}).getMessage());
     }
     // --------------------------------------------------------------------------
@@ -752,14 +752,14 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     // --------------------------------------------------------------------------
     /**
      * Affirms if a given element satisfy a condition.
-     * 
+     *
      */
     public static interface Filter<T> {
         boolean selects(T attr);
 
         Filter<T> inverse();
     }
-    
+
 
     /**
      * Applies chain of filters ANDed on the given collection to populate the given result.
@@ -767,48 +767,48 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * The arguments are not passed as variable argument list to suppress warnings in in the caller
      * for generic varargs array construction.
      */
-    
-    public static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original, 
+
+    public static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original,
         C result, Filter<T> f1, Filter<T> f2, Filter<T> f3, Filter<T> f4) {
         for (T t : original) {
-            if ((f1 == null || f1.selects(t)) && (f2 == null || f2.selects(t)) 
+            if ((f1 == null || f1.selects(t)) && (f2 == null || f2.selects(t))
              && (f3 == null || f3.selects(t)) && (f4 == null || f4.selects(t)))
                 result.add((E) t);
         }
         return result;
     }
-    
+
     /**
      * Applies chain of filters ANDed on the given collection to pick a single element.
      * A null filter evaluates always TRUE.
      * The arguments are not passed as variable argument list to suppress warnings in in the caller
      * for generic varargs array construction.
      */
-    public static <T> T pick(Collection<T> original, Filter<T> f1, Filter<T> f2, Filter<T> f3, 
+    public static <T> T pick(Collection<T> original, Filter<T> f1, Filter<T> f2, Filter<T> f3,
         Filter<T> f4) {
         for (T t : original) {
-            if ((f1 == null || f1.selects(t)) && (f2 == null || f2.selects(t)) 
+            if ((f1 == null || f1.selects(t)) && (f2 == null || f2.selects(t))
              && (f3 == null || f3.selects(t)) && (f4 == null || f4.selects(t)))
                 return t;
         }
         return null;
     }
-    
-    static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original, 
+
+    static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original,
             C result, Filter<T> f1) {
         return filter(original, result, f1, null, null, null);
     }
-    
-    static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original, 
+
+    static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original,
             C result, Filter<T> f1, Filter<T> f2) {
         return filter(original, result, f1, f2, null, null);
     }
-    
-    static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original, 
+
+    static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original,
             C result, Filter<T> f1, Filter<T> f2, Filter<T> f3) {
         return filter(original, result, f1, f2, f3, null);
     }
-    
+
     static <T> T pick(Collection<T> original, Filter<T> f1) {
         return pick(original, f1, null, null, null);
     }
@@ -816,15 +816,15 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     static <T> T pick(Collection<T> original, Filter<T> f1, Filter<T> f2) {
         return pick(original, f1, f2, null, null);
     }
-    
+
     static <T> T pick(Collection<T> original, Filter<T> f1, Filter<T> f2, Filter<T> f3) {
         return pick(original, f1, f2, f3, null);
     }
-    
+
 
     /**
      * Affirms if the given attribute is a Singular attribute.
-     * 
+     *
      */
     public static final class SingularAttributeFilter<X> implements
             Filter<Attribute<? super X, ?>> {
@@ -895,7 +895,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
         public AttributeTypeFilter<X, Y> inverse() {
             return new AttributeTypeFilter<X, Y>(_type, !_invert);
-        }        
+        }
     }
 
     public static final class AttributeNameFilter<X> implements
@@ -951,7 +951,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Selects plural attribute of given element type.
      * null element type imply <em>any</em> element type.
      */
-    
+
     public static final class ElementTypeFilter<X, E> implements Filter<Attribute<? super X, ?>> {
         private final Class<E> _elementType;
         private final boolean _invert;
@@ -967,8 +967,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
         public boolean selects(Attribute<? super X, ?> attr) {
             boolean result = (attr instanceof PluralAttribute<?, ?, ?>)
-                    && (_elementType == null 
-                    || ((PluralAttribute<?, ?, ?>) attr).getElementType().getJavaType() 
+                    && (_elementType == null
+                    || ((PluralAttribute<?, ?, ?>) attr).getElementType().getJavaType()
                          == _elementType);
             return _invert ? !result : result;
         }
@@ -996,9 +996,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
 
         public boolean selects(Attribute<? super X, ?> attr) {
             boolean result = (attr instanceof MapAttribute<?, ?, ?>)
-                    && (_keyType == null 
+                    && (_keyType == null
                     || ((MapAttribute<?, ?, ?>) attr).getKeyType().getJavaType() == _keyType)
-                    && (_valueType == null 
+                    && (_valueType == null
                     || ((MapAttribute<?, ?, ?>) attr).getElementType().getJavaType() == _valueType);
             return _invert ? !result : result;
         }
@@ -1029,24 +1029,24 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             return new IdAttributeFilter<X>(!_invert);
         }
     }
-    
+
     public static final class VersionAttributeFilter<X> implements Filter<Attribute<? super X, ?>> {
         private final boolean _invert;
 
         public VersionAttributeFilter() {
             this(false);
         }
-        
+
         public VersionAttributeFilter(boolean inverted) {
             _invert = inverted;
         }
-        
+
         public boolean selects(Attribute<? super X, ?> attr) {
             FieldMetaData fmd = ((Members.Member<?, ?>) attr).fmd;
             boolean result = fmd.isVersion();
             return _invert ? !result : result;
         }
-        
+
         public IdAttributeFilter<X> inverse() {
             return new IdAttributeFilter<X>(!_invert);
         }

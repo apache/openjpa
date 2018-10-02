@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity;
 
@@ -26,7 +26,7 @@ import javax.persistence.Table;
 
 /**
  * JPA Entity with a compound Id of two fields, both simple.
- * 
+ *
  * @author Michael Vorburger
  */
 @Entity
@@ -43,7 +43,7 @@ public class SimpleCompoundIdTestEntity {
 	private Long secondId;
 
 	// ...
-	
+
 	public Long getFirstId() {
 		return firstId;
 	}
@@ -51,6 +51,6 @@ public class SimpleCompoundIdTestEntity {
 	public Long getSecondId() {
 		return secondId;
 	}
-	
+
 	// ...
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -1163,7 +1163,7 @@ public class XMLPersistenceMetaDataSerializer
      * Add a target-entity attribute to collection and map fields that do
      * not use generics.
      */
-    private void addTargetEntityAttribute(FieldMetaData fmd) 
+    private void addTargetEntityAttribute(FieldMetaData fmd)
         throws SAXException {
         Member member = fmd.getBackingMember();
         Class[] types;
@@ -1205,7 +1205,7 @@ public class XMLPersistenceMetaDataSerializer
         if (fmd.getMappedBy() != null)
             addAttribute("mapped-by", fmd.getMappedBy());
     }
-    
+
     /**
      * Order column is not processed as meta data, instead it
      * can be processed as mapping data if in mapping mode.
@@ -1270,7 +1270,7 @@ public class XMLPersistenceMetaDataSerializer
         public int getColNumber() {
             return _seqs[0].getColNumber();
         }
-        
+
         public int compareTo(ClassSeqs other) {
             if (other == this)
                 return 0;
@@ -1495,7 +1495,7 @@ public class XMLPersistenceMetaDataSerializer
             return fmd1.compareTo(fmd2);
 		}
 	}
-    
+
     /**
      * Returns the stored ClassMetaData
      */

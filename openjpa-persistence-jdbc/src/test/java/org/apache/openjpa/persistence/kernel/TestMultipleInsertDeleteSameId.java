@@ -36,16 +36,16 @@ public class TestMultipleInsertDeleteSameId
         RuntimeTest1 o = new RuntimeTest1("one", 99);
         em.persist(o);
         Query q = em.createQuery("select o from RuntimeTest1 o "
-          + " where o.stringField = 'one'"); 
+          + " where o.stringField = 'one'");
         assertEquals(o, q.getSingleResult());
 
         em.remove(o);
         assertEquals(0, q.getResultList().size());
-      
+
         RuntimeTest1 o2 = new RuntimeTest1("two", 99);
         em.persist(o2);
         q = em.createQuery("select o from RuntimeTest1 o "
-          + " where o.stringField = 'two'"); 
+          + " where o.stringField = 'two'");
         assertEquals(o2, q.getSingleResult());
 
         em.remove(o2);

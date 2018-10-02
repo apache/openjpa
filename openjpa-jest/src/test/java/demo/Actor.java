@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package demo;
@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.FetchGroups;
 
 /**
  * A persistent entity with singular and plural association.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -46,7 +46,7 @@ import org.apache.openjpa.persistence.FetchGroups;
     })
 })
 public class Actor {
-    public static enum Gender {Male, Female}; 
+    public static enum Gender {Male, Female};
     @Id
     private String id;
     private String firstName;
@@ -57,11 +57,11 @@ public class Actor {
     private Actor partner;
     @OneToMany
     private Set<Movie> movies;
-    
+
     protected Actor() {
-        
+
     }
-    
+
     public Actor(String id, String firstName, String lastName, Gender gender, Date dob) {
         super();
         this.id = id;

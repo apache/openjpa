@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
@@ -41,23 +41,23 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestIntermediate
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-    
+
     private Object _pc;
     private Object _rel;
-    
+
     public TestIntermediate(String test) {
         super(test);
     }
-    
+
     /** Creates a new instance of TestIntermediate */
     public TestIntermediate() {
     }
-    
+
     public void setUp() {
         RuntimeTest1 pc = new RuntimeTest1("pc", 1);
         RuntimeTest1 rel = new RuntimeTest1("rel", 2);
         pc.setSelfOneOne(rel);
-        
+
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
         Broker broker = JPAFacadeHelper.toBroker(em);
         broker.begin();
@@ -68,7 +68,7 @@ public class TestIntermediate
         broker.close();
         em.close();
     }
-    
+
     public void testOneOneSetsIntermediate() {
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
         Broker broker = JPAFacadeHelper.toBroker(em);
@@ -79,13 +79,13 @@ public class TestIntermediate
             em.close();
         }
     }
-    
+
     public void testDataCacheOneOneSetsIntermediate() {
         BrokerFactory factory = getBrokerFactory(new String[]{
             "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
         });
-        
+
         // get obj into cache
         Broker broker = factory.newBroker();
         try {
@@ -93,7 +93,7 @@ public class TestIntermediate
         } finally {
             broker.close();
         }
-        
+
         // test from cache
         broker = factory.newBroker();
         try {
@@ -106,7 +106,7 @@ public class TestIntermediate
             }
         }
     }
-    
+
     /**
      * Helper method to see that the one to one uses an intermediate values.
      */
@@ -120,6 +120,6 @@ public class TestIntermediate
         assertEquals(_rel, broker.getObjectId(pc.getSelfOneOne()));
         assertNull(sm.getIntermediate(fmd.getIndex()));
     }
-    
-    
+
+
 }

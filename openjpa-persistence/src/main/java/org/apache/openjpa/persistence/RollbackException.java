@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -37,7 +37,7 @@ import org.apache.openjpa.util.Exceptions;
 public class RollbackException
     extends javax.persistence.RollbackException
     implements Serializable, ExceptionInfo {
-	
+
     private transient Object _failed = null;
 
     private transient Throwable[] _nested;

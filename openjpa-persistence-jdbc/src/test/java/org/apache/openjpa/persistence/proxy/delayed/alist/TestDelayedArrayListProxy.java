@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.delayed.alist;
 
@@ -37,9 +37,9 @@ import org.apache.openjpa.persistence.proxy.delayed.Location;
 import org.apache.openjpa.persistence.proxy.delayed.Product;
 
 public class TestDelayedArrayListProxy extends DelayedProxyCollectionsTestCase {
-    
-    public static Object[] _pcList = { 
-        Employee.class, 
+
+    public static Object[] _pcList = {
+        Employee.class,
         Department.class,
         UserIdentity.class,
         Member.class,
@@ -49,7 +49,7 @@ public class TestDelayedArrayListProxy extends DelayedProxyCollectionsTestCase {
     public void setUp() {
         super.setUp(_pcList);
     }
-    
+
     public void setUp(Object... props){
         List<Object> parms = new ArrayList<Object>();
         // Add package-specific types
@@ -58,11 +58,11 @@ public class TestDelayedArrayListProxy extends DelayedProxyCollectionsTestCase {
         parms.addAll(Arrays.asList(props));
         super.setUp(parms.toArray());
     }
-    
+
     public IUserIdentity findUserIdentity(EntityManager em, int id) {
         return em.find(UserIdentity.class, id);
     }
-    
+
     public IDepartment findDepartment(EntityManager em, int id) {
         return em.find(Department.class, id);
     }
@@ -76,12 +76,12 @@ public class TestDelayedArrayListProxy extends DelayedProxyCollectionsTestCase {
         IAccount acct = new Account(name, ui);
         return acct;
     }
-    
+
     public IDepartment createDepartment() {
         Department d = new Department();
         return d;
     }
-    
+
     public IMember createMember(String name) {
         Member m = new Member();
         m.setName(name);
@@ -90,7 +90,7 @@ public class TestDelayedArrayListProxy extends DelayedProxyCollectionsTestCase {
 
     @Override
     public IEmployee createEmployee() {
-        Employee e = new Employee(); 
+        Employee e = new Employee();
         return e;
     }
 
@@ -103,12 +103,12 @@ public class TestDelayedArrayListProxy extends DelayedProxyCollectionsTestCase {
     public Collection<Product> createProducts() {
         return new ArrayList<Product>();
     }
-    
+
     @Override
     public Collection<Award> createAwards() {
         return new ArrayList<Award>();
     }
-    
+
     @Override
     public Collection<Location> createLocations() {
         return new ArrayList<Location>();

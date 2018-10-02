@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -64,7 +64,7 @@ import org.apache.openjpa.util.UserException;
 
 /**
  * Implementation of {@link Query} interface.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @author Abe White
  */
@@ -80,7 +80,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
     private DelegatingQuery _query;
 	/**
 	 * Constructor; supply factory exception translator and delegate.
-	 * 
+	 *
 	 * @param em  The EntityManager which created this query
 	 * @param ret Exception translator for this query
 	 * @param query The underlying "kernel" query.
@@ -90,33 +90,33 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         super(qmd, em);
         _query = new DelegatingQuery(query, ret);
         _lock = new ReentrantLock();
-        if(query.getLanguage() == QueryLanguages.LANG_SQL) { 
-            _convertPositionalParams = false; 
+        if(query.getLanguage() == QueryLanguages.LANG_SQL) {
+            _convertPositionalParams = false;
         }
-        else { 
-            Compatibility compat  = query.getStoreContext().getConfiguration().getCompatibilityInstance(); 
-            _convertPositionalParams = compat.getConvertPositionalParametersToNamed();    
+        else {
+            Compatibility compat  = query.getStoreContext().getConfiguration().getCompatibilityInstance();
+            _convertPositionalParams = compat.getConvertPositionalParametersToNamed();
         }
-        
+
     }
 
 	/**
 	 * Constructor; supply factory and delegate.
-	 * 
+	 *
 	 * @deprecated
 	 */
     public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret, org.apache.openjpa.kernel.Query query) {
         this(em, ret, query, null);
     }
-	
+
     /**
      * Constructor; supply factory and delegate.
-     * 
+     *
      * @deprecated
      */
     public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query) {
         this(em, null, query, null);
-    }	
+    }
 
 	/**
 	 * Delegate.
@@ -257,13 +257,13 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 			_query.setRange(start, start + max);
 		return this;
 	}
-	
+
 	public OpenJPAQuery<X> compile() {
 		_em.assertNotCloseInvoked();
 		_query.compile();
 		return this;
 	}
-	
+
 	private Object execute() {
         if (!isNative() && _query.getOperation() != QueryOperations.OP_SELECT)
             throw new InvalidStateException(_loc.get("not-select-query", getQueryString()), null, null, false);
@@ -282,7 +282,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		    unlock();
 		}
 	}
-	
+
 	public List getResultList() {
 		_em.assertNotCloseInvoked();
 		boolean queryFetchPlanUsed = pushQueryFetchPlan();
@@ -400,7 +400,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 	 */
 	void assertJPQLOrCriteriaQuery() {
         String language = getLanguage();
-        if (JPQLParser.LANG_JPQL.equals(language) 
+        if (JPQLParser.LANG_JPQL.equals(language)
          || QueryLanguages.LANG_PREPARED_SQL.equals(language)
          || CriteriaBuilderImpl.LANG_CRITERIA.equals(language)) {
             return;
@@ -454,9 +454,9 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	/**
 	 * Get all the active hints and their values.
-	 * 
+	 *
 	 */
-    //TODO: JPA 2.0 Hints that are not set to FetchConfiguration 
+    //TODO: JPA 2.0 Hints that are not set to FetchConfiguration
     public Map<String, Object> getHints() {
         if (_hintHandler == null)
             return Collections.emptyMap();
@@ -481,10 +481,10 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
     /**
      * Unwraps this receiver to an instance of the given class, if possible.
-     * 
+     *
      * @exception if the given class is null, generic <code>Object.class</code> or a class
-     * that is not wrapped by this receiver.  
-     * 
+     * that is not wrapped by this receiver.
+     *
      * @since 2.0.0
      */
     public <T> T unwrap(Class<T> cls) {
@@ -493,32 +493,32 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
             if (cls != null && cls != Object.class && cls.isInstance(o))
                 return (T)o;
         }
-        // Set this transaction to rollback only (as per spec) here because the raised exception 
+        // Set this transaction to rollback only (as per spec) here because the raised exception
         // does not go through normal exception translation pathways
-        RuntimeException ex = new PersistenceException(_loc.get("unwrap-query-invalid", cls).toString(), null, 
+        RuntimeException ex = new PersistenceException(_loc.get("unwrap-query-invalid", cls).toString(), null,
                 this, false);
         if (_em.isActive())
             _em.setRollbackOnly(ex);
         throw ex;
     }
 
-    
+
     // =======================================================================
     // Prepared Query Cache related methods
     // =======================================================================
-    
+
     /**
      * Invoked before a query is executed.
      * If this receiver is cached as a {@linkplain PreparedQuery prepared query}
      * then re-parameterizes the given user parameters. The given map is cleared
-     * and re-parameterized values are filled in. 
-     * 
-     * @param params user supplied parameter key-values. Always supply a 
-     * non-null map even if the user has not specified any parameter, because 
+     * and re-parameterized values are filled in.
+     *
+     * @param params user supplied parameter key-values. Always supply a
+     * non-null map even if the user has not specified any parameter, because
      * the same map will to be populated by re-parameterization.
-     * 
+     *
      * @return true if this invocation caused the query being registered in the
-     * cache. 
+     * cache.
      */
     private boolean preExecute(Map params) {
 
@@ -571,9 +571,9 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
     /**
      * Initialize the registered Prepared Query from the given opaque object.
-     * 
+     *
      * @param result an opaque object representing execution result of a query
-     * 
+     *
      * @return true if the prepared query can be initialized.
      */
     private boolean postExecute(Object result) {
@@ -583,9 +583,9 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         }
         return cache.initialize(_id, result) != null;
     }
-    
+
     /**
-     * Remove this query from PreparedQueryCache. 
+     * Remove this query from PreparedQueryCache.
      */
     boolean invalidatePreparedQuery() {
         PreparedQueryCache cache = _em.getPreparedQueryCache();
@@ -594,37 +594,37 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         ignorePreparedQuery();
         return cache.invalidate(_id);
     }
-    
+
     /**
      * Ignores this query from PreparedQueryCache by recreating the original
-     * query if it has been cached. 
+     * query if it has been cached.
      */
     void ignorePreparedQuery() {
         PreparedQuery cached = _em.getPreparedQuery(_id);
         if (cached == null)
             return;
         Broker broker = _em.getBroker();
-        // Critical assumption: Only JPQL queries are cached and more 
+        // Critical assumption: Only JPQL queries are cached and more
         // importantly, the identifier of the prepared query is the original
         // JPQL String
         String JPQL = JPQLParser.LANG_JPQL;
         String jpql = _id;
-        
+
         org.apache.openjpa.kernel.Query newQuery = broker.newQuery(JPQL, jpql);
         newQuery.getFetchConfiguration().copy(_query.getFetchConfiguration());
         newQuery.compile();
         _query = new DelegatingQuery(newQuery, _em.getExceptionTranslator());
     }
-    
+
     // package protected
     QueryImpl setId(String id) {
         _id = id;
         return this;
     }
     // ================ End of Prepared Query related methods =====================
-    
+
     protected void lock() {
-        if (_lock != null) 
+        if (_lock != null)
             _lock.lock();
     }
 
@@ -644,7 +644,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
     }
 
     public String toString() {
-        String result = _query.getQueryString(); 
+        String result = _query.getQueryString();
         return result != null ? result : _id;
     }
 }

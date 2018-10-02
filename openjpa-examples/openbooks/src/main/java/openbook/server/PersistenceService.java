@@ -21,16 +21,16 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
 
 /**
- * An abstract utility for JPA based service. 
+ * An abstract utility for JPA based service.
  * This thin wrapper over a {@link EntityManagerFactory Persistence Unit} maintains
  * <LI>per-thread persistence context
- * <LI>relinquishes direct transaction control under a managed environment 
- * 
+ * <LI>relinquishes direct transaction control under a managed environment
+ *
  * @see #getEntityManager()
  * @see #newEntityManager()
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @SuppressWarnings("serial")
 abstract class PersistenceService implements Serializable {
@@ -38,18 +38,18 @@ abstract class PersistenceService implements Serializable {
     private final String unitName;
     private final boolean isManaged;
     private final PersistenceContextType scope;
-    
+
     private ThreadLocal<EntityManager> thread = new ThreadLocal<EntityManager>();
     private ReentrantLock lock = new ReentrantLock();
 
-    protected PersistenceService(String unit, EntityManagerFactory emf, boolean managed, 
+    protected PersistenceService(String unit, EntityManagerFactory emf, boolean managed,
             PersistenceContextType scope) {
         this.unitName = unit;
         this.emf = emf;
         this.isManaged = managed;
         this.scope = scope;
     }
-    
+
     public final EntityManagerFactory getUnit() {
         return emf;
     }
@@ -57,11 +57,11 @@ abstract class PersistenceService implements Serializable {
     public final String getUnitName() {
         return unitName;
     }
-    
+
     public final boolean isManaged() {
         return isManaged;
     }
-    
+
     public final PersistenceContextType getContextType() {
         return scope;
     }
@@ -71,7 +71,7 @@ abstract class PersistenceService implements Serializable {
      * current thread is not associated with any entity manager or the
      * associated entity manager has been closed, creates a new entity manager
      * and associates with the current thread.
-     * 
+     *
      * @return an entity manager associated with the current thread.
      */
     protected EntityManager getEntityManager() {
@@ -102,7 +102,7 @@ abstract class PersistenceService implements Serializable {
      * If the thread is not associated with a persistence context, then a new
      * context is created, associated with the thread, new transaction is
      * started.
-     * 
+     *
      * @see #getEntityManager()
      */
     protected EntityManager begin() {
@@ -151,7 +151,7 @@ abstract class PersistenceService implements Serializable {
             lock.lock();
             EntityManager em = getEntityManager();
             if (isManaged) {
-                
+
             } else {
                 em.getTransaction().rollback();
             }
@@ -172,7 +172,7 @@ abstract class PersistenceService implements Serializable {
         assertTrue("No persistent context is associated with " + thread, em != null);
         assertTrue("Persistent context " + em + " associated with " + thread + " has been closed", em.isOpen());
         if (!isManaged) {
-            assertTrue("Persistent context " + em + " associated with " + thread + " has no active transaction", 
+            assertTrue("Persistent context " + em + " associated with " + thread + " has no active transaction",
                     em.getTransaction().isActive());
         }
     }

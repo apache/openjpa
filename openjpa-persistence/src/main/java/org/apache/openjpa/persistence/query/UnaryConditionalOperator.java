@@ -14,35 +14,35 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
- * Enumeration of operator that operates on a single expression to generate 
+ * Enumeration of operator that operates on a single expression to generate
  * a predicate.
- * 
+ *
  * @see UnaryOperatorExpression
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public enum UnaryConditionalOperator {
 	EXISTS("EXISTS"),
 	EXISTS_NOT("NOT EXISTS"),
-	
+
 	ISEMPTY("IS EMPTY"),
 	ISEMPTY_NOT("IS NOT EMPTY"),
 	ISNULL("IS NULL"),
 	ISNULL_NOT("IS NOT NULL"),
 	SOME("SOME");
-	
+
 	private final String _symbol;
-	
+
 	UnaryConditionalOperator(String symbol) {
 		_symbol = symbol;
 	}
-	
+
 	public String toString() {
 		return _symbol;
 	}

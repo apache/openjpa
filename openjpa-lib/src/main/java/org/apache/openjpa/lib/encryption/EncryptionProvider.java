@@ -14,14 +14,14 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.encryption;
 
 /**
  * Interface for providing encryption/decryption capabilities to the OpenJPA
  * runtime.
- * 
+ *
  * Currently method is ONLY called to decrypt openjpa.ConnectionPassword and
  * openjpa.Connection2Password properties.
  */
@@ -31,7 +31,7 @@ public interface EncryptionProvider {
 	 * This method will decrypt the provided string. If null is passed into this
 	 * method it should noop and return null. No exceptions should ever escape
 	 * from this method.
-	 * 
+	 *
 	 * Note: Currently method is ONLY called to decrypt
 	 * openjpa.ConnectionPassword and openjpa.Connection2Password properties.
 	 */
@@ -41,7 +41,7 @@ public interface EncryptionProvider {
 	 * This method will encrypt the provided string. If null is passed into this
 	 * method it should noop and return null. No exceptions should ever escape
 	 * from this method.
-	 * 
+	 *
 	 * NOTE : This method is not called by the OpenJPA runtime. It is here for
 	 * possible future uses.
 	 */

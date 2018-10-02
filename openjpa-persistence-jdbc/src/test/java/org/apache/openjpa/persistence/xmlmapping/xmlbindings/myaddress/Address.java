@@ -20,10 +20,10 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for Address complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained
  * within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="Address">
  *   &lt;complexContent>
@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
+ *
  * <p>The JAXB generated source has been modified by adding
  * a <CODE>set</CODE> method for the street property. Otherwise
  * the proxying mechanism will not work - see OPENJPA-834.
@@ -64,10 +64,10 @@ public class Address {
 
     /**
      * Gets the value of the name property.
-     * 
+     *
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getName() {
         return name;
@@ -75,11 +75,11 @@ public class Address {
 
     /**
      * Sets the value of the name property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setName(String value) {
         this.name = value;
@@ -87,24 +87,24 @@ public class Address {
 
     /**
      * Gets the value of the street property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getStreet().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
+     *
+     *
      */
     public List<String> getStreet() {
         if (street == null) {
@@ -115,7 +115,7 @@ public class Address {
 
     /**
      * Sets the value of the street property.
-     * 
+     *
      * @param value a List of String instances
      */
     public void setStreet(List<String> value) {
@@ -124,10 +124,10 @@ public class Address {
 
     /**
      * Gets the value of the city property.
-     * 
+     *
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getCity() {
         return city;
@@ -135,11 +135,11 @@ public class Address {
 
     /**
      * Sets the value of the city property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setCity(String value) {
         this.city = value;

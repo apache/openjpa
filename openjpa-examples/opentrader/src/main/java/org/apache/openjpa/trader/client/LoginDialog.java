@@ -37,16 +37,16 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * A dialog box for login a Trader. Once the trader's name is entered, this widget calls the server 
+ * A dialog box for login a Trader. Once the trader's name is entered, this widget calls the server
  * to start a session for the trader, gets all the tradable Stocks and passes that initialization data
  * to the {@link OpenTrader main application} to {@link OpenTrader#init(Trader, List) initialize}.
- * 
+ *
  * <br>
  * CSS styles used
  * <LI> login : for the main dialog box
  * <LI> login-caption: for the caption
- * 
- * 
+ *
+ *
  * @author Pinaki Poddar
  *
  */
@@ -54,13 +54,13 @@ public class LoginDialog extends PopupPanel {
     private Trader trader;
     private String serverURI;
     private final OpenTrader session;
-    
+
     public LoginDialog(final OpenTrader session) {
         super(false, true);
 
         setAnimationEnabled(true);
         this.session = session;
-        
+
         final FlexTable table = new FlexTable();
         final HTML header = new HTML("&nbsp;&nbsp;Welcome to OpenTrader&nbsp;&nbsp;");
         final Label label  = new Label("Please enter name:");
@@ -73,7 +73,7 @@ public class LoginDialog extends PopupPanel {
         table.addStyleName("login");
         label.addStyleName("login");
         header.addStyleName("login-caption");
-                
+
         table.setWidget(0, 0, header);
         table.setWidget(2, 0, label);
         table.setWidget(2, 1, traderName);
@@ -82,7 +82,7 @@ public class LoginDialog extends PopupPanel {
 
         enter.setEnabled(true);
         traderName.setFocus(true);
-        
+
         enter.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (traderName.getText().trim().length() == 0) {
@@ -96,7 +96,7 @@ public class LoginDialog extends PopupPanel {
         });
         setWidget(table);
     }
-    
+
     /**
      * ---------------------------------------------------------------------------------
      * Asynchronous RPC service callbacks
@@ -107,21 +107,21 @@ public class LoginDialog extends PopupPanel {
      * Logs in a [@link Trader} and then invokes another RPC service to get the list of tradable stocks.
      * This pattern of calling one RPC from another addresses sequential execution of asynchronous
      * callbacks. This pattern is necessary when the second RPC depends in some way to the result of
-     * the first RPC. 
-     * 
+     * the first RPC.
+     *
      */
     class LoginCallback implements AsyncCallback<Trader> {
         public void onFailure(Throwable caught) {
             ProgressMonitor.stop();
             session.handleError(caught);
         }
-        
+
         public void onSuccess(Trader result) {
             trader = result;
             session.getService().getServiceURI(new GetServerURI());
         }
     }
-    
+
     /**
      * Initializes the server URI.
      *
@@ -137,7 +137,7 @@ public class LoginDialog extends PopupPanel {
         }
     }
 
-    
+
     /**
      * Initializes the tradable stocks followed by the main application.
      *

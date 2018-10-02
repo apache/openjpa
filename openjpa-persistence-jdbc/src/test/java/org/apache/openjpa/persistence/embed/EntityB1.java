@@ -32,7 +32,7 @@ public class EntityB1 implements Serializable {
 
     @Column(length=30)
     String name;
-    
+
     @OneToOne
     EntityA_Embed_MappedToOne entityA;
 

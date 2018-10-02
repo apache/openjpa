@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 import java.util.ArrayList;
@@ -35,36 +35,36 @@ import javax.persistence.OneToMany;
 public class EntityAInverseEager  {
 	@GeneratedValue
 	@Id private int id;
-    
+
     private String name;
 
 	@OneToMany(fetch=FetchType.EAGER, mappedBy="entityA")
     private List<EntityBInverseEager> listB =
         new ArrayList<EntityBInverseEager>();
-	
+
 	public EntityAInverseEager() {}
-	
+
 	public EntityAInverseEager(String name) {
 	    this.name = name;
 	}
-	
+
 	public List<EntityBInverseEager> getListB() {
 		return listB;
 	}
-	
+
 	public List addB(EntityBInverseEager entityB) {
 		listB.add(entityB);
 		return listB;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
-	
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }

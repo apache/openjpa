@@ -26,15 +26,15 @@ import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.LeafC;
 
 @Entity
 @DiscriminatorValue("StrF")
-public class PIdJTSDMSCLeafC 
+public class PIdJTSDMSCLeafC
 extends PIdJTSDMSCMappedSuperclass implements LeafC {
     private String leafCData;
-    
-    public String getLeafCData() 
+
+    public String getLeafCData()
     {
         return leafCData;
     }
-    
+
     public void setLeafCData(String leafCData) {
         this.leafCData = leafCData;
     }

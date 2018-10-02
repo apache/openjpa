@@ -29,13 +29,13 @@ public class BaseClass5 {
 
     @Id
     private int id;
-    
+
     @Version
     private int version;
-    
+
     @Basic
     private String name;
-    
+
     @OneToOne
     private SubclassH subclassh;
 
@@ -62,9 +62,9 @@ public class BaseClass5 {
     public String getName() {
         return name;
     }
-    
+
     public String toString() {
-        return "Id=" + id + 
+        return "Id=" + id +
                ";Version=" + version +
                ";Name=" + name;
     }

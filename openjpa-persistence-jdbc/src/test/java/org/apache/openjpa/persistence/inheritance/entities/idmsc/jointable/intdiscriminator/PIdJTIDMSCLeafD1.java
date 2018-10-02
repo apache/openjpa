@@ -27,10 +27,10 @@ import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.
 
 @Entity
 @DiscriminatorValue("8")
-public class PIdJTIDMSCLeafD1 
+public class PIdJTIDMSCLeafD1
 extends PIdJTIDMSCEntityD implements LeafD1 {
     private String leafD1Data;
-    
+
     public String getLeafD1Data() {
         return leafD1Data;
     }

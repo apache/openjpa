@@ -42,7 +42,7 @@ import javax.persistence.Version;
         , query="SELECT c FROM LSEBase c WHERE c.firstName LIKE :firstName"
         , lockMode=LockModeType.PESSIMISTIC_WRITE
         , hints={@QueryHint(name="javax.persistence.lock.scope",value="EXTENDED")}
-        ) 
+        )
     }
 )
 

@@ -31,17 +31,17 @@ import javax.persistence.TemporalType;
 @Entity
 @Access(AccessType.FIELD)
 @NamedQueries( {
-    @NamedQuery(name="FieldSub.query", 
-        query="SELECT fs FROM FieldSub fs WHERE " + 
+    @NamedQuery(name="FieldSub.query",
+        query="SELECT fs FROM FieldSub fs WHERE " +
         "fs.id = :id AND fs.name = :name AND fs.crtDate = :crtDate"),
-    @NamedQuery(name="FieldSub.badQuery", 
-        query="SELECT fs FROM FieldSub fs WHERE " + 
+    @NamedQuery(name="FieldSub.badQuery",
+        query="SELECT fs FROM FieldSub fs WHERE " +
         "fs.id = :id AND fs.name = :name AND fs.createDate = :crtDate") } )
 public class FieldSub extends AbstractMappedSuperProperty {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date crtDate;
-    
+
     @Override
     public Date getCreateDate() {
         return crtDate;
@@ -51,7 +51,7 @@ public class FieldSub extends AbstractMappedSuperProperty {
     public void setCreateDate(Date date) {
         crtDate = date;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof FieldSub) {
             FieldSub ps = (FieldSub)obj;

@@ -35,44 +35,44 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestDefaultAccess extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(CLEAR_TABLES, 
+        setUp(CLEAR_TABLES,
             PropEntity.class, MappedCallbackSup.class);
     }
 
 
     /**
-     * Validates that an property access entity extending a mapped superclass 
-     * containing no persistent fields (only a callback) does not cause access 
+     * Validates that an property access entity extending a mapped superclass
+     * containing no persistent fields (only a callback) does not cause access
      * validation failures.
      */
     public void testDefaultMappedSuperclassAccess() {
-        
+
         EntityManager em = emf.createEntityManager();
-                
+
         PropEntity pe = new PropEntity();
-        
+
         pe.setId(new Random().nextInt());
         pe.setName("Name");
-        
+
         em.getTransaction().begin();
         em.persist(pe);
         em.getTransaction().commit();
         em.close();
     }
-    
+
     /**
      * Validates use of access specifier of FIELD in entity-mappings.
      */
     public void testEMDefaultFieldAccess() {
-        OpenJPAEntityManagerFactorySPI emf1 = 
+        OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-EMFldDef",
             "org/apache/openjpa/persistence/access/" +
             "access-def-persistence.xml");
-        
+
         OpenJPAEntityManagerSPI em = emf1.createEntityManager();
         verifyDefaultFieldAccess(em);
-                        
+
         em.close();
         clear(emf1);
         closeEMF(emf1);
@@ -82,12 +82,12 @@ public class TestDefaultAccess extends SingleEMFTestCase {
      * Validates use of access specifier of PROPERTY in entity-mappings.
      */
     public void testEMDefaultPropertyAccess() {
-        OpenJPAEntityManagerFactorySPI emf1 = 
+        OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-EMPropDef",
             "org/apache/openjpa/persistence/access/" +
             "access-def-persistence.xml");
-        
+
         OpenJPAEntityManagerSPI em = emf1.createEntityManager();
         verifyDefaultPropertyAccess(em);
 
@@ -100,31 +100,31 @@ public class TestDefaultAccess extends SingleEMFTestCase {
      * Validates use of access specifier of FIELD in persistence unit defaults.
      */
     public void testPUDefaultFieldAccess() {
-        OpenJPAEntityManagerFactorySPI emf1 = 
+        OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-PUFldDef",
             "org/apache/openjpa/persistence/access/" +
             "access-pudef-persistence.xml");
-        
+
         OpenJPAEntityManagerSPI em = emf1.createEntityManager();
         verifyDefaultFieldAccess(em);
-                        
+
         em.close();
         clear(emf1);
         closeEMF(emf1);
     }
 
     /**
-     * Validates use of access specifier of PROPERTY in persistence unit 
+     * Validates use of access specifier of PROPERTY in persistence unit
      * defaults.
      */
     public void testPUDefaultPropertyAccess() {
-        OpenJPAEntityManagerFactorySPI emf1 = 
+        OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-PUPropDef",
             "org/apache/openjpa/persistence/access/" +
             "access-pudef-persistence.xml");
-        
+
         OpenJPAEntityManagerSPI em = emf1.createEntityManager();
         verifyDefaultPropertyAccess(em);
 
@@ -132,17 +132,17 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         clear(emf1);
         closeEMF(emf1);
     }
-    
+
     private void verifyDefaultFieldAccess(OpenJPAEntityManagerSPI em) {
         XMLFieldAccess2 fa = new XMLFieldAccess2();
-        // Set the persistent field through a misnamed setter         
+        // Set the persistent field through a misnamed setter
         fa.setStringField("XMLFieldAccess2");
-        
+
         em.getTransaction().begin();
         em.persist(fa);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the field name to verify that
         // field access is in use.
@@ -157,19 +157,19 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         dfmpa.setStrField("NonPCSetter");
         // Call setter with property access
         dfmpa.setStringField("XMLDFMPA2");
-        
+
         em.getTransaction().begin();
         em.persist(dfmpa);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent property was set using the setter
         // above, but this query will use the property name to verify that
         // property access is in use.
         qry = em.createNamedQuery("XMLDFMPA2.query");
         qry.setParameter("id", dfmpa.getId());
         qry.setParameter("strVal", "XMLDFMPA2");
-        XMLDefFieldMixedPropAccess2 dfmpa2 = 
+        XMLDefFieldMixedPropAccess2 dfmpa2 =
             (XMLDefFieldMixedPropAccess2)qry.getSingleResult();
         assertEquals(dfmpa, dfmpa2);
         assertEquals(dfmpa2.getStringField(), "XMLDFMPA2");
@@ -188,14 +188,14 @@ public class TestDefaultAccess extends SingleEMFTestCase {
 
     private void verifyDefaultPropertyAccess(OpenJPAEntityManagerSPI em) {
         XMLPropAccess2 pa = new XMLPropAccess2();
-        // Set the persistent field through a mis-named setter         
+        // Set the persistent field through a mis-named setter
         pa.setStrProp("PropertyAccess");
-        
+
         em.getTransaction().begin();
         em.persist(pa);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the field name to verify that
         // field access is in use.
@@ -208,19 +208,19 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         XMLDefPropMixedFieldAccess2 dpmfa = new XMLDefPropMixedFieldAccess2();
         // Call setter with underlying field access
         dpmfa.setStrProp("XMLDPMFA2");
-        
+
         em.getTransaction().begin();
         em.persist(dpmfa);
         em.getTransaction().commit();
         em.clear();
-        
+
         // This value of a persistent field was set using the setter
         // above, but this query will use the property name to verify that
         // property access is in use.
         qry = em.createNamedQuery("XMLDPMFA2.query");
         qry.setParameter("id", dpmfa.getId());
         qry.setParameter("strVal", "XMLDPMFA2");
-        XMLDefPropMixedFieldAccess2 dpmfa2 = 
+        XMLDefPropMixedFieldAccess2 dpmfa2 =
             (XMLDefPropMixedFieldAccess2)qry.getSingleResult();
         assertEquals(dpmfa, dpmfa2);
         assertEquals(dpmfa2.getStrProp(), "XMLDPMFA2");

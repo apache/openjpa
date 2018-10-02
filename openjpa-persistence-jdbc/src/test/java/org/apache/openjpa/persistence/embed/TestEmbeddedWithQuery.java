@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.embed;
@@ -36,27 +36,27 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
             CLEAR_TABLES);
         populate();
     }
-    
+
     public void testFullEmbeddableLoadByJPQLQuery() {
         EntityManager em = emf.createEntityManager();
-        
+
         try {
-            String queryStr = 
+            String queryStr =
                     "SELECT id AS idparent, longVal AS idchild, CAST(NULL AS CHAR)  as missing FROM EGENERIC";
-                    //"SELECT 1 as idparent, 2 as idchild,CAST(NULL AS CHAR) as missing " 
+                    //"SELECT 1 as idparent, 2 as idchild,CAST(NULL AS CHAR) as missing "
                     // FROM sysibm.sysdummy1";
             Query q1 = em.createNativeQuery(queryStr, EParent.class);
-            
-            List resultList = q1.getResultList(); 
+
+            List resultList = q1.getResultList();
             assertNotNull(resultList);
-            
+
             List <EParent> pList = new ArrayList<EParent>();
             pList.addAll(resultList);
-            em.clear();                      
+            em.clear();
             assertNotEquals(0, pList.size());
-            
+
             EParent pFind = pList.get(0);
-            
+
             assertNotNull(pFind);
             assertEquals(pFind.getIdParent(), new Integer(1));
             assertNotNull(pFind.getChildTo());
@@ -65,28 +65,28 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            
+
             em.close();
         }
     }
-    
+
     public void testPartialEmbeddableLoadByJPQLQuery() {
         EntityManager em = emf.createEntityManager();
-        
+
         try {
             String queryStr = "SELECT id AS idparent, longVal AS idchild FROM EGENERIC";
             Query q1 = em.createNativeQuery(queryStr, EParent.class);
-            
-            List resultList = q1.getResultList(); 
+
+            List resultList = q1.getResultList();
             assertNotNull(resultList);
-            
+
             List <EParent> pList = new ArrayList<EParent>();
             pList.addAll(resultList);
-            em.clear();                      
+            em.clear();
             assertNotEquals(0, pList.size());
-            
+
             EParent pFind = pList.get(0);
-            
+
             assertNotNull(pFind);
             assertEquals(pFind.getIdParent(), new Integer(1));
             assertNotNull(pFind.getChildTo());
@@ -95,30 +95,30 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            
+
             if (em.isOpen()) {
                 em.close();
             }
         }
     }
-    
+
     private void populate() {
         EntityManager em = emf.createEntityManager();
-        
+
         try {
             EGeneric generic = new EGeneric();
             generic.setId(new Integer(1));
             generic.setLongVal(new Long(10));
             generic.setStrVal("Nope");
-            
+
             em.getTransaction().begin();
             em.persist(generic);
-            em.getTransaction().commit();       
+            em.getTransaction().commit();
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            
+
             em.close();
         }
     }

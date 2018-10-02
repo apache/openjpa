@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance;
 
@@ -37,8 +37,8 @@ public interface StateManager {
     public Object getGenericContext();
 
     /**
-     * Return the persistence-capable primary key object by extracting the 
-     * identity value of the related instance stored in the given field from 
+     * Return the persistence-capable primary key object by extracting the
+     * identity value of the related instance stored in the given field from
      * the given object id.
      */
     public Object getPCPrimaryKey(Object oid, int field);

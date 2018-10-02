@@ -39,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests query parameters.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -47,7 +47,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     private static OpenJPAEntityManagerFactorySPI oemf;
     private static int TEST_COUNT = 0;
     private EntityManager em;
-    
+
     @Override
     public void setUp() {
         if (oemf == null) {
@@ -57,7 +57,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
         em = oemf.createEntityManager();
         TEST_COUNT++;
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         // do not close the factory until done
@@ -67,95 +67,95 @@ public class TestQueryParameters extends SingleEMFTestCase {
             super.tearDown();
         }
     }
-    
+
     public void testNamedParameterUsingReservedWord() {
         String jpql = "select e from simple e WHERE e.id=:key and e.name=:value";
         Query q = em.createQuery(jpql)
                     .setParameter("key", 100)
                     .setParameter("value", "XYZ");
-        
+
         assertEquals(2, q.getParameters().size());
         Parameter<?> param1 = q.getParameter("key");
         Parameter<?> param2 = q.getParameter("value");
-        
+
         assertEquals(100, q.getParameterValue("key"));
         assertEquals(100, q.getParameterValue(param1));
         assertEquals("XYZ", q.getParameterValue("value"));
         assertEquals("XYZ", q.getParameterValue(param2));
-        
+
         q.getResultList();
     }
-    
+
     public void testPositionalParameterInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=?1 and e.name=?2";
         Query q = em.createQuery(jpql)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
-        
+
         assertEquals(2, q.getParameters().size());
         Parameter<?> param1 = q.getParameter(1);
         Parameter<?> param2 = q.getParameter(2);
-        
+
         assertEquals(100, q.getParameterValue(1));
         assertEquals(100, q.getParameterValue(param1));
         assertEquals("XYZ", q.getParameterValue(2));
         assertEquals("XYZ", q.getParameterValue(param2));
-        
+
         q.getResultList();
     }
-    
+
     public void testNamedParameterInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=:id and e.name=:name";
         Query q = em.createQuery(jpql)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
-        
+
         assertEquals(2, q.getParameters().size());
         Parameter<?> param1 = q.getParameter("id");
         Parameter<?> param2 = q.getParameter("name");
-        
+
         assertEquals(100, q.getParameterValue("id"));
         assertEquals(100, q.getParameterValue(param1));
         assertEquals("XYZ", q.getParameterValue("name"));
         assertEquals("XYZ", q.getParameterValue(param2));
-        
+
         q.getResultList();
     }
-    
+
     public void testPositionalParameterMissingInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=?1 and e.name=?2";
         Query q = em.createQuery(jpql)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
-        
+
         assertSetParameterFails(q, 3, 100); // wrong position
     }
-    
+
     public void testNamedParameterMissingInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=:id and e.name=:name";
         Query q = em.createQuery(jpql)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
-        
+
         assertSetParameterFails(q, "xyz", 100); // wrong name
     }
-    
+
     public void testPositionalParameterWrongValueInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=?1 and e.name=?2";
         Query q = em.createQuery(jpql)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
-        
+
         assertSetParameterFails(q, 1, "XYZ"); // wrong value
         assertSetParameterFails(q, 2, 100); // wrong value
     }
-    
+
     public void testNamedParameterWrongValueInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=:id and e.name=:name";
         Query q = em.createQuery(jpql)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
-        
+
         assertSetParameterFails(q, "id", "XYZ"); // wrong value
         assertSetParameterFails(q, "name", 100); // wrong value
     }
@@ -165,48 +165,48 @@ public class TestQueryParameters extends SingleEMFTestCase {
         Query q = em.createQuery(jpql)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
-        
+
         Parameter<?> param1 = q.getParameter(1);
         assertTrue(param1 instanceof ParameterImpl);
         assertEquals(long.class, param1.getParameterType());
-        
+
         Parameter<?> param2 = q.getParameter(2);
         assertTrue(param2 instanceof ParameterImpl);
         assertEquals(String.class, param2.getParameterType());
     }
-    
+
     public void testNamedParameterValueTypeInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=:id and e.name=:name";
         Query q = em.createQuery(jpql)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
-        
+
         Parameter<?> param1 = q.getParameter("id");
         assertTrue(param1 instanceof ParameterImpl);
         assertEquals(long.class, param1.getParameterType());
-        
+
         Parameter<?> param2 = q.getParameter("name");
         assertTrue(param2 instanceof ParameterImpl);
         assertEquals(String.class, param2.getParameterType());
     }
-    
+
     public void testNamedParameterInPreparedQuery() {
         String jpql = "select x from simple x WHERE x.id=:id and x.name=:name";
         Query q = em.createQuery(jpql)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
         q.getResultList();
-        
+
         assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q).getLanguage());
-        
+
         Query q2 = em.createQuery(jpql)
                      .setParameter("id", 200)
                      .setParameter("name", "ZXY");
-        
+
         assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
         q2.getResultList();
     }
-    
+
     //--------------------------------------------------------------------------------------------
     // Similar tests with NamedQuery
     //--------------------------------------------------------------------------------------------
@@ -214,66 +214,66 @@ public class TestQueryParameters extends SingleEMFTestCase {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_POSITIONAL_PARAMS)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
-        
+
         assertEquals(2, q.getParameters().size());
         Parameter<?> param1 = q.getParameter(1);
         Parameter<?> param2 = q.getParameter(2);
-        
+
         assertEquals(100, q.getParameterValue(1));
         assertEquals(100, q.getParameterValue(param1));
         assertEquals("XYZ", q.getParameterValue(2));
         assertEquals("XYZ", q.getParameterValue(param2));
-        
+
         q.getResultList();
     }
-    
+
     public void testNamedParameterInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_NAMED_PARAMS)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
-        
+
         assertEquals(2, q.getParameters().size());
         Parameter<?> param1 = q.getParameter("id");
         Parameter<?> param2 = q.getParameter("name");
-        
+
         assertEquals(100, q.getParameterValue("id"));
         assertEquals(100, q.getParameterValue(param1));
         assertEquals("XYZ", q.getParameterValue("name"));
         assertEquals("XYZ", q.getParameterValue(param2));
-        
+
         q.getResultList();
     }
-    
+
     public void testPositionalParameterMissingInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_POSITIONAL_PARAMS)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
-        
+
         assertSetParameterFails(q, 3, 100); // wrong position
     }
-    
+
     public void testNamedParameterMissingInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_NAMED_PARAMS)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
-        
+
         assertSetParameterFails(q, "xyz", 100); // wrong name
     }
-    
+
     public void testPositionalParameterWrongValueInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_POSITIONAL_PARAMS)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
-        
+
         assertSetParameterFails(q, 1, "XYZ"); // wrong value
         assertSetParameterFails(q, 2, 100); // wrong value
     }
-    
+
     public void testNamedParameterWrongValueInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_NAMED_PARAMS)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
-        
+
         assertSetParameterFails(q, "id", "XYZ"); // wrong value
         assertSetParameterFails(q, "name", 100); // wrong value
     }
@@ -282,38 +282,38 @@ public class TestQueryParameters extends SingleEMFTestCase {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_POSITIONAL_PARAMS)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
-        
+
         Parameter<?> param1 = q.getParameter(1);
         assertTrue(param1 instanceof ParameterImpl);
         assertEquals(long.class, param1.getParameterType());
-        
+
         Parameter<?> param2 = q.getParameter(2);
         assertTrue(param2 instanceof ParameterImpl);
         assertEquals(String.class, param2.getParameterType());
     }
-    
+
     public void testNamedParameterValueTypeInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_NAMED_PARAMS)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
-        
+
         Parameter<?> param1 = q.getParameter("id");
         assertTrue(param1 instanceof ParameterImpl);
         assertEquals(long.class, param1.getParameterType());
-        
+
         Parameter<?> param2 = q.getParameter("name");
         assertTrue(param2 instanceof ParameterImpl);
         assertEquals(String.class, param2.getParameterType());
     }
-    
+
     public void testCriteriaQueryWithNamedParameter() {
         Metamodel model = oemf.getMetamodel();
         EntityType<SimpleEntity> entity = model.entity(SimpleEntity.class);
-        SingularAttribute<SimpleEntity, Long> id = 
+        SingularAttribute<SimpleEntity, Long> id =
             (SingularAttribute<SimpleEntity, Long>)entity.getSingularAttribute("id");
-        SingularAttribute<SimpleEntity, String> name = 
+        SingularAttribute<SimpleEntity, String> name =
             (SingularAttribute<SimpleEntity, String>)entity.getSingularAttribute("name");
-        
+
         CriteriaBuilder cb = oemf.getCriteriaBuilder();
         CriteriaQuery<SimpleEntity> c = cb.createQuery(SimpleEntity.class);
         Root<SimpleEntity> root = c.from(SimpleEntity.class);
@@ -322,7 +322,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
         Predicate p1 = cb.equal(root.get(id), param1);
         Predicate p2 = cb.equal(root.get(name), param2);
         c.where(cb.and(p1,p2));
-        
+
         Query q = em.createQuery(c);
         assertEquals(2, q.getParameters().size());
         assertTrue(q.getParameters().contains(param1));
@@ -330,15 +330,15 @@ public class TestQueryParameters extends SingleEMFTestCase {
         assertNotNull(q.getParameter("id"));
         assertNotNull(q.getParameter("name"));
     }
-    
+
     public void testCriteriaQueryWithUnnamedParameter() {
         Metamodel model = oemf.getMetamodel();
         EntityType<SimpleEntity> entity = model.entity(SimpleEntity.class);
-        SingularAttribute<SimpleEntity, Long> id = 
+        SingularAttribute<SimpleEntity, Long> id =
             (SingularAttribute<SimpleEntity, Long>)entity.getSingularAttribute("id");
-        SingularAttribute<SimpleEntity, String> name = 
+        SingularAttribute<SimpleEntity, String> name =
             (SingularAttribute<SimpleEntity, String>)entity.getSingularAttribute("name");
-        
+
         CriteriaBuilder cb = oemf.getCriteriaBuilder();
         CriteriaQuery<SimpleEntity> c = cb.createQuery(SimpleEntity.class);
         Root<SimpleEntity> root = c.from(SimpleEntity.class);
@@ -347,15 +347,15 @@ public class TestQueryParameters extends SingleEMFTestCase {
         Predicate p1 = cb.equal(root.get(id), param1);
         Predicate p2 = cb.equal(root.get(name), param2);
         c.where(cb.and(p1,p2));
-        
+
         Query q = em.createQuery(c);
         assertEquals(2, q.getParameters().size());
         assertTrue(q.getParameters().contains(param1));
         assertTrue(q.getParameters().contains(param2));
     }
 
-    
-    
+
+
     void assertSetParameterFails(Query q, String name, Object v) {
         try {
             q.setParameter(name, v);
@@ -364,9 +364,9 @@ public class TestQueryParameters extends SingleEMFTestCase {
             // good
             System.err.println("Following is expeceted exception, printing to verify error message");
             System.err.println(e);
-        } 
+        }
     }
-    
+
     void assertSetParameterFails(Query q, int pos, Object v) {
         try {
             q.setParameter(pos, v);
@@ -375,6 +375,6 @@ public class TestQueryParameters extends SingleEMFTestCase {
             // good
             System.err.println("Following is expeceted exception, printing to verify error message");
             System.err.println(e);
-        } 
+        }
     }
 }

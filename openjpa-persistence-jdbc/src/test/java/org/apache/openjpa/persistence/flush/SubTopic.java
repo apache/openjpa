@@ -43,14 +43,14 @@ public class SubTopic implements Serializable {
     @SequenceGenerator(name="subtopicIdSeq", sequenceName="FL_SUBTOPIC_SEQ")
     @GeneratedValue(generator="subtopicIdSeq", strategy=GenerationType.SEQUENCE)
     protected Long subtopicId;
-    
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.LAZY)
     @JoinColumn(name="TOPIC_ID")
     protected Topic topic;
-    
+
     @Column(name="SUBTOPIC_TEXT")
     protected String subtopicText;
-    
+
     public Long getSubtopicId() {
         return subtopicId;
     }

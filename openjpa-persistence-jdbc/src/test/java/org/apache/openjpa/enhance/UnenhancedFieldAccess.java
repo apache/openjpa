@@ -34,7 +34,7 @@ import javax.persistence.FetchType;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class UnenhancedFieldAccess
     implements UnenhancedType, Serializable, Cloneable {
-    
+
     @Id @GeneratedValue private int id;
     @Version public int version;
     protected String stringField = "foo";

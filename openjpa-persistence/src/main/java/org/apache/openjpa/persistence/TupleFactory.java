@@ -34,51 +34,51 @@ import org.apache.openjpa.kernel.ObjectFactory;
  * A factory for tuples such that all instances created by a factory instance share the same TupleElements
  * to save memory consumption.
  * <BR>
- * All Tuple instances created by this factory access the TupleElememts contained in this factory. 
- * 
+ * All Tuple instances created by this factory access the TupleElememts contained in this factory.
+ *
  * @author Pinaki Poddar
- * 
+ *
  * @since 2.0.0
  *
  */
 public class TupleFactory implements ObjectFactory<Tuple> {
     private final List<TupleElement<?>> elements;
-    
+
     /**
      * A factory of Tuple that shares the given TupleElements.
-     * 
+     *
      */
     public TupleFactory(List<TupleElement<?>> elems) {
         elements = Collections.unmodifiableList(elems);
     }
-    
+
     public TupleFactory(TupleElement<?>... elems) {
         this(Arrays.asList(elems));
     }
-    
+
     public TupleFactory(Selection<?>... elems) {
         List<TupleElement<?>> list = new ArrayList<TupleElement<?>>();
         for (Selection<?> s : elems)
             list.add(s);
         elements = Collections.unmodifiableList(list);
     }
-    
+
     public List<TupleElement<?>> getElements() {
         return elements;
     }
-    
+
     public TupleImpl newInstance() {
         TupleImpl impl = new TupleImpl(this);
         return impl;
     }
-    
+
     public int getIndex(TupleElement<?> e) {
         int i = elements.indexOf(e);
         if (i == -1)
             throw new IllegalArgumentException("Index " + i + " does not exist");
         return i;
     }
-    
+
     public int getIndex(String alias) {
         if (alias == null)
             throw new IllegalArgumentException("null alias");

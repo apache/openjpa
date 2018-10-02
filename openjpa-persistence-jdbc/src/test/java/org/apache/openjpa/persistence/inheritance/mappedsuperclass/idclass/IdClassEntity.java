@@ -27,9 +27,9 @@ import javax.persistence.IdClass;
 public class IdClassEntity extends IdClassTestMSC {
 	@Id
 	private int id;
-	
+
 	private String someData;
-	
+
 	public IdClassEntity() {
 		someData = "";
 	}

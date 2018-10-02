@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -30,17 +30,17 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests behavior of FetchPlan constructed dynamically by adding fields.
- * 
- * Originally reported by Michael Vorburger in 
- * <A HREF="http://n2.nabble.com/Fetch-Group-questions-tc534861.html">OpenJPA 
+ *
+ * Originally reported by Michael Vorburger in
+ * <A HREF="http://n2.nabble.com/Fetch-Group-questions-tc534861.html">OpenJPA
  * user group</A>
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	private static final String JPQL = "select a from FetchA a";
-	
+
 	public void setUp() {
         super.setUp(CLEAR_TABLES, FetchBase.class, FetchA.class, FetchB.class);
 		createData();
@@ -94,7 +94,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertEquals("a1", a.getText());
 		assertNull(b.getText());
 	}
-	
+
 	public void testFetchBySuperClassField() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
@@ -112,7 +112,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertEquals("a1", a.getText());
 		assertEquals("b1", b.getText());
 	}
-	
+
 	public void testFetchBySubClassFieldNameB() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
@@ -148,7 +148,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertEquals("a1", a.getText());
 		assertNull(b.getText());
 	}
-	
+
 	public void testFetchBySuperClassFieldName() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
@@ -166,7 +166,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertEquals("a1", a.getText());
 		assertEquals("b1", b.getText());
 	}
-	
+
 	// OPENJPA-2413: FetchPlan.clearFetchGroups() does not retain "default" in list of active Fetch Groups.
 	public void testClearFetchPlan() {
 	    OpenJPAEntityManager em = emf.createEntityManager();
@@ -181,12 +181,12 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	    fp.clearFetchGroups();
 	    Collection<String> fetchGroupsAfterClear = fp.getFetchGroups();
 	    assertNotNull(fetchGroupsAfterClear);
-	    assertTrue(fetchGroupsAfterClear.contains(FetchGroup.NAME_DEFAULT));    
+	    assertTrue(fetchGroupsAfterClear.contains(FetchGroup.NAME_DEFAULT));
 
 	    // Should still be able to remove the "default" FetchGroup
 	    fp.removeFetchGroup(FetchGroup.NAME_DEFAULT);
 	    Collection<String> fetchGroupsAfterRemove = fp.getFetchGroups();
 	    assertNotNull(fetchGroupsAfterClear);
-	    assertTrue(fetchGroupsAfterClear.isEmpty());    
+	    assertTrue(fetchGroupsAfterClear.isEmpty());
 	}
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -57,7 +57,7 @@ public class JDBCFetchConfigurationImpl
     implements JDBCFetchConfiguration {
 
     private static final Localizer _loc = Localizer.forPackage(JDBCFetchConfigurationImpl.class);
-    
+
     /**
      * Hint keys that correspond to a mutable bean-style setter in this receiver.
      * These keys are registered with both <code>openjpa.FetchPlan</code> and <code>openjpa.jdbc</code> as prefix.
@@ -100,7 +100,7 @@ public class JDBCFetchConfigurationImpl
         this(null, null);
     }
 
-    protected JDBCFetchConfigurationImpl(ConfigurationState state, 
+    protected JDBCFetchConfigurationImpl(ConfigurationState state,
         JDBCConfigurationState jstate) {
         super(state);
         _state = (jstate == null) ? new JDBCConfigurationState() : jstate;
@@ -168,7 +168,7 @@ public class JDBCFetchConfigurationImpl
             _state.eagerMode = mode;
         return this;
     }
-    
+
     public int getSubclassFetchMode() {
         return _state.subclassMode;
     }
@@ -313,7 +313,7 @@ public class JDBCFetchConfigurationImpl
     }
 
     public Set<String> getJoins() {
-        if (_state.joins == null) 
+        if (_state.joins == null)
             return Collections.emptySet();
         return _state.joins;
     }
@@ -325,7 +325,7 @@ public class JDBCFetchConfigurationImpl
     public JDBCFetchConfiguration addJoin(String join) {
         if (StringUtil.isEmpty(join))
             throw new UserException(_loc.get("null-join"));
-        
+
         lock();
         try {
             if (_state.joins == null)
@@ -418,7 +418,7 @@ public class JDBCFetchConfigurationImpl
     }
 
     public Set<String> getFetchInnerJoins() {
-        if (_state.fetchInnerJoins == null) 
+        if (_state.fetchInnerJoins == null)
             return Collections.emptySet();
         return _state.fetchInnerJoins;
     }
@@ -431,7 +431,7 @@ public class JDBCFetchConfigurationImpl
     public JDBCFetchConfiguration addFetchInnerJoin(String join) {
         if (StringUtil.isEmpty(join))
             throw new UserException(_loc.get("null-join"));
-        
+
         lock();
         try {
             if (_state.fetchInnerJoins == null)

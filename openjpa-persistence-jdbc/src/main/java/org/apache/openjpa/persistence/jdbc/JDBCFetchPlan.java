@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -227,13 +227,13 @@ public interface JDBCFetchPlan
      * @deprecated use {@link #setJoinSyntax(JoinSyntax)} instead.
      */
     public JDBCFetchPlan setJoinSyntax(int syntax);
-    
+
     /**
      * Affirms if foreign key for a relation field will be pre-fetched as part of the owning object irrespective of
      * whether the field is included in the default fetch group of this fetch configuration. <br><br>
      * By default, foreign key for a relation field is pre-fetched as part of the owning object <em>only</em> if the
      * field in included in the default fetch group of this fetch configuration.
-     * 
+     *
      * @since 2.2.0
      */
     public boolean getIgnoreDfgForFkSelect();
@@ -243,7 +243,7 @@ public interface JDBCFetchPlan
      * whether the field is included in the default fetch group of this fetch configuration. <br><br>
      * By default, foreign key for a relation field is pre-fetched as part of the owning object <em>only</em> if the
      * field in included in the default fetch group of this fetch configuration.
-     * 
+     *
      * @since 2.2.0
      */
     public void setIgnoreDfgForFkSelect(boolean b);

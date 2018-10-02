@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
@@ -32,13 +32,13 @@ import org.apache.openjpa.persistence.jdbc.common.apps.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestSequenceGeneratorEnsureCapacityCall 
+public class TestSequenceGeneratorEnsureCapacityCall
     extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-   
-    
-    
+
+
+
     /** Creates a new instance of TestSequenceGeneratorEnsureCapacityCall */
-    public TestSequenceGeneratorEnsureCapacityCall(String name) 
+    public TestSequenceGeneratorEnsureCapacityCall(String name)
     {
     	super(name);
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -38,16 +38,16 @@ public class Account {
 
     private int balance;
     private Integer loan;
-    
+
     @OneToOne
     private Person owner;
-    
+
     @ManyToOne
     private Customer customer;
-    
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Product product;
-    
+
     private String name;
 
     public long getId() {
@@ -85,11 +85,11 @@ public class Account {
     public void setLoan(Integer loan) {
         this.loan = loan;
     }
-    
+
     public Product getProduct() {
         return product;
     }
-    
+
     public void setProduct(Product product) {
         this.product = product;
     }
@@ -97,7 +97,7 @@ public class Account {
     public Customer getCustomer() {
         return customer;
     }
-    
+
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }

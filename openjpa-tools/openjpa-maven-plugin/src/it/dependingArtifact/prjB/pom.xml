@@ -27,7 +27,7 @@
     <groupId>org.apache.openjpa.tools.openjpa-maven-plugin.testing</groupId>
     <artifactId>dependingProject-B</artifactId>
     <version>1.0-SNAPSHOT</version>
-    
+
     <description>
         This IT tests if JPA classes (in our case an Enum) in a depending artifact can properly
         be used by another artifact.

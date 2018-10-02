@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -120,27 +120,27 @@ public class QueryCacheStoreQuery
             return null;
 
         // get the cached data
-        QueryResult res = _cache.get(qk);       
+        QueryResult res = _cache.get(qk);
         if (res == null) {
             return null;
         }
-               
+
         // this if block is invoked if the evictOnTimestamp is set to true
         if (_cache instanceof AbstractQueryCache) {
             AbstractQueryCache qcache = (AbstractQueryCache) _cache;
             if (qcache.getEvictPolicy() == EvictPolicy.TIMESTAMP) {
                 Set<String> classNames = qk.getAcessPathClassNames();
-                List<String> keyList = new ArrayList<String>();      
+                List<String> keyList = new ArrayList<String>();
                 keyList.addAll(classNames);
 
-                List<Long> timestamps = 
+                List<Long> timestamps =
                     qcache.getAllEntityTimestamp(keyList);
                 long queryTS = res.getTimestamp();
                 if (timestamps != null) {
                     for (Long ts: timestamps) {
-                        // if this is true we have to evict the query 
+                        // if this is true we have to evict the query
                         // from cache
-                        if (queryTS <= ts) { 
+                        if (queryTS <= ts) {
                             qcache.remove(qk);
                             return null;
                         }
@@ -148,7 +148,7 @@ public class QueryCacheStoreQuery
                 }
             }
         }
-      
+
         if (res.isEmpty()) {
             return Collections.emptyList();
         }
@@ -303,10 +303,10 @@ public class QueryCacheStoreQuery
     public boolean supportsParameterDeclarations() {
         return _query.supportsParameterDeclarations();
     }
- 
+
     public Object evaluate(Object value, Object ob, Object[] params,
         OpenJPAStateManager sm) {
-        return _query.evaluate(value, ob, params, sm);         
+        return _query.evaluate(value, ob, params, sm);
     }
 
     /**
@@ -368,7 +368,7 @@ public class QueryCacheStoreQuery
             else
                 return rop;
         }
-        
+
         public QueryExpressions[] getQueryExpressions() {
             return _ex.getQueryExpressions();
         }
@@ -428,9 +428,9 @@ public class QueryCacheStoreQuery
         public void validate(StoreQuery q) {
             _ex.validate(unwrap(q));
         }
-        
+
         public void getRange(StoreQuery q, Object[] params, Range range) {
-            _ex.getRange(q, params, range); 
+            _ex.getRange(q, params, range);
         }
 
         public Object getOrderingValue(StoreQuery q, Object[] params,
@@ -458,7 +458,7 @@ public class QueryCacheStoreQuery
         public ResultShape<?> getResultShape(StoreQuery q) {
             return _ex.getResultShape(q);
         }
-        
+
         public String[] getProjectionAliases(StoreQuery q) {
             return _ex.getProjectionAliases(unwrap(q));
         }
@@ -490,11 +490,11 @@ public class QueryCacheStoreQuery
         public OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return _ex.getOrderedParameterTypes(unwrap(q));
         }
-        
+
         public LinkedMap getParameterTypes(StoreQuery q) {
             return _ex.getParameterTypes(unwrap(q));
         }
-        
+
         public Object[] toParameterArray(StoreQuery q, Map userParams) {
             return _ex.toParameterArray(q, userParams);
         }
@@ -519,7 +519,7 @@ public class QueryCacheStoreQuery
         private final boolean _proj;
         private final StoreContext _sctx;
         private final FetchConfiguration _fc;
-        
+
         public CachedList(QueryResult res, boolean proj, StoreContext ctx, FetchConfiguration fc) {
             _res = res;
             _proj = proj;

@@ -27,10 +27,10 @@
     <groupId>org.apache.openjpa.tools.openjpa-maven-plugin.testing</groupId>
     <artifactId>dependingProject-A</artifactId>
     <version>1.0-SNAPSHOT</version>
-   
+
     <description>
         This module defines a few Interfaces which includes Enums.
-        This makes problems with the PCEnhancer of OpenJPA-1.2.1 if they are not on the 
+        This makes problems with the PCEnhancer of OpenJPA-1.2.1 if they are not on the
         classpath.
     </description>
 

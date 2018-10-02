@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.embed;
@@ -31,15 +31,15 @@ public class EGeneric {
     @Id
     @Column(name="id")
     private Integer id = null;
-    
+
     @Basic @Column(name="longVal")
     private Long longVal = null;
-    
+
     @Basic @Column(name="strVal")
     private String strVal = null;
-    
+
     public EGeneric() {
-        
+
     }
 
     public Integer getId() {

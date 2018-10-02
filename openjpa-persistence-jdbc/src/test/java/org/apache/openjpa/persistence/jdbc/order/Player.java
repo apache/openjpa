@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -26,7 +26,7 @@ import javax.persistence.OrderColumn;
 
 @Entity
 public class Player extends Person {
-    
+
     private int playerNumber;
 
     @ManyToMany(mappedBy="playersTrained")
@@ -35,10 +35,10 @@ public class Player extends Person {
     @ManyToMany(mappedBy="playedIn")
     @OrderColumn(name="playedInOrder")
     private List<Game> gamesPlayedIn;
-    
-    public Player() {        
+
+    public Player() {
     }
-    
+
     public Player(String name, int number) {
         setName(name);
         this.playerNumber = number;
@@ -50,7 +50,7 @@ public class Player extends Person {
 
     public int getPlayerNumber() {
         return playerNumber;
-    }    
+    }
 
     public void setTrainers(List<Trainer> trainers) {
         this.trainers = trainers;

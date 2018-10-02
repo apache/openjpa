@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -36,19 +36,19 @@ public class DataStoreBasicEntity {
     @Version
     private Integer optLock;
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public BasicEntity getRel() { 
-        return rel; 
+    public BasicEntity getRel() {
+        return rel;
     }
 
-    public void setRel(BasicEntity rel) { 
-        this.rel = rel; 
+    public void setRel(BasicEntity rel) {
+        this.rel = rel;
     }
 }

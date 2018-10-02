@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -29,18 +29,18 @@ public class ColDefTestElement {
   @Id
   @GeneratedValue
   private int id;
-  
+
   @Basic
   private String name;
-  
 
-  public ColDefTestElement() {        
+
+  public ColDefTestElement() {
   }
-  
+
   public ColDefTestElement(String name) {
       this.name = name;
   }
-  
+
   public void setName(String name) {
       this.name = name;
   }
@@ -56,12 +56,12 @@ public class ColDefTestElement {
   public int getId() {
       return id;
   }
-  
+
   public boolean equals(Object obj) {
       if (obj instanceof ColDefTestElement) {
           ColDefTestElement bte = (ColDefTestElement)obj;
           return getId() == bte.getId() &&
-             bte.getName().equalsIgnoreCase(bte.getName());                
+             bte.getName().equalsIgnoreCase(bte.getName());
       }
       return false;
   }

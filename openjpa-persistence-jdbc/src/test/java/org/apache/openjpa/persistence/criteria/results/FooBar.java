@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.criteria.results;
 
 /**
  * A non-entity class for testing constructor expressions in query.
- * 
+ *
  * @author Pinaki Poddar
  *
  */

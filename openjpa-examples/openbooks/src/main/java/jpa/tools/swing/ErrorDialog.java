@@ -35,25 +35,25 @@ import javax.swing.JTextPane;
 
 /**
  * A dialog to display runtime error.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 @SuppressWarnings("serial")
 public class ErrorDialog extends JDialog {
     private static List<String> filters = Arrays.asList(
-            "java.awt.", 
-            "javax.swing.", 
+            "java.awt.",
+            "javax.swing.",
             "sun.reflect.",
             "java.util.concurrent.");
     private static Dimension MESSAGE_SIZE    = new Dimension(600,200);
     private static Dimension STACKTRACE_SIZE = new Dimension(600,300);
     private static Dimension TOTAL_SIZE      = new Dimension(600,500);
-    
-    
+
+
     static String NEWLINE = "\r\n";
     static String INDENT  = "    ";
-    
+
     private boolean      _showingDetails;
     private boolean      _isFiltering = true;
     private JComponent _message;
@@ -61,10 +61,10 @@ public class ErrorDialog extends JDialog {
     private JScrollPane  _details;
     private JTextPane    _stacktrace;
     private final Throwable _error;
-    
+
     /**
      * Creates a modal dialog to display the given exception message.
-     * 
+     *
      * @param t the exception to display
      */
     public ErrorDialog(Throwable t) {
@@ -74,10 +74,10 @@ public class ErrorDialog extends JDialog {
     public ErrorDialog(JComponent owner, Throwable t) {
         this(owner, null, t);
     }
-    
+
     /**
      * Creates a modal dialog to display the given exception message.
-     * 
+     *
      * @param owner if non-null, then the dialog is positioned (centered) w.r.t. this component
      * @param t the exception to display
      */
@@ -85,7 +85,7 @@ public class ErrorDialog extends JDialog {
         super();
         setTitle(t.getClass().getName());
         setModal(true);
-        if (icon != null && icon instanceof ImageIcon) 
+        if (icon != null && icon instanceof ImageIcon)
             setIconImage(((ImageIcon)icon).getImage());
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         _error = t;
@@ -96,11 +96,11 @@ public class ErrorDialog extends JDialog {
         pack();
         SwingHelper.position(this, owner);
     }
-    
+
     /**
-     * Creates the display with the top-level exception message 
+     * Creates the display with the top-level exception message
      * followed by a pane (that toggles) for detailed stack traces.
-     *  
+     *
      * @param t a non-null exception
      */
     JComponent createContent() {
@@ -129,7 +129,7 @@ public class ErrorDialog extends JDialog {
             }
         });
         JPanel messagePanel = new JPanel();
-      
+
         final JCheckBox filter = new JCheckBox("Filter stack traces");
         filter.setSelected(_isFiltering);
         filter.addActionListener(new ActionListener(){
@@ -151,16 +151,16 @@ public class ErrorDialog extends JDialog {
         messagePanel.add(_message, BorderLayout.CENTER);
         messagePanel.add(buttonPanel, BorderLayout.SOUTH);
         messagePanel.setPreferredSize(MESSAGE_SIZE);
-        
+
         JPanel main = new JPanel();
         main.setLayout(new BorderLayout());
         main.add(messagePanel, BorderLayout.NORTH);
         return main;
     }
-    
+
     /**
      * Creates a non-editable widget to display the error message.
-     * 
+     *
      */
     JComponent createErrorMessage(Throwable t) {
         String txt = t.getLocalizedMessage();
@@ -170,23 +170,23 @@ public class ErrorDialog extends JDialog {
         message.setText(txt);
         return message;
     }
-    
+
     /**
      * Creates a non-editable widget to display the detailed stack trace.
      */
     JScrollPane createDetailedMessage(Throwable t) {
         _stacktrace = new JTextPane();
         _stacktrace.setEditable(false);
-        JScrollPane pane = new JScrollPane(_stacktrace, 
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+        JScrollPane pane = new JScrollPane(_stacktrace,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        
+
         return pane;
     }
-    
+
     /**
      * Recursively print the stack trace on the given buffer.
-     */    
+     */
     StringBuilder generateStackTrace(Throwable t, StringBuilder buffer) {
         buffer.append(t.getClass().getName() + ": " + t.getMessage() + NEWLINE);
         buffer.append(toString(t.getStackTrace()));
@@ -196,7 +196,7 @@ public class ErrorDialog extends JDialog {
         }
         return buffer;
     }
-    
+
     StringBuilder toString(StackTraceElement[] traces) {
         StringBuilder error = new StringBuilder();
         for (StackTraceElement e : traces) {
@@ -207,7 +207,7 @@ public class ErrorDialog extends JDialog {
         }
         return error;
     }
-    
+
     /**
      * Affirms if the error messages from the given class name is to be suppressed.
      */
@@ -218,12 +218,12 @@ public class ErrorDialog extends JDialog {
         }
         return false;
     }
-    
+
     public static void main(String[] args) {
-        String m1 = "This is test error with very very very very very long line of error message that " 
+        String m1 = "This is test error with very very very very very long line of error message that "
             + " should not be in a single line. Another message string that shoul dbe split across word." +
             "The quick brown fox jumpled over the lazy dog";
-        String m2 = "This is another test error with very long line of error message that " 
+        String m2 = "This is another test error with very long line of error message that "
             + " should not be in a single line";
         Throwable nested = new NumberFormatException(m2);
         Throwable top = new IllegalArgumentException(m1, nested);

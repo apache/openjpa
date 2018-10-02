@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.test;
@@ -27,24 +27,24 @@ import junit.framework.AssertionFailedError;
 
 /**
  * Adds ability to run tests under combinations of options.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
-public abstract class CombinatorialPersistenceTestCase 
+public abstract class CombinatorialPersistenceTestCase
 	extends SQLListenerTestCase {
-	
+
 	protected static CombinatorialTestHelper helper;
-	
+
 	public void setUp(Object...props) {
 		super.setUp(getHelper().setCombinatorialOption(props));
 	}
-	
+
 	@Override
 	public int countTestCases() {
         return super.countTestCases() * getHelper().getCombinationSize();
 	}
-	   
+
     @Override
     public void runBare() throws Throwable {
     	Map<String, Throwable> errors = new HashMap<String, Throwable>();
@@ -64,7 +64,7 @@ public abstract class CombinatorialPersistenceTestCase
     			}
     		}
     	} while (getHelper().hasMoreCombination());
-    	
+
     	if (testResult.errorCount() + testResult.failureCount() > 0) {
     		if (!failures.isEmpty())
                 System.err.println(failures.size() + " assertion failures");
@@ -85,15 +85,15 @@ public abstract class CombinatorialPersistenceTestCase
                 + "Stack trace for each error/failure is printed on console");
     	}
     }
-    
-    
-   
+
+
+
     public static CombinatorialTestHelper getHelper() {
 		if (helper == null)
 			helper = new CombinatorialTestHelper();
 		return helper;
     }
-    
+
     public void assertSQL(String sqlExp) {
     	try {
     		super.assertSQL(sqlExp);

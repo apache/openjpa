@@ -40,7 +40,7 @@ public class TestNoCascadeOneToOneMerge
     private int b2_id;
 
     public void setUp() {
-        setUp(SimpleA.class, SimpleRef.class, SimpleB.class, SimpleC.class, 
+        setUp(SimpleA.class, SimpleRef.class, SimpleB.class, SimpleC.class,
             "openjpa.Compatibility", "FlushBeforeDetach=true," +
             "CopyOnDetach=true",
             CLEAR_TABLES);

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -61,12 +61,12 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
  * Factory for Criteria query expressions.
- * 
+ *
  * Acts as an adapter to OpenJPA ExpressionFactory.
- * 
+ *
  * @author Pinaki Poddar
  * @author Fay Wang
- * 
+ *
  * @since 2.0.0
  *
  */
@@ -79,7 +79,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
         _model = model;
         return this;
     }
-    
+
     public Metamodel getMetamodel() {
         return _model;
     }
@@ -89,7 +89,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
         CriteriaQueryImpl<?> c = (CriteriaQueryImpl<?>) parsed;
         return c.getQueryExpressions(factory);
     }
-    
+
     public Value[] eval(String[] vals, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate) {
         return null;
@@ -98,7 +98,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     public String getLanguage() {
         return LANG_CRITERIA;
     }
-    
+
     /**
      *  Create a Criteria query object with the specified result type.
      *  @param resultClass  type of the query result
@@ -109,7 +109,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     }
 
     /**
-     *  Create a Criteria query object that returns a tuple of 
+     *  Create a Criteria query object that returns a tuple of
      *  objects as its result.
      *  @return query object
      */
@@ -241,7 +241,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
         return new Expressions.Diff<N>(x, y);
     }
 
-    public <N extends Number> Expression<N> diff(N x, 
+    public <N extends Number> Expression<N> diff(N x,
         Expression<? extends N> y) {
         return new Expressions.Diff<N>(x, y);
     }
@@ -382,7 +382,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     public Predicate isTrue(Expression<Boolean> x) {
         if (x instanceof PredicateImpl) {
-            PredicateImpl predicate = (PredicateImpl)x; 
+            PredicateImpl predicate = (PredicateImpl)x;
             if (predicate.isEmpty()) {
                 return predicate.getOperator() == BooleanOperator.AND ? PredicateImpl.TRUE() : PredicateImpl.FALSE();
             }
@@ -420,7 +420,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     }
 
-    public <Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, 
+    public <Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x,
         Expression<? extends Y> y) {
         return new Expressions.LessThanEqual(x,y);
     }
@@ -572,10 +572,10 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     /**
      * Construct a ParameterExpression with a null name as key.
      * The name of this parameter will be assigned automatically
-     * when this parameter expression is 
+     * when this parameter expression is
      * {@linkplain CriteriaQueryImpl#registerParameter(ParameterExpressionImpl)
      * registered} in a Criteriaquery during tree traversal.
-     * 
+     *
      * @see ParameterExpressionImpl#assignAutoName(String)
      */
     public <T> ParameterExpression<T> parameter(Class<T> paramClass) {
@@ -676,11 +676,11 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     public <N extends Number> Expression<N> sum(N x, Expression<? extends N> y) {
         return new Expressions.Sum<N>(x,y);
     }
-    
+
     public Expression<Long> sumAsLong(Expression<Integer> x) {
         return sum(x).as(Long.class);
     }
-    
+
     public Expression<Double> sumAsDouble(Expression<Float> x) {
         return sum(x).as(Double.class);
     }
@@ -757,7 +757,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     public Predicate isNull(Expression<?> x) {
         return new Expressions.IsNull((ExpressionImpl<?> )x);
     }
-    
+
     public <T> Expression<T> nullLiteral(Class<T> t) {
         return new Expressions.Constant<T>(t, (T)null);
     }
@@ -773,10 +773,10 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     public CompoundSelection<Tuple> tuple(Selection<?>... selections) {
         return new CompoundSelections.Tuple(selections);
     }
-    
+
     /**
      * Create a predicate based upon the attribute values of a given
-     * "example" entity instance. The predicate is the conjunction 
+     * "example" entity instance. The predicate is the conjunction
      * or disjunction of predicates for subset of attribute of the entity.
      * <br>
      * By default, all the singular entity attributes (the basic, embedded
@@ -784,17 +784,17 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
      * value for the example instance and are not an identity or version
      * attribute are included. The comparable attributes can be further
      * pruned by specifying variable list of attributes as the final argument.
-     * 
+     *
      * @param example an instance of an entity class
-     * 
+     *
      * @param style specifies various aspects of comparison such as whether
-     * non-null attribute values be included, how string-valued attribute be 
+     * non-null attribute values be included, how string-valued attribute be
      * compared, whether the individual attribute based predicates are ANDed
      * or ORed etc.
-     * 
+     *
      * @param excludes list of attributes that are excluded from comparison.
-     *  
-     * @return a predicate 
+     *
+     * @return a predicate
      */
     public <T> Predicate qbe(From<?, T> from, T example, ComparisonStyle style, Attribute<?,?>... excludes) {
         if (from == null)
@@ -803,24 +803,24 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
             return from.isNull();
         }
         ManagedType<T> type = (ManagedType<T>)_model.managedType(example.getClass());
-        return new CompareByExample<T>(this, type, from, example, 
+        return new CompareByExample<T>(this, type, from, example,
             style == null ? qbeStyle() : style, excludes);
     }
-    
+
     public <T> Predicate qbe(From<?, T> from, T example, ComparisonStyle style) {
         return qbe(from, example, style, null);
     }
-    
+
     public <T> Predicate qbe(From<?, T> from, T example, Attribute<?,?>... excludes) {
         return qbe(from, example, qbeStyle(), excludes);
     }
-    
+
     public <T> Predicate qbe(From<?, T> from, T example) {
         return qbe(from, example, qbeStyle(), null);
     }
-    
+
     /**
-     * Create a style to tune different aspects of comparison by example. 
+     * Create a style to tune different aspects of comparison by example.
      */
     public ComparisonStyle qbeStyle() {
         return new ComparisonStyle.Default();

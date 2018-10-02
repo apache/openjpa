@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.example.gallery.constraint;
 
@@ -33,7 +33,7 @@ import static org.apache.openjpa.example.gallery.ImageType.GIF;
 import static org.apache.openjpa.example.gallery.ImageType.JPEG;
 
 /**
- * Attribute-level annotation used to specify an image content constraint.  Uses 
+ * Attribute-level annotation used to specify an image content constraint.  Uses
  * ImageContentValidator to perform the validation.
  */
 @Documented

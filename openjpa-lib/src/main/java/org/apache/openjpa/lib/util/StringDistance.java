@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -119,7 +119,7 @@ public class StringDistance {
         String minString = null;
         int minValue = Integer.MAX_VALUE;
 
-        for(String candidate : candidates) { 
+        for(String candidate : candidates) {
             int distance = getLevenshteinDistance(str, candidate);
             if (distance < minValue) {
                 minValue = distance;

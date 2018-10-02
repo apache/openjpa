@@ -37,7 +37,7 @@ import com.google.gwt.user.client.ui.TreeItem;
  * CSS Style names
  * <LI>errorDialog-caption:
  * <LI>errorDialog-message:
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -49,16 +49,16 @@ public class ErrorDialog extends PopupPanel {
     private static ErrorDialog _instance = new ErrorDialog();
     private static final String STYLE_CAPTION = "errorDialog-caption";
     private static final String STYLE_MESSAGE = "errorDialog-message";
-    
+
     private ErrorDialog() {
         super(false, true);
         setAnimationEnabled(true);
         setGlassEnabled(true);
         setVisible(false);
-        
+
         header = new HTML();
         header.addStyleName(STYLE_CAPTION);
-        
+
         close = new Button("x");
         close.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -70,7 +70,7 @@ public class ErrorDialog extends PopupPanel {
         scroll.setSize("600px", "200px");
         scroll.add(tree);
         DOM.setStyleAttribute(scroll.getElement(), "border", "1px");
-        
+
         table = new FlexTable();
         table.setWidget(0, 0, header);
         table.setWidget(0, 1, close);
@@ -79,18 +79,18 @@ public class ErrorDialog extends PopupPanel {
         table.getCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
         setWidget(table);
    }
-    
+
     public static void showError(Throwable t) {
         _instance.populate(t);
         _instance.center();
     }
-    
+
     private void populate(Throwable t) {
         header.setHTML(t.getClass().getName());
         tree.clear();
         tree = addStackTrace(t);
     }
-    
+
     private Tree addStackTrace(Throwable t) {
         TreeItem root = new TreeItem(t.getClass().getName());
         root.addItem(createMessageLabel(t));
@@ -105,13 +105,13 @@ public class ErrorDialog extends PopupPanel {
         }
         return addStackTrace(cause);
     }
-    
+
     Label createMessageLabel(Throwable t) {
         HTML label = new HTML(t.getMessage());
         label.addStyleName(STYLE_MESSAGE);
         return label;
     }
-    
+
     Label createStackTrace(StackTraceElement trace) {
         HTML label = new HTML(trace.toString());
         label.addStyleName(STYLE_MESSAGE);

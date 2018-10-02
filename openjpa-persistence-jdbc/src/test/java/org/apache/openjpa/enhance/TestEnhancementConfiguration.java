@@ -31,7 +31,7 @@ public class TestEnhancementConfiguration
         setUp("openjpa.RuntimeUnenhancedClasses", "unsupported",
             UnenhancedFieldAccess.class, CLEAR_TABLES);
     }
-    
+
     public void testEnhancementConfiguration() {
         try {
             assertFalse(ImplHelper.isManagedType(emf.getConfiguration(),

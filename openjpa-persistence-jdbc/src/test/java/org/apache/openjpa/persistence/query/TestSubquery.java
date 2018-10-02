@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -45,13 +45,13 @@ public class TestSubquery
 
     static String[]  querys = new String[] {
         "select c from Customer c where EXISTS" +
-            " (select o from  in(c.orders)  o)" , 
+            " (select o from  in(c.orders)  o)" ,
         "select c from Customer c where EXISTS" +
-            " (select o from c.orders o)" , 
+            " (select o from c.orders o)" ,
         "select c from Customer c where NOT EXISTS" +
-            " (select o from in (c.orders) o)" , 
+            " (select o from in (c.orders) o)" ,
         "select c from Customer c where NOT EXISTS" +
-            " (select o from  c.orders o)" , 
+            " (select o from  c.orders o)" ,
         "select o1.oid from Order o1 where o1.oid in " +
             " (select distinct o.oid from OrderItem i, Order o" +
             " where i.quantity > 10 and o.amount > 1000 and i.lid = o.oid)" ,
@@ -77,7 +77,7 @@ public class TestSubquery
             " (select max(o.amount) from Order o) and" +
             " (select avg(o.amount) from Order o) ",
         "select o.oid from Order o where o.amount >" +
-            " (select sum(o2.amount) from Customer c, in(c.orders) o2) ",   
+            " (select sum(o2.amount) from Customer c, in(c.orders) o2) ",
         "select o.oid from Order o where o.amount between" +
             " (select avg(o2.amount) from Customer c, in(c.orders) o2)" +
             " and (select min(o2.amount) from Customer c, in(c.orders) o2)",
@@ -94,7 +94,7 @@ public class TestSubquery
             "AND m2.datePublished = "+
             "(SELECT MAX(m3.datePublished) "+
             "FROM Magazine m3 "+
-            "WHERE m3.idPublisher.id = p.id)) ", 
+            "WHERE m3.idPublisher.id = p.id)) ",
         "select o from Order o where o.amount > " +
             " (select count(o) from Order o)",
         "select o from Order o where o.amount > " +
@@ -103,56 +103,56 @@ public class TestSubquery
          + " (select o2 from c.orders o2 where o2 = o)",
     };
 
-    static String[]  querys_jpa20 = new String[] {        
+    static String[]  querys_jpa20 = new String[] {
         "select o.oid from Order o where o.delivered =" +
             " (select " +
-            "   CASE WHEN o2.amount > 10 THEN true" + 
+            "   CASE WHEN o2.amount > 10 THEN true" +
             "     WHEN o2.amount = 10 THEN false " +
             "     ELSE false " +
             "     END " +
             " from Order o2" +
             " where o.customer.cid.id = o2.customer.cid.id)",
- 
+
         "select o1.oid from Order o1 where o1.amount > " +
             " (select o.amount*0.8 from OrderItem i, Order o" +
             " where i.quantity > 10 and o.amount > 1000 and i.lid = o.oid)",
-            
+
         "select o.oid from Order o where o.customer.name =" +
             " (select substring(o2.customer.name, 3) from Order o2" +
             " where o.customer.cid.id = o2.customer.cid.id)",
-            
+
         "select o.oid from Order o where o.orderTs >" +
             " (select CURRENT_TIMESTAMP from o.lineitems i)",
-            
+
         "select o.oid from Order o where o.amount >" +
             " (select SQRT(o.amount) from Order o where o.delivered = true)",
-            
+
         "select o.oid from Order o where o.customer.name in" +
             " (select CONCAT(o.customer.name, 'XX') from Order o" +
-            " where o.amount > 10)",  
-            
+            " where o.amount > 10)",
+
         "select c from Customer c where c.creditRating =" +
             " (select " +
-            "   CASE WHEN o2.amount > 10 THEN " + 
+            "   CASE WHEN o2.amount > 10 THEN " +
             "org.apache.openjpa.persistence.query.Customer$CreditRating.POOR" +
-            "     WHEN o2.amount = 10 THEN " + 
+            "     WHEN o2.amount = 10 THEN " +
             "org.apache.openjpa.persistence.query.Customer$CreditRating." +
             "GOOD " +
-            "     ELSE " + 
+            "     ELSE " +
             "org.apache.openjpa.persistence.query." +
             "Customer$CreditRating.EXCELLENT " +
             "     END " +
             " from Order o2" +
             " where c.cid.id = o2.customer.cid.id)",
 
-        "select c from Customer c " + 
-            "where c.creditRating = (select COALESCE (c1.creditRating, " + 
+        "select c from Customer c " +
+            "where c.creditRating = (select COALESCE (c1.creditRating, " +
             "org.apache.openjpa.persistence.query." +
             "Customer$CreditRating.POOR) " +
-            "from Customer c1 where c1.name = 'Famzy') order by c.name DESC", 
-            
-        "select c from Customer c " + 
-            "where c.creditRating = (select NULLIF (c1.creditRating, " + 
+            "from Customer c1 where c1.name = 'Famzy') order by c.name DESC",
+
+        "select c from Customer c " +
+            "where c.creditRating = (select NULLIF (c1.creditRating, " +
             "org.apache.openjpa.persistence.query." +
             "Customer$CreditRating.POOR) " +
             "from Customer c1 where c1.name = 'Famzy') order by c.name DESC",
@@ -160,14 +160,14 @@ public class TestSubquery
 
     static String[] updates = new String[] {
         "update Order o set o.amount = 1000 where o.customer.name = " +
-            " (select max(o2.customer.name) from Order o2 " + 
-            " where o.customer.cid.id = o2.customer.cid.id)",  
+            " (select max(o2.customer.name) from Order o2 " +
+            " where o.customer.cid.id = o2.customer.cid.id)",
     };
 
     static String[]  querys2 = new String[] {
             // 0
         "select o1.oid, c.name from Order o1, Customer c" +
-            " where o1.customer.name = " + 
+            " where o1.customer.name = " +
             " any(select o2.customer.name from in(c.orders) o2)",
             // 1
         "select o1.oid, c.name from Order o1, Customer c" +
@@ -179,11 +179,11 @@ public class TestSubquery
             // 3
         "select DISTINCT c.name FROM Customer c, IN(c.orders) co " +
             "WHERE co.amount > ALL " +
-            "(Select o.amount FROM Order o, in(o.lineitems) l WHERE l.quantity > 2)", 
+            "(Select o.amount FROM Order o, in(o.lineitems) l WHERE l.quantity > 2)",
             // 4
         "select distinct c.name FROM Customer C, IN(C.orders) co " +
             "WHERE co.amount < ALL " +
-            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity > 2)", 
+            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity > 2)",
             //5
         "select c.name FROM Customer c, IN(c.orders) co " +
             "WHERE co.amount <= ALL " +
@@ -236,7 +236,7 @@ public class TestSubquery
     public void testSubquery() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
-        
+
         EntityManager em = emf.createEntityManager();
         for (int i = 0; i < querys_jpa20.length; i++) {
             String q = querys_jpa20[i];
@@ -252,13 +252,13 @@ public class TestSubquery
         }
 
         // MySQL throws exception for the jpql in the updates:
-        // "You can't specify target table 'xxx' for update in FROM clause". The MySQL manual mentions 
-        // this at the bottom of the UPDATE documentation(http://dev.mysql.com/doc/refman/5.0/en/update.html): 
+        // "You can't specify target table 'xxx' for update in FROM clause". The MySQL manual mentions
+        // this at the bottom of the UPDATE documentation(http://dev.mysql.com/doc/refman/5.0/en/update.html):
         // Currently, you cannot update a table and select from the same table in a subquery.
-        
+
         if (dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary)
             return;
-        
+
         em.getTransaction().begin();
         for (int i = 0; i < updates.length; i++) {
             int updateCount = em.createQuery(updates[i]).executeUpdate();
@@ -268,14 +268,14 @@ public class TestSubquery
         em.getTransaction().rollback();
         em.close();
     }
-    
+
     /**
-     * Verify a sub query can contain MAX and additional date comparisons 
-     * without losing the correct alias information. This sort of query 
-     * originally caused problems for DBDictionaries which used DATABASE 
+     * Verify a sub query can contain MAX and additional date comparisons
+     * without losing the correct alias information. This sort of query
+     * originally caused problems for DBDictionaries which used DATABASE
      * syntax.
      */
-    public void testSubSelectMaxDateRange() {        
+    public void testSubSelectMaxDateRange() {
         String query =
             "SELECT e,d from Employee e, Dependent d "
                 + "WHERE e.empId = :empid "

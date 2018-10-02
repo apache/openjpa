@@ -21,13 +21,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /**
  * A specialized table to display statistics of queries.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 @SuppressWarnings("serial")
 public class PreparedQueryViewer extends JTable {
-    
+
     public PreparedQueryViewer(OpenJPAEntityManagerFactory emf) {
         super(new QueryStatisticsModel(((OpenJPAEntityManagerFactorySPI)emf).getConfiguration()
                 .getQuerySQLCacheInstance().getStatistics()));

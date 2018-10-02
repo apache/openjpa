@@ -14,18 +14,18 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
- * An expression resulting from operation on a query itself. Can be used as a 
+ * An expression resulting from operation on a query itself. Can be used as a
  * subquery clause in a parent query.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
-abstract class QueryExpression extends UnaryOperatorExpression 
+abstract class QueryExpression extends UnaryOperatorExpression
     implements Subquery {
     public QueryExpression(QueryDefinitionImpl q, UnaryFunctionalOperator op) {
 		super(q, op);

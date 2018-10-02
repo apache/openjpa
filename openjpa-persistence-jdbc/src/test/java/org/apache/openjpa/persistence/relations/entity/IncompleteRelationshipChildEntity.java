@@ -31,11 +31,11 @@ import javax.persistence.Entity;
 @Entity
 public class IncompleteRelationshipChildEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Embeddable
     public static class IncompleteRelationshipChildEntityPk implements Serializable {
         private static final long serialVersionUID = 1L;
-        
+
         @Column(name = "DISCOUNT", nullable = false, length = 120)
         protected String discount;
         @Column(name = "CLIENT_ID", nullable = false, length = 35)

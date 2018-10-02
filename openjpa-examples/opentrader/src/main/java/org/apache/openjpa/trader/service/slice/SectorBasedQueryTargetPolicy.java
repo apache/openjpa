@@ -29,7 +29,7 @@ import org.apache.openjpa.trader.service.TradingService;
 /**
  * An example of a {@link QueryTargetPolicy query target policy} that directs the query based
  * on its parameters.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -37,7 +37,7 @@ public class SectorBasedQueryTargetPolicy implements QueryTargetPolicy {
 
 	@Override
 	public String[] getTargets(String query, Map<Object, Object> params,
-			String language, List<String> slices, Object context) {        
+			String language, List<String> slices, Object context) {
 		Stock stock = null;
 		if (TradingService.MATCH_ASK.equals(query)) {
 			stock = ((Tradable)params.get("ask")).getStock();

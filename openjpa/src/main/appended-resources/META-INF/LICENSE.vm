@@ -39,7 +39,7 @@ openjpa-persistence -
   persistence-xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd)
   persistence_2_0-xsd.rsrc - CDDL 1.0 - included in the openjpa jar, taken from:
-    http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd). 
+    http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd).
 ===========================
 
 COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0

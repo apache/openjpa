@@ -14,36 +14,36 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
  * Else clause in a Case Statement.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class ElseExpression extends ExpressionImpl {
 	private final CaseExpressionImpl _caseClause;
 	private final Expression _elseClause;
-	
+
 	public ElseExpression(CaseExpressionImpl owner, Expression op) {
 		_caseClause = owner;
 		_elseClause = op;
 	}
-	
+
 	@Override
 	public String asExpression(AliasContext ctx) {
-		return ((Visitable)_caseClause).asExpression(ctx) 
-		    + " ELSE " + ((Visitable)_elseClause).asExpression(ctx) 
+		return ((Visitable)_caseClause).asExpression(ctx)
+		    + " ELSE " + ((Visitable)_elseClause).asExpression(ctx)
 		    + " END";
 	}
-	
+
 	@Override
 	public String asProjection(AliasContext ctx) {
-		return ((Visitable)_caseClause).asProjection(ctx) 
-	    + " ELSE " + ((Visitable)_elseClause).asProjection(ctx) 
+		return ((Visitable)_caseClause).asProjection(ctx)
+	    + " ELSE " + ((Visitable)_elseClause).asProjection(ctx)
 	    + " END";
 	}
 }

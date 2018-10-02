@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -134,7 +134,7 @@ public class PersistenceMetaDataDefaults
     private Boolean _isNonDefaultMappingAllowed = null;
     private String _defaultSchema;
     private Boolean _isCascadePersistPersistenceUnitDefaultEnabled = null;
-    
+
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
             CALLBACK_FAIL_FAST);
@@ -149,7 +149,7 @@ public class PersistenceMetaDataDefaults
     (FieldMetaData fmd, Member member) {
         return getPersistenceStrategy(fmd, member, false);
     }
-    
+
     /**
      * Return the code for the strategy of the given member. Return null if
      * no strategy.
@@ -233,9 +233,9 @@ public class PersistenceMetaDataDefaults
             return BASIC;
         return null;
     }
-    
+
     /**
-     * Auto-configuration method for the default access type of base classes 
+     * Auto-configuration method for the default access type of base classes
      * with ACCESS_UNKNOWN
      */
     public void setDefaultAccessType(String type) {
@@ -244,7 +244,7 @@ public class PersistenceMetaDataDefaults
         else if ("FIELD".equals(type.toUpperCase(Locale.ENGLISH)))
             setDefaultAccessType(AccessCode.FIELD);
         else
-        	throw new IllegalArgumentException(_loc.get("access-invalid", 
+        	throw new IllegalArgumentException(_loc.get("access-invalid",
         	    type).toString());
     }
 
@@ -252,21 +252,21 @@ public class PersistenceMetaDataDefaults
      * Populates the given class metadata. The access style determines which
      * field and/or getter method will contribute as the persistent property
      * of the given class. If the given access is unknown, then the access
-     * type is to be determined at first. 
-     * 
+     * type is to be determined at first.
+     *
      * @see #determineAccessType(ClassMetaData)
      */
     @Override
     public void populate(ClassMetaData meta, int access) {
         populate(meta, access, false);
     }
-    
+
     /**
      * Populates the given class metadata. The access style determines which
      * field and/or getter method will contribute as the persistent property
      * of the given class. If the given access is unknown, then the access
-     * type is to be determined at first. 
-     * 
+     * type is to be determined at first.
+     *
      * @see #determineAccessType(ClassMetaData)
      */
     @Override
@@ -298,7 +298,7 @@ public class PersistenceMetaDataDefaults
         vmd.setCascadeAttach(ValueMetaData.CASCADE_NONE);
         vmd.setCascadeDetach(ValueMetaData.CASCADE_NONE);
     }
-    
+
     ClassMetaData getCachedSuperclassMetaData(ClassMetaData meta) {
     	if (meta == null)
     		return null;
@@ -317,13 +317,13 @@ public class PersistenceMetaDataDefaults
     /**
      * Recursive helper to determine access type based on annotation placement
      * on members for the given class without an explicit access annotation.
-     * 
-     * @return must return a not-unknown access code 
+     *
+     * @return must return a not-unknown access code
      */
     private int determineAccessType(ClassMetaData meta) {
     	if (meta == null)
     		return AccessCode.UNKNOWN;
-        if (meta.getDescribedType().isInterface()) // managed interfaces 
+        if (meta.getDescribedType().isInterface()) // managed interfaces
         	return AccessCode.PROPERTY;
     	if (!AccessCode.isUnknown(meta))
     		return meta.getAccessType();
@@ -334,14 +334,14 @@ public class PersistenceMetaDataDefaults
     	            meta.getRepository().getConfiguration());
     	if (!AccessCode.isUnknown(access))
     		return access;
-    	
+
     	ClassMetaData sup = getCachedSuperclassMetaData(meta);
     	ClassMetaData tmpSup = sup;
     	while (tmpSup != null && tmpSup.isExplicitAccess()) {
             tmpSup = getCachedSuperclassMetaData(tmpSup);
             if (tmpSup != null) {
                 sup = tmpSup;
-            }    	    
+            }
     	}
     	if (sup != null && !AccessCode.isUnknown(sup))
     		return sup.getAccessType();
@@ -349,12 +349,12 @@ public class PersistenceMetaDataDefaults
         trace(meta, _loc.get("access-default", meta, AccessCode.toClassString(getDefaultAccessType())));
         return getDefaultAccessType();
     }
-    
+
     /**
-     * Determines the access type for the given class by placement of 
+     * Determines the access type for the given class by placement of
      * annotations on field or getter method. Does not consult the
      * super class.
-     * 
+     *
      * Annotation can be placed on either fields or getters but not on both.
      * If no field or getter is annotated then UNKNOWN access code is returned.
      */
@@ -379,48 +379,48 @@ public class PersistenceMetaDataDefaults
         List<Method> getters = filter(methods, getterFilter);
         if (fields.isEmpty() && getters.isEmpty())
         	return AccessCode.EMPTY;
-        
+
         fields = filter(fields, annotatedFilter);
         getters = filter(getters, annotatedFilter);
-        
+
         List<Method> setters = filter(methods, setterFilter);
         getters =  matchGetterAndSetter(getters, setters);
-        
+
         boolean mixed = !fields.isEmpty() && !getters.isEmpty();
         if (mixed)
-        	throw new UserException(_loc.get("access-mixed", 
+        	throw new UserException(_loc.get("access-mixed",
         		cls, toFieldNames(fields), toMethodNames(getters)));
         if (!fields.isEmpty()) {
         	return AccessCode.FIELD;
-        } 
+        }
         if (!getters.isEmpty()) {
         	return AccessCode.PROPERTY;
-        } 
+        }
         return AccessCode.UNKNOWN;
     }
-    
+
     /**
      * Explicit access type, if any, is generally detected by the parser. This
      * is only used for metadata of an embeddable type which is encountered
      * as a field during some other owning entity.
-     * 
+     *
      * @see ValueMetaData#addEmbeddedMetaData()
      */
     private int determineExplicitAccessType(Class<?> cls) {
         Access access = cls.getAnnotation(Access.class);
-        return access == null ? AccessCode.UNKNOWN : ((access.value() == 
+        return access == null ? AccessCode.UNKNOWN : ((access.value() ==
             AccessType.FIELD ? AccessCode.FIELD : AccessCode.PROPERTY) |
             AccessCode.EXPLICIT);
     }
-    
+
     /**
      * Matches the given getters with the given setters. Removes the getters
      * that do not have a corresponding setter.
      */
-    private List<Method> matchGetterAndSetter(List<Method> getters,  
+    private List<Method> matchGetterAndSetter(List<Method> getters,
     		List<Method> setters) {
         Collection<Method> unmatched =  new ArrayList<Method>();
-       
+
         for (Method getter : getters) {
             String getterName = getter.getName();
             Class<?> getterReturnType = getter.getReturnType();
@@ -445,39 +445,39 @@ public class PersistenceMetaDataDefaults
     }
 
     /**
-     * Gets the fields that are possible candidate for being persisted. The  
-     * result depends on the current access style of the given class. 
+     * Gets the fields that are possible candidate for being persisted. The
+     * result depends on the current access style of the given class.
      */
     List<Field> getPersistentFields(ClassMetaData meta, boolean ignoreTransient) {
     	boolean explicit = meta.isExplicitAccess();
     	boolean unknown  = AccessCode.isUnknown(meta);
     	boolean isField  = AccessCode.isField(meta);
-    	
+
     	if (explicit || unknown || isField) {
     		Field[] fields = AccessController.doPrivileged(J2DoPrivHelper.
                 getDeclaredFieldsAction(meta.getDescribedType()));
-    		
-        	return filter(fields, fieldFilter, 
-        	    ignoreTransient ? null : nonTransientFilter, 
-        		unknown || isField  ? null : annotatedFilter, 
+
+        	return filter(fields, fieldFilter,
+        	    ignoreTransient ? null : nonTransientFilter,
+        		unknown || isField  ? null : annotatedFilter,
         	    explicit ? (isField ? null : fieldAccessFilter) : null);
-    	} 
+    	}
     	return Collections.EMPTY_LIST;
     }
-    
+
     /**
-     * Gets the methods that are possible candidate for being persisted. The  
-     * result depends on the current access style of the given class. 
+     * Gets the methods that are possible candidate for being persisted. The
+     * result depends on the current access style of the given class.
      */
     List<Method> getPersistentMethods(ClassMetaData meta, boolean ignoreTransient) {
     	boolean explicit = meta.isExplicitAccess();
     	boolean unknown  = AccessCode.isUnknown(meta.getAccessType());
     	boolean isProperty  = AccessCode.isProperty(meta.getAccessType());
-    	
+
     	if (explicit || unknown || isProperty) {
     		Method[] publicMethods = AccessController.doPrivileged(
               J2DoPrivHelper.getDeclaredMethodsAction(meta.getDescribedType()));
-        
+
             /*
              * OpenJPA 1.x permitted private accessor properties to be persistent.  This is
              * contrary to the JPA 1.0 specification, which states that persistent
@@ -488,26 +488,26 @@ public class PersistenceMetaDataDefaults
             getterFilter.setIncludePrivate(
                 meta.getRepository().getConfiguration().getCompatibilityInstance().getPrivatePersistentProperties());
 
-            List<Method> getters = filter(publicMethods, methodFilter, 
-                getterFilter, 
-                ignoreTransient ? null : nonTransientFilter, 
-        		unknown || isProperty ? null : annotatedFilter, 
+            List<Method> getters = filter(publicMethods, methodFilter,
+                getterFilter,
+                ignoreTransient ? null : nonTransientFilter,
+        		unknown || isProperty ? null : annotatedFilter,
                 explicit ? (isProperty ? null : propertyAccessFilter) : null);
-            
+
             List<Method> setters = filter(publicMethods, setterFilter);
             return getters = matchGetterAndSetter(getters, setters);
     	}
-        
+
     	return Collections.EMPTY_LIST;
     }
-     
+
     /**
      * Gets the members that are backing members for attributes being persisted.
-     * Unlike {@linkplain #getPersistentFields(ClassMetaData)} and 
-     * {@linkplain #getPersistentMethods(ClassMetaData)} which returns 
+     * Unlike {@linkplain #getPersistentFields(ClassMetaData)} and
+     * {@linkplain #getPersistentMethods(ClassMetaData)} which returns
      * <em>possible</em> candidates, the result of this method is definite.
-     * 
-     * Side-effect of this method is if the given class metadata has 
+     *
+     * Side-effect of this method is if the given class metadata has
      * no access type set, this method will set it.
      */
     @Override
@@ -515,13 +515,13 @@ public class PersistenceMetaDataDefaults
     	List<Member> members = new ArrayList<Member>();
     	List<Field> fields   = getPersistentFields(meta, ignoreTransient);
     	List<Method> getters = getPersistentMethods(meta, ignoreTransient);
-    	
+
     	boolean isMixed = !fields.isEmpty() && !getters.isEmpty();
     	boolean isEmpty = fields.isEmpty() && getters.isEmpty();
 
     	boolean explicit    = meta.isExplicitAccess();
     	boolean unknown     = AccessCode.isUnknown(meta.getAccessType());
-    	
+
     	if (isEmpty) {
     		warn(meta, _loc.get("access-empty", meta));
     		return Collections.EMPTY_LIST;
@@ -548,18 +548,18 @@ public class PersistenceMetaDataDefaults
     	}
     	return members;
     }
-    
+
     void assertNoDuplicate(List<Field> fields, List<Method> getters) {
-    	
+
     }
-    
+
     void error(ClassMetaData meta, Localizer.Message message) {
     	Log log = meta.getRepository().getConfiguration()
     		.getLog(OpenJPAConfiguration.LOG_RUNTIME);
     	log.error(message.toString());
     	throw new UserException(message.toString());
     }
-    
+
     void warn(ClassMetaData meta, Localizer.Message message) {
     	Log log = meta.getRepository().getConfiguration()
 		.getLog(OpenJPAConfiguration.LOG_RUNTIME);
@@ -586,31 +586,31 @@ public class PersistenceMetaDataDefaults
         String name) {
         return isDefaultPersistent(meta, member, name, false);
     }
-    
+
     protected boolean isDefaultPersistent(ClassMetaData meta, Member member,
         String name, boolean ignoreTransient) {
         int mods = member.getModifiers();
         if (Modifier.isTransient(mods))
             return false;
-        int access = meta.getAccessType();        
-        
+        int access = meta.getAccessType();
+
         if (member instanceof Field) {
-            // If mixed or unknown, default property access, keep explicit 
+            // If mixed or unknown, default property access, keep explicit
             // field members
             if (AccessCode.isProperty(access)) {
                 if (!isAnnotatedAccess(member, AccessType.FIELD))
                     return false;
             }
-        }        
+        }
         else if (member instanceof Method) {
             // If mixed or unknown, field default access, keep explicit property
             // members
             if (AccessCode.isField(access)) {
                 if (!isAnnotatedAccess(member, AccessType.PROPERTY))
                     return false;
-            }            
+            }
             try {
-                String setterName; 
+                String setterName;
                 if (member.getName().startsWith("is")) {
                     setterName = "set" + member.getName().substring(2);
                 } else {
@@ -651,7 +651,7 @@ public class PersistenceMetaDataDefaults
     }
 
     /**
-     * May be used to determine if member is annotated with the specified 
+     * May be used to determine if member is annotated with the specified
      * access type.
      * @param member class member
      * @param type expected access type
@@ -661,12 +661,12 @@ public class PersistenceMetaDataDefaults
     private boolean isAnnotatedAccess(Member member, AccessType type) {
     	if (member == null)
     		return false;
-        Access anno = 
+        Access anno =
             AccessController.doPrivileged(J2DoPrivHelper
-                .getAnnotationAction((AnnotatedElement)member, 
+                .getAnnotationAction((AnnotatedElement)member,
                 Access.class));
         return anno != null && anno.value() == type;
-    }    
+    }
 
     private boolean isAnnotated(Member member) {
     	return member != null && member instanceof AnnotatedElement
@@ -679,10 +679,10 @@ public class PersistenceMetaDataDefaults
     }
 
     /**
-     * Gets either the instance field or the getter method depending upon the 
+     * Gets either the instance field or the getter method depending upon the
      * access style of the given meta-data.
      */
-    public Member getMemberByProperty(ClassMetaData meta, String property, 
+    public Member getMemberByProperty(ClassMetaData meta, String property,
     	int access, boolean applyDefaultRule) {
     	Class<?> cls = meta.getDescribedType();
         Field field = Reflection.findField(cls, property, false);;
@@ -692,22 +692,22 @@ public class PersistenceMetaDataDefaults
         	access;
         if (field == null && getter == null)
         	error(meta, _loc.get("access-no-property", cls, property));
-    	if ((isNotTransient(getter) && isAnnotated(getter)) && 
+    	if ((isNotTransient(getter) && isAnnotated(getter)) &&
     	     isNotTransient(field) && isAnnotated(field))
-    		throw new IllegalStateException(_loc.get("access-duplicate", 
+    		throw new IllegalStateException(_loc.get("access-duplicate",
     			field, getter).toString());
-    	
+
         if (AccessCode.isField(accessCode)) {
            if (isAnnotatedAccess(getter, AccessType.PROPERTY)) {
         	   meta.setAccessType(AccessCode.MIXED | meta.getAccessType());
                return getter;
            }
-           return field == null ? getter : field; 
+           return field == null ? getter : field;
         } else if (AccessCode.isProperty(accessCode)) {
             if (isAnnotatedAccess(field, AccessType.FIELD)) {
          	   meta.setAccessType(AccessCode.MIXED | meta.getAccessType());
                return field;
-            }            
+            }
             return getter == null ? field : getter;
         } else if (AccessCode.isUnknown(accessCode)) {
         	if (isAnnotated(field)) {
@@ -722,16 +722,16 @@ public class PersistenceMetaDataDefaults
                     _loc.get("access-none", meta, property).toString());
         	}
         } else {
-        	throw new InternalException(meta + " " + 
+        	throw new InternalException(meta + " " +
         		AccessCode.toClassString(meta.getAccessType()));
         }
     }
-    
+
     // ========================================================================
     //  Selection Filters select specific elements from a collection.
     //  Used to determine the persistent members of a given class.
     // ========================================================================
-    
+
     /**
      * Inclusive element filtering predicate.
      *
@@ -747,7 +747,7 @@ public class PersistenceMetaDataDefaults
      * Filter the given collection with the conjunction of filters. The given
      * collection itself is not modified.
      */
-    <T extends AnnotatedElement> List<T> filter(T[] array, 
+    <T extends AnnotatedElement> List<T> filter(T[] array,
     	InclusiveFilter... filters) {
         List<T> result = new ArrayList<T>();
         for (T e : array) {
@@ -763,8 +763,8 @@ public class PersistenceMetaDataDefaults
         }
         return result;
     }
-    
-    <T extends AnnotatedElement> List<T> filter(List<T> list, 
+
+    <T extends AnnotatedElement> List<T> filter(List<T> list,
         	InclusiveFilter... filters) {
         List<T> result = new ArrayList<T>();
         for (T e : list) {
@@ -785,12 +785,12 @@ public class PersistenceMetaDataDefaults
      * Selects getter method. A getter method name starts with 'get', returns a
      * non-void type and has no argument. Or starts with 'is', returns a boolean
      * and has no argument.
-     * 
+     *
      */
     static class GetterFilter implements InclusiveFilter<Method> {
-        
-        private boolean includePrivate;        
-                       
+
+        private boolean includePrivate;
+
         public boolean includes(Method method) {
             return isGetter(method, isIncludePrivate());
         }
@@ -807,7 +807,7 @@ public class PersistenceMetaDataDefaults
     /**
      * Selects setter method. A setter method name starts with 'set', returns a
      * void and has single argument.
-     * 
+     *
      */
     static class SetterFilter implements InclusiveFilter<Method> {
         public boolean includes(Method method) {
@@ -819,16 +819,16 @@ public class PersistenceMetaDataDefaults
          */
         public static boolean isSetter(Method method) {
         	String methodName = method.getName();
-        	return startsWith(methodName, "set") 
+        	return startsWith(methodName, "set")
         	    && method.getParameterTypes().length == 1
         	    && method.getReturnType() == void.class;
         }
     }
 
     /**
-     * Selects elements which is annotated with @Access annotation and that 
+     * Selects elements which is annotated with @Access annotation and that
      * annotation has the given AccessType value.
-     * 
+     *
      */
     static class AccessFilter implements InclusiveFilter<AnnotatedElement> {
         final AccessType target;
@@ -842,11 +842,11 @@ public class PersistenceMetaDataDefaults
         	return access != null && access.value().equals(target);
         }
     }
-    
+
     /**
-     * Selects elements which is annotated with @Access annotation and that 
+     * Selects elements which is annotated with @Access annotation and that
      * annotation has the given AccessType value.
-     * 
+     *
      */
     static class MemberFilter implements InclusiveFilter<AnnotatedElement> {
         final Class<?> target;
@@ -857,36 +857,36 @@ public class PersistenceMetaDataDefaults
 
         public boolean includes(AnnotatedElement obj) {
         	int mods = ((Member)obj).getModifiers();
-        	
-            return obj.getClass() == target && 
-                 !(Modifier.isStatic(mods) || Modifier.isFinal(mods) 
+
+            return obj.getClass() == target &&
+                 !(Modifier.isStatic(mods) || Modifier.isFinal(mods)
                 || Modifier.isTransient(mods) || Modifier.isNative(mods));
-                  
+
         }
     }
 
     /**
-     * Selects non-transient elements.  Selectively will examine only the 
+     * Selects non-transient elements.  Selectively will examine only the
      * transient field modifier.
      */
     static class TransientFilter implements InclusiveFilter<AnnotatedElement> {
         final boolean modifierOnly;
-        
+
         public TransientFilter(boolean modOnly) {
             modifierOnly = modOnly;
         }
-        
+
         public boolean includes(AnnotatedElement obj) {
             if (modifierOnly) {
                 return !Modifier.isTransient(((Member)obj).getModifiers());
             }
-        	return !obj.isAnnotationPresent(Transient.class) && 
+        	return !obj.isAnnotationPresent(Transient.class) &&
         	       !Modifier.isTransient(((Member)obj).getModifiers());
         }
     }
-    
+
     /**
-     * Selects all element annotated with <code>javax.persistence.*</code> or 
+     * Selects all element annotated with <code>javax.persistence.*</code> or
      * <code>org.apache.openjpa.*</code> annotation except the annotations
      * marked to be ignored.
      */
@@ -904,7 +904,7 @@ public class PersistenceMetaDataDefaults
         	return false;
         }
     }
-    
+
     private void logNoSetter(ClassMetaData meta, String name, Exception e) {
         Log log = meta.getRepository().getConfiguration()
             .getLog(OpenJPAConfiguration.LOG_METADATA);
@@ -916,30 +916,30 @@ public class PersistenceMetaDataDefaults
             log.warn(_loc.get("no-setter-for-getter", name,
                 meta.getDescribedType().getName()), e);
     }
-    
+
     private Log getLog(ClassMetaData meta) {
         return meta.getRepository().getConfiguration()
             .getLog(OpenJPAConfiguration.LOG_METADATA);
     }
-    
+
     String toFieldNames(List<Field> fields) {
     	return fields.toString();
     }
-    
+
     String toMethodNames(List<Method> methods) {
     	return methods.toString();
     }
-    
+
     public boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf) {
         if (_isAbstractMappingUniDirectional == null)
             setAbstractMappingUniDirectional(conf);
         return _isAbstractMappingUniDirectional;
     }
-    
+
     public void setAbstractMappingUniDirectional(OpenJPAConfiguration conf) {
         _isAbstractMappingUniDirectional = conf.getCompatibilityInstance().isAbstractMappingUniDirectional();
     }
-    
+
     public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf) {
         if (_isNonDefaultMappingAllowed == null)
             setNonDefaultMappingAllowed(conf);
@@ -950,11 +950,11 @@ public class PersistenceMetaDataDefaults
         _isNonDefaultMappingAllowed = conf.getCompatibilityInstance().
             isNonDefaultMappingAllowed();
     }
-    
+
     public Boolean isDefaultCascadePersistEnabled() {
         return _isCascadePersistPersistenceUnitDefaultEnabled;
     }
-    
+
     public void setDefaultCascadePersistEnabled(Boolean bool) {
         _isCascadePersistPersistenceUnitDefaultEnabled = bool;
     }
@@ -966,6 +966,6 @@ public class PersistenceMetaDataDefaults
 
     @Override
     public void setDefaultSchema(String schema) {
-        _defaultSchema=schema;        
+        _defaultSchema=schema;
     }
 }

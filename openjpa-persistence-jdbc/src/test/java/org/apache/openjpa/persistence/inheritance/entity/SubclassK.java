@@ -26,7 +26,7 @@ public class SubclassK extends MidClass3 {
 
     @Basic
     private String classKName;
-               
+
     public void setClassKName(String classKName) {
         this.classKName = classKName;
     }
@@ -34,8 +34,8 @@ public class SubclassK extends MidClass3 {
     public String getClassKName() {
         return classKName;
     }
-    
+
     public String toString() {
-        return super.toString() + ";classKName=" + classKName; 
-    }    
+        return super.toString() + ";classKName=" + classKName;
+    }
 }

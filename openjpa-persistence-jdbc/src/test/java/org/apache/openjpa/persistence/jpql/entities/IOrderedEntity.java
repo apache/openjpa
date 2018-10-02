@@ -33,7 +33,7 @@ public interface IOrderedEntity {
     public void addEntity(INameEntity newElement);
 
     public INameEntity removeEntity(int location);
-    
+
     public void insertEntity(int location, INameEntity entity);
 
     public String toString();

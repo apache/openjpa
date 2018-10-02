@@ -37,23 +37,23 @@ public class OrderedOneManyParent {
 
     @OneToMany(mappedBy="parent")
     @OrderBy("name ASC")
-    private List<OrderedOneManyChild> children = 
+    private List<OrderedOneManyChild> children =
         new ArrayList<OrderedOneManyChild>();
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
-    public List<OrderedOneManyChild> getChildren() { 
-        return children; 
+    public List<OrderedOneManyChild> getChildren() {
+        return children;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 }
 

@@ -99,7 +99,7 @@ public class TestTypedResults extends SingleEMFTestCase {
     /**
      * Verify that a query using a date field works the same with JPQL, JPQL (typed), Criteria (typed), and via a
      * NativeQuery
-     * 
+     *
      * @throws Exception
      */
     public void testTypedJPQLQuery() {
@@ -124,7 +124,7 @@ public class TestTypedResults extends SingleEMFTestCase {
         List<Order> typedCriteriaResults = typedCriteriaQuery.getResultList();
         assertEquals(N_ORDERS / 2, typedCriteriaResults.size());
 
-        
+
         DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
         String sql = "SELECT * FROM CRIT_RES_ORD o WHERE (o.filled = 1)";
         if (dict instanceof PostgresDictionary)
@@ -145,13 +145,13 @@ public class TestTypedResults extends SingleEMFTestCase {
     /**
      * Verify that a query using a date field works the same with JPQL, JPQL (typed), Criteria (typed), and via a
      * NativeQuery
-     * 
+     *
      * @throws Exception
      */
     public void testDateQuery() throws Exception {
         EntityManager em = emf.createEntityManager();
         Date maxDate = df.parse(ORDER_DATES[2]);
-        
+
         Query jpqlQuery = em.createQuery("Select o from Order o where o.date < :maxDate");
         jpqlQuery.setParameter("maxDate", maxDate);
         List<Order> jpqlResults = jpqlQuery.getResultList();
@@ -187,7 +187,7 @@ public class TestTypedResults extends SingleEMFTestCase {
     /**
      * Testcase to verify that selecting multiple results in a variety of ways returns the same results. Results are
      * returned via a normal Object [] (JPQL), Tuple (Criteria), and a custom tuple (Criteria.construct)
-     * 
+     *
      * @throws Exception
      */
     public void testMultiSelect() throws Exception {

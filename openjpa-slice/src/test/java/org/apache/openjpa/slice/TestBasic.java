@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -31,8 +31,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * Tests basic create, read, update and delete operations.
- * 
- * @author Pinaki Poddar 
+ *
+ * @author Pinaki Poddar
  *
  */
 public class TestBasic extends SliceTestCase {
@@ -46,7 +46,7 @@ public class TestBasic extends SliceTestCase {
 
 
     public void setUp() throws Exception {
-        super.setUp(PObject.class, Person.class, Address.class, Country.class, 
+        super.setUp(PObject.class, Person.class, Address.class, Country.class,
         	CLEAR_TABLES);
     }
 
@@ -123,7 +123,7 @@ public class TestBasic extends SliceTestCase {
         assertEquals(pc.getId(), pc2.getId());
         assertEquals(value, pc2.getValue());
     }
-    
+
     /**
      * Store and find the same object via reference.
      */
@@ -141,12 +141,12 @@ public class TestBasic extends SliceTestCase {
         em.merge(pc);
         em.getTransaction().commit();
         em.clear();
-        
+
         em.getTransaction().begin();
         PObject pc3 = em.find(PObject.class, pc.getId());
         assertEquals(value+1, pc3.getValue());
         em.getTransaction().commit();
-        
+
     }
 
 
@@ -228,7 +228,7 @@ public class TestBasic extends SliceTestCase {
         assertEquals(pc.getId(), pc2.getId());
         assertEquals(value + 1, pc2.getValue());
     }
-    
+
     public void testPersistReplicatedObjects() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -240,7 +240,7 @@ public class TestBasic extends SliceTestCase {
         }
         em.getTransaction().commit();
         assertEquals(names.length, count(Country.class));
-        
+
         em.getTransaction().begin();
         Country india = em.find(Country.class, "India");
         assertNotNull(india);
@@ -249,9 +249,9 @@ public class TestBasic extends SliceTestCase {
         assertTrue(SlicePersistence.getSlice(india).indexOf("One") != -1);
         assertTrue(SlicePersistence.getSlice(india).indexOf("Two") != -1);
     }
-    
+
     /**
-     * Disable this test temporarily as we undergo changes in internal slice 
+     * Disable this test temporarily as we undergo changes in internal slice
      * information structure.
      */
     public void testUpdateReplicatedObjects() {
@@ -267,7 +267,7 @@ public class TestBasic extends SliceTestCase {
         }
         em.getTransaction().commit();
         em.clear();
-        
+
         assertEquals(names.length, count(Country.class));
         Country india = em.find(Country.class, "India");
 
@@ -277,7 +277,7 @@ public class TestBasic extends SliceTestCase {
         em.getTransaction().begin();
         em.merge(india);
         em.getTransaction().commit();
-        
+
         String[] hints = new String[] {"One", "Two"};
         String jpql = "select c from Country c where c.name=:name";
         em.getTransaction().begin();
@@ -293,7 +293,7 @@ public class TestBasic extends SliceTestCase {
         }
         em.getTransaction().rollback();
     }
-    
+
     public void testQuerySingleObject() {
     	PObject pc = createIndependentObject();
     	long pid = pc.getId();
@@ -309,13 +309,13 @@ public class TestBasic extends SliceTestCase {
         assertEquals(pc.getId(), pc2.getId());
         assertEquals(value, pc2.getValue());
     }
-    
+
     public void testGetConnection() {
         OpenJPAEntityManager em = emf.createEntityManager();
         Object con = em.getConnection();
         assertTrue(con instanceof Connection);
     }
-    
+
     public void testDynamicSlice() {
         DistributedConfiguration conf = (DistributedConfiguration)emf.getConfiguration();
         conf.setDistributionPolicyInstance(new DistributionPolicy() {
@@ -340,7 +340,7 @@ public class TestBasic extends SliceTestCase {
                 }
                 return null;
             }
-        
+
         });
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -351,7 +351,7 @@ public class TestBasic extends SliceTestCase {
         em.getTransaction().commit();
         Object newId = em.getObjectId(pc2);
         em.clear();
-        
+
         PObject newP = em.find(PObject.class, newId);
         assertNotNull(newP);
         assertEquals("newslice", SlicePersistence.getSlice(newP));

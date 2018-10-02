@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.jdbc;
 
@@ -44,17 +44,17 @@ import java.util.Map;
 /**
  * A chain of ResultSet.
  * Assumes added ResultSet are identical in structure and fetches forward.
- * Can not move absolutely or change fetch direction. 
- * 
- * @author Pinaki Poddar 
+ * Can not move absolutely or change fetch direction.
+ *
+ * @author Pinaki Poddar
  *
  */
 public class DistributedResultSet implements ResultSet {
-    
+
 	private LinkedList<ResultSet> comps = new LinkedList<ResultSet>();
 	private ResultSet current;
 	private int cursor = -1;
-	
+
 	/**
 	 * Adds the ResultSet only if it has rows.
 	 */
@@ -68,7 +68,7 @@ public class DistributedResultSet implements ResultSet {
 			// ignore
 		}
 	}
-	
+
 	public boolean absolute(int arg0) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
@@ -96,7 +96,7 @@ public class DistributedResultSet implements ResultSet {
 		for (ResultSet rs : comps)
 			rs.close();
 	}
- 
+
 	public void deleteRow() throws SQLException {
 		throw new UnsupportedOperationException();
 	}
@@ -106,7 +106,7 @@ public class DistributedResultSet implements ResultSet {
 	}
 
 	public boolean first() throws SQLException {
-		if (comps.isEmpty()) 
+		if (comps.isEmpty())
 			return false;
 		cursor = 0;
 		current = comps.getFirst();
@@ -397,7 +397,7 @@ public class DistributedResultSet implements ResultSet {
 	}
 
 	public boolean last() throws SQLException {
-		if (comps.isEmpty()) 
+		if (comps.isEmpty())
 			return false;
 		cursor = comps.size()-1;
 		current = comps.getLast();
@@ -909,13 +909,13 @@ public class DistributedResultSet implements ResultSet {
     public void updateSQLXML(String arg0, SQLXML arg1) throws SQLException {
         throw new UnsupportedOperationException();
     }
-    
+
     // Java 7 methods follow
-    
+
     public <T>T getObject(String columnLabel, Class<T> type) throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public <T>T getObject(int columnIndex, Class<T> type) throws SQLException{
     	throw new UnsupportedOperationException();
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex0;
 
@@ -72,8 +72,8 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
         String query = "select e from Department1 d, " +
             " in (d.empMap) e " +
             "group by e " +
-            "having e = ?1"; 
-        Query q = em.createQuery(query); 
+            "having e = ?1";
+        Query q = em.createQuery(query);
         q.setParameter(1, e1);
         List<Employee1> rs = (List<Employee1>) q.getResultList();
         Employee1 e2 = rs.get(0);
@@ -83,8 +83,8 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
         query = "select e from Department1 d, " +
             " in (d.empMap) e " +
             "group by e " +
-            "having e <> ?1"; 
-        q = em.createQuery(query); 
+            "having e <> ?1";
+        q = em.createQuery(query);
         q.setParameter(1, e1);
         rs = (List<Employee1>) q.getResultList();
         Employee1 e3 = rs.get(0);
@@ -94,8 +94,8 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
         query = "select value(e) from Department1 d, " +
             " in (d.empMap) e " +
             "group by value(e) " +
-            "having value(e) = ?1"; 
-        q = em.createQuery(query); 
+            "having value(e) = ?1";
+        q = em.createQuery(query);
         q.setParameter(1, e1);
         rs = (List<Employee1>) q.getResultList();
         Employee1 e4 = rs.get(0);
@@ -107,14 +107,14 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
-    
+
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
-    public void setCandidate(Query q, Class<?> clz) 
+    public void setCandidate(Query q, Class<?> clz)
         throws Exception {
-        org.apache.openjpa.persistence.QueryImpl q1 = 
+        org.apache.openjpa.persistence.QueryImpl q1 =
             (org.apache.openjpa.persistence.QueryImpl) q;
         org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
         org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
@@ -131,39 +131,39 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
         String query = "select KEY(e) from Department1 d, " +
             " in (d.empMap) e";
         Query q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department1.class);
         List<?> rs = q.getResultList();
         Integer d = (Integer) rs.get(0);
-        
+
         query = "select KEY(e) from Department2 d, " +
             " in (d.empMap) e";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department2.class);
         rs = q.getResultList();
         EmployeePK2 d2 = (EmployeePK2) rs.get(0);
-        
+
         query = "select KEY(e) from Department3 d, " +
             " in (d.emps) e";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department3.class);
         rs = q.getResultList();
         EmployeeName3 d3 = (EmployeeName3) rs.get(0);
-        
+
         // Check HAVING clause support for KEY
         query = "select KEY(e) from Department1 d, " +
         " in (d.empMap) e " +
         "group by KEY(e) " +
         "having KEY(e) = 2";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department1.class);
         rs = q.getResultList();
         Integer deptId = (Integer) rs.get(0);
         assertEquals("dept id is not 2", 2, deptId.intValue());
-        
+
         query = "select KEY(e).lName from Department3 d, " + "in (d.emps) e " + "group by KEY(e).lName "
                 + "having KEY(e).lName like 'l%'";
         q = em.createQuery(query);
@@ -304,7 +304,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
             Employee2 e = es.get(pk);
             Assert.assertEquals(pk, e.getEmpPK());
         }
-    }	
+    }
 
     public void assertDepartment3(Department3 d) {
         int id = d.getDeptId();

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -38,7 +38,7 @@ public class AccessDictionary
         reservedWordSet.add("VALUE");
         // OpenJPA-2045: NAME has been removed from common reserved words to
         // only specific dictionaries
-        reservedWordSet.add("NAME"); 
+        reservedWordSet.add("NAME");
 
         supportsAutoAssign = true;
         autoAssignTypeName = "COUNTER";
@@ -67,11 +67,11 @@ public class AccessDictionary
         maxIndexesPerTable = 32;
 
         substringFunctionName = "MID";
-        
+
         setLeadingDelimiter("[");
         setTrailingDelimiter("]");
-    }    
-    
+    }
+
 
     public void setLong(PreparedStatement stmnt, int idx, long val, Column col)
         throws SQLException {

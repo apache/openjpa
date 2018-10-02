@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -70,9 +70,9 @@ public class ClassMappingInfo
     private File _file = null;
     private int _srcType = SRC_OTHER;
     private String[] _comments = null;
-    private int _lineNum = 0;  
-    private int _colNum = 0;  
-    
+    private int _lineNum = 0;
+    private int _colNum = 0;
+
     // Unique constraints indexed by primary or secondary table name
     private Map<DBIdentifier,List<Unique>> _uniques;
 
@@ -261,9 +261,9 @@ public class ClassMappingInfo
         }
         return cols;
     }
-    
+
     /**
-     * Adds a Secondary table of given name to this mapping. A secondary table 
+     * Adds a Secondary table of given name to this mapping. A secondary table
      * must be known before unique constraints are added to a Secondary table.
      * @deprecated
      */
@@ -292,12 +292,12 @@ public class ClassMappingInfo
             _seconds = new LinkedHashMap<DBIdentifier, List<Column>>();
         _seconds.put(tableName, cols);
     }
-    
+
     /**
      * Return the named table for the given class.
      * @deprecated
      */
-    public Table getTable(final ClassMapping cls, String tableName, 
+    public Table getTable(final ClassMapping cls, String tableName,
         boolean adapt) {
         return getTable(cls, DBIdentifier.newTable(tableName), adapt);
     }
@@ -305,7 +305,7 @@ public class ClassMappingInfo
     /**
      * Return the named table for the given class.
      */
-    public Table getTable(final ClassMapping cls, DBIdentifier tableName, 
+    public Table getTable(final ClassMapping cls, DBIdentifier tableName,
             boolean adapt) {
 
         Table t = createTable(cls, new TableDefaults() {
@@ -325,14 +325,14 @@ public class ClassMappingInfo
             : cls.getTypeAlias());
         return t;
     }
-    
+
     /**
      * Return the primary table for the given class.
      */
     public Table getTable(final ClassMapping cls, boolean adapt) {
     	return getTable(cls, _tableName, adapt);
     }
-    
+
     /**
      * Return the datastore identity columns for the given class, based on the
      * given templates.
@@ -400,7 +400,7 @@ public class ClassMappingInfo
             : cls.getStrategy().getAlias();
         if (strat != null && (cls.getPCSuperclass() != null
             || !FullClassStrategy.ALIAS.equals(strat)))
-            setStrategy(strat);        
+            setStrategy(strat);
     }
 
     public boolean hasSchemaComponents() {
@@ -442,10 +442,10 @@ public class ClassMappingInfo
         }
 
     }
-    
+
     /**
      * Add a unique constraint for the given table.
-     * @param table must be primary table or secondary table name added a 
+     * @param table must be primary table or secondary table name added a
      * priori to this receiver.
      * @param unique the unique constraint. null means no-op.
      * @deprecated
@@ -456,15 +456,15 @@ public class ClassMappingInfo
 
     /**
      * Add a unique constraint for the given table.
-     * @param table must be primary table or secondary table name added a 
+     * @param table must be primary table or secondary table name added a
      * priori to this receiver.
      * @param unique the unique constraint. null means no-op.
      */
     public void addUnique(DBIdentifier table, Unique unique) {
     	if (!DBIdentifier.equal(_tableName, table) &&
     	   (_seconds == null || !_seconds.containsKey(table))) {
-            throw new UserException(_loc.get("unique-no-table", 
-                    new Object[]{table, _className, _tableName, 
+            throw new UserException(_loc.get("unique-no-table",
+                    new Object[]{table, _className, _tableName,
                     ((_seconds == null) ? "" : _seconds.keySet())}));
     	}
     	if (unique == null)
@@ -481,7 +481,7 @@ public class ClassMappingInfo
         	uniques.add(unique);
         }
     }
-    
+
     /**
      * Get the unique constraints of the given primary or secondary table.
      * @deprecated
@@ -494,17 +494,17 @@ public class ClassMappingInfo
      * Get the unique constraints of the given primary or secondary table.
      */
     public Unique[] getUniques(DBIdentifier table) {
-        if (_uniques == null || _uniques.isEmpty() 
+        if (_uniques == null || _uniques.isEmpty()
         || _uniques.containsKey(table))
             return new Unique[0];
         List<Unique> uniques = _uniques.get(table);
         return uniques.toArray(new Unique[uniques.size()]);
     }
-    
+
     /**
-     * Get all the unique constraints associated with both the primary and/or 
+     * Get all the unique constraints associated with both the primary and/or
      * secondary tables.
-     * 
+     *
      */
     public Unique[] getUniques(MetaDataContext cm, boolean adapt) {
         if (_uniques == null || _uniques.isEmpty())
@@ -520,22 +520,22 @@ public class ClassMappingInfo
                     DBIdentifier columnName = templateColumns[i].getIdentifier();
         			if (!table.containsColumn(columnName)) {
                         throw new UserException(_loc.get(
-                                "unique-missing-column", 
-                                new Object[]{cm, columnName, tableName, 
+                                "unique-missing-column",
+                                new Object[]{cm, columnName, tableName,
                                 Arrays.toString(table.getColumnNames())}));
         			}
                     Column uniqueColumn = table.getColumn(columnName);
         			uniqueColumns[i] = uniqueColumn;
         		}
-        		Unique unique = createUnique(cm, "unique", template,  
+        		Unique unique = createUnique(cm, "unique", template,
         				uniqueColumns, adapt);
         		if (unique != null)
         			result.add(unique);
         	}
         }
         return result.toArray(new Unique[result.size()]);
-    }   
-    
+    }
+
     public File getSourceFile() {
         return _file;
     }
@@ -564,7 +564,7 @@ public class ClassMappingInfo
     public void setComments(String[] comments) {
         _comments = comments;
     }
-    
+
     public int getLineNumber() {
         return _lineNum;
     }

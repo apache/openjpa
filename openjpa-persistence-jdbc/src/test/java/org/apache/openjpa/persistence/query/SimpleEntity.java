@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -49,14 +49,14 @@ import javax.persistence.Table;
         query="select a from simple a where a.id=?900 and a.name=?2 and a.value=?54")
 })
 
-@NamedNativeQueries( { 
+@NamedNativeQueries( {
     @NamedNativeQuery(name = "findSimpleEntitites",
-        query = "SELECT ID, NAME, VALUE FROM SIMPLE_ENTITY", 
+        query = "SELECT ID, NAME, VALUE FROM SIMPLE_ENTITY",
         resultSetMapping = "simpleEntitiesResult") })
 
 @SqlResultSetMapping(name = "simpleEntitiesResult",
     entities = @EntityResult(
-    entityClass = org.apache.openjpa.persistence.query.SimpleEntity.class, 
+    entityClass = org.apache.openjpa.persistence.query.SimpleEntity.class,
     fields = {@FieldResult(name = "id", column = "ID"),
         @FieldResult(name = "name", column = "NAME"),
         @FieldResult(name = "value", column = "VALUE") }))
@@ -65,7 +65,7 @@ import javax.persistence.Table;
 public class SimpleEntity implements Serializable {
     public static final String NAMED_QUERY_WITH_POSITIONAL_PARAMS = "SelectWithPositionalParameter";
     public static final String NAMED_QUERY_WITH_NAMED_PARAMS = "SelectWithNamedParameter";
-    
+
     @Id
     @GeneratedValue
     @Column(name = "ID")

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
@@ -26,11 +26,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * This test was added for https://issues.apache.org/jira/browse/OPENJPA-1892.
- * 
+ *
  * The key to this test is that the ChildUncacheable is uncacheable and ParentUnspecifiedEntity is cacheable. In the
  * case were we pass the root Entity in em.find(ParentUnspecifiedEntity.class, 1) AND the id we passed corresponds to
  * the child Entity we shouldn't be caching this result.
- * 
+ *
  */
 public class TestCacheModeDisableSelectiveInheritance extends SingleEMFTestCase {
     Object[] params =

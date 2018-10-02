@@ -21,10 +21,10 @@ package org.apache.openjpa.persistence.jpql.entities;
 public class XMLUnorderedNameEntity implements INameEntity, java.io.Serializable {
 
     private int id;
-    
+
     private String name;
 
-    
+
     public XMLUnorderedNameEntity() {
     }
 

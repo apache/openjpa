@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.criteria;
@@ -96,8 +96,8 @@ public class TestByteArray extends SingleEMFTestCase {
         assertBlogUser(users.get(0));
 
         em.close();
-    }     
-    
+    }
+
     public void testSimpleQueryBytesNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
@@ -158,7 +158,7 @@ public class TestByteArray extends SingleEMFTestCase {
 
         em.close();
     }
-    
+
     public void testSimpleQueryCharsNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);

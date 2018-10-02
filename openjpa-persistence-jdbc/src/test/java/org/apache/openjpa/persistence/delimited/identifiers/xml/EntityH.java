@@ -26,19 +26,19 @@ import java.util.Map;
 public class EntityH {
     private int id;
     private String name;
-    
+
     private String secName;
-    
+
     private Collection<EntityI> eIs = new HashSet<EntityI>();
-    
+
     private EntityI2 eI2;
-    
+
     Map<EntityI3,EntityI4> map = new HashMap<EntityI3,EntityI4>();
-    
+
     Map<EntityI4,EntityI3> map2 = new HashMap<EntityI4,EntityI3>();
 
     public EntityH() {}
-    
+
     public EntityH(int id) {
         this.id = id;
     }
@@ -84,7 +84,7 @@ public class EntityH {
     public void setSecName(String secName) {
         this.secName = secName;
     }
-    
+
     public Collection<EntityI> getEntityIs() {
         return eIs;
     }
@@ -94,7 +94,7 @@ public class EntityH {
     public void setEntityIs(Collection<EntityI> entityIs) {
         this.eIs = entityIs;
     }
-    
+
     public void addEntityI(EntityI entityI) {
         eIs.add(entityI);
     }
@@ -126,7 +126,7 @@ public class EntityH {
     public void setMap(Map<EntityI3, EntityI4> map) {
         this.map = map;
     }
-    
+
     public void addMapValues(EntityI3 key, EntityI4 value) {
         map.put(key, value);
     }
@@ -144,7 +144,7 @@ public class EntityH {
     public void setMap2(Map<EntityI4, EntityI3> map2) {
         this.map2 = map2;
     }
-    
+
     public void addMap2Values(EntityI4 key, EntityI3 value) {
         map2.put(key, value);
     }

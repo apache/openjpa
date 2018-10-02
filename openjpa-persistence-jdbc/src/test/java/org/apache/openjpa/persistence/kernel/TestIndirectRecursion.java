@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -40,20 +40,20 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * Graph nodes (State) holds pair of list of incoming/outgoing edges (Transition).
  * The problem report [1] showed that traversal from a root node (incorrectly) terminates
  * at a depth of 1 irrespective of the value of recursion depth and/or max depth depth.
- * 
- * The test data model is originally reported in 
+ *
+ * The test data model is originally reported in
  * [1] FetchGroup Recursion Problem
  * <A HREF="http://n2.nabble.com/Fetchgroups-recursion-problem-tc3874382.html#a3874382">mailing list</A>.
- * 
- * 
+ *
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestIndirectRecursion extends SingleEMFTestCase {
     // The connection matrix
-    static byte[][] transitions = { 
-      //  s1 s2 s3 s4 s5    
-        { 0, 1, 0, 0, 0 }, // s1 
+    static byte[][] transitions = {
+      //  s1 s2 s3 s4 s5
+        { 0, 1, 0, 0, 0 }, // s1
         { 1, 0, 1, 1, 0 }, // s2
         { 1, 1, 0, 1, 0 }, // s3
         { 0, 0, 0, 0, 1 }, // s4
@@ -62,7 +62,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
 
     public void setUp() {
         super.setUp(DROP_TABLES, State.class, Transition.class);
-        
+
         DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
         if (dict instanceof OracleDictionary) {
             ((OracleDictionary) dict).useTriggersForAutoAssign = true;
@@ -75,14 +75,14 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
 
         int N = transitions.length;
         State[] states = new State[N];
-        // create nodes 
+        // create nodes
         for (int i = 1; i <= N; i++) {
             State s = new State();
             s.setName("s" + i);
             em.persist(s);
             states[i - 1] = s;
         }
-        // create edges as per the transition matrix 
+        // create edges as per the transition matrix
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 if (transitions[i][j] == 1) {
@@ -93,7 +93,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
         em.getTransaction().commit();
 
         em.clear();
-        
+
         // Select root (state 1)
         Query query = em.createQuery("select s from State s where s.name=:name");
         FetchPlan fetch = OpenJPAPersistence.cast(query).getFetchPlan();
@@ -111,7 +111,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
         assertMatrixEqual(transitions, actualTransitionMatrix);
 
     }
-    
+
     void assertMatrixEqual(byte[][] expected, byte[][] actual) {
         int N = transitions.length;
         for (int i = 0; i < N; i++) {

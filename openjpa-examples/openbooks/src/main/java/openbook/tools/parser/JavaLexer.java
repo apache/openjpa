@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package openbook.tools.parser;
 // $ANTLR 3.2 Sep 23, 2009 12:02:23 Java.g 2010-05-15 01:06:38
@@ -141,7 +141,7 @@ public class JavaLexer extends Lexer {
     // delegates
     // delegators
 
-    public JavaLexer() {;} 
+    public JavaLexer() {;}
     public JavaLexer(CharStream input) {
         this(input, new RecognizerSharedState());
     }
@@ -159,7 +159,7 @@ public class JavaLexer extends Lexer {
             // Java.g:8:7: ( 'package' )
             // Java.g:8:9: 'package'
             {
-            match("package"); 
+            match("package");
 
 
             }
@@ -180,7 +180,7 @@ public class JavaLexer extends Lexer {
             // Java.g:9:7: ( ';' )
             // Java.g:9:9: ';'
             {
-            match(';'); 
+            match(';');
 
             }
 
@@ -200,7 +200,7 @@ public class JavaLexer extends Lexer {
             // Java.g:10:7: ( 'import' )
             // Java.g:10:9: 'import'
             {
-            match("import"); 
+            match("import");
 
 
             }
@@ -221,7 +221,7 @@ public class JavaLexer extends Lexer {
             // Java.g:11:7: ( 'static' )
             // Java.g:11:9: 'static'
             {
-            match("static"); 
+            match("static");
 
 
             }
@@ -242,7 +242,7 @@ public class JavaLexer extends Lexer {
             // Java.g:12:7: ( '.' )
             // Java.g:12:9: '.'
             {
-            match('.'); 
+            match('.');
 
             }
 
@@ -262,7 +262,7 @@ public class JavaLexer extends Lexer {
             // Java.g:13:7: ( '*' )
             // Java.g:13:9: '*'
             {
-            match('*'); 
+            match('*');
 
             }
 
@@ -282,7 +282,7 @@ public class JavaLexer extends Lexer {
             // Java.g:14:7: ( 'public' )
             // Java.g:14:9: 'public'
             {
-            match("public"); 
+            match("public");
 
 
             }
@@ -303,7 +303,7 @@ public class JavaLexer extends Lexer {
             // Java.g:15:7: ( 'protected' )
             // Java.g:15:9: 'protected'
             {
-            match("protected"); 
+            match("protected");
 
 
             }
@@ -324,7 +324,7 @@ public class JavaLexer extends Lexer {
             // Java.g:16:7: ( 'private' )
             // Java.g:16:9: 'private'
             {
-            match("private"); 
+            match("private");
 
 
             }
@@ -345,7 +345,7 @@ public class JavaLexer extends Lexer {
             // Java.g:17:7: ( 'abstract' )
             // Java.g:17:9: 'abstract'
             {
-            match("abstract"); 
+            match("abstract");
 
 
             }
@@ -366,7 +366,7 @@ public class JavaLexer extends Lexer {
             // Java.g:18:7: ( 'final' )
             // Java.g:18:9: 'final'
             {
-            match("final"); 
+            match("final");
 
 
             }
@@ -387,7 +387,7 @@ public class JavaLexer extends Lexer {
             // Java.g:19:7: ( 'strictfp' )
             // Java.g:19:9: 'strictfp'
             {
-            match("strictfp"); 
+            match("strictfp");
 
 
             }
@@ -408,7 +408,7 @@ public class JavaLexer extends Lexer {
             // Java.g:20:7: ( 'class' )
             // Java.g:20:9: 'class'
             {
-            match("class"); 
+            match("class");
 
 
             }
@@ -429,7 +429,7 @@ public class JavaLexer extends Lexer {
             // Java.g:21:7: ( 'extends' )
             // Java.g:21:9: 'extends'
             {
-            match("extends"); 
+            match("extends");
 
 
             }
@@ -450,7 +450,7 @@ public class JavaLexer extends Lexer {
             // Java.g:22:7: ( 'implements' )
             // Java.g:22:9: 'implements'
             {
-            match("implements"); 
+            match("implements");
 
 
             }
@@ -471,7 +471,7 @@ public class JavaLexer extends Lexer {
             // Java.g:23:7: ( '<' )
             // Java.g:23:9: '<'
             {
-            match('<'); 
+            match('<');
 
             }
 
@@ -491,7 +491,7 @@ public class JavaLexer extends Lexer {
             // Java.g:24:7: ( ',' )
             // Java.g:24:9: ','
             {
-            match(','); 
+            match(',');
 
             }
 
@@ -511,7 +511,7 @@ public class JavaLexer extends Lexer {
             // Java.g:25:7: ( '>' )
             // Java.g:25:9: '>'
             {
-            match('>'); 
+            match('>');
 
             }
 
@@ -531,7 +531,7 @@ public class JavaLexer extends Lexer {
             // Java.g:26:7: ( '&' )
             // Java.g:26:9: '&'
             {
-            match('&'); 
+            match('&');
 
             }
 
@@ -551,7 +551,7 @@ public class JavaLexer extends Lexer {
             // Java.g:27:7: ( '{' )
             // Java.g:27:9: '{'
             {
-            match('{'); 
+            match('{');
 
             }
 
@@ -571,7 +571,7 @@ public class JavaLexer extends Lexer {
             // Java.g:28:7: ( '}' )
             // Java.g:28:9: '}'
             {
-            match('}'); 
+            match('}');
 
             }
 
@@ -591,7 +591,7 @@ public class JavaLexer extends Lexer {
             // Java.g:29:7: ( 'interface' )
             // Java.g:29:9: 'interface'
             {
-            match("interface"); 
+            match("interface");
 
 
             }
@@ -612,7 +612,7 @@ public class JavaLexer extends Lexer {
             // Java.g:30:7: ( 'void' )
             // Java.g:30:9: 'void'
             {
-            match("void"); 
+            match("void");
 
 
             }
@@ -633,7 +633,7 @@ public class JavaLexer extends Lexer {
             // Java.g:31:7: ( '[' )
             // Java.g:31:9: '['
             {
-            match('['); 
+            match('[');
 
             }
 
@@ -653,7 +653,7 @@ public class JavaLexer extends Lexer {
             // Java.g:32:7: ( ']' )
             // Java.g:32:9: ']'
             {
-            match(']'); 
+            match(']');
 
             }
 
@@ -673,7 +673,7 @@ public class JavaLexer extends Lexer {
             // Java.g:33:7: ( 'throws' )
             // Java.g:33:9: 'throws'
             {
-            match("throws"); 
+            match("throws");
 
 
             }
@@ -694,7 +694,7 @@ public class JavaLexer extends Lexer {
             // Java.g:34:7: ( '=' )
             // Java.g:34:9: '='
             {
-            match('='); 
+            match('=');
 
             }
 
@@ -714,7 +714,7 @@ public class JavaLexer extends Lexer {
             // Java.g:35:7: ( 'native' )
             // Java.g:35:9: 'native'
             {
-            match("native"); 
+            match("native");
 
 
             }
@@ -735,7 +735,7 @@ public class JavaLexer extends Lexer {
             // Java.g:36:7: ( 'synchronized' )
             // Java.g:36:9: 'synchronized'
             {
-            match("synchronized"); 
+            match("synchronized");
 
 
             }
@@ -756,7 +756,7 @@ public class JavaLexer extends Lexer {
             // Java.g:37:7: ( 'transient' )
             // Java.g:37:9: 'transient'
             {
-            match("transient"); 
+            match("transient");
 
 
             }
@@ -777,7 +777,7 @@ public class JavaLexer extends Lexer {
             // Java.g:38:7: ( 'volatile' )
             // Java.g:38:9: 'volatile'
             {
-            match("volatile"); 
+            match("volatile");
 
 
             }
@@ -798,7 +798,7 @@ public class JavaLexer extends Lexer {
             // Java.g:39:7: ( 'boolean' )
             // Java.g:39:9: 'boolean'
             {
-            match("boolean"); 
+            match("boolean");
 
 
             }
@@ -819,7 +819,7 @@ public class JavaLexer extends Lexer {
             // Java.g:40:7: ( 'char' )
             // Java.g:40:9: 'char'
             {
-            match("char"); 
+            match("char");
 
 
             }
@@ -840,7 +840,7 @@ public class JavaLexer extends Lexer {
             // Java.g:41:7: ( 'byte' )
             // Java.g:41:9: 'byte'
             {
-            match("byte"); 
+            match("byte");
 
 
             }
@@ -861,7 +861,7 @@ public class JavaLexer extends Lexer {
             // Java.g:42:7: ( 'short' )
             // Java.g:42:9: 'short'
             {
-            match("short"); 
+            match("short");
 
 
             }
@@ -882,7 +882,7 @@ public class JavaLexer extends Lexer {
             // Java.g:43:7: ( 'int' )
             // Java.g:43:9: 'int'
             {
-            match("int"); 
+            match("int");
 
 
             }
@@ -903,7 +903,7 @@ public class JavaLexer extends Lexer {
             // Java.g:44:7: ( 'long' )
             // Java.g:44:9: 'long'
             {
-            match("long"); 
+            match("long");
 
 
             }
@@ -924,7 +924,7 @@ public class JavaLexer extends Lexer {
             // Java.g:45:7: ( 'float' )
             // Java.g:45:9: 'float'
             {
-            match("float"); 
+            match("float");
 
 
             }
@@ -945,7 +945,7 @@ public class JavaLexer extends Lexer {
             // Java.g:46:7: ( 'double' )
             // Java.g:46:9: 'double'
             {
-            match("double"); 
+            match("double");
 
 
             }
@@ -966,7 +966,7 @@ public class JavaLexer extends Lexer {
             // Java.g:47:7: ( '?' )
             // Java.g:47:9: '?'
             {
-            match('?'); 
+            match('?');
 
             }
 
@@ -986,7 +986,7 @@ public class JavaLexer extends Lexer {
             // Java.g:48:7: ( 'super' )
             // Java.g:48:9: 'super'
             {
-            match("super"); 
+            match("super");
 
 
             }
@@ -1007,7 +1007,7 @@ public class JavaLexer extends Lexer {
             // Java.g:49:7: ( '(' )
             // Java.g:49:9: '('
             {
-            match('('); 
+            match('(');
 
             }
 
@@ -1027,7 +1027,7 @@ public class JavaLexer extends Lexer {
             // Java.g:50:7: ( ')' )
             // Java.g:50:9: ')'
             {
-            match(')'); 
+            match(')');
 
             }
 
@@ -1047,7 +1047,7 @@ public class JavaLexer extends Lexer {
             // Java.g:51:7: ( '...' )
             // Java.g:51:9: '...'
             {
-            match("..."); 
+            match("...");
 
 
             }
@@ -1068,7 +1068,7 @@ public class JavaLexer extends Lexer {
             // Java.g:52:7: ( 'this' )
             // Java.g:52:9: 'this'
             {
-            match("this"); 
+            match("this");
 
 
             }
@@ -1089,7 +1089,7 @@ public class JavaLexer extends Lexer {
             // Java.g:53:7: ( 'null' )
             // Java.g:53:9: 'null'
             {
-            match("null"); 
+            match("null");
 
 
             }
@@ -1110,7 +1110,7 @@ public class JavaLexer extends Lexer {
             // Java.g:54:7: ( 'true' )
             // Java.g:54:9: 'true'
             {
-            match("true"); 
+            match("true");
 
 
             }
@@ -1131,7 +1131,7 @@ public class JavaLexer extends Lexer {
             // Java.g:55:7: ( 'false' )
             // Java.g:55:9: 'false'
             {
-            match("false"); 
+            match("false");
 
 
             }
@@ -1152,7 +1152,7 @@ public class JavaLexer extends Lexer {
             // Java.g:56:7: ( '@' )
             // Java.g:56:9: '@'
             {
-            match('@'); 
+            match('@');
 
             }
 
@@ -1172,7 +1172,7 @@ public class JavaLexer extends Lexer {
             // Java.g:57:7: ( 'default' )
             // Java.g:57:9: 'default'
             {
-            match("default"); 
+            match("default");
 
 
             }
@@ -1193,7 +1193,7 @@ public class JavaLexer extends Lexer {
             // Java.g:58:7: ( ':' )
             // Java.g:58:9: ':'
             {
-            match(':'); 
+            match(':');
 
             }
 
@@ -1213,7 +1213,7 @@ public class JavaLexer extends Lexer {
             // Java.g:59:7: ( 'if' )
             // Java.g:59:9: 'if'
             {
-            match("if"); 
+            match("if");
 
 
             }
@@ -1234,7 +1234,7 @@ public class JavaLexer extends Lexer {
             // Java.g:60:7: ( 'else' )
             // Java.g:60:9: 'else'
             {
-            match("else"); 
+            match("else");
 
 
             }
@@ -1255,7 +1255,7 @@ public class JavaLexer extends Lexer {
             // Java.g:61:7: ( 'for' )
             // Java.g:61:9: 'for'
             {
-            match("for"); 
+            match("for");
 
 
             }
@@ -1276,7 +1276,7 @@ public class JavaLexer extends Lexer {
             // Java.g:62:7: ( 'while' )
             // Java.g:62:9: 'while'
             {
-            match("while"); 
+            match("while");
 
 
             }
@@ -1297,7 +1297,7 @@ public class JavaLexer extends Lexer {
             // Java.g:63:7: ( 'do' )
             // Java.g:63:9: 'do'
             {
-            match("do"); 
+            match("do");
 
 
             }
@@ -1318,7 +1318,7 @@ public class JavaLexer extends Lexer {
             // Java.g:64:7: ( 'try' )
             // Java.g:64:9: 'try'
             {
-            match("try"); 
+            match("try");
 
 
             }
@@ -1339,7 +1339,7 @@ public class JavaLexer extends Lexer {
             // Java.g:65:7: ( 'finally' )
             // Java.g:65:9: 'finally'
             {
-            match("finally"); 
+            match("finally");
 
 
             }
@@ -1360,7 +1360,7 @@ public class JavaLexer extends Lexer {
             // Java.g:66:7: ( 'switch' )
             // Java.g:66:9: 'switch'
             {
-            match("switch"); 
+            match("switch");
 
 
             }
@@ -1381,7 +1381,7 @@ public class JavaLexer extends Lexer {
             // Java.g:67:7: ( 'return' )
             // Java.g:67:9: 'return'
             {
-            match("return"); 
+            match("return");
 
 
             }
@@ -1402,7 +1402,7 @@ public class JavaLexer extends Lexer {
             // Java.g:68:7: ( 'throw' )
             // Java.g:68:9: 'throw'
             {
-            match("throw"); 
+            match("throw");
 
 
             }
@@ -1423,7 +1423,7 @@ public class JavaLexer extends Lexer {
             // Java.g:69:7: ( 'break' )
             // Java.g:69:9: 'break'
             {
-            match("break"); 
+            match("break");
 
 
             }
@@ -1444,7 +1444,7 @@ public class JavaLexer extends Lexer {
             // Java.g:70:7: ( 'continue' )
             // Java.g:70:9: 'continue'
             {
-            match("continue"); 
+            match("continue");
 
 
             }
@@ -1465,7 +1465,7 @@ public class JavaLexer extends Lexer {
             // Java.g:71:7: ( 'catch' )
             // Java.g:71:9: 'catch'
             {
-            match("catch"); 
+            match("catch");
 
 
             }
@@ -1486,7 +1486,7 @@ public class JavaLexer extends Lexer {
             // Java.g:72:7: ( 'case' )
             // Java.g:72:9: 'case'
             {
-            match("case"); 
+            match("case");
 
 
             }
@@ -1507,7 +1507,7 @@ public class JavaLexer extends Lexer {
             // Java.g:73:7: ( '+=' )
             // Java.g:73:9: '+='
             {
-            match("+="); 
+            match("+=");
 
 
             }
@@ -1528,7 +1528,7 @@ public class JavaLexer extends Lexer {
             // Java.g:74:7: ( '-=' )
             // Java.g:74:9: '-='
             {
-            match("-="); 
+            match("-=");
 
 
             }
@@ -1549,7 +1549,7 @@ public class JavaLexer extends Lexer {
             // Java.g:75:7: ( '*=' )
             // Java.g:75:9: '*='
             {
-            match("*="); 
+            match("*=");
 
 
             }
@@ -1570,7 +1570,7 @@ public class JavaLexer extends Lexer {
             // Java.g:76:7: ( '/=' )
             // Java.g:76:9: '/='
             {
-            match("/="); 
+            match("/=");
 
 
             }
@@ -1591,7 +1591,7 @@ public class JavaLexer extends Lexer {
             // Java.g:77:7: ( '&=' )
             // Java.g:77:9: '&='
             {
-            match("&="); 
+            match("&=");
 
 
             }
@@ -1612,7 +1612,7 @@ public class JavaLexer extends Lexer {
             // Java.g:78:7: ( '|=' )
             // Java.g:78:9: '|='
             {
-            match("|="); 
+            match("|=");
 
 
             }
@@ -1633,7 +1633,7 @@ public class JavaLexer extends Lexer {
             // Java.g:79:7: ( '^=' )
             // Java.g:79:9: '^='
             {
-            match("^="); 
+            match("^=");
 
 
             }
@@ -1654,7 +1654,7 @@ public class JavaLexer extends Lexer {
             // Java.g:80:7: ( '%=' )
             // Java.g:80:9: '%='
             {
-            match("%="); 
+            match("%=");
 
 
             }
@@ -1675,7 +1675,7 @@ public class JavaLexer extends Lexer {
             // Java.g:81:7: ( '||' )
             // Java.g:81:9: '||'
             {
-            match("||"); 
+            match("||");
 
 
             }
@@ -1696,7 +1696,7 @@ public class JavaLexer extends Lexer {
             // Java.g:82:7: ( '&&' )
             // Java.g:82:9: '&&'
             {
-            match("&&"); 
+            match("&&");
 
 
             }
@@ -1717,7 +1717,7 @@ public class JavaLexer extends Lexer {
             // Java.g:83:8: ( '|' )
             // Java.g:83:10: '|'
             {
-            match('|'); 
+            match('|');
 
             }
 
@@ -1737,7 +1737,7 @@ public class JavaLexer extends Lexer {
             // Java.g:84:8: ( '^' )
             // Java.g:84:10: '^'
             {
-            match('^'); 
+            match('^');
 
             }
 
@@ -1757,7 +1757,7 @@ public class JavaLexer extends Lexer {
             // Java.g:85:8: ( '==' )
             // Java.g:85:10: '=='
             {
-            match("=="); 
+            match("==");
 
 
             }
@@ -1778,7 +1778,7 @@ public class JavaLexer extends Lexer {
             // Java.g:86:8: ( '!=' )
             // Java.g:86:10: '!='
             {
-            match("!="); 
+            match("!=");
 
 
             }
@@ -1799,7 +1799,7 @@ public class JavaLexer extends Lexer {
             // Java.g:87:8: ( 'instanceof' )
             // Java.g:87:10: 'instanceof'
             {
-            match("instanceof"); 
+            match("instanceof");
 
 
             }
@@ -1820,7 +1820,7 @@ public class JavaLexer extends Lexer {
             // Java.g:88:8: ( '+' )
             // Java.g:88:10: '+'
             {
-            match('+'); 
+            match('+');
 
             }
 
@@ -1840,7 +1840,7 @@ public class JavaLexer extends Lexer {
             // Java.g:89:8: ( '-' )
             // Java.g:89:10: '-'
             {
-            match('-'); 
+            match('-');
 
             }
 
@@ -1860,7 +1860,7 @@ public class JavaLexer extends Lexer {
             // Java.g:90:8: ( '/' )
             // Java.g:90:10: '/'
             {
-            match('/'); 
+            match('/');
 
             }
 
@@ -1880,7 +1880,7 @@ public class JavaLexer extends Lexer {
             // Java.g:91:8: ( '%' )
             // Java.g:91:10: '%'
             {
-            match('%'); 
+            match('%');
 
             }
 
@@ -1900,7 +1900,7 @@ public class JavaLexer extends Lexer {
             // Java.g:92:8: ( '++' )
             // Java.g:92:10: '++'
             {
-            match("++"); 
+            match("++");
 
 
             }
@@ -1921,7 +1921,7 @@ public class JavaLexer extends Lexer {
             // Java.g:93:8: ( '--' )
             // Java.g:93:10: '--'
             {
-            match("--"); 
+            match("--");
 
 
             }
@@ -1942,7 +1942,7 @@ public class JavaLexer extends Lexer {
             // Java.g:94:8: ( '~' )
             // Java.g:94:10: '~'
             {
-            match('~'); 
+            match('~');
 
             }
 
@@ -1962,7 +1962,7 @@ public class JavaLexer extends Lexer {
             // Java.g:95:8: ( '!' )
             // Java.g:95:10: '!'
             {
-            match('!'); 
+            match('!');
 
             }
 
@@ -1982,7 +1982,7 @@ public class JavaLexer extends Lexer {
             // Java.g:96:8: ( 'new' )
             // Java.g:96:10: 'new'
             {
-            match("new"); 
+            match("new");
 
 
             }
@@ -2003,7 +2003,7 @@ public class JavaLexer extends Lexer {
             // Java.g:909:12: ( '0' ( 'x' | 'X' ) ( HexDigit )+ ( IntegerTypeSuffix )? )
             // Java.g:909:14: '0' ( 'x' | 'X' ) ( HexDigit )+ ( IntegerTypeSuffix )?
             {
-            match('0'); 
+            match('0');
             if ( input.LA(1)=='X'||input.LA(1)=='x' ) {
                 input.consume();
 
@@ -2029,7 +2029,7 @@ public class JavaLexer extends Lexer {
             	case 1 :
             	    // Java.g:909:28: HexDigit
             	    {
-            	    mHexDigit(); 
+            	    mHexDigit();
 
             	    }
             	    break;
@@ -2054,7 +2054,7 @@ public class JavaLexer extends Lexer {
                 case 1 :
                     // Java.g:909:38: IntegerTypeSuffix
                     {
-                    mIntegerTypeSuffix(); 
+                    mIntegerTypeSuffix();
 
                     }
                     break;
@@ -2100,14 +2100,14 @@ public class JavaLexer extends Lexer {
                 case 1 :
                     // Java.g:911:19: '0'
                     {
-                    match('0'); 
+                    match('0');
 
                     }
                     break;
                 case 2 :
                     // Java.g:911:25: '1' .. '9' ( '0' .. '9' )*
                     {
-                    matchRange('1','9'); 
+                    matchRange('1','9');
                     // Java.g:911:34: ( '0' .. '9' )*
                     loop3:
                     do {
@@ -2123,7 +2123,7 @@ public class JavaLexer extends Lexer {
                     	case 1 :
                     	    // Java.g:911:34: '0' .. '9'
                     	    {
-                    	    matchRange('0','9'); 
+                    	    matchRange('0','9');
 
                     	    }
                     	    break;
@@ -2150,7 +2150,7 @@ public class JavaLexer extends Lexer {
                 case 1 :
                     // Java.g:911:45: IntegerTypeSuffix
                     {
-                    mIntegerTypeSuffix(); 
+                    mIntegerTypeSuffix();
 
                     }
                     break;
@@ -2176,7 +2176,7 @@ public class JavaLexer extends Lexer {
             // Java.g:913:14: ( '0' ( '0' .. '7' )+ ( IntegerTypeSuffix )? )
             // Java.g:913:16: '0' ( '0' .. '7' )+ ( IntegerTypeSuffix )?
             {
-            match('0'); 
+            match('0');
             // Java.g:913:20: ( '0' .. '7' )+
             int cnt6=0;
             loop6:
@@ -2193,7 +2193,7 @@ public class JavaLexer extends Lexer {
             	case 1 :
             	    // Java.g:913:21: '0' .. '7'
             	    {
-            	    matchRange('0','7'); 
+            	    matchRange('0','7');
 
             	    }
             	    break;
@@ -2218,7 +2218,7 @@ public class JavaLexer extends Lexer {
                 case 1 :
                     // Java.g:913:32: IntegerTypeSuffix
                     {
-                    mIntegerTypeSuffix(); 
+                    mIntegerTypeSuffix();
 
                     }
                     break;
@@ -2312,7 +2312,7 @@ public class JavaLexer extends Lexer {
                     	case 1 :
                     	    // Java.g:922:10: '0' .. '9'
                     	    {
-                    	    matchRange('0','9'); 
+                    	    matchRange('0','9');
 
                     	    }
                     	    break;
@@ -2326,7 +2326,7 @@ public class JavaLexer extends Lexer {
                         cnt8++;
                     } while (true);
 
-                    match('.'); 
+                    match('.');
                     // Java.g:922:25: ( '0' .. '9' )*
                     loop9:
                     do {
@@ -2342,7 +2342,7 @@ public class JavaLexer extends Lexer {
                     	case 1 :
                     	    // Java.g:922:26: '0' .. '9'
                     	    {
-                    	    matchRange('0','9'); 
+                    	    matchRange('0','9');
 
                     	    }
                     	    break;
@@ -2363,7 +2363,7 @@ public class JavaLexer extends Lexer {
                         case 1 :
                             // Java.g:922:37: Exponent
                             {
-                            mExponent(); 
+                            mExponent();
 
                             }
                             break;
@@ -2381,7 +2381,7 @@ public class JavaLexer extends Lexer {
                         case 1 :
                             // Java.g:922:47: FloatTypeSuffix
                             {
-                            mFloatTypeSuffix(); 
+                            mFloatTypeSuffix();
 
                             }
                             break;
@@ -2394,7 +2394,7 @@ public class JavaLexer extends Lexer {
                 case 2 :
                     // Java.g:923:9: '.' ( '0' .. '9' )+ ( Exponent )? ( FloatTypeSuffix )?
                     {
-                    match('.'); 
+                    match('.');
                     // Java.g:923:13: ( '0' .. '9' )+
                     int cnt12=0;
                     loop12:
@@ -2411,7 +2411,7 @@ public class JavaLexer extends Lexer {
                     	case 1 :
                     	    // Java.g:923:14: '0' .. '9'
                     	    {
-                    	    matchRange('0','9'); 
+                    	    matchRange('0','9');
 
                     	    }
                     	    break;
@@ -2436,7 +2436,7 @@ public class JavaLexer extends Lexer {
                         case 1 :
                             // Java.g:923:25: Exponent
                             {
-                            mExponent(); 
+                            mExponent();
 
                             }
                             break;
@@ -2454,7 +2454,7 @@ public class JavaLexer extends Lexer {
                         case 1 :
                             // Java.g:923:35: FloatTypeSuffix
                             {
-                            mFloatTypeSuffix(); 
+                            mFloatTypeSuffix();
 
                             }
                             break;
@@ -2483,7 +2483,7 @@ public class JavaLexer extends Lexer {
                     	case 1 :
                     	    // Java.g:924:10: '0' .. '9'
                     	    {
-                    	    matchRange('0','9'); 
+                    	    matchRange('0','9');
 
                     	    }
                     	    break;
@@ -2497,7 +2497,7 @@ public class JavaLexer extends Lexer {
                         cnt15++;
                     } while (true);
 
-                    mExponent(); 
+                    mExponent();
                     // Java.g:924:30: ( FloatTypeSuffix )?
                     int alt16=2;
                     int LA16_0 = input.LA(1);
@@ -2509,7 +2509,7 @@ public class JavaLexer extends Lexer {
                         case 1 :
                             // Java.g:924:30: FloatTypeSuffix
                             {
-                            mFloatTypeSuffix(); 
+                            mFloatTypeSuffix();
 
                             }
                             break;
@@ -2538,7 +2538,7 @@ public class JavaLexer extends Lexer {
                     	case 1 :
                     	    // Java.g:925:10: '0' .. '9'
                     	    {
-                    	    matchRange('0','9'); 
+                    	    matchRange('0','9');
 
                     	    }
                     	    break;
@@ -2552,7 +2552,7 @@ public class JavaLexer extends Lexer {
                         cnt17++;
                     } while (true);
 
-                    mFloatTypeSuffix(); 
+                    mFloatTypeSuffix();
 
                     }
                     break;
@@ -2623,7 +2623,7 @@ public class JavaLexer extends Lexer {
             	case 1 :
             	    // Java.g:929:34: '0' .. '9'
             	    {
-            	    matchRange('0','9'); 
+            	    matchRange('0','9');
 
             	    }
             	    break;
@@ -2678,7 +2678,7 @@ public class JavaLexer extends Lexer {
             // Java.g:935:5: ( '\\'' ( EscapeSequence | ~ ( '\\'' | '\\\\' ) ) '\\'' )
             // Java.g:935:9: '\\'' ( EscapeSequence | ~ ( '\\'' | '\\\\' ) ) '\\''
             {
-            match('\''); 
+            match('\'');
             // Java.g:935:14: ( EscapeSequence | ~ ( '\\'' | '\\\\' ) )
             int alt21=2;
             int LA21_0 = input.LA(1);
@@ -2699,7 +2699,7 @@ public class JavaLexer extends Lexer {
                 case 1 :
                     // Java.g:935:16: EscapeSequence
                     {
-                    mEscapeSequence(); 
+                    mEscapeSequence();
 
                     }
                     break;
@@ -2721,7 +2721,7 @@ public class JavaLexer extends Lexer {
 
             }
 
-            match('\''); 
+            match('\'');
 
             }
 
@@ -2741,7 +2741,7 @@ public class JavaLexer extends Lexer {
             // Java.g:939:5: ( '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"' )
             // Java.g:939:8: '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"'
             {
-            match('\"'); 
+            match('\"');
             // Java.g:939:12: ( EscapeSequence | ~ ( '\\\\' | '\"' ) )*
             loop22:
             do {
@@ -2760,7 +2760,7 @@ public class JavaLexer extends Lexer {
             	case 1 :
             	    // Java.g:939:14: EscapeSequence
             	    {
-            	    mEscapeSequence(); 
+            	    mEscapeSequence();
 
             	    }
             	    break;
@@ -2785,7 +2785,7 @@ public class JavaLexer extends Lexer {
                 }
             } while (true);
 
-            match('\"'); 
+            match('\"');
 
             }
 
@@ -2853,7 +2853,7 @@ public class JavaLexer extends Lexer {
                 case 1 :
                     // Java.g:944:9: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' )
                     {
-                    match('\\'); 
+                    match('\\');
                     if ( input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||input.LA(1)=='t' ) {
                         input.consume();
 
@@ -2869,14 +2869,14 @@ public class JavaLexer extends Lexer {
                 case 2 :
                     // Java.g:945:9: UnicodeEscape
                     {
-                    mUnicodeEscape(); 
+                    mUnicodeEscape();
 
                     }
                     break;
                 case 3 :
                     // Java.g:946:9: OctalEscape
                     {
-                    mOctalEscape(); 
+                    mOctalEscape();
 
                     }
                     break;
@@ -2939,25 +2939,25 @@ public class JavaLexer extends Lexer {
                 case 1 :
                     // Java.g:951:9: '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' )
                     {
-                    match('\\'); 
+                    match('\\');
                     // Java.g:951:14: ( '0' .. '3' )
                     // Java.g:951:15: '0' .. '3'
                     {
-                    matchRange('0','3'); 
+                    matchRange('0','3');
 
                     }
 
                     // Java.g:951:25: ( '0' .. '7' )
                     // Java.g:951:26: '0' .. '7'
                     {
-                    matchRange('0','7'); 
+                    matchRange('0','7');
 
                     }
 
                     // Java.g:951:36: ( '0' .. '7' )
                     // Java.g:951:37: '0' .. '7'
                     {
-                    matchRange('0','7'); 
+                    matchRange('0','7');
 
                     }
 
@@ -2967,18 +2967,18 @@ public class JavaLexer extends Lexer {
                 case 2 :
                     // Java.g:952:9: '\\\\' ( '0' .. '7' ) ( '0' .. '7' )
                     {
-                    match('\\'); 
+                    match('\\');
                     // Java.g:952:14: ( '0' .. '7' )
                     // Java.g:952:15: '0' .. '7'
                     {
-                    matchRange('0','7'); 
+                    matchRange('0','7');
 
                     }
 
                     // Java.g:952:25: ( '0' .. '7' )
                     // Java.g:952:26: '0' .. '7'
                     {
-                    matchRange('0','7'); 
+                    matchRange('0','7');
 
                     }
 
@@ -2988,11 +2988,11 @@ public class JavaLexer extends Lexer {
                 case 3 :
                     // Java.g:953:9: '\\\\' ( '0' .. '7' )
                     {
-                    match('\\'); 
+                    match('\\');
                     // Java.g:953:14: ( '0' .. '7' )
                     // Java.g:953:15: '0' .. '7'
                     {
-                    matchRange('0','7'); 
+                    matchRange('0','7');
 
                     }
 
@@ -3013,12 +3013,12 @@ public class JavaLexer extends Lexer {
             // Java.g:958:5: ( '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit )
             // Java.g:958:9: '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit
             {
-            match('\\'); 
-            match('u'); 
-            mHexDigit(); 
-            mHexDigit(); 
-            mHexDigit(); 
-            mHexDigit(); 
+            match('\\');
+            match('u');
+            mHexDigit();
+            mHexDigit();
+            mHexDigit();
+            mHexDigit();
 
             }
 
@@ -3036,7 +3036,7 @@ public class JavaLexer extends Lexer {
             // Java.g:961:5: ( 'enum' )
             // Java.g:961:9: 'enum'
             {
-            match("enum"); 
+            match("enum");
 
             if (!enumIsKeyword) _type=Identifier;
 
@@ -3058,7 +3058,7 @@ public class JavaLexer extends Lexer {
             // Java.g:965:5: ( 'assert' )
             // Java.g:965:9: 'assert'
             {
-            match("assert"); 
+            match("assert");
 
             if (!assertIsKeyword) _type=Identifier;
 
@@ -3080,7 +3080,7 @@ public class JavaLexer extends Lexer {
             // Java.g:969:5: ( Letter ( Letter | JavaIDDigit )* )
             // Java.g:969:9: Letter ( Letter | JavaIDDigit )*
             {
-            mLetter(); 
+            mLetter();
             // Java.g:969:16: ( Letter | JavaIDDigit )*
             loop25:
             do {
@@ -3210,7 +3210,7 @@ public class JavaLexer extends Lexer {
             // Java.g:1015:5: ( '/*' ( options {greedy=false; } : . )* '*/' )
             // Java.g:1015:9: '/*' ( options {greedy=false; } : . )* '*/'
             {
-            match("/*"); 
+            match("/*");
 
             // Java.g:1015:14: ( options {greedy=false; } : . )*
             loop26:
@@ -3239,7 +3239,7 @@ public class JavaLexer extends Lexer {
             	case 1 :
             	    // Java.g:1015:42: .
             	    {
-            	    matchAny(); 
+            	    matchAny();
 
             	    }
             	    break;
@@ -3249,7 +3249,7 @@ public class JavaLexer extends Lexer {
                 }
             } while (true);
 
-            match("*/"); 
+            match("*/");
 
             _channel=HIDDEN;
 
@@ -3271,7 +3271,7 @@ public class JavaLexer extends Lexer {
             // Java.g:1019:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
             // Java.g:1019:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
             {
-            match("//"); 
+            match("//");
 
             // Java.g:1019:12: (~ ( '\\n' | '\\r' ) )*
             loop27:
@@ -3317,14 +3317,14 @@ public class JavaLexer extends Lexer {
                 case 1 :
                     // Java.g:1019:26: '\\r'
                     {
-                    match('\r'); 
+                    match('\r');
 
                     }
                     break;
 
             }
 
-            match('\n'); 
+            match('\n');
             _channel=HIDDEN;
 
             }
@@ -3345,707 +3345,707 @@ public class JavaLexer extends Lexer {
             case 1 :
                 // Java.g:1:10: T__25
                 {
-                mT__25(); 
+                mT__25();
 
                 }
                 break;
             case 2 :
                 // Java.g:1:16: T__26
                 {
-                mT__26(); 
+                mT__26();
 
                 }
                 break;
             case 3 :
                 // Java.g:1:22: T__27
                 {
-                mT__27(); 
+                mT__27();
 
                 }
                 break;
             case 4 :
                 // Java.g:1:28: T__28
                 {
-                mT__28(); 
+                mT__28();
 
                 }
                 break;
             case 5 :
                 // Java.g:1:34: T__29
                 {
-                mT__29(); 
+                mT__29();
 
                 }
                 break;
             case 6 :
                 // Java.g:1:40: T__30
                 {
-                mT__30(); 
+                mT__30();
 
                 }
                 break;
             case 7 :
                 // Java.g:1:46: T__31
                 {
-                mT__31(); 
+                mT__31();
 
                 }
                 break;
             case 8 :
                 // Java.g:1:52: T__32
                 {
-                mT__32(); 
+                mT__32();
 
                 }
                 break;
             case 9 :
                 // Java.g:1:58: T__33
                 {
-                mT__33(); 
+                mT__33();
 
                 }
                 break;
             case 10 :
                 // Java.g:1:64: T__34
                 {
-                mT__34(); 
+                mT__34();
 
                 }
                 break;
             case 11 :
                 // Java.g:1:70: T__35
                 {
-                mT__35(); 
+                mT__35();
 
                 }
                 break;
             case 12 :
                 // Java.g:1:76: T__36
                 {
-                mT__36(); 
+                mT__36();
 
                 }
                 break;
             case 13 :
                 // Java.g:1:82: T__37
                 {
-                mT__37(); 
+                mT__37();
 
                 }
                 break;
             case 14 :
                 // Java.g:1:88: T__38
                 {
-                mT__38(); 
+                mT__38();
 
                 }
                 break;
             case 15 :
                 // Java.g:1:94: T__39
                 {
-                mT__39(); 
+                mT__39();
 
                 }
                 break;
             case 16 :
                 // Java.g:1:100: T__40
                 {
-                mT__40(); 
+                mT__40();
 
                 }
                 break;
             case 17 :
                 // Java.g:1:106: T__41
                 {
-                mT__41(); 
+                mT__41();
 
                 }
                 break;
             case 18 :
                 // Java.g:1:112: T__42
                 {
-                mT__42(); 
+                mT__42();
 
                 }
                 break;
             case 19 :
                 // Java.g:1:118: T__43
                 {
-                mT__43(); 
+                mT__43();
 
                 }
                 break;
             case 20 :
                 // Java.g:1:124: T__44
                 {
-                mT__44(); 
+                mT__44();
 
                 }
                 break;
             case 21 :
                 // Java.g:1:130: T__45
                 {
-                mT__45(); 
+                mT__45();
 
                 }
                 break;
             case 22 :
                 // Java.g:1:136: T__46
                 {
-                mT__46(); 
+                mT__46();
 
                 }
                 break;
             case 23 :
                 // Java.g:1:142: T__47
                 {
-                mT__47(); 
+                mT__47();
 
                 }
                 break;
             case 24 :
                 // Java.g:1:148: T__48
                 {
-                mT__48(); 
+                mT__48();
 
                 }
                 break;
             case 25 :
                 // Java.g:1:154: T__49
                 {
-                mT__49(); 
+                mT__49();
 
                 }
                 break;
             case 26 :
                 // Java.g:1:160: T__50
                 {
-                mT__50(); 
+                mT__50();
 
                 }
                 break;
             case 27 :
                 // Java.g:1:166: T__51
                 {
-                mT__51(); 
+                mT__51();
 
                 }
                 break;
             case 28 :
                 // Java.g:1:172: T__52
                 {
-                mT__52(); 
+                mT__52();
 
                 }
                 break;
             case 29 :
                 // Java.g:1:178: T__53
                 {
-                mT__53(); 
+                mT__53();
 
                 }
                 break;
             case 30 :
                 // Java.g:1:184: T__54
                 {
-                mT__54(); 
+                mT__54();
 
                 }
                 break;
             case 31 :
                 // Java.g:1:190: T__55
                 {
-                mT__55(); 
+                mT__55();
 
                 }
                 break;
             case 32 :
                 // Java.g:1:196: T__56
                 {
-                mT__56(); 
+                mT__56();
 
                 }
                 break;
             case 33 :
                 // Java.g:1:202: T__57
                 {
-                mT__57(); 
+                mT__57();
 
                 }
                 break;
             case 34 :
                 // Java.g:1:208: T__58
                 {
-                mT__58(); 
+                mT__58();
 
                 }
                 break;
             case 35 :
                 // Java.g:1:214: T__59
                 {
-                mT__59(); 
+                mT__59();
 
                 }
                 break;
             case 36 :
                 // Java.g:1:220: T__60
                 {
-                mT__60(); 
+                mT__60();
 
                 }
                 break;
             case 37 :
                 // Java.g:1:226: T__61
                 {
-                mT__61(); 
+                mT__61();
 
                 }
                 break;
             case 38 :
                 // Java.g:1:232: T__62
                 {
-                mT__62(); 
+                mT__62();
 
                 }
                 break;
             case 39 :
                 // Java.g:1:238: T__63
                 {
-                mT__63(); 
+                mT__63();
 
                 }
                 break;
             case 40 :
                 // Java.g:1:244: T__64
                 {
-                mT__64(); 
+                mT__64();
 
                 }
                 break;
             case 41 :
                 // Java.g:1:250: T__65
                 {
-                mT__65(); 
+                mT__65();
 
                 }
                 break;
             case 42 :
                 // Java.g:1:256: T__66
                 {
-                mT__66(); 
+                mT__66();
 
                 }
                 break;
             case 43 :
                 // Java.g:1:262: T__67
                 {
-                mT__67(); 
+                mT__67();
 
                 }
                 break;
             case 44 :
                 // Java.g:1:268: T__68
                 {
-                mT__68(); 
+                mT__68();
 
                 }
                 break;
             case 45 :
                 // Java.g:1:274: T__69
                 {
-                mT__69(); 
+                mT__69();
 
                 }
                 break;
             case 46 :
                 // Java.g:1:280: T__70
                 {
-                mT__70(); 
+                mT__70();
 
                 }
                 break;
             case 47 :
                 // Java.g:1:286: T__71
                 {
-                mT__71(); 
+                mT__71();
 
                 }
                 break;
             case 48 :
                 // Java.g:1:292: T__72
                 {
-                mT__72(); 
+                mT__72();
 
                 }
                 break;
             case 49 :
                 // Java.g:1:298: T__73
                 {
-                mT__73(); 
+                mT__73();
 
                 }
                 break;
             case 50 :
                 // Java.g:1:304: T__74
                 {
-                mT__74(); 
+                mT__74();
 
                 }
                 break;
             case 51 :
                 // Java.g:1:310: T__75
                 {
-                mT__75(); 
+                mT__75();
 
                 }
                 break;
             case 52 :
                 // Java.g:1:316: T__76
                 {
-                mT__76(); 
+                mT__76();
 
                 }
                 break;
             case 53 :
                 // Java.g:1:322: T__77
                 {
-                mT__77(); 
+                mT__77();
 
                 }
                 break;
             case 54 :
                 // Java.g:1:328: T__78
                 {
-                mT__78(); 
+                mT__78();
 
                 }
                 break;
             case 55 :
                 // Java.g:1:334: T__79
                 {
-                mT__79(); 
+                mT__79();
 
                 }
                 break;
             case 56 :
                 // Java.g:1:340: T__80
                 {
-                mT__80(); 
+                mT__80();
 
                 }
                 break;
             case 57 :
                 // Java.g:1:346: T__81
                 {
-                mT__81(); 
+                mT__81();
 
                 }
                 break;
             case 58 :
                 // Java.g:1:352: T__82
                 {
-                mT__82(); 
+                mT__82();
 
                 }
                 break;
             case 59 :
                 // Java.g:1:358: T__83
                 {
-                mT__83(); 
+                mT__83();
 
                 }
                 break;
             case 60 :
                 // Java.g:1:364: T__84
                 {
-                mT__84(); 
+                mT__84();
 
                 }
                 break;
             case 61 :
                 // Java.g:1:370: T__85
                 {
-                mT__85(); 
+                mT__85();
 
                 }
                 break;
             case 62 :
                 // Java.g:1:376: T__86
                 {
-                mT__86(); 
+                mT__86();
 
                 }
                 break;
             case 63 :
                 // Java.g:1:382: T__87
                 {
-                mT__87(); 
+                mT__87();
 
                 }
                 break;
             case 64 :
                 // Java.g:1:388: T__88
                 {
-                mT__88(); 
+                mT__88();
 
                 }
                 break;
             case 65 :
                 // Java.g:1:394: T__89
                 {
-                mT__89(); 
+                mT__89();
 
                 }
                 break;
             case 66 :
                 // Java.g:1:400: T__90
                 {
-                mT__90(); 
+                mT__90();
 
                 }
                 break;
             case 67 :
                 // Java.g:1:406: T__91
                 {
-                mT__91(); 
+                mT__91();
 
                 }
                 break;
             case 68 :
                 // Java.g:1:412: T__92
                 {
-                mT__92(); 
+                mT__92();
 
                 }
                 break;
             case 69 :
                 // Java.g:1:418: T__93
                 {
-                mT__93(); 
+                mT__93();
 
                 }
                 break;
             case 70 :
                 // Java.g:1:424: T__94
                 {
-                mT__94(); 
+                mT__94();
 
                 }
                 break;
             case 71 :
                 // Java.g:1:430: T__95
                 {
-                mT__95(); 
+                mT__95();
 
                 }
                 break;
             case 72 :
                 // Java.g:1:436: T__96
                 {
-                mT__96(); 
+                mT__96();
 
                 }
                 break;
             case 73 :
                 // Java.g:1:442: T__97
                 {
-                mT__97(); 
+                mT__97();
 
                 }
                 break;
             case 74 :
                 // Java.g:1:448: T__98
                 {
-                mT__98(); 
+                mT__98();
 
                 }
                 break;
             case 75 :
                 // Java.g:1:454: T__99
                 {
-                mT__99(); 
+                mT__99();
 
                 }
                 break;
             case 76 :
                 // Java.g:1:460: T__100
                 {
-                mT__100(); 
+                mT__100();
 
                 }
                 break;
             case 77 :
                 // Java.g:1:467: T__101
                 {
-                mT__101(); 
+                mT__101();
 
                 }
                 break;
             case 78 :
                 // Java.g:1:474: T__102
                 {
-                mT__102(); 
+                mT__102();
 
                 }
                 break;
             case 79 :
                 // Java.g:1:481: T__103
                 {
-                mT__103(); 
+                mT__103();
 
                 }
                 break;
             case 80 :
                 // Java.g:1:488: T__104
                 {
-                mT__104(); 
+                mT__104();
 
                 }
                 break;
             case 81 :
                 // Java.g:1:495: T__105
                 {
-                mT__105(); 
+                mT__105();
 
                 }
                 break;
             case 82 :
                 // Java.g:1:502: T__106
                 {
-                mT__106(); 
+                mT__106();
 
                 }
                 break;
             case 83 :
                 // Java.g:1:509: T__107
                 {
-                mT__107(); 
+                mT__107();
 
                 }
                 break;
             case 84 :
                 // Java.g:1:516: T__108
                 {
-                mT__108(); 
+                mT__108();
 
                 }
                 break;
             case 85 :
                 // Java.g:1:523: T__109
                 {
-                mT__109(); 
+                mT__109();
 
                 }
                 break;
             case 86 :
                 // Java.g:1:530: T__110
                 {
-                mT__110(); 
+                mT__110();
 
                 }
                 break;
             case 87 :
                 // Java.g:1:537: T__111
                 {
-                mT__111(); 
+                mT__111();
 
                 }
                 break;
             case 88 :
                 // Java.g:1:544: T__112
                 {
-                mT__112(); 
+                mT__112();
 
                 }
                 break;
             case 89 :
                 // Java.g:1:551: T__113
                 {
-                mT__113(); 
+                mT__113();
 
                 }
                 break;
             case 90 :
                 // Java.g:1:558: HexLiteral
                 {
-                mHexLiteral(); 
+                mHexLiteral();
 
                 }
                 break;
             case 91 :
                 // Java.g:1:569: DecimalLiteral
                 {
-                mDecimalLiteral(); 
+                mDecimalLiteral();
 
                 }
                 break;
             case 92 :
                 // Java.g:1:584: OctalLiteral
                 {
-                mOctalLiteral(); 
+                mOctalLiteral();
 
                 }
                 break;
             case 93 :
                 // Java.g:1:597: FloatingPointLiteral
                 {
-                mFloatingPointLiteral(); 
+                mFloatingPointLiteral();
 
                 }
                 break;
             case 94 :
                 // Java.g:1:618: CharacterLiteral
                 {
-                mCharacterLiteral(); 
+                mCharacterLiteral();
 
                 }
                 break;
             case 95 :
                 // Java.g:1:635: StringLiteral
                 {
-                mStringLiteral(); 
+                mStringLiteral();
 
                 }
                 break;
             case 96 :
                 // Java.g:1:649: ENUM
                 {
-                mENUM(); 
+                mENUM();
 
                 }
                 break;
             case 97 :
                 // Java.g:1:654: ASSERT
                 {
-                mASSERT(); 
+                mASSERT();
 
                 }
                 break;
             case 98 :
                 // Java.g:1:661: Identifier
                 {
-                mIdentifier(); 
+                mIdentifier();
 
                 }
                 break;
             case 99 :
                 // Java.g:1:672: WS
                 {
-                mWS(); 
+                mWS();
 
                 }
                 break;
             case 100 :
                 // Java.g:1:675: COMMENT
                 {
-                mCOMMENT(); 
+                mCOMMENT();
 
                 }
                 break;
             case 101 :
                 // Java.g:1:683: LINE_COMMENT
                 {
-                mLINE_COMMENT(); 
+                mLINE_COMMENT();
 
                 }
                 break;
@@ -4760,6 +4760,6 @@ public class JavaLexer extends Lexer {
             return "1:1: Tokens : ( T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral | CharacterLiteral | StringLiteral | ENUM | ASSERT | Identifier | WS | COMMENT | LINE_COMMENT );";
         }
     }
- 
+
 
 }

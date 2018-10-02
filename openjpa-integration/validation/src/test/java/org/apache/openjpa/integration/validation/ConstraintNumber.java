@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -36,7 +36,7 @@ public class ConstraintNumber implements Serializable {
 
     @Transient
     private static final long serialVersionUID = 1L;
-    
+
     @Transient
     private static final long negative = -99;
 
@@ -54,8 +54,8 @@ public class ConstraintNumber implements Serializable {
     @Basic
     private long maxZero;   // @Max(value = 0) constraint is on the getter
 
-    
-    /* 
+
+    /*
      * Some helper methods to create the entities to test with
      */
     public static ConstraintNumber createInvalidMin() {
@@ -86,7 +86,7 @@ public class ConstraintNumber implements Serializable {
         return c;
     }
 
-    
+
     /*
      * Main entity code
      */

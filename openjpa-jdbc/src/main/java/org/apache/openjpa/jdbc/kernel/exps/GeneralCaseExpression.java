@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -95,16 +95,16 @@ public class GeneralCaseExpression
 
     private static class GeneralCaseExpState
         extends ExpState {
-        
+
         public ExpState[] states;
-        
+
         public GeneralCaseExpState(Joins joins, ExpState[] states) {
             super(joins);
             this.states = states;
         }
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf, int index) {
         GeneralCaseExpState cstate = (GeneralCaseExpState) state;
 
@@ -119,7 +119,7 @@ public class GeneralCaseExpression
         buf.append(" END ");
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         GeneralCaseExpState cstate = (GeneralCaseExpState) state;
         int i = 0;
@@ -143,12 +143,12 @@ public class GeneralCaseExpression
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         GeneralCaseExpState gstate = (GeneralCaseExpState) state;
-        for (int i = 0; i < _exp.length; i++) {   
+        for (int i = 0; i < _exp.length; i++) {
             BinaryOpExpState bstate = (BinaryOpExpState) gstate.states[i];
             ((WhenCondition) _exp[i]).getVal().calculateValue(sel, ctx,
                 bstate.state2, other, otherState);
         }
-        _val.calculateValue(sel, ctx, gstate.states[_exp.length], other, 
+        _val.calculateValue(sel, ctx, gstate.states[_exp.length], other,
             otherState);
     }
 
@@ -187,7 +187,7 @@ public class GeneralCaseExpression
     }
 
     public void setImplicitType(Class type) {
-        _cast = type;        
+        _cast = type;
     }
 
     public void setMetaData(ClassMetaData meta) {
@@ -196,15 +196,15 @@ public class GeneralCaseExpression
     public void setOtherPath(Value other) {
         this.other = other;
     }
-    
+
     public Value getOtherPath() {
         return other;
     }
-    
+
     public void setOtherState(ExpState otherState) {
         this.otherState = otherState;
     }
-    
+
     public ExpState getOtherState() {
         return otherState;
     }

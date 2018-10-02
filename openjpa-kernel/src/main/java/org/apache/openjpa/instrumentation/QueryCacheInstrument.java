@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation;
 
@@ -29,13 +29,13 @@ public interface QueryCacheInstrument {
     /**
      * Returns number of total exec requests since start.
      */
-    public long getTotalExecutionCount(); 
+    public long getTotalExecutionCount();
 
     /**
      * Returns number of total exec requests since start for
      * the specified string-ified query key.
      */
-    public long getTotalExecutionCount(String queryKey); 
+    public long getTotalExecutionCount(String queryKey);
 
     /**
      * Returns number of total execution requests since last reset
@@ -49,13 +49,13 @@ public interface QueryCacheInstrument {
     public long getExecutionCount(String queryKey);
 
     /**
-     * Returns number of total read requests that have been found in cache since 
+     * Returns number of total read requests that have been found in cache since
      * last reset.
      */
     public long getHitCount();
 
     /**
-     * Returns number of total read requests that have been found in cache since 
+     * Returns number of total read requests that have been found in cache since
      * last reset for the specified string-ified query key.
      */
     public long getHitCount(String queryKey);
@@ -75,7 +75,7 @@ public interface QueryCacheInstrument {
      * Resets cache statistics
      */
     public void reset();
-    
+
     /**
      * Returns date since cache statistics collection were last reset.
      */
@@ -85,7 +85,7 @@ public interface QueryCacheInstrument {
      * Returns date cache statistics collection started.
      */
     public Date startDate();
-    
+
     /**
      * Returns all the string-ified keys for query results in the cache.
      */
@@ -95,7 +95,7 @@ public interface QueryCacheInstrument {
      * Returns number of total evictions since last reset
      */
     public long getEvictionCount();
-    
+
     /**
      * Returns number of total eviction requests since start.
      */
@@ -106,5 +106,5 @@ public interface QueryCacheInstrument {
      * @return entries
      */
     public long count();
-    
+
 }

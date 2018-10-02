@@ -42,7 +42,7 @@ public class Employee {
     private String lastName;
 
     @OneToMany(mappedBy = "employee", cascade = { CascadeType.MERGE,
-        CascadeType.PERSIST })     
+        CascadeType.PERSIST })
     private Collection<Task> tasks;
 
     public int getId() {

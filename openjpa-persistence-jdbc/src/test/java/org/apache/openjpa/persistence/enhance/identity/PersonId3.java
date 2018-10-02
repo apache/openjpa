@@ -14,37 +14,37 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
 public class PersonId3 {
     String firstName;
     String lastName;
-    
+
     public PersonId3() {}
-    
+
     public PersonId3(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
-    
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    
+
     public String getFirstName() {
         return firstName;
     }
-    
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
+
     public String getLastName() {
         return lastName;
     }
-    
+
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof PersonId3)) return false;
@@ -57,7 +57,7 @@ public class PersonId3 {
         if (lastName == null && lastName0 != null) return false;
         return true;
     }
-    
+
     public int hashCode() {
         int ret = 0;
         if (firstName != null)
@@ -66,5 +66,5 @@ public class PersonId3 {
         ret = ret * 31 + lastName.hashCode();
         return ret;
     }
-    
+
 }

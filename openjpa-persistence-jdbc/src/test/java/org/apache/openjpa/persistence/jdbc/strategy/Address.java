@@ -32,7 +32,7 @@ public class Address {
 	@Column(nullable = false, length = 30)
 	private String city;
 
-	
+
 	public Address() {}
 
 	public String getCity() {

@@ -52,14 +52,14 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
      */
     public void testDataCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx");
- 
+
         // Verify an EMF was created with the supplied instrumentation
         assertNotNull(oemf);
 
         // Verify an instrumentation manager is available
         InstrumentationManager mgr = oemf.getConfiguration().getInstrumentationManagerInstance();
         assertNotNull(mgr);
-        
+
         // Get the in-band data cache instrument
         Set<InstrumentationProvider> providers = mgr.getProviders();
         assertNotNull(providers);
@@ -71,20 +71,20 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         assertTrue(inst instanceof DataCacheInstrument);
         DataCacheInstrument dci = (DataCacheInstrument)inst;
         assertEquals(dci.getCacheName(), "default");
-        
+
         OpenJPAEntityManagerSPI oem = oemf.createEntityManager();
-        
+
         CachedEntity ce = new CachedEntity();
         int id = new Random().nextInt();
         ce.setId(id);
-        
+
         oem.getTransaction().begin();
         oem.persist(ce);
         oem.getTransaction().commit();
         oem.clear();
         assertTrue(oemf.getCache().contains(CachedEntity.class, id));
         ce = oem.find(CachedEntity.class, id);
-        
+
         assertTrue(dci.getHitCount() > 0);
         assertTrue(dci.getHitCount(clsName) > 0);
         assertTrue(dci.getWriteCount() > 0);
@@ -99,23 +99,23 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         } catch (Throwable t) {
             fail("DataCache verification failed: " + t);
         }
-        
+
         closeEMF(oemf);
     }
-    
+
     /**
      * Verifies query cache metrics are available through simple instrumentation.
      */
     public void testQueryCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx");
- 
+
         // Verify an EMF was created with the supplied instrumentation
         assertNotNull(oemf);
 
         // Verify an instrumentation manager is available
         InstrumentationManager mgr = oemf.getConfiguration().getInstrumentationManagerInstance();
         assertNotNull(mgr);
-        
+
         // Get the in-band data cache instrument
         Set<InstrumentationProvider> providers = mgr.getProviders();
         assertNotNull(providers);
@@ -127,14 +127,14 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         assertNotNull(inst);
         assertTrue(inst instanceof QueryCacheInstrument);
         QueryCacheInstrument qci = (QueryCacheInstrument)inst;
-        
+
         assertEquals(0,qci.getExecutionCount());
         assertEquals(0,qci.getTotalExecutionCount());
         assertEquals(0,qci.getHitCount());
         assertEquals(0,qci.getTotalHitCount());
-        
+
         OpenJPAEntityManagerSPI oem = oemf.createEntityManager();
-        
+
         CachedEntity ce = new CachedEntity();
         int id = new Random().nextInt();
         ce.setId(id);
@@ -146,16 +146,16 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         oem.persist(ce);
         oem.persist(ce2);
         oem.getTransaction().commit();
-       
+
         Query q = oem.createQuery("SELECT ce FROM CachedEntity ce");
-        
+
         List<?> result = q.getResultList();
         assertNotNull(result);
         assertTrue(result.size() > 1);
         oem.clear();
 
         result = q.getResultList();
-        
+
         assertTrue(qci.getExecutionCount() > 0);
         assertTrue(qci.getTotalExecutionCount() > 0);
         assertTrue(qci.getHitCount() > 0);
@@ -181,14 +181,14 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
      */
     public void testPreparedQueryCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx-qsc");
- 
+
         // Verify an EMF was created with the supplied instrumentation
         assertNotNull(oemf);
 
         // Verify an instrumentation manager is available
         InstrumentationManager mgr = oemf.getConfiguration().getInstrumentationManagerInstance();
         assertNotNull(mgr);
-        
+
         // Get the in-band data cache instrument
         Set<InstrumentationProvider> providers = mgr.getProviders();
         assertNotNull(providers);
@@ -200,14 +200,14 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         assertNotNull(inst);
         assertTrue(inst instanceof PreparedQueryCacheInstrument);
         PreparedQueryCacheInstrument qci = (PreparedQueryCacheInstrument)inst;
-        
+
         assertEquals(0,qci.getExecutionCount());
         assertEquals(0,qci.getTotalExecutionCount());
         assertEquals(0,qci.getHitCount());
         assertEquals(0,qci.getTotalHitCount());
-        
+
         OpenJPAEntityManagerSPI oem = oemf.createEntityManager();
-        
+
         CachedEntity ce = new CachedEntity();
         int id = new Random().nextInt();
         ce.setId(id);
@@ -219,16 +219,16 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         oem.persist(ce);
         oem.persist(ce2);
         oem.getTransaction().commit();
-       
+
         Query q = oem.createQuery("SELECT ce FROM CachedEntity ce");
-        
+
         List<?> result = q.getResultList();
         assertNotNull(result);
         assertTrue(result.size() > 1);
         oem.clear();
 
         result = q.getResultList();
-        
+
         assertTrue(qci.getExecutionCount() > 0);
         assertTrue(qci.getTotalExecutionCount() > 0);
         assertTrue(qci.getHitCount() > 0);
@@ -262,25 +262,25 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
                 Set<ObjectName> ons = mbs.queryNames(objname, null);
                 assertEquals(1, ons.size());
                 ObjectName on = ons.iterator().next();
-                
+
                 DataCacheJMXInstrumentMBean mbean = JMX.newMBeanProxy(mbs, on, DataCacheJMXInstrumentMBean.class);
                 // Assert data cache attributes can be accessed and are being updated through the MBean
                 assertTrue(mbean.getHitCount() > 0);
                 assertTrue(mbean.getReadCount() > 0);
                 assertTrue(mbean.getWriteCount() > 0);
-                
+
                 // Assert data cache MBean methods can be invoked
                 assertTrue(mbean.getHitCount(clsName) > 0);
                 assertTrue(mbean.getReadCount(clsName) > 0);
                 assertTrue(mbean.getWriteCount(clsName) > 0);
-                
+
                 Map<String,long[]> stats = mbean.getCacheStatistics();
                 assertNotNull(stats);
-                // Comment out classNames portion of the test which is currently broken. 
+                // Comment out classNames portion of the test which is currently broken.
                  Set<String> classNames = stats.keySet();
                  assertNotNull(classNames);
                  assertTrue(classNames.contains(clsName));
-                
+
                 // Invoke the reset method and recollect stats
                 mbean.reset();
 
@@ -302,18 +302,18 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
     public class QueryCachesMBeanCallable implements Callable<Boolean> {
 
         public static final String QC_OBJNAME = "org.apache.openjpa:type=QueryCache,cfgid=openjpa-integration-jmx,*";
-        public static final String QSC_OBJNAME = "org.apache.openjpa:type=QuerySQLCache,cfgid=openjpa-integration-jmx-qsc,*";  
+        public static final String QSC_OBJNAME = "org.apache.openjpa:type=QuerySQLCache,cfgid=openjpa-integration-jmx-qsc,*";
         public static final String QC_QM = "queryKeys";
         public static final String QSC_QM = "queries";
-        
+
         private String _objNameStr;
         private String _queryMethod;
-        
+
         public QueryCachesMBeanCallable(String objName, String queryMethod) {
             setObjName(objName);
             setQueryMethod(queryMethod);
         }
-        
+
         @SuppressWarnings("unchecked")
         public Boolean call() {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -331,7 +331,7 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
                 assertTrue(hitCount > 0);
                 assertTrue(execCount > 0);
                 // Assert data cache MBean methods can be invoked
-                
+
                 Set<String> keys = (Set<String>)mbs.invoke(on, getQueryMethod(), null, null);
                 assertNotNull(keys);
                 assertTrue(keys.size() > 0);
@@ -339,7 +339,7 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
                 for (String key : keys) {
                     Object[] parms = new Object[] { key };
                     long queryHitCount = (Long)mbs.invoke(on, "getHitCount", parms, sigs);
-                    long queryReadCount = (Long)mbs.invoke(on, "getExecutionCount", parms, sigs); 
+                    long queryReadCount = (Long)mbs.invoke(on, "getExecutionCount", parms, sigs);
                     assertTrue(queryHitCount > 0);
                     assertTrue(queryReadCount > 0);
                 }

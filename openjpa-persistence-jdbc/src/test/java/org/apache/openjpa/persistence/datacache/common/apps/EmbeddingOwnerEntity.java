@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache.common.apps;
 
@@ -31,9 +31,9 @@ import org.apache.openjpa.persistence.datacache.TestEmbeddedCollection;
 
 /**
  * Persistent entity that embeds a persistent collection of embeddable.
- *  
- * Used in {@link TestEmbeddedCollection}. 
- * 
+ *
+ * Used in {@link TestEmbeddedCollection}.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -42,9 +42,9 @@ public class EmbeddingOwnerEntity {
 	@Id
 	@GeneratedValue
 	private long id;
-	
-	@PersistentCollection(elementEmbedded = true, 
-			elementType = EmbeddedEntity.class, 
+
+	@PersistentCollection(elementEmbedded = true,
+			elementType = EmbeddedEntity.class,
 			fetch = FetchType.LAZY)
 	private List<EmbeddedEntity> members;
 
@@ -57,17 +57,17 @@ public class EmbeddingOwnerEntity {
 			members = new ArrayList<EmbeddedEntity>();
 		this.members.add(member);
 	}
-	
+
 	public void removeMember(EmbeddedEntity member) {
 		if (members != null)
 			members.remove(member);
 	}
-	
+
 	public EmbeddedEntity removeMember(int member) {
 		return (members != null) ? members.remove(member) : null;
 	}
 
 	public long getId() {
 		return id;
-	} 
+	}
 }

@@ -43,11 +43,11 @@ import org.apache.openjpa.trader.domain.Trader;
 @SuppressWarnings("serial")
 public class Exchange extends PersistenceService implements TradingService {
     private BufferedLog log;
-    
+
     public Exchange(String unit) {
         this(unit, null);
     }
-    
+
     public Exchange(String unit, Map<String,Object> config) {
         super(unit, false, PersistenceContextType.TRANSACTION, addLog(config));
         LogFactory serverLog = getUnit().getConfiguration().getLogFactory();
@@ -61,8 +61,8 @@ public class Exchange extends PersistenceService implements TradingService {
         populate();
         new MarketFeed(this).start(60*1000);
     }
-    
-    
+
+
     public Ask ask(Trader trader, Stock stock, int volume, double price) {
         EntityManager em = getEntityManager();
         begin();
@@ -72,7 +72,7 @@ public class Exchange extends PersistenceService implements TradingService {
         return ask;
     }
 
-    
+
     public Bid bid(Trader trader, Stock stock, int volume, double price) {
         EntityManager em = getEntityManager();
         begin();
@@ -82,7 +82,7 @@ public class Exchange extends PersistenceService implements TradingService {
         return bid;
     }
 
-    
+
     public List<Match> matchBid(Bid bid) {
         EntityManager em = getEntityManager();
         begin();
@@ -92,7 +92,7 @@ public class Exchange extends PersistenceService implements TradingService {
         commit();
         return matches;
     }
-    
+
     public List<Match> matchAsk(Ask ask) {
         EntityManager em = getEntityManager();
         begin();
@@ -102,7 +102,7 @@ public class Exchange extends PersistenceService implements TradingService {
         commit();
         return matches;
     }
-    
+
     @Override
     public Tradable withdraw(Tradable t) {
         if (t.isTraded()) {
@@ -116,7 +116,7 @@ public class Exchange extends PersistenceService implements TradingService {
         commit();
         return t;
     }
-    
+
     /**
      * Refresh may fail for various reasons.
      * The tradable might have been traded or withdrawn.
@@ -132,7 +132,7 @@ public class Exchange extends PersistenceService implements TradingService {
         commit();
         return t;
     }
-    
+
     public Trade trade(Match match) {
         EntityManager em = getEntityManager();
         begin();
@@ -193,13 +193,13 @@ public class Exchange extends PersistenceService implements TradingService {
         }
         q.setParameter("from", from.getNanos())
          .setParameter("to", to.getNanos());
-        
+
         List<Trade> result = q.getResultList();
         commit();
         return result;
     }
 
-    
+
     public void populate() {
         Object[][] data = {
                 new Object[]{"IBM",  Sector.INFRASTRUCTURE, 140.03},
@@ -210,10 +210,10 @@ public class Exchange extends PersistenceService implements TradingService {
                 new Object[]{"CSCO", Sector.INFRASTRUCTURE, 23.45},
                 new Object[]{"GS",   Sector.FINACE, 120.09},
                 new Object[]{"IFN", Sector.FINACE, 265.87},
-               
+
         };
         EntityManager em = getEntityManager();
-        
+
         begin();
         List<Stock> stocks = em.createQuery(GET_ALL_STOCKS, Stock.class).getResultList();
         if (stocks.isEmpty()) {
@@ -222,7 +222,7 @@ public class Exchange extends PersistenceService implements TradingService {
                 Stock stock = new Stock((String)d[0], (String)d[0], (Sector)d[1], (Double)d[2]);
                 em.persist(stock);
             }
-        
+
             for (int i = 0; i < 4; i++) {
                 Trader trader = new Trader("Trader-"+i);
                 em.persist(trader);
@@ -233,7 +233,7 @@ public class Exchange extends PersistenceService implements TradingService {
     }
 
 
-    
+
     public List<Stock> getStocks() {
         EntityManager em = getEntityManager();
         begin();
@@ -241,7 +241,7 @@ public class Exchange extends PersistenceService implements TradingService {
         commit();
         return stocks;
     }
-    
+
 
     public List<LogStatement> getLog() {
         if (log == null) {
@@ -254,7 +254,7 @@ public class Exchange extends PersistenceService implements TradingService {
     public void close() {
         super.close();
     }
-    
+
     static Map<String,Object> addLog(Map<String,Object> config) {
         if (config == null) {
             config = new HashMap<String, Object>();
@@ -262,7 +262,7 @@ public class Exchange extends PersistenceService implements TradingService {
         config.put("openjpa.Log", BufferedLog.class.getName());
         return config;
     }
-    
+
     public String getServiceURI() {
     	Map<String,Object> props = getUnit().getProperties();
     	Object url = props.get("openjpa.ConnectionURL");

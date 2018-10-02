@@ -28,18 +28,18 @@ public class TestFetchJoin extends CriteriaTest {
         Root<Employee> e = q.from(Employee.class);
         q.select(e);
         e.fetch(Employee_.department);
-        
+
         assertEquivalence(q, jpql);
         assertEquals(jpql, q.toCQL());
     }
-    
+
     public void testLeftFetchJoin() {
         String jpql = "SELECT e FROM Employee e LEFT JOIN FETCH e.department";
         OpenJPACriteriaQuery<Employee> q = cb.createQuery(Employee.class);
         Root<Employee> e = q.from(Employee.class);
         q.select(e);
         e.fetch(Employee_.department, JoinType.LEFT);
-        
+
         assertEquivalence(q, jpql);
         assertEquals(jpql, q.toCQL());
     }

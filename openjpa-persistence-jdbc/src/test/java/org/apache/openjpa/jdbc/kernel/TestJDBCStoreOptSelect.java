@@ -56,7 +56,7 @@ public class TestJDBCStoreOptSelect extends SQLListenerTestCase {
             // included in the current load. If this property isn't set, the FK for eagerOneToOneOwner will not be
             // selected.
              ((JDBCFetchPlan)fp).setIgnoreDfgForFkSelect(true);
- 
+
             // Remove all relationships
             fp.removeField(OptSelectEntity.class, "eagerOneToOne");
             fp.removeField(OptSelectEntity.class, "eagerOneToOneOwner");

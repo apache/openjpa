@@ -29,30 +29,30 @@ public class EmbedPropAccess {
     String fName;
     String lName;
 
-    public EmbedPropAccess() {        
+    public EmbedPropAccess() {
     }
-    
+
     public EmbedPropAccess(String fn, String ln) {
         setFirstName(fn);
         setLastName(ln);
     }
-    
+
     public String getFirstName() {
         return fName;
     }
-    
+
     public void setFirstName(String fname) {
-        fName = fname;        
+        fName = fname;
     }
-    
+
     public String getLastName() {
         return lName;
     }
-    
+
     public void setLastName(String lname) {
         lName = lname;
-    }    
-    
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof EmbedPropAccess) {
             EmbedPropAccess ps = (EmbedPropAccess)obj;

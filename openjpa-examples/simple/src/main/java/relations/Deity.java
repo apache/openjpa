@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package relations;
 
@@ -34,7 +34,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 
-/** 
+/**
  * An entity that contains relations corresponding to family tree relations.
  * This entity demonstrates the following JPA features:
  *
@@ -105,9 +105,9 @@ public class Deity implements Serializable {
     // Business methods follow
     //////////////////////////
 
-    /** 
-     * She's having a baby... 
-     *  
+    /**
+     * She's having a baby...
+     *
      * @param  childName  the baby name
      * @return the new child
      *

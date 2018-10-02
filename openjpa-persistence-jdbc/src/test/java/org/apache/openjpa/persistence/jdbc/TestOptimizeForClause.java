@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -42,7 +42,7 @@ public class TestOptimizeForClause
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
             .getDBDictionaryInstance();
-        
+
         em.getTransaction().begin();
         AllFieldTypes a = new AllFieldTypes();
         a.setIntField(123);
@@ -93,15 +93,15 @@ public class TestOptimizeForClause
                     q.setHint("openjpa.hint.OptimizeResultCount"
                          ,new Integer(8));
                     q.getResultList();
-                }    
+                }
                 else {
-                    OpenJPAQuery q =  OpenJPAPersistence.cast (em.createQuery 
+                    OpenJPAQuery q =  OpenJPAPersistence.cast (em.createQuery
                         ("select o from AllFieldTypes o where o.intField " +
                          "= :p"));
                     q.setParameter("p", 0);
-                    q.setHint(q.HINT_RESULT_COUNT, new Integer(8)); 
+                    q.setHint(q.HINT_RESULT_COUNT, new Integer(8));
                     q.getResultList();
-               }     
+               }
                if (dict instanceof DB2Dictionary) {
                    assertEquals(1, sql.size());
                    assertContainsSQL(" optimize for 8 row");
@@ -113,7 +113,7 @@ public class TestOptimizeForClause
                     assertEquals(1, sql.size());
                     assertContainsSQL(" optimize for 1 row");
                 }
-                   
+
             }
         } catch (InvalidStateException pe) {
             // if we're not using DB2, we expect an InvalidStateException.

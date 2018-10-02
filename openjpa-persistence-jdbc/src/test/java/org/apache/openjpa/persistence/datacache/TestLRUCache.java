@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -33,11 +33,11 @@ import org.apache.openjpa.util.IntId;
 public class TestLRUCache extends SingleEMFTestCase {
     private final int cacheSize = 5;
     private final String QUERY = "SELECT p FROM CachedPerson p WHERE p.id=";
-    
+
     @Override
     protected void setUp(Object... props) {
-        super.setUp(CLEAR_TABLES, 
-            CachedPerson.class, 
+        super.setUp(CLEAR_TABLES,
+            CachedPerson.class,
             "openjpa.RemoteCommitProvider", "sjvm",
             "openjpa.DataCache","true(SoftReferenceSize=0,Lru=true,CacheSize="+cacheSize+")",
             "openjpa.QueryCache","true(SoftReferenceSize=0,Lru=true,CacheSize="+cacheSize+")"

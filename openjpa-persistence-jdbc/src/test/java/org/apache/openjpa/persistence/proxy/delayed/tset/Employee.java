@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.delayed.tset;
 
@@ -39,9 +39,9 @@ public class Employee implements IEmployee, Serializable, Comparable<Employee> {
     @Id
     @GeneratedValue
     private int id;
-    
+
     private String empName;
-    
+
     @ManyToOne(targetEntity=Department.class)
     @JoinColumn(name="DEPT_ID")
     private IDepartment dept;
@@ -73,12 +73,12 @@ public class Employee implements IEmployee, Serializable, Comparable<Employee> {
     public IDepartment getDept() {
         return dept;
     }
-    
+
     @Override
     public int hashCode() {
         return getId();
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof Employee) {
             Employee e = (Employee)obj;

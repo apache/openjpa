@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.external;
 
@@ -43,7 +43,7 @@ public class EntityA implements java.io.Serializable {
 	@ExternalValues( { "SMALL=5", "MEDIUM=8", "LARGE=15" })
 	@Type(int.class)
 	private String s2;
-	
+
 	/*
 	 * By default, OpenJPA stores Chars as Ints, so to force the use of
 	 * a char(1) field, you would need to override this processing via
@@ -54,7 +54,7 @@ public class EntityA implements java.io.Serializable {
     @ExternalValues({"true=T", "false=F"})
     @Type(char.class)
     private boolean _useStreaming = false;
-    
+
 	public EntityA() {
 	}
 
@@ -77,7 +77,7 @@ public class EntityA implements java.io.Serializable {
 	public void setS2(String s2) {
 		this.s2 = s2;
 	}
-	
+
     public boolean getUseStreaming() {
         return _useStreaming;
     }

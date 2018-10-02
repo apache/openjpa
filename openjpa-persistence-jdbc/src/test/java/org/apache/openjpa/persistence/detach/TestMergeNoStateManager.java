@@ -28,7 +28,7 @@ public class TestMergeNoStateManager extends SingleEMFTestCase {
     Object[] args =
         new Object[] { TimestampVersionEntity.class, IntVersionEntity.class, NoVersionEntity.class,
             IntegerVersionEntity.class, CLEAR_TABLES
-//            , "openjpa.Log", "SQL=trace" 
+//            , "openjpa.Log", "SQL=trace"
             };
 
     IntVersionEntity _ive;
@@ -58,7 +58,7 @@ public class TestMergeNoStateManager extends SingleEMFTestCase {
     }
 
     /**
-     * This test is commented out is it will fail. 
+     * This test is commented out is it will fail.
      */
 //    public void testOLE() throws Exception {
 //        OpenJPAEntityManagerSPI em = emf.createEntityManager();

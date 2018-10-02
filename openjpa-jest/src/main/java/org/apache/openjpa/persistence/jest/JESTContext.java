@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -41,11 +41,11 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 
 /**
  * An operational context combines a {@link OpenJPAEntityManager persistence context} and a HTTP execution
- * context expressed as a {@link HttpServletRequest request} and {@link HttpServletResponse response}. 
+ * context expressed as a {@link HttpServletRequest request} and {@link HttpServletResponse response}.
  * <br>
- * This context {@link #getAction(String) parses} the HTTP request URL to identity the command and then 
+ * This context {@link #getAction(String) parses} the HTTP request URL to identity the command and then
  * {@link #execute() executes} it.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -60,28 +60,28 @@ public class JESTContext implements JPAServletContext {
     protected Log _log;
     protected static PrototypeFactory<String,JESTCommand> _cf = new PrototypeFactory<String,JESTCommand>();
     public static final Localizer _loc = Localizer.forPackage(JESTContext.class);
-    private static final String ONE_YEAR_FROM_NOW; 
-    public static final char QUERY_SEPARATOR = '?'; 
+    private static final String ONE_YEAR_FROM_NOW;
+    public static final char QUERY_SEPARATOR = '?';
     public static final String CONTEXT_ROOT  = "/";
     public static final String JEST_TEMPLATE  = "jest.html";
-    
-    
+
+
     /**
      * Registers known commands in a {@link PrototypeFactory registry}.
-     * 
+     *
      */
     static {
         _cf.register("find",  FindCommand.class);
         _cf.register("query", QueryCommand.class);
         _cf.register("domain", DomainCommand.class);
         _cf.register("properties", PropertiesCommand.class);
-        
+
         Calendar now = Calendar.getInstance();
         now.add(Calendar.YEAR, 1);
         ONE_YEAR_FROM_NOW = new Date(now.getTimeInMillis()).toString();
     }
-    
-    public JESTContext(String unit, OpenJPAEntityManagerFactory emf, HttpServletRequest request, 
+
+    public JESTContext(String unit, OpenJPAEntityManagerFactory emf, HttpServletRequest request,
         HttpServletResponse response) {
         _unit = unit;
         _emf = emf;
@@ -91,17 +91,17 @@ public class JESTContext implements JPAServletContext {
         _log = conf.getLog("JEST");
         _repos = conf.getMetaDataRepositoryInstance();
     }
-        
+
     /**
      * Gets the name of the persistence unit.
      */
     public String getPersistenceUnitName() {
         return _unit;
     }
-    
+
     /**
      * Gets the persistence context. The persistence context is lazily constructed because all commands
-     * may not need it.  
+     * may not need it.
      */
     public OpenJPAEntityManager getPersistenceContext() {
         if (_em == null) {
@@ -109,16 +109,16 @@ public class JESTContext implements JPAServletContext {
         }
         return _em;
     }
-    
+
     /**
      * Gets the request.
      */
     public HttpServletRequest getRequest() {
         return _request;
     }
-    
+
     /**
-     * 
+     *
      */
     public String getRequestURI() {
         StringBuffer buf = _request.getRequestURL();
@@ -127,42 +127,42 @@ public class JESTContext implements JPAServletContext {
             buf.append(QUERY_SEPARATOR).append(query);
         }
         return buf.toString();
-        
+
     }
-    
+
     /**
      * Gets the response.
      */
     public HttpServletResponse getResponse() {
         return _response;
     }
-    
+
     /**
      * Executes the request.
      * <br>
-     * Execution starts with parsing the {@link HttpServletRequest#getPathInfo() request path}. 
+     * Execution starts with parsing the {@link HttpServletRequest#getPathInfo() request path}.
      * The {@linkplain #getAction(String) first path segment} is interpreted as action key, and
      * if a action with the given key is registered then the control is delegated to the command.
      * The command parses the entire {@link HttpServletRequest request} for requisite qualifiers and
-     * arguments and if the parse is successful then the command is 
+     * arguments and if the parse is successful then the command is
      * {@linkplain JESTCommand#process() executed} in this context.
      * <br>
      * If path is null, or no  command is registered for the action or the command can not parse
-     * the request, then a last ditch attempt is made to {@linkplain #findResource(String) find} a resource. 
+     * the request, then a last ditch attempt is made to {@linkplain #findResource(String) find} a resource.
      * This fallback lookup is important because the response can contain hyperlinks to stylesheets or
-     * scripts. The browser will resolve such hyperlinks relative to the original response. 
+     * scripts. The browser will resolve such hyperlinks relative to the original response.
      * <br>
      * For example, let the original request URL be:<br>
      * <code>http://host:port/demo/jest/find?type=Actor&Robert</code>
      * <br>
      * The response to this request is a HTML page that contained a hyperlink to <code>jest.css</code> stylesheet
      * in its &lt;head&gt; section.<br>
-     * <code>&lt;link ref="jest.css" .....></code> 
-     * <br> 
+     * <code>&lt;link ref="jest.css" .....></code>
+     * <br>
      * The browser will resolve the hyperlink by sending back another request as<br>
      * <code>http://host:port/demo/jest/find/jest.css</code>
      * <br>
-     *   
+     *
      * @throws Exception
      */
     public void execute() throws Exception {
@@ -190,35 +190,35 @@ public class JESTContext implements JPAServletContext {
             }
         }
     }
-    
+
     /**
      * Gets the action from the given path.
-     * 
+     *
      * @param path a string
-     * @return if null, returns context root i.e. <code>'/'</code> character. 
-     * Otherwise, if the path starts with context root, then returns the substring before the 
-     * next <code>'/'</code> character or end of the string, whichever is earlier. 
-     * If the path does not start with context root, returns 
-     * the substring before the first <code>'/'</code> character or end of the string, whichever is earlier. 
+     * @return if null, returns context root i.e. <code>'/'</code> character.
+     * Otherwise, if the path starts with context root, then returns the substring before the
+     * next <code>'/'</code> character or end of the string, whichever is earlier.
+     * If the path does not start with context root, returns
+     * the substring before the first <code>'/'</code> character or end of the string, whichever is earlier.
      */
     public static String getAction(String path) {
         if (path == null)
             return CONTEXT_ROOT;
         if (path.startsWith(CONTEXT_ROOT))
-            path = path.substring(1); 
-        int idx = path.indexOf(CONTEXT_ROOT); 
+            path = path.substring(1);
+        int idx = path.indexOf(CONTEXT_ROOT);
         return idx == -1 ? path : path.substring(0, idx);
     }
-    
-    
+
+
     public ClassMetaData resolve(String alias) {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         return _repos.getMetaData(alias, loader, true);
     }
-    
+
     /**
-     * A resource is always looked up with respect to this class. 
-     * 
+     * A resource is always looked up with respect to this class.
+     *
      * @param rsrc
      * @throws ProcessingException
      */
@@ -229,7 +229,7 @@ public class JESTContext implements JPAServletContext {
         if (in == null) { // try again as a relative path
             if (rsrc.startsWith(CONTEXT_ROOT)) {
                 in = getClass().getResourceAsStream(rsrc.substring(1));
-            } 
+            }
             if (in == null) {
                 throw new ProcessingException(this, _loc.get("resource-not-found", rsrc), HTTP_NOT_FOUND);
             }
@@ -258,7 +258,7 @@ public class JESTContext implements JPAServletContext {
             throw new ProcessingException(this, e, _loc.get("resource-not-found", rsrc), HTTP_NOT_FOUND);
         }
     }
-       
+
     public void log(short level, String message) {
         switch (level) {
             case Log.INFO:  _log.info(message); break;
@@ -266,12 +266,12 @@ public class JESTContext implements JPAServletContext {
             case Log.FATAL: _log.fatal(message); break;
             case Log.TRACE: _log.trace(message); break;
             case Log.WARN:  _log.warn(message); break;
-            default: _request.getSession().getServletContext().log(message); 
-            
+            default: _request.getSession().getServletContext().log(message);
+
             break;
         }
     }
-    
+
     /**
      * Is this path a context root?
      * @param path
@@ -279,17 +279,17 @@ public class JESTContext implements JPAServletContext {
     boolean isContextRoot(String path) {
         return (path == null || CONTEXT_ROOT.equals(path));
     }
-    
+
     boolean isEmpty(String s) {
         return s == null || s.trim().length() == 0;
     }
-    
+
     /**
      * Root resource is a HTML template with deployment specific tokens such as name of the persistence unit
-     * or base url. On first request for this resource, the tokens in the templated HTML file gets replaced  
+     * or base url. On first request for this resource, the tokens in the templated HTML file gets replaced
      * by the actual deployment specific value into a string. This string (which is an entire HTML file)
      * is then written to the response.
-     * 
+     *
      * @see TokenReplacedStream
      * @throws IOException
      */
@@ -300,18 +300,18 @@ public class JESTContext implements JPAServletContext {
             String[] tokens = {
                 "${persistence.unit}", getPersistenceUnitName(),
                 "${jest.uri}",         _request.getRequestURL().toString(),
-                "${webapp.name}",     _request.getContextPath().startsWith(CONTEXT_ROOT) 
+                "${webapp.name}",     _request.getContextPath().startsWith(CONTEXT_ROOT)
                                     ? _request.getContextPath().substring(1)
                                     : _request.getContextPath(),
-                "${servlet.name}",     _request.getServletPath().startsWith(CONTEXT_ROOT) 
+                "${servlet.name}",     _request.getServletPath().startsWith(CONTEXT_ROOT)
                                     ? _request.getServletPath().substring(1)
                                     : _request.getServletPath(),
                 "${server.name}",     _request.getServerName(),
                 "${server.port}",     ""+_request.getServerPort(),
-                
+
                 "${dojo.base}",     Constants.DOJO_BASE_URL,
                 "${dojo.theme}",    Constants.DOJO_THEME,
-                
+
             };
             InputStream in = getClass().getResourceAsStream(JEST_TEMPLATE);
             CharArrayWriter out = new CharArrayWriter();

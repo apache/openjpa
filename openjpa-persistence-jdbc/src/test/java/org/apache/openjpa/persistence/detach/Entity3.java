@@ -28,13 +28,13 @@ public class Entity3 {
     @Id
     private long id;
     private String name;
-    
+
     @OneToOne(cascade=(CascadeType.ALL))
     private Entity4 e4;
 
     public Entity3() {
     }
-    
+
     public Entity3(long id, String name) {
         this.id = id;
         this.name = name;
@@ -59,7 +59,7 @@ public class Entity3 {
     public Entity4 getE4() {
         return e4;
     }
-    
+
     public void setE4(Entity4 e4) {
         this.e4 = e4;
     }

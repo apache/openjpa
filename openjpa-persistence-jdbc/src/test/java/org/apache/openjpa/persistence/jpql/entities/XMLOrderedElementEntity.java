@@ -25,8 +25,8 @@ public class XMLOrderedElementEntity implements IOrderedElements, java.io.Serial
 
     private int id;
 
-    private List<String> elements;  
-    
+    private List<String> elements;
+
     public int getId() {
         return id;
     }
@@ -49,7 +49,7 @@ public class XMLOrderedElementEntity implements IOrderedElements, java.io.Serial
         }
         elements.add(element);
     }
-    
+
     public String removeListElements(int location) {
         String rtnVal = null;
         if( elements != null) {
@@ -57,7 +57,7 @@ public class XMLOrderedElementEntity implements IOrderedElements, java.io.Serial
         }
         return rtnVal;
     }
-    
+
     public void insertListElements(int location, String name) {
         if( elements == null) {
             elements = new ArrayList<String>();

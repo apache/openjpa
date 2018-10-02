@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -34,20 +34,20 @@ public class Manager {
     private int id;
 
     private String name;
-    
+
     private BigDecimal salary;
 
     @ManyToOne
     private Department department;
-    
+
     public int getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -55,7 +55,7 @@ public class Manager {
     public void setDepartment(Department department) {
         this.department = department;
     }
-    
+
     public Department getDepartment() {
         return department;
     }
@@ -63,7 +63,7 @@ public class Manager {
     public BigDecimal getSalary() {
         return salary;
     }
-    
+
     public void setSalary(BigDecimal salary) {
         this.salary = salary;
     }

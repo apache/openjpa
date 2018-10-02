@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.ee;
 
@@ -367,17 +367,17 @@ public class WASManagedRuntime extends AbstractManagedRuntime
     public static void main(String[] args)
         throws IOException {
         Project project = new Project();
-        
+
         InputStream in = WASManagedRuntime.class.getClassLoader()
             .getResourceAsStream(CLASS.replace('.', '/') + ".class");
         BCClass bcClass = project.loadClass(in);
-        
+
         String [] interfaces = bcClass.getInterfaceNames();
-        
+
         if(interfaces != null) {
-        	for(int i = 0; i < interfaces.length; i++) { 
+        	for(int i = 0; i < interfaces.length; i++) {
         		if(interfaces[i].equals(INTERFACE)) {
-        			return; 
+        			return;
         		}
         	}
         }

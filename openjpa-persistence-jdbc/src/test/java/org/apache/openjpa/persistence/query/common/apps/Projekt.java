@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query.common.apps;
 
@@ -29,19 +29,19 @@ import javax.persistence.ManyToMany;
 public class Projekt {
 	@Id
 	private String name;
-	
+
 	@ManyToMany
 	private List<Osoba> osoby;
 
 	protected Projekt() {
 		this("?");
 	}
-	
+
 	public Projekt(String name) {
 		super();
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -58,5 +58,5 @@ public class Projekt {
 		if (osoby ==null)
 			osoby = new ArrayList<Osoba>();
 		osoby.add(osoba);
-	}	
+	}
 }

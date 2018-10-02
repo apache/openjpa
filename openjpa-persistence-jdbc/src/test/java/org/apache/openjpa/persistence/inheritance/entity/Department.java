@@ -30,7 +30,7 @@ import javax.persistence.Table;
 /**
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-1536">OPENJPA-1536</A>
- *  
+ *
  * @author Jody Grassel
  * @author Fay Wang
  *
@@ -40,25 +40,25 @@ import javax.persistence.Table;
 public class Department {
     @Id
     private int id;
-    
+
     private String departmentName;
-    
+
     @ManyToOne
     private Manager departmentManager;
-    
+
     @OneToMany(mappedBy="department")
     private List<Employee> employeeList;
 
     public Department() {
         this.employeeList = new ArrayList<Employee>();
     }
-    
+
     public Department(int id, String departmentName) {
         this.employeeList = new ArrayList<Employee>();
         this.id = id;
         this.departmentName = departmentName;
     }
-    
+
     public int getId() {
         return id;
     }

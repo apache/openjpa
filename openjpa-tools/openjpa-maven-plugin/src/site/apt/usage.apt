@@ -5,38 +5,38 @@
  ------
  November 29, 2010
  ------
- 
+
 OpenJPA Maven Plugin
 
  As of this writing the OpenJPA Plugin provides 3 goals to
  cope with persistence-enabled classes in a project using Maven 2.
-  
- 
+
+
 * Goals Overview
 
-  *  <<<openjpa:enhance>>> enhances the persistence-enabled classes in a 
-  project. 
+  *  <<<openjpa:enhance>>> enhances the persistence-enabled classes in a
+  project.
 
-  *  <<<openjpa:test-enhance>>> enhances the persistence-enabled test classes in a 
+  *  <<<openjpa:test-enhance>>> enhances the persistence-enabled test classes in a
   project. This is typically bound to the process-test-classes phase.
-  
+
   * <<<openjpa:sql>>> creates a file which contains the SQL statements
   for creating or updating the database or directly create the schema
   in the database.
-  
-  * <<<openjpa:schema>>> create the schema mapping XML file 
-  
-  All these OpenJPA Mojos expect the following resources to be 
-  present on classpath: 
-  
-  *  <<<META-INF/persistence.xml>>>, or
-  
-  *  <<<META-INF/openjpa.xml>>>
-    
-  OpenJPA documentation is available 
-  {{{http://openjpa.apache.org/documentation.html}here}}. 
 
- 
+  * <<<openjpa:schema>>> create the schema mapping XML file
+
+  All these OpenJPA Mojos expect the following resources to be
+  present on classpath:
+
+  *  <<<META-INF/persistence.xml>>>, or
+
+  *  <<<META-INF/openjpa.xml>>>
+
+  OpenJPA documentation is available
+  {{{http://openjpa.apache.org/documentation.html}here}}.
+
+
 * Examples
 
   Below is an OpenJPA plugin configuration example.
@@ -51,12 +51,12 @@ OpenJPA Maven Plugin
       <addDefaultConstructor>true</addDefaultConstructor>
       <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
 
-      <!-- Pass additional properties to the Plugin here -->     
+      <!-- Pass additional properties to the Plugin here -->
       <toolProperties>
         <property>
           <name>directory</name>
           <value>otherdirectoryvalue</value>
-        </property>              
+        </property>
       </toolProperties>
 
     </configuration>
@@ -76,15 +76,15 @@ OpenJPA Maven Plugin
   * You don't have to explicitly specify an OpenJPA dependency in the dependencies section
   of the plugin! Follow the following guide to use this plugin with {{{examples/older_versions.html}older OpenJPA versions}}.
 
-  
+
   * The <<<openjpa:enhance>>> mojo will automatically be called in the
   <<<process-classes>>> phase.
-  
-  From the command prompt/terminal window. 
-  
-  * Change directory to the project's root directory. 
-  
-  * Run the following goal to run OpenJPA PCEnhancer on persistence-enabled 
+
+  From the command prompt/terminal window.
+
+  * Change directory to the project's root directory.
+
+  * Run the following goal to run OpenJPA PCEnhancer on persistence-enabled
   classes manually.
 
 ----------
@@ -92,7 +92,7 @@ OpenJPA Maven Plugin
 ----------
 
 
-  * Run the following goal to run OpenJPA MappingTool for creating the 
+  * Run the following goal to run OpenJPA MappingTool for creating the
   database creation SQL statements for all persistence-enabled classes manually.
 
 ----------
@@ -100,7 +100,7 @@ OpenJPA Maven Plugin
 ----------
 
 
-  * Run the following goal to run OpenJPA MappingTool for creating the 
+  * Run the following goal to run OpenJPA MappingTool for creating the
   schema mapping XML file for all persistence-enabled classes manually.
 
 ----------

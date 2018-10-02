@@ -33,7 +33,7 @@ import javax.persistence.Transient;
 public abstract class AbstractMappedSuperProperty {
 
     private int id;
-    
+
     private String name;
 
     public void setId(int id) {
@@ -55,12 +55,12 @@ public abstract class AbstractMappedSuperProperty {
     public String getName() {
         return name;
     }
-    
+
     @Transient
     abstract public Date getCreateDate();
-    
-    abstract public void setCreateDate(Date date);    
-    
+
+    abstract public void setCreateDate(Date date);
+
     public boolean equals(Object obj) {
         if (obj instanceof AbstractMappedSuperProperty) {
             AbstractMappedSuperProperty ps = (AbstractMappedSuperProperty)obj;

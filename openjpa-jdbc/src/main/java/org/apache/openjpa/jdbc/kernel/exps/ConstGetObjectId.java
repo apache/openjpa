@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -56,7 +56,7 @@ class ConstGetObjectId
     }
 
     public Object getValue(ExpContext ctx, ExpState state) {
-        return ctx.store.getContext().getObjectId(_constant.getValue(ctx, 
+        return ctx.store.getContext().getObjectId(_constant.getValue(ctx,
             ((ConstGetObjectIdExpState) state).constantState));
     }
 
@@ -68,12 +68,12 @@ class ConstGetObjectId
         return ((ConstGetObjectIdExpState) state).sqlValue;
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
         ConstGetObjectIdExpState cstate = (ConstGetObjectIdExpState) state;
         _constant.calculateValue(sel, ctx, cstate.constantState, null, null);
-        Object oid = ctx.store.getContext().getObjectId(_constant.getValue(ctx, 
+        Object oid = ctx.store.getContext().getObjectId(_constant.getValue(ctx,
             cstate.constantState));
         if (other != null) {
             cstate.sqlValue = other.toDataStoreValue(sel, ctx, otherState, oid);
@@ -82,11 +82,11 @@ class ConstGetObjectId
             cstate.sqlValue = oid;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         ConstGetObjectIdExpState cstate = (ConstGetObjectIdExpState) state;
         if (cstate.otherLength > 1)
-            sql.appendValue(((Object[]) cstate.sqlValue)[index], 
+            sql.appendValue(((Object[]) cstate.sqlValue)[index],
                 cstate.getColumn(index));
         else
             sql.appendValue(cstate.sqlValue, cstate.getColumn(index));
@@ -95,7 +95,7 @@ class ConstGetObjectId
     /**
      * Expression state.
      */
-    private static class ConstGetObjectIdExpState 
+    private static class ConstGetObjectIdExpState
         extends ConstExpState {
 
         public final ExpState constantState;

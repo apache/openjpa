@@ -44,7 +44,7 @@ import javax.persistence.Version;
             , query="SELECT c FROM LSESecTbl c WHERE c.firstName LIKE :firstName"
             , lockMode=LockModeType.PESSIMISTIC_WRITE
             , hints={@QueryHint(name="javax.persistence.lock.scope",value="EXTENDED")}
-            ) 
+            )
         }
     )
 
@@ -61,7 +61,7 @@ public class LSESecTbl implements Externalizable {
     private String firstName;
     @Column(table="LSESecTblDtl")
     private String lastName;
-    
+
     public int getId() {
         return id;
     }

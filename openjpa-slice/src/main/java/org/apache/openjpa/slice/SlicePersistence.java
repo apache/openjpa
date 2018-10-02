@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -26,24 +26,24 @@ import org.apache.openjpa.util.ImplHelper;
 
 /**
  * A helper to determine the slice identifier of an instance.
- * 
- * @author Pinaki Poddar 
+ *
+ * @author Pinaki Poddar
  *
  */
 public class SlicePersistence {
     /**
      * The key for setting the Query hints. The value is comma-separated Slice
      * names. If the hint is specified then the query is executed only on the
-     * listed slices. 
+     * listed slices.
      */
     public static final String HINT_TARGET = ProductDerivation.HINT_TARGET;
-    
+
 	/**
 	 * Get the slice identifier for the given instance if it is a managed
 	 * instance and has been assigned to a slice.
      * If the given instance is replicated across multiple slices then returns
 	 * comma-separated list of slice names.
-	 * 
+	 *
 	 * @return name of the slice, if any. null otherwise.
 	 */
 	public static String getSlice(Object obj) {
@@ -59,7 +59,7 @@ public class SlicePersistence {
 		String[] names = info.getSlices();
 		return info.isReplicated() ? Arrays.toString(names) : names[0];
 	}
-	
+
 	/**
      * Affirms if the given instance is replicated, provided the given instance
 	 * is managed.

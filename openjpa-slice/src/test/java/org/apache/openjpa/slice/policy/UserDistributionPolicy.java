@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.policy;
 
@@ -28,22 +28,22 @@ import org.apache.openjpa.slice.Person;
 
 /**
  * Exemplar {@link DistributionPolicy} that maintains closure and distributes
- * based on attributes of the given instance. 
- * 
- * @author Pinaki Poddar 
+ * based on attributes of the given instance.
+ *
+ * @author Pinaki Poddar
  *
  */
 public class UserDistributionPolicy implements DistributionPolicy {
 
 	/**
 	 * Distribute the given instance.
-	 * Assumes that two configured slices are named as <em>One</em> and 
+	 * Assumes that two configured slices are named as <em>One</em> and
 	 * <em>Two</em>.<br>
      * The policy is only implemented for PObject and Person i.e. two of three
      * known classes. No policy is implemented for Address because Address is
      * persisted always by cascade and hence Slice should assign automatically
-	 * the same slice as its owner Person. 
-	 * 
+	 * the same slice as its owner Person.
+	 *
 	 */
     public String distribute(Object pc, List<String> slices, Object context) {
 		assertValidSlices(slices);
@@ -54,21 +54,21 @@ public class UserDistributionPolicy implements DistributionPolicy {
 		}
 		throw new RuntimeException("No policy for " + pc.getClass());
 	}
-	
+
 	void assertValidSlices(List<String> slices) {
 		if (slices.contains("One") && slices.contains("Two"))
 			return;
         throw new RuntimeException("This policy assumes two slices named " +
                 "One and Two. But configured slices are " + slices);
 	}
-	
+
 	/**
 	 * Distribute PObject based on odd-even value of its id.
 	 */
 	String distribute(PObject pc) {
 		return (pc.getId()%2 == 0) ? "One" : "Two";
 	}
-	
+
 	/**
 	 * Distribute Person based on first character of its name.
 	 */

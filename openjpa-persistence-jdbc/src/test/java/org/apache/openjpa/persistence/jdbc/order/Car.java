@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -32,28 +32,28 @@ public class Car {
     @Id
     @GeneratedValue
     private int id;
-        
+
     @ManyToOne
     private Owner owner;
-    
+
     @Basic
     private int modelYear;
-    
+
     @Basic
     private String make;
-    
+
     @Basic
     private String model;
 
-    public Car() {        
+    public Car() {
     }
-    
+
     public Car(int year, String make, String model){
         this.modelYear = year;
         this.make = make;
         this.model = model;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -93,7 +93,7 @@ public class Car {
     public Owner getOwner() {
         return owner;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof Car) {
             Car car = (Car)obj;

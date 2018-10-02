@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -47,7 +47,7 @@ public class InverseManager implements Configurable {
     private static final Localizer _loc = Localizer.forPackage(InverseManager.class);
 
     protected static final Object NONE = new Object();
-    
+
     protected DataCacheManager _mgr;
 
     /**
@@ -252,7 +252,7 @@ public class InverseManager implements Configurable {
                 initial = (Collection) obj;
             else if (obj instanceof Map)
                 initial = ((Map)obj).values();
-            
+
             if (initial == null)
                 return;
 

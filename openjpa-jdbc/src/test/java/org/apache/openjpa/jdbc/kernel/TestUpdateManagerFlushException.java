@@ -56,12 +56,12 @@ import org.apache.openjpa.util.Id;
  * <p>
  * Tests AbstractUpdateManager flush's method exception return behavior.
  * </p>
- * 
+ *
  * ================  IMPORTANT NOTE ======================================
- * This test is retired temporarily. This test declares a TestConnection 
- * class which needs to be abstract for JDK6/JDBC4. 
+ * This test is retired temporarily. This test declares a TestConnection
+ * class which needs to be abstract for JDK6/JDBC4.
  * =======================================================================
- * 
+ *
  * @author Albert Lee
  */
 
@@ -72,9 +72,9 @@ public class TestUpdateManagerFlushException extends /* Abstract */TestCase {
     public void setUp() {
         updMgr = new TestUpdateManager();
     }
-    
+
     public void testDummy() {
-        
+
     }
 
     /**
@@ -82,14 +82,14 @@ public class TestUpdateManagerFlushException extends /* Abstract */TestCase {
      * the order the original exceptions are thrown.
      */
     public void xtestAddRetrieve() {
-        
+
         Collection states = new ArrayList<OpenJPAStateManager>();
         states.add(new TestOpenJPAStateManager());
 
         Collection exceps = updMgr.flush(states, new TestJDBCStore());
 
         assertEquals(3, exceps.size());
-        
+
         Iterator<Exception> itr = exceps.iterator();
         assertEquals(itr.next().getMessage(),
             "TestUpdateManager.populateRowManager");
@@ -128,7 +128,7 @@ public class TestUpdateManagerFlushException extends /* Abstract */TestCase {
         protected Collection populateRowManager(OpenJPAStateManager sm,
             RowManager rowMgr, JDBCStore store, Collection exceps,
             Collection customs) {
-            
+
             exceps.add(new SQLException(
                 "TestUpdateManager.populateRowManager"));
             customs.add(new CustomMapping(CustomMapping.INSERT, sm,
@@ -494,7 +494,7 @@ public class TestUpdateManagerFlushException extends /* Abstract */TestCase {
             byte cur) {
         }
 
-        public void providedCharField(PersistenceCapable pc, int idx, 
+        public void providedCharField(PersistenceCapable pc, int idx,
             char cur) {
         }
 
@@ -506,11 +506,11 @@ public class TestUpdateManagerFlushException extends /* Abstract */TestCase {
             float cur) {
         }
 
-        public void providedIntField(PersistenceCapable pc, int idx, 
+        public void providedIntField(PersistenceCapable pc, int idx,
             int cur) {
         }
 
-        public void providedLongField(PersistenceCapable pc, int idx, 
+        public void providedLongField(PersistenceCapable pc, int idx,
             long cur) {
         }
 
@@ -518,7 +518,7 @@ public class TestUpdateManagerFlushException extends /* Abstract */TestCase {
             Object cur) {
         }
 
-        public void providedShortField(PersistenceCapable pc, int idx, 
+        public void providedShortField(PersistenceCapable pc, int idx,
             short cur) {
         }
 
@@ -873,7 +873,7 @@ public class TestUpdateManagerFlushException extends /* Abstract */TestCase {
             throw new RuntimeException("TestConnection is abstract for JDK6");
 //            return new TestConnection();
         }
-        
+
         public Connection getNewConnection() {
             return getConnection();
         }

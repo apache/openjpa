@@ -24,9 +24,9 @@ import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 public class BrokerLevelInstrument extends AbstractInstrument {
 
     public static String NAME = "NoneInstrument";
-    
-    private boolean _initialized; 
-    
+
+    private boolean _initialized;
+
     @Override
     public String getName() {
         return NAME;
@@ -56,5 +56,5 @@ public class BrokerLevelInstrument extends AbstractInstrument {
     public boolean isInitialized() {
         return _initialized;
     }
-    
+
 }

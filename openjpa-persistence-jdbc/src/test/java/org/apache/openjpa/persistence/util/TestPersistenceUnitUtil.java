@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.util;
 
@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestPersistenceUnitUtil extends SingleEMFTestCase{
-    
+
     public void setUp() {
         setUp(CLEAR_TABLES, EagerEntity.class, LazyEmbed.class,
             LazyEntity.class, EagerEmbed.class, RelEntity.class,
@@ -43,37 +43,37 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
     }
 
     /*
-     * Verifies an entity and its persistent attributes are in the proper 
+     * Verifies an entity and its persistent attributes are in the proper
      * load state.
      */
-    public void testIsLoadedEager() {        
+    public void testIsLoadedEager() {
         verifyIsLoadedEagerState(true);
     }
 
     /*
-     * Verifies an entity and its persistent attributes are in the proper 
+     * Verifies an entity and its persistent attributes are in the proper
      * not loaded state.
      */
     public void testNotLoadedLazy() {
-        verifyIsLoadedEagerState(false);       
+        verifyIsLoadedEagerState(false);
     }
 
     /*
-     * Verifies an entity and its persistent attributes are in the proper 
+     * Verifies an entity and its persistent attributes are in the proper
      * loaded state.
      */
-    public void testIsLoadedLazy() {        
+    public void testIsLoadedLazy() {
         verifyIsLoadedLazyState(true);
     }
 
     /*
-     * Verifies an entity and its persistent attributes are in the proper 
+     * Verifies an entity and its persistent attributes are in the proper
      * NOT_LOADED state.
      */
     public void testNotLoadedEager() {
-        verifyIsLoadedEagerState(false);       
+        verifyIsLoadedEagerState(false);
     }
-    
+
     /**
      * Verifies the use of PersistenceUnitUtil with multiple PU's.
      */
@@ -90,7 +90,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             createEntityManagerFactory("PUtil2",
                 "org/apache/openjpa/persistence/util/" +
                 "persistence.xml");
-        
+
         assertNotNull(emf2);
         assertNotSame(emf, emf1);
         assertNotSame(emf1, emf2);
@@ -110,77 +110,77 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         verifyPULoadState(em, puu, puu1, puu2);
         verifyPULoadState(em1, puu1, puu, puu2);
         verifyPULoadState(em2, puu2, puu, puu1);
-        
+
         em.close();
         em1.close();
         em2.close();
-        
+
         if (emf1 != null) {
             emf1.close();
         }
         if (emf2 != null) {
             emf2.close();
         }
-        
+
     }
 
     private void verifyPULoadState(EntityManager em,
         PersistenceUnitUtil...puu) {
 
-        EagerEntity ee = createEagerEntity();       
+        EagerEntity ee = createEagerEntity();
         assertEquals(false, puu[0].isLoaded(ee));
-        assertEquals(false, puu[0].isLoaded(ee, 
+        assertEquals(false, puu[0].isLoaded(ee,
             "id"));
         assertEquals(false, puu[1].isLoaded(ee));
-        assertEquals(false, puu[1].isLoaded(ee, 
+        assertEquals(false, puu[1].isLoaded(ee,
             "id"));
         assertEquals(false, puu[2].isLoaded(ee));
-        assertEquals(false, puu[2].isLoaded(ee, 
+        assertEquals(false, puu[2].isLoaded(ee,
             "id"));
-        
+
         em.getTransaction().begin();
         em.persist(ee);
         em.getTransaction().commit();
 
         assertEquals(true, puu[0].isLoaded(ee));
-        assertEquals(true, puu[0].isLoaded(ee, 
+        assertEquals(true, puu[0].isLoaded(ee,
             "id"));
         assertEquals(false, puu[1].isLoaded(ee));
-        assertEquals(false, puu[1].isLoaded(ee, 
+        assertEquals(false, puu[1].isLoaded(ee,
             "id"));
         assertEquals(false, puu[2].isLoaded(ee));
-        assertEquals(false, puu[2].isLoaded(ee, 
+        assertEquals(false, puu[2].isLoaded(ee,
             "id"));
     }
 
-    
+
     private void verifyIsLoadedEagerState(boolean loaded) {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
         assertSame(emf, puu);
         EntityManager em = emf.createEntityManager();
         EagerEntity ee = createEagerEntity();
-        
+
         // Vfy LoadState is false for the unmanaged entity
         assertEquals(false, puu.isLoaded(ee));
-        assertEquals(false, puu.isLoaded(ee, 
+        assertEquals(false, puu.isLoaded(ee,
             "id"));
-        
+
         em.getTransaction().begin();
         em.persist(ee);
         em.getTransaction().commit();
         em.clear();
-        
+
         if (loaded)
             ee = em.find(EagerEntity.class, ee.getId());
         else
             ee = em.getReference(EagerEntity.class, ee.getId());
-        
+
         assertEquals(loaded, puu.isLoaded(ee));
         assertEquals(loaded, puu.isLoaded(ee, "id"));
         assertEquals(loaded, puu.isLoaded(ee, "name"));
         assertEquals(loaded, puu.isLoaded(ee, "eagerEmbed"));
         assertEquals(false, puu.isLoaded(ee, "transField"));
-        
+
         em.close();
     }
 
@@ -189,22 +189,22 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         assertSame(emf, puu);
         EntityManager em = emf.createEntityManager();
         LazyEntity le = createLazyEntity();
-        
+
         // Vfy LoadState is false for the unmanaged entity
         assertEquals(false, puu.isLoaded(le));
         assertEquals(false, puu.isLoaded(le,"id"));
-        
+
         em.getTransaction().begin();
         em.persist(le);
         em.getTransaction().commit();
         em.clear();
-        
+
         // Use find or getReference based upon expected state
         if (loaded)
             le = em.find(LazyEntity.class, le.getId());
         else
             le = em.getReference(LazyEntity.class, le.getId());
-        
+
         assertEquals(loaded, puu.isLoaded(le));
         assertEquals(loaded, puu.isLoaded(le, "id"));
 
@@ -212,7 +212,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         assertEquals(false, puu.isLoaded(le, "name"));
         assertEquals(loaded, puu.isLoaded(le, "lazyEmbed"));
         assertEquals(false, puu.isLoaded(le, "transField"));
-        
+
         em.close();
     }
 
@@ -225,16 +225,16 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         assertSame(emf, puu);
         EntityManager em = emf.createEntityManager();
         EagerEntity ee = createEagerEntity();
-        
+
         em.getTransaction().begin();
         em.persist(ee);
         em.getTransaction().commit();
         em.clear();
-        
+
         ee = em.getReference(EagerEntity.class, ee.getId());
         assertNotNull(ee);
         assertEagerLoadState(puu, ee, false);
-        
+
         ee.setName("AppEagerName");
         EagerEmbed emb = createEagerEmbed();
         ee.setEagerEmbed(emb);
@@ -243,26 +243,26 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         // Vfy the set values are applied to the entity
         assertEquals("AppEagerName", ee.getName());
         assertEquals(emb, ee.getEagerEmbed());
-        
+
         em.close();
     }
 
     public void testPCMapEager() {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
         EntityManager em = emf.createEntityManager();
-        
+
         MapValEntity mve = new MapValEntity();
         mve.setIntVal(10);
         MapKeyEmbed mke = new MapKeyEmbed();
         mke.setFirstName("Jane");
         mke.setLastName("Doe");
-        
+
         MapEntity me = new MapEntity();
 
         assertEquals(false, puu.isLoaded(me));
-        assertEquals(false, puu.isLoaded(me, 
+        assertEquals(false, puu.isLoaded(me,
             "mapValEntity"));
-        assertEquals(false, puu.isLoaded(me, 
+        assertEquals(false, puu.isLoaded(me,
             "mapEntities"));
 
         assertEquals(false, puu.isLoaded(mve));
@@ -271,24 +271,24 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         me.setMapValEntity(mve);
         mve.setMapEntity(me);
 
-        HashMap<MapKeyEmbed, MapValEntity> hm = 
+        HashMap<MapKeyEmbed, MapValEntity> hm =
             new HashMap<MapKeyEmbed, MapValEntity>();
-        
+
         hm.put(mke, mve);
         me.setMapEntities(hm);
 
         em.getTransaction().begin();
         em.persist(me);
         em.getTransaction().commit();
-        
+
         assertEquals(true, puu.isLoaded(me));
-        assertEquals(true, puu.isLoaded(me, 
+        assertEquals(true, puu.isLoaded(me,
             "mapValEntity"));
-        assertEquals(true, puu.isLoaded(me, 
+        assertEquals(true, puu.isLoaded(me,
             "mapEntities"));
 
         assertEquals(true, puu.isLoaded(mve));
-        
+
         em.close();
     }
 
@@ -314,7 +314,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             // Force load the lazy field
             ote.getToManyLazy();
             assertTrue(puu.isLoaded(ote, "toManyLazy"));
-            
+
             OneToEntity ote2 = new OneToEntity();
             em.getTransaction().begin();
             em.persist(ote2);
@@ -323,10 +323,10 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             assertTrue(puu.isLoaded(ote2, "toManyLazy"));
             em.clear();
             ote2 = em.find(OneToEntity.class, ote2.getId());
-            
+
             // Field is lazy and not immediately loaded by the application
             assertFalse(puu.isLoaded(ote2, "toManyLazy"));
-            
+
             // Load by application
             List<ToManyLazy> tmes = new ArrayList<ToManyLazy>();
             for (int i = 0; i < 5; i++) {
@@ -339,7 +339,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             em.getTransaction().commit();
             // Still loaded after commit
             assertTrue(puu.isLoaded(ote2, "toManyLazy"));
-            
+
             // Set to null - still loaded per spec.
             em.getTransaction().begin();
             ote2.setToManyLazy(null);
@@ -372,7 +372,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             ote = em.find(OneToEntity.class, ote.getId());
             // Field is eager and is immediately loaded by the application
             assertTrue(puu.isLoaded(ote, "toManyEager"));
-            
+
             OneToEntity ote2 = new OneToEntity();
             em.getTransaction().begin();
             em.persist(ote2);
@@ -383,10 +383,10 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             assertTrue(puu.isLoaded(ote2, "toManyEager"));
             em.clear();
             ote2 = em.find(OneToEntity.class, ote2.getId());
-            
+
             // Field is eager and is immediately loaded by the application
             assertTrue(puu.isLoaded(ote2, "toManyEager"));
-            
+
             // Load by application
             List<ToManyEager> tmes = new ArrayList<ToManyEager>();
             for (int i = 0; i < 5; i++) {
@@ -399,7 +399,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             em.getTransaction().commit();
             // Still loaded after commit
             assertTrue(puu.isLoaded(ote2, "toManyEager"));
-            
+
             // Set to null - still loaded per spec.
             em.getTransaction().begin();
             ote2.setToManyEager(null);
@@ -424,7 +424,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         EntityManager em = emf.createEntityManager();
         EagerEntity ee = createEagerEntity();
         int id = ee.getId();
-        
+
         em.getTransaction().begin();
         em.persist(ee);
         em.getTransaction().commit();
@@ -467,8 +467,8 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         rel.add(new RelEntity());
         return le;
     }
-    
-    private void assertEagerLoadState(PersistenceUnitUtil pu, Object ent, 
+
+    private void assertEagerLoadState(PersistenceUnitUtil pu, Object ent,
         boolean state) {
         assertEquals(state, pu.isLoaded(ent));
         assertEquals(state, pu.isLoaded(ent, "id"));

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -27,22 +27,22 @@ import javax.persistence.*;
 public class EmployeePK2 implements Serializable {
     String name;
     Date bDay;
-    
+
     public EmployeePK2() {}
     public EmployeePK2(String name, Date bDay) {
         this.name = name;
         this.bDay = bDay;
     }
-    
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof EmployeePK2)) return false;
         EmployeePK2 pk = (EmployeePK2) o;
         if (pk.name.equals(name) &&
-            pk.bDay.equals(bDay)) return true;    
+            pk.bDay.equals(bDay)) return true;
         return false;
     }
-    
+
     public int hashCode() {
         int code = 0;
         code = code * 31 + name.hashCode();

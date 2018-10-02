@@ -27,10 +27,10 @@ public class SubclassJ extends AbstractClass {
 
     @Basic
     private String classJName;
-   
+
     @Version
     private int version;
-            
+
     public void setClassJName(String classJName) {
         this.classJName = classJName;
     }
@@ -38,12 +38,12 @@ public class SubclassJ extends AbstractClass {
     public String getClassJName() {
         return classJName;
     }
-    
+
     public String toString() {
-        return super.toString() + ";classJName=" + classJName + 
+        return super.toString() + ";classJName=" + classJName +
         ";Version=" + version;
     }
-    
+
     public void setVersion(int version) {
         this.version = version;
     }

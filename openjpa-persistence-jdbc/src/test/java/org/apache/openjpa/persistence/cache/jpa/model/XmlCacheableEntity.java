@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.cache.jpa.model;
 
@@ -24,7 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.Version;
 
 /**
- * Cacheable setting will be provided by XML descriptor.  
+ * Cacheable setting will be provided by XML descriptor.
  */
 @Entity
 public class XmlCacheableEntity implements CacheEntity {
@@ -35,7 +35,7 @@ public class XmlCacheableEntity implements CacheEntity {
     @Version
     @Column(name="VERSN")
     private int version;
-    
+
     private String name;
 
     public int getId() {

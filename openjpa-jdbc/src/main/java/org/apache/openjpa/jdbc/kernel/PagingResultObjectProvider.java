@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -392,7 +392,7 @@ public class PagingResultObjectProvider
     /**
      *  Based on the DBDictionary, create the needed IN clauses.
      */
-    private void createInContains(Select sel, DBDictionary dict, SQLBuffer buf, 
+    private void createInContains(Select sel, DBDictionary dict, SQLBuffer buf,
         ClassMapping mapping, Column[] pks, int start, int end) {
         int inClauseLimit = dict.inClauseLimit;
         if (inClauseLimit <= 0 || end - start <= inClauseLimit)
@@ -408,7 +408,7 @@ public class PagingResultObjectProvider
             buf.append(")");
         }
     }
-    
+
     /**
      * Create an IN clause limiting the results to the current page.
      */

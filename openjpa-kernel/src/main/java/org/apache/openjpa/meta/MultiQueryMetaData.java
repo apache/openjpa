@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -26,8 +26,8 @@ import org.apache.openjpa.kernel.QueryLanguages;
 
 
 /**
- * Extends {@link QueryMetaData} to allow multiple {@link QueryMetaData#getResultType() result class} or 
- * {@link QueryMetaData#getResultSetMappingName() mapping names}. 
+ * Extends {@link QueryMetaData} to allow multiple {@link QueryMetaData#getResultType() result class} or
+ * {@link QueryMetaData#getResultSetMappingName() mapping names}.
  * <br>
  * Designed for mapping the results from a Stored Procudure that can produce more than one {@link java.sql.ResultSet},
  * each being mapped with a different mapping specification.

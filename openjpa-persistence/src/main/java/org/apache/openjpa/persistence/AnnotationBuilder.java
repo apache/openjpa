@@ -102,7 +102,7 @@ public class AnnotationBuilder {
     private AnnotationBuilder doAdd (String key, Object val) {
         if (null != val)
             components.add(new AnnotationEntry(key, val));
-        return this;        
+        return this;
     }
 
     private AnnotationEntry find(String key) {
@@ -138,14 +138,14 @@ public class AnnotationBuilder {
         if (components.size() == 0)
             return;
         sb.append("(");
-        for (Iterator<AnnotationEntry> i = components.iterator(); i.hasNext();) 
+        for (Iterator<AnnotationEntry> i = components.iterator(); i.hasNext();)
         {
             AnnotationEntry e = i.next();
             e.toString(sb);
             if (i.hasNext())
                 sb.append(", ");
         }
-        sb.append(")");        
+        sb.append(")");
     }
 
     public String toString() {

@@ -41,7 +41,7 @@ public class EmbedValue3 {
     @Basic
     @Column(name = "EMB_INTBASIC")
     protected int intBasic;
-    
+
     @Persistent
     @Strategy("PointHandler")
     @Column(name="my_point")
@@ -64,12 +64,12 @@ public class EmbedValue3 {
         return intBasic;
     }
 
-    public Point getPoint() { 
-        return point; 
+    public Point getPoint() {
+        return point;
     }
-    
-    public void setPoint(Point point) { 
-        this.point = point; 
+
+    public void setPoint(Point point) {
+        this.point = point;
     }
 
 }

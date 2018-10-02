@@ -66,7 +66,7 @@ public abstract class AbstractBrokerSerializationTest<T>
 
         setUp(getManagedType(), getSecondaryType(), CLEAR_TABLES,
             "openjpa.EntityManagerFactoryPool", "true");
-        
+
         T e = newManagedInstance();
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

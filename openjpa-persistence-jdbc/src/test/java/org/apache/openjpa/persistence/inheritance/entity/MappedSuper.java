@@ -27,7 +27,7 @@ public class MappedSuper {
 
     @Id
     private int id;
-    
+
     @Basic
     private String name;
 
@@ -46,9 +46,9 @@ public class MappedSuper {
     public String getName() {
         return name;
     }
-    
+
     public String toString() {
-        return "Id=" + id + 
+        return "Id=" + id +
                ";Name=" + name;
     }
 

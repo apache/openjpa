@@ -23,12 +23,12 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestTableGenerator extends SingleEMFTestCase {
-    
-    public void setUp() { 
+
+    public void setUp() {
         setUp(Dog.class, CLEAR_TABLES);
     }
 
-    public void testInitialValue() { 
+    public void testInitialValue() {
         EntityManager em = emf.createEntityManager();
 
         Dog dog = new Dog();

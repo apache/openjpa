@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
@@ -40,65 +40,65 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestEagerDistinct
     extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-        
+
     /** Creates a new instance of TestEagerDistinct */
-    public TestEagerDistinct(String name) 
+    public TestEagerDistinct(String name)
     {
     	super(name);
     }
-    
+
     public boolean skipTest() {
         return ((JDBCConfiguration) getConfiguration()).
                 getDBDictionaryInstance().joinSyntax == Join.SYNTAX_TRADITIONAL;
     }
-    
+
     public void setUpTestCase() {
        deleteAll(EagerPC.class);
        deleteAll(HelperPC.class);
        deleteAll(HelperPC2.class);
-        
+
         HelperPC shared = new HelperPC();
         shared.setStringField("shared");
-        
+
         HelperPC2 pc1 = new HelperPC2();
         pc1.setStringField("pc1");
         pc1.getHelperCollection().add(shared);
         pc1.getHelperCollection().add(new HelperPC());
-        
+
         HelperPC2 pc2 = new HelperPC2();
         pc2.setStringField("pc2");
         pc2.getHelperCollection().add(shared);
         pc2.getHelperCollection().add(new HelperPC());
-        
+
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
         pm.persist(pc1);
         pm.persist(pc2);
         endTx(pm);
-        
+
         // to make sure subclasses are selected, etc
         //FIXME jthomas
         //pm.createNativeQuery("",HelperPC.class).execute();
         //pm.newQuery(HelperPC2.class).execute();
         pm.close();
     }
-    
+
     public OpenJPAEntityManager getPM() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().setMaxFetchDepth(-1);
         return pm;
     }
-    
+
     public void testEagerParallelWithNonDistinctQuery()
     throws Exception {
         eagerParallelWithNonDistinctQuery(-1);
     }
-    
+
     public void testPagingEagerParallelWithNonDistinctQuery()
     throws Exception {
         eagerParallelWithNonDistinctQuery(0);
     }
-    
+
     private void eagerParallelWithNonDistinctQuery(int fetchSize)
     throws Exception {
         OpenJPAEntityManager pm = getPM();
@@ -108,18 +108,18 @@ public class TestEagerDistinct
         //q.setOrdering("stringField ascending");
         q.getFetchPlan().setFetchBatchSize(fetchSize);
         List res = (List) q.getResultList();
-        
+
         if (fetchSize == -1)
             assertEquals(2, sql.size());
-        
+
         assertEquals(2, res.size());
         assertHelperPC2("pc1", (HelperPC2) res.get(0));
         assertHelperPC2("pc2", (HelperPC2) res.get(1));
-        
+
         assertNotSQL("DISTINCT");
         pm.close();
     }
-    
+
     private void assertHelperPC2(String stringField, HelperPC2 pc) {
         assertEquals(stringField, pc.getStringField());
         assertEquals(2, pc.getHelperCollection().size());
@@ -128,17 +128,17 @@ public class TestEagerDistinct
         assertNull(((HelperPC) pc.getHelperCollection().get(1)).
                 getStringField());
     }
-    
+
     public void testEagerParallelWithDistinctQuery()
     throws Exception {
         eagerParallelWithDistinctQuery(-1);
     }
-    
+
     public void testPagingEagerParallelWithDistinctQuery()
     throws Exception {
         eagerParallelWithDistinctQuery(0);
     }
-    
+
     private void eagerParallelWithDistinctQuery(int fetchSize)
     throws Exception {
         OpenJPAEntityManager pm = getPM();
@@ -149,28 +149,28 @@ public class TestEagerDistinct
         //q.setOrdering("stringField ascending");
         q.getFetchPlan().setFetchBatchSize(fetchSize);
         List res = (List) q.getResultList();
-        
+
         if (fetchSize == -1) {
             sql.remove(0);    // orig sel
             assertSQL("DISTINCT");
         }
-        
+
         assertEquals(2, res.size());
         assertHelperPC2("pc1", (HelperPC2) res.get(0));
         assertHelperPC2("pc2", (HelperPC2) res.get(1));
         pm.close();
     }
-    
+
     public void testNestedEagerParallel()
     throws Exception {
         nestedEagerParallel(-1);
     }
-    
+
     public void testPagingNestedEagerParallel()
     throws Exception {
         nestedEagerParallel(0);
     }
-    
+
     private void nestedEagerParallel(int fetchSize)
     throws Exception {
         OpenJPAEntityManager pm = getPM();
@@ -178,11 +178,11 @@ public class TestEagerDistinct
         //FIXME jthomas
         //q.setOrdering("stringField ascending");
         List helpers = (List) q.getResultList();
-        
+
         EagerPC eager1 = new EagerPC();
         eager1.setStringField("eager1");
         eager1.getRecurseCollection().addAll(helpers);
-        
+
         EagerPC eager2 = new EagerPC();
         eager2.setStringField("eager2");
         eager2.getRecurseCollection().addAll(helpers);
@@ -192,7 +192,7 @@ public class TestEagerDistinct
         pc3.getHelperCollection().add(new HelperPC());
         pc3.getHelperCollection().add(new HelperPC());
         eager2.getRecurseCollection().add(pc3);
-        
+
         startTx(pm);;
         pm.persist(eager1);
         pm.persist(eager2);
@@ -202,7 +202,7 @@ public class TestEagerDistinct
         pm.createNativeQuery("",EagerPC.class).getResultList();
         pm.close();
         sql.clear();
-        
+
         pm = getPM();
         q = pm.createNativeQuery("stringField.startsWith ('eager')",
                 EagerPC.class);
@@ -210,12 +210,12 @@ public class TestEagerDistinct
         //q.setOrdering("stringField ascending");
         q.getFetchPlan().setFetchBatchSize(fetchSize);
         List res = (List) q.getResultList();
-        
+
         if (fetchSize == -1) {
             sql.remove(0); // orig sel
             assertSQL("DISTINCT");
         }
-        
+
         assertEquals(2, res.size());
         eager1 = (EagerPC) res.get(0);
         assertEquals("eager1", eager1.getStringField());
@@ -224,7 +224,7 @@ public class TestEagerDistinct
                 get(0));
         assertHelperPC2("pc2", (HelperPC2) eager1.getRecurseCollection().
                 get(1));
-        
+
         eager2 = (EagerPC) res.get(1);
         assertEquals("eager2", eager2.getStringField());
         assertEquals(3, eager2.getRecurseCollection().size());
@@ -237,5 +237,5 @@ public class TestEagerDistinct
         assertEquals(3, pc3.getHelperCollection().size());
         pm.close();
     }
-    
+
 }

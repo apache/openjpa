@@ -36,7 +36,7 @@ public class OrderedManyToManyEntity implements IOrderedEntity, java.io.Serializ
     @OrderColumn
     private List<INameEntity> entities;
 
-    
+
     public int getId() {
         return id;
     }
@@ -59,7 +59,7 @@ public class OrderedManyToManyEntity implements IOrderedEntity, java.io.Serializ
         }
         entities.add(entity);
     }
-        
+
     public INameEntity removeEntity(int location) {
         INameEntity rtnVal = null;
         if( entities != null) {
@@ -67,7 +67,7 @@ public class OrderedManyToManyEntity implements IOrderedEntity, java.io.Serializ
         }
         return rtnVal;
     }
-    
+
     public void insertEntity(int location, INameEntity entity) {
         if( entities == null) {
             entities = new ArrayList<INameEntity>();

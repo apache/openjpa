@@ -28,10 +28,10 @@ public class SubclassG extends BaseClass4 {
 
     @Basic
     private String classGName;
-        
+
     @Basic
     private int intFieldSup;
-    
+
     public void setClassGName(String classGName) {
         this.classGName = classGName;
     }
@@ -39,9 +39,9 @@ public class SubclassG extends BaseClass4 {
     public String getClassGName() {
         return classGName;
     }
-    
+
     public String toString() {
-        return super.toString() + ";classGName=" + classGName + 
+        return super.toString() + ";classGName=" + classGName +
             ";intFieldSup=" + intFieldSup;
     }
 

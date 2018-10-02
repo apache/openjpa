@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation;
 
@@ -31,11 +31,11 @@ import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
  * class can be extended to create a provider specific instrument for the
  * prepared query cache.
  */
-public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstrument  
+public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstrument
     implements PreparedQueryCacheInstrument {
 
     public static final long NO_STATS = -1;
-    
+
     private PreparedQueryCache _qc;
     private String _configID = null;
     private String _configRef = null;
@@ -43,11 +43,11 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
     public void setConfigId(String cid) {
         _configID = cid;
     }
-    
+
     public void setContextRef(String cref) {
         _configRef = cref;
     }
-    
+
     public String getConfigId() {
         return _configID;
     }
@@ -55,11 +55,11 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
     public String getContextRef() {
         return _configRef;
     }
-    
+
     public void setPreparedQueryCache(PreparedQueryCache qc) {
         _qc = qc;
     }
-    
+
     private QueryStatistics<String> getStatistics() {
         if (_qc == null)
             return null;
@@ -125,30 +125,30 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
     public void reset() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
-            stats.reset();        
+            stats.reset();
     }
-    
+
     public Date sinceDate() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
             return stats.since();
         return null;
     }
-    
+
     public Date startDate() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
-            return stats.start();        
+            return stats.start();
         return null;
     }
-    
+
     public Set<String> queries() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
             return stats.keys();
         return null;
     }
-    
+
     public InstrumentationLevel getLevel() {
         return InstrumentationLevel.FACTORY;
     }

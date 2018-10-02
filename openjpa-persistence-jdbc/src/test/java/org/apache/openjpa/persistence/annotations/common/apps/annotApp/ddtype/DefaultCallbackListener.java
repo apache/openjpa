@@ -14,60 +14,60 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.
         CallbackStorage;
 
-public class DefaultCallbackListener 
+public class DefaultCallbackListener
 {
 	public DefaultCallbackListener()
 	{}
-	
+
 //	@PrePersist
 	public void prePersist(Object obj)
 	{
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("def-prepersist");
 	}
-	
+
 //	@PostPersist
 	public void postPersist(Object obj)
 	{
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("def-postpersist");
 	}
-	
+
 //	@PostRemove
 	public void postRemove(Object obj)
 	{
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("def-postremove");
 	}
-	
+
 //	@PreRemove
 	public void preRemove(Object obj)
 	{
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("def-preremove");
 	}
-	
-//	@PostUpdate	
+
+//	@PostUpdate
 	public void postUpdate(Object obj)
 	{
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("def-postupdate");
 	}
-	
+
 //	@PreUpdate
 	public void preUpdate(Object obj)
 	{
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("def-preupdate");
 	}
-	
+
 //	@PostLoad
 	public void postLoad(Object obj)
 	{

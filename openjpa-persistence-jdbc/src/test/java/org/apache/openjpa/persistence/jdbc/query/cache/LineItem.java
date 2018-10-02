@@ -26,7 +26,7 @@ public class LineItem {
     @Id
     private String id;
     private int quantity;
-    
+
     @ManyToOne
     private Invoice invoice;
 

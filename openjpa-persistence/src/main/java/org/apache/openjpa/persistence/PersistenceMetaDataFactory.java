@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -80,7 +80,7 @@ public class PersistenceMetaDataFactory
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataFactory.class);
 
-    private final PersistenceMetaDataDefaults _def = 
+    private final PersistenceMetaDataDefaults _def =
         new PersistenceMetaDataDefaults();
     private AnnotationPersistenceMetaDataParser _annoParser = null;
     private AnnotationPersistenceXMLMetaDataParser _annoXMLParser = null;
@@ -89,7 +89,7 @@ public class PersistenceMetaDataFactory
     private Set<URL> _unparsed = null; // xml rsrc
     private boolean _fieldOverride = true;
 
-    protected Stack<XMLPersistenceMetaDataParser> _stack = 
+    protected Stack<XMLPersistenceMetaDataParser> _stack =
         new Stack<XMLPersistenceMetaDataParser>();
 
     /**
@@ -174,7 +174,7 @@ public class PersistenceMetaDataFactory
     }
 
     public void resetXMLParser() {
-        // If a parser was pushed on the stack due to multi-level parsing, 
+        // If a parser was pushed on the stack due to multi-level parsing,
         // clear the current parser and pop the inner parser off the stack.
         if (!_stack.isEmpty()) {
             _xmlParser.clear();
@@ -206,7 +206,7 @@ public class PersistenceMetaDataFactory
     protected XMLPersistenceMetaDataSerializer newXMLSerializer() {
         return new XMLPersistenceMetaDataSerializer(repos.getConfiguration());
     }
-    
+
     public void load(Class<?> cls, int mode, ClassLoader envLoader) {
         if (mode == MODE_NONE)
             return;
@@ -269,7 +269,7 @@ public class PersistenceMetaDataFactory
     /**
      * Parse the given XML resource.
      */
-    private void parseXML(URL xml, Class<?> cls, int mode, 
+    private void parseXML(URL xml, Class<?> cls, int mode,
     	ClassLoader envLoader) {
         // spring needs to use the envLoader first for all class resolution,
         // but we must still fall back on application loader
@@ -286,7 +286,7 @@ public class PersistenceMetaDataFactory
             mult.addClassLoader(loader);
           loader = mult;
         }
-    
+
         XMLPersistenceMetaDataParser xmlParser = getXMLParser();
         xmlParser.setClassLoader(loader);
         xmlParser.setEnvClassLoader(envLoader);
@@ -335,7 +335,7 @@ public class PersistenceMetaDataFactory
         if (log.isTraceEnabled())
             log.trace(_loc.get(
                 "map-persistent-type-names", rsrc, Arrays.asList(names)));
-        
+
         if (_xml == null)
             _xml = new HashMap<URL, Set<String>>();
         _xml.put((URL) rsrc, new HashSet<String>(Arrays.asList(names)));
@@ -393,7 +393,7 @@ public class PersistenceMetaDataFactory
         ClassLoader loader) {
         if (rsMappingName == null)
             return null;
-        
+
         Collection<Class<?>> classes = repos.loadPersistentTypes(false, loader);
         for (Class<?> cls : classes) {
 
@@ -563,7 +563,7 @@ public class PersistenceMetaDataFactory
     }
 
     /**
-     * Return JAXB XML annotation parser, 
+     * Return JAXB XML annotation parser,
      * creating it if it does not already exist.
      */
     public AnnotationPersistenceXMLMetaDataParser getXMLAnnotationParser() {
@@ -599,9 +599,9 @@ public class PersistenceMetaDataFactory
             = getXMLAnnotationParser();
         parser.parse(cls);
     }
-    
+
     private static String UNDERSCORE = "_";
-    
+
     public String getManagedClassName(String mmClassName) {
         if (mmClassName == null || mmClassName.length() == 0)
             return null;
@@ -619,7 +619,7 @@ public class PersistenceMetaDataFactory
     public boolean isMetaClass(Class<?> c) {
         return c != null && c.getAnnotation(StaticMetamodel.class) != null;
     }
-    
+
     public Class<?> getManagedClass(Class<?> c) {
         if (isMetaClass(c)) {
             return c.getAnnotation(StaticMetamodel.class).value();

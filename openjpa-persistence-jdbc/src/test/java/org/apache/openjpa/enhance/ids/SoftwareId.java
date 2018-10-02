@@ -19,19 +19,19 @@
 package org.apache.openjpa.enhance.ids;
 
 public class SoftwareId {
-    
+
     public static boolean[] usedConstructor = new boolean[3];
 
     private Integer idInteger;
-    
+
     private int idInt;
-    
+
     private String idString;
-    
+
     public SoftwareId() {
-        
+
     }
-    
+
     public SoftwareId(int idint) {
         usedConstructor[0] = true;
         idInt = idint;
@@ -60,7 +60,7 @@ public class SoftwareId {
     public String getIdString() {
         return idString;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SoftwareId) {
@@ -71,7 +71,7 @@ public class SoftwareId {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return getIdInt() + getIdInteger().hashCode() + getIdString().hashCode();

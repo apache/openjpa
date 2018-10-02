@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -41,21 +41,21 @@ public class VideoStore {
     private int id;
 
     private String name;
-    
+
     @Embedded
     private Address location;
-    
+
     @ElementCollection
     @CollectionTable(name="INVENTORY",
         joinColumns=@JoinColumn(name="STORE"))
-    @Column(name="COPIES_IN_STOCK")    
+    @Column(name="COPIES_IN_STOCK")
     @MapKeyJoinColumn(name="MOVIE", referencedColumnName="ID")
     private Map<Movie, Integer> videoInventory = new HashMap<Movie, Integer>();
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -63,25 +63,25 @@ public class VideoStore {
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Map getVideoInventory() {
         return videoInventory;
     }
-    
+
     public void addToVideoInventory(Movie movie, Integer inventory) {
         videoInventory.put(movie, inventory);
     }
-    
+
     public Address getLocation() {
         return location;
     }
-    
+
     public void setLocation(Address location) {
         this.location = location;
     }
-    
+
 }

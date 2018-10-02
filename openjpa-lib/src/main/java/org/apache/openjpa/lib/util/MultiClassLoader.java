@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -231,11 +231,11 @@ public class MultiClassLoader extends ClassLoader {
                 loader = AccessController.doPrivileged(
                     J2DoPrivHelper.getContextClassLoaderAction());
 
-            if (loader == null) // skip 
+            if (loader == null) // skip
                 continue;
 
             rsrc = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourceAction(loader, name)); 
+                J2DoPrivHelper.getResourceAction(loader, name));
             if (rsrc != null)
                 return rsrc;
         }
@@ -258,7 +258,7 @@ public class MultiClassLoader extends ClassLoader {
 
             try {
                 rsrcs = AccessController.doPrivileged(
-                    J2DoPrivHelper.getResourcesAction(loader, name)); 
+                    J2DoPrivHelper.getResourcesAction(loader, name));
                 while (rsrcs.hasMoreElements()) {
                     rsrc = rsrcs.nextElement();
                     if (!all.contains(rsrc))
@@ -266,7 +266,7 @@ public class MultiClassLoader extends ClassLoader {
                 }
             } catch (PrivilegedActionException pae) {
                 throw (IOException) pae.getException();
-            }                
+            }
         }
         return all.elements();
     }

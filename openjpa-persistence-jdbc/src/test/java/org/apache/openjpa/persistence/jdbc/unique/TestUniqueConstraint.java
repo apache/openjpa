@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.unique;
 
@@ -30,10 +30,10 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * Tests unique constraints specified via annotations for primary/secondary
  * table, sequence generator, join tables have been defined on database by
  * examining DDL statements.
- * 
+ *
  * @see resources/org/apache/openjpa/persistence/jdbc/unique/orm.xml defines
  * the ORM mapping.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -42,18 +42,18 @@ public class TestUniqueConstraint extends SQLListenerTestCase {
     public void setUp(Object... props) {
         super.setUp(DROP_TABLES, UniqueA.class, UniqueB.class);
     }
-    
+
 	public void testMapping() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.getTransaction().commit();
 		em.close();
 		// The above should trigger schema definition
-		
+
 		List<String> sqls = super.sql;
-		
+
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_A",
-				"UNIQUE .*\\(f1, f2\\)", 
+				"UNIQUE .*\\(f1, f2\\)",
 				"UNIQUE .*\\(f3, f4\\).*");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_B",
 				"UNIQUE .*\\(f1, f2\\).*");
@@ -68,11 +68,11 @@ public class TestUniqueConstraint extends SQLListenerTestCase {
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_B",
 			    "UNIQUE .*\\(f1\\)");
 	}
-		
+
 	void assertSQLFragnments(List<String> list, String... keys) {
 		if (SQLSniffer.matches(list, keys))
 			return;
-		fail("None of the following " + sql.size() + " SQL \r\n" + 
+		fail("None of the following " + sql.size() + " SQL \r\n" +
 				toString(sql) + "\r\n contains all keys \r\n"
 				+ toString(Arrays.asList(keys)));
 	}

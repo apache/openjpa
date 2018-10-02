@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.graph;
 
@@ -42,9 +42,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Tests basic create and query on generic persistent graph. The test creates a
  * graph of People and Cities. Then different queries on the graph are verified.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class TestPersistentGraph extends SingleEMFTestCase {
     private static enum Emotion {
@@ -66,7 +66,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
     /* P2 */new Emotion[] { Emotion.LOVES,          null, Emotion.LOVES,          null, Emotion.LOVES },
     /* P3 */new Emotion[] { Emotion.HATES, Emotion.LOVES,          null,          null, Emotion.KNOWS },
     /* P4 */new Emotion[] { Emotion.LOVES, Emotion.HATES, Emotion.KNOWS, Emotion.LOVES, Emotion.LOVES },
-    /* P5 */new Emotion[] {          null, Emotion.LOVES, Emotion.KNOWS, Emotion.KNOWS,          null }, 
+    /* P5 */new Emotion[] {          null, Emotion.LOVES, Emotion.KNOWS, Emotion.KNOWS,          null },
     };
 
     private static final String ATTR_DISTANCE = "distance";
@@ -79,7 +79,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
 
     private EntityManager em;
     private PersistentGraph<Object> graph;
-    
+
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, PersistentGraph.class, RelationGraph.class,
                 PersistentRelation.class, People.class, City.class);
@@ -87,7 +87,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
         graph = createData();
         em.clear();
     }
-    
+
     /**
      * Verifies that fields are mapped with expected strategy or value handlers.
      */
@@ -133,7 +133,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
         if (handler == null) {
             if (actualHandler != null) {
                 printMapping(fmd);
-                fail("Expected no value handler for " + pcClass.getName() + "." + field + 
+                fail("Expected no value handler for " + pcClass.getName() + "." + field +
                         " but found " + actualHandler);
             }
         } else {
@@ -257,7 +257,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
                                   .setParameter("value", value)
                                   .getResultList();
 
-        assertFalse("Result of [" + jpql + "] on key-value (" + ATTR_EMOTION + "," + value + ") should not be empty", 
+        assertFalse("Result of [" + jpql + "] on key-value (" + ATTR_EMOTION + "," + value + ") should not be empty",
                 result.isEmpty());
     }
 
@@ -268,7 +268,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
      */
     public void testQueryRelationOnMultipleAttributeKeyValuePairs() {
         String jpql = "select r from PersistentRelation r join r.attrs a1 join r.attrs a2 "
-                    + "where key(a1) = :key1 and value(a1) = :value1 " 
+                    + "where key(a1) = :key1 and value(a1) = :value1 "
                     + "and key(a2) = :key2 and value(a2) = :value2";
         String value = EMOTIONS[0][2].toString();
         List<PersistentRelation> result = em.createQuery(jpql, PersistentRelation.class)
@@ -278,11 +278,11 @@ public class TestPersistentGraph extends SingleEMFTestCase {
                                   .setParameter("value2", SINCE.toString())
                                   .getResultList();
 
-        assertFalse("Result of [" + jpql + "] on key-value = (" + ATTR_EMOTION + "," + value 
-                + ") and key-value=("  + ATTR_SINCE + "," + SINCE + ") should not be empty", 
+        assertFalse("Result of [" + jpql + "] on key-value = (" + ATTR_EMOTION + "," + value
+                + ") and key-value=("  + ATTR_SINCE + "," + SINCE + ") should not be empty",
                 result.isEmpty());
 
-        String wrongJPQL = "select r from PersistentRelation r join r.attrs a "  
+        String wrongJPQL = "select r from PersistentRelation r join r.attrs a "
                          + "where key(a) = :key1 and value(a) = :value1 "
                          + "and key(a) = :key2 and value(a) = :value2";
         List<PersistentRelation> result2 = em.createQuery(wrongJPQL, PersistentRelation.class)
@@ -292,8 +292,8 @@ public class TestPersistentGraph extends SingleEMFTestCase {
                                    .setParameter("value2", SINCE.toString())
                                    .getResultList();
 
-        assertTrue("Result of [" + jpql + "] on key-value = (" + ATTR_EMOTION + "," + value 
-                + ") and key-value=("+ ATTR_SINCE + "," + SINCE + ") should be empty", 
+        assertTrue("Result of [" + jpql + "] on key-value = (" + ATTR_EMOTION + "," + value
+                + ") and key-value=("+ ATTR_SINCE + "," + SINCE + ") should be empty",
                 result2.isEmpty());
     }
 
@@ -309,7 +309,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
         r.get(0).addAttribute("new-key", "new-value");
         em.getTransaction().commit();
         em.clear();
-        
+
         em.getTransaction().begin();
         jpql = "select r from PersistentRelation r join r.attrs a where key(a) = :key";
         Relation newR = em.createQuery(jpql, PersistentRelation.class)
@@ -319,7 +319,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
         assertEquals("new-value", newR.getAttribute("new-key"));
         newR.removeAttribute("new-key");
         em.getTransaction().commit();
-        
+
         em.getTransaction().begin();
         jpql = "select r from PersistentRelation r join r.attrs a where key(a) = :key";
         try {
@@ -333,7 +333,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
             em.getTransaction().rollback();
         }
     }
-    
+
     boolean isPopulated() {
         return em.createQuery("select count(p) from People p", Long.class).getSingleResult() > 0;
     }
@@ -344,7 +344,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
      */
     PersistentGraph<Object> createData() {
         PersistentGraph<Object> graph = new RelationGraph<Object>();
-        
+
         em.getTransaction().begin();
 
         People[] people = new People[SSN.length];
@@ -384,14 +384,14 @@ public class TestPersistentGraph extends SingleEMFTestCase {
         }
         em.persist(graph);
         em.getTransaction().commit();
-        
+
         return graph;
     }
 
     void assertDataEquals(Graph<Object> graph, People[] people, City[] cities) {
         assertEquals(SSN.length, people.length);
         assertEquals(CITY_NAMES.length, cities.length);
-        
+
         for (int i = 0; i < people.length; i++) {
             People p = people[i];
             assertEquals(SSN[i], p.getSsn());

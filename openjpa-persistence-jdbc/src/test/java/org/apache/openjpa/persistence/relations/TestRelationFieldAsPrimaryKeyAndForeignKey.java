@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -27,27 +27,27 @@ import junit.framework.Assert;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 
-public class TestRelationFieldAsPrimaryKeyAndForeignKey 
+public class TestRelationFieldAsPrimaryKeyAndForeignKey
     extends SingleEMFTestCase {
 
 	public void setUp() {
-	    setUp(C.class, CM.class, D.class, E.class, VC.class, 
+	    setUp(C.class, CM.class, D.class, E.class, VC.class,
 	        VCS.class, CLEAR_TABLES);
-	    
+
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             List<E> es = (List<E>) em.createQuery(
             "Select e from E e").getResultList();
-            for (E e : es) 
+            for (E e : es)
                 em.remove(e);
 
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
-            
+
         }
-	    
+
 	    em = emf.createEntityManager();
 	    em.getTransaction().begin();
 

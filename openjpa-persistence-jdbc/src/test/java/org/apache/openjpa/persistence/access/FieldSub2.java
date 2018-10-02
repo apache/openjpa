@@ -29,14 +29,14 @@ import javax.persistence.NamedQuery;
 @Entity
 @Access(AccessType.FIELD)
 @NamedQueries( {
-    @NamedQuery(name="FieldSub2.query", 
-        query="SELECT fs FROM FieldSub2 fs WHERE " + 
+    @NamedQuery(name="FieldSub2.query",
+        query="SELECT fs FROM FieldSub2 fs WHERE " +
         "fs.id = :id AND fs.name = :name AND fs.crtDate = :crtDate"),
-    @NamedQuery(name="FieldSub2.badQuery", 
-        query="SELECT ps FROM FieldSub2 ps WHERE " + 
+    @NamedQuery(name="FieldSub2.badQuery",
+        query="SELECT ps FROM FieldSub2 ps WHERE " +
         "ps.id = :id AND ps.name = :name AND ps.createDate = :crtDate") } )
 public class FieldSub2 extends MappedSuperProperty {
-    
+
     protected Date crtDate;
 
     public Date getCreateDate() {
@@ -46,7 +46,7 @@ public class FieldSub2 extends MappedSuperProperty {
     public void setCreateDate(Date date) {
         crtDate = date;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof FieldSub2) {
             FieldSub2 ps = (FieldSub2)obj;
@@ -57,5 +57,5 @@ public class FieldSub2 extends MappedSuperProperty {
         }
         return false;
     }
-    
+
 }

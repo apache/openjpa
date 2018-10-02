@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
@@ -37,10 +37,10 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestLazySchemaFactory
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-       
+
     private SchemaGroup _group = null;
     private boolean _fks = true;
-    
+
     /** Creates a new instance of TestLazySchemaFactory */
     public TestLazySchemaFactory() {
     }
@@ -106,5 +106,5 @@ public class TestLazySchemaFactory
     public static void main(String[] args) {
         //main(TestLazySchemaFactory.class);
     }
-    
+
 }

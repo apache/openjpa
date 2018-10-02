@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.lazy;
 
@@ -44,7 +44,7 @@ public class ReclinerId {
     public String getColor() {
         return color;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ReclinerId) {
@@ -54,7 +54,7 @@ public class ReclinerId {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return id ^ color.hashCode();

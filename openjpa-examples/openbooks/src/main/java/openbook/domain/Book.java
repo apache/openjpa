@@ -33,14 +33,14 @@ import javax.persistence.Version;
  * The mutable properties of the book such as number of items in stock etc.
  * are factored out in a separate {@link Inventory} instance.
  * <br>
- * The state of inventory is mutable, but the relation to inventory is immutable. 
- * 
+ * The state of inventory is mutable, but the relation to inventory is immutable.
+ *
  * <LI><b>Identity</b>: Application-defined identity.
  * <LI><b>Mapping</b>: One-to-One bi-directional, immutable mapping to {@link Inventory}.
  * Many-to-Many bi-directional mapping to {@linkplain Author}.
  * <LI><b>Version</b>: No.
  * <p>
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -49,35 +49,35 @@ import javax.persistence.Version;
 public class Book implements Serializable {
     @Id
     private String ISBN;
-    
+
     private String title;
-    
+
     private double price;
-    
+
     @OneToOne(mappedBy="book",
               fetch=FetchType.LAZY,
               cascade=CascadeType.ALL,
               optional=false,
               orphanRemoval=true)
     private Inventory inventory;
-    
+
     /**
      * <A name="authors">
-     * A many-to-many <em>eager</em> relation. 
+     * A many-to-many <em>eager</em> relation.
      * By default, many-to-many relations are lazily fetched.
      */
     @ManyToMany(fetch=FetchType.EAGER)
     private List<Author> authors;
-    
+
     /**
      * A no-arg constructor is required for JPA Specification.
      */
     public Book() {
     }
-    
+
     /**
      * Construct a book with given parameters.
-     * 
+     *
      * @param ISBN primary identity of this Book
      * @param title Title of the book.
      * @param price price of the book.
@@ -89,23 +89,23 @@ public class Book implements Serializable {
         this.price = price;
         inventory = new Inventory(this, initialSupply);
     }
-    
+
     public String getISBN() {
         return ISBN;
     }
-    
+
     public String getTitle() {
         return title;
     }
-    
+
     public double getPrice() {
         return price;
     }
-    
+
     public List<Author> getAuthors() {
         return authors;
     }
-    
+
     public void addAuthor(Author...authors) {
         if (this.authors == null)
             this.authors = new ArrayList<Author>();
@@ -114,18 +114,18 @@ public class Book implements Serializable {
                 this.authors.add(a);
         }
     }
-    
+
     public void setAuthors(List<Author> authors) {
         this.authors = authors;
     }
-    
+
     public Inventory getInventory() {
         return inventory;
     }
-    
+
     @Version
     private int version;
-    
+
     public int getVersion() {
         return version;
     }

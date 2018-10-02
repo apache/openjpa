@@ -43,28 +43,28 @@ import com.google.gwt.user.client.ui.RadioButton;
 /**
  * A popup presents a list of matching Tradables and lets the user select one of them
  * to commit a trade.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class MatchWindow extends PopupPanel {
     private final OpenTrader session;
-    
+
     public MatchWindow(final OpenTrader session, final Tradable tradable, final List<Match> matches) {
         super(false, true);
         this.session = session;
         setAnimationEnabled(true);
-        
+
         DockPanel panel = new DockPanel();
         panel.setHorizontalAlignment(DockPanel.ALIGN_CENTER);
 
         final HTML header = new HTML();
         final boolean ask = (tradable instanceof Ask);
-        String txt = (matches.isEmpty() ? "No" : ""+matches.size()) + " matching "+ (ask ? "Bid" : "Ask") + " for " 
+        String txt = (matches.isEmpty() ? "No" : ""+matches.size()) + " matching "+ (ask ? "Bid" : "Ask") + " for "
                    + toString(tradable) + "<br>";
         header.setHTML(txt);
         header.addStyleName("table-caption");
-        
+
         Button close = new Button(matches.isEmpty() ? "OK" : "Cancel");
         close.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -86,7 +86,7 @@ public class MatchWindow extends PopupPanel {
                 body.setWidget(i, 2, FormatUtil.formatVolume(t2.getVolume()));
                 body.setText(i, 3, " by " + cpty.getName());
             }
-            
+
             Button act = new Button(ask ? "Sell" : "Buy");
             act.setFocus(true);
             body.setWidget(matches.size()+1, 1, act);
@@ -106,31 +106,31 @@ public class MatchWindow extends PopupPanel {
         } else {
             body.setWidget(0,0, new HTML("<p>Open a new browser page and login with a different Trader name<br>"
                     + "to create a matching " + (ask ? "Bid" : "Ask") + "<p>"));
-            
+
             close.setFocus(true);
             body.setWidget(1, 0, close);
-            body.getFlexCellFormatter().setAlignment(1,0, 
-                    HasHorizontalAlignment.ALIGN_CENTER, 
+            body.getFlexCellFormatter().setAlignment(1,0,
+                    HasHorizontalAlignment.ALIGN_CENTER,
                     HasVerticalAlignment.ALIGN_MIDDLE);
         }
-        
-        
+
+
         panel.add(header, DockPanel.NORTH);
         panel.add(body, DockPanel.CENTER);
         setWidget(panel);
     }
-    
+
     String toString(Tradable t) {
-        return "" + t.getVolume() + " of " + t.getStock().getSymbol() + " at price " 
+        return "" + t.getVolume() + " of " + t.getStock().getSymbol() + " at price "
         + FormatUtil.priceFormat.format(t.getPrice());
     }
-    
+
     /**
      * ---------------------------------------------------------------------------------
      * Asynchronous RPC service callbacks
      * ---------------------------------------------------------------------------------
      */
-    
+
     /**
      * Commits a Trade and notifies the listeners to {@link ServiceEvent.TradableRemoved
      * remove} the {@link Tradable tradable} and newly {@link ServiceEvent.TradeCommitted committed}
@@ -142,7 +142,7 @@ public class MatchWindow extends PopupPanel {
      */
     public class TradeCallback implements AsyncCallback<Trade> {
         private final Tradable tradable;
-        
+
         public TradeCallback(Tradable m) {
             tradable = m;
         }
@@ -151,7 +151,7 @@ public class MatchWindow extends PopupPanel {
         }
 
         public void onSuccess(Trade trade) {
-            session.fireEvent(new ServiceEvent.TradableRemoved(tradable));                         
+            session.fireEvent(new ServiceEvent.TradableRemoved(tradable));
             session.fireEvent(new ServiceEvent.TradeCommitted(trade));
         }
     }

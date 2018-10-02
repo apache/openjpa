@@ -24,35 +24,35 @@ import javax.swing.ImageIcon;
 /**
  * Utility to load and cache images.
  * Maintains a list of <em>known</em> images.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class Images {
-    
+
     private static Map<String, Icon> images = new HashMap<String, Icon>();
-    
+
     public static Icon NEXT    = getIcon("images/arrow_right.jpg", 24, -1);
     public static Icon BACK    = getIcon("images/arrow_left.jpg",  24, -1);
     public static Icon DONE    = getIcon("images/done.png");
     public static Icon ERROR   = getIcon("images/error.png");
     public static Icon START   = getIcon("images/start_task.gif");
-    
+
     public static final Icon BUY       = Images.getIcon("images/buy.jpg",       32, -1);
     public static final Icon DELIVERY  = Images.getIcon("images/delivery.jpg",  32, -1);
     public static final Icon SUPPLY    = Images.getIcon("images/supply.jpg",    32, -1);
     public static final Icon SEARCH    = Images.getIcon("images/search.jpg", 24, -1);
     public static final Icon CART      = Images.getIcon("images/cart.jpg",      24, -1);
-    
+
     public static Icon VIEW_UNIT    = Images.getIcon("images/view_unit.jpg",   32, -1);
     public static Icon VIEW_DOMAIN  = Images.getIcon("images/view_domain.jpg", 32, -1);
     public static Icon VIEW_CODE    = Images.getIcon("images/view_code.jpg",   32, -1);
     public static Icon VIEW_QUERY   = Images.getIcon("images/view_query.jpg",  32, -1);
-    
+
     public static final Icon    LOGO_OPENBOOKS = Images.getIcon("images/OpenBooks.jpg", 32, -1);
     public static final Icon    LOGO_OPENJPA   = Images.getIcon("images/openjpa-logo-small.png");
-    
-    
+
+
     public static Icon getIcon(String name) {
         Icon icon = images.get(name);
         if (icon == null) {
@@ -61,11 +61,11 @@ public class Images {
         }
         return icon;
     }
-    
+
     public static Icon getIcon(String name, boolean scale) {
         return getIcon(name, 32, -1);
     }
-    
+
     public static Icon getIcon(String name, int width, int height) {
         Icon icon = getIcon(name);
         if (icon == null) {
@@ -74,10 +74,10 @@ public class Images {
         icon = new ImageIcon(((ImageIcon)icon).getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
         return icon;
     }
-    
-    /** 
-     * Returns an ImageIcon, or null if the path was invalid. 
-     * 
+
+    /**
+     * Returns an ImageIcon, or null if the path was invalid.
+     *
      **/
     protected static ImageIcon createImageIcon(String path) {
         if (path == null)

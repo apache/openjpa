@@ -27,10 +27,10 @@ public abstract class AbstractClass {
 
     @Id
     private int id;
-        
+
     @Basic
     private String name;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -50,9 +50,9 @@ public abstract class AbstractClass {
     public String getName() {
         return name;
     }
-    
+
     public String toString() {
-        return "Id=" + id + 
+        return "Id=" + id +
                ";Name=" + name;
     }
 }

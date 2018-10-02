@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -27,12 +27,12 @@ import org.apache.regexp.RE;
 /**
  * Utility class to verify whether a set of fragments appear in a list of
  * possible SQL statement.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class SQLSniffer {
-	
+
 	private static Map<String, RE> cache = new HashMap<String, RE>();
 	/**
      * Checks that the given set of regular expressions occur in at least one of
@@ -55,9 +55,9 @@ public class SQLSniffer {
 		}
 		return false;
 	}
-	
+
 	private static RE getRegularExpression(String regex) {
-		if (cache.containsKey(regex)) 
+		if (cache.containsKey(regex))
 			return cache.get(regex);
 		RE re = new RE(regex);
 		cache.put(regex, re);

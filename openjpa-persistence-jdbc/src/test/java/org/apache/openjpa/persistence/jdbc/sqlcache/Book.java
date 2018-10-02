@@ -32,23 +32,23 @@ import org.apache.openjpa.persistence.ExternalValues;
 @DiscriminatorValue("BOOK")
 public class Book extends Merchandise {
     private String title;
-    
+
     @ManyToMany(fetch=FetchType.EAGER)
     private Set<Author> authors;
 
     @ExternalValues({"SMALL=S", "MEDIUM=M", "LARGE=L"})
     private String token;
-    
+
     public Book() {
         this("?");
         token = "MEDIUM";
     }
-    
+
     public Book(String title) {
         super();
         setTitle(title);
     }
-    
+
     public String getTitle() {
         return title;
     }
@@ -68,11 +68,11 @@ public class Book extends Merchandise {
             a.addBook(this);
         }
     }
-    
+
     public String getToken() {
         return token;
     }
-    
+
     public void setToken(String t) {
         token = t;
     }

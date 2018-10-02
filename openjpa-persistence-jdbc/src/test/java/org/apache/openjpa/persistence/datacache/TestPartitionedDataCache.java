@@ -36,7 +36,7 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
         "openjpa.CacheDistributionPolicy",
         "org.apache.openjpa.persistence.datacache.TestPartitionedDataCache$TestPolicy");
     }
-    
+
     public void testPropertyParsing() {
         PartitionedDataCache cache = new PartitionedDataCache();
         String badProperty = "(name=a,cacheSize=100),(name=b,cacheSize=200";// missing last bracket
@@ -74,9 +74,9 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
         } catch (UserException e) {
             System.err.println(e);
         }
-        
+
     }
-    
+
     public void testPolicyConfiguration() {
         Object v = emf.getConfiguration().toProperties(true).get("openjpa.CacheDistributionPolicy");
         String policyPlugin = emf.getConfiguration().getCacheDistributionPolicy();
@@ -84,7 +84,7 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
         CacheDistributionPolicy policy = emf.getConfiguration().getDataCacheManagerInstance().getDistributionPolicy();
         assertNotNull(policy);
         assertTrue(policy.getClass() + " not TestPolicy", policy instanceof TestPolicy);
-        
+
     }
     public void testPluginConfiguration() {
         DataCache cache = ((StoreCacheImpl)emf.getStoreCache()).getDelegate();
@@ -96,14 +96,14 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
         assertCacheConfiguration("a", 100);
         assertCacheConfiguration("b", 200);
     }
-    
+
     void assertCacheConfiguration(String name, int size) {
         DataCache cache = emf.getConfiguration().getDataCacheManagerInstance().getDataCache(name);
         assertNotNull(cache);
         assertTrue(cache instanceof ConcurrentDataCache);
         assertEquals(size, ((ConcurrentDataCache)cache).getCacheSize());
     }
-    
+
     public static class TestPolicy implements CacheDistributionPolicy {
 
         public String selectCache(OpenJPAStateManager sm, Object context) {
@@ -118,6 +118,6 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
 
         public void startConfiguration() {
         }
-        
+
     }
 }

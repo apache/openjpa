@@ -71,7 +71,7 @@ public class TestQueryResultSize
         assertEquals(0, getQueryCacheSize());
         endEm(pm);
 
-        System.out.println("****Deleted Records " + 
+        System.out.println("****Deleted Records " +
             deleteAll(CacheObjectE.class));
     }
 

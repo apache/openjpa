@@ -48,11 +48,11 @@ public class EntityA_Coll_String implements Serializable {
 
     @Column(length=30)
     String name;
-    
+
     @Basic(fetch=FetchType.LAZY)
     int age;
 
-    @ElementCollection(fetch=FetchType.EAGER) 
+    @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(name="NickNames_Tbl")
     @Column(name="nicknames1", length=20)
     protected Set<String> nickNames = new HashSet<String>();
@@ -60,7 +60,7 @@ public class EntityA_Coll_String implements Serializable {
     @ElementCollection
     @Enumerated(EnumType.ORDINAL)
     protected List<CreditRating> cr = new ArrayList<CreditRating>();
-    
+
     @ElementCollection
     @Temporal(TemporalType.DATE)
     protected List<Timestamp> ts = new ArrayList<Timestamp>();
@@ -96,7 +96,7 @@ public class EntityA_Coll_String implements Serializable {
     public Set<String> getNickNames() {
         return nickNames;
     }
-    
+
     public void addNickName(String nickName) {
         nickNames.add(nickName);
     }
@@ -104,23 +104,23 @@ public class EntityA_Coll_String implements Serializable {
     public List<CreditRating> getCreditRating() {
         return cr;
     }
-    
+
     public void addCreditRating(CreditRating c) {
         cr.add(c);
     }
-    
+
     public List<Timestamp> getTimestamps() {
         return ts;
     }
-    
+
     public void addTimestamp(Timestamp t) {
         ts.add(t);
     }
-    
+
     public List<String> getLobs() {
         return lobs;
     }
-    
+
     public void addLob(String lob) {
         lobs.add(lob);
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation;
 
@@ -33,22 +33,22 @@ import org.apache.openjpa.lib.instrumentation.InstrumentationProvider;
  */
 public class InstrumentationManagerImpl implements InstrumentationManager {
 
-    public Set<InstrumentationProvider> _providers = 
+    public Set<InstrumentationProvider> _providers =
         Collections.synchronizedSet(new HashSet<InstrumentationProvider>());
-    
+
     private boolean _closed = false;
-    
+
     /**
      * Initializes all providers defined for the specified configuration.
      */
     public void initialize(OpenJPAConfiguration conf, PluginListValue pluginVal) {
-        InstrumentationProvider[] providers = 
+        InstrumentationProvider[] providers =
             (InstrumentationProvider[])pluginVal.instantiate(InstrumentationProvider.class, conf);
         _providers.addAll(Arrays.asList(providers));
     }
-    
+
     /**
-     * Make a provider managed.  This will bind its instrumentation to 
+     * Make a provider managed.  This will bind its instrumentation to
      * InstrumentationLevel type events (factory create/close, broker create/close).
      */
     public void manageProvider(InstrumentationProvider provider) {
@@ -57,7 +57,7 @@ public class InstrumentationManagerImpl implements InstrumentationManager {
 
     /**
      * Returns all providers as an unmodifiable set
-     */    
+     */
     public Set<InstrumentationProvider> getProviders() {
         return Collections.unmodifiableSet(_providers);
     }

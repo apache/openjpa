@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.example.gallery.constraint;
 
@@ -23,7 +23,7 @@ import javax.validation.groups.Default;
 
 /**
  * Sequenced validation group definition.  When this validation group is
- * used constraints within the Default group will validate first.  If 
+ * used constraints within the Default group will validate first.  If
  * successful, constraints within the ImageGroup will validate next.
  */
 @GroupSequence({Default.class, ImageGroup.class})

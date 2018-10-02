@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.mapping;
 
@@ -51,7 +51,7 @@ public class Authority {
        @Strategy("org.apache.openjpa.jdbc.meta.strats.EnumValueHandler")
        private AuthorityValues authorityName;
 
-       
+
        @XmlType(name = "IonAuthorityValues")
        @XmlEnum
        public enum AuthorityValues {
@@ -72,7 +72,7 @@ public class Authority {
        public void setAuthorityName(AuthorityValues auth) {
            authorityName = auth;
        }
-       
+
        public AuthorityValues getAuthorityName() {
            return authorityName;
        }

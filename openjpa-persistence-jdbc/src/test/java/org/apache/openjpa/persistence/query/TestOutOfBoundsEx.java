@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -32,36 +32,36 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestOutOfBoundsEx extends SingleEMFTestCase {
 	private EntityManager em = null;
 	private Lookup lookup;
-	
+
 	public void setUp() throws Exception {
-		super.setUp(Lookup.class, Case.class, Role.class, ScheduledAssignment.class, ScheduleDay.class, 
+		super.setUp(Lookup.class, Case.class, Role.class, ScheduledAssignment.class, ScheduleDay.class,
         DROP_TABLES);
 		em = emf.createEntityManager();
 		insertLookups();
 	}
-	
+
 	public void testOutOfBounds() throws Exception {
 		Calendar cal = Calendar.getInstance();
 		final Date date = cal.getTime();
 		ScheduleDay sd = insertScheduleDay(date);
-		
+
 		Role role1 = insertJob();
 		Role role2 = insertJob();
 		Case kase1 = insertCase(sd);
 		Case kase2 = insertCase(sd);
 		insertScheduledAssignmentInCase(role1, kase2);
-		
+
 		// simulate new web transaction on different em
 		em.close();
 		em = emf.createEntityManager();
-		
+
 		Query query = em.createQuery("select o from Case as o" +
 				" where o.scheduleDay = :sd");
 		query.setParameter("sd", sd);
 		FetchPlan fetchPlan = ((QueryImpl) query).getFetchPlan();
 		fetchPlan.addField(Case.class, "scheduledAssignments");
-		
-		//Without the changes of OJ1424, this next call would cause an 
+
+		//Without the changes of OJ1424, this next call would cause an
 		//ArrayIndexOutOfBoundsException.
 		List<Case> allCases = query.getResultList();
 	}
@@ -78,7 +78,7 @@ public class TestOutOfBoundsEx extends SingleEMFTestCase {
 		em.persist(obj);
 		em.getTransaction().commit();
 	}
-	
+
 	public Role insertJob() {
 		Role role = new Role();
 		role.setLookup(lookup);
@@ -106,5 +106,5 @@ public class TestOutOfBoundsEx extends SingleEMFTestCase {
 		sd.setDate(date);
 		save(sd);
 		return sd;
-	}	
+	}
 }

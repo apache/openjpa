@@ -36,18 +36,18 @@ import org.apache.openjpa.meta.JavaTypes;
 
 /**
  * Persistent attribute according to JPA 2.0 metamodel.
- * 
+ *
  * Implemented as a thin adapter to OpenJPA FieldMetadata. Mostly immutable.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  * @since 2.0.0
  *
  */
 public class Members {
     /**
      * An attribute of a Java type. A persistent attribute is realized as a field and getter/setter
-     * method of a Java class. This implementation adapts kernel's {@link FieldMetaData} construct 
+     * method of a Java class. This implementation adapts kernel's {@link FieldMetaData} construct
      * to meet the JPA API contract.
 	 *
 	 *
@@ -60,7 +60,7 @@ public class Members {
 
         /**
          * Supply immutable parts.
-         * 
+         *
          * @param owner the persistent type that contains this attribute
          * @param fmd the kernel's concrete representation of this attribute
          */
@@ -76,14 +76,14 @@ public class Members {
         public final ManagedType<X> getDeclaringType() {
             return (ManagedType<X>)owner.model.managedType(fmd.getDeclaringType());
         }
-        
+
         /**
-         *  Returns the java.lang.reflect.Member for this attribute. 
+         *  Returns the java.lang.reflect.Member for this attribute.
          */
         public final java.lang.reflect.Member getJavaMember() {
             return fmd.getBackingMember();
         }
-        
+
         /**
          *  Gets the Java type of this attribute.
          */
@@ -91,7 +91,7 @@ public class Members {
         public final Class<Y> getJavaType() {
             return (Class<Y>)fmd.getDeclaredType();
         }
-        
+
         /**
          * Gets the name of this attribute.
          */
@@ -104,11 +104,11 @@ public class Members {
          */
         @SuppressWarnings("unchecked")
         public final Type<Y> getType() {
-            return owner.model.getType(isCollection() 
-            	 ? fmd.getElement().getDeclaredType() 
+            return owner.model.getType(isCollection()
+            	 ? fmd.getElement().getDeclaredType()
             	 : fmd.getDeclaredType());
         }
-        
+
         /**
          * Affirms if this attribute is an association.
          */
@@ -125,7 +125,7 @@ public class Members {
                  || typeCode == JavaTypes.MAP
                  || typeCode == JavaTypes.ARRAY;
         }
-        
+
         /**
          *  Returns the persistent category for the attribute.
          */
@@ -140,20 +140,20 @@ public class Members {
         public int compareTo(Member<X, Y> o) {
             return fmd.getName().compareTo(o.fmd.getName());
         }
-        
+
         public String toString() {
         	return fmd.getFullName(true);
         }
     }
-    
-    
+
+
     /**
      * Represents single-valued persistent attributes.
      *
      * @param <X> The type containing the represented attribute
      * @param <T> The type of the represented attribute
      */
-    public static final class SingularAttributeImpl<X, T> extends Member<X, T> 
+    public static final class SingularAttributeImpl<X, T> extends Member<X, T>
         implements SingularAttribute<X, T> {
 
         public SingularAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
@@ -174,7 +174,7 @@ public class Members {
             return fmd.isVersion();
         }
 
-        /** 
+        /**
          *  Affirms if this attribute can be null.
          */
         public boolean isOptional() {
@@ -183,25 +183,25 @@ public class Members {
 
         /**
          *  Categorizes bindable type represented by this attribute.
-         */ 
+         */
         public final BindableType getBindableType() {
-            return fmd.isDeclaredTypePC() 
+            return fmd.isDeclaredTypePC()
                 ? BindableType.ENTITY_TYPE
                 : BindableType.SINGULAR_ATTRIBUTE;
         }
-       
+
         /**
          * Returns the bindable Java type of this attribute.
-         * 
-         * If the bindable category of this attribute is PLURAL_ATTRIBUTE, the Java element type 
-         * is returned. If the bindable type is SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type 
+         *
+         * If the bindable category of this attribute is PLURAL_ATTRIBUTE, the Java element type
+         * is returned. If the bindable type is SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type
          * of the represented entity or attribute is returned.
          */
         @SuppressWarnings("unchecked")
         public final Class<T> getBindableJavaType() {
             return fmd.getElement().getDeclaredType();
         }
-        
+
         /**
          * Categorizes the attribute.
          */
@@ -211,7 +211,7 @@ public class Members {
             if (fmd.getValue().isEmbedded() && fmd.getAssociationType() == 0) {
                 return PersistentAttributeType.EMBEDDED;
             }
-            
+
             return fmd.getMappedByMetaData() == null || !fmd.getType().isAssignableFrom(Collection.class)
                  ? PersistentAttributeType.ONE_TO_ONE
                  : PersistentAttributeType.ONE_TO_MANY;
@@ -223,11 +223,11 @@ public class Members {
      *
 	 * @param <X> the type that owns this member
 	 * @param <C> the container type that holds this member (e.g. java.util.Set&lt;Employee&gt;)
-     * @param <E> the type of the element held by this member (e.g. Employee). 
+     * @param <E> the type of the element held by this member (e.g. Employee).
      */
     public static abstract class PluralAttributeImpl<X, C, E> extends Member<X, C>
         implements PluralAttribute<X, C, E> {
-        
+
         public PluralAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
             super(owner, fmd);
         }
@@ -241,22 +241,22 @@ public class Members {
 
         /**
          *  Returns the bindable category of this attribute.
-         */ 
+         */
         public final BindableType getBindableType() {
             return BindableType.PLURAL_ATTRIBUTE;
         }
-        
+
         /**
          * Returns the bindable Java type of this attribute.
-         * 
-         * For PLURAL_ATTRIBUTE, the Java element type is returned. 
+         *
+         * For PLURAL_ATTRIBUTE, the Java element type is returned.
          */
         @SuppressWarnings("unchecked")
         public Class<E> getBindableJavaType() {
             return fmd.getElement().getDeclaredType();
         }
-        
-        
+
+
         public PersistentAttributeType getPersistentAttributeType() {
             return PersistentAttributeType.ONE_TO_MANY;
         }
@@ -265,8 +265,8 @@ public class Members {
     /**
      * Represents attributes declared as java.util.Collection&lt;E&gt;.
      */
-    public static class CollectionAttributeImpl<X, E> 
-        extends PluralAttributeImpl<X, java.util.Collection<E>, E> 
+    public static class CollectionAttributeImpl<X, E>
+        extends PluralAttributeImpl<X, java.util.Collection<E>, E>
         implements CollectionAttribute<X, E> {
 
         public CollectionAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
@@ -281,8 +281,8 @@ public class Members {
     /**
      * Represents attributes declared as java.util.List&lt;E&gt;.
      */
-    public static class ListAttributeImpl<X, E> 
-        extends PluralAttributeImpl<X, java.util.List<E>, E> 
+    public static class ListAttributeImpl<X, E>
+        extends PluralAttributeImpl<X, java.util.List<E>, E>
         implements ListAttribute<X, E> {
 
         public ListAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
@@ -297,8 +297,8 @@ public class Members {
     /**
      * Represents attributes declared as java.util.Set&lt;E&gt;.
      */
-    public static class SetAttributeImpl<X, E> 
-        extends PluralAttributeImpl<X, java.util.Set<E>, E> 
+    public static class SetAttributeImpl<X, E>
+        extends PluralAttributeImpl<X, java.util.Set<E>, E>
         implements SetAttribute<X, E> {
 
         public SetAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
@@ -309,12 +309,12 @@ public class Members {
             return CollectionType.SET;
         }
     }
-    
+
     /**
-     * Represents the keys of java.util.Map&lt;K,V&gt; in managed type &lt;X&gt; as a pseudo-attribute of type 
+     * Represents the keys of java.util.Map&lt;K,V&gt; in managed type &lt;X&gt; as a pseudo-attribute of type
      * java.util.Set&lt;K&gt;.
      *
-     * @param <X> the declaring type of the original java.util.Map&lt;K,V&gt; attribute 
+     * @param <X> the declaring type of the original java.util.Map&lt;K,V&gt; attribute
      * @param <K> the type of the key of the original java.util.Map&lt;K,V&gt; attribute
      */
     public static class KeyAttributeImpl<X,K> extends SetAttributeImpl<X, K> {
@@ -331,8 +331,8 @@ public class Members {
     /**
      * Represents attributes declared as java.util.Map&lt;K,V&gt; in managed type &lt;X&gt;.
      */
-    public static class MapAttributeImpl<X, K, V> 
-        extends PluralAttributeImpl<X, java.util.Map<K, V>, V> 
+    public static class MapAttributeImpl<X, K, V>
+        extends PluralAttributeImpl<X, java.util.Map<K, V>, V>
         implements MapAttribute<X, K, V> {
 
         public MapAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
@@ -342,7 +342,7 @@ public class Members {
         public CollectionType getCollectionType() {
             return CollectionType.MAP;
         }
-        
+
         @SuppressWarnings("unchecked")
         public Class<K> getKeyJavaType() {
             return fmd.getKey().getDeclaredType();
@@ -351,7 +351,7 @@ public class Members {
         public Type<K> getKeyType() {
             return owner.model.getType(getKeyJavaType());
         }
-        
+
         public PersistentAttributeType getPersistentAttributeType() {
             return PersistentAttributeType.MANY_TO_MANY;
         }

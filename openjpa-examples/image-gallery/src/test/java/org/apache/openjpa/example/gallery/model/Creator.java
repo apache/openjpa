@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.example.gallery.model;
 
@@ -38,20 +38,20 @@ public class Creator {
     @Id
     @GeneratedValue
     private long id;
-    
+
     @NotNull(message="Photographer's first name must be specified.")
     private String firstName;
-    
+
     @NotNull(message="Photographer's last name must be specified.")
     private String lastName;
 
     @OneToMany
     @OrderBy("fileName")
     private List<Image> images;
-    
+
     @ManyToMany
     private List<Album> albums;
-    
+
     public void setId(long id) {
         this.id = id;
     }

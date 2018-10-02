@@ -34,8 +34,8 @@ import javax.swing.JScrollPane;
  * An internal viewer for HTML formatted source code.
  * The input to this viewer is a root URL.
  * The viewer shows the anchors in a combo-box and displays the
- * corresponding HTML in the main editor. 
- * 
+ * corresponding HTML in the main editor.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -45,45 +45,45 @@ public class SourceCodeViewer extends JPanel {
     private final JComboBox   _bookmarks;
     private IndexedMap<String, URI> _anchors = new IndexedMap<String, URI>();
     private LinkedList<String> _visited = new LinkedList<String>();
-    
+
     /**
      * Create a Source Code Browser.
      */
     public SourceCodeViewer() {
         super(true);
         setLayout(new BorderLayout());
-        
+
         _editor = new JEditorPane();
         _editor.setContentType("text/html");
         _editor.setEditable(false);
-        
+
         DefaultComboBoxModel model = new DefaultComboBoxModel();
         _bookmarks = new JComboBox(model);
         _bookmarks.setEditable(false);
-        
+
         _bookmarks.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
                 showAnchor((String)_bookmarks.getSelectedItem());
             }
         });
-        
+
         JPanel topPanel = new JPanel();
         ((FlowLayout)topPanel.getLayout()).setAlignment(FlowLayout.LEADING);
         topPanel.add(new JLabel("Go to "));
         topPanel.add(_bookmarks);
         topPanel.add(Box.createHorizontalGlue());
-        
-        
+
+
         add(new JScrollPane(_editor,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), 
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS),
                 BorderLayout.CENTER);
         add(topPanel, BorderLayout.NORTH);
     }
-    
+
     /**
      * Add a page to this browser.
-     * 
+     *
      * @param anchor a user visible description to identify the page
      * @param uri the unique resource location
      */
@@ -91,10 +91,10 @@ public class SourceCodeViewer extends JPanel {
         _anchors.put(anchor, url);
         ((DefaultComboBoxModel)_bookmarks.getModel()).addElement(anchor);
     }
-    
+
     /**
      * Shows the page identified by the given anchor.
-     * 
+     *
      * @param anchor an anchor added a priori.
      */
     public void showAnchor(String anchor) {
@@ -103,14 +103,14 @@ public class SourceCodeViewer extends JPanel {
             return;
         showPage(anchor, _anchors.get(anchor));
     }
-   
+
     /**
      * Shows the given URI.
      * @param anchor an anchor added a priori or a new one.
      * @param uri the URI of the anchor
      */
     public void showPage(String anchor, URI uri) {
-        if (anchor == null || uri == null) 
+        if (anchor == null || uri == null)
             return;
         try {
             URL url = uri.toURL();

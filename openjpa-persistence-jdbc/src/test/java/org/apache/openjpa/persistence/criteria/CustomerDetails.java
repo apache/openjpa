@@ -14,53 +14,53 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
 public class CustomerDetails {
     long id;
-    
+
     int status;
-    
+
     int quantity;
 
     public CustomerDetails() {}
-    
+
     public CustomerDetails(long id, int status) {
         this.id = id;
         this.status = status;
     }
-    
+
     public CustomerDetails(long id, int status, int quantity) {
         this.id = id;
         this.status = status;
         this.quantity = quantity;
     }
-    
+
     public int getStatus() {
         return status;
     }
-    
+
     public void setStatus(int status) {
         this.status = status;
     }
-    
+
     public long getId() {
         return id;
     }
-    
+
     public void setId(long id) {
         this.id = id;
     }
-    
+
     public int getQuantity() {
         return quantity;
     }
-    
+
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-    
+
 }
 

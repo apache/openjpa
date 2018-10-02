@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.delimited.identifiers.xml;
 
 public class Chevrolet extends Car {
     public Chevrolet() {}
-    
+
     public Chevrolet(int id) {
         super(id);
     }

@@ -5,9 +5,9 @@
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistenceUtil;
 /**
  * OpenJPA optimized TraversableResolver Default implementation/behavior asks all discovered providers -
  * javax.persistence.Persistence.getPersistenceUtil().isLoaded( traversableObject, traversableProperty.getName());
- * 
+ *
  * @see javax.validation.TraversableResolver
  */
 public class TraversableResolverImpl implements TraversableResolver {
@@ -38,7 +38,7 @@ public class TraversableResolverImpl implements TraversableResolver {
 
     /* (non-Javadoc) isReachable() is called by the Validator before accessing
      * a property for validation or for cascading.
-     * 
+     *
      * @see javax.validation.TraversableResolver#isReachable(java.lang.Object,
      *      javax.validation.Path.Node, java.lang.Class, javax.validation.Path,
      *      java.lang.annotation.ElementType)
@@ -59,10 +59,10 @@ public class TraversableResolverImpl implements TraversableResolver {
         }
     }
 
-    /* (non-Javadoc) isCascadable() is called by the Validator after 
-     * isReachable() returns true and before a property marked with @Valid 
+    /* (non-Javadoc) isCascadable() is called by the Validator after
+     * isReachable() returns true and before a property marked with @Valid
      * is cascaded.
-     * 
+     *
      * @see javax.validation.TraversableResolver#isCascadable(java.lang.Object,
      *      javax.validation.Path.Node, java.lang.Class, javax.validation.Path,
      *      java.lang.annotation.ElementType)

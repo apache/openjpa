@@ -25,9 +25,9 @@ public class EntityI {
     private int id;
     private String name;
     private Collection<EntityH> eHs = new HashSet<EntityH>();
-    
+
     public EntityI() {}
-    
+
     public EntityI(int id) {
         this.id = id;
     }
@@ -73,7 +73,7 @@ public class EntityI {
     public void setEntityHs(Collection<EntityH> entityHs) {
         this.eHs = entityHs;
     }
-    
+
     public void addEntityH(EntityH entityH) {
         eHs.add(entityH);
     }

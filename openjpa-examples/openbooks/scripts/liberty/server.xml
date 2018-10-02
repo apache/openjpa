@@ -11,14 +11,14 @@
                   host="localhost"
                   httpPort="9080"
                   httpsPort="9443" />
-    
-    <jdbcDriver id="DerbyEmbedded" libraryRef="DerbyLib" /> 
-    <library id="DerbyLib" filesetRef="DerbyFileset" /> 
+
+    <jdbcDriver id="DerbyEmbedded" libraryRef="DerbyLib" />
+    <library id="DerbyLib" filesetRef="DerbyFileset" />
     <fileset id="DerbyFileset" dir="${derbyInstallDir}/lib" includes="derby.jar"/>
     <dataSource id="OpenBooks" jndiName="jdbc/OpenBooks" jdbcDriverRef="DerbyEmbedded">
-        <properties databaseName="OpenBooks" createDatabase="create" /> 
+        <properties databaseName="OpenBooks" createDatabase="create" />
     </dataSource>
     <dataSource id="OpenBooksNoTx" jndiName="jdbc/NonTxOpenBooks" jdbcDriverRef="DerbyEmbedded">
-        <properties databaseName="OpenBooks" createDatabase="create" /> 
+        <properties databaseName="OpenBooks" createDatabase="create" />
     </dataSource>
 </server>

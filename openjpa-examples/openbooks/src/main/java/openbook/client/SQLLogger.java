@@ -31,7 +31,7 @@ import org.apache.openjpa.lib.jdbc.JDBCEvent;
 
 /**
  * Logs SQL statement to a graphic console.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -45,7 +45,7 @@ public class SQLLogger extends AbstractJDBCListener {
         blue = ctx.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.BLUE);
         magenta = ctx.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.MAGENTA);
     }
-    
+
     public void setOutput(GraphicOutputStream o) {
         out = new PrintStream(o, true);
         o.registerStyle("INSERT", green);
@@ -53,7 +53,7 @@ public class SQLLogger extends AbstractJDBCListener {
         o.registerStyle("UPDATE", magenta);
         o.registerStyle("DELETE", red);
     }
-    
+
     @Override
     public void beforeExecuteStatement(final JDBCEvent event) {
         if (out == null)

@@ -27,13 +27,13 @@ public class SubclassH extends MidClass2 {
 
     @Basic
     private String classHName;
-        
+
     @Basic
     private int intFieldSup;
-    
+
     @OneToOne
     private BaseClass5 baseclass5;
-    
+
     public void setClassHName(String classHName) {
         this.classHName = classHName;
     }
@@ -41,9 +41,9 @@ public class SubclassH extends MidClass2 {
     public String getClassHName() {
         return classHName;
     }
-    
+
     public String toString() {
-        return super.toString() + ";classHName=" + classHName + 
+        return super.toString() + ";classHName=" + classHName +
             ";intFieldSup=" + intFieldSup;
     }
 

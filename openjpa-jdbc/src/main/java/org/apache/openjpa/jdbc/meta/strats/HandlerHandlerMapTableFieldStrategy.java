@@ -109,7 +109,7 @@ public class HandlerHandlerMapTableFieldStrategy
 
         field.mapJoin(adapt, true);
         _kio = new ColumnIO();
-        List columns = key.getValueInfo().getColumns(); 
+        List columns = key.getValueInfo().getColumns();
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         DBIdentifier colName = dict.getValidColumnName(DBIdentifier.newColumn("key"), field.getTable());
         _kcols = HandlerStrategies.map(key, colName.getName(), _kio, adapt);

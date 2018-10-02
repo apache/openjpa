@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -91,7 +91,7 @@ public class RelationStrategies {
                 store.getContext().getClassLoader(), true);
         }
         if (!rel.isMapped())
-            throw new UserException(_loc.get("unmapped-datastore-value", 
+            throw new UserException(_loc.get("unmapped-datastore-value",
                 rel.getDescribedType()));
 
         Column[] cols;
@@ -227,9 +227,9 @@ public class RelationStrategies {
             return new DetachedValueStateManager(obj, ctx);
         return sm;
     }
-    
+
     /**
-     * Affirms if all of the given columns represent a {@linkplain RelationId relationship identifier}. 
+     * Affirms if all of the given columns represent a {@linkplain RelationId relationship identifier}.
      */
     public static boolean isRelationId(Column[] cols) {
         if (cols == null || cols.length == 0)
@@ -240,7 +240,7 @@ public class RelationStrategies {
         }
         return true;
     }
-    
+
     /**
      * Affirms if all of the foreign key columns represent a {@linkplain RelationId relationship identifier}.
      */

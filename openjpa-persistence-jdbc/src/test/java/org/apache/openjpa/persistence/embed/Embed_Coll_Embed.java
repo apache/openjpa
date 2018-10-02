@@ -28,12 +28,12 @@ import javax.persistence.Embeddable;
 
 import javax.persistence.ElementCollection;
 
-@Embeddable 
+@Embeddable
 public class Embed_Coll_Embed {
     protected int intVal1;
     protected int intVal2;
     protected int intVal3;
-    
+
     @ElementCollection // use default table name
     //@CollectionTable(name="TableA")
     @AttributeOverrides({
@@ -42,35 +42,35 @@ public class Embed_Coll_Embed {
         @AttributeOverride(name="intVal3", column=@Column(name="A3"))
     })
     protected List<Embed> embeds = new ArrayList<Embed>();
-    
+
     public int getIntVal1() {
         return intVal1;
     }
-    
+
     public void setIntVal1(int intVal1) {
         this.intVal1 = intVal1;
     }
-    
+
     public int getIntVal2() {
         return intVal2;
     }
-    
+
     public void setIntVal2(int intVal2) {
         this.intVal2 = intVal2;
     }
-    
+
     public int getIntVal3() {
         return intVal3;
     }
-    
+
     public void setIntVal3(int intVal3) {
         this.intVal3 = intVal3;
     }
-        
+
     public List<Embed> getEmbeds() {
         return embeds;
     }
- 
+
     public void addEmbed(Embed embed) {
         embeds.add(embed);
     }

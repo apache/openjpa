@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
@@ -31,11 +31,11 @@ public class TimeEntity {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
     String name;
-    
+
     int value;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     private java.util.Calendar cal2Timestamp;
 
@@ -66,23 +66,23 @@ public class TimeEntity {
     public long getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public int getValue() {
         return value;
     }
-    
+
     public void setValue(int value) {
         this.value = value;
     }
-    
+
     public Calendar getCal2Timestamp() {
         return cal2Timestamp;
     }

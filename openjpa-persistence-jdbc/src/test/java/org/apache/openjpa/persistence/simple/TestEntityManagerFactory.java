@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.simple;
 
@@ -27,7 +27,7 @@ public class TestEntityManagerFactory extends TestCase {
 
     /*
      * This test uses a mis-configured persistence unit to verify that we will
-     * not connect to the database when an unused emf is closed.  
+     * not connect to the database when an unused emf is closed.
      */
     public void testCloseUnusedEMF() {
         EntityManagerFactory emf =

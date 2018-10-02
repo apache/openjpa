@@ -14,26 +14,26 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
 public class XMLBase extends XMLSuper {
-   
-    private int id;        
+
+    private int id;
     private String strValue;
-    
+
     public void setId(int id) {
         this.id = id;
     }
     public int getId() {
         return id;
     }
-    
+
     public void setStrValue(String strValue) {
         this.strValue = strValue;
     }
     public String getStrValue() {
         return strValue;
-    }    
+    }
 }

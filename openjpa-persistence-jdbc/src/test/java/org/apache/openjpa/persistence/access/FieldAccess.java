@@ -30,8 +30,8 @@ import static javax.persistence.AccessType.FIELD;
 
 @Entity
 @Access(value=FIELD)
-@NamedQuery(name="FieldAccess.query", 
-    query="SELECT fa FROM FieldAccess fa WHERE " + 
+@NamedQuery(name="FieldAccess.query",
+    query="SELECT fa FROM FieldAccess fa WHERE " +
         "fa.id = :id AND fa.strField = :strVal")
 public class FieldAccess {
 
@@ -41,7 +41,7 @@ public class FieldAccess {
 
     @Version
     private int version;
-    
+
     @Basic
     private String strField;
 
@@ -67,8 +67,8 @@ public class FieldAccess {
 
     public String getStringField() {
         return getStrField();
-    }  
-    
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof FieldAccess) {
             FieldAccess fa = (FieldAccess)obj;

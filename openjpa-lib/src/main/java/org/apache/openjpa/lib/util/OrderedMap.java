@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -26,21 +26,21 @@ import java.util.Set;
 
 /**
  * A Map with predictable iteration order.
- * 
+ *
  * @author Pinaki Poddar
  * @since 2.0.0
  */
 @SuppressWarnings("serial")
 public class OrderedMap<K, V> implements Map<K, V>, Serializable {
     private final LinkedHashMap<K, V> _del;
-    
+
     /**
      * Construct with predictable insertion order.
      */
     public OrderedMap() {
         _del = new LinkedHashMap<K, V>(6,0.1f,false);
     }
-    
+
     /**
      * Construct with predictable iteration order.
      * @param lru if true the iterator order is based on last access, false for order of insertion.
@@ -48,7 +48,7 @@ public class OrderedMap<K, V> implements Map<K, V>, Serializable {
     public OrderedMap(boolean lru) {
         _del = new LinkedHashMap<K, V>(6,0.1f,lru);
     }
-    
+
     public int indexOf(Object key) {
         int i = 0;
         for (K k : _del.keySet()) {
@@ -58,61 +58,61 @@ public class OrderedMap<K, V> implements Map<K, V>, Serializable {
         }
         return -1;
     }
-    
+
     public void clear() {
     }
 
-    
+
     public boolean containsKey(Object key) {
         return _del.containsKey(key);
     }
 
-    
+
     public boolean containsValue(Object value) {
         return _del.containsValue(value);
     }
 
-    
+
     public Set<java.util.Map.Entry<K, V>> entrySet() {
         return _del.entrySet();
     }
 
-    
+
     public V get(Object key) {
         return _del.get(key);
     }
 
-    
+
     public boolean isEmpty() {
         return _del.isEmpty();
     }
 
-    
+
     public Set<K> keySet() {
         return _del.keySet();
     }
 
-    
+
     public V put(K key, V value) {
         return _del.put(key, value);
     }
 
-    
+
     public void putAll(Map<? extends K, ? extends V> m) {
         _del.putAll(m);
     }
 
-    
+
     public V remove(Object key) {
         return _del.remove(key);
     }
 
-    
+
     public int size() {
         return _del.size();
     }
 
-    
+
     public Collection<V> values() {
         return _del.values();
     }

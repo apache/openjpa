@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="ref_guide_intro">
     <title>
@@ -34,8 +34,8 @@ This document is intended for OpenJPA developers. It
 assumes strong knowledge of Java, familiarity with the eXtensible Markup
 Language (XML), and an understanding of JPA. If you are not familiar with JPA,
 please read the <link linkend="jpa_overview_intro">JPA Overview</link> before
-proceeding. 
-<!-- 
+proceeding.
+<!--
 ### TUTORIAL
 We also strongly recommend taking OpenJPA's hands-on
 <link linkend="tutorials">tutorials</link> to get comfortable with OpenJPA

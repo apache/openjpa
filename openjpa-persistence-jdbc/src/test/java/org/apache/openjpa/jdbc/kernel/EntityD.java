@@ -43,12 +43,12 @@ public class EntityD {
     @JoinColumn(name = "entitya_id", referencedColumnName = "entitya_id")
     @ForeignKey
     private EntityA entityA;
-    
+
     @OneToOne
     @JoinColumn(name = "entityb_id", referencedColumnName = "entityb_id")
     @ForeignKey
     private EntityB entityB;
-    
+
     @Version
     private Integer optLock;
 
@@ -78,7 +78,7 @@ public class EntityD {
     public void setEntityB(EntityB entityB) {
         this.entityB = entityB;
     }
-    
+
     public String getName() {
         return this.name;
     }

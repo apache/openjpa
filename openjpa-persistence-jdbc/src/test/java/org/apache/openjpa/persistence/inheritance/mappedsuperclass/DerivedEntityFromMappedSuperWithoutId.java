@@ -25,9 +25,9 @@ import javax.persistence.Version;
 /**
  * A Mapped Super Class without a declared identity field. The derived classes
  * declare identity.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 
 @Entity

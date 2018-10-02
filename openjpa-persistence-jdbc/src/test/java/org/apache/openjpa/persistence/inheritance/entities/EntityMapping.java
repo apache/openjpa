@@ -91,13 +91,13 @@ public class EntityMapping {
     @SuppressWarnings("unchecked")
     public static enum InheritanceEntityMapping {
         /*
-         * Primitive Identity defined on a Mapped Superclass, 
+         * Primitive Identity defined on a Mapped Superclass,
          * Joined Table Entity Inheritance
          */
-        
-        // Primitive Identity defined on a Mapped Superclass, 
+
+        // Primitive Identity defined on a Mapped Superclass,
         // Joined Table Entity Inheritance, Integer Discriminator
-        PIdJTIDMSCRootEntity {         
+        PIdJTIDMSCRootEntity {
             public Class getEntityClass() {
                 return PIdJTIDMSCRootEntity.class;
             }
@@ -142,8 +142,8 @@ public class EntityMapping {
                 return PIdJTIDMSCLeafD2.class;
             }
         },
-        
-        // Primitive Identity defined on a Mapped Superclass, 
+
+        // Primitive Identity defined on a Mapped Superclass,
         // Joined Table Entity Inheritance, Char Discriminator
         PIdJTCDMSCRootEntity {
             public Class getEntityClass() {
@@ -190,8 +190,8 @@ public class EntityMapping {
                 return PIdJTCDMSCLeafD2.class;
             }
         },
-        
-        // Primitive Identity defined on a Mapped Superclass, 
+
+        // Primitive Identity defined on a Mapped Superclass,
         // Joined Table Entity Inheritance, String Discriminator
         PIdJTSDMSCRootEntity {
             public Class getEntityClass() {
@@ -238,13 +238,13 @@ public class EntityMapping {
                 return PIdJTSDMSCLeafD2.class;
             }
         },
-        
+
         /*
-         * Primitive Identity defined on a Mapped Superclass, 
+         * Primitive Identity defined on a Mapped Superclass,
          * Single Table Entity Inheritance
          */
-        
-        // Primitive Identity defined on a Mapped Superclass, 
+
+        // Primitive Identity defined on a Mapped Superclass,
         // Single Table Entity Inheritance, Integer Discriminator
         PIdSTIDMSCRootEntity {
             public Class getEntityClass() {
@@ -291,8 +291,8 @@ public class EntityMapping {
                 return PIdSTIDMSCLeafD2.class;
             }
         },
-        
-        // Primitive Identity defined on a Mapped Superclass, 
+
+        // Primitive Identity defined on a Mapped Superclass,
         // Single Table Entity Inheritance, Char Discriminator
         PIdSTCDMSCRootEntity {
             public Class getEntityClass() {
@@ -339,8 +339,8 @@ public class EntityMapping {
                 return PIdSTCDMSCLeafD2.class;
             }
         },
-        
-        // Primitive Identity defined on a Mapped Superclass, 
+
+        // Primitive Identity defined on a Mapped Superclass,
         // Single Table Entity Inheritance, String Discriminator
         PIdSTSDMSCRootEntity {
             public Class getEntityClass() {
@@ -388,7 +388,7 @@ public class EntityMapping {
             }
         },
 
-        
+
         /*
          * Non Entity PC-Aware Types
          */
@@ -396,7 +396,7 @@ public class EntityMapping {
             public Class getEntityClass() {
                 return PrimitiveIDMappedSuperclass.class;
             }
-        }, 
+        },
         PIdJTIDMSCMappedSuperclass {
             public Class getEntityClass() {
                 return PIdJTIDMSCMappedSuperclass.class;
@@ -427,15 +427,15 @@ public class EntityMapping {
                 return PIdSTSDMSCMappedSuperclass.class;
             }
         }
-        
+
         ;
-        
+
         public abstract Class getEntityClass();
         public String getEntityName() {
             return getEntityClass().getSimpleName();
         }
     };
-    
+
     public final static InheritanceEntityMapping[] PIdJTIDMSC = {
         InheritanceEntityMapping.PIdJTIDMSCRootEntity,
         InheritanceEntityMapping.PIdJTIDMSCLeafA,
@@ -447,7 +447,7 @@ public class EntityMapping {
         InheritanceEntityMapping.PIdJTIDMSCLeafD1,
         InheritanceEntityMapping.PIdJTIDMSCLeafD2
     };
-    
+
     public final static InheritanceEntityMapping[] PIdJTCDMSC = {
         InheritanceEntityMapping.PIdJTCDMSCRootEntity,
         InheritanceEntityMapping.PIdJTCDMSCLeafA,
@@ -459,7 +459,7 @@ public class EntityMapping {
         InheritanceEntityMapping.PIdJTCDMSCLeafD1,
         InheritanceEntityMapping.PIdJTCDMSCLeafD2
     };
-    
+
     public final static InheritanceEntityMapping[] PIdJTSDMSC = {
         InheritanceEntityMapping.PIdJTSDMSCRootEntity,
         InheritanceEntityMapping.PIdJTSDMSCLeafA,
@@ -471,7 +471,7 @@ public class EntityMapping {
         InheritanceEntityMapping.PIdJTSDMSCLeafD1,
         InheritanceEntityMapping.PIdJTSDMSCLeafD2
     };
-    
+
     public final static InheritanceEntityMapping[] PIdSTIDMSC = {
         InheritanceEntityMapping.PIdSTIDMSCRootEntity,
         InheritanceEntityMapping.PIdSTIDMSCLeafA,
@@ -483,7 +483,7 @@ public class EntityMapping {
         InheritanceEntityMapping.PIdSTIDMSCLeafD1,
         InheritanceEntityMapping.PIdSTIDMSCLeafD2
     };
-    
+
     public final static InheritanceEntityMapping[] PIdSTCDMSC = {
         InheritanceEntityMapping.PIdSTCDMSCRootEntity,
         InheritanceEntityMapping.PIdSTCDMSCLeafA,
@@ -495,7 +495,7 @@ public class EntityMapping {
         InheritanceEntityMapping.PIdSTCDMSCLeafD1,
         InheritanceEntityMapping.PIdSTCDMSCLeafD2
     };
-    
+
     public final static InheritanceEntityMapping[] PIdSTSDMSC = {
         InheritanceEntityMapping.PIdSTSDMSCRootEntity,
         InheritanceEntityMapping.PIdSTSDMSCLeafA,
@@ -508,12 +508,12 @@ public class EntityMapping {
         InheritanceEntityMapping.PIdSTSDMSCLeafD2
     };
 
-    
+
     @SuppressWarnings("unchecked")
     public static Object createEntityObjectInstance(
             InheritanceEntityMapping eType) throws Exception {
         Class eClassType = eType.getEntityClass();
-        
+
         Constructor c = eClassType.getConstructor(new Class[] {});
         Object eObj = c.newInstance(new Object[] {});
         return eObj;

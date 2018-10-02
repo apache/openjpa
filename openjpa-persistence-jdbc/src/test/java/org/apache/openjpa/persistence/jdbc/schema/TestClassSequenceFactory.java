@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
@@ -51,38 +51,38 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="This test only applies to run with Oracle. This test also is not functional; disable until fix")
 public class TestClassSequenceFactory extends BaseJDBCTest{
-    
+
     private static Map _sysprops = new HashMap();
-    
+
     Broker _broker;
-    
+
     /** Creates a new instance of TestClassSequenceFactory */
     public TestClassSequenceFactory() {
     }
     public TestClassSequenceFactory(String test) {
         super(test);
     }
-    
+
     public void setUp()
     throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.fromProperties(getProperties());
         if (!adjustConfiguration(conf))
             return;
-        
+
         String driver = conf.getConnectionDriverName().toLowerCase();
         String [] sql = null;
-        
+
         if (driver.indexOf("oracle") >= 0) {
             sql = new String []{
                 "create sequence seqa_seq",
                 "create sequence seqb_seq"
             };
         }
-        
+
         if (sql == null)
             return;
-        
+
         DataSource ds = conf.getDataSource2(null);
         Connection c = ds.getConnection();
         Statement s = null;
@@ -101,39 +101,39 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
                 } catch (Exception e) {
                 }
         }
-        
+
         _broker = getBrokerFactory().newBroker();
     }
-    
+
     /**
      * Tests that all sequence numbers are unique and in order.
      */
     public void testSequence()
     throws Exception {
         Set set = new HashSet();
-        
+
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.fromProperties(getProperties());
         if (!adjustConfiguration(conf))
             return;
         Thread t1 = new UpdateThread(set, conf);
         Thread t2 = new UpdateThread(set, conf);
-        
+
         t1.start();
         t2.start();
         t1.join();
         t2.join();
-        
+
         assertEquals(102, set.size());
     }
-    
+
     public void testExtensions()
     throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.fromProperties(getProperties());
         if (!adjustConfiguration(conf))
             return;
-        
+
         ClassMapping aMapping = conf.getMappingRepositoryInstance().
                 getMapping(SeqA.class, null, true);
         ClassMapping bMapping = conf.getMappingRepositoryInstance().
@@ -141,18 +141,18 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
         ClassMapping cMapping = conf.getMappingRepositoryInstance().
                 getMapping(SeqC.class, null, true);
         DataSource ds = conf.getDataSource2(null);
-        
+
         // hold a and c and start b
-        
+
         Seq seq = conf.getSequenceInstance();
         long aid = ((Long) seq.next(_broker, aMapping)).longValue();
         for (int i = 0; i < 5; i++)
             seq.next(_broker, bMapping);
-        
+
         assertEquals(new Long(aid + 1), seq.next(_broker, aMapping));
         assertEquals(new Long(aid + 2), seq.next(_broker, cMapping));
     }
-    
+
     /**
      * Pass in a mutable configuration
      * <p/>
@@ -167,26 +167,26 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
             conf.setSequence(ClassTableJDBCSeq.class.getName());
             return true;
         }
-        
+
         return false;
     }
-    
+
     public static void main(String[] args) {
 //        main();
     }
-    
-    
+
+
     private class UpdateThread
             extends Thread {
-        
+
         private JDBCConfiguration _conf;
         private Set _set = null;
-        
+
         public UpdateThread(Set set, JDBCConfiguration conf) {
             _set = set;
             _conf = conf;
         }
-        
+
         public void run() {
             DataSource ds = _conf.getDataSource2(null);
             try {
@@ -200,5 +200,5 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
             }
         }
     }
-    
+
 }

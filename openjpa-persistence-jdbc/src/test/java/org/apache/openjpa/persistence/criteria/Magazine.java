@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -42,7 +42,7 @@ public class Magazine implements Serializable {
 
     @Column(name="name")
     private String name;
-    
+
     @Column(name="date_published")
     private Date datePublished;
 
@@ -76,7 +76,7 @@ public class Magazine implements Serializable {
     public void setIdPublisher(Publisher idPublisher) {
         this.idPublisher = idPublisher;
     }
-    
+
     public Date getDatePublished() {
         return datePublished;
     }

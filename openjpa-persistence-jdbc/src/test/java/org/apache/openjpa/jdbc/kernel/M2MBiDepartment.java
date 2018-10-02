@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -30,14 +30,14 @@ import javax.persistence.Version;
 @Entity
 public class M2MBiDepartment {
 
-	@Id	
+	@Id
 	private String deptid;
-	
+
 	String name;
-	
-	@ManyToMany(mappedBy="departments", fetch=FetchType.EAGER)	
+
+	@ManyToMany(mappedBy="departments", fetch=FetchType.EAGER)
     public Collection<M2MBiEmployee> employees = new ArrayList<M2MBiEmployee>();
-	
+
 	@Version
     private int version;
 
@@ -82,6 +82,6 @@ public class M2MBiDepartment {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
+
+
 }

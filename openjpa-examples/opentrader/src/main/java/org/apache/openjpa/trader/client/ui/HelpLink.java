@@ -29,14 +29,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * An anchor that pops up a min-browser with some hopefully helpful text.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
 public class HelpLink extends Anchor implements ClickHandler {
     private final String url;
-    private static HelpWindow window; 
-   
+    private static HelpWindow window;
+
     public HelpLink(String url) {
         super("Help", url, "Help");
         this.url = url;
@@ -46,26 +46,26 @@ public class HelpLink extends Anchor implements ClickHandler {
         }
         addStyleName("help");
     }
-    
+
     @Override
     public void onClick(ClickEvent event) {
         window.showHelp(url);
         event.preventDefault();
     }
-    
-    
+
+
     public class HelpWindow extends PopupPanel implements PopupPanel.PositionCallback {
         private final Frame frame;
-        
-        
+
+
         public HelpWindow() {
             super(true);
             setAnimationEnabled(true);
             setAutoHideEnabled(true);
             setModal(false);
-            
+
             VerticalPanel panel = new VerticalPanel();
-            
+
             frame = new Frame();
             frame.setPixelSize(400, 300);
             Button close = new Button("close");
@@ -79,12 +79,12 @@ public class HelpLink extends Anchor implements ClickHandler {
             setWidget(panel);
             setVisible(true);
         }
-        
+
         public void showHelp(String url) {
             frame.setUrl(url);
             super.setPopupPositionAndShow(this);
         }
-        
+
         public void setPosition(int offsetWidth, int offsetHeight) {
                int left = Window.getClientWidth() - getWidget().getOffsetWidth() - 100;
                int top  = 40;

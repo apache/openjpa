@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -125,14 +125,14 @@ public class DelegatingMetaDataFactory
     public void loadXMLMetaData(Class<?> cls) {
         _delegate.loadXMLMetaData(cls);
     }
-    
+
     public String getMetaModelClassName(String managedClassName) {
         return _delegate.getMetaModelClassName(managedClassName);
     }
     public String getManagedClassName(String metamodelClassName) {
         return _delegate.getManagedClassName(metamodelClassName);
     }
-    
+
     public boolean isMetaClass(Class<?> c) {
         return _delegate.isMetaClass(c);
     }

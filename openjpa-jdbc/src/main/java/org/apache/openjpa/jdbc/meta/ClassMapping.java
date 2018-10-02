@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -181,7 +181,7 @@ public class ClassMapping
             join = assertJoinable(pks[i]);
             fm = getFieldMapping(join.getFieldIndex());
             pkIdx = fm.getPrimaryKeyIndex();
-            canReadDiscriminator &= isSelfReference(fk, join.getColumns()); 
+            canReadDiscriminator &= isSelfReference(fk, join.getColumns());
             // could have already set value with previous multi-column joinable
             if (vals[pkIdx] == null) {
                 res.startDataRequest(fm);
@@ -198,7 +198,7 @@ public class ClassMapping
         // the oid data is loaded by the base type, but if discriminator data
         // is present, make sure to use it to construct the actual oid instance
         // so that we get the correct app id class, etc
-        
+
         // Discriminator refers to the row but the vals[] may hold data that
         // refer to another row. Then there is little point reading the disc
         // value
@@ -209,21 +209,21 @@ public class ClassMapping
             try {
                 Class dtype = cls.getDiscriminator().getClass(store, cls, res);
                 if (dtype != cls.getDescribedType())
-                  dcls = cls.getMappingRepository().getMapping(dtype, 
-                    store.getContext().getClassLoader(), true); 
+                  dcls = cls.getMappingRepository().getMapping(dtype,
+                    store.getContext().getClassLoader(), true);
             } catch (Exception e) {
                 // intentionally ignored
             }
-            res.endDataRequest();  
+            res.endDataRequest();
         }
         Object oid = ApplicationIds.fromPKValues(vals, dcls);
         if (oid instanceof OpenJPAId) {
-            ((OpenJPAId) oid).setManagedInstanceType(dcls.getDescribedType(), 
+            ((OpenJPAId) oid).setManagedInstanceType(dcls.getDescribedType(),
                 subs);
         }
         return oid;
     }
-    
+
     boolean isSelfReference(ForeignKey fk, Column[] cols) {
     	if (fk == null)
     		return true;
@@ -259,15 +259,15 @@ public class ClassMapping
                 // columns in the Embeddable are greater than 1, we are dealing with a composite primary
                 // key, and as such 'ret' will be an instance of the embeddable, NOT the individual PK values.
                 // Given this, we need to dig deeper and get the individual values of the embeddable key.
-            	// On the other hand, if the embeddable only contains one column, 'ret' will be the value of 
+            	// On the other hand, if the embeddable only contains one column, 'ret' will be the value of
             	// that column and as such no further digging is necessary.
                 FieldMapping[] fmsPK = this.getPrimaryKeyFieldMappings();
                 List<FieldMapping> fms = getFieldMappings(cols, true);
 
-                // Note that if we are dealing with an embeddable that is an EmbeddableId, the fms.size will 
+                // Note that if we are dealing with an embeddable that is an EmbeddableId, the fms.size will
                 // always be 1 (since an EmbeddableId is slightly opaque, we don't have an fms for each field).
-                // If on the other hand we are dealing with an embeddable that is an @IdClass, fms.size will be the 
-                // number columns in the @IdClass.  Furthermore, when dealing with @IdClass, 'ret' will already  
+                // If on the other hand we are dealing with an embeddable that is an @IdClass, fms.size will be the
+                // number columns in the @IdClass.  Furthermore, when dealing with @IdClass, 'ret' will already
                 // properly contain the column values, therefore no further processing is needed.
                 if (fmsPK.length > 0 && fmsPK[0].isEmbedded() && cols.length > 1 && fms.size() == 1) {
                     // OK, we know this PK is an embeddable. So get the individual field values.
@@ -299,7 +299,7 @@ public class ClassMapping
         }
         return ret;
     }
-    
+
     /**
      * Return the joinable for the given column, or throw an exception if
      * none is available.
@@ -862,21 +862,21 @@ public class ClassMapping
                 boolean fill = getMappingRepository().getMappingDefaults().
                     defaultMissingInfo();
                 ForeignKey fk = fms[i].getForeignKey();
-                if (fill && fk != null && 
-                    fk.getPrimaryKeyColumns().length == 0) { 
-                    // set resolve mode to force this field mapping to be 
-                    // resolved again. The need to resolve again occurs when 
+                if (fill && fk != null &&
+                    fk.getPrimaryKeyColumns().length == 0) {
+                    // set resolve mode to force this field mapping to be
+                    // resolved again. The need to resolve again occurs when
                     // a primary key is a relation field with the foreign key
                     // annotation. In this situation, this primary key field
-                    // mapping is resolved during the call to 
+                    // mapping is resolved during the call to
                     // resolveNonRelationMapping. Since it is a relation
-                    // field, the foreign key will be constructed. However, 
-                    // the primary key of the parent entity may not have been 
+                    // field, the foreign key will be constructed. However,
+                    // the primary key of the parent entity may not have been
                     // resolved yet, resulting in missing information in the fk
-                    fms[i].setResolve(MODE_META); 
+                    fms[i].setResolve(MODE_META);
                     if (fms[i].getStrategy() != null)
                         fms[i].getStrategy().map(false);
-                }                
+                }
                 fms[i].resolve(MODE_MAPPING);
             }
         }
@@ -895,10 +895,10 @@ public class ClassMapping
             }
         }
         // once columns are resolved, resolve unique constraints as they need
-        // the columns be resolved 
+        // the columns be resolved
         _info.getUniques(this, true);
     }
-    
+
     /**
      * Resolve non-relation field mappings so that when we do relation
      * mappings they can rely on them for joins.
@@ -921,7 +921,7 @@ public class ClassMapping
                 fms[i].resolve(MODE_MAPPING);
 
         _discrim.resolve(MODE_MAPPING);
-        _version.resolve(MODE_MAPPING);        
+        _version.resolve(MODE_MAPPING);
     }
 
     protected void initializeMapping() {
@@ -1050,16 +1050,16 @@ public class ClassMapping
         throws SQLException {
         return assertStrategy().customLoad(sm, store, fetch, result);
     }
-    
+
     private ClassStrategy assertStrategy() {
         if (_strategy == null)
             throw new InternalException();
         return _strategy;
     }
-    
+
     /**
      * Find the field mappings that correspond to the given columns.
-     * 
+     *
      * @return null if no columns are given or no field mapping uses the given
      * columns.
      */
@@ -1078,16 +1078,16 @@ public class ClassMapping
     	}
     	return result;
     }
-    
+
     /**
      * Looks up in reverse to find the list of field mappings that include the
      * given column. Costly.
-     * 
-     * @return null if no field mappings carry this column. 
+     *
+     * @return null if no field mappings carry this column.
      */
     private List<FieldMapping> hasColumn(Column c, boolean prime) {
     	List<FieldMapping> result = null;
-    	FieldMapping[] fms = (prime) ? 
+    	FieldMapping[] fms = (prime) ?
     		getPrimaryKeyFieldMappings() : getFieldMappings();
     	for (FieldMapping fm : fms) {
     		Column[] cols = fm.getColumns();
@@ -1099,22 +1099,22 @@ public class ClassMapping
     	}
     	return result;
     }
-    
+
     boolean contains(Column[] cols, Column c) {
     	for (Column col : cols)
     		if (col == c)
     			return true;
     	return false;
     }
-    
+
     /**
      * Gets the field values of the given instance for the given columns.
      * The given columns are used to identify the fields by a reverse lookup.
-     *  
-     * @return a single object or an array of objects based on number of 
+     *
+     * @return a single object or an array of objects based on number of
      * fields the given columns represent.
      */
-    private Object getValueFromUnmanagedInstance(Object obj, Column[] cols, 
+    private Object getValueFromUnmanagedInstance(Object obj, Column[] cols,
     		boolean prime) {
     	List<FieldMapping> fms = getFieldMappings(cols, prime);
     	if (fms == null)

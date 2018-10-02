@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.property;
 
@@ -23,16 +23,16 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * <b>TestCompatibile</b> is used to test various backwards compatibility 
+ * <b>TestCompatibile</b> is used to test various backwards compatibility
  * scenarios between JPA 2.0 and JPA 1.x.
- * 
+ *
  * <p>The following scenarios are tested:
  * <ol>
- * <li>private persistent embeddable, which was valid in JPA 1.2 but no longer 
+ * <li>private persistent embeddable, which was valid in JPA 1.2 but no longer
  * in JPA 2.x
  * <li>TBD
  * </ol>
- * <p> 
+ * <p>
  * <b>Note(s):</b>
  * <ul>
  * <li>N/A
@@ -41,8 +41,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestCompatible extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(EntityContact.class, 
-              EmbeddableAddress.class, 
+        setUp(EntityContact.class,
+              EmbeddableAddress.class,
               "openjpa.Compatibility", "PrivatePersistentProperties=true",
               DROP_TABLES);
     }

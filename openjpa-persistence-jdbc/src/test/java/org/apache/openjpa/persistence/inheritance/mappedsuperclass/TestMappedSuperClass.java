@@ -30,9 +30,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-873">OPENJPA-873</A>
  * <p>
  * Added a new test where mapped super class does not decalre an identity.
- * Originally reported 
+ * Originally reported
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-2325">OPENJPA-2325</A>
- * 
+ *
  * @author pioneer_ip@yahoo.com
  * @author Fay Wang
  * @author Pinaki Poddar
@@ -40,8 +40,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestMappedSuperClass extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(CashBaseEntity.class, 
-              SituationDA.class, ValuableItemDA.class, 
+        setUp(CashBaseEntity.class,
+              SituationDA.class, ValuableItemDA.class,
               MappedSuperWithoutId.class, DerivedEntityFromMappedSuperWithoutId.class,
               CLEAR_TABLES);
     }
@@ -61,7 +61,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
             em.persist(v);
         }
         em.getTransaction().commit();
-        
+
         em.clear();
 
         // test polymorphic queries
@@ -69,7 +69,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
         List rs = em.createQuery(query).getResultList();
         for (int i = 0; i < rs.size(); i++)
             assertTrue(rs.get(i) instanceof SituationDA);
-        
+
         query = "select s from CashBaseEntity s where TYPE(s) <> ValuableItemDA";
         try {
             rs = em.createQuery(query).getResultList();
@@ -79,7 +79,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
             em.close();
         }
     }
-    
+
     /**
      * Tests that new entity can be merged when the entity is derived from a mapped
      * super class that does not declare an identity field.
@@ -94,7 +94,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
 		em.persist(pc);
 		em.getTransaction().commit();
 		em.close();
-    	
+
 		DerivedEntityFromMappedSuperWithoutId newpc = new DerivedEntityFromMappedSuperWithoutId();
 		em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -103,11 +103,11 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
 		em.merge(newpc);
 		em.getTransaction().commit();
 		em.close();
-		
+
 		em = emf.createEntityManager();
 		DerivedEntityFromMappedSuperWithoutId found = em.find(DerivedEntityFromMappedSuperWithoutId.class, id);
 		assertNotNull(found);
 		assertEquals("xyz", found.getName());
-		
+
     }
 }

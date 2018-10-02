@@ -28,8 +28,8 @@ public class DogTable implements Serializable
 
 {
     @Id
-    @TableGenerator(name = "Dog_Gen1", table = "ID_Gen1", 
-            pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", 
+    @TableGenerator(name = "Dog_Gen1", table = "ID_Gen1",
+            pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL",
             pkColumnValue = "ID2", initialValue = 20, allocationSize = 10)
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Dog_Gen1")
     private int id2;

@@ -57,7 +57,7 @@ public class TestLocking extends SQLListenerTestCase {
         assertEquals(1, e1.getPhoneNumbers().size());
 
         // This SHOULD lock Employee with id=1 AND the join table.
-        // 
+        //
         // pg 86
         // Element collections and relationships owned by the entity that are contained in join tables will be
         // locked if the javax.persistence.lock.scope property is specified with a value of

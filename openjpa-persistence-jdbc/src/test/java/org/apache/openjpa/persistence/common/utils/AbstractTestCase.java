@@ -32,7 +32,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.common.utils;
 
@@ -129,7 +129,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
 
     /**
      * Use the given persistent types during the test.
-     * 
+     *
      * @param props
      *            list of persistent types used in testing and/or configuration values in the form
      *            key,value,key,value...
@@ -141,7 +141,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
 
     /**
      * Closes any EMFs created by getEmf()
-     * 
+     *
      */
     public void tearDown() throws Exception {
         try {
@@ -208,7 +208,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
 
     /**
      * Creates a EMF and adds it to a Map for cleanup in tearDown()
-     * 
+     *
      * @param map
      */
     protected OpenJPAEntityManagerFactory getEmf(Map map) {
@@ -257,7 +257,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
 
     /**
      * Creates a EMF and adds it to a Map for cleanup in tearDown()
-     * 
+     *
      */
     protected OpenJPAEntityManagerFactory getEmf() {
         Map m = new HashMap();
@@ -327,7 +327,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
     protected void bug(int id, String s) {
         bug(id, null, s);
     }
-    
+
     protected void bug(Platform platform, int id, Throwable t, String s) {
         bug(EnumSet.of(platform), id, t, s);
     }

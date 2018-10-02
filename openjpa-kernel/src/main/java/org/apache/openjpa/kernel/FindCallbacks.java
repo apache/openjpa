@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -27,7 +27,7 @@ package org.apache.openjpa.kernel;
 public interface FindCallbacks {
 
     /**
-     * Process find argument. Throw proper 
+     * Process find argument. Throw proper
      * {@link org.apache.openjpa.util.OpenJPAException} for illegal value.
      *
      * @return the id to look up, or null to ignore this argument

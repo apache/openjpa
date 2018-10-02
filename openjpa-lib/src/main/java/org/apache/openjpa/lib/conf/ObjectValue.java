@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -118,7 +118,7 @@ public class ObjectValue extends Value {
                 J2DoPrivHelper.getClassLoaderAction(type));
             if (cl == null) {  // System classloader is returned as null
                 cl = AccessController.doPrivileged(
-                    J2DoPrivHelper.getSystemClassLoaderAction()); 
+                    J2DoPrivHelper.getSystemClassLoaderAction());
             }
             _classloaderCache.put(type, cl);
         }

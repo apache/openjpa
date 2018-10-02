@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -29,14 +29,14 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 @SuppressWarnings("serial")
 public class Unique
     extends LocalConstraint {
-	
+
 	public Unique() {
 		super();
 	}
-    
+
     /**
      * Construct with given name.
-     * 
+     *
      * @param name the name of the constraint, if any
      * @param table the table of the constraint
      * @deprecated
@@ -52,10 +52,10 @@ public class Unique
     public boolean isLogical() {
         return false;
     }
-        
+
     /**
      * Set the name of the constraint. This method cannot be called if the
-     * constraint already belongs to a table. 
+     * constraint already belongs to a table.
      * @deprecated
      */
     public void setName(String name) {
@@ -65,7 +65,7 @@ public class Unique
     public void setIdentifier(DBIdentifier name) {
         super.setIdentifier(name);
     }
-    
+
     /**
      * Return true if the structure of this primary key matches that of
      * the given one (same table, same columns).

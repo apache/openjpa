@@ -31,7 +31,7 @@ public class TestDelimInheritance extends SQLListenerTestCase {
     int id = 0;
     Pontiac pontiac;
     Chevrolet chevrolet;
-    
+
     @Override
     public void setUp() throws Exception {
         setSupportedDatabases(
@@ -40,18 +40,18 @@ public class TestDelimInheritance extends SQLListenerTestCase {
         if (isTestsDisabled()) {
             return;
         }
-        
+
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.Car.class,
             org.apache.openjpa.persistence.delimited.identifiers.Pontiac.class,
             org.apache.openjpa.persistence.delimited.identifiers.Chevrolet.class,
             DROP_TABLES);
         assertNotNull(emf);
-        
+
         em = emf.createEntityManager();
         assertNotNull(em);
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
@@ -65,40 +65,40 @@ public class TestDelimInheritance extends SQLListenerTestCase {
     protected OpenJPAEntityManagerFactorySPI createEMF(final Object... props) {
         return createNamedEMF("delimited-identifiers", props);
     }
-    
+
     private void createPontiac(int id) {
         pontiac = new Pontiac(id);
         pontiac.setModel("G6");
         pontiac.setColor("red");
     }
-    
+
     private void createChevrolet(int id) {
         chevrolet = new Chevrolet(id);
         chevrolet.setModel("Malibu");
         chevrolet.setColor("black");
     }
-    
+
     public void testCreate() {
         id++;
         createPontiac(id);
         id++;
         createChevrolet(id);
-        
+
         em.getTransaction().begin();
         em.persist(pontiac);
         em.persist(chevrolet);
         em.getTransaction().commit();
-        
+
         runQueries();
     }
-    
+
     private void runQueries() {
         em.clear();
         queryChevrolet();
         em.clear();
         queryPontiac();
     }
-    
+
     private void queryChevrolet() {
         String query =
             "SELECT DISTINCT c " +
@@ -108,10 +108,10 @@ public class TestDelimInheritance extends SQLListenerTestCase {
         List<Car> results = (List<Car>)q.getResultList();
         assertEquals(1,results.size());
     }
-    
+
     // Use native query
     private void queryPontiac() {
-        String query = 
+        String query =
             "SELECT * " +
             "FROM \"Car\" c " +
             "WHERE c.\"discr col\" = 'Pontiac'";

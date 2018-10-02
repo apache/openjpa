@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -27,14 +27,14 @@ import org.apache.openjpa.meta.FieldMetaData;
 
 /**
  * Carries immutable information about an audited persistent instance.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
 public final class Audited {
 	private final StateManagerImpl _sm;
 	private final PersistenceCapable _original;
-	
+
 	/**
 	 * Supply a state manager and a transient copy.
 	 * @param sm a state manager, must not be null.
@@ -43,29 +43,29 @@ public final class Audited {
 	Audited(StateManagerImpl sm, PersistenceCapable o) {
 		if (sm == null || o == null)
 			throw new NullPointerException("sm: " + sm + " original: " + o);
-		if (o.pcGetStateManager() != null) 
+		if (o.pcGetStateManager() != null)
 			throw new IllegalArgumentException(o + " is not transient");
 		_sm  = sm;
 		_original = o;
 	}
-	
+
 	/**
 	 * Gets the current state of the persistent instance.
 	 */
 	public Object getManagedObject() {
 		return _sm.getManagedInstance();
 	}
-	
+
 	/**
 	 * Gets the original state of the persistent instance as a transient instance.
 	 */
 	public Object getOriginalObject() {
 		return _original;
 	}
-	
+
 	/**
 	 * Gets the name of the updated fields.
-	 * 
+	 *
 	 * @return persistent property names that are modified.
 	 * For deleted instances the array is empty and for newly created instances
 	 * the array contains all the fields.
@@ -75,17 +75,17 @@ public final class Audited {
 		String[] names = new String[dirty.cardinality()];
 		int j = 0;
 		for (int pos = dirty.nextSetBit(0); pos != -1; pos = dirty.nextSetBit(pos+1)) {
-			names[j++] = _sm.getMetaData().getField(pos).getName();		
+			names[j++] = _sm.getMetaData().getField(pos).getName();
 		}
 		return names;
 	}
-	
+
 	/**
 	 * Gets the value of the given field of the managed object.
-	 * 
+	 *
 	 * @param field name of a persistent property
 	 * @return value of the given field in the managed instance
-	 * @exception IllegalArgumentException if the named field is not a persistent property 
+	 * @exception IllegalArgumentException if the named field is not a persistent property
 	 */
 	public Object getManangedFieldValue(String field) {
 		FieldMetaData fmd = _sm.getMetaData().getField(field);
@@ -94,13 +94,13 @@ public final class Audited {
 		}
 		return _sm.fetch(fmd.getIndex());
 	}
-	
+
 	/**
 	 * Gets the value of the given field of the original state of the object.
-	 * 
+	 *
 	 * @param field name of a persistent property
 	 * @return value of the given field in the original instance
-	 * @exception IllegalArgumentException if the named field is not a persistent property 
+	 * @exception IllegalArgumentException if the named field is not a persistent property
 	 */
 	public Object getOriginalFieldValue(String field) {
 		try {
@@ -109,7 +109,7 @@ public final class Audited {
 			throw new IllegalArgumentException(field + " does not exist in " + _original);
 		}
 	}
-	
+
 	/**
 	 * Gets the type of this audit.
 	 */

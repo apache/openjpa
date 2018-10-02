@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.lazy;
 
@@ -32,42 +32,42 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
-public class TestLazyEmbeddable extends AbstractPersistenceTestCase {  
+public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
 
     protected List<String> _sql = new ArrayList<String>();
 
     /*
      * Verifies an entity with annotated (@Persistent) lazy embeddable and xml-tagged
-     * lazy embeddable (openjpa:persistent) with a mix of eager and lazy fields are lazily 
+     * lazy embeddable (openjpa:persistent) with a mix of eager and lazy fields are lazily
      * loaded (or not) as expected.
      */
     public void testLazyEmbeddableFields() throws Exception {
         _sql.clear();
         HashMap<String, Object> props = new HashMap<String, Object>();
-        props.put("openjpa.jdbc.JDBCListeners", 
+        props.put("openjpa.jdbc.JDBCListeners",
             new JDBCListener[] { new SQLListener() });
-        OpenJPAEntityManagerFactorySPI emf1 = 
+        OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("LazyEmbedPU",
             "org/apache/openjpa/persistence/embed/lazy/" +
             "embed-lazy-persistence.xml", props);
-        
+
         try {
             EntityManager em = emf1.createEntityManager();
-            
+
             Recliner rec = new Recliner();
             ReclinerId recId = new ReclinerId();
             recId.setColor("Camouflage");
             recId.setId(new Random().nextInt());
             rec.setId(recId);
             rec.setStyle(Style.RETRO);
-            
+
             Guy guy = new Guy();
             guy.setName("Tom");
             guy.setHeight(76);
             guy.setWeight(275);
             rec.setGuy(guy);
-            
+
             BeverageHolder bh = new BeverageHolder();
             bh.setDepth(2);
             bh.setDiameter(3);
@@ -76,14 +76,14 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
             em.getTransaction().begin();
             em.persist(rec);
             em.getTransaction().commit();
-            
+
             em.clear();
             _sql.clear();
-            
+
             Recliner r2 = em.find(Recliner.class, recId);
             assertNotNull("Find returned null object", r2);
             assertTrue(selectContains("REC_TABLE", _sql, "REC_STYLE", "RECID_ID", "RECID_COLOR"));
-            assertFalse(selectContains("REC_TABLE", _sql, "GUY_HEIGHT", "GUY_WEIGHT", "GUY_NAME", 
+            assertFalse(selectContains("REC_TABLE", _sql, "GUY_HEIGHT", "GUY_WEIGHT", "GUY_NAME",
                 "BH_DIAMETER", "BH_DEPTH"));
             em.detach(r2);
             // Lazy embeds should be null after detach.
@@ -100,17 +100,17 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
             r2 = em.find(Recliner.class, recId);
             assertNotNull("Find returned null object", r2);
             assertTrue(selectContains("REC_TABLE", _sql, "REC_STYLE", "RECID_ID", "RECID_COLOR"));
-            assertFalse(selectContains("REC_TABLE", _sql, "GUY_HEIGHT", "GUY_WEIGHT", "GUY_NAME", 
+            assertFalse(selectContains("REC_TABLE", _sql, "GUY_HEIGHT", "GUY_WEIGHT", "GUY_NAME",
                 "BH_DIAMETER", "BH_DEPTH"));
             verifyLazyLoading(r2);
         } finally {
             cleanupEMF(emf1);
         }
     }
-    
 
 
-    private void verifyLazyLoading(Recliner r2) {        
+
+    private void verifyLazyLoading(Recliner r2) {
         _sql.clear();
         Guy g = r2.getGuy();
         assertNotNull("Guy is not null", g);
@@ -119,7 +119,7 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
         _sql.clear();
         g.getHeight();
         assertTrue(selectContains("REC_TABLE", _sql, "GUY_HEIGHT"));
-        assertFalse(selectContains("REC_TABLE", _sql, "GUY_NAME", "GUY_WEIGHT", "BH_DIAMETER", 
+        assertFalse(selectContains("REC_TABLE", _sql, "GUY_NAME", "GUY_WEIGHT", "BH_DIAMETER",
             "BH_DEPTH"));
 
         _sql.clear();
@@ -161,12 +161,12 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
             buf.append(s).append("\r\n");
         return buf.toString();
     }
-    
+
     /**
-     * Closes a specific entity manager factory and cleans up 
+     * Closes a specific entity manager factory and cleans up
      * associated tables.
      */
-    private void cleanupEMF(OpenJPAEntityManagerFactorySPI emf1) 
+    private void cleanupEMF(OpenJPAEntityManagerFactorySPI emf1)
       throws Exception {
 
         if (emf1 == null)
@@ -182,7 +182,7 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
         } finally {
             closeEMF(emf1);
         }
-    }    
+    }
 
     public class SQLListener
         extends AbstractJDBCListener {

@@ -32,20 +32,20 @@ import javax.persistence.Transient;
 @Entity
 @Access(AccessType.FIELD)
 @NamedQueries( {
-    @NamedQuery(name="MixedFieldSub.query", 
-        query="SELECT fs FROM MixedFieldSub fs WHERE " + 
+    @NamedQuery(name="MixedFieldSub.query",
+        query="SELECT fs FROM MixedFieldSub fs WHERE " +
         "fs.mid = :id AND fs.name = :name AND fs.createDate = :crtDate " +
         "AND fs.myField = :myField"),
-    @NamedQuery(name="MixedFieldSub.badQuery", 
-        query="SELECT fs FROM MixedFieldSub fs WHERE " + 
+    @NamedQuery(name="MixedFieldSub.badQuery",
+        query="SELECT fs FROM MixedFieldSub fs WHERE " +
         "fs.mid = :id AND fs.name = :name AND fs.myFieldProp = :myField") } )
 public class MixedFieldSub extends MixedMappedSuper {
 
     private String myField;
-    
+
     @Transient
     private Date crtDate;
-    
+
     @Access(AccessType.PROPERTY)
     @Temporal(TemporalType.TIMESTAMP)
     public Date getCreateDate() {
@@ -55,7 +55,7 @@ public class MixedFieldSub extends MixedMappedSuper {
     public void setCreateDate(Date date) {
         crtDate = date;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof MixedFieldSub) {
             MixedFieldSub ps = (MixedFieldSub)obj;

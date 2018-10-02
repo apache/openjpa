@@ -17,7 +17,7 @@ package openbook.domain;
 /**
  * A simple numeric range.
  * Minimum value is included, maximum value is excluded.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -25,7 +25,7 @@ public class Range<N extends Number> {
     private N min;
     private N max;
     private final Class<N> type;
-    
+
     @SuppressWarnings("unchecked")
     public Range(Object min, Object max) {
         this((N)min, (N)max);
@@ -33,7 +33,7 @@ public class Range<N extends Number> {
 
     /**
      * Creates a range. Empty range i.e. where minimum equals maximum is allowed.
-     * 
+     *
      * @param min non-null minimum value.
      * @param max non-null maximum value.
      */
@@ -47,53 +47,53 @@ public class Range<N extends Number> {
         this.max = max;
         type = (Class<N>)min.getClass();
     }
-    
+
     public Class<N> type() {
         return type;
     }
-    
+
     /**
      * Affirms if the given value is within this range.
      * Minimum is included, maximum is excluded.
-     * 
+     *
      * @param x a non-null value
      * @return true if the given value is greater than or equals to minimum and less than the maximum.
      */
     public boolean contains(Number x) {
         return x != null && x.doubleValue() >= min.doubleValue() && x.doubleValue() < max.doubleValue();
     }
-    
+
     /**
      * Affirms if the given range is within this range.
      * Minimum is included, maximum is excluded.
-     * 
+     *
      * @param x a non-null value
      * @return true if the given value is greater than or equals to minimum and less than the maximum.
      */
     public <X extends Number> boolean contains(Range<X> r) {
-        return r != null && r.getMinimum().doubleValue() >= min.doubleValue() && 
+        return r != null && r.getMinimum().doubleValue() >= min.doubleValue() &&
             r.getMaximum().doubleValue() <= max.doubleValue();
     }
-    
+
     /**
      * Gets the minimum value.
      */
     public N getMinimum() {
         return min;
     }
-    
+
     /**
      * Gets the maximum value.
      */
     public N getMaximum() {
         return max;
     }
-    
+
     /**
      * Adjusts this range by the given number.
-     * 
+     *
      * @param x a non-null value.
-     * 
+     *
      * @return if this range is adjusted by this value.
      */
     public boolean adjust(N x) {
@@ -109,7 +109,7 @@ public class Range<N extends Number> {
         }
         return false;
     }
-    
+
 
     @Override
     public int hashCode() {

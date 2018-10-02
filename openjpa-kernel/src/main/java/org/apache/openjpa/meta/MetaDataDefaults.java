@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -53,7 +53,7 @@ public interface MetaDataDefaults
      * event type. Defaults to false.
      */
     public boolean getCallbacksBeforeListeners(int type);
-   
+
     /**
      * Whether declared interfaces of a class are treated as persistent
      * types. Defaults to true.
@@ -61,12 +61,12 @@ public interface MetaDataDefaults
     public boolean isDeclaredInterfacePersistent();
 
     /**
-     * Whether the field in the object id class corresponding to a 
-     * datastore id persistence-capable primary key field is the simple 
+     * Whether the field in the object id class corresponding to a
+     * datastore id persistence-capable primary key field is the simple
      * datastore id value of the related instance.  Defaults to false.
      */
     public boolean isDataStoreObjectIdFieldUnwrapped();
- 
+
     /**
      * Whether to ignore members which are not persistent by default
      * during metadata population. Defaults to true.
@@ -91,21 +91,21 @@ public interface MetaDataDefaults
      * Return the backing member for the given field metadata.
      */
     public Member getBackingMember(FieldMetaData field);
-    
+
     /**
      * Get the field or getter for the given attribute of the given class.
-     * 
-     * @param meta is the declaring class 
+     *
+     * @param meta is the declaring class
      * @param attribute name of the logical attribute
-     * @param access whether to look for the field of getter method. 
-     * If unknown, then field or property is chosen based on the access type 
+     * @param access whether to look for the field of getter method.
+     * If unknown, then field or property is chosen based on the access type
      * used by the given class.
      * @param scanAnnotation if true and access is unknown then scans the
      * annotation on the member to determine access.
-     * 
+     *
      * @since 2.0.0
      */
-    public Member getMemberByProperty(ClassMetaData meta, String attribute, 
+    public Member getMemberByProperty(ClassMetaData meta, String attribute,
     	int access, boolean scanAnnotation);
 
     /**
@@ -113,25 +113,25 @@ public interface MetaDataDefaults
      * managed interface methods.
      */
     public Class getUnimplementedExceptionType();
-    
+
     /**
      * Whether the relationship in MappedSuper class must be
-     * uni-directional.  
+     * uni-directional.
      * @since 2.0.0
      */
     public boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf);
-    
+
     /**
      * Whether non-default mapping is allowed.
      * @since 2.0.0
      */
     public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf);
-    
+
     /**
      * Whether cascade-persist was declared in the persistence unit defaults.
      */
     public Boolean isDefaultCascadePersistEnabled();
-    
+
     public void setDefaultCascadePersistEnabled(Boolean bool);
 
     /**
@@ -139,7 +139,7 @@ public interface MetaDataDefaults
      * @since 2.2.3
      */
     public String getDefaultSchema();
-    
+
     /**
      * Sets the default schema.
      * @since 2.2.3

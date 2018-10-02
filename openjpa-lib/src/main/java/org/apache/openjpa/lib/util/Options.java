@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -65,7 +65,7 @@ public class Options extends TypedProperties {
         { int.class, Integer.class, Integer.valueOf(0) },
         { long.class, Long.class, Long.valueOf(0L) },
         { short.class, Short.class, Short.valueOf((short) 0) }, };
-    
+
     private static Localizer _loc = Localizer.forPackage(Options.class);
 
     /**
@@ -160,7 +160,7 @@ public class Options extends TypedProperties {
      * <li>Map Entry: <code>"brother.name"-&gt;"Bob"</code><br />
      * Resultant method call: <code>obj.getBrother().setName("Bob")
      * <code></li>
-     * </ul> 
+     * </ul>
      * Any keys present in the map for which there is no
      * corresponding property in the given object will be ignored,
      * and will be returned in the {@link Map} returned by this method.

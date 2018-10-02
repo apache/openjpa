@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -86,7 +86,7 @@ public abstract class AbstractPCData
                 Map m = (Map) data;
                 Map m2 = (Map) sm.newFieldProxy(fmd.getIndex());
                 Collection keys = new ArrayList (m.size());
-                Collection values = new ArrayList(m.size());          
+                Collection values = new ArrayList(m.size());
 
                 for (Iterator<Map.Entry> mi = m.entrySet().iterator();
                     mi.hasNext();) {
@@ -158,7 +158,7 @@ public abstract class AbstractPCData
      * Transform the given data value to its field value. The data value
      * may be a key, value, or element of a map or collection.
      */
-    protected Collection toNestedFields(OpenJPAStateManager sm, 
+    protected Collection toNestedFields(OpenJPAStateManager sm,
         ValueMetaData vmd, Collection data, FetchConfiguration fetch,
         Object context) {
         if (data == null)
@@ -201,7 +201,7 @@ public abstract class AbstractPCData
         }
     }
 
-    
+
     /**
      * Transform the given data into a relation field value. Default
      * implementation assumes the data is an oid.
@@ -293,13 +293,13 @@ public abstract class AbstractPCData
 
                 Object a;
                 if (isImmutableType(fmd.getElement())) {
-                    a = Array.newInstance(fmd.getElement().getDeclaredType(), 
+                    a = Array.newInstance(fmd.getElement().getDeclaredType(),
                         length);
                     System.arraycopy(val, 0, a, 0, length);
                 } else {
                     Object[] data = new Object[length];
                     for (int i = 0; i < length; i++) {
-                        data[i] = toNestedData(fmd.getElement(), 
+                        data[i] = toNestedData(fmd.getElement(),
                             Array.get(val, i), ctx);
                     }
                     a = data;

@@ -24,7 +24,7 @@ import javax.persistence.Entity;
 /**
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-1536">OPENJPA-1536</A>
- *  
+ *
  * @author Jody Grassel
  * @author Fay Wang
  *

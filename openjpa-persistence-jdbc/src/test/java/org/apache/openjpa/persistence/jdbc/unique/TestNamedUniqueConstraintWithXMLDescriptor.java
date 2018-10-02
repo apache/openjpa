@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.unique;
 
@@ -38,27 +38,27 @@ public class TestNamedUniqueConstraintWithXMLDescriptor extends SQLListenerTestC
     public void setUp(Object... props) {
         super.setUp(DROP_TABLES, NamedUniqueA.class, NamedUniqueB.class);
     }
-    
+
     protected String getPersistenceUnitName() {
         return "NamedUniqueConstraintTest";
-    }    
-    
+    }
+
     public void testMapping() {
-        
+
         // If the database does not support unique constraints, exit
         if (!supportsUniqueConstraints())
             return;
-        
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.getTransaction().commit();
         em.close();
         // The above should trigger schema definition
-        
+
         List<String> sqls = super.sql;
-        
+
         assertSQLFragnments(sqls, "CREATE TABLE NX_UNIQUE_A",
-            getUniqueConstraint("ucxa_f1_f2 UNIQUE .*\\(f1x, f2x\\)"), 
+            getUniqueConstraint("ucxa_f1_f2 UNIQUE .*\\(f1x, f2x\\)"),
             getUniqueConstraint("ucxa_f3_f4 UNIQUE .*\\(f3x, f4x\\).*"));
         assertSQLFragnments(sqls, "CREATE TABLE NX_UNIQUE_B",
             getUniqueConstraint("ucxb_f1_f2 UNIQUE .*\\(f1x, f2x\\).*"));
@@ -71,7 +71,7 @@ public class TestNamedUniqueConstraintWithXMLDescriptor extends SQLListenerTestC
         assertSQLFragnments(sqls, "CREATE TABLE NX_U_COLL_TBL",
             getUniqueConstraint("ucxb_f3 UNIQUE .*\\(f3x\\).*"));
     }
-        
+
     private boolean supportsUniqueConstraints() {
         OpenJPAEntityManagerFactorySPI emfs = (OpenJPAEntityManagerFactorySPI)emf;
         JDBCConfiguration jdbccfg = (JDBCConfiguration)emfs.getConfiguration();
@@ -81,20 +81,20 @@ public class TestNamedUniqueConstraintWithXMLDescriptor extends SQLListenerTestC
 
     private String getUniqueConstraint(String unique) {
         if (dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary) {
-            //CREATE TABLE N_UNIQUE_A (aid INTEGER NOT NULL, f1 INTEGER NOT NULL, f2 INTEGER NOT NULL, 
-            //f3 INTEGER NOT NULL, f4 INTEGER NOT NULL, f5 INTEGER, f6 INTEGER, PRIMARY KEY (aid), 
-            //UNIQUE U_N_UNQU__F1 (f1), 
-            //UNIQUE uca_f1_f2 (f1, f2), 
+            //CREATE TABLE N_UNIQUE_A (aid INTEGER NOT NULL, f1 INTEGER NOT NULL, f2 INTEGER NOT NULL,
+            //f3 INTEGER NOT NULL, f4 INTEGER NOT NULL, f5 INTEGER, f6 INTEGER, PRIMARY KEY (aid),
+            //UNIQUE U_N_UNQU__F1 (f1),
+            //UNIQUE uca_f1_f2 (f1, f2),
             //UNIQUE uca_f3_f4 (f3, f4)) TYPE = innodb
             return TestNamedUniqueConstraint.getUniqueConstraint(dict, unique);
         }
         return unique;
     }
-    
+
     void assertSQLFragnments(List<String> list, String... keys) {
         if (SQLSniffer.matches(list, keys))
             return;
-        fail("None of the following " + sql.size() + " SQL \r\n" + 
+        fail("None of the following " + sql.size() + " SQL \r\n" +
                 toString(sql) + "\r\n contains all keys \r\n"
                 + toString(Arrays.asList(keys)));
     }

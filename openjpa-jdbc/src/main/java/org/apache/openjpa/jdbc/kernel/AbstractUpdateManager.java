@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -95,14 +95,14 @@ public abstract class AbstractUpdateManager
                     mappedByIdStates.add(sm);
                 else exceps = populateRowManager(sm, rowMgr, store, exceps,
                         customs);
-            } else 
+            } else
                 exceps = populateRowManager(obj, rowMgr, store, exceps,
                         customs);
         }
 
         // flush rows
         exceps = flush(rowMgr, psMgr, exceps);
-        
+
         if (mappedByIdStates.size() != 0) {
             for (Iterator itr = mappedByIdStates.iterator(); itr.hasNext();) {
                 StateManagerImpl sm = (StateManagerImpl) itr.next();
@@ -187,7 +187,7 @@ public abstract class AbstractUpdateManager
         	RowImpl row = (RowImpl) rowMgr.getRow(((ClassMapping) sm.getMetaData()).getTable(), action, sm, false);
             if (row != null) {
                 row.setFlushed(true);
-            } 
+            }
             exceps = addException(exceps, ke);
         }
         return exceps;
@@ -229,8 +229,8 @@ public abstract class AbstractUpdateManager
             // the id fields. Once the id fields are fully populated,
             // we will then insert the id fields.
             fields = reorderFields(fields);
-        }  
-        
+        }
+
         BitSet dirty = sm.getDirty();
         for (int i = 0; i < fields.length; i++) {
             if (dirty.get(fields[i].getIndex())
@@ -247,7 +247,7 @@ public abstract class AbstractUpdateManager
                 dsc.insert(sm, store, rowMgr);
         }
     }
-    
+
     private FieldMapping[] reorderFields(FieldMapping[] fields) {
         List<FieldMapping> pkFmds = new ArrayList<FieldMapping>();
         FieldMapping[] ret = new FieldMapping[fields.length];

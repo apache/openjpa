@@ -14,26 +14,26 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 import javax.persistence.*;
 @Entity
 @Table(name="TODREITM")
 public class OrderItem {
-	@Id 
+	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	int lid;
-	
+
 	int quantity;
 	double cost;
-	 
+
 	@ManyToOne (fetch=FetchType.EAGER)
 	Order order;
-	
+
 	@Version
 	long version;
-	
+
 	public OrderItem(){}
 
     public OrderItem( int quantity, double cost, Order o){

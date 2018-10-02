@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.
 public class PIdJTIDMSCLeafB2
 extends PIdJTIDMSCEntityB implements LeafB2 {
 private String leafB2Data;
-    
+
     public String getLeafB2Data() {
         return leafB2Data;
     }

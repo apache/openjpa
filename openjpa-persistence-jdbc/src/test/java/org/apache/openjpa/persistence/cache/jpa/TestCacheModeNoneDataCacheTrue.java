@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.cache.jpa;
@@ -25,7 +25,7 @@ import java.util.Map;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /*
- * Caching is off when shared cache mode is set to NONE no matter 
+ * Caching is off when shared cache mode is set to NONE no matter
  * dataCache is set to true or not.
  * */
 public class TestCacheModeNoneDataCacheTrue extends TestCacheModeNone{

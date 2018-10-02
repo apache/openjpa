@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -34,10 +34,10 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * traverses the entire result list on construction. So it is not suitable or
  * efficient for large results. All mutation operations (except clear()) throw
  * {@link UnsupportedOperationException}.
- * 
+ *
  * @author Pinaki Poddar
  * @since 2.0.0
- * 
+ *
  * @param <E>
  *            element type
  */

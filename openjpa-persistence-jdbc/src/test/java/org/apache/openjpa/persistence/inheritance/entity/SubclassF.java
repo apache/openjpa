@@ -26,10 +26,10 @@ public class SubclassF extends BaseClass3 implements ManagedIface2  {
 
     @Basic
     private String classFName;
-        
+
     @Basic
     private int intFieldSup;
-    
+
     public void setClassFName(String classFName) {
         this.classFName = classFName;
     }
@@ -37,9 +37,9 @@ public class SubclassF extends BaseClass3 implements ManagedIface2  {
     public String getClassFName() {
         return classFName;
     }
-    
+
     public String toString() {
-        return super.toString() + ";classFName=" + classFName + 
+        return super.toString() + ";classFName=" + classFName +
             ";intFieldSup=" + intFieldSup;
     }
 

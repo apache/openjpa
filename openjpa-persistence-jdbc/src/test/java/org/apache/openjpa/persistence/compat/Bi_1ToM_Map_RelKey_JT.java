@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -36,31 +36,31 @@ public class Bi_1ToM_Map_RelKey_JT {
 
     @OneToMany(mappedBy="bi1mjt", fetch=FetchType.EAGER)
     private Map<EntityC, EntityC_B1M_Map_RelKey_JT> entityCs = null;
-    
-    public long getId() { 
-        return id; 
+
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Map<EntityC, EntityC_B1M_Map_RelKey_JT> getEntityCs() { 
-        return entityCs; 
+    public Map<EntityC, EntityC_B1M_Map_RelKey_JT> getEntityCs() {
+        return entityCs;
     }
 
-    public void setEntityCs(Map<EntityC, EntityC_B1M_Map_RelKey_JT> entityCs) { 
-        this.entityCs = entityCs; 
+    public void setEntityCs(Map<EntityC, EntityC_B1M_Map_RelKey_JT> entityCs) {
+        this.entityCs = entityCs;
     }
 
     public int hashCode() {
         return name.hashCode();
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof Bi_1ToM_Map_RelKey_JT)) return false;
         Bi_1ToM_Map_RelKey_JT b = (Bi_1ToM_Map_RelKey_JT)o;
@@ -75,7 +75,7 @@ public class Bi_1ToM_Map_RelKey_JT {
         }
         return true;
     }
-    
+
     private Object getValue(Map map, Object mkey) {
         Set<Map.Entry> entries = map.entrySet();
         for (Map.Entry entry : entries) {

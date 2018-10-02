@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
  */
 public class TestByteArray extends SingleEMTestCase {
     boolean runTest=false;
-    
+
     public void setUp()  {
         super.setUp();
         OpenJPAEntityManagerFactorySPI ojpaEmf = (OpenJPAEntityManagerFactorySPI) emf;
@@ -44,10 +44,10 @@ public class TestByteArray extends SingleEMTestCase {
             super.setUp(ByteArrayHolder.class, CLEAR_TABLES);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public void testByteArray() {
-        if (! runTest) { 
+        if (! runTest) {
             // skip if not DB2 (from setup)
             return;
         }
@@ -78,8 +78,8 @@ public class TestByteArray extends SingleEMTestCase {
             String baFromH = new String(e.getTkiid());
             assertEquals(new String (ba), baFromH);
         }
-        
-        // verify that it's still in the original EntityManager 
+
+        // verify that it's still in the original EntityManager
         holder = em.find(ByteArrayHolder.class, holder.getTaskId());
         String baFromH = new String(holder.getTkiid());
         assertEquals(new String (ba), baFromH);

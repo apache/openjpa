@@ -30,21 +30,21 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestManualDelimId extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     EntityF entityF;
-    
+
     @Override
     public void setUp() throws Exception {
-        // NOTE: This test is only configured to run on DB2 and Derby since 
-        // those DBs handle non-default schemas without additional authority or 
-        // configuration  
+        // NOTE: This test is only configured to run on DB2 and Derby since
+        // those DBs handle non-default schemas without additional authority or
+        // configuration
         setSupportedDatabases(DB2Dictionary.class, DerbyDictionary.class);
         if (isTestsDisabled())
             return;
-        
+
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.EntityF.class,
             DROP_TABLES);
         assertNotNull(emf);
-        
+
         em = emf.createEntityManager();
         assertNotNull(em);
     }
@@ -71,28 +71,28 @@ public class TestManualDelimId extends SQLListenerTestCase {
         entityF.addDelimCollectionMap("www", "xxx");
         entityF.addDelimCollectionMap("yyy", "zzz");
     }
-    
+
     public void testCreateF() {
         createEntityF();
-        
+
         em.getTransaction().begin();
         em.persist(entityF);
         em.getTransaction().commit();
-        
+
         runQueries();
-        
+
     }
-    
+
     // Run a second time to re-create a situation that initially caused a problem when running this
     // test consecutive times.
     public void testCreateF2() {
         createEntityF();
-        
+
         em.getTransaction().begin();
         em.persist(entityF);
         em.getTransaction().commit();
     }
-    
+
     private void runQueries() {
         em.clear();
         queryOnEntityOnly();
@@ -101,7 +101,7 @@ public class TestManualDelimId extends SQLListenerTestCase {
         em.clear();
         queryCollection();
     }
-    
+
     private void queryOnEntityOnly() {
         String query =
             "SELECT DISTINCT f " +
@@ -110,7 +110,7 @@ public class TestManualDelimId extends SQLListenerTestCase {
         List<EntityF> results = (List<EntityF>)q.getResultList();
         assertEquals(1,results.size());
     }
-    
+
     private void queryOnColumnValue() {
         String query =
             "SELECT DISTINCT f " +
@@ -120,7 +120,7 @@ public class TestManualDelimId extends SQLListenerTestCase {
         List<EntityF> results = (List<EntityF>)q.getResultList();
         assertEquals(1,results.size());
     }
-    
+
     private void queryCollection() {
         String query =
             "SELECT DISTINCT f " +

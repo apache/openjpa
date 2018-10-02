@@ -32,51 +32,51 @@ import org.apache.openjpa.persistence.models.library.*;
  * <p>
  * In particular, it mirrors the behavior when there is a Spring annotated
  * service interface that looks like the following:
- * 
+ *
  * <pre>
  *    (at)Transactional(propagation=Propagation.SUPPORTS)
  *    public interface LibService
  *       {
  *       public Borrower findBorrowerByName(String name);
  *       public Book findBookByTitle(String title);
- *        
+ *
  *       (at)Transactional(propagation=Propagation.REQUIRED)
  *       public void borrowBook(Borrower borrower, Book book);
- *        
- *       (at)Transactional(propagation=Propagation.REQUIRED) 
+ *
+ *       (at)Transactional(propagation=Propagation.REQUIRED)
  *       public void returnBook(Book book);
  *       }
  * </pre>
  * <p>
  * And there is a Spring configuration file with the following entries:
- * 
+ *
  * <pre>
- *    &lt;bean id=&quot;emf&quot; 
+ *    &lt;bean id=&quot;emf&quot;
  *   class=&quot;org.springframework.orm.jpa.LocalEntityManagerFactoryBean&quot;
  *   &gt;
  *    &lt;property name=&quot;persistenceUnitName&quot; value=&quot;&quot; /&gt;
  *    &lt;/bean&gt;
- *  
+ *
  *    &lt;!--  enable Spring's support for JPA injection --&gt;
  *    &lt;bean class=&quot;
  *org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor
  *&quot;/&gt;
- *              
- *    &lt;bean id=&quot;transactionalService&quot; 
+ *
+ *    &lt;bean id=&quot;transactionalService&quot;
  *          class=&quot;sample.jpa.service.LibServiceImpl&quot; &gt;
  *    &lt;/bean&gt;
- *  
- *    &lt;bean id=&quot;transactionManager&quot; 
+ *
+ *    &lt;bean id=&quot;transactionManager&quot;
  *      class=&quot;org.springframework.orm.jpa.JpaTransactionManager&quot; &gt;
  *  &lt;property name=&quot;entityManagerFactory&quot; ref=&quot;emf&quot; /&gt;
  *    &lt;/bean&gt;
- *  
+ *
  *    &lt;tx:annotation-driven/&gt;
  * </pre>
  * <p>
  * And the declaration of the entity manager in the service implementation is
  * annotated with the <b>(at)PersistenceContext</b> annotation.
- * 
+ *
  * @author David Ezzio
  */
 

@@ -29,16 +29,16 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestGeneratedValues extends SingleEMFTestCase {
     DBDictionary _dict;
-    
-    public void setUp() { 
+
+    public void setUp() {
         setUp(GeneratedValues.class, CLEAR_TABLES);
         _dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
     }
 
     public void testDefaultValues() {
-        if (_dict instanceof PostgresDictionary) 
+        if (_dict instanceof PostgresDictionary)
             return;
-        
+
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues();
@@ -55,9 +55,9 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         // Note: UUID 'string' values are not compared (intermittent failures
         // on DB2.) In an environment where data is converted to
         // a considerably different character encoding of the database (ex.
-        // Unicode -> EBCDIC) upon persistence, the uuid string returned by the 
-        // database may not be equal to the original value.  This is a common 
-        // issue with string data, but even more likely for a uuids given that 
+        // Unicode -> EBCDIC) upon persistence, the uuid string returned by the
+        // database may not be equal to the original value.  This is a common
+        // issue with string data, but even more likely for a uuids given that
         // uuid strings are produced from pseudo-random byte arrays, which yield
         // all sorts of variant characters.
         assertFalse(gv.getId() == gv2.getId());
@@ -68,8 +68,8 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         assertFalse(gv.getUuidT4string().equals(gv2.getUuidT4string()));
         closeEM(em);
     }
-    
-    public void testInitialValues() { 
+
+    public void testInitialValues() {
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues(7, 9, "a", "b", "c", "d");
@@ -87,12 +87,12 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         } finally {
             closeEM(em);
         }
-        
+
         // should not get here...
         fail();
     }
-    
-    public void testIdSetter() { 
+
+    public void testIdSetter() {
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues();
@@ -111,12 +111,12 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         } finally {
             closeEM(em);
         }
-        
+
         // should not get here...
         fail();
     }
-    
-    public void testFieldSetter() { 
+
+    public void testFieldSetter() {
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues();
@@ -132,7 +132,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         } finally {
             closeEM(em);
         }
-        
+
         // should not get here...
         fail();
     }
@@ -150,7 +150,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
 //    }
 
     public void testCustomSequenceGeneratorWithIndirection() {
-        if (_dict instanceof PostgresDictionary) 
+        if (_dict instanceof PostgresDictionary)
             return;
         EntityManager em = emf.createEntityManager();
 
@@ -163,44 +163,44 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         assertNotEquals(0, gv.getCustomSeqWithIndirectionField());
         closeEM(em);
     }
-    
+
     public void testUUIDGenerators() {
-        if (_dict instanceof PostgresDictionary) 
+        if (_dict instanceof PostgresDictionary)
             return;
-        
+
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues();
         em.getTransaction().begin();
         em.persist(gv);
         em.getTransaction().commit();
-        
+
         int id = gv.getId();
 
         assertTrue(isStringUUID(gv.getUuidT4string(), 4));
         assertTrue(isStringUUID(gv.getUuidstring(), 1));
         assertTrue(isHexUUID(gv.getUuidhex(), 1));
-        assertTrue(isHexUUID(gv.getUuidT4hex(), 4));     
-        
+        assertTrue(isHexUUID(gv.getUuidT4hex(), 4));
+
         em.clear();
-        
-        GeneratedValues gv2 = em.find(GeneratedValues.class, id);  
+
+        GeneratedValues gv2 = em.find(GeneratedValues.class, id);
         assertNotNull(gv2);
         // The string value could contain null values and such so length
-        // calculations may be non-deterministic.  For string generators, 
-        // simply ensure the fields are populated (not null). 
+        // calculations may be non-deterministic.  For string generators,
+        // simply ensure the fields are populated (not null).
         assertNotNull(gv2.getUuidstring());
         assertTrue(isHexUUID(gv2.getUuidhex(), 1));
         assertNotNull(gv2.getUuidT4string());
-        assertTrue(isHexUUID(gv2.getUuidT4hex(), 4));     
-        
+        assertTrue(isHexUUID(gv2.getUuidT4hex(), 4));
+
         // Compare original hex values with new values.  They should be equal.
         // Note: UUID 'string' values are not compared.  In most cases they will
         // be the same, but in an environment where data is converted to
         // a considerably different character encoding of the database (ex.
-        // Unicode -> EBCDIC) upon persistence, the uuid string returned by the 
-        // database may not be equal to the original value.  This is a common 
-        // issue with string data, but even more likely for a uuids given that 
+        // Unicode -> EBCDIC) upon persistence, the uuid string returned by the
+        // database may not be equal to the original value.  This is a common
+        // issue with string data, but even more likely for a uuids given that
         // uuid strings are produced from pseudo-random byte arrays, which yield
         // all sorts of variant characters.
         assertTrue(gv.getId() == gv2.getId());
@@ -209,7 +209,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         assertTrue(gv.getUuidT4hex().equals(gv2.getUuidT4hex()));
         closeEM(em);
     }
-                
+
     /*
      * Verify a uuid string is 16 characters long and is the expected type.
      */
@@ -220,17 +220,17 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         if (type != version) return false;
         return true;
     }
-    
+
     /*
      * Verify a uuid hex string value is 32 characters long, consists entirely
      * of hex digits and is the correct version.
      */
     private boolean isHexUUID(String value, int type) {
-        if (value.length() != 32) 
+        if (value.length() != 32)
             return false;
         char[] chArr = value.toCharArray();
         for (int i = 0; i < 32; i++)
-        {                
+        {
             char ch = chArr[i];
             if (!(Character.isDigit(ch) ||
                 (ch >= 'a' && ch <= 'f') ||

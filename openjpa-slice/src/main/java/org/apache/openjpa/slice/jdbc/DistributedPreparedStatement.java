@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.jdbc;
 
@@ -42,18 +42,18 @@ import java.util.Calendar;
 /**
  * A virtual PreparedStaement that delegates to a set of actual
  * PreparedStatements.
- * 
- * @author Pinaki Poddar 
+ *
+ * @author Pinaki Poddar
  *
  */
-public class DistributedPreparedStatement 
-    extends DistributedTemplate<PreparedStatement> 
+public class DistributedPreparedStatement
+    extends DistributedTemplate<PreparedStatement>
     implements PreparedStatement {
 
 	public DistributedPreparedStatement(DistributedConnection c) {
 		super(c);
 	}
-	
+
 	public void clearParameters() throws SQLException {
 		for (PreparedStatement s : this)
 			s.clearParameters();
@@ -217,35 +217,35 @@ public class DistributedPreparedStatement
 			for (PreparedStatement t : this)
 				t.setTime(arg0, arg1);
 	 }
-	
+
 	 public void setTime(int arg0, Time arg1, Calendar arg2) throws
 	 SQLException {
 			for (PreparedStatement t : this)
 				t.setTime(arg0, arg1, arg2);
 	 }
-	
+
      public void setTimestamp(int arg0, Timestamp arg1) throws SQLException {
 			for (PreparedStatement t : this)
 				t.setTimestamp(arg0, arg1);
 	 }
-	
+
 	 public void setTimestamp(int arg0, Timestamp arg1, Calendar arg2)
 	 throws SQLException {
 			for (PreparedStatement t : this)
 				t.setTimestamp(arg0, arg1, arg2);
 	 }
-	
+
 	 public void setURL(int arg0, URL arg1) throws SQLException {
 			for (PreparedStatement t : this)
 				t.setURL(arg0, arg1);
 	 }
-	
+
 	 public void setUnicodeStream(int arg0, InputStream arg1, int arg2)
 	     throws SQLException {
 			for (PreparedStatement t : this)
 				t.setUnicodeStream(arg0, arg1, arg2);
 	 }
-	
+
 	 public void addBatch() throws SQLException {
 		for (PreparedStatement t:this)
 		    t.addBatch();
@@ -345,13 +345,13 @@ public class DistributedPreparedStatement
     public void setSQLXML(int arg0, SQLXML arg1) throws SQLException {
         throw new UnsupportedOperationException();
     }
-    
+
     // Java 7 methods follow
-    
+
     public boolean isCloseOnCompletion() throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public void closeOnCompletion() throws SQLException{
     	throw new UnsupportedOperationException();
     }

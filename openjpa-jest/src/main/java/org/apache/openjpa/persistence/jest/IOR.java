@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -25,7 +25,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 
 /**
  * String reference of a managed object.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -34,7 +34,7 @@ public class IOR {
     /**
      * Stringified representation of a managed instance identity.
      * The simple Java type name and the persistent identity separated by a {@link Constants#DASH dash}.
-     *  
+     *
      * @param sm a managed instance.
      */
     public static String toString(OpenJPAStateManager sm) {

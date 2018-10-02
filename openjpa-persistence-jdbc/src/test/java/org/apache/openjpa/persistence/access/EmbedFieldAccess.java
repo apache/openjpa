@@ -32,19 +32,19 @@ public class EmbedFieldAccess {
     public String getFirstName() {
         return fName;
     }
-    
+
     public void setFirstName(String fname) {
-        fName = fname;        
+        fName = fname;
     }
-    
+
     public String getLastName() {
         return lName;
     }
-    
+
     public void setLastName(String lname) {
         lName = lname;
-    }  
-    
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof EmbedFieldAccess) {
             EmbedFieldAccess ps = (EmbedFieldAccess)obj;

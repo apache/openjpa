@@ -31,7 +31,7 @@ import javax.persistence.Version;
 /**
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-1536">OPENJPA-1536</A>
- *  
+ *
  * @author Jody Grassel
  * @author Fay Wang
  *
@@ -41,26 +41,26 @@ import javax.persistence.Version;
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="EMP_TYPEL", discriminatorType=DiscriminatorType.INTEGER)
 public class Employee {
-    
+
     @Id
     private int id;
-    
+
     private String lastName;
     private String firstName;
 
     private int vacationDays;
-    
+
     @ManyToOne
     private Manager manager;
-    
+
     @ManyToOne
     private Department department;
-    
+
     @Version
     private long version;
-    
+
     private transient String str = null;
-    
+
     public int getId() {
         return id;
     }

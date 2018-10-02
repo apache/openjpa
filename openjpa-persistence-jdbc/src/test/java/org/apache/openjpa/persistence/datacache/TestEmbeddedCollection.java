@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -32,17 +32,17 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test removing members of embedded collection with active DataCache.
- * 
- * Originally reported in 
+ *
+ * Originally reported in
  * <HREF="http://issues.apache.org/jira/browse/OPENJPA-625">OPENJPA-625</A>
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestEmbeddedCollection extends SingleEMFTestCase {
 
 	private static final int SIZE = 4;
- 
+
 	/**
 	 * Sets up EntityManagerFactory: with DataCache.
 	 */
@@ -52,7 +52,7 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
                 "openjpa.RuntimeUnenhancedClasses", "unsupported",
                 "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
                 "sjvm", "openjpa.jdbc.UpdateManager", "constraint",
-				EmbeddingOwnerEntity.class, 
+				EmbeddingOwnerEntity.class,
 				EmbeddedEntity.class,
 				CLEAR_TABLES);
 		createData();
@@ -66,7 +66,7 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
                 && emf.getConfiguration().getDataCacheManagerInstance()
 						.getSystemDataCache() != null;
 	}
-	
+
 	public void createData() {
 		EmbeddingOwnerEntity owner = new EmbeddingOwnerEntity();
 		for (int i = 0; i < SIZE; i++) {
@@ -101,17 +101,17 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
 
 		EmbeddingOwnerEntity owner = result.get(0);
 		Object id = owner.getId();
-		
+
         assertTrue(emf.getStoreCache().contains(EmbeddingOwnerEntity.class,
                 id));
-		
+
 		List<EmbeddedEntity> members = owner.getMembers();
 		members.remove(0);
 		owner.removeMember(0);
 		owner.removeMember(members.get(0));
 		em.getTransaction().commit();
-		
-		assertEquals(owner.getMembers().size(), SIZE-3); 
+
+		assertEquals(owner.getMembers().size(), SIZE-3);
 	}
 
 }

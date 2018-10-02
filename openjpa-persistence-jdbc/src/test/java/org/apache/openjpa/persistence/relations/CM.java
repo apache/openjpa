@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.jdbc.ForeignKey;
 @IdClass(CM.CMId.class)
 @Table(name="CM4_REL")
 public class CM {
-	
+
 	@Id
     private String cmId;
 
@@ -47,7 +47,7 @@ public class CM {
     @ForeignKey
     @Id
     private E e;
-    
+
     public CM() {
     }
 
@@ -66,7 +66,7 @@ public class CM {
 	public void setCs(Set<C> cs) {
 		this.cs = cs;
 	}
-	
+
 	public void addC(C c){
 		cs.add(c);
 		c.setCm(this);
@@ -83,14 +83,14 @@ public class CM {
 	public static class CMId{
 		private String cmId;
 		private String e;
-		
+
 		public String getCmId() {
 			return cmId;
 		}
 		public void setCmId(String id) {
 			cmId = id;
 		}
-		
+
 		public String getE() {
 			return e;
 		}
@@ -100,7 +100,7 @@ public class CM {
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
-				return true;			
+				return true;
 			if (obj == null && ! (obj instanceof CMId))
 				return false;
 			CMId id = (CMId) obj;
@@ -109,7 +109,7 @@ public class CM {
                 && ( this.getE() == id.getE() || (this.getE() != null &&
                 this.getE().equals(id.getE())));
 		}
-		
+
 		@Override
 		public int hashCode() {
             return (this.getCmId() != null? this.getCmId().hashCode():0)

@@ -34,7 +34,7 @@ public class TestVersion extends SingleEMFTestCase {
 
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, AnnoTest3.class, Flat1.class,
-            EmbedOwner.class, EmbedValue.class, CLEAR_TABLES 
+            EmbedOwner.class, EmbedValue.class, CLEAR_TABLES
 //            ,"openjpa.Log","SQL=trace"
             ,"openjpa.ConnectionFactoryProperties","printParameters=true"
         );
@@ -99,7 +99,7 @@ public class TestVersion extends SingleEMFTestCase {
         catch (InterruptedException e) {
             // do nothing
         }
-        
+
         EntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
         EntityManager em2 = emf.createEntityManager();
@@ -180,7 +180,7 @@ public class TestVersion extends SingleEMFTestCase {
 
     public void testNoDefaultVersionWithoutFieldOrColumn() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
-            getMappingRepositoryInstance().getMapping(EmbedOwner.class, 
+            getMappingRepositoryInstance().getMapping(EmbedOwner.class,
             null, true);
         assertEquals(NoneVersionStrategy.getInstance(),
             cls.getVersion().getStrategy());
@@ -189,7 +189,7 @@ public class TestVersion extends SingleEMFTestCase {
 
     public void testVersionWithField() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
-            getMappingRepositoryInstance().getMapping(AnnoTest1.class, 
+            getMappingRepositoryInstance().getMapping(AnnoTest1.class,
             null, true);
         assertTrue(NoneVersionStrategy.getInstance() !=
             cls.getVersion().getStrategy());
@@ -208,15 +208,15 @@ public class TestVersion extends SingleEMFTestCase {
             em.getTransaction().commit();
             em.close();
              em = emf.createEntityManager();
-            
+
             em.getTransaction().begin();
             em2.getTransaction().begin();
-            
+
             AnnoTest1 e2 = em2.find(AnnoTest1.class, e.getPk());
             e = em.find(AnnoTest1.class, e.getPk());
             e.setBasic(1);
             em.getTransaction().commit();
-            
+
             e2 = em2.find(AnnoTest1.class, e.getPk());
             em2.refresh(e2);
             System.out.println(e2.getBasic());

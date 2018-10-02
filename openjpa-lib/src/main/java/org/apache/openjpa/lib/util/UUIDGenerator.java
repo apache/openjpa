@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -30,8 +30,8 @@ import java.util.UUID;
  * in the Apache Commons Id project:  http://jakarta.apache.org/commons/sandbox
  * /id/uuid.html  The type 4 generator uses the standard Java UUID generator.
  *
- * The type 1 code has been vastly simplified and modified to replace the 
- * ethernet address of the host machine with the IP, since we do not want to 
+ * The type 1 code has been vastly simplified and modified to replace the
+ * ethernet address of the host machine with the IP, since we do not want to
  * require native libs and Java cannot access the MAC address directly.
  *
  * In spirit, implements the IETF UUID draft specification, found here:<br />
@@ -72,7 +72,7 @@ public class UUIDGenerator {
     private final static byte TYPE_TIME_BASED = 0x10;
 
     // random number generator used to reduce conflicts with other JVMs, and
-    // hasher for strings.  
+    // hasher for strings.
     private static Random RANDOM;
 
     // 4-byte IP address + 2 random bytes to compensate for the fact that
@@ -106,7 +106,7 @@ public class UUIDGenerator {
         // it is used; consider switching to a standard random
         RANDOM = new SecureRandom();
         _seq = (short) RANDOM.nextInt(MAX_14BIT);
-        
+
         byte[] ip = null;
         try {
             ip = InetAddress.getLocalHost().getAddress();
@@ -122,7 +122,7 @@ public class UUIDGenerator {
         for( int i = 0 ; i < ip.length; ++i ) {
             IP[2+(i%4)] ^= ip[i];
         }
-        
+
         type1Initialized = true;
     }
 
@@ -135,9 +135,9 @@ public class UUIDGenerator {
         }
         return createType1();
     }
-      
+
     /*
-     * Creates a type 1 UUID 
+     * Creates a type 1 UUID
      */
     public static byte[] createType1() {
         if (type1Initialized == false) {
@@ -190,14 +190,14 @@ public class UUIDGenerator {
         longToBytes(type4.getLeastSignificantBits(), uuid, 8);
         return uuid;
     }
-    
+
     /*
      * Converts a long to byte values, setting them in a byte array
      * at a given starting position.
      */
     private static void longToBytes(long longVal, byte[] buf, int sPos) {
         sPos += 7;
-        for(int i = 0; i < 8; i++)         
+        for(int i = 0; i < 8; i++)
             buf[sPos-i] = (byte)(longVal >>> (i * 8));
     }
 

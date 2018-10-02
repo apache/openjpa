@@ -37,22 +37,22 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestAttrOverridesXml extends SQLListenerTestCase {
-   
+
     public int numPersons = 4;
     public List<String> namedQueries = new ArrayList<String>();
     public int eId = 1;
-    
+
     public void setUp() {
         setUp(
         org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed.class,
         DROP_TABLES);
     }
-    
+
     @Override
     protected String getPersistenceUnitName() {
         return "embed-pu";
     }
-    
+
     public void testAttrOverride1() {
         sql.clear();
     	createObj1();
@@ -60,64 +60,64 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
     	queryObj1();
         assertAttrOverrides("CustomerXml1");
     }
-    
+
     /**
-     * This test verifies that an embeddable column attribute override defined 
+     * This test verifies that an embeddable column attribute override defined
      * in XML overrides the base column definition.
      */
-    public void testBasicEmbedAttrOverride() {       
+    public void testBasicEmbedAttrOverride() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         BasicEntityXML be = new BasicEntityXML();
         be.setId(new Random().nextInt());
-        
+
         BasicEmbedXML bem = new BasicEmbedXML();
         bem.setNotIntegerValue(new Random().nextInt());
         ArrayList<BasicEmbedXML> al = new ArrayList<BasicEmbedXML>();
         al.add(bem);
         be.setListIntAttrOverEmbed(al);
-        
+
         em.getTransaction().begin();
         em.persist(be);
         em.getTransaction().commit();
-        
-        assertTrue(verifyColumnOverride(em, "listIntAttrOverEmbedColTable", 
+
+        assertTrue(verifyColumnOverride(em, "listIntAttrOverEmbedColTable",
             "intValueAttributeOverride"));
         em.close();
     }
-    
+
     /**
-     * This test verifies that an XML defined entity with an annotated 
-     * only embeddable has attribute overrides applied correctly.  
+     * This test verifies that an XML defined entity with an annotated
+     * only embeddable has attribute overrides applied correctly.
      */
     public void testXMLEntityWithAnnotatedOverrideEmbed() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        
+
         XMLOverEntity xoe = new XMLOverEntity();
         xoe.setId(new Random().nextInt());
-        
+
         AnnoOverEmbed aoe = new AnnoOverEmbed();
         aoe.setIntEmbed(1);
         aoe.setStrEmbed("StrVal");
         xoe.setEmbed(aoe);
-        
+
         em.getTransaction().begin();
         em.persist(xoe);
         em.getTransaction().commit();
-        
-        assertTrue(verifyColumnOverride(em, "XMLOverEntity", 
+
+        assertTrue(verifyColumnOverride(em, "XMLOverEntity",
             "intOverEmbed"));
-        assertFalse(verifyColumnOverride(em, "XMLOverEntity", 
+        assertFalse(verifyColumnOverride(em, "XMLOverEntity",
             "intEmbed"));
 
-        assertTrue(verifyColumnOverride(em, "XMLOverEntity", 
+        assertTrue(verifyColumnOverride(em, "XMLOverEntity",
             "strOverEmbed"));
-        assertFalse(verifyColumnOverride(em, "XMLOverEntity", 
+        assertFalse(verifyColumnOverride(em, "XMLOverEntity",
             "strEmbed"));
 
-        em.close();        
+        em.close();
     }
-    
+
     public void createObj1() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -174,18 +174,18 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
                     if (sqlStr.indexOf("ADDR_STATE") == -1 ||
                         sqlStr.indexOf("ADDR_ZIP") == -1)
                         fail();
-                } 
+                }
             }
         }
         if (!found)
             fail();
     }
 
-    private boolean verifyColumnOverride( 
+    private boolean verifyColumnOverride(
         OpenJPAEntityManagerSPI em, String tableName,
         String columnName) {
 
-        JDBCConfiguration conf = (JDBCConfiguration) 
+        JDBCConfiguration conf = (JDBCConfiguration)
             em.getEntityManagerFactory().getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
 
@@ -193,7 +193,7 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
         try {
             DatabaseMetaData dbmd = conn.getMetaData();
             // (meta, catalog, schemaName, tableName, conn)
-            Column[] cols = dict.getColumns(dbmd, null, null, 
+            Column[] cols = dict.getColumns(dbmd, null, null,
                     tableName, columnName, conn);
             if (cols != null && cols.length == 1) {
                 Column col = cols[0];

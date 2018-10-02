@@ -35,14 +35,14 @@ public class MappedSuperField {
     @Id
     @GeneratedValue
     private int id;
-    
+
     @Basic
     @Access(AccessType.FIELD)
     private String name;
 
     @Transient
     protected Date crtDate;
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -58,7 +58,7 @@ public class MappedSuperField {
     public String getName() {
         return name;
     }
-        
+
     public boolean equals(Object obj) {
         if (obj instanceof MappedSuperField) {
             MappedSuperField ps = (MappedSuperField)obj;

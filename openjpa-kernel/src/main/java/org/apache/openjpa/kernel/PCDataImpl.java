@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -45,7 +45,7 @@ public class PCDataImpl
     public PCDataImpl(Object oid, ClassMetaData meta) {
         this(oid, meta, DataCache.NAME_DEFAULT);
     }
-    
+
     /**
      * Constructor.
      */
@@ -148,7 +148,7 @@ public class PCDataImpl
             // fields in configured fetch groups
             if (!isLoaded(i))
                 loadIntermediate(sm, fmds[i]);
-            else if (!sm.getLoaded().get(i) && fetch.requiresFetch(fmds[i]) 
+            else if (!sm.getLoaded().get(i) && fetch.requiresFetch(fmds[i])
                 != FetchConfiguration.FETCH_NONE)
                 loadField(sm, fmds[i], fetch, context);
         }
@@ -167,11 +167,11 @@ public class PCDataImpl
                 continue;
 
             fmd = sm.getMetaData().getField(i);
-            boolean loading = false; 
-            if(sm.getContext() != null && sm.getContext() instanceof BrokerImpl) { 
+            boolean loading = false;
+            if(sm.getContext() != null && sm.getContext() instanceof BrokerImpl) {
                 loading = ((BrokerImpl) sm.getContext()).isLoading(sm.getObjectId());
             }
-            if (!isLoaded(i) || loading) { // prevent reentrant calls. 
+            if (!isLoaded(i) || loading) { // prevent reentrant calls.
                 loadIntermediate(sm, fmd);
             }
             else {
@@ -205,7 +205,7 @@ public class PCDataImpl
     protected void loadField(OpenJPAStateManager sm, FieldMetaData fmd, FetchConfiguration fetch, Object context) {
         int index = fmd.getIndex();
         Object val = toField(sm, fmd, getData(index), fetch, context);
-        
+
         // If val is null, make sure that we don't send back a null Embeddable or ElementCollection...perhaps others?
         // Probably should think about trying to shove this data back into the cache at this point so we don't
         // continually run through this code.

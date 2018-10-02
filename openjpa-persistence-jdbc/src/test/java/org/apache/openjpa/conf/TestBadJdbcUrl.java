@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.conf;
 
@@ -36,12 +36,12 @@ import org.apache.openjpa.util.UserException;
  * Driver should return a null connection upon getConnection() when a bad driver
  * is specified on the URL. OpenJPA must be able to handle this condition and
  * return an appropriate message.
- * 
+ *
  * OpenJPA JIRA: {@link http://issues.apache.org/jira/browse/OPENJPA-656}
- * 
+ *
  * @author Jeremy Bauer
  * @author Pinaki Poddar
- * 
+ *
  */
 public class TestBadJdbcUrl extends TestCase {
     public static final String GOOD_URL =
@@ -116,7 +116,7 @@ public class TestBadJdbcUrl extends TestCase {
 	/**
      * Attempts to connect with given properties and analyze exception for the
 	 * existence of given target exception and error message strings.
-	 * 
+	 *
 	 * @param props
 	 *            the properties to initialize the persistence unit
 	 * @param target
@@ -150,7 +150,7 @@ public class TestBadJdbcUrl extends TestCase {
 	/**
      * Asserts that the given targetType is assignable from actual. Asserts that
 	 * the nestedType is a nested within the given actual Throwable
-	 * 
+	 *
 	 * @param actual
 	 * @param targetType
 	 * @param nestedType

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -27,25 +27,25 @@ import javax.persistence.*;
 public class Item3 {
     @Id
     int id;
-    
+
     @ElementCollection
     @MapKeyColumn(name="IMAGE_NAME")
     @Column(name="IMAGE_FILENAME")
     @CollectionTable(name="IMAGE_MAPPING")
     Map<String, String> images = new HashMap<String, String>();
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public Map<String, String> getImages() {
         return images;
     }
-    
+
     public void addImage(String imageName, String fileName) {
         images.put(imageName, fileName);
     }

@@ -34,26 +34,26 @@ import javax.persistence.Version;
 public class Trader implements Serializable {
     @Id
     private String name;
-    
+
     @Version
     private int version;
-    
+
     protected Trader() {
         super();
     }
-    
+
     public Trader(String name) {
         this.name = name;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public int getVersion() {
         return version;
     }
-    
+
     public String toString() {
         return name;
     }

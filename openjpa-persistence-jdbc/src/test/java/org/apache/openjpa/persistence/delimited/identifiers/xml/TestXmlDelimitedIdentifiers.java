@@ -26,21 +26,21 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestXmlDelimitedIdentifiers extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
-    
+
     EntityA entityA;
-    
+
     public void setUp() throws Exception {
         setSupportedDatabases(DB2Dictionary.class, DerbyDictionary.class);
         if (isTestsDisabled())
             return;
-        
+
         super.setUp(org.apache.openjpa.persistence.delimited.identifiers.xml.EntityA.class, DROP_TABLES);
         assertNotNull(emf);
-        
+
         em = emf.createEntityManager();
         assertNotNull(em);
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
@@ -54,7 +54,7 @@ public class TestXmlDelimitedIdentifiers extends SQLListenerTestCase {
     protected String getPersistenceUnitName() {
         return "delimited-identifiers-xml";
     }
-    
+
     public void createEntityA(int id) {
         entityA = new EntityA(id, "aName");
         entityA.setSecName("sec name");
@@ -62,21 +62,21 @@ public class TestXmlDelimitedIdentifiers extends SQLListenerTestCase {
         entityA.addDelimSet("bbb");
         entityA.addDelimMap("ccc", "ddd");
     }
-    
+
     public void testTableName() {
         id++;
         createEntityA(id);
-        
+
         em.getTransaction().begin();
         em.persist(entityA);
         em.getTransaction().commit();
-        
+
         int genId = entityA.getId();
         em.clear();
         em.getTransaction().begin();
         EntityA eA = em.find(EntityA.class, genId);
         assertEquals("aName", eA.getName());
-        
+
         em.getTransaction().commit();
         em.close();
     }

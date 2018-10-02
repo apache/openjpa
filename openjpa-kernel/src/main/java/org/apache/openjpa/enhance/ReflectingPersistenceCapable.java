@@ -188,7 +188,7 @@ public class ReflectingPersistenceCapable
         if (fromObject instanceof ReflectingPersistenceCapable)
             fromObject = ((ReflectingPersistenceCapable) fromObject)
                 .getManagedInstance();
-        
+
         for(int i = 0; i < fieldIndices.length; i++)
             pcCopyField(fromObject, fieldIndices[i]);
     }
@@ -276,7 +276,7 @@ public class ReflectingPersistenceCapable
             pks[i] = getValue(pkFields[i].getIndex(), o);
         return ApplicationIds.fromPKValues(pks, meta);
     }
-    
+
     public Object pcNewObjectIdInstance(Object oid) {
         return pcSubclassInstance.pcNewObjectIdInstance(oid);
     }

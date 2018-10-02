@@ -17,14 +17,14 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<entity-mappings xmlns="http://openjpa.apache.org/ns/orm/extendable" 
-    xmlns:openjpa="http://openjpa.apache.org/ns/orm" 
-    xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<entity-mappings xmlns="http://openjpa.apache.org/ns/orm/extendable"
+    xmlns:openjpa="http://openjpa.apache.org/ns/orm"
+    xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="2.0">
-    
+
   <openjpa:openjpa-version version="1.0"/>
-    
+
   <entity class="org.apache.openjpa.persistence.embed.lazy.Recliner">
     <attributes>
       <openjpa:attributes>

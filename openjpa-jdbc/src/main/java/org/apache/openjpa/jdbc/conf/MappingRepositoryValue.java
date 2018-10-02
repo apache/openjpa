@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.conf;
 
@@ -47,7 +47,7 @@ public class MappingRepositoryValue
         try {
             Class cls = ClassUtil.toClass(clsName,
                 AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(type)));        
+                    J2DoPrivHelper.getClassLoaderAction(type)));
             return cls.getConstructor(new Class[]{ JDBCConfiguration.class }).
                 newInstance(new Object[]{ conf });
         } catch (RuntimeException e) {

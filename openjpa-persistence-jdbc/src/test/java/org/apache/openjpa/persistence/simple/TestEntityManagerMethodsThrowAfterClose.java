@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.simple;
 
@@ -207,7 +207,7 @@ public class TestEntityManagerMethodsThrowAfterClose
 
     public void testCreateNativeQueryWithMappingAfterClose() {
         try {
-            em.createNativeQuery("SELECT NOTHINK FROM NOBODYZ", 
+            em.createNativeQuery("SELECT NOTHINK FROM NOBODYZ",
                     AllFieldTypes.class);
             fail("Expected exception not thrown " +
                     "when calling em.createNativeQuery " +

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.identifier;
 
@@ -22,7 +22,7 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 
 /**
  * Default rule for column definition.  This rule disables delimiting of
- * column definitions.  Column definitions can be extremely tricky to 
+ * column definitions.  Column definitions can be extremely tricky to
  * delimit correctly.  Blindly delimiting them causes failures on most
  * databases.  Where user defined types are concerned, generally they don't
  * need to be delimited and if so, they are more appropriately delimited

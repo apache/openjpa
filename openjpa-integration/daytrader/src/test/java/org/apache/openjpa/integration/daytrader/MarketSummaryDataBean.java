@@ -31,15 +31,15 @@ public class MarketSummaryDataBean implements Serializable
 {
 
 	private static final long serialVersionUID = -2753373502228082501L;
-	
+
     private BigDecimal 	TSIA;			/* Trade Stock Index Average */
-	private BigDecimal 	openTSIA;		/* Trade Stock Index Average at the open */	
+	private BigDecimal 	openTSIA;		/* Trade Stock Index Average at the open */
 	private double  	volume; 		/* volume of shares traded */
 	private Collection 	topGainers;		/* Collection of top gaining stocks */
-	private Collection 	topLosers;		/* Collection of top losing stocks */	
-	//FUTURE private Collection 	topVolume;		/* Collection of top stocks by volume */		
+	private Collection 	topLosers;		/* Collection of top losing stocks */
+	//FUTURE private Collection 	topVolume;		/* Collection of top stocks by volume */
 	private Date			summaryDate;   /* Date this summary was taken */
-	
+
 	//cache the gainPercent once computed for this bean
 	private BigDecimal  gainPercent=null;
 
@@ -58,21 +58,21 @@ public class MarketSummaryDataBean implements Serializable
 		setTopLosers(topLosers);
 		setSummaryDate(new java.sql.Date(System.currentTimeMillis()));
 		gainPercent = computeGainPercent(getTSIA(), getOpenTSIA());
-		
+
 	}
-	
+
 	public static MarketSummaryDataBean getRandomInstance() {
 		Collection gain = new ArrayList();
 		Collection lose = new ArrayList();
-		
+
 		for (int ii = 0; ii < 5; ii++) {
 			QuoteDataBean quote1 = QuoteDataBean.getRandomInstance();
 			QuoteDataBean quote2 = QuoteDataBean.getRandomInstance();
-			
+
 			gain.add(quote1);
 			lose.add(quote2);
 		}
-		
+
 		return new MarketSummaryDataBean(
 			TradeConfig.rndBigDecimal(1000000.0f),
 			TradeConfig.rndBigDecimal(1000000.0f),
@@ -95,19 +95,19 @@ public class MarketSummaryDataBean implements Serializable
 			return ret;
 		ret += "\n\t\t   Current Top Gainers:";
 		Iterator it = getTopGainers().iterator();
-		while ( it.hasNext() ) 
+		while ( it.hasNext() )
 		{
 			QuoteDataBean quoteData = (QuoteDataBean) it.next();
 			ret += ( "\n\t\t\t"  + quoteData.toString() );
 		}
 		ret += "\n\t\t   Current Top Losers:";
 		it = getTopLosers().iterator();
-		while ( it.hasNext() ) 
+		while ( it.hasNext() )
 		{
 			QuoteDataBean quoteData = (QuoteDataBean) it.next();
 			ret += ( "\n\t\t\t"  + quoteData.toString() );
 		}
-		return ret;		
+		return ret;
 	}
 	public String toHTML()
 	{
@@ -120,14 +120,14 @@ public class MarketSummaryDataBean implements Serializable
 			return ret;
 		ret += "<BR> Current Top Gainers:";
 		Iterator it = getTopGainers().iterator();
-		while ( it.hasNext() ) 
+		while ( it.hasNext() )
 		{
 			QuoteDataBean quoteData = (QuoteDataBean) it.next();
 			ret += ( "<LI>"  + quoteData.toString()  + "</LI>" );
 		}
 		ret += "<BR>   Current Top Losers:";
 		it = getTopLosers().iterator();
-		while ( it.hasNext() ) 
+		while ( it.hasNext() )
 		{
 			QuoteDataBean quoteData = (QuoteDataBean) it.next();
 			ret += ( "<LI>"  + quoteData.toString()  + "</LI>" );
@@ -137,8 +137,8 @@ public class MarketSummaryDataBean implements Serializable
 	public void print()
 	{
 		// Log.log( this.toString() );
-	}	
-	
+	}
+
 	public BigDecimal getGainPercent()
 	{
 		if ( gainPercent == null )

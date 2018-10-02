@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package relations;
 
@@ -25,7 +25,7 @@ import javax.persistence.*;
 import static relations.Deity.Gender.*;
 
 
-/** 
+/**
  * A very simple, stand-alone program that stores a new entity in the
  * database and then performs a query to retrieve it.
  */
@@ -54,9 +54,9 @@ public class Main {
         factory.close();
     }
 
-    /** 
+    /**
      * Creates a partial family tree of the Greek dieties.
-     *  
+     *
      * @param  em  the EntityManager to use in the persistence process
      */
     public static void initFamilyTree(EntityManager em) {
@@ -121,9 +121,9 @@ public class Main {
         em.getTransaction().commit();
     }
 
-    /** 
+    /**
      * Run some sample queries against the family tree model.
-     *  
+     *
      * @param  em  the EntityManager to use
      */
     public static void runQueries(EntityManager em) {
@@ -134,7 +134,7 @@ public class Main {
         Query q = em.createQuery("select x from Deity x");
 
         // Go through each of the entities and print out each of their
-        // messages, as well as the date on which it was created 
+        // messages, as well as the date on which it was created
         for (Deity m : (List<Deity>) q.getResultList()) {
             System.out.println(m.getName());
         }

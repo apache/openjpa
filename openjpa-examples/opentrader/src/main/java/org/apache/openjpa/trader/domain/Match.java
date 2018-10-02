@@ -22,9 +22,9 @@ import java.io.Serializable;
 
 /**
  * A pair of matching offer to {@linkplain Bid buy} and {@linkplain Ask sell}.
- * This is <em>not</em> a persistent entity. But it is in the persistent domain 
+ * This is <em>not</em> a persistent entity. But it is in the persistent domain
  * because it is often is the result of query.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -32,13 +32,13 @@ import java.io.Serializable;
 public class Match implements Serializable {
     private Ask ask;
     private Bid bid;
-    
+
     /**
      * A no-arg constructor to comply to GWT compiler.
      */
     protected Match() {
     }
-    
+
     /**
      * Constructs a pair with matching offers.
      * @param a the offer to sell. Must not be null.
@@ -50,7 +50,7 @@ public class Match implements Serializable {
         if (b == null)
             throw new NullPointerException("Can not create Match with null Bid");
         if (a.getSeller().equals(b.getBuyer())) {
-            throw new NullPointerException("Can not create Match with same Trader " 
+            throw new NullPointerException("Can not create Match with same Trader "
                     + a.getSeller() + " for Ask and Bid");
         }
         if (a.getPrice() > b.getPrice()) {
@@ -60,26 +60,26 @@ public class Match implements Serializable {
         ask = a;
         bid = b;
     }
-    
+
     /**
-     * Gets the matching offer to sell. 
-     * 
-     * @return the matching offer to sell. Never null. 
+     * Gets the matching offer to sell.
+     *
+     * @return the matching offer to sell. Never null.
      */
     public Ask getAsk() {
         return ask;
     }
-    
+
     /**
      * Gets the matching offer to buy.
-     * 
-     * @return the matching offer to buy. Never null. 
+     *
+     * @return the matching offer to buy. Never null.
      */
     public Bid getBid() {
         return bid;
     }
-    
-    
+
+
     public String toString() {
         return "Match ["+ ask + " and " + bid + "]";
     }

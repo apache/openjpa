@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -27,17 +27,17 @@ import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.util.OpenJPAException;
 
 /**
- * <P>Batch update manager that writes the SQL in object-level operation order. 
- * This update manager initiates a BatchPreparedStatementManagerImpl which 
- * will utilize the JDBC addBatch() and executeBatch() APIs to batch the 
+ * <P>Batch update manager that writes the SQL in object-level operation order.
+ * This update manager initiates a BatchPreparedStatementManagerImpl which
+ * will utilize the JDBC addBatch() and executeBatch() APIs to batch the
  * statements for performance improvement.</P>
- * <P>This is the plug-in class for UpdateManager to support statement 
- * batching for ordering. You can plug-in this statement batch implementation 
- * through the following property: 
+ * <P>This is the plug-in class for UpdateManager to support statement
+ * batching for ordering. You can plug-in this statement batch implementation
+ * through the following property:
  * <PRE>
- * < property name="openjpa.jdbc.UpdateManager" 
+ * < property name="openjpa.jdbc.UpdateManager"
  *   value="org.apache.openjpa.jdbc.kernel.BatchingOperationOrderUpdateManager"
- *    />   
+ *    />
  * </PRE></P>
  * @author Teresa Kan
  */
@@ -51,7 +51,7 @@ public class BatchingOperationOrderUpdateManager extends
         return new BatchingPreparedStatementManagerImpl(store, conn,
             batchLimit);
     }
-    
+
     /*
      * Override this method to flush any remaining batched row in the
      * PreparedStatementManager.
@@ -59,7 +59,7 @@ public class BatchingOperationOrderUpdateManager extends
     protected Collection flush(RowManager rowMgr,
         PreparedStatementManager psMgr, Collection exceps) {
         exceps = super.flush(rowMgr, psMgr, exceps);
-        BatchingPreparedStatementManagerImpl bPsMgr = 
+        BatchingPreparedStatementManagerImpl bPsMgr =
             (BatchingPreparedStatementManagerImpl) psMgr;
         try {
             bPsMgr.flushBatch();

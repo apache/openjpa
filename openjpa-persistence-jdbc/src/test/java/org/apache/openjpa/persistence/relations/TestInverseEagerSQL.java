@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -42,17 +42,17 @@ public class TestInverseEagerSQL
 
     public int numCustomers = 1;
     public int numOrdersPerCustomer = 4;
-    
-    public int _nPeople = 3; 
+
+    public int _nPeople = 3;
     public int _nPhones = 3;
 
     public void setUp() {
-        setUp(Customer.class, Customer.CustomerKey.class, Order.class, 
+        setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             EntityAInverseEager.class, EntityA1InverseEager.class,
             EntityA2InverseEager.class, EntityBInverseEager.class,
             EntityCInverseEager.class, EntityDInverseEager.class,
-            Publisher.class, Magazine.class, 
-            PPerson.class, PPhone.class, 
+            Publisher.class, Magazine.class,
+            PPerson.class, PPhone.class,
             DROP_TABLES);
 
         // Not all databases support GenerationType.IDENTITY column(s)
@@ -77,7 +77,7 @@ public class TestInverseEagerSQL
 
         EntityAInverseEager a = new EntityAInverseEager("a");
         em.persist(a);
-        
+
         EntityA1InverseEager a1 = new EntityA1InverseEager("a1");
         em.persist(a1);
 
@@ -138,15 +138,15 @@ public class TestInverseEagerSQL
             magazine.setName("magagine"+i+"_"+p2.getName());
             em.persist(magazine);
         }
-        
+
         PPerson person;
         PPhone phone;
-        for(int i =0; i < _nPeople; i++) { 
+        for(int i =0; i < _nPeople; i++) {
             person = new PPerson();
             person.setPhones(new ArrayList<PPhone>());
             em.persist(person);
-            for(int j = 0; j < _nPhones; j++) { 
-                phone = new PPhone(); 
+            for(int j = 0; j < _nPhones; j++) {
+                phone = new PPhone();
                 phone.setPeople(new ArrayList<PPerson>());
                 phone.getPeople().add(person);
                 person.getPhones().add(phone);
@@ -169,7 +169,7 @@ public class TestInverseEagerSQL
 
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAQuery q = em.createQuery("SELECT c FROM Customer c ");
-        List<Customer> res = q.getResultList(); 
+        List<Customer> res = q.getResultList();
 
         assertEquals(1, res.size());
 
@@ -303,7 +303,7 @@ public class TestInverseEagerSQL
         assertEquals(0, sql.size());
         em.close();
     }
-    
+
     public void testManyToManyEagerEagerInverseLazyQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -405,7 +405,7 @@ public class TestInverseEagerSQL
         assertEquals(numOrdersPerCustomer * (numCustomers - 1), count);
         em.close();
     }
-    
+
     public static void main(String[] args) {
         TestRunner.run(TestInverseEagerSQL.class);
     }

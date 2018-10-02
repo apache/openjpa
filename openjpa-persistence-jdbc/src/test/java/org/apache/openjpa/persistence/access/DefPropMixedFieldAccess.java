@@ -33,18 +33,18 @@ import static javax.persistence.AccessType.PROPERTY;
 @Entity(name="DPMFA")
 @Access(value=PROPERTY)
 @NamedQueries( {
-    @NamedQuery(name="DPMFA.query", 
-        query="SELECT p FROM DPMFA p WHERE " + 
+    @NamedQuery(name="DPMFA.query",
+        query="SELECT p FROM DPMFA p WHERE " +
         "p.id = :id AND p.strField = :strVal"),
-    @NamedQuery(name="DPMFA.badQuery", 
-        query="SELECT p FROM DPMFA p WHERE " + 
-        "p.id = :id AND p.strProp = :strVal") } )        
+    @NamedQuery(name="DPMFA.badQuery",
+        query="SELECT p FROM DPMFA p WHERE " +
+        "p.id = :id AND p.strProp = :strVal") } )
 public class DefPropMixedFieldAccess {
 
     private int id;
 
     private int version;
-    
+
     @Access(value=FIELD)
     private String strField;
 
@@ -74,8 +74,8 @@ public class DefPropMixedFieldAccess {
     @Transient
     public String getStrProp() {
         return strField;
-    }   
-    
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof DefPropMixedFieldAccess) {
             DefPropMixedFieldAccess dpmfa = (DefPropMixedFieldAccess)obj;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -37,11 +37,11 @@ public class Department {
 	private String name;
 	@OneToMany
 	private Set<Employee> employees;
-	
+
     public int getDeptno() {
         return deptNo;
     }
-    
+
     public void setDeptno(int deptNo) {
         this.deptNo = deptNo;
     }
@@ -49,7 +49,7 @@ public class Department {
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -57,7 +57,7 @@ public class Department {
     public Set<Employee> getEmployees() {
         return employees;
     }
-    
+
     public void setEmployees(Set<Employee> employees){
         this.employees = employees;
     }

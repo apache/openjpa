@@ -32,13 +32,13 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 @AllowFailure(message=
-	"Multi-level embedding" + 
-	"JPA 2.0 Access Style " + 
-    "XML Metadata "         + 
-    "Attribute Override "   +  
+	"Multi-level embedding" +
+	"JPA 2.0 Access Style " +
+    "XML Metadata "         +
+    "Attribute Override "   +
     " is not yet supported")
 public class TestEmbeddableXml extends SingleEMFTestCase {
-   
+
     public int numEmbeddables = 1;
     public int numBasicTypes = 10;
     public int ID = 1;
@@ -61,16 +61,16 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     public int numDivisionsPerCo = 2;
     public int numCustomers = 1;
     public int numOrdersPerCustomer = 2;
-    
+
     public void setUp() {
         setUp(CLEAR_TABLES);
     }
-    
+
     @Override
     protected String getPersistenceUnitName() {
         return "embed-pu";
     }
-    
+
     public void testJoinColumns() {
         createFeatureXml();
         EntityManager em = emf.createEntityManager();
@@ -83,7 +83,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         }
         em.close();
     }
-    
+
     public void createFeatureXml() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -100,7 +100,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         aList.add(a);
         f.setAttributes(aList);
         em.persist(f);
-        
+
         FeatureXml f1 = new FeatureXml();
         FeatureIdXml fid1 = new FeatureIdXml();
         fid1.setIndex(1);
@@ -113,11 +113,11 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         aList1.add(a1);
         f1.setAttributes(aList1);
         em.persist(f1);
-        
-        tran.commit();       
+
+        tran.commit();
         em.close();
     }
-    
+
     public void testEntityA_Coll_StringXml() {
         createEntityA_Coll_StringXml();
         queryEntityA_Coll_StringXml();
@@ -204,14 +204,14 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         EntityA_Coll_StringXml a = em.find(EntityA_Coll_StringXml.class, ID);
         checkEntityA_Coll_StringXml(a);
-        
+
         Query q = em.createNativeQuery("select count(*) from EntityA_Coll_StringXml_nickNames");
         Object obj = q.getSingleResult();
         // ensure that multiple rows are inserted into the table (the column is not serialized)
-        assertEquals(numBasicTypes, obj);          
-        
-        
-        
+        assertEquals(numBasicTypes, obj);
+
+
+
         em.close();
     }
 
@@ -309,7 +309,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         em.close();
     }
 
-     
+
     public void testMapKeyAnnotations(){
         createObj();
         queryObj();
@@ -696,7 +696,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         int id = vp.getId();
         String name = vp.getName();
     }
-    
+
     public void createOrphanRemoval() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -728,7 +728,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         em.persist(o);
         return o;
     }
-    
+
     public void testOrphanRemovalTarget() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
@@ -757,7 +757,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         assertEquals(numOrdersPerCustomer * numCustomers - 1, count);
         em.close();
     }
-    
+
     public void testOrphanRemovalTargetSetNull() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
@@ -771,18 +771,18 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
 
         int count = count(OrderXml.class);
         assertEquals(numOrdersPerCustomer * (numCustomers - 1), count);
-        
+
         c = em.find(CustomerXml.class, 1);
         Set<OrderXml> orders = c.getOrders();
         if (orders != null)
             assertEquals(0, orders.size());
         em.close();
     }
-    
+
     public void testOrphanRemovalSource() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
-        
+
         // OrphanRemoval: remove source
         CustomerXml c = em.find(CustomerXml.class, 1);
         em.getTransaction().begin();
@@ -790,10 +790,10 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         em.flush();
         em.getTransaction().commit();
         em.clear();
-        
+
         int count = count(OrderXml.class);
         assertEquals(numOrdersPerCustomer * (numCustomers - 1), count);
-        
+
         em.close();
     }
 }

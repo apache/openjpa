@@ -34,7 +34,7 @@ public class ChildPK implements Serializable{
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#hashCode()
    */
   @Override
@@ -49,7 +49,7 @@ public class ChildPK implements Serializable{
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override

@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests statistics of data cache operation.
- * 
+ *
  */
 public class TestStatistics extends SingleEMFTestCase {
     private static final boolean L2Cached = true;
@@ -39,10 +39,10 @@ public class TestStatistics extends SingleEMFTestCase {
 
     Object[] p =
         new Object[] { CLEAR_TABLES, CachedEntityStatistics.class
-            ,"openjpa.DataCache", "true(EnableStatistics=true)","openjpa.QueryCache", "true", 
+            ,"openjpa.DataCache", "true(EnableStatistics=true)","openjpa.QueryCache", "true",
 //            "openjpa.ConnectionFactoryProperties", "PrintParameters=True", "openjpa.Log","SQL=trace",
         };
-    
+
     private EntityManager em;
     private StoreCache cache;
     CacheStatistics stats;
@@ -115,7 +115,7 @@ public class TestStatistics extends SingleEMFTestCase {
         write++;
         write++;
         write++;
-        
+
         write++;
         write++;
         assertion(cls, hit,  read, write, stats);

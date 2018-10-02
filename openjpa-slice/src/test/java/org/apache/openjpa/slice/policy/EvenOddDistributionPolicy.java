@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.policy;
 
@@ -37,14 +37,14 @@ public class EvenOddDistributionPolicy implements DistributionPolicy {
             return distribute((Car)pc);
         if (pc instanceof Manufacturer)
             return distribute((Manufacturer)pc);
-        
+
         return null;
     }
-    
+
     String distribute(Car car) {
         return "Even";
     }
-    
+
     String distribute(Manufacturer maker) {
         return "Odd";
     }

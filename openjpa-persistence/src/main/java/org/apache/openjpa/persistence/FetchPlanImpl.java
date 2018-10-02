@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -46,52 +46,52 @@ public class FetchPlanImpl
 	implements FetchPlan {
 
     private final DelegatingFetchConfiguration _fetch;
-    
+
     /**
      * Structure holds ranking of equivalent hint keys. Each entry value is a list of other keys that are higher rank
-     * than the entry key.   
+     * than the entry key.
      */
     protected static Map<String, List<String>> _precedence = new HashMap<String, List<String>>();
-    
+
     /**
-     * Structure holds one or more converters for a user-specified hint value. 
+     * Structure holds one or more converters for a user-specified hint value.
      */
     protected static Map<String,HintValueConverter[]> _hints = new HashMap<String,HintValueConverter[]>();
-    
+
     /**
-     * Statically registers supported hint keys with their ranking and converters. 
+     * Statically registers supported hint keys with their ranking and converters.
      */
     static {
-        registerHint(new String[]{"openjpa.FetchPlan.ExtendedPathLookup"}, 
+        registerHint(new String[]{"openjpa.FetchPlan.ExtendedPathLookup"},
                 new HintValueConverter.StringToBoolean());
-        registerHint(new String[]{"openjpa.FetchBatchSize", "openjpa.FetchPlan.FetchBatchSize"}, 
+        registerHint(new String[]{"openjpa.FetchBatchSize", "openjpa.FetchPlan.FetchBatchSize"},
                 new HintValueConverter.StringToInteger());
-        registerHint(new String[]{"openjpa.MaxFetchDepth", "openjpa.FetchPlan.MaxFetchDepth"}, 
+        registerHint(new String[]{"openjpa.MaxFetchDepth", "openjpa.FetchPlan.MaxFetchDepth"},
                 new HintValueConverter.StringToInteger());
-        registerHint(new String[]{"openjpa.LockTimeout", "openjpa.FetchPlan.LockTimeout", 
+        registerHint(new String[]{"openjpa.LockTimeout", "openjpa.FetchPlan.LockTimeout",
                 "javax.persistence.lock.timeout"}, new HintValueConverter.StringToInteger());
-        registerHint(new String[]{"openjpa.QueryTimeout", "openjpa.FetchPlan.QueryTimeout", 
+        registerHint(new String[]{"openjpa.QueryTimeout", "openjpa.FetchPlan.QueryTimeout",
                 "javax.persistence.query.timeout"}, new HintValueConverter.StringToInteger());
-        registerHint(new String[]{"openjpa.FlushBeforeQueries", "openjpa.FetchPlan.FlushBeforeQueries"}, 
+        registerHint(new String[]{"openjpa.FlushBeforeQueries", "openjpa.FetchPlan.FlushBeforeQueries"},
                 new HintValueConverter.StringToInteger(
                    new String[] {"0", "1", "2"},
-                   new int[]{QueryFlushModes.FLUSH_TRUE, QueryFlushModes.FLUSH_FALSE, 
+                   new int[]{QueryFlushModes.FLUSH_TRUE, QueryFlushModes.FLUSH_FALSE,
                            QueryFlushModes.FLUSH_WITH_CONNECTION}));
         registerHint(new String[]{"openjpa.ReadLockMode", "openjpa.FetchPlan.ReadLockMode"},
                 new MixedLockLevelsHelper());
         registerHint(new String[]{"openjpa.ReadLockLevel", "openjpa.FetchPlan.ReadLockLevel"},
                 new MixedLockLevelsHelper());
-        registerHint(new String[]{"openjpa.WriteLockMode", "openjpa.FetchPlan.WriteLockMode"}, 
+        registerHint(new String[]{"openjpa.WriteLockMode", "openjpa.FetchPlan.WriteLockMode"},
                 new MixedLockLevelsHelper());
-        registerHint(new String[]{"openjpa.WriteLockLevel", "openjpa.FetchPlan.WriteLockLevel"}, 
+        registerHint(new String[]{"openjpa.WriteLockLevel", "openjpa.FetchPlan.WriteLockLevel"},
                 new MixedLockLevelsHelper());
     }
-    
+
     /**
-     * Registers a hint key with its value converters. 
-     * 
+     * Registers a hint key with its value converters.
+     *
      * @param keys a set of keys in increasing order of ranking. Can not be null or empty.
-     * 
+     *
      * @param converters array of converters that are attempts in order to convert a user-specified hint value
      * to a value that is consumable by the kernel.
      */
@@ -109,7 +109,7 @@ public class FetchPlanImpl
             }
         }
     }
-    
+
     /**
      * Constructor; supply delegate.
      */
@@ -334,11 +334,11 @@ public class FetchPlanImpl
         _fetch.setWriteLockLevel(MixedLockLevelsHelper.toLockLevel(mode));
         return this;
     }
-    
+
     public boolean getExtendedPathLookup() {
         return _fetch.getExtendedPathLookup();
     }
-    
+
     public FetchPlan setExtendedPathLookup(boolean flag) {
         _fetch.setExtendedPathLookup(flag);
         return this;
@@ -347,10 +347,10 @@ public class FetchPlanImpl
     public Object getHint(String key) {
         return _fetch.getHint(key);
     }
-    
+
     /**
      * Sets the hint after converting the value appropriately.
-     * If a higher ranking equivalent hint is already set, then bypasses this hint. 
+     * If a higher ranking equivalent hint is already set, then bypasses this hint.
      */
     public void setHint(String key, Object value) {
         if (!isRecognizedHint(key))
@@ -362,7 +362,7 @@ public class FetchPlanImpl
                     return;
             }
         }
-        Object newValue = convertHintValue(key, value); 
+        Object newValue = convertHintValue(key, value);
         _fetch.setHint(key, newValue, value);
     }
 
@@ -374,11 +374,11 @@ public class FetchPlanImpl
             setHint(hint.getKey(), hint.getValue());
         }
     }
-    
+
     public Map<String, Object> getHints() {
         return _fetch.getHints();
     }
-    
+
     public int hashCode() {
         return ((_fetch == null) ? 0  : _fetch.hashCode());
     }
@@ -390,7 +390,7 @@ public class FetchPlanImpl
             return false;
         if (_fetch == null)
         	return false;
-        
+
         return _fetch.equals(((FetchPlanImpl) other)._fetch);
     }
 
@@ -425,7 +425,7 @@ public class FetchPlanImpl
         }
         return value;
     }
-    
+
     boolean isRecognizedHint(String key) {
         if (key == null)
             return false;
@@ -433,7 +433,7 @@ public class FetchPlanImpl
             return true;
         return key.startsWith("openjpa.");
     }
-    
+
     boolean intersects(Collection<String> keys, Collection<String> b) {
         if (keys == null || keys.isEmpty() || b == null || b.isEmpty())
             return false;

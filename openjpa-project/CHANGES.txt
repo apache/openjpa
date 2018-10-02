@@ -21,12 +21,12 @@ Content
 Overview
 --------
    The Apache OpenJPA community is proud to release a SNAPSHOT distribution of
-   OpenJPA 2.2.0. This distribution is based on the final JSR 317 Java 
+   OpenJPA 2.2.0. This distribution is based on the final JSR 317 Java
    Persistence API, Version 2.0 specification and passes the JPA 2.0 TCK,
    while remaining backwards compatible with prior releases based on the
    Java Persistence API (JPA 1.0) part of Java Community Process JSR-220
    (Enterprise JavaBeans 3.0).
-   
+
    Additional information on the OpenJPA project may be found at the project
    web site:
       http://openjpa.apache.org
@@ -75,7 +75,7 @@ Notices
 
 Prerequisites
 -------------
-   OpenJPA requires Java SE 6 or higher and a relational 
+   OpenJPA requires Java SE 6 or higher and a relational
    database of some sort.
 
 

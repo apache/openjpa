@@ -26,28 +26,28 @@ import javax.persistence.Transient;
 @Access(AccessType.PROPERTY)
 @Embeddable
 public class EmbedMixedAccess {
-    
+
     private transient String fName;
     private transient String lName;
 
     @Access(AccessType.FIELD)
-    private String mName; 
+    private String mName;
 
     public String getFirstName() {
         return fName;
     }
-    
+
     public void setFirstName(String fname) {
-        fName = fname;        
+        fName = fname;
     }
-    
+
     public String getLastName() {
         return lName;
     }
-    
+
     public void setLastName(String lname) {
         lName = lname;
-    }  
+    }
 
     @Transient
     public String getMiddleName() {
@@ -57,7 +57,7 @@ public class EmbedMixedAccess {
     public void setMiddleName(String mname) {
         mName = mname;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof EmbedMixedAccess) {
             EmbedMixedAccess ps = (EmbedMixedAccess)obj;

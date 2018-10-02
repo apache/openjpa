@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.detach.xml;
 
@@ -30,8 +30,8 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 /**
  * These test verify the use of cascade-detach via orm.xml through
- * the cascade-detach and cascade-all elements.  Within each variation, a 
- * bi-directional entity graph containing all relationship types is made 
+ * the cascade-detach and cascade-all elements.  Within each variation, a
+ * bi-directional entity graph containing all relationship types is made
  * persistent.  Detach is called iteratively on a full graph and cascade
  * behavior is verified.
  */
@@ -42,17 +42,17 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
      * in the graph should be detached when any entity is detached.
      */
     public void testDetach() throws Exception {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("DetachXMLPU",
                 "org/apache/openjpa/persistence/detach/" +
                 "detach-persistence.xml");
-        
+
         try {
-            verifyCascadeDetach(emf, true);                        
+            verifyCascadeDetach(emf, true);
         } finally {
             cleanupEMF(emf);
-        }      
+        }
     }
 
     /*
@@ -61,17 +61,17 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
      * detached.
      */
     public void testNoDetach()  throws Exception {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("NoDetachXMLPU",
                 "org/apache/openjpa/persistence/detach/" +
                 "detach-persistence.xml");
-        
+
         try {
             verifyCascadeDetach(emf, false);
         } finally {
             cleanupEMF(emf);
-        }      
+        }
     }
 
     /*
@@ -79,26 +79,26 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
      * in the graph should be detached when a single entity is detached.
      */
     public void testAllDetach()  throws Exception {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("DetachAllXMLPU",
                 "org/apache/openjpa/persistence/detach/" +
                 "detach-persistence.xml");
-        
+
         try {
             verifyCascadeDetach(emf, true);
         } finally {
             cleanupEMF(emf);
-        }      
+        }
     }
-    
+
     private void verifyCascadeDetach(EntityManagerFactory emf, boolean cascade) {
         EntityManager em = emf.createEntityManager();
         List<Object> data = createData(em);
         assertNotNull(data);
         int size = data.size();
         assertTrue(data.size() > 0);
-        
+
         // Cycle through all PCs, verifying detach state
         for (int i = 0; i < size; i++) {
             Object entity = data.get(i);
@@ -115,21 +115,21 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
             // Populate new data
             data = createData(em);
         }
-        
+
     }
-    
+
     private List<Object> createData(EntityManager em) {
         List<Object> data = new ArrayList<Object>();
         Automobile auto = new Automobile();
         auto.setMake("Ford");
         auto.setModel("Pinto");
         data.add(auto);
-                
+
         Automobile auto2 = new Automobile();
         auto2.setMake("Winnebago");
         auto2.setModel("Sightseer");
         data.add(auto2);
-        
+
         List<Automobile> autos = new ArrayList<Automobile>();
         autos.add(auto);
         autos.add(auto2);
@@ -138,30 +138,30 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
         p1.setName("Crash test dummy 0");
         p1.setAutos(autos);
         data.add(p1);
-        
+
         Passenger p2 = new Passenger();
         p2.setName("Crash test dummy 1");
         p2.setAutos(autos);
         data.add(p2);
-        
+
         List<Passenger> passengers = new ArrayList<Passenger>();
         passengers.add(p1);
         passengers.add(p2);
         auto.setPassengers(passengers);
         auto2.setPassengers(passengers);
-        
+
         Driver d1 = new Driver();
         d1.setAuto(auto);
         d1.setName("Crash test driver 0");
         auto.setPrimaryDriver(d1);
         data.add(d1);
-        
+
         Driver d2 = new Driver();
         d2.setAuto(auto2);
         d2.setName("Crash test driver 1");
         auto2.setPrimaryDriver(d2);
         data.add(d2);
-        
+
         Owner owner = new Owner();
         owner.setName("DMV");
         owner.setAutos(autos);
@@ -170,19 +170,19 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
         data.add(owner);
 
         // Persist the object graph
-        em.getTransaction().begin();        
+        em.getTransaction().begin();
         em.persist(owner);
         em.getTransaction().commit();
-        
+
         return data;
     }
 
 
     /**
-     * Closes a specific entity manager factory and cleans up 
+     * Closes a specific entity manager factory and cleans up
      * associated tables.
      */
-    private void cleanupEMF(OpenJPAEntityManagerFactorySPI emf1) 
+    private void cleanupEMF(OpenJPAEntityManagerFactorySPI emf1)
       throws Exception {
 
         if (emf1 == null)
@@ -198,6 +198,6 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
         } finally {
             closeEMF(emf1);
         }
-    }    
+    }
 
 }

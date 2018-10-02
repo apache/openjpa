@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -26,8 +26,8 @@ import javax.persistence.Query;
 
 /**
  * Tests query ordering.
- * 
- * @author Pinaki Poddar 
+ *
+ * @author Pinaki Poddar
  *
  */
 public class TestQuery extends SliceTestCase {
@@ -35,7 +35,7 @@ public class TestQuery extends SliceTestCase {
     private int POBJECT_COUNT = 25;
     private int VALUE_MIN = 100;
     private int VALUE_MAX = VALUE_MIN + POBJECT_COUNT - 1;
-    
+
     protected String getPersistenceUnitName() {
         return "ordering";
     }
@@ -49,7 +49,7 @@ public class TestQuery extends SliceTestCase {
             create(POBJECT_COUNT);
         }
     }
-    
+
     void create(int N) {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -75,10 +75,10 @@ public class TestQuery extends SliceTestCase {
         em.persist(p2);
         assertEquals("Even", SlicePersistence.getSlice(p1));
         assertEquals("Odd", SlicePersistence.getSlice(p2));
-        
+
         em.getTransaction().commit();
     }
-    
+
     public void testOrderedQueryResultWhenOrderableItemSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -97,7 +97,7 @@ public class TestQuery extends SliceTestCase {
         }
         em.getTransaction().rollback();
     }
-    
+
     public void testOrderedQueryResultWhenOrderableItemNotSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -113,7 +113,7 @@ public class TestQuery extends SliceTestCase {
         }
         em.getTransaction().rollback();
     }
-    
+
     public void testOrderedQueryResultWhenNavigatedOrderableItemNotSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -133,7 +133,7 @@ public class TestQuery extends SliceTestCase {
         }
         em.getTransaction().rollback();
     }
-    
+
     public void testAggregateQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -151,7 +151,7 @@ public class TestQuery extends SliceTestCase {
         Object min1 = ((Object[])minmax)[0];
         Object max1 = ((Object[])minmax)[1];
         em.getTransaction().rollback();
-        
+
         assertEquals(POBJECT_COUNT, ((Number)count).intValue());
         assertEquals(VALUE_MAX, ((Number)max).intValue());
         assertEquals(VALUE_MIN, ((Number)min).intValue());
@@ -160,7 +160,7 @@ public class TestQuery extends SliceTestCase {
         assertEquals(min, min1);
         assertEquals(max, max1);
     }
-    
+
     public void testAggregateQueryWithMissingValueFromSlice() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -168,7 +168,7 @@ public class TestQuery extends SliceTestCase {
                 "SELECT MAX(p.value) FROM PObject p WHERE MOD(p.value,2)=0")
                 .getSingleResult();
         em.getTransaction().rollback();
-        
+
         assertEquals(VALUE_MAX, ((Number)max).intValue());
     }
 
@@ -189,7 +189,7 @@ public class TestQuery extends SliceTestCase {
         assertEquals(limit, result.size());
         em.getTransaction().rollback();
     }
-    
+
     public void testHint() {
         List<String> targets = new ArrayList<String>();
         targets.add("Even");
@@ -204,7 +204,7 @@ public class TestQuery extends SliceTestCase {
         }
         em.getTransaction().rollback();
     }
-    
+
     public void testQueryTargetPolicy() {
         List<String> targets = new ArrayList<String>();
         targets.add("Even");
@@ -219,7 +219,7 @@ public class TestQuery extends SliceTestCase {
         }
         em.getTransaction().rollback();
     }
-    
+
     public void testInMemoryOrderBy() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -228,7 +228,7 @@ public class TestQuery extends SliceTestCase {
         List result = query.getResultList();
         em.getTransaction().rollback();
     }
-    
+
     public void testQueryParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -238,7 +238,7 @@ public class TestQuery extends SliceTestCase {
         List result = query.getResultList();
         em.getTransaction().rollback();
     }
-    
+
     public void testQueryParameterEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -257,16 +257,16 @@ public class TestQuery extends SliceTestCase {
         assertEquals("Rome", p.getAddress().getCity());
         em.getTransaction().rollback();
     }
-    
+
     /**
      * Verifies that a lazy relation can be stored across different slices i.e.
      * collocation constraint can be violated under some restrictions.
-     * 
+     *
      * Car refers to Manufacturer. The relationship is uni-directional, no
-     * cascade and most importantly lazy. 
-     * The distribution policy is designed to store Car and Manufacturer 
-     * *always* in different slices. 
-     * 
+     * cascade and most importantly lazy.
+     * The distribution policy is designed to store Car and Manufacturer
+     * *always* in different slices.
+     *
      */
     public void testCollocationConstraintViolation() {
         // This transaction will store Manufacturer only
@@ -276,24 +276,24 @@ public class TestQuery extends SliceTestCase {
         bmw.setName("BMW");
         em.persist(bmw);
         em.getTransaction().commit();
-        
-        // This transaction will store a Car in a slice but the Car is related 
-        // to a Manufacturer that *always* reside in a different slice. 
+
+        // This transaction will store a Car in a slice but the Car is related
+        // to a Manufacturer that *always* reside in a different slice.
         em.getTransaction().begin();
-        Car z4 = new Car(); 
+        Car z4 = new Car();
         z4.setVin("1234V56789");
         z4.setMaker(bmw);
         z4.setModel("Z4");
         em.persist(z4);
         em.getTransaction().commit();
         em.clear();
-        
+
         // Verify that all cars are stored in "Even" slice
         List cars = em.createQuery("select c from Car c").getResultList();
         assertFalse(cars.isEmpty());
         for (Object c : cars)
             assertEquals("Even", SlicePersistence.getSlice(c));
-        
+
         // While all Manufacturers are stored in "Odd" slice.
         List makers =
             em.createQuery("select m from Manufacturer m").getResultList();
@@ -301,7 +301,7 @@ public class TestQuery extends SliceTestCase {
         for (Object m : makers)
             assertEquals("Odd", SlicePersistence.getSlice(m));
         em.clear();
-        
+
         // Now query for cars. The related manufacturer will be fetched
         // correctly, though it resides in a different slice because the
         // relationship is lazy and hence two separate SQLs are issued for
@@ -311,7 +311,7 @@ public class TestQuery extends SliceTestCase {
         for (Object c : cars)
             assertNotNull(((Car)c).getMaker());
     }
-    
+
     void assertValidResult(List result) {
         assertNotNull(result);
         assertFalse(result.isEmpty());

@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -78,7 +78,7 @@ public class TestComplexQueries extends BaseQueryTest {
 
         broker.begin();
         // test against database
-        //OpenJPAQuery q = pm.createQuery("SELECT o FROM " + 
+        //OpenJPAQuery q = pm.createQuery("SELECT o FROM " +
         //c.getSimpleName() + "o WHERE o." + filter);
         String qstrng =
             "SELECT o FROM " + c.getSimpleName() + " o WHERE o." + filter;

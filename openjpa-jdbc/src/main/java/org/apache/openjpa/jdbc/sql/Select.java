@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -617,14 +617,14 @@ public interface Select
      * Group by the columns of the given mapping, possibly including subclasses.
      * Assumes EAGER_NONE.
      */
-    public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store, 
+    public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store,
         JDBCFetchConfiguration fetch);
 
     /**
      * Group by the columns of the given mapping, possibly including subclasses.
      * Assumes EAGER_NONE.
      */
-    public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store, 
+    public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store,
         JDBCFetchConfiguration fetch, Joins joins);
 
     /**
@@ -719,19 +719,19 @@ public interface Select
      * @param schemaAlias
      */
     public void setSchemaAlias(String schemaAlias);
-    
+
     /**
      * Set the flag to indicate whether this Select has
-     * internally generated subselect 
+     * internally generated subselect
      */
     public void setHasSubselect(boolean hasSub);
-    
+
     /**
      * Return the flag to indicate whether this Select has
      * internally generated subselect
      */
     public boolean getHasSubselect();
-   
+
     /**
      * Extended trace that logs eager relations
      */
@@ -766,6 +766,6 @@ public interface Select
      * get joined table metadatas excluded for polymorphic queries
      */
     public List getExcludedJoinedTableClassMeta();
-    
-    public DBDictionary getDictionary() ; 
+
+    public DBDictionary getDictionary() ;
 }

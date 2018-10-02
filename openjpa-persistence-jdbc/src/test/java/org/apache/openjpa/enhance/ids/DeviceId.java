@@ -19,24 +19,24 @@
 package org.apache.openjpa.enhance.ids;
 
 public class DeviceId {
-    
+
     public static boolean[] usedConstructor = new boolean[3];
 
     private int id;
-    
+
     private int type;
-    
+
     public DeviceId() {
         usedConstructor[0] = true;
     }
-    
+
     @SuppressWarnings("unused")
     private DeviceId(int i, int t) {
         usedConstructor[1] = true;
         id = i;
         type = t;
     }
-    
+
     public DeviceId(int i) {
         usedConstructor[2] = true;
         id = i;
@@ -59,7 +59,7 @@ public class DeviceId {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return getId() + getType();

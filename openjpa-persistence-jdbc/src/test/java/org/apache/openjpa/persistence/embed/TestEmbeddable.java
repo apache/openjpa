@@ -83,24 +83,24 @@ public class TestEmbeddable extends SQLListenerTestCase {
     public Map<Integer, Employee> employees = new HashMap<Integer, Employee>();
 
     public void setUp() {
-        setUp(Embed.class, Embed_Coll_Embed.class, Embed_Coll_Integer.class, 
-            Embed_Embed.class, Embed_Embed_ToMany.class, Embed_ToMany.class, 
-            Embed_ToOne.class, EntityA_Coll_Embed_ToOne.class, 
-            EntityA_Coll_String.class, EntityA_Embed_Coll_Embed.class, 
-            EntityA_Embed_Coll_Integer.class, EntityA_Embed_Embed.class, 
-            EntityA_Embed_Embed_ToMany.class, EntityA_Embed_ToMany.class, 
-            EntityA_Embed_ToOne.class, EntityB1.class, 
+        setUp(Embed.class, Embed_Coll_Embed.class, Embed_Coll_Integer.class,
+            Embed_Embed.class, Embed_Embed_ToMany.class, Embed_ToMany.class,
+            Embed_ToOne.class, EntityA_Coll_Embed_ToOne.class,
+            EntityA_Coll_String.class, EntityA_Embed_Coll_Embed.class,
+            EntityA_Embed_Coll_Integer.class, EntityA_Embed_Embed.class,
+            EntityA_Embed_Embed_ToMany.class, EntityA_Embed_ToMany.class,
+            EntityA_Embed_ToOne.class, EntityB1.class,
             EntityA_Coll_Embed_Embed.class, ContactInfo.class,
             Employee.class, JobInfo.class, LocationDetails.class,
             ParkingSpot.class, PhoneNumber.class, ProgramManager.class,
             Department1.class, Employee1.class, Department2.class,
             Employee2.class, EmployeePK2.class, Department3.class,
             Employee3.class, EmployeeName3.class, Item1.class, Item2.class,
-            Item3.class, Item4.class, Item5.class, FileName4.class, 
-            Company1.class, Company2.class, Division.class,   
+            Item3.class, Item4.class, Item5.class, FileName4.class,
+            Company1.class, Company2.class, Division.class,
             VicePresident.class, EntityA_Embed_MappedToOne.class,
-            Embed_MappedToOne.class, Embed_MappedToOneCascadeDelete.class, 
-            EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class, 
+            Embed_MappedToOne.class, Embed_MappedToOneCascadeDelete.class,
+            EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class,
             Book.class, Listing.class, Seller.class,
             EntityA_Embed_Coll_Map.class, Embed_Coll_Map.class,
             EntityA_Embed_Single_Coll.class, Embed_Single_Coll.class, EntityA_Embed.class,
@@ -152,12 +152,12 @@ public class TestEmbeddable extends SQLListenerTestCase {
                     rs = em.createQuery(query[i]).setParameter(1, name).getResultList();
                 } catch(ArgumentException e) {
                     // as expected : compare embeddable is not allowed
-                    System.out.println(e.getMessage()); 
+                    System.out.println(e.getMessage());
                 }
                 break;
             }
         }
-        em.close();        
+        em.close();
     }
 
     public void testEntityA_Embed_Coll_Map() {
@@ -281,7 +281,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         queryEntityA_Embed_Coll_Embed();
         findEntityA_Embed_Coll_Embed();
     }
-    
+
     public void testEmployee() {
         createEmployeeObj();
         queryEmployeeObj();
@@ -293,7 +293,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         queryObjMapKey();
         findObjMapKey();
     }
-    
+
     public void testMapKeyClass() {
         createObjMapKeyClass();
         queryObjMapKeyClass();
@@ -315,8 +315,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
         createEntityA_Embed_MappedToOneCascadeDelete();
         updateEntityA_Embed_MappedToOneCascadeDelete();
     }
-    
-    public void testEmbeddableContainingRelationWithGeneratedKey() 
+
+    public void testEmbeddableContainingRelationWithGeneratedKey()
         throws IOException, SQLException {
         createEmbeddableContainingRelationWithGeneratedKey();
     }
@@ -328,12 +328,12 @@ public class TestEmbeddable extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         createEntityA_Coll_String(em, ID);
-        
+
         EntityB1 b = new EntityB1();
         b.setId(ID);
         b.setName("b" + ID);
         em.persist(b);
-        
+
         tran.begin();
         em.flush();
         tran.commit();
@@ -412,7 +412,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.persist(a);
     }
 
-    public Embed_MappedToOne createEmbed_MappedToOne(EntityManager em, int id, 
+    public Embed_MappedToOne createEmbed_MappedToOne(EntityManager em, int id,
         EntityA_Embed_MappedToOne a) {
         Embed_MappedToOne embed = new Embed_MappedToOne();
         embed.setName1("name1");
@@ -440,14 +440,14 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.close();
     }
 
-    public void createEntityA_Embed_MappedToOneCascadeDelete(EntityManager em, 
+    public void createEntityA_Embed_MappedToOneCascadeDelete(EntityManager em,
         int id) {
-        EntityA_Embed_MappedToOneCascadeDelete a = 
+        EntityA_Embed_MappedToOneCascadeDelete a =
             new EntityA_Embed_MappedToOneCascadeDelete();
         a.setId(id);
         a.setName("a" + id);
         a.setAge(id);
-        Embed_MappedToOneCascadeDelete embed = 
+        Embed_MappedToOneCascadeDelete embed =
             createEmbed_MappedToOneDeleteCascade(em, id, a);
         a.setEmbed(embed);
         em.persist(a);
@@ -468,7 +468,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.persist(b);
         return embed;
     }
-    
+
     /*
      * Update EntityA_Embed_MappedToOneCascadeDelete
      */
@@ -480,28 +480,28 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.flush();
         tran.commit();
         em.clear();
-        
-        EntityA_Embed_MappedToOneCascadeDelete a = 
+
+        EntityA_Embed_MappedToOneCascadeDelete a =
             em.find(EntityA_Embed_MappedToOneCascadeDelete.class, ID);
         assertNotNull(a);
-        
+
         EntityB2 b2 = em.find(EntityB2.class, ID);
         assertNotNull(b2);
-        
+
         em.close();
     }
 
-    public void updateEntityA_Embed_MappedToOneCascadeDelete(EntityManager em, 
+    public void updateEntityA_Embed_MappedToOneCascadeDelete(EntityManager em,
         int id) {
-        EntityA_Embed_MappedToOneCascadeDelete a = 
+        EntityA_Embed_MappedToOneCascadeDelete a =
             em.find(EntityA_Embed_MappedToOneCascadeDelete.class, id);
         a.setName("newa" + id);
         a.setAge(id + 1);
-        Embed_MappedToOneCascadeDelete embed = 
+        Embed_MappedToOneCascadeDelete embed =
             createEmbed_MappedToOneDeleteCascade(em, id+1, a);
         a.setEmbed(embed);
     }
-    
+
     /*
      * Create EntityA_Coll_Embed_ToOne
      */
@@ -598,7 +598,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         embed.setEmbed(embed_ToMany);
         return embed;
     }
-    
+
     /*
      * Create EntityA_Embed_Coll_Integer
      */
@@ -764,19 +764,19 @@ public class TestEmbeddable extends SQLListenerTestCase {
         createPhoneNumbers(em);
         createEmployees(em);
         createProgramManagers(em);
-        
+
         tran.begin();
         em.flush();
         tran.commit();
         em.close();
     }
-    
+
     public void createProgramManagers(EntityManager em) {
         empId = 1;
         for (int i = 0; i < numProgramManagers; i++)
             createProgramManager(em, pmId++);
     }
-    
+
     public void createProgramManager(EntityManager em, int id) {
         ProgramManager pm = new ProgramManager();
         pm.setId(id);
@@ -790,7 +790,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         }
         em.persist(pm);
     }
-    
+
     public void createEmployees(EntityManager em) {
         phoneId = 1;
         for (int i = 0; i < numEmployees; i++) {
@@ -803,7 +803,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         Employee e = new Employee();
         e.setEmpId(id);
         ContactInfo contactInfo = new ContactInfo();
-        for (int i = 0; i < numPhoneNumbersPerEmployee; i++) { 
+        for (int i = 0; i < numPhoneNumbersPerEmployee; i++) {
             PhoneNumber phoneNumber = phones.get(phoneId++);
             contactInfo.addPhoneNumber(phoneNumber);
             e.setContactInfo(contactInfo);
@@ -822,7 +822,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.persist(e);
         return e;
     }
-    
+
     public void createPhoneNumbers(EntityManager em) {
         for (int i = 0; i < numPhoneNumbers; i++) {
             PhoneNumber p = new PhoneNumber();
@@ -830,15 +830,15 @@ public class TestEmbeddable extends SQLListenerTestCase {
             phones.put(p.getNumber(), p);
             em.persist(p);
         }
-    }    
-    
+    }
+
     public ParkingSpot createParkingSpot(EntityManager em, int id) {
         ParkingSpot p = new ParkingSpot();
         p.setId(id);
         p.setGarage("garage" + id);
         em.persist(p);
         return p;
-    }    
+    }
 
     public void findEmployeeObj() {
         EntityManager em = emf.createEntityManager();
@@ -850,23 +850,23 @@ public class TestEmbeddable extends SQLListenerTestCase {
 
         Employee e = em.find(Employee.class, 1);
         assertEmployee(e);
-        
+
         PhoneNumber p = em.find(PhoneNumber.class, 1);
         assertPhoneNumber(p);
-        
+
         ParkingSpot ps = em.find(ParkingSpot.class, 1);
         assertParkingSpot(ps);
-       
+
         em.close();
     }
-    
+
     public void queryEmployeeObj() {
         queryProgramManager(emf);
         queryEmployeeObj(emf);
         queryPhoneNumber(emf);
         queryParkingSpot(emf);
     }
-    
+
     public void queryParkingSpot(EntityManagerFactory emf) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -879,7 +879,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         tran.commit();
         em.close();
     }
-    
+
     public void queryProgramManager(EntityManagerFactory emf) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -920,7 +920,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         // test range variable over element collection
         String[] query = {
             "select e from Employee e, in (e.nickNames) n " +
-                " where n like '%1'",  
+                " where n like '%1'",
         };
         for (int i = 0; i < query.length; i++) {
             es = em.createQuery(query[i]).getResultList();
@@ -939,7 +939,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             assertEmployee(e);
         }
     }
-    
+
     public void assertEmployee(Employee e) {
         int id = e.getEmpId();
         ContactInfo c = e.getContactInfo();
@@ -948,7 +948,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         for (PhoneNumber p : phones) {
             assertPhoneNumber(p);
         }
-        
+
         LocationDetails loc = e.getLocationDetails();
         int officeNumber = loc.getOfficeNumber();
         ParkingSpot p = loc.getParkingSpot();
@@ -956,20 +956,20 @@ public class TestEmbeddable extends SQLListenerTestCase {
         ProgramManager pm = e.getJobInfo().getProgramManager();
         Set<String> nickNames = e.getNickNames();
         assertEquals(numNickNames, nickNames.size());
-        
+
     }
-    
+
     public void assertPhoneNumber(PhoneNumber p) {
         int number = p.getNumber();
         Collection<Employee> es = p.getEmployees();
         assertEquals(numEmployeesPerPhoneNumber, es.size());
     }
-    
+
     public void assertParkingSpot(ParkingSpot p) {
         String garage = p.getGarage();
         Employee e = p.getAssignedTo();
     }
-    
+
     /*
      * Find EntityA_Coll_String
      */
@@ -995,7 +995,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         assertNull(b);
         em.close();
     }
-    
+
     public void testLazyFetchEmbed() {
         EntityManager em = emf.createEntityManager();
         EntityA_Embed a = new EntityA_Embed();
@@ -1011,7 +1011,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.getTransaction().begin();
         em.getTransaction().commit();
         em.clear();
-        
+
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
         // do not fetch emb
@@ -1098,7 +1098,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         EntityA_Coll_Embed_Embed a =
             em.find(EntityA_Coll_Embed_Embed.class, ID);
         checkEntityA_Coll_Embed_Embed(a);
-        
+
         em.clear();
         em.getTransaction().begin();
         Embed_Embed embed = createEmbed_Embed(ID, 100);
@@ -1245,7 +1245,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         Embed_Embed_ToMany embed = a.getEmbed();
         checkEmbed_Embed_ToMany(embed);
     }
-    
+
     public void checkEmbed_Embed_ToMany(Embed_Embed_ToMany embed) {
         int intVal1 = embed.getIntVal1();
         int intVal2 = embed.getIntVal2();
@@ -1256,7 +1256,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         Embed_ToMany embed1 = embed.getEmbed();
         checkEmbed_ToMany(embed1);
     }
-    
+
     /*
      * check EntityA_Embed_Coll_Integer
      */
@@ -1400,18 +1400,18 @@ public class TestEmbeddable extends SQLListenerTestCase {
             }
             em.clear();
         }
-        
+
         String[] queryWithParameters = {
-                "select b.name from " + 
-                    "EntityB1 b " + 
-                    "WHERE b.id in " + 
+                "select b.name from " +
+                    "EntityB1 b " +
+                    "WHERE b.id in " +
                     "(select a.id FROM EntityA_Coll_String a where ?1 MEMBER OF a.nickNames)",
-                "select b.name from " + 
-                    "EntityB1 b " + 
-                    "WHERE b.id not in " + 
+                "select b.name from " +
+                    "EntityB1 b " +
+                    "WHERE b.id not in " +
                     "(select a.id FROM EntityA_Coll_String a where ?1 MEMBER OF a.nickNames)"
         };
-            
+
         for (int i = 0; i < queryWithParameters.length; i++) {
             Query q1 = em.createQuery(queryWithParameters[i]);
             q1.setParameter(1, "nickName_10");
@@ -1425,8 +1425,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 assertTrue(rs.size() == 0);
                 break;
             }
-        }        
-        
+        }
+
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Coll_String a");
@@ -1575,8 +1575,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " e.b IS NOT NULL " +
                 " order by e",
             // the following query works in DB2 but not in Derby:
-            // because Derby subquery is only allowed to 
-            // return a single column. 
+            // because Derby subquery is only allowed to
+            // return a single column.
             /*
             "select e, e.b.id  from " +
                 " EntityA_Coll_Embed_ToOne a " +
@@ -1734,7 +1734,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             case 11:
                 assertTrue(obj instanceof EntityB1);
                 break;
-            }        
+            }
             em.clear();
         }
         EntityTransaction tran = em.getTransaction();
@@ -1878,8 +1878,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " , in (a.embeds) e WHERE a.embeds IS NOT EMPTY " +
                 " order by e.intVal3",
             // the following query works in DB2 but not in Derby,
-            // because Derby subquery is only allowed to 
-            // return a single column. 
+            // because Derby subquery is only allowed to
+            // return a single column.
             /*
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
@@ -2098,7 +2098,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         tran.commit();
         em.close();
     }
-    
+
     public void createObjMapKey() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -2134,7 +2134,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         tran.commit();
         em.close();
     }
-    
+
     public void createObjMapKeyTemporal() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -2144,7 +2144,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         Timestamp ts1 = new Timestamp(ts);
         Timestamp ts2 = new Timestamp(ts+1000000);
         Timestamp ts3 = new Timestamp(ts+2000000);
-        
+
         FileName4 fileName1 = new FileName4("file" + 1, "file" + 1);
         item.addImage(ts1, fileName1);
 
@@ -2182,7 +2182,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             if (sqlStr.toUpperCase().indexOf("ITEM2_XXX") != -1) {
                 found = true;
                 break;
-            } 
+            }
             if (sqlStr.toUpperCase().indexOf("ITEM2_IMAGES") != -1) {
                 found = false;
                 break;
@@ -2202,7 +2202,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         }
         em.persist(item);
     }
-    
+
     public void createItem2(EntityManager em, int id) {
         Item2 item = new Item2();
         item.setId(id);
@@ -2233,7 +2233,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         }
         em.persist(c);
     }
-    
+
     public void createCompany2(EntityManager em, int id) {
         Company2 c = new Company2();
         c.setId(id);
@@ -2253,13 +2253,13 @@ public class TestEmbeddable extends SQLListenerTestCase {
         d.setName("d" + id);
         return d;
     }
-    
+
     public VicePresident createVicePresident(EntityManager em, int id) {
         VicePresident vp = new VicePresident();
         vp.setId(id);
         vp.setName("vp" + id);
         return vp;
-    }    
+    }
 
     public void createDepartment1(EntityManager em, int id) {
         Department1 d = new Department1();
@@ -2275,13 +2275,13 @@ public class TestEmbeddable extends SQLListenerTestCase {
         d.setEmpMap(emps);
         em.persist(d);
     }
-    
+
     public Employee1 createEmployee1(EntityManager em, int id) {
         Employee1 e = new Employee1();
         e.setEmpId(id);
         return e;
     }
-    
+
     public void createDepartment2(EntityManager em, int id) {
         Department2 d = new Department2();
         d.setDeptId(id);
@@ -2293,12 +2293,12 @@ public class TestEmbeddable extends SQLListenerTestCase {
         }
         em.persist(d);
     }
-    
+
     public Employee2 createEmployee2(EntityManager em, int id) {
         Employee2 e = new Employee2("e" + id, new Date());
         return e;
     }
-    
+
     public void createDepartment3(EntityManager em, int id) {
         Department3 d = new Department3();
         d.setDeptId(id);
@@ -2310,7 +2310,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         }
         em.persist(d);
     }
-    
+
     public Employee3 createEmployee3(EntityManager em, int id) {
         Employee3 e = new Employee3();
         EmployeeName3 name = new EmployeeName3("f" + id, "l" + id);
@@ -2323,29 +2323,29 @@ public class TestEmbeddable extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         Department1 d1 = em.find(Department1.class, 1);
         assertDepartment1(d1);
-        
+
         Employee1 e1 = em.find(Employee1.class, 1);
         assertEmployee1(e1);
-        
+
         Department2 d2 = em.find(Department2.class, 3);
         assertDepartment2(d2);
-        
+
         Map emps = d2.getEmpMap();
         Set<EmployeePK2> keys = emps.keySet();
         for (EmployeePK2 key : keys) {
             Employee2 e2 = em.find(Employee2.class, key);
             assertEmployee2(e2);
         }
-        
+
         Department3 d3 = em.find(Department3.class, 5);
         assertDepartment3(d3);
-        
+
         Employee3 e3 = em.find(Employee3.class, 9);
         assertEmployee3(e3);
-        
+
         em.close();
     }
-    
+
     public void assertDepartment1(Department1 d) {
         int id = d.getDeptId();
         Map<Integer, Employee1> es = d.getEmpMap();
@@ -2357,7 +2357,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             assertEquals(empId.intValue(), e.getEmpId());
         }
     }
-    
+
     public void assertDepartment2(Department2 d) {
         int id = d.getDeptId();
         Map<EmployeePK2, Employee2> es = d.getEmpMap();
@@ -2367,7 +2367,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             Employee2 e = es.get(pk);
             assertEquals(pk, e.getEmpPK());
         }
-    }   
+    }
 
     public void assertDepartment3(Department3 d) {
         int id = d.getDeptId();
@@ -2379,19 +2379,19 @@ public class TestEmbeddable extends SQLListenerTestCase {
             assertEquals(key, e.getName());
         }
     }
-    
+
     public void assertEmployee1(Employee1 e) {
         int id = e.getEmpId();
         Department1 d = e.getDepartment();
         assertDepartment1(d);
     }
-    
+
     public void assertEmployee2(Employee2 e) {
         EmployeePK2 pk = e.getEmpPK();
         Department2 d = e.getDepartment();
         assertDepartment2(d);
     }
-    
+
     public void assertEmployee3(Employee3 e) {
         int id = e.getEmpId();
         Department3 d = e.getDepartment();
@@ -2402,7 +2402,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         queryDepartment(emf);
         queryEmployee(emf);
     }
-    
+
     public void queryDepartment(EntityManagerFactory emf) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -2412,7 +2412,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         for (Department1 d : ds1){
             assertDepartment1(d);
         }
-        
+
         Query q2 = em.createQuery("select d from Department2 d");
         List<Department2> ds2 = q2.getResultList();
         for (Department2 d : ds2){
@@ -2424,7 +2424,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         for (Department3 d : ds3){
             assertDepartment3(d);
         }
-        
+
         tran.commit();
 
         String query[] = {
@@ -2472,39 +2472,39 @@ public class TestEmbeddable extends SQLListenerTestCase {
         tran.commit();
         em.close();
     }
-    
+
     public void findObjMapKeyClass() {
         EntityManager em = emf.createEntityManager();
-        
+
         Item1 item1 = em.find(Item1.class, 1);
         assertItem1(item1);
-        
+
         Item2 item2 = em.find(Item2.class, 3);
         assertItem2(item2);
-        
+
         Item3 item3 = em.find(Item3.class, 5);
         assertItem3(item3);
 
         Company1 c1 = em.find(Company1.class, 1);
         assertCompany1(c1);
-        
+
         Company2 c2 = em.find(Company2.class, 3);
         assertCompany2(c2);
 
         Division d = em.find(Division.class, 1);
         assertDivision(d);
-        
+
         VicePresident vp = em.find(VicePresident.class, 1);
         assertVicePresident(vp);
         em.close();
     }
-    
+
     public void assertItem1(Item1 item) {
         int id = item.getId();
         Map images = item.getImages();
         assertEquals(numImagesPerItem, images.size());
     }
-    
+
     public void assertItem2(Item2 item) {
         int id = item.getId();
         Map images = item.getImages();
@@ -2522,13 +2522,13 @@ public class TestEmbeddable extends SQLListenerTestCase {
         Map organization = c.getOrganization();
         assertEquals(2,organization.size());
     }
-    
+
     public void assertCompany2(Company2 c) {
         int id = c.getId();
         Map organization = c.getOrganization();
         assertEquals(2,organization.size());
-    }    
-    
+    }
+
     public void assertDivision(Division d) {
         int id = d.getId();
         String name = d.getName();
@@ -2545,20 +2545,20 @@ public class TestEmbeddable extends SQLListenerTestCase {
         queryDivision(emf);
         queryVicePresident(emf);
     }
-    
+
     public void findObjMapKeyEnumerated() {
         EntityManager em = emf.createEntityManager();
         Item4 item = em.find(Item4.class, 1);
         FileName4 fileName1 = item.getImage(Item4.Catagory.A1);
-        assertEquals("file1", fileName1.getFName());       
-        assertEquals("file1", fileName1.getLName());       
-        
+        assertEquals("file1", fileName1.getFName());
+        assertEquals("file1", fileName1.getLName());
+
         FileName4 fileName2 = item.getImage(Item4.Catagory.A2);
-        assertEquals("file2", fileName2.getFName());       
-        assertEquals("file2", fileName2.getLName());       
-        
+        assertEquals("file2", fileName2.getFName());
+        assertEquals("file2", fileName2.getLName());
+
         FileName4 fileName3 = item.getImage(Item4.Catagory.A3);
-        assertEquals("file3", fileName3.getFName());       
+        assertEquals("file3", fileName3.getFName());
         assertEquals("file3", fileName3.getLName());
         em.close();
     }
@@ -2569,10 +2569,10 @@ public class TestEmbeddable extends SQLListenerTestCase {
         assertEquals(3, item.getImages().size());
         em.close();
     }
-    
+
     public void queryObjMapKeyTemporal() {
         EntityManager em = emf.createEntityManager();
-        String jpql = "SELECT VALUE(img) FROM Item5 item, IN (item.images) img " + 
+        String jpql = "SELECT VALUE(img) FROM Item5 item, IN (item.images) img " +
             "WHERE img.fName = :fName and item.id = :id";
         Query q = em.createQuery(jpql);
         q.setParameter("fName", "file1");
@@ -2591,7 +2591,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         for (Item1 item : is1){
             assertItem1(item);
         }
-        
+
         Query q2 = em.createQuery("select i from Item2 i");
         List<Item2> is2 = q2.getResultList();
         for (Item2 item : is2){
@@ -2702,15 +2702,15 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " where ?1 = " +
                 " (select KEY(d) from Company1 c, in(c.organization) d" +
                 "   where d.id = 1)" +
-                " order by c ",  
+                " order by c ",
             "select c from Company1 c where exists" +
                 " (select d from in(c.organization) d" +
                 "  where KEY(d) = ?1)" +
-                " order by c ",  
+                " order by c ",
             "select c from Company1 c where exists" +
                 " (select d from c.organization d" +
                 "  where KEY(d) = ?1)" +
-                " order by c ",  
+                " order by c ",
         };
         for (int i = 0; i < query.length; i++) {
             Query q = em.createQuery(query[i]);
@@ -2726,15 +2726,15 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " where ?1 = " +
                 " (select KEY(d) from Company2 c, in(c.organization) d" +
                 "   where d.id = 3)" +
-                " order by c ",  
+                " order by c ",
             "select c from Company2 c where exists" +
                 " (select d from in(c.organization) d" +
                 "  where KEY(d) = ?1)" +
-                " order by c ",  
+                " order by c ",
             "select c from Company2 c where exists" +
                 " (select d from c.organization d" +
                 "  where KEY(d) = ?1)" +
-                " order by c ",  
+                " order by c ",
         };
 
         for (int i = 0; i < query2.length; i++) {
@@ -2773,23 +2773,23 @@ public class TestEmbeddable extends SQLListenerTestCase {
         tran.commit();
         em.close();
     }
-    
+
     /**
      * To run this method on Oracle requires the user to have the authority
      * to create triggers.  ex.  GRANT CREATE TRIGGER TO "SCOTT"
      */
-    public void createEmbeddableContainingRelationWithGeneratedKey() 
+    public void createEmbeddableContainingRelationWithGeneratedKey()
         throws IOException, SQLException {
         EntityManager em = emf.createEntityManager();
-        
+
         OpenJPAEntityManagerSPI ojem = (OpenJPAEntityManagerSPI)em;
         JDBCConfiguration conf = (JDBCConfiguration) ojem.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         if (dict instanceof OracleDictionary) {
-            recreateOracleArtifacts((OracleDictionary)dict, conf);                
+            recreateOracleArtifacts((OracleDictionary)dict, conf);
         }
         EntityTransaction tran = em.getTransaction();
-        
+
         Book b = new Book(1590596455);
         Seller bob = new Seller("Bob's books!");
         Seller jim = new Seller("Jim's books!");
@@ -2816,7 +2816,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
      * This method uses the mapping tool to regenerate Oracle db artifacts
      * with the useTriggersForAutoAssign db option enabled.
      */
-    private void recreateOracleArtifacts(OracleDictionary dict, 
+    private void recreateOracleArtifacts(OracleDictionary dict,
         JDBCConfiguration conf) throws IOException, SQLException {
         dict.useTriggersForAutoAssign = true;
         Flags flags = new MappingTool.Flags();
@@ -2825,12 +2825,12 @@ public class TestEmbeddable extends SQLListenerTestCase {
         flags.sequences = true;
         flags.ignoreErrors = true;
         flags.dropSequences = true;
-        MappingTool.run( 
-            conf, 
+        MappingTool.run(
+            conf,
             new String[] { "org.apache.openjpa.persistence.embed.Book" },
             flags,
             conf.getClassResolverInstance().
-            getClassLoader(MappingTool.class, null));        
+            getClassLoader(MappingTool.class, null));
     }
 
     /*
@@ -3067,14 +3067,14 @@ public class TestEmbeddable extends SQLListenerTestCase {
           embedArray[i] = new Embed_Embed();
           embedArray[i].setIntVal1(i);
         }
-        
+
         List embedList = Arrays.asList(embedArray);
         EntityA_Coll_Embed_Embed a1 = new EntityA_Coll_Embed_Embed();
         a1.setId(1);
         a1.setAge(1);
         a1.setName("name" + 1);
         a1.setEmbeds(embedList);
-        
+
         em.persist(a1);
         tran.begin();
         em.flush();
@@ -3087,7 +3087,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         a1.addEmbed(embed1);
         tran.commit();
         em.clear();
-        
+
         //find
         EntityA_Coll_Embed_Embed findA = em.find(EntityA_Coll_Embed_Embed.class, 1);
         assertEquals(6, findA.getEmbeds().size());
@@ -3101,7 +3101,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         getLog().trace("testDefaultNameForElementCollection() - entered");
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
-        tran.begin(); 
+        tran.begin();
         A a = new A();
         a.setId("1");
         Embed embed = new Embed();
@@ -3121,16 +3121,16 @@ public class TestEmbeddable extends SQLListenerTestCase {
             if (sqlStr.toUpperCase().indexOf("A_EMBEDS") != -1) {
                 found = true;
                 break;
-            } 
+            }
         }
         assertTrue(found);
-        
+
         found = false;
         for (String sqlStr : sql) {
             if (sqlStr.toUpperCase().indexOf("VALUE") != -1) {
                 found = true;
                 break;
-            } 
+            }
         }
         assertTrue(found);
         em.close();

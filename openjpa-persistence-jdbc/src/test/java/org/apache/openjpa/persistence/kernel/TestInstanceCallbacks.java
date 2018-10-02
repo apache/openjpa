@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -200,7 +200,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
             + pm.getObjectId(pc), pc.preStoreCalled);
     }
 
-    /* 
+    /*
     // no JPA equivalent
 
     public void testDetachAttach()
@@ -212,13 +212,13 @@ public class TestInstanceCallbacks extends BaseKernelTest {
         pc = (DetachAttachEvent) pm.detach(pc);
         assertDetachEvents(new String[]{ "PRED4", "POSTD4" });
         endEm(pm,());
-        
+
         assertTrue(pm.isDetached(pc));
-        
+
         pm = getPM();
         startTx(pm,());
         //FIXME jthomas
-        
+
 //        pm.addInstanceLifecycleListener(new CreateLifecycleListener() {
 //            public void postCreate(InstanceLifecycleEvent ev) {
 //                fail("No post create necessary");
@@ -229,7 +229,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
         endTx(pm,());
         endEm(pm,());
     }
-    
+
     public void testDetachAttachRelations() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm,());
@@ -243,7 +243,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
         endEm(pm,());
         assertDetachEvents(
                 new String[]{ "PRED2", "PRED4", "POSTD2", "POSTD4" });
-        
+
         pm = getPM();
         startTx(pm,());
         pm.persist(pc);
@@ -252,7 +252,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
         rollbackTx(pm,());
         endEm(pm,());
     }
-    
+
     private void assertDetachEvents(String[] expected) {
         Collection events = DetachAttachEvent.EVENTS;
         if (expected.length != events.size()) {
@@ -275,7 +275,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
             fail("Excess events fired:" + events);
         DetachAttachEvent.EVENTS.clear();
     }
-    
+
     private Object createDetachableId(int field) {
         OpenJPAEntityManager pm = getPM();
         startTx(pm,());

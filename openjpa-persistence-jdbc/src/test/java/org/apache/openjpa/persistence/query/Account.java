@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -39,7 +39,7 @@ public class Account {
 
     @ManyToOne
     private Customer cust;
-    
+
     private String name;
 
     public long getId() {
@@ -69,11 +69,11 @@ public class Account {
     public void setLoan(Integer loan) {
         this.loan = loan;
     }
-    
+
     public Customer getCustomer() {
         return cust;
     }
-    
+
     public void setCustomer(Customer customer) {
         this.cust = customer;
     }

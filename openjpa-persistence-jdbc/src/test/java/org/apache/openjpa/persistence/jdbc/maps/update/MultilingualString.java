@@ -51,11 +51,11 @@ public class MultilingualString {
     private Map<String, LocalizedString> map = new HashMap<String, LocalizedString>();
 
     public MultilingualString() {}
-    
+
     public MultilingualString(String lang, String text) {
         setText(lang, text);
     }
-    
+
     public long getId() {
         return id;
     }

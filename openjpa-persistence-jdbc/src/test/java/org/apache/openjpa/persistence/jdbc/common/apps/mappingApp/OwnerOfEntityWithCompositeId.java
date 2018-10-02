@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
@@ -74,43 +74,43 @@ import javax.persistence.*;
 @Entity
 @Table(name="OWNER_OF_COMPOSITE_ID")
 public class OwnerOfEntityWithCompositeId {
-	
+
 	private String                 name;
 	private EntityWithCompositeId  relation;
-	
+
 	public OwnerOfEntityWithCompositeId() {
 		super();
 	}
-	
+
 	public OwnerOfEntityWithCompositeId (String name)
 	{
 		setName (name);
 	}
-	
+
 	@Id
 	@Column(name="NAME")
-	public String getName () 
+	public String getName ()
 	{
 		return name;
 	}
-	
+
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumns({
 		@JoinColumn(name="RELATION_ID",referencedColumnName="ID"),
 		@JoinColumn(name="RELATION_NAME", referencedColumnName="NAME")
 	})
-	
+
 	public EntityWithCompositeId getRelation()
 	{
 		return relation;
 	}
-	
-	
+
+
 	public void setName (String name)
 	{
 		this.name = name;
 	}
-	
+
 	public void setRelation (EntityWithCompositeId relation)
 	{
 		this.relation = relation;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.xmlstore;
 
@@ -81,7 +81,7 @@ public class XMLFileHandler {
     public Collection load(ClassMetaData meta) {
         File f = getFile(meta);
         if (!(AccessController.doPrivileged(
-            J2DoPrivHelper.existsAction(f))).booleanValue() || 
+            J2DoPrivHelper.existsAction(f))).booleanValue() ||
             (AccessController.doPrivileged(
             J2DoPrivHelper.lengthAction(f))).longValue() == 0)
             return Collections.EMPTY_SET;
@@ -534,7 +534,7 @@ public class XMLFileHandler {
 
                 case JavaTypes.OBJECT:
                 case JavaTypes.OID:
-                    // convert the chars into bytes, and run them through an 
+                    // convert the chars into bytes, and run them through an
                     // ObjectInputStream in order to get the serialized object
                     byte[] bytes = Base16Encoder.decode(str);
                     ByteArrayInputStream bais = new ByteArrayInputStream(bytes);

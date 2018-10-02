@@ -41,7 +41,7 @@ public class Task {
     @OneToMany(mappedBy = "task", cascade = { CascadeType.MERGE,
         CascadeType.PERSIST })
     private Collection<Story> stories;
-    
+
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     private Employee employee;
 
@@ -71,5 +71,5 @@ public class Task {
 
     public int getVersion() {
         return version;
-    } 
+    }
 }

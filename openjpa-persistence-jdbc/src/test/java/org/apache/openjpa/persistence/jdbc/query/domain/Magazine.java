@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
@@ -24,9 +24,9 @@ import java.util.Date;
 import javax.persistence.*;
 
 /**
- * Simple persistent entity as a target of bi-directional one-to-one 
+ * Simple persistent entity as a target of bi-directional one-to-one
  * association.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -38,14 +38,14 @@ public class Magazine {
 	private long id;
 
 	private String name;
-	
+
 	@OneToOne
 	private Publisher publisher;
 
 	private Date datePublished;
 
 	private Timestamp tsPublished;
-	
+
 	public String getName() {
 		return name;
 	}
@@ -81,5 +81,5 @@ public class Magazine {
 	public void setTsPublished(Timestamp tsPublished) {
 		this.tsPublished = tsPublished;
 	}
-	
+
 }

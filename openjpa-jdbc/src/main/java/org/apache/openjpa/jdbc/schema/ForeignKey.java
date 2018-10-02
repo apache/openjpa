@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -73,7 +73,7 @@ public class ForeignKey
      */
     public static final int ACTION_DEFAULT = 5;
 
-    private static final Localizer _loc = 
+    private static final Localizer _loc =
         Localizer.forPackage(ForeignKey.class);
 
     private DBIdentifier _pkTableName = DBIdentifier.NULL;
@@ -187,17 +187,17 @@ public class ForeignKey
     }
 
     /**
-     * Helper to calculate whether this foreign key depends on auto-assigned 
+     * Helper to calculate whether this foreign key depends on auto-assigned
      * columns.  Recurses appropriately if the primary key columns this key
      * joins to are themselves members of a foreign key that is dependent on
-     * auto-assigned columns.  Caches calculated auto-assign value as a side 
+     * auto-assigned columns.  Caches calculated auto-assign value as a side
      * effect.
      *
      * @param seen track seen foreign keys to prevent infinite recursion in
      * the case of foreign key cycles
      */
     private boolean isPrimaryKeyAutoAssigned(List seen) {
-        if (_autoAssign != null) 
+        if (_autoAssign != null)
             return _autoAssign.booleanValue();
 
         Column[] cols = getPrimaryKeyColumns();
@@ -755,7 +755,7 @@ public class ForeignKey
       }
       return false;
     }
-    
+
     private static boolean match(Column[] cols, Column[] fkCols) {
         if (cols.length != fkCols.length)
             return false;
@@ -780,7 +780,7 @@ public class ForeignKey
                 return false;
         return true;
     }
-    
+
     /**
      * Return the name of the foreignkey constraint as defined in the database.
      * @deprecated
@@ -795,8 +795,8 @@ public class ForeignKey
         DBIdentifier retVal = DBIdentifier.NULL;
         try{
             Schema schema = getTable().getSchema();
-            ForeignKey[] fks = dbdict.getImportedKeys(conn.getMetaData(), 
-                DBIdentifier.newCatalog(conn.getCatalog()), schema.getIdentifier(), 
+            ForeignKey[] fks = dbdict.getImportedKeys(conn.getMetaData(),
+                DBIdentifier.newCatalog(conn.getCatalog()), schema.getIdentifier(),
                 getTable().getIdentifier(), conn, false);
             for ( int i=0; i< fks.length; i++) {
                 Table localtable = schema.getTable(fks[i].getTableIdentifier());
@@ -813,10 +813,10 @@ public class ForeignKey
                     fkTemp.setDeleteAction(fks[i].getDeleteAction());
                 }
                 if (fks[i].getColumns() == null || fks[i].getColumns().length == 0) {
-                    // Singular column foreign key 
+                    // Singular column foreign key
                     if( ! fkTemp.containsColumn(
                         localtable.getColumn(fks[i].getColumnIdentifier())))
-                    fkTemp.join(localtable.getColumn(fks[i].getColumnIdentifier()), 
+                    fkTemp.join(localtable.getColumn(fks[i].getColumnIdentifier()),
                         pkTable.getColumn(fks[i].getPrimaryKeyColumnIdentifier()));
                 } else {
                     // Add the multi-column foreign key, joining local and pk columns in
@@ -834,7 +834,7 @@ public class ForeignKey
                     for (int j = 0; j < locCols.length; j++) {
                         if( ! fkTemp.containsColumn(
                             localtable.getColumn(locCols[j].getIdentifier()))) {
-                            fkTemp.join(localtable.getColumn(locCols[j].getIdentifier()), 
+                            fkTemp.join(localtable.getColumn(locCols[j].getIdentifier()),
                                 pkTable.getColumn(pkCols[j].getIdentifier()));
                         }
                     }
@@ -880,9 +880,9 @@ public class ForeignKey
             join(keyCols[0], keyCols[1]);
         }
     }
-    
+
     /*
-     * Creates the local and primary key columns for a name-based fk. 
+     * Creates the local and primary key columns for a name-based fk.
      * @return Column[] element 0 is local column
      *                  element 1 is the primary key in another table.
      */
@@ -894,7 +894,7 @@ public class ForeignKey
             fkCol.setTableIdentifier(fk.getTableIdentifier());
             fkCol.setSchemaIdentifier(fk.getSchemaIdentifier());
         }
-        
+
         Column pkCol = null;
         if (!DBIdentifier.isEmpty(fk.getPrimaryKeyColumnIdentifier())) {
             pkCol = new Column();
@@ -904,13 +904,13 @@ public class ForeignKey
         }
         return new Column[] { fkCol, pkCol };
     }
-    
+
     /*
-     * ForeignKey utility class which determines equality based upon the 
-     * non-column state of the keys.  
+     * ForeignKey utility class which determines equality based upon the
+     * non-column state of the keys.
      */
     public static class FKMapKey {
-        
+
         private ForeignKey _fk;
 
         public FKMapKey(ForeignKey fk) {
@@ -923,7 +923,7 @@ public class ForeignKey
         public int hashCode() {
             return getFk().getIdentifier() != null ? getFk().getIdentifier().hashCode() : getFk().hashCode();
         }
-        
+
         public boolean equals(Object fkObj) {
             if (fkObj == this) {
                 return true;

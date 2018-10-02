@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
@@ -23,20 +23,20 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 
-/** This simple domain class without any relationship is for testing basic 
+/** This simple domain class without any relationship is for testing basic
  * SQL Result Set mapping functionality.
  * This class uses Application Identity.
  * The annotation specified herein examplifies test cases of accessing
- * with or without identity fields, aliased column names etc. 
- */ 
+ * with or without identity fields, aliased column names etc.
+ */
 @SqlResultSetMappings(value = {
 	/**
 	 *  This mapping is the same as the native query that
 	 *  takes a class argument.
 	 *  <code>SELECT id,name,price FROM ITEM WHERE name='WINE'</code>
-	 */ 		
-	@SqlResultSetMapping(name = "MappingEquivalentToClassQuery", 
-		entities = { @EntityResult(entityClass = SQLMapItem.class) 
+	 */
+	@SqlResultSetMapping(name = "MappingEquivalentToClassQuery",
+		entities = { @EntityResult(entityClass = SQLMapItem.class)
 	}),
 
 	/**
@@ -44,9 +44,9 @@ import javax.persistence.*;
 	 * but the query specifies aliases for the projection columns.
 	 *  <code>SELECT id AS ITEM_ID,name AS ITEM_NAME FROM ITEM
 	 *  WHERE NAME='WINE'</code>
-	 */				
-	@SqlResultSetMapping(name = "MappingWithAliasedColumnName", 
-		entities = { @EntityResult(entityClass = SQLMapItem.class, 
+	 */
+	@SqlResultSetMapping(name = "MappingWithAliasedColumnName",
+		entities = { @EntityResult(entityClass = SQLMapItem.class,
 			fields = {
 				@FieldResult(name = "id",   column = "ITEM_ID"),
                 @FieldResult(name = "name", column = "ITEM_NAME") })
@@ -54,8 +54,8 @@ import javax.persistence.*;
 
 	/**
 	 * This mapping specifes only few fields of the application class.
-	 * 
-	 */ 		
+	 *
+	 */
 	@SqlResultSetMapping(name="MappingWithPartialFields",
 		entities={@EntityResult(entityClass=SQLMapItem.class,
 			fields={
@@ -68,7 +68,7 @@ import javax.persistence.*;
 			fields={
 				@FieldResult(name="name", column="name")
 				})
-	
+
 		})
 })
 

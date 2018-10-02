@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_29_ex1;
 
@@ -37,11 +37,11 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
     public int numCompany = 2;
     public int numDivisionsPerCo = 2;
     public List rsAllCompany = null;
-    
+
     public int compId = 1;
     public int divId = 1;
     public int vpId = 1;
-    
+
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Company.class,
@@ -59,14 +59,14 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
-    
+
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
-    public void setCandidate(Query q, Class clz) 
+    public void setCandidate(Query q, Class clz)
         throws Exception {
-        org.apache.openjpa.persistence.QueryImpl q1 = 
+        org.apache.openjpa.persistence.QueryImpl q1 =
             (org.apache.openjpa.persistence.QueryImpl) q;
         org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
         org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
@@ -80,7 +80,7 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
         String query = "select KEY(e), e from Company c, " +
             " in (c.organization) e order by c.id";
         Query q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Company.class);
         List rs = q.getResultList();
         Division d = (Division) ((Object[]) rs.get(0))[0];
@@ -89,7 +89,7 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
         query = "select KEY(e), b from Company c, " +
             " in (c.organization) e, in(KEY(e).branches) b order by b";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Company.class);
         rs = q.getResultList();
         String branch = (String) ((Object[]) rs.get(0))[1];
@@ -99,7 +99,7 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
         query = "select ENTRY(e) from Company c, " +
             " in (c.organization) e order by c.id";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Company.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
@@ -110,7 +110,7 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
         query = "select KEY(e), e from Company c " +
             " left join c.organization e order by c.id";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Company.class);
         rs = q.getResultList();
         d = (Division) ((Object[]) rs.get(0))[0];
@@ -120,7 +120,7 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
         query = "select ENTRY(e) from Company c " +
             " left join c.organization e order by c.id";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Company.class);
         rs = q.getResultList();
         me = (Map.Entry) rs.get(0);

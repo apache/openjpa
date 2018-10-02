@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -64,7 +64,7 @@ public class Lit
         return _ptype;
     }
 
-    public Object getValue() { 
+    public Object getValue() {
         return _val;
     }
 
@@ -75,11 +75,11 @@ public class Lit
     public Object getValue(Object[] params) {
         return getValue();
     }
-    
+
     public boolean isRaw() {
         return _isRaw;
     }
-    
+
     public void setRaw(boolean isRaw) {
         _isRaw = isRaw;
     }
@@ -99,10 +99,10 @@ public class Lit
         extends ConstExpState {
 
         public Object sqlValue;
-        public int otherLength; 
-    } 
+        public int otherLength;
+    }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
         LitExpState lstate = (LitExpState) state;
@@ -113,7 +113,7 @@ public class Lit
             lstate.sqlValue = _val;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         LitExpState lstate = (LitExpState) state;
         if (lstate.otherLength > 1) {
@@ -122,7 +122,7 @@ public class Lit
             return;
         } else if (_isRaw) {
             int parseType = getParseType();
-            if (parseType == Literal.TYPE_ENUM) { 
+            if (parseType == Literal.TYPE_ENUM) {
                 StringBuilder value = new StringBuilder();
                 boolean isOrdinal = false;
                 if (lstate.sqlValue instanceof Integer)
@@ -145,7 +145,7 @@ public class Lit
         }
         Object useLiteral = ctx.fetch.getHint(QueryHints.HINT_USE_LITERAL_IN_SQL);
 //        useLiteral = true;
-        boolean useParamToken = useLiteral != null ? !(Boolean)useLiteral : true; 
+        boolean useParamToken = useLiteral != null ? !(Boolean)useLiteral : true;
         sql.appendValue(lstate.sqlValue, lstate.getColumn(index), null, useParamToken);
     }
 }

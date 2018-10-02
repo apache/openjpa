@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -50,13 +50,13 @@ import static org.apache.openjpa.persistence.jest.Constants.MIME_TYPE_JSON;
 /**
  * Marshals a root instance and its persistent closure as JSON object.
  * The closure is resolved against the persistence context that contains the root instance.
- * The JSON format introduces a $id and $ref to address reference that pure JSON does not. 
- * 
+ * The JSON format introduces a $id and $ref to address reference that pure JSON does not.
+ *
  * @author Pinaki Poddar
  *
  */
 public class JSONObjectFormatter implements ObjectFormatter<JSON> {
-    
+
     public String getMimeType() {
         return MIME_TYPE_JSON;
     }
@@ -64,7 +64,7 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
     public void encode(Object obj, JPAServletContext ctx) {
         if (obj instanceof OpenJPAStateManager) {
             try {
-                JSON result = encodeManagedInstance((OpenJPAStateManager)obj, 
+                JSON result = encodeManagedInstance((OpenJPAStateManager)obj,
                     ctx.getPersistenceContext().getMetamodel());
                 PrintWriter writer = ctx.getResponse().getWriter();
                 writer.println(result.toString());
@@ -76,28 +76,28 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
         }
         return;
     }
-    
-    public JSON writeOut(Collection<OpenJPAStateManager> sms, Metamodel model, String title, String desc, 
+
+    public JSON writeOut(Collection<OpenJPAStateManager> sms, Metamodel model, String title, String desc,
         String uri, OutputStream out) throws IOException {
         JSON json = encode(sms,model);
         out.write(json.toString().getBytes());
         return json;
     }
-    
+
     public JSON encode(Collection<OpenJPAStateManager> sms, Metamodel model) {
         return encodeManagedInstances(sms, model);
     }
-    
+
     /**
      * Encodes the given managed instance into a new XML element as a child of the given parent node.
-     * 
+     *
      * @param sm a managed instance, can be null.
      * @param parent the parent node to which the new node be attached.
      */
     private JSON encodeManagedInstance(final OpenJPAStateManager sm, Metamodel model) {
         return encodeManagedInstance(sm, new HashSet<OpenJPAStateManager>(), 0, false, model);
     }
-    
+
     private JSON encodeManagedInstances(final Collection<OpenJPAStateManager> sms, Metamodel model) {
         JSONObject.Array result = new JSONObject.Array();
         for (OpenJPAStateManager sm : sms) {
@@ -105,19 +105,19 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
         }
         return result;
     }
-    
-   
+
+
     /**
      * Encodes the closure of a persistent instance into a XML element.
-     * 
+     *
      * @param sm the managed instance to be encoded. Can be null.
      * @param parent the parent XML element to which the new XML element be added. Must not be null. Must be
-     * owned by a document. 
+     * owned by a document.
      * @param visited the persistent instances that had been encoded already. Must not be null or immutable.
-     * 
-     * @return the new element. The element has been appended as a child to the given parent in this method.  
+     *
+     * @return the new element. The element has been appended as a child to the given parent in this method.
      */
-    private JSONObject encodeManagedInstance(final OpenJPAStateManager sm, final Set<OpenJPAStateManager> visited, 
+    private JSONObject encodeManagedInstance(final OpenJPAStateManager sm, final Set<OpenJPAStateManager> visited,
         int indent, boolean indentPara, Metamodel model) {
         if (visited == null) {
             throw new IllegalArgumentException("null closure for encoder");
@@ -125,20 +125,20 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
         if (sm == null) {
             return null;
         }
-        
+
         boolean ref = !visited.add(sm);
         JSONObject root =  new JSONObject(typeOf(sm), sm.getObjectId(), ref);;
         if (ref) {
             return root;
-        } 
-        
+        }
+
         BitSet loaded = sm.getLoaded();
         StoreContext ctx = (StoreContext)sm.getGenericContext();
         List<Attribute<?, ?>> attrs = MetamodelHelper.getAttributesInOrder(sm.getMetaData(), model);
-            
+
         for (int i = 0; i < attrs.size(); i++) {
             FieldMetaData fmd = ((Members.Member<?, ?>) attrs.get(i)).fmd;
-            if (!loaded.get(fmd.getIndex())) 
+            if (!loaded.get(fmd.getIndex()))
                 continue;
             Object value = sm.fetch(fmd.getIndex());
             switch (fmd.getDeclaredTypeCode()) {
@@ -170,16 +170,16 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
                 case JavaTypes.ENUM:
                          root.set(fmd.getName(),value);
                 break;
-                
+
                 case JavaTypes.PC:
                     if (value == null) {
                         root.set(fmd.getName(), null);
                     } else {
-                        root.set(fmd.getName(),encodeManagedInstance(ctx.getStateManager(value), visited, 
-                            indent+1, false, model)); 
+                        root.set(fmd.getName(),encodeManagedInstance(ctx.getStateManager(value), visited,
+                            indent+1, false, model));
                     }
                     break;
-                    
+
                 case JavaTypes.ARRAY:
                     Object[] values = (Object[])value;
                     value = Arrays.asList(values);
@@ -203,7 +203,7 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
                             if (basic) {
                                 array.add(o);
                             } else {
-                                array.add(encodeManagedInstance(ctx.getStateManager(o), visited, indent+1, true, 
+                                array.add(encodeManagedInstance(ctx.getStateManager(o), visited, indent+1, true,
                                     model));
                             }
                         }
@@ -220,7 +220,7 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
                     if (entries.isEmpty()) {
                         break;
                     }
-                    
+
                     boolean basicKey   = fmd.getElement().getTypeMetaData() == null;
                     boolean basicValue = fmd.getValue().getTypeMetaData() == null;
                     for (Map.Entry<?,?> e : entries) {
@@ -230,18 +230,18 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
                             k = encodeManagedInstance(ctx.getStateManager(k), visited, indent+1, true, model);
                         }
                         if (!basicValue) {
-                            v = encodeManagedInstance(ctx.getStateManager(e.getValue()), visited, 
+                            v = encodeManagedInstance(ctx.getStateManager(e.getValue()), visited,
                                 indent+1, false, model);
                         }
                         map.put(k,v);
                     }
                     break;
-                    
+
                 case JavaTypes.INPUT_STREAM:
                 case JavaTypes.INPUT_READER:
                     root.set(fmd.getName(), streamToString(value));
                     break;
-                    
+
                 case JavaTypes.PC_UNTYPED:
                 case JavaTypes.OBJECT:
                 case JavaTypes.OID:
@@ -250,18 +250,18 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
         }
         return root;
     }
-    
-    
+
+
     String typeOf(OpenJPAStateManager sm) {
         return sm.getMetaData().getDescribedType().getSimpleName();
     }
-    
-    
+
+
     /**
      * Convert the given stream (either an InutStream or a Reader) to a String
      * to be included in CDATA section of a XML document.
-     * 
-     * @param value the field value to be converted. Can not be null 
+     *
+     * @param value the field value to be converted. Can not be null
      */
     String streamToString(Object value) {
         Reader reader = null;

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.simple;
 
@@ -33,13 +33,13 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestFlushBeforeDetach extends SQLListenerTestCase {
 
     private int _id;
-    
+
     public void setUp() {
-      setUp(Item.class,"openjpa.Compatibility", 
+      setUp(Item.class,"openjpa.Compatibility",
                 "default(flushBeforeDetach=false,copyOnDetach=true)");
         persistSampleEntity();
     }
-    
+
     private void persistSampleEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -78,7 +78,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         assertNotSQL("UPDATE ITEM SET.*");
         em.close();
     }
-    
+
     public void testDetachAll() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -92,7 +92,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         assertNotSQL("UPDATE ITEM SET.*");
         em.close();
     }
-    
+
     public void testDetachAllCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

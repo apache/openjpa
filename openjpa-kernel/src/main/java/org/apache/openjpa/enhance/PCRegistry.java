@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance;
 
@@ -43,7 +43,7 @@ public class PCRegistry {
     // map of persistent classes to meta structures; weak so the VM can GC classes
     private static final Map<Class<?>,Meta> _metas = new ConcurrentReferenceHashMap(ReferenceStrength.WEAK,
         ReferenceStrength.HARD);
-    
+
     // register class listeners
     // Weak reference prevents OutOfMemeoryError as described in OPENJPA-2042
     private static final Collection<RegisterClassListener> _listeners =
@@ -193,7 +193,7 @@ public class PCRegistry {
      * @param alias the class alias
      * @param pc an instance of the class, if not abstract
      */
-    public static void register(Class<?> pcClass, String[] fieldNames, Class<?>[] fieldTypes, byte[] fieldFlags, 
+    public static void register(Class<?> pcClass, String[] fieldNames, Class<?>[] fieldTypes, byte[] fieldFlags,
         Class<?> sup, String alias, PersistenceCapable pc) {
         if (pcClass == null)
             throw new NullPointerException();
@@ -214,7 +214,7 @@ public class PCRegistry {
     }
 
     /**
-     * De-Register all metadata associated with the given ClassLoader. 
+     * De-Register all metadata associated with the given ClassLoader.
      * Allows ClassLoaders to be garbage collected.
      *
      * @param cl the ClassLoader
@@ -228,7 +228,7 @@ public class PCRegistry {
             }
         }
     }
-    
+
     /**
      * Returns a collection of class objects of the registered
      * persistence-capable classes.

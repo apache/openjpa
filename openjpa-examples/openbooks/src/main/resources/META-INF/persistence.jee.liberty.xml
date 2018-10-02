@@ -32,19 +32,19 @@
         <class>openbook.domain.LineItem</class>
         <class>openbook.domain.Customer</class>
         <class>openbook.domain.Author</class>
-        
+
         <validation-mode>NONE</validation-mode>
-        
-        <properties>            
-            <property name="openjpa.DataCache"                value="true"/>        
+
+        <properties>
+            <property name="openjpa.DataCache"                value="true"/>
             <property name="openjpa.RemoteCommitProvider"     value="sjvm"/>
             <property name="openjpa.DynamicEnhancementAgent"  value="false"/>
             <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
 
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
             <property name="openjpa.jdbc.QuerySQLCache"       value="true(EnableStatistics=true)"/>
-            
+
         </properties>
     </persistence-unit>
-    
+
 </persistence>

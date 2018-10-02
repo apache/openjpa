@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -24,8 +24,8 @@ import org.apache.openjpa.slice.jdbc.TargetFetchConfiguration;
 /**
  * Extension to Broker to allow access to {@link DistributedStoreManager virtual data store}.
  * The broker manages a single persistence context like a normal {@link Broker}, but the
- * context holds data from multiple databases. 
- * 
+ * context holds data from multiple databases.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -34,7 +34,7 @@ public interface DistributedBroker extends Broker {
      * Gets the distributed store manager used by this receiver.
      */
     DistributedStoreManager getDistributedStoreManager();
-   
+
     /**
      * Gets the covariant fetch configuration that is aware of targets.
      */

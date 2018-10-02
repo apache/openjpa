@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -29,28 +29,28 @@ import junit.framework.TestCase;
 public class TestXMLCaseConversions extends TestCase {
 
     public void testToXMLName() {
-        assertEquals("easy-xml-conversion", 
+        assertEquals("easy-xml-conversion",
             ConfigurationImpl.toXMLName("easyXmlConversion"));
-        assertEquals("initial-caps", 
+        assertEquals("initial-caps",
             ConfigurationImpl.toXMLName("InitialCaps"));
-        assertEquals("nodash", 
+        assertEquals("nodash",
             ConfigurationImpl.toXMLName("nodash"));
-        assertEquals("anothernodash", 
+        assertEquals("anothernodash",
             ConfigurationImpl.toXMLName("Anothernodash"));
-        assertEquals("multiple-caps", 
+        assertEquals("multiple-caps",
             ConfigurationImpl.toXMLName("MUltipleCaps"));
-        assertEquals("trailing-multi-caps", 
+        assertEquals("trailing-multi-caps",
             ConfigurationImpl.toXMLName("TrailingMultiCAPS"));
-        assertEquals("two-i-nner-caps", 
+        assertEquals("two-i-nner-caps",
             ConfigurationImpl.toXMLName("TwoINnerCaps"));
-        assertEquals("four-inn-er-caps", 
+        assertEquals("four-inn-er-caps",
             ConfigurationImpl.toXMLName("FourINNErCaps"));
-        assertEquals("inner-3-number", 
+        assertEquals("inner-3-number",
             ConfigurationImpl.toXMLName("Inner3Number"));
-        assertEquals("inner-03-number", 
+        assertEquals("inner-03-number",
             ConfigurationImpl.toXMLName("Inner03Number"));
     }
-    
+
     public static void main(String[] args) throws IOException {
         BufferedReader r = new BufferedReader (new FileReader(new File(
                 args[0])));

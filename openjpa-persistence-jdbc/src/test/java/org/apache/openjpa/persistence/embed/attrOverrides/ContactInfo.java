@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
@@ -24,27 +24,27 @@ import java.util.*;
 @Embeddable
 public class ContactInfo {
 	@ManyToOne
-	Address address; 
+	Address address;
 
 	// Bidirectional
 	@ManyToMany
     List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
-    
+
     @Embedded
     EmergencyContactInfo ecInfo;
-    
+
     public List<PhoneNumber> getPhoneNumbers() {
         return phoneNumbers;
     }
-    
+
     public void addPhoneNumber(PhoneNumber phoneNumber) {
         phoneNumbers.add(phoneNumber);
     }
-    
+
     public Address getAddress() {
     	return address;
     }
-  
+
     public void setAddress(Address address) {
     	this.address = address;
     }
@@ -52,7 +52,7 @@ public class ContactInfo {
     public EmergencyContactInfo getEmergencyContactInfo() {
     	return ecInfo;
     }
-  
+
     public void setEmergencyContactInfo(EmergencyContactInfo ecInfo) {
     	this.ecInfo = ecInfo;
     }

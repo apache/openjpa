@@ -19,10 +19,10 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for GBR_Address complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained
  * within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="GBR_Address">
  *   &lt;complexContent>
@@ -37,8 +37,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlRootElement(name = "GBR_Address")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -57,10 +57,10 @@ public class GBRAddress
 
     /**
      * Gets the value of the county property.
-     * 
+     *
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getCounty() {
         return county;
@@ -68,11 +68,11 @@ public class GBRAddress
 
     /**
      * Sets the value of the county property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setCounty(String value) {
         this.county = value;
@@ -80,10 +80,10 @@ public class GBRAddress
 
     /**
      * Gets the value of the postcode property.
-     * 
+     *
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getPostcode() {
         return postcode;
@@ -91,11 +91,11 @@ public class GBRAddress
 
     /**
      * Sets the value of the postcode property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setPostcode(String value) {
         this.postcode = value;

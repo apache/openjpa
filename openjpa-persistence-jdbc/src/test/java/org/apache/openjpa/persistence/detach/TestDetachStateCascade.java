@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Test the various options for openjpa.DetachState with the new DETACH
  * cascade option.
- * 
+ *
  * @author dianner
  * @since 2.0.0
  *
@@ -40,17 +40,17 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     Compatibility compat;
-    
+
     EntityA entityA;
     EntityB entityB;
     EntityC entityC;
     EntityD entityD;
     EntityE entityE;
-    
+
     List<EntityC> list = new ArrayList<EntityC>();
-    
+
     Collection<Object> allEntities = new HashSet<Object>();
-    
+
     public void setUp() throws Exception {
         setUp(org.apache.openjpa.persistence.detach.EntityA.class,
             org.apache.openjpa.persistence.detach.EntityB.class,
@@ -67,7 +67,7 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
         compat.setCascadeWithDetach(false);
         id++;
         create(id);
-        
+
         em.getTransaction().begin();
         em.persist(entityA);
         em.getTransaction().commit();
@@ -79,15 +79,15 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
         entityC = new EntityC(id, "entityC");
         entityD = new EntityD(id, "entityD");
         entityE = new EntityE(id, "entityE");
-        
+
         entityA.setEntityB(entityB);
         entityA.setEntityC(entityC);
         entityA.setEntityD(entityD);
         entityA.setEntityE(entityE);
     }
-    
-    
-    
+
+
+
     /**
      * The default DetachState of LOADED is tested. In this scenario:
      * A is the main entity to be detached
@@ -122,7 +122,7 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
         assertFalse(em.isDetached(eE));
         em.getTransaction().commit();
     }
-    
+
     /**
      * The DetachState of ALL is tested. In this scenario:
      * A is the main entity to be detached.
@@ -153,7 +153,7 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
         assertFalse(em.isDetached(eA.getEntityE()));
         em.getTransaction().commit();
     }
-    
+
     /**
      * The default DetachState of LOADED is tested. In this scenario:
      * A is the main entity to be detached
@@ -188,5 +188,5 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
         assertFalse(em.isDetached(eE));
         em.getTransaction().commit();
     }
-    
+
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache.discrim;
 
@@ -24,13 +24,13 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class ComposedPK implements Serializable {
-    
+
     private static final long serialVersionUID = -7415701271873221026L;
 
     private Short field1;
 
     private Integer field2;
-    
+
     public ComposedPK(){}
 
     public Short getField1() {
@@ -84,5 +84,5 @@ public class ComposedPK implements Serializable {
             return false;
         return true;
     }
-    
+
 }

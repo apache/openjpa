@@ -25,7 +25,7 @@
         <persistence-unit-defaults>
             <description> This is an orm 2.0 element</description>
         </persistence-unit-defaults>
-    </persistence-unit-metadata>    
+    </persistence-unit-metadata>
     <package>
         org.apache.openjpa.persistence.xml
     </package>

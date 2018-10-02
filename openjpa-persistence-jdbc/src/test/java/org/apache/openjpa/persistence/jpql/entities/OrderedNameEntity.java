@@ -31,14 +31,14 @@ public class OrderedNameEntity implements IColumnEntity, java.io.Serializable {
 
     @Id
     private int id;
-    
+
     private String name;
 
     @ManyToMany
     @OrderColumn
     private List <IOrderedEntity> entities;
 
-    
+
     public OrderedNameEntity() {
     }
 

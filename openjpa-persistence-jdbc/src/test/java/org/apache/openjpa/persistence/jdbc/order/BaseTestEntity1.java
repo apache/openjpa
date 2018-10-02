@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Set;
 
 /*
- * Entity used for testing custom column definitions base values.  
+ * Entity used for testing custom column definitions base values.
  */
 public class BaseTestEntity1 {
 
     private int id;
-    
+
     private List<BaseTestElement1> one2Melems;
-        
+
     private List<BaseTestElement1> m2melems;
 
     private Set<BaseTestElement1> collelems;
@@ -64,5 +64,5 @@ public class BaseTestEntity1 {
 
     public int getId() {
         return id;
-    }    
+    }
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -77,8 +77,8 @@ class InstanceofExpression
 
         // if the path represents a relation, get its class indicator and
         // make sure it's joined down to its base type
-        Discriminator discrim = (relMapping == null 
-            || !relMapping.getDescribedType().isAssignableFrom(_cls)) 
+        Discriminator discrim = (relMapping == null
+            || !relMapping.getDescribedType().isAssignableFrom(_cls))
             ? null : relMapping.getDiscriminator();
         ClassMapping mapping = null;
         Joins joins = pathState.joins;
@@ -123,7 +123,7 @@ class InstanceofExpression
         public final Discriminator discrim;
         public final Class rel;
 
-        public InstanceofExpState(Joins joins, ExpState pathState, 
+        public InstanceofExpState(Joins joins, ExpState pathState,
             ClassMapping mapping, Discriminator discrim, Class rel) {
             super(joins);
             this.pathState = pathState;
@@ -133,7 +133,7 @@ class InstanceofExpression
         }
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         // if no class indicator or a final class, just append true or false
         // depending on whether the cast matches the expected type
@@ -152,7 +152,7 @@ class InstanceofExpression
         sel.append(sql, istate.joins);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         InstanceofExpState istate = (InstanceofExpState) state;
         if (istate.discrim != null)

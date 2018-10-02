@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -30,19 +30,19 @@ public class EmbeddableWithRelation {
     @ManyToOne(cascade=CascadeType.ALL)
     private MultipleSameTypedEmbedded rel;
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public MultipleSameTypedEmbedded getRel() { 
-        return rel; 
+    public MultipleSameTypedEmbedded getRel() {
+        return rel;
     }
 
-    public void setRel(MultipleSameTypedEmbedded rel) { 
-        this.rel = rel; 
+    public void setRel(MultipleSameTypedEmbedded rel) {
+        this.rel = rel;
     }
 }

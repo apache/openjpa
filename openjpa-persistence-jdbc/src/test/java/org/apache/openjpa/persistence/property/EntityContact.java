@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.property;
 
@@ -88,11 +88,11 @@ public class EntityContact implements IContact {
     }
 
     public String toString() {
-        return( "org.apache.openjpa.persistence.compatible.EntityContact: " + 
-                " id: " + getId() + 
-                " email: " + getEmail() + 
-                " phone: " + getPhone() + 
-                " type: " + getType() + 
+        return( "org.apache.openjpa.persistence.compatible.EntityContact: " +
+                " id: " + getId() +
+                " email: " + getEmail() +
+                " phone: " + getPhone() +
+                " type: " + getType() +
                 " address: " + getAddress() );
     }
 }

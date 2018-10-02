@@ -33,7 +33,7 @@ import javax.persistence.Table;
 public class Item implements Serializable {
 
     private static final long serialVersionUID = 489786296539819572L;
-    
+
     public int itemId;
     public String itemName;
     public java.math.BigDecimal itemPrice;

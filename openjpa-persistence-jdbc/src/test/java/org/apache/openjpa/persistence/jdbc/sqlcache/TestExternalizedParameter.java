@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
@@ -34,15 +34,15 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * Tests that we can detect if a query is using query parameters for fields whose values are externalized.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestExternalizedParameter extends TestCase {
-    private static String RESOURCE = "META-INF/persistence.xml"; 
+    private static String RESOURCE = "META-INF/persistence.xml";
     private static String UNIT_NAME = "PreparedQuery";
     private static EntityManagerFactory emf;
-    
+
     public void setUp() throws Exception {
         if (emf == null) {
             Properties config = new Properties();
@@ -54,7 +54,7 @@ public class TestExternalizedParameter extends TestCase {
             emf = OpenJPAPersistence.createEntityManagerFactory(UNIT_NAME, RESOURCE, config);
         }
     }
-    
+
     public void testNoFalseAlarmOnExternalizedParameterDetection() {
         String jpql = "select b from Book b where b.title=:title";
         EntityManager em = emf.createEntityManager();
@@ -62,10 +62,10 @@ public class TestExternalizedParameter extends TestCase {
                 .setParameter("title","XYZ")
                 .getResultList());
         assertNotNull(exps);
-        
+
         assertFalse(isUsingExternalizedParameter(exps[0]));
     }
-    
+
     public void testCanDetectExternalizedSingleParameterValue() {
         String jpql = "select b from Book b where b.token=:token";
         EntityManager em = emf.createEntityManager();
@@ -73,10 +73,10 @@ public class TestExternalizedParameter extends TestCase {
                 .setParameter("token","MEDIUM")
                 .getResultList());
         assertNotNull(exps);
-        
+
         assertTrue(isUsingExternalizedParameter(exps[0]));
     }
-    
+
     public void testCanDetectExternalizedMixedParameterValue() {
         String jpql = "select b from Book b where b.token=:token and b.title = :title";
         EntityManager em = emf.createEntityManager();
@@ -85,10 +85,10 @@ public class TestExternalizedParameter extends TestCase {
                 .setParameter("token", "LARGE")
                 .getResultList());
         assertNotNull(exps);
-        
+
         assertTrue(isUsingExternalizedParameter(exps[0]));
     }
-    
+
     public QueryExpressions[] getExpressions(List<?> result) {
         Object userObject = ((ResultList<?>)result).getUserObject();
         if (userObject == null || !userObject.getClass().isArray() || ((Object[])userObject).length != 2)
@@ -98,7 +98,7 @@ public class TestExternalizedParameter extends TestCase {
             return null;
         return ((StoreQuery.Executor)executor).getQueryExpressions();
     }
-    
+
     boolean isUsingExternalizedParameter(QueryExpressions exp) {
         List<FieldMetaData> fmds = exp.getParameterizedFields();
         for (FieldMetaData fmd : fmds) {

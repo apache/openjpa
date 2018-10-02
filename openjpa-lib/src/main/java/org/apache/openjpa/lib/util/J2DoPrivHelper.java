@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -120,34 +120,34 @@ import serp.bytecode.Project;
  * <li>javax.validation.Validator.validate
  * <li>javax.validation.Validation.buildDefaultValidatorFactory
  * </ul>
- * 
+ *
  * If these methods are used, the following sample usage patterns should be
  * followed to ensure proper privilege is granted:
  * <pre>
  * 1) No security risk method call. E.g.
- *  
+ *
  *    private static final String SEP = J2DoPrivHelper.getLineSeparator();
- * 
+ *
  * 2) Methods with no exception thrown. PrivilegedAction is returned from
  *    J2DoPrivHelper.*Action(). E.g.
- *      
+ *
  *    ClassLoader loader = AccessController.doPrivileged(
  *                             J2DoPrivHelper.getClassLoaderAction(clazz));
- *                               
+ *
  *    ClassLoader loader = (ClassLoader) (System.getSecurityManager() == null)
  *                         ? clazz.getClassLoader()
  *                         : AccessController.doPrivileged(
  *                             J2DoPrivHelper.getClassLoaderAction(clazz));
  * 3) Methods with exception thrown. PrivilegedExceptionAction is returned
  *    from J2DoPrivHelper.*Action(). E.g.
- *    
+ *
  *    try {
  *      method = AccessController.doPrivileged(
  *        J2DoPrivHelper.getDeclaredMethodAction(clazz, name, parameterType));
  *    } catch (PrivilegedActionException pae) {
  *      throw (NoSuchMethodException) pae.getException();
  *    }
- *    
+ *
  *    try {
  *      method = (System.getSecurityManager() == null)
  *        ? clazz.getDeclaredMethod(name,parameterType)
@@ -156,8 +156,8 @@ import serp.bytecode.Project;
  *              clazz, name, parameterType));
  *    } catch (PrivilegedActionException pae) {
  *        throw (NoSuchMethodException) pae.getException()
- *    }                               
- * </pre> 
+ *    }
+ * </pre>
  * @author Albert Lee
  */
 
@@ -167,8 +167,8 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return the value of the "line.separator" system property.
-     * 
-     * Requires security policy: 
+     *
+     * Requires security policy:
      *   'permission java.util.PropertyPermission "read";'
      */
     public static String getLineSeparator() {
@@ -185,7 +185,7 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return the value of the "path.separator" system property.
-     * 
+     *
      * Requires security policy:
      *   'permission java.util.PropertyPermission "read";'
      */
@@ -203,7 +203,7 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for aObj.setAccessible().
-     * 
+     *
      * Requires security policy: 'permission java.lang.reflect.ReflectPermission
      * "suppressAccessChecks";'
      */
@@ -219,15 +219,15 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for Class.forName().
-     * 
+     *
      * Notes: doPriv of Class.forName call is required only if the input
      * classloader argument is null. E.g.
-     * 
+     *
      * Class.forName("x", false, Collection.class.getClassLoader());
-     * 
+     *
      * Requires security policy: 'permission java.lang.RuntimePermission
      * "getClassLoader";'
-     * 
+     *
      * @return Class
      */
     public static PrivilegedExceptionAction<Class<?>> getForNameAction(
@@ -242,17 +242,17 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for clazz.getClassloader().
-     * 
+     *
      * Notes: No doPrivilege wrapping is required in the caller if:
      *     "the caller's class loader is not null and the caller's class loader
      *      is not the same as or an ancestor of the class loader for the class
      *      whose class loader is requested". E.g.
-     *      
+     *
      *         this.getClass().getClassLoader();
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *   
+     *
      * @return Classloader
      */
     public static PrivilegedAction<ClassLoader> getClassLoaderAction(
@@ -266,10 +266,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for clazz.getDeclaredField().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "accessDeclaredMembers";'
-     *   
+     *
      * @return Field
      * @exception NoSuchFieldException
      */
@@ -284,10 +284,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for class.getDeclaredFields().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "accessDeclaredMembers";'
-     *   
+     *
      * @return Field[]
      */
     public static PrivilegedAction<Field []> getDeclaredFieldsAction(
@@ -301,16 +301,16 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for clazz.getDeclaredMethod().
-     * 
+     *
      * Requires security policy
      *   'permission java.lang.RuntimePermission "accessDeclaredMembers";'
-     *   
+     *
      * @return Method
      * @exception NoSuchMethodException
      */
     public static PrivilegedExceptionAction<Method>
         getDeclaredMethodAction(
-            final Class<?> clazz, final String name, 
+            final Class<?> clazz, final String name,
             final Class<?>[] parameterTypes) {
         return new PrivilegedExceptionAction<Method>() {
             public Method run() throws NoSuchMethodException {
@@ -321,10 +321,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for clazz.getDeclaredMethods().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "accessDeclaredMembers";'
-     *   
+     *
      * @return Method[]
      */
     public static PrivilegedAction<Method []> getDeclaredMethodsAction(
@@ -338,10 +338,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for clazz.getResource().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     *   
+     *
      * @return URL
      */
     public static PrivilegedAction<URL> getResourceAction(
@@ -355,12 +355,12 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for clazz.newInstance().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *   
+     *
      * @return A new instance of the provided class.
-     * @exception IllegalAccessException 
+     * @exception IllegalAccessException
      * @exception InstantiationException
      */
     public static <T> PrivilegedExceptionAction<T> newInstanceAction(
@@ -373,7 +373,7 @@ public abstract class J2DoPrivHelper {
                     return clazz.newInstance();
                 } else {
                     try {
-                        return (T)clazz.getMethod("newInstance", 
+                        return (T)clazz.getMethod("newInstance",
                             new Class[]{}).invoke(null, new Object[]{});
                     } catch (Throwable t) {
                         throw new InstantiationException(t.toString());
@@ -382,7 +382,7 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
-    
+
     /**
      * Return a PrivilegeAction object for class.getProtectionDomain().
      *
@@ -402,10 +402,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for loader.getParent().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *   
+     *
      * @return ClassLoader
      */
     public static PrivilegedAction<ClassLoader> getParentAction(
@@ -419,10 +419,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for loader.getResource().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     *   
+     *
      * @return URL
      */
     public static PrivilegedAction<URL> getResourceAction(
@@ -436,10 +436,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for loader.getResources().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     *   
+     *
      * @return Enumeration
      * @exception IOException
      */
@@ -455,10 +455,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for ClassLoader.getSystemClassLoader().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *   
+     *
      * @return ClassLoader
      */
     public static PrivilegedAction<ClassLoader>
@@ -472,10 +472,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.delete().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "delete";'
-     * 
+     *
      * @return Boolean
      */
     public static PrivilegedAction<Boolean> deleteAction(final File f) {
@@ -488,10 +488,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.exists().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     *   
+     *
      * @return Boolean
      */
     public static PrivilegedAction<Boolean> existsAction(final File f) {
@@ -508,7 +508,7 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.deleteOnExit().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "delete";'
      */
@@ -524,10 +524,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.getAbsoluteFile().
-     * 
+     *
      * Requires security policy:
      *   'permission java.util.PropertyPermission "read";'
-     * 
+     *
      * @return File
      */
     public static PrivilegedAction<File> getAbsoluteFileAction(
@@ -541,10 +541,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.getAbsolutePath().
-     * 
+     *
      * Requires security policy:
      *   'permission java.util.PropertyPermission "read";'
-     *   
+     *
      * @return String
      */
     public static PrivilegedAction<String>
@@ -558,10 +558,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for f.getCanonicalPath().
-     * 
+     *
      * Requires security policy:
      *   'permission java.util.PropertyPermission "read";'
-     *   
+     *
      * @return String
      * @exception IOException
      */
@@ -577,10 +577,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.isDirectory().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     * 
+     *
      * @return Boolean
      */
     public static PrivilegedAction<Boolean>
@@ -594,10 +594,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.isFile().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     * 
+     *
      * @return Boolean
      */
     public static PrivilegedAction<Boolean> isFileAction(final File f) {
@@ -610,10 +610,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.length().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     *   
+     *
      * @return Long
      */
     public static PrivilegedAction<Long> lengthAction(final File f) {
@@ -626,10 +626,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.listFiles().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     * 
+     *
      * @return File[]
      */
     public static PrivilegedAction<File []>
@@ -643,10 +643,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.mkdirs().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "write";'
-     *   
+     *
      * @return Boolean
      */
     public static PrivilegedAction<Boolean> mkdirsAction(final File f) {
@@ -659,10 +659,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for f.renameTo().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "write";'
-     *   
+     *
      * @return Boolean
      */
     public static PrivilegedAction<Boolean> renameToAction(
@@ -676,10 +676,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for f.toURL().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     *   
+     *
      * @return URL
      * @throws MalformedURLException
      */
@@ -695,10 +695,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for new FileInputStream().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     * 
+     *
      * @return FileInputStream
      * @throws FileNotFoundException
      */
@@ -714,10 +714,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for new FileOutputStream().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "write";'
-     * 
+     *
      * @return FileOutputStream
      * @throws FileNotFoundException
      */
@@ -733,10 +733,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for new FileOutputStream().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "write";'
-     * 
+     *
      * @return FileOutputStream
      * @throws FileNotFoundException
      */
@@ -752,10 +752,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for InetAdress.getByName().
-     * 
+     *
      * Requires security policy:
      *   'permission java.net.SocketPermission "connect";'
-     * 
+     *
      * @return InetAddress
      * @throws UnknownHostException
      */
@@ -770,10 +770,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for new Socket().
-     * 
+     *
      * Requires security policy:
      *   'permission java.net.SocketPermission "connect";'
-     * 
+     *
      * @return Socket
      * @throws IOException
      */
@@ -788,10 +788,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for new ServerSocket().
-     * 
+     *
      * Requires security policy:
      *   'permission java.net.SocketPermission "listen";'
-     * 
+     *
      * @return ServerSocket
      * @throws IOException
      */
@@ -807,10 +807,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for ServerSocket.accept().
-     * 
+     *
      * Requires security policy:
      *   'permission java.net.SocketPermission "listen";'
-     * 
+     *
      * @return Socket
      * @throws IOException
      */
@@ -825,10 +825,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for System.getProperties().
-     * 
+     *
      * Requires security policy:
      *   'permission java.util.PropertyPermission "read";'
-     *   
+     *
      * @return Properties
      */
     public static PrivilegedAction<Properties> getPropertiesAction() {
@@ -841,10 +841,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for System.getProperty().
-     * 
+     *
      * Requires security policy:
      *   'permission java.util.PropertyPermission "read";'
-     *   
+     *
      * @return String
      */
     public static PrivilegedAction<String> getPropertyAction(
@@ -855,13 +855,13 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
-    
+
     /**
      * Return a PrivilegeAction object for System.getProperty().
-     * 
+     *
      * Requires security policy:
      *   'permission java.util.PropertyPermission "read";'
-     *   
+     *
      * @return String
      */
     public static PrivilegedAction<String> getPropertyAction(
@@ -876,10 +876,10 @@ public abstract class J2DoPrivHelper {
     /**
      * Return a PrivilegeAction object for Thread.currentThread
      *   .getContextClassLoader().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *   
+     *
      * @return ClassLoader
      */
     public static PrivilegedAction<ClassLoader>
@@ -894,10 +894,10 @@ public abstract class J2DoPrivHelper {
     /**
      * Return a PrivilegeAction object for Thread.currentThread
      *   .setContextClassLoader().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "setContextClassLoader";'
-     *   
+     *
      * @return ClassLoader
      */
     public static PrivilegedAction<Boolean>
@@ -912,11 +912,11 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedAction object for new Thread().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "modifyThreadGroup";'
      *   'permission java.lang.RuntimePermission "modifyThread";'
-     * 
+     *
      * @return Thread
      */
     public static PrivilegedAction<Thread> newDaemonThreadAction(
@@ -932,10 +932,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for url.openStream().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     * 
+     *
      * @return InputStream
      * @throws IOException
      */
@@ -950,10 +950,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object con.getContent().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     * 
+     *
      * @return Object
      * @throws IOException
      */
@@ -968,10 +968,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegedExceptionAction object for new ZipFile().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     * 
+     *
      * @return ZipFile
      * @throws IOException
      */
@@ -984,13 +984,13 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
-    
+
     /**
      * Return a PrivilegedExceptionAction object for con.getJarFile().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     * 
+     *
      * @return JarFile
      * @throws IOException
      */
@@ -1002,13 +1002,13 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
-    
+
     /**
      * Return a PrivilegedExceptionAction object for con.getJarEntry().
-     * 
+     *
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
-     * 
+     *
      * @return JarEntry
      * @throws IOException
      */
@@ -1019,14 +1019,14 @@ public abstract class J2DoPrivHelper {
                 return con.getJarEntry();
             }
         };
-    }   
+    }
 
     /**
      * Return a PrivilegeAction object for new serp.bytecode.Code().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *   
+     *
      * @return serp.bytecode.Code
      */
     public static PrivilegedAction<Code> newCodeAction() {
@@ -1039,10 +1039,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for new TemporaryClassLoader().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "createClassLoader";'
-     *   
+     *
      * @return TemporaryClassLoader
      */
     public static PrivilegedAction<TemporaryClassLoader>
@@ -1057,10 +1057,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for new MultiClassLoader().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "createClassLoader";'
-     *   
+     *
      * @return MultiClassLoader
      */
     public static PrivilegedAction<MultiClassLoader> newMultiClassLoaderAction() {
@@ -1073,10 +1073,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for new BCClassLoader().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "createClassLoader";'
-     *   
+     *
      * @return BCClassLoader
      */
     public static PrivilegedAction<BCClassLoader> newBCClassLoaderAction(
@@ -1096,13 +1096,13 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
-    
+
     /**
      * Return a PrivilegeAction object for BCClass.getFields().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *   
+     *
      * @return BCField
      */
     public static PrivilegedAction<BCField []> getBCClassFieldsAction(
@@ -1116,10 +1116,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for FieldInstruction.getField().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *   
+     *
      * @return BCField
      */
     public static PrivilegedAction<BCField> getFieldInstructionFieldAction
@@ -1134,10 +1134,10 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for Project.loadClass().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "createClassLoader";'
-     *   
+     *
      * @return BCClass
      */
     public static PrivilegedAction<BCClass> loadProjectClassAction(
@@ -1148,13 +1148,13 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
-    
+
     /**
      * Return a PrivilegeAction object for Project.loadClass().
-     * 
+     *
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *   
+     *
      * @return BCClass
      */
     public static PrivilegedAction<BCClass> loadProjectClassAction(
@@ -1165,7 +1165,7 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
-    
+
     /**
      * Return a PrivilegeAction object for AnnotatedElement.getAnnotations().
      *
@@ -1221,7 +1221,7 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
-    
+
     /**
      * Return a PrivilegedAction object for
      *   AnnotatedElement.getAnnotation().
@@ -1233,7 +1233,7 @@ public abstract class J2DoPrivHelper {
      */
     public static <T extends Annotation> PrivilegedAction<T>
         getAnnotationAction(
-        final AnnotatedElement element, 
+        final AnnotatedElement element,
         final Class<T> annotationClazz) {
         return new PrivilegedAction<T>() {
             public T run() {
@@ -1241,10 +1241,10 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
-    
+
     /**
      * Return a PrivilegeAction object for javax.validation.Validator.validate().
-     * 
+     *
      * Requires security policy: 'permission java.lang.RuntimePermission "accessDeclaredMemeber";'
      */
     public static <T> PrivilegedAction<Set<ConstraintViolation<T>>> validateAction(
@@ -1258,7 +1258,7 @@ public abstract class J2DoPrivHelper {
 
     /**
      * Return a PrivilegeAction object for javax.validation.Validation.buildDefaultValidatorFactory().
-     * 
+     *
      * Requires security policy: 'permission java.lang.RuntimePermission "createClassLoader";'
      */
     public static <T> PrivilegedAction<ValidatorFactory> buildDefaultValidatorFactoryAction() {

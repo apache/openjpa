@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
@@ -33,13 +33,13 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 public class TestJPQLScalarExpressions extends AbstractTestCase {
 
     private int userid1, userid2, userid3, userid4, userid5, userid6;
-    
+
     /**
-     * Some databases trim the whitespace from a string upon insert. Store Shannon's name for 
+     * Some databases trim the whitespace from a string upon insert. Store Shannon's name for
      * asserts later in the testcase.
      */
     private String expectedShannonName = "Shannon ";
-    
+
     public TestJPQLScalarExpressions(String name) {
         super(name, "jpqlclausescactusapp");
     }
@@ -76,9 +76,9 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         userid5 = user5.getUserid();
         em.persist(user6);
         userid6 = user6.getUserid();
-        
+
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
-        if(dict instanceof SybaseDictionary) { 
+        if(dict instanceof SybaseDictionary) {
             expectedShannonName="Shannon";
         }
         endTx(em);
@@ -142,7 +142,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " FROM CompUser e ORDER BY e.name DESC";
         List rs = em.createQuery(query).getResultList();
         Object[] result = (Object[]) rs.get(rs.size()-1);
-        assertEquals("the name is not famzy", "Famzy", result[0]);        
+        assertEquals("the name is not famzy", "Famzy", result[0]);
         assertEquals("Unknown", result[1]);
 
         endTx(em);
@@ -162,7 +162,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         Object[] result = (Object[]) rs.get(1);
         assertEquals("the name is not shannon ", expectedShannonName, result[0]);
         assertNull("is not null", result[1]);
-        
+
         endTx(em);
         endEm(em);
     }
@@ -218,40 +218,40 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         rs = em.createQuery(query).getResultList();
 
         result = (Object[]) rs.get(rs.size()-1);
-        
+
         if (result[1] instanceof String)
             assertEquals(result[1], "true");
-        else    
+        else
             assertEquals(result[1], 1);
-        
+
 
         startTx(em);
         String update = "update CompUser c set c.creditRating = " +
             " CASE c.age WHEN 35 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
-            "CompUser$CreditRating.POOR" + 
-            " WHEN 11 THEN " + 
-            "org.apache.openjpa.persistence.common.apps." + 
+            "CompUser$CreditRating.POOR" +
+            " WHEN 11 THEN " +
+            "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.GOOD" +
-            " ELSE " + 
-            "org.apache.openjpa.persistence.common.apps." + 
+            " ELSE " +
+            "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.EXCELLENT" +
             " END ";
         int updateCount = em.createQuery(update).executeUpdate();
         assertEquals("the result is not 6", 6, updateCount);
 
         /*
-        //Derby fails but DB2 works 
+        //Derby fails but DB2 works
         String update2 = "update CompUser c set c.creditRating = " +
             " (select " +
-            " CASE c1.age WHEN 10 THEN " + 
-            "org.apache.openjpa.persistence.common.apps." + 
-              CompUser$CreditRating.POOR" + 
-            " WHEN 19 THEN " + 
-            "org.apache.openjpa.persistence.common.apps." + 
+            " CASE c1.age WHEN 10 THEN " +
+            "org.apache.openjpa.persistence.common.apps." +
+              CompUser$CreditRating.POOR" +
+            " WHEN 19 THEN " +
+            "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.GOOD " +
-            " ELSE " + 
-            "org.apache.openjpa.persistence.common.apps." + 
+            " ELSE " +
+            "org.apache.openjpa.persistence.common.apps." +
             CompUser$CreditRating.EXCELLENT " +
             " END " +
             " from CompUser c1" +
@@ -288,7 +288,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
         int result = em.createQuery(update).executeUpdate();
         assertEquals("the result is not 6", 6, result);
-        
+
         String query2 = "SELECT e.name, e.age+1 as cage, " +
             "CASE WHEN e.address.country = 'USA' " +
             " THEN 'United-States' " +
@@ -298,17 +298,17 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         List rs2 = em.createQuery(query2).getResultList();
         Object[] result2 = (Object[]) rs2.get(rs2.size()-1);
         assertEquals("the name is not seetha", "Seetha", result2[0]);
-        assertEquals("the country is not 'Non United-States'", 
+        assertEquals("the country is not 'Non United-States'",
             "Non United-States", result2[2]);
-        
+
         String query3 = " select e.name, " +
             "CASE WHEN e.age = 11 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
-            "CompUser$CreditRating.POOR" + 
-            " WHEN e.age = 35 THEN " + 
+            "CompUser$CreditRating.POOR" +
+            " WHEN e.age = 35 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.GOOD" +
-            " ELSE " + 
+            " ELSE " +
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.EXCELLENT" +
             " END FROM CompUser e ORDER BY e.age";
@@ -319,40 +319,40 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
         String update2 = "update CompUser c set c.creditRating = " +
             " CASE WHEN c.name ='Jacob' THEN " +
-            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.POOR" + 
-            " WHEN c.name = 'Ugo' THEN " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.POOR" +
+            " WHEN c.name = 'Ugo' THEN " +
             "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.GOOD " +
-            " ELSE " + 
+            " ELSE " +
             "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.EXCELLENT " +
             " END ";
         int updateCount = em.createQuery(update2).executeUpdate();
         assertEquals("the result is not 6", 6, updateCount);
-        
-        
+
+
         String update3 = "update CompUser c set c.creditRating = " +
             " CASE WHEN c.age > 30 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
-            "CompUser$CreditRating.POOR" + 
-            " WHEN c.age < 15 THEN " + 
+            "CompUser$CreditRating.POOR" +
+            " WHEN c.age < 15 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.GOOD " +
-            " ELSE " + 
+            " ELSE " +
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.EXCELLENT " +
-            " END "; 
+            " END ";
         updateCount = em.createQuery(update3).executeUpdate();
         assertEquals("the result is not 6", 6, updateCount);
-        
-        String query4 = "select e.name, e.creditRating from CompUser e " + 
+
+        String query4 = "select e.name, e.creditRating from CompUser e " +
             "where e.creditRating = " +
             "(select " +
-            "CASE WHEN e1.age = 11 THEN " + 
+            "CASE WHEN e1.age = 11 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
-            "CompUser$CreditRating.POOR" + 
-            " WHEN e1.age = 35 THEN " + 
+            "CompUser$CreditRating.POOR" +
+            " WHEN e1.age = 35 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.GOOD" +
-            " ELSE " + 
+            " ELSE " +
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.EXCELLENT" +
             " END " +
@@ -364,32 +364,32 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         assertEquals("the credit rating is not 'EXCELLENT'", "EXCELLENT",
             ((org.apache.openjpa.persistence.common.apps.CompUser.CreditRating)
             result4[1]).name());
-        
+
         String update4 = "update CompUser c set c.creditRating = " +
             " CASE c.age WHEN 35 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
-            "CompUser$CreditRating.POOR" + 
-            " WHEN 11 THEN " + 
+            "CompUser$CreditRating.POOR" +
+            " WHEN 11 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.GOOD " +
-            " ELSE " + 
+            " ELSE " +
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.EXCELLENT " +
-            " END "; 
+            " END ";
         result = em.createQuery(update4).executeUpdate();
         assertEquals("the result is not 6", 6, result);
 
-        // Derby fails but DB2 works 
+        // Derby fails but DB2 works
         /*
         String update4 = "update CompUser c set c.creditRating = " +
             " (select " +
-            " CASE c1.age WHEN 10 THEN " + 
+            " CASE c1.age WHEN 10 THEN " +
             "org.apache.openjpa.persistence.common.apps.
-            CompUser$CreditRating.POOR" + 
-            " WHEN 19 THEN " + 
+            CompUser$CreditRating.POOR" +
+            " WHEN 19 THEN " +
             "org.apache.openjpa.persistence.common.apps
             .CompUser$CreditRating.GOOD" +
-            " ELSE " + 
+            " ELSE " +
             "org.apache.openjpa.persistence.common.apps.
             CompUser$CreditRating.EXCELLENT" +
             " END " +

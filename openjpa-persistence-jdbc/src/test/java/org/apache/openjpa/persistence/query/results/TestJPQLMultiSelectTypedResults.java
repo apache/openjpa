@@ -89,7 +89,7 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
         em.persist(s);
         Person person = new Person("Test Result Shape");
         em.persist(person);
-        
+
         Foo foo = new Foo(100L, "Test Foo");
         Bar bar = new Bar(200L, "Test Bar");
         foo.setBar(bar);
@@ -117,7 +117,7 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
             assertTrue("1-st element " + row[1].getClass() + " is not Bar", row[1] instanceof Bar);
             assertTrue("2-nd element " + row[2].getClass() + " is not FooBar", row[2] instanceof FooBar);
         }
-        
+
     }
     public void testMultipleConstructorMixWithMultiSelect() {
         String query = "SELECT NEW Person(p.name), p.id, NEW Person(p.name), p.name FROM Person p ORDER BY p.name";
@@ -127,12 +127,12 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
         assertTrue(!result.isEmpty());
         for (Object[] row : result) {
             assertEquals(4, row.length);
-            
+
             assertEquals(Person.class,  row[0].getClass());
             assertEquals(Integer.class, row[1].getClass());
             assertEquals(Person.class,  row[2].getClass());
             assertEquals(String.class,  row[3].getClass());
-            
+
             assertEquals(((Person)row[0]).getName(), ((Person)row[2]).getName());
             assertEquals(((Person)row[0]).getName(), row[3]);
         }
@@ -140,7 +140,7 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
     /**
      * Testcase to verify that selecting multiple results in a variety of ways returns the same results. Results are
      * returned via a normal Object [] (JPQL).
-     * 
+     *
      * @throws Exception
      */
     public void testMultiSelect() throws Exception {

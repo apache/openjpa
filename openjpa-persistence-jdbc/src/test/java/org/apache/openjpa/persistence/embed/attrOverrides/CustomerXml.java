@@ -14,37 +14,37 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
 public class CustomerXml {
     protected Integer id;
-    
+
     protected String name;
-    
+
     protected AddressXml address;
-    
+
     public Integer getId() {
     	return id;
     }
-    
+
     public void setId(Integer id) {
     	this.id = id;
     }
-    
+
     public String getName() {
     	return name;
     }
-    
+
     public void setName(String name) {
     	this.name = name;
     }
-    
+
     public AddressXml getAddress() {
     	return address;
     }
-    
+
     public void setAddress(AddressXml address) {
     	this.address = address;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -166,10 +166,10 @@ public class JavaTypes {
             return INPUT_STREAM;
         if (Enum.class.isAssignableFrom(type))
             return ENUM;
-            
+
         return OBJECT;
     }
- 
+
     /**
      * Check the given name against the same set of standard packages used
      * when parsing metadata.
@@ -186,13 +186,13 @@ public class JavaTypes {
         return classForName(name, context, context.getDescribedType(), null,
             loader);
     }
-    
+
     /**
      * Check the given name against the same set of standard packages used
      * when parsing metadata.
-     * 
+     *
      * @param mustExist Whether the supplied loader <b>must</b> be able to load the class. If true no attempt to use a
-     * different classloader will be made. If false the ClassResolver from the configuration will be used. 
+     * different classloader will be made. If false the ClassResolver from the configuration will be used.
      */
     public static Class<?> classForName(String name, ClassMetaData context, ClassLoader loader, boolean mustExist) {
         return classForName(name, context, context.getDescribedType(), null, loader, mustExist);
@@ -217,16 +217,16 @@ public class JavaTypes {
     }
 
      /**
-     * Try to load a class using the provided loader. Optionally tries the 
+     * Try to load a class using the provided loader. Optionally tries the
      * configuration's ClassResolver if the supplied loader cannot find the class.
      *
-     * @param name Name of the class to load. 
+     * @param name Name of the class to load.
      * @param loader ClassLoader to use. If null, the configuration's ClassResolver will be used.
-     * @param mustExist Whether the supplied loader <b>must</b> be able to load the class. If true no attempt to use a 
-     *        different classloader will be made. If false the ClassResolver from the configuration will be used. 
+     * @param mustExist Whether the supplied loader <b>must</b> be able to load the class. If true no attempt to use a
+     *        different classloader will be made. If false the ClassResolver from the configuration will be used.
      */
     public static Class<?> classForName(String name, ValueMetaData context,
-            ClassLoader loader, boolean mustExist) {    	
+            ClassLoader loader, boolean mustExist) {
             return classForName(name,
                 context.getFieldMetaData().getDefiningMetaData(),
                 context.getFieldMetaData().getDeclaringType(), context, loader, mustExist);
@@ -245,7 +245,7 @@ public class JavaTypes {
      * Check the given name against the same set of standard packages used
      * when parsing metadata.
      */
-    private static Class<?> classForName(String name, ClassMetaData meta, Class<?> dec, ValueMetaData vmd, 
+    private static Class<?> classForName(String name, ClassMetaData meta, Class<?> dec, ValueMetaData vmd,
         ClassLoader loader, boolean mustExist) {
         // special case for PersistenceCapable and Object
         if ("PersistenceCapable".equals(name)
@@ -269,20 +269,20 @@ public class JavaTypes {
             cls = CFMetaDataParser.classForName(name, pkg, runtime, loader);
         }
 
-        //OJ-758 start: If the class is still null, as a last/final attempt to 
+        //OJ-758 start: If the class is still null, as a last/final attempt to
         //load the class, check with the ClassResolver to get a loader
-        //and use it to attempt to load the class. 
+        //and use it to attempt to load the class.
         if (cls == null  && !mustExist){
             loader = rep.getConfiguration().getClassResolverInstance().
             getClassLoader(dec, meta.getEnvClassLoader());
             cls = CFMetaDataParser.classForName(name, pkg, runtime, loader);
-        }         	
-        //OJ-758 end  
-    
+        }
+        //OJ-758 end
+
         if (cls == null)
             throw new MetaDataException(_loc.get("bad-class", name,
                 (vmd == null) ? (Object) meta : (Object) vmd));
-        
+
         return cls;
     }
 
@@ -483,10 +483,10 @@ public class JavaTypes {
             Array.set(array, idx, itr.next ());
 		return array;
 	}
-    
+
     /**
      * Determine whether or not the provided Object value is the default for the provided typeCode.
-     * 
+     *
      * For example: If o = Integer(0) and typeCode = JavaTypes.INT, this method will return true.
      */
     public static boolean isPrimitiveDefault(Object o, int typeCode) {

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -103,7 +103,7 @@ public class PessimisticLockManager
         Object sdata, boolean postVersionCheck) {
         // we can skip any already-locked instance regardless of level because
         // we treat all locks the same (though super doesn't).
-        
+
         // only need to lock if not loaded from locking result
         ConnectionInfo info = (ConnectionInfo) sdata;
         if (info == null || info.result == null || !info.result.isLocking())
@@ -129,9 +129,9 @@ public class PessimisticLockManager
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
 
         //Code changed for OPENJPA-2449, code updated for OPENJPA-2547.  OPENJPA-2547 added
-        //one check to determine if the lock is a value of LockLevels.LOCK_NONE.  The first 
-        //time a thread attempts to get a lock the lock will be null.  If the thread can't 
-        //get the lock because another thread holds it, the lock will be non-null and have 
+        //one check to determine if the lock is a value of LockLevels.LOCK_NONE.  The first
+        //time a thread attempts to get a lock the lock will be null.  If the thread can't
+        //get the lock because another thread holds it, the lock will be non-null and have
         //a value of LockLevels.LOCK_NONE.
         List<SQLBuffer> sqls = (sm.getLock() == null || sm.getLock().equals(LockLevels.LOCK_NONE))
             ?  getLockRows(dict, id, mapping, fetch, _store.getSQLFactory())
@@ -153,7 +153,7 @@ public class PessimisticLockManager
         } catch (SQLException se) {
             LockException e = new LockException(sm.getPersistenceCapable(), timeout, level);
             e.setCause(se);
-            e.setFatal(dict.isFatalException(StoreException.LOCK, se) 
+            e.setFatal(dict.isFatalException(StoreException.LOCK, se)
                     || level >= MixedLockLevels.LOCK_PESSIMISTIC_READ);
             throw e;
         } finally {
@@ -177,7 +177,7 @@ public class PessimisticLockManager
         sqls.add(select.toSelect(true, fetch));
         return sqls;
     }
-    
+
     protected void lockJoinTables(List<SQLBuffer> sqls, DBDictionary dict, Object id, ClassMapping mapping,
             JDBCFetchConfiguration fetch, SQLFactory factory) {
         FieldMapping[] fms = mapping.getFieldMappings();
@@ -206,35 +206,35 @@ public class PessimisticLockManager
                 log.trace(_loc.get("start-trans-for-lock"));
         }
     }
-    
+
     public JDBCStore getStore() {
         return _store;
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of preparing statement.
      */
     protected PreparedStatement prepareStatement(Connection conn, SQLBuffer sql)
         throws SQLException {
         return sql.prepareStatement(conn);
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of executing query.
      */
-    protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt, 
+    protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt,
         SQLBuffer sql) throws SQLException {
         return stmnt.executeQuery();
     }
-    
+
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
+     * This method is to provide override for non-JDBC or JDBC-like
      * implementation of checking lock from the result set.
      */
     protected void checkLock(ResultSet rs, OpenJPAStateManager sm, int timeout)
-        throws SQLException { 
+        throws SQLException {
         if (!rs.next())
             throw new LockException(sm.getManagedInstance(), timeout);
         return;

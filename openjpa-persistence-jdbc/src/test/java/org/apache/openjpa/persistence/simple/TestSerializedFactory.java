@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.simple;
 
@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests that a EntityManagerFactory can be used after serialization.
- * 
+ *
  * @author David Ezzio
  */
 public class TestSerializedFactory extends SingleEMFTestCase {
@@ -56,7 +56,7 @@ public class TestSerializedFactory extends SingleEMFTestCase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(emf);
-        EntityManagerFactory emf2 = 
+        EntityManagerFactory emf2 =
                 (EntityManagerFactory) new ObjectInputStream(
                 new ByteArrayInputStream(baos.toByteArray())).readObject();
 
@@ -64,7 +64,7 @@ public class TestSerializedFactory extends SingleEMFTestCase {
         assertTrue("The deserialized entity manager factory is not open",
                 emf2.isOpen());
         EntityManager em = emf2.createEntityManager();
-        assertTrue("The newly created entity manager is not open", 
+        assertTrue("The newly created entity manager is not open",
                 em.isOpen());
 
         // exercise the entity manager produced from the deserialized EMF
@@ -75,12 +75,12 @@ public class TestSerializedFactory extends SingleEMFTestCase {
         // close the extra resources
         em.close();
         assertFalse("The entity manager is not closed", em.isOpen());
-        
+
         // clean up any committed records, etc.
         clear(emf2);
         if (emf2.isOpen())
             emf2.close();
-        assertFalse("The entity manager factory is not closed", 
+        assertFalse("The entity manager factory is not closed",
                 emf2.isOpen());
         emf2 = null;
         oos.close();

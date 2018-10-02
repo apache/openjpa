@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.detach;
 
@@ -26,18 +26,18 @@ import javax.persistence.Version;
 
 @Entity
 public class TimestampVersionEntity {
-    
+
     @Id
     private int id;
     private String name;
-    
+
     @Version
     private Timestamp version;
-    
+
     public Timestamp getVersion() {
         return version;
     }
-    
+
     public TimestampVersionEntity() {}
 
     public TimestampVersionEntity(int id) {

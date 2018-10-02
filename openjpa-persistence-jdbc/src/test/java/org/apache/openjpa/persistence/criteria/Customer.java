@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -38,27 +38,27 @@ public class Customer {
     @Id
     @GeneratedValue
 	private long id;
-    
+
 	private String firstName;
 	private String lastName;
 	private String name;
-	
+
 	@OneToMany(mappedBy="customer")
-	private Set<Order> orders = new HashSet<Order>(); 
-	
+	private Set<Order> orders = new HashSet<Order>();
+
 	private int status;
 	private int balanceOwed;
-	
+
 	@OneToOne
 	private Address address;
-	
+
 	private int filledOrderCount;
-	
+
     private long accountNum;
-	
+
 	@OneToMany
 	private List<Account> accounts = new ArrayList<Account>();
-	
+
     @Enumerated
     @Basic
     private CreditRating creditRating;
@@ -66,7 +66,7 @@ public class Customer {
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -74,15 +74,15 @@ public class Customer {
     public String getFirstName() {
         return firstName;
     }
-    
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    
+
     public String getLastName() {
         return lastName;
     }
-    
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
@@ -90,7 +90,7 @@ public class Customer {
     public Set<Order> getOrders() {
         return orders;
     }
-    
+
     public void setOrders(Set<Order> orders) {
         this.orders = orders;
     }
@@ -110,15 +110,15 @@ public class Customer {
     public int getStatus() {
         return status;
     }
-    
+
     public void setStatus(int status) {
         this.status = status;
     }
-    
+
     public long getAccountNum() {
         return accountNum;
     }
-    
+
     public void setAccountNum(long accountNum) {
         this.accountNum = accountNum;
     }
@@ -126,23 +126,23 @@ public class Customer {
     public int getBalanceOwed() {
         return balanceOwed;
     }
-    
+
     public void setBalanceOwed(int balanceOwed) {
         this.balanceOwed = balanceOwed;
     }
-	
+
     public int getFilledOrderCount() {
         return filledOrderCount;
     }
-    
+
     public void setFilledOrderCount(int filledOrderCount) {
         this.filledOrderCount = filledOrderCount;
     }
-    
+
     public List<Account> getAccounts() {
         return accounts;
     }
-    
+
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
@@ -150,10 +150,10 @@ public class Customer {
     public CreditRating getRating() {
         return creditRating;
     }
-    
+
     public void setRating(CreditRating rating) {
         this.creditRating = rating;
     }
-    
+
     public enum CreditRating { POOR, GOOD, EXCELLENT };
 }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -70,14 +70,14 @@ public class VersionLockManager
         Object sdata) {
         commonLock(sm, level, timeout, sdata, !_refreshing);
     }
-    
+
     public void refreshLock(OpenJPAStateManager sm, int level, int timeout,
             Object sdata) {
     	try {
         	_refreshing = true;
     		commonLock(sm, level, timeout, sdata, false);
     	} finally {
-        	_refreshing = false;    		
+        	_refreshing = false;
     	}
     }
 

@@ -43,7 +43,7 @@ public class TestMissingMetaData extends TestCase {
         emf = OpenJPAPersistence.createEntityManagerFactory(
             "test-missing-metadata", "persistence2.xml", props);
     }
-    
+
     public void testMissingMetaData() {
         String msg =
             "No registered metadata for type " +
@@ -56,12 +56,12 @@ public class TestMissingMetaData extends TestCase {
             assertTrue("Unexpected Exception : " + e.getMessage(), e.getMessage().startsWith(msg));
         }
     }
-    
+
     public void tearDown() {
         emf.close();
         emf = null;
     }
-    
+
     public static void main(String[] args) {
         TestRunner.run(TestMissingMetaData.class);
 

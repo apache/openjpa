@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -26,24 +26,24 @@ import javax.persistence.OneToOne;
 
 @Embeddable
 public class Contact {
-	@OneToOne 
+	@OneToOne
 	private Address address;
-	
+
 	@OneToMany
 	private List<Phone> phones;
-	
+
     public List<Phone> getPhones() {
         return phones;
     }
-    
+
     public void addPhone(Phone phone) {
         phones.add(phone);
     }
-    
+
     public Address getAddress() {
         return address;
     }
-  
+
     public void setAddress(Address address) {
         this.address = address;
     }

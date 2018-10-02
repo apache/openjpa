@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -77,9 +77,9 @@ import org.apache.openjpa.util.UserException;
 public class FieldMetaData
     extends Extensions
     implements ValueMetaData, MetaDataContext, MetaDataModes, Commentable {
-    
+
     private static final long serialVersionUID = -566180883009883198L;
-    
+
     /**
      * Constant specifying that no null-value was given.
      */
@@ -117,7 +117,7 @@ public class FieldMetaData
      * Constant specifying the management level of a field.
      */
     public static final int MANAGE_NONE = 0;
-    
+
     public static final int ONE_TO_ONE = 1;
     public static final int ONE_TO_MANY = 2;
     public static final int MANY_TO_ONE = 3;
@@ -219,12 +219,12 @@ public class FieldMetaData
     // ordering on load
     private Order[] _orders = null;
     private String _orderDec = null;
-    // indicate if this field is used by other field as "order by" value 
+    // indicate if this field is used by other field as "order by" value
     private boolean _usedInOrderBy = false;
     private boolean _isElementCollection = false;
     private int _associationType;
 
-    private boolean _persistentCollection = false; 
+    private boolean _persistentCollection = false;
 
     private Boolean _delayCapable = null;
     /**
@@ -249,7 +249,7 @@ public class FieldMetaData
     /**
      * Supply the backing member object; this allows us to utilize
      * parameterized type information if available.
-     * Sets the access style of this receiver based on whether the given 
+     * Sets the access style of this receiver based on whether the given
      * member represents a field or getter method.
      */
     public void backingMember(Member member) {
@@ -537,7 +537,7 @@ public class FieldMetaData
      * <li>{@link #MANAGE_TRANSACTIONAL}: the field is transactional but not
      * persistent</li>
      * <li>{@link #MANAGE_NONE}: the field is not managed</li>
-     * </ul> 
+     * </ul>
      * Defaults to {@link #MANAGE_PERSISTENT}.
      */
     public void setManagement(int manage) {
@@ -561,7 +561,7 @@ public class FieldMetaData
     }
 
     /**
-     * For a primary key field, return the type of the corresponding object id 
+     * For a primary key field, return the type of the corresponding object id
      * class field.
      */
     public int getObjectIdFieldTypeCode() {
@@ -579,7 +579,7 @@ public class FieldMetaData
     }
 
     /**
-     * For a primary key field, return the type of the corresponding object id 
+     * For a primary key field, return the type of the corresponding object id
      * class field.
      */
     public Class<?> getObjectIdFieldType() {
@@ -599,7 +599,7 @@ public class FieldMetaData
                     : relmeta.getObjectIdType();
             default:
                 return Object.class;
-        } 
+        }
     }
 
     /**
@@ -655,7 +655,7 @@ public class FieldMetaData
     private boolean isEnum() {
         if (_enumField == null) {
             Class<?> decl = getDeclaredType();
-            _enumField =  Enum.class.isAssignableFrom(decl) 
+            _enumField =  Enum.class.isAssignableFrom(decl)
                 ? Boolean.TRUE : Boolean.FALSE;
         }
         return _enumField.booleanValue();
@@ -715,7 +715,7 @@ public class FieldMetaData
     }
 
     /**
-     * Gets the name of the custom fetch groups those are associated to this 
+     * Gets the name of the custom fetch groups those are associated to this
      * receiver.  This does not include the "default" and "all" fetch groups.
      *
      * @return the set of fetch group names, not including the default and
@@ -723,7 +723,7 @@ public class FieldMetaData
      */
     public String[] getCustomFetchGroups() {
         if (_fgs == null) {
-            if (_fgSet == null || _manage != MANAGE_PERSISTENT 
+            if (_fgSet == null || _manage != MANAGE_PERSISTENT
                 || isPrimaryKey() || isVersion())
                 _fgs = new String[0];
             else
@@ -739,7 +739,7 @@ public class FieldMetaData
     public String getLoadFetchGroup () {
     	return _lfg;
     }
-    
+
     /**
      * The fetch group that is to be loaded when this receiver is loaded, or
      * null if none set.
@@ -786,7 +786,7 @@ public class FieldMetaData
             || (!in && _fgSet != null && _fgSet.remove(fg)))
             _fgs = null;
     }
-    
+
     /**
      * How the data store should treat null values for this field:
      * <ul>
@@ -892,7 +892,7 @@ public class FieldMetaData
         FieldMetaData field = meta.getField(mappedBy);
         if (field != null)
             return field;
-        int dotIdx = mappedBy.indexOf("."); 
+        int dotIdx = mappedBy.indexOf(".");
         if ( dotIdx == -1)
             return null;
         String fieldName = mappedBy.substring(0, dotIdx);
@@ -905,8 +905,8 @@ public class FieldMetaData
         String mappedBy1 = mappedBy.substring(dotIdx + 1);
         return getMappedByField(meta1, mappedBy1);
     }
-    
-    
+
+
     /**
      * Logical inverse field.
      */
@@ -1101,7 +1101,7 @@ public class FieldMetaData
     public boolean isStream() {
         return _stream == Boolean.TRUE && _manage == MANAGE_PERSISTENT;
     }
-    
+
     /**
      * Whether this field is backed by a stream.
      *
@@ -1110,7 +1110,7 @@ public class FieldMetaData
     public void setStream(boolean stream) {
         _stream = (stream) ? Boolean.TRUE : Boolean.FALSE;
     }
-    
+
     /**
      * Whether this field uses intermediate data when loading/storing
      * information through a {@link OpenJPAStateManager}. Defaults to true.
@@ -1188,7 +1188,7 @@ public class FieldMetaData
                     if (elemCls != null) {
                       FieldMetaData fmd = elemCls.getDeclaredField(decs[i]);
                       if (fmd != null)
-                        fmd.setUsedInOrderBy(true);                      
+                        fmd.setUsedInOrderBy(true);
                     }
                 }
                 _orders = orders;
@@ -1365,7 +1365,7 @@ public class FieldMetaData
         try {
             if (val == null && getNullValue() == NULL_DEFAULT)
                 return AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(getDeclaredType())); 
+                    J2DoPrivHelper.newInstanceAction(getDeclaredType()));
 
             // invoke either the constructor for the field type,
             // or the static type.toField(val[, ctx]) method
@@ -1606,7 +1606,7 @@ public class FieldMetaData
     private Method findMethod(String method) {
     	return findMethodByNameAndType(method, null);
     }
-    
+
     /**
      * Find the method for the specified name and type. Possible forms are:
      * <ul>
@@ -1652,7 +1652,7 @@ public class FieldMetaData
                 if (Modifier.isStatic(methods[i].getModifiers())
                     && (params.length == 1 || (params.length == 2
                     && isStoreContextParameter(params[1]))))
-                	
+
                 	if (type == null) {
                 		return methods[i];
                 	} else if (isConvertibleToByMethodInvocationConversion(type, params[0])) {
@@ -1673,31 +1673,31 @@ public class FieldMetaData
 	 * Convertible follows the rules in Java Language Specification, 3rd Ed, s5.3 and means that:
 	 * <ul>
 	 * <li>{@code sourceType} and {@code destType} are the same type (identity conversion)</li>
-	 * <li>For primitive types: that {@code sourceType} can be widened into {@code destType} 
+	 * <li>For primitive types: that {@code sourceType} can be widened into {@code destType}
 	 * or that {@code sourceType} can be boxed into a class assignable to {@code destType}.</li>
 	 * <li>For non-primitive types: that the {@code sourceType} can be unboxed into a primitive
 	 *  that is the same as, or can be widened into,
-	 * {@code destType} or {@code sourceType} can be assigned to {@code destType}.</li> 
-	 * 
+	 * {@code destType} or {@code sourceType} can be assigned to {@code destType}.</li>
+	 *
 	 * @return True iff the conditions above are true.
 	 */
 	private boolean isConvertibleToByMethodInvocationConversion(Class<?> sourceType, Class<?> destType) {
 		// Note that class.isAssignableFrom is a widening reference conversion test
 		if (sourceType.isPrimitive()) {
-			return isConvertibleToByIdentityPrimitiveConversion(sourceType, destType) 
-				|| isConvertibleToByWideningPrimitive(sourceType, destType) 
+			return isConvertibleToByIdentityPrimitiveConversion(sourceType, destType)
+				|| isConvertibleToByWideningPrimitive(sourceType, destType)
 				|| destType.isAssignableFrom(box(sourceType));
 		} else {
-			// Note that unbox will return null if the sourceType is not a wrapper.  
+			// Note that unbox will return null if the sourceType is not a wrapper.
 			// The identity primitive conversion and widening primitive handle this.
-			return isConvertibleToByIdentityPrimitiveConversion(unbox(sourceType), destType) 
-			|| isConvertibleToByWideningPrimitive(unbox(sourceType), destType) 
+			return isConvertibleToByIdentityPrimitiveConversion(unbox(sourceType), destType)
+			|| isConvertibleToByWideningPrimitive(unbox(sourceType), destType)
 			|| destType.isAssignableFrom(sourceType);
 		}
 	}
-	
+
 	/**
-	 * @return The results of unboxing {@code sourceType} following Java Language Specification, 3rd Ed, s5.1.8 
+	 * @return The results of unboxing {@code sourceType} following Java Language Specification, 3rd Ed, s5.1.8
 	 */
 	private Class<?> unbox(Class<?> sourceType) {
 		if (sourceType == java.lang.Boolean.class) {
@@ -1722,7 +1722,7 @@ public class FieldMetaData
 	}
 
 	/**
-	 * @return The results of unboxing {@code sourceType} following Java Language Specification, 3rd Ed, s5.1.7 
+	 * @return The results of unboxing {@code sourceType} following Java Language Specification, 3rd Ed, s5.1.7
 	 */
 	private Class<?> box(Class<?> sourceType) {
 		if (sourceType.isPrimitive()) {
@@ -1742,16 +1742,16 @@ public class FieldMetaData
 				return java.lang.Float.class;
 			} else if (sourceType == java.lang.Double.TYPE) {
 				return java.lang.Double.class;
-			} 
+			}
 			return null;  // Should never be reached because all primitives are accounted for above.
 		} else {
 			throw new IllegalArgumentException("Cannot box a type that is not a primitive.");
 		}
 	}
-	
+
 	/**
 	 * @return true if {@code sourceType} can be converted by a widening primitive conversion
-	 *  following Java Language Specification, 3rd Ed, s5.1.2 
+	 *  following Java Language Specification, 3rd Ed, s5.1.2
 	 */
 	private boolean isConvertibleToByWideningPrimitive(Class<?> sourceType, Class<?> destType) {
 		// Widening conversion following Java Language Specification, s5.1.2.
@@ -1767,9 +1767,9 @@ public class FieldMetaData
 				destType == java.lang.Float.TYPE ||
 				destType == java.lang.Double.TYPE;
 		} else if (sourceType == java.lang.Character.TYPE) {
-			return destType == java.lang.Integer.TYPE || 
-			  	destType == java.lang.Long.TYPE || 
-			  	destType == java.lang.Float.TYPE || 
+			return destType == java.lang.Integer.TYPE ||
+			  	destType == java.lang.Long.TYPE ||
+			  	destType == java.lang.Float.TYPE ||
 			  	destType == java.lang.Double.TYPE;
 		} else if (sourceType == java.lang.Integer.TYPE) {
 			return destType == java.lang.Long.TYPE ||
@@ -1785,14 +1785,14 @@ public class FieldMetaData
 	}
 
 	/**
-	 * Returns true iff the sourceType is a primitive that can be converted to 
+	 * Returns true iff the sourceType is a primitive that can be converted to
 	 * destType using an identity conversion - i.e. sourceType and destType are the same type.
-	 * following Java Language Specification, 3rd Ed, s5.1.1 
+	 * following Java Language Specification, 3rd Ed, s5.1.1
 	 */
 	private boolean isConvertibleToByIdentityPrimitiveConversion(Class<?> sourceType, Class<?> destType) {
 		return sourceType != null && sourceType.isPrimitive() && sourceType == destType;
 	}
-	
+
     /**
      * Return true if the given type is a store context type; we can't
      * use the standard <code>isAssignableFrom</code> because of classloader
@@ -2192,7 +2192,7 @@ public class FieldMetaData
     public void setCascadePersist(int persist) {
         _val.setCascadePersist(persist);
     }
-    
+
     public void setCascadePersist(int cascade, boolean checkPUDefault) {
         _val.setCascadePersist(cascade, checkPUDefault);
     }
@@ -2204,7 +2204,7 @@ public class FieldMetaData
     public void setCascadeAttach(int attach) {
         _val.setCascadeAttach(attach);
     }
-    
+
     public int getCascadeDetach() {
         return _val.getCascadeDetach();
     }
@@ -2261,7 +2261,7 @@ public class FieldMetaData
     public boolean isUsedInOrderBy() {
     	return _usedInOrderBy;
     }
-    
+
     /**
      * Whether this field is used by other field as "order by" value .
      *
@@ -2270,9 +2270,9 @@ public class FieldMetaData
     public void setUsedInOrderBy(boolean isUsed) {
     	_usedInOrderBy = isUsed;
     }
-    
+
     /**
-     * Serializable wrapper around a {@link Method} or {@link Field}. For 
+     * Serializable wrapper around a {@link Method} or {@link Field}. For
      * space considerations, this does not support {@link Constructor}s.
      */
 	public static class MemberProvider
@@ -2304,7 +2304,7 @@ public class FieldMetaData
                 if (isField)
                     _member = AccessController.doPrivileged(
                         J2DoPrivHelper.getDeclaredFieldAction(
-                            cls, memberName)); 
+                            cls, memberName));
                 else {
                     Class<?>[] parameterTypes = (Class[]) in.readObject();
                     _member = AccessController.doPrivileged(
@@ -2357,11 +2357,11 @@ public class FieldMetaData
     public void setMappedByIdValue(String mappedByIdValue) {
         this._mappedByIdValue = mappedByIdValue;
     }
-    
+
     public boolean isMappedById() {
     	return (_mappedByIdValue != null);
     }
-    
+
     /**
      * Gets the access type used by this field. If no access type is set for
      * this field then return the access type used by the declaring class.
@@ -2374,7 +2374,7 @@ public class FieldMetaData
         }
         return _access;
     }
-    
+
     /**
      * Sets access type of this field. The access code is verified for validity
      * as well as against the access style used by the declaring class.
@@ -2384,11 +2384,11 @@ public class FieldMetaData
     	owner.mergeFieldAccess(this, fCode);
         _access = fCode;
     }
-    
+
     public int getAssociationType() {
         return _associationType;
     }
-    
+
     public void setAssociationType(int type) {
         _associationType = type;
     }
@@ -2415,7 +2415,7 @@ public class FieldMetaData
     	return _relationType;
     }
     private class Unknown{};
-    
+
     public boolean isDelayCapable() {
         if (_delayCapable != null) {
             return _delayCapable.booleanValue();
@@ -2434,7 +2434,7 @@ public class FieldMetaData
         }
         return _delayCapable;
     }
-    
+
     public void setDelayCapable(Boolean delayCapable) {
         _delayCapable = delayCapable;
     }

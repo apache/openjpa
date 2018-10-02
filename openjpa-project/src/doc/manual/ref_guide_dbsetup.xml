@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="ref_guide_dbsetup">
     <title>
@@ -251,10 +251,10 @@ each pretty-printed SQL line.
                                 PrintParameters
                             </secondary>
                         </indexterm>
-<literal>PrintParameters</literal>: A boolean indicating whether SQL parameter 
-values will be included in exception text and when logging is enabled. Since 
-the parameter values may contain sensitive information the default value is 
-false. 
+<literal>PrintParameters</literal>: A boolean indicating whether SQL parameter
+values will be included in exception text and when logging is enabled. Since
+the parameter values may contain sensitive information the default value is
+false.
                         </para>
                     </listitem>
                 </itemizedlist>
@@ -269,7 +269,7 @@ false.
 &lt;property name="openjpa.ConnectionPassword" value="pass"/&gt;
 &lt;property name="openjpa.ConnectionURL" value="jdbc:hsqldb:db-hypersonic"/&gt;
 &lt;property name="openjpa.ConnectionDriverName" value="org.hsqldb.jdbcDriver"/&gt;
-&lt;property name="openjpa.ConnectionFactoryProperties" 
+&lt;property name="openjpa.ConnectionFactoryProperties"
     value="PrettyPrint=true, PrettyPrintLineLength=80, PrintParameters=true"/&gt;
 </programlisting>
             </example>
@@ -337,7 +337,7 @@ Persistence.createEntityManagerFactory</methodname> under the
                     </primary>
                 </indexterm>
 Bind the <classname>DataSource</classname> into JNDI, and then specify its
-location in the <literal>jta-data-source</literal> or 
+location in the <literal>jta-data-source</literal> or
 <literal>non-jta-data-source</literal> element of the
 <link linkend="jpa_overview_persistence_xml">JPA XML format</link> (depending on
 whether the <classname>DataSource</classname> is managed by JTA), or in the
@@ -367,7 +367,7 @@ class via reflection. It will then configure the <classname>DataSource
 The features of OpenJPA's own <classname>DataSource</classname> can
 also be used with third-party implementations. OpenJPA layers on top of the
 third-party <classname>DataSource</classname> to provide the extra
-functionality. To configure these features use the 
+functionality. To configure these features use the
 <link linkend="openjpa.ConnectionFactoryProperties">
 <literal>openjpa.ConnectionFactoryProperties</literal></link> property described
 in the previous section.
@@ -378,20 +378,20 @@ in the previous section.
             </title>
 <programlisting>
 &lt;property name="openjpa.ConnectionDriverName" value="oracle.jdbc.pool.OracleDataSource"/&gt;
-&lt;property name="openjpa.ConnectionProperties" 
+&lt;property name="openjpa.ConnectionProperties"
     value="PortNumber=1521, ServerName=saturn, DatabaseName=solarsid, DriverType=thin"/&gt;
 &lt;property name="openjpa.ConnectionFactoryProperties" value="QueryTimeout=5000"/&gt;
 </programlisting>
             <para>
 You can also force the Apache Commons DBCP BasicDataSource to be used for
 connection pooling when provided on the classpath by substituting it as the
-<literal>ConnectionDriverName</literal> and setting 
+<literal>ConnectionDriverName</literal> and setting
 <literal>ConnectionProperties=DriverClassName</literal> to the actual JDBC
 driver value -
             </para>
 <programlisting>
 &lt;property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/&gt;
-&lt;property name="openjpa.ConnectionProperties" 
+&lt;property name="openjpa.ConnectionProperties"
     value="DriverClassName=oracle.jdbc.pool.OracleDataSource, PortNumber=1521, ServerName=saturn, DatabaseName=solarsid, DriverType=thin, MaxIdle=0"/&gt;
 &lt;property name="openjpa.ConnectionFactoryProperties" value="QueryTimeout=5000"/&gt;
 </programlisting>
@@ -426,11 +426,11 @@ Certain application servers automatically enlist their <classname> DataSource
 </classname>s in global transactions. When this is the case, OpenJPA should not
 attempt to commit the underlying connection, leaving JDBC transaction completion
 to the application server. To notify OpenJPA that your third-party <classname>
-DataSource</classname> is managed by the application server, use the 
+DataSource</classname> is managed by the application server, use the
 <literal>jta-data-source</literal> element of your <filename>
 persistence.xml</filename> file or set the
 <link linkend="openjpa.ConnectionFactoryMode">
-<literal>openjpa.ConnectionFactoryMode</literal></link> property to 
+<literal>openjpa.ConnectionFactoryMode</literal></link> property to
 <literal>managed</literal>.
             </para>
             <para>
@@ -474,13 +474,13 @@ properties are outlined in <xref linkend="ref_guide_conf"/>.
                 <primary>connections</primary>
                 <secondary>override configuration</secondary>
             </indexterm>
-            <para> 
+            <para>
 As mentioned above, the JTA and Non-JTA DataSources may be passed in as configuration properties
 at EntityManagerFactory creation. Either the JPA standard properties (
-<literal>javax.persistence.jtaDataSource</literal>, <literal>java.persistence.nonJtaDataSource</literal>) 
-or their OpenJPA specific equivalents (<literal>openjpa.ConnectionFactoryName</literal>, 
-<literal>openjpa.ConnectionFactory2Name</literal>) may be used. One use case for this function is to 
-store production connection information in configuration files but override the value when testing. 
+<literal>javax.persistence.jtaDataSource</literal>, <literal>java.persistence.nonJtaDataSource</literal>)
+or their OpenJPA specific equivalents (<literal>openjpa.ConnectionFactoryName</literal>,
+<literal>openjpa.ConnectionFactory2Name</literal>) may be used. One use case for this function is to
+store production connection information in configuration files but override the value when testing.
             </para>
             <para>
             <example>
@@ -494,24 +494,24 @@ emf = Persistence.createEntityManagerFactory("example", props);</programlisting>
             </example>
             </para>
                 <section id="ref_guide_dbsetup_setDSPerEM">
-                <title>Using different DataSources for each EntityManager</title> 
+                <title>Using different DataSources for each EntityManager</title>
                 <para>
-The JPA specification allows the DataSource (ConnectionFactory) to be specified on the 
-EntityManagerFactory. OpenJPA extends this support and allows each EntityManager to override the 
-DataSource from the EntityManagerFactory. It's expected that the EntityManagerFactory will also be 
-configured with a valid JTA / Non-JTA DataSource. The DataSource configured on the 
+The JPA specification allows the DataSource (ConnectionFactory) to be specified on the
+EntityManagerFactory. OpenJPA extends this support and allows each EntityManager to override the
+DataSource from the EntityManagerFactory. It's expected that the EntityManagerFactory will also be
+configured with a valid JTA / Non-JTA DataSource. The DataSource configured on the
 EntityManagerFactory will be used to obtain a DBDictionary and (rarely) to gather some information
-about the database in use (e.g. version, JDBC driver version). 
+about the database in use (e.g. version, JDBC driver version).
                 </para>
                 <para>
                     If the EntityManagerFactory is not configured with a valid DataSource there are
-                    a few additional caveats. 
+                    a few additional caveats.
                     <itemizedlist>
                         <listitem><para>The <literal>openjpa.DBDictionary</literal> property must be
                         used to ensure the correct DBDictionary is used.</para></listitem>
                         <listitem><para>OpenJPA will always attempt to obtain a DataSource from JNDI
                         based on the configuration for the EntityManagerFactory. When a JNDI name is
-                        specified on the EntityManager this lookup happens slightly earlier than 
+                        specified on the EntityManager this lookup happens slightly earlier than
                         normal. If the lookup fails the JNDI name provided at EntityManager creation
                         will be set into the EntityManagerFactory's configuration and used in
                         subsequent attempts. </para></listitem>
@@ -520,57 +520,57 @@ about the database in use (e.g. version, JDBC driver version).
                 <section id="ref_guide_dbsetup_setDSBenefits">
                     <title>Benefits</title>
                     <para>
-                    In effect this option allows a single set of entity definitions to be shared 
+                    In effect this option allows a single set of entity definitions to be shared
                     between multiple database instances or schemas within an instance. This can be
                     highly beneficial when there are a large number of entity definitions (e.g. >
                     200), or a large number of databases / schemas in use.
-                    </para> 
+                    </para>
                 </section>
                 <section id="ref_guide_dbsetup_setDSLimitations">
                     <title>Limitations</title>
                     <para>
                         <itemizedlist>
                             <listitem>
-                                <para>The same database type and version must be used by each 
+                                <para>The same database type and version must be used by each
                                 EntityManager. OpenJPA will use the same DBDictionary for each
-                                EntityManager and will make no attempt to alter SQL syntax 
-                                between EntityManager instances. 
+                                EntityManager and will make no attempt to alter SQL syntax
+                                between EntityManager instances.
                             </para>
                             </listitem>
-                            <listitem><para>It is the application's responsibility to ensure 
+                            <listitem><para>It is the application's responsibility to ensure
                             that the schema is identical on each database.</para></listitem>
-                            <listitem><para>The application may not specify schema names for 
+                            <listitem><para>The application may not specify schema names for
                             individual entities.</para></listitem>
                             <listitem>
-                                <para>The DataSource (ConnectionFactory) name may only be 
-                                specified when the EntityManager is created. The DataSource 
+                                <para>The DataSource (ConnectionFactory) name may only be
+                                specified when the EntityManager is created. The DataSource
                                 may not be switched while an EntityManager is in use.
                                 </para>
                             </listitem>
-                            <listitem><para>The L2 cache (DataCache) should not be used if 
+                            <listitem><para>The L2 cache (DataCache) should not be used if
                             different DataSources are specified for each EntityManager</para>
                             </listitem>
-                            <listitem><para>SynchronizeMappings should not be used with this 
+                            <listitem><para>SynchronizeMappings should not be used with this
                             feature.</para></listitem>
-                            <listitem><para>Table and Sequence generators should not be used 
+                            <listitem><para>Table and Sequence generators should not be used
                             with this feature.</para></listitem>
-                            <listitem><para>It is not required, but is recommended that the 
-                            <literal>openjpa.DBDictionary</literal> property be specified when 
-                            using this feature</para></listitem> 
+                            <listitem><para>It is not required, but is recommended that the
+                            <literal>openjpa.DBDictionary</literal> property be specified when
+                            using this feature</para></listitem>
                         </itemizedlist>
-                    </para> 
+                    </para>
                 </section>
                 <section id="ref_guide_dbsetup_setDSError">
                     <title>Error handling</title>
                     <para>
-                    If a JTA DataSource is not available when the EntityManager is created, an 
+                    If a JTA DataSource is not available when the EntityManager is created, an
                     <literal>IllegalArgumentException</literal> will be thrown.
-                    The EntityManager will not fall back to the JTA DataSource defined in the 
-                    configuration. 
-                    </para> 
+                    The EntityManager will not fall back to the JTA DataSource defined in the
+                    configuration.
+                    </para>
                     <para>
-                    The same logic applies if a Non-JTA DataSource is not available when the 
-                    EntityManager is created. OpenJPA will not fall back to the configured 
+                    The same logic applies if a Non-JTA DataSource is not available when the
+                    EntityManager is created. OpenJPA will not fall back to the configured
                     Non-JTA DataSource.
                     </para>
                 </section>
@@ -738,7 +738,7 @@ the <ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/DB2Dictionary.html">
                     </primary>
                 </indexterm>
 <literal>derby</literal>: Dictionary for the Apache Derby database. This is an
-alias for the 
+alias for the
 <ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/DerbyDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.DerbyDictionary</classname> class.
 </ulink>
@@ -975,7 +975,7 @@ typically won't use these properties unless you are designing your own
 <classname>DBDictionary</classname> for an unsupported database.
             </para>
             <itemizedlist>
-            <!-- Please keep the list of dictionary properties 
+            <!-- Please keep the list of dictionary properties
                  in alphabetical order -->
                 <listitem id="DBDictionary.AllowsAliasInBulkClause">
                     <para>
@@ -987,7 +987,7 @@ typically won't use these properties unless you are designing your own
                             AllowsAliasInBulkClause
                         </secondary>
                     </indexterm>
-<literal>AllowsAliasInBulkClause</literal>: 
+<literal>AllowsAliasInBulkClause</literal>:
 When true, SQL delete and update statements may use table aliases.
                     </para>
                 </listitem>
@@ -1047,11 +1047,11 @@ to be overridden, and is only used when the schema is generated using the
                             AutoAssignTypeName
                         </tertiary>
                     </indexterm>
-<literal>AutoAssignTypeName</literal>: 
+<literal>AutoAssignTypeName</literal>:
 The column type name for auto-increment
 columns. For example, <literal>"BIGSERIAL"</literal> for PostgreSQL. This
 property is set automatically in the dictionary and should not need to be
-overridden.  It is used only when the schema is generated using the 
+overridden.  It is used only when the schema is generated using the
 <literal>mappingtool</literal>.
                     </para>
                 </listitem>
@@ -1065,10 +1065,10 @@ overridden.  It is used only when the schema is generated using the
                             BatchLimit
                         </secondary>
                     </indexterm>
-<literal>BatchLimit</literal>: 
+<literal>BatchLimit</literal>:
 The default batch limit for sending multiple SQL statements at once to the
 database.  A value of -1 indicates unlimited batching, and any positive integer
-indicates the maximum number of SQL statements to batch together.  
+indicates the maximum number of SQL statements to batch together.
 Defaults to 0 which disables batching.
                     </para>
                 </listitem>
@@ -1112,7 +1112,7 @@ generated by the <literal>mappingtool</literal>.
                             BitTypeName
                         </secondary>
                     </indexterm>
-<literal>BitTypeName</literal>: The overridden default column type for 
+<literal>BitTypeName</literal>: The overridden default column type for
 <literal>java.sql.Types.BIT</literal>. This is used only when the schema is generated by
 the <literal>mappingtool</literal>.
                     </para>
@@ -1128,7 +1128,7 @@ the <literal>mappingtool</literal>.
                         </secondary>
                     </indexterm>
 <literal>BlobBufferSize</literal>: This property establishes the buffer size in
-the <literal>INSERT/UPDATE</literal> operations with an 
+the <literal>INSERT/UPDATE</literal> operations with an
 <literal>java.io.InputStream</literal>. This is only used with OpenJPA's
 <xref linkend="ref_guide_streamsupport"/>. Defaults to 50000.
                     </para>
@@ -1202,10 +1202,10 @@ is generated by the <literal>mappingtool</literal>.
                             CastFunction
                         </secondary>
                     </indexterm>
-<literal>CastFunction</literal>: 
-The SQL function call to cast a value to another SQL type. 
-Use the tokens <literal>{0}</literal> and <literal>{1}</literal> to represent 
-the two arguments.  The result of the function is convert the 
+<literal>CastFunction</literal>:
+The SQL function call to cast a value to another SQL type.
+Use the tokens <literal>{0}</literal> and <literal>{1}</literal> to represent
+the two arguments.  The result of the function is convert the
 <literal>{0}</literal> value to a <literal>{1}</literal> type.
 The default is <literal>"CAST({0} AS {1})"</literal>.
                     </para>
@@ -1264,8 +1264,8 @@ generated by the <literal>mappingtool</literal>.
                             ClobBufferSize
                         </secondary>
                     </indexterm>
-<literal>ClobBufferSize</literal>: This property establish the buffer size in 
-the <literal>INSERT/UPDATE</literal> operations with a 
+<literal>ClobBufferSize</literal>: This property establish the buffer size in
+the <literal>INSERT/UPDATE</literal> operations with a
 <literal>java.io.Reader</literal>. This is only used with OpenJPA's
 <xref linkend="ref_guide_streamsupport"/>. Defaults to 50000.
                     </para>
@@ -1303,13 +1303,13 @@ generated by the <literal>mappingtool</literal>.
                             ClosePoolSQL
                         </secondary>
                     </indexterm>
-<literal>ClosePoolSQL</literal>: 
+<literal>ClosePoolSQL</literal>:
 A special command to issue to the database when shutting down the pool.
-Usually the pool of connections to the database is closed when the 
-application is ending.  For embedded databases, whose lifecycle is 
+Usually the pool of connections to the database is closed when the
+application is ending.  For embedded databases, whose lifecycle is
 coterminous with the application, there may be a special
-command, usually <literal>"SHUTDOWN"</literal>, 
-that will cause the embedded database to close cleanly.  
+command, usually <literal>"SHUTDOWN"</literal>,
+that will cause the embedded database to close cleanly.
 Defaults to <literal>null</literal>.
                     </para>
                 </listitem>
@@ -1324,11 +1324,11 @@ Defaults to <literal>null</literal>.
                         </secondary>
                     </indexterm>
 <literal>ConcatenateFunction</literal>:
-The SQL function call or operation to concatenate two strings. 
-Use the tokens <literal>{0}</literal> and <literal>{1}</literal> to represent 
-the two arguments.  The result of the function or operation is to concatenate 
-the <literal>{1}</literal> string to the end of the <literal>{0}</literal> 
-string.  Defaults to <literal>"({0}||{1})"</literal>.  
+The SQL function call or operation to concatenate two strings.
+Use the tokens <literal>{0}</literal> and <literal>{1}</literal> to represent
+the two arguments.  The result of the function or operation is to concatenate
+the <literal>{1}</literal> string to the end of the <literal>{0}</literal>
+string.  Defaults to <literal>"({0}||{1})"</literal>.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.ConstraintNameMode">
@@ -1344,7 +1344,7 @@ string.  Defaults to <literal>"({0}||{1})"</literal>.
 <literal>ConstraintNameMode</literal>: When creating constraints, whether to
 put the constraint name before the definition (<literal>"before"</literal>),
 just after the constraint type name (<literal>"mid"</literal>), or after the
-constraint definition (<literal>"after"</literal>). 
+constraint definition (<literal>"after"</literal>).
 Defaults to <literal>"before"</literal>.
                     </para>
                 </listitem>
@@ -1439,7 +1439,7 @@ This value is usually one million, meaning that the database is able
 to store time values with a precision of one millisecond.  Particular
 databases may have more or less precision.
 OpenJPA will round all time values to this degree of precision
-before storing them in the database.  This property can be set to one 
+before storing them in the database.  This property can be set to one
 of the following precisions:
                 </para>
                 <itemizedlist>
@@ -1481,20 +1481,20 @@ of the following precisions:
                         </secondary>
                     </indexterm>
 <literal>DateMillisecondBehavior</literal>:
-When retrieving a <literal>Date</literal> value from a database which stores the value in 
+When retrieving a <literal>Date</literal> value from a database which stores the value in
 a TIMESTAMP column, the values retrieved will be rounded to the nearest
 millisecond.  So a date of '2010-01-01 12:00:00.687701' stored in the
 database will become '2010-01-01 12:00:00.688' in the <literal>Date</literal> field of the
-entity.  The following date stored in the database as '9999-12-31 23:59:59.9999' 
+entity.  The following date stored in the database as '9999-12-31 23:59:59.9999'
 will become '10000-01-01 00:00:00.000'.  This rounding may not be desirable.  With this
-property, a user has options which will direct OpenJPA how to handle the milliseconds.  This 
-property can be set to one of the enums defined in 
-<literal>DBDictionary.DateMillisecondBehaviors</literal>.  The options defined in 
+property, a user has options which will direct OpenJPA how to handle the milliseconds.  This
+property can be set to one of the enums defined in
+<literal>DBDictionary.DateMillisecondBehaviors</literal>.  The options defined in
 <literal>DBDictionary.DateMillisecondBehaviors</literal> are as follows:
                 <itemizedlist>
                     <listitem>
                         <para>
-<literal>DateMillisecondBehaviors.ROUND</literal>: This is the default.  The 
+<literal>DateMillisecondBehaviors.ROUND</literal>: This is the default.  The
 <literal>Date</literal> will be rounded to the nearest millisecond, as described above.
                         </para>
                     </listitem>
@@ -1511,12 +1511,12 @@ entity.
 <literal>DateMillisecondBehaviors.RETAIN</literal>: The milliseconds will not be rounded, but will
 be retained.  As an example, a date of '2010-01-01 12:00:00.687701' stored in the
 database will become '2010-01-01 12:00:00.687' in the <literal>Date</literal> field of the
-entity.  
+entity.
                         </para>
                     </listitem>
                 </itemizedlist>
                     </para>
-                </listitem>                
+                </listitem>
                 <listitem id="DBDictionary.DateTypeName">
                     <para>
                     <indexterm>
@@ -1557,10 +1557,10 @@ generated by the <literal>mappingtool</literal>.
                 			DelimitedCase
                 		</secondary>
                 	</indexterm>
-<literal>DelimitedCase</literal>: The case to use when querying the database 
+<literal>DelimitedCase</literal>: The case to use when querying the database
 about identifiers that have been delimited. It defaults to preserving the
 case of the originally specified name. Available values are:
-<literal>upper, lower, preserve.</literal>                	
+<literal>upper, lower, preserve.</literal>
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.DisableAlterSeqenceIncrementBy">
@@ -1575,10 +1575,10 @@ case of the originally specified name. Available values are:
                     </indexterm>
 <literal>DisableAlterSeqenceIncrementBy</literal>: OpenJPA attempts to execute
 an ALTER SEQUENCE....INCREMENT BY SQL statement for a user defined sequence.  This
-is done to ensure that the 'allocationSize' value defined by the entity's sequence, 
+is done to ensure that the 'allocationSize' value defined by the entity's sequence,
 or default value, matches the sequence defined in the database.  For example, with
 an allocationSize of 1000 for a sequence named 'SEQ_JPASAMPLE', the following SQL
-will be generated (the SQL might vary slightly depending on the databases): 
+will be generated (the SQL might vary slightly depending on the databases):
 <literal>ALTER SEQUENCE SEQ_JPASAMPLE INCREMENT BY 1000</literal>.  If the user
 executing this command doesn't have permissions to execute the command, it will
 fail and in turn OpenJPA will disable sequence caching.  If a user wants to disable
@@ -1597,15 +1597,15 @@ database.  Defaults to false.
                             DisableSchemaFactoryColumnTypeErrors
                         </secondary>
                     </indexterm>
-<literal>DisableSchemaFactoryColumnTypeErrors</literal>: When something other than the default 
+<literal>DisableSchemaFactoryColumnTypeErrors</literal>: When something other than the default
 SchemaFactory is used, up-front mapping validation is performed against the database schema.  As
 part of the validation, OpenJPA will verify a persistence class column's type against the column type
-defined in the database schema.  If a mismatch is found, OpenJPA will throw an exception to flag the 
-mismatch types and will not allow processing to continue.  This can be limiting, especially if the 
-JDBC driver and/or database can properly handle the mismatch.  Set this property to true to disable 
+defined in the database schema.  If a mismatch is found, OpenJPA will throw an exception to flag the
+mismatch types and will not allow processing to continue.  This can be limiting, especially if the
+JDBC driver and/or database can properly handle the mismatch.  Set this property to true to disable
 column type mismatch errors.  Defaults to false.
                     </para>
-                </listitem>                
+                </listitem>
                 <listitem id="DBDictionary.DistinctCountColumnSeparator">
                     <para>
                     <indexterm>
@@ -1618,7 +1618,7 @@ column type mismatch errors.  Defaults to false.
                     </indexterm>
 <literal>DistinctCountColumnSeparator</literal>: The string the database uses
 to delimit between column expressions in a <literal>SELECT COUNT(DISTINCT
-column-list)</literal> clause. Defaults to <literal>null</literal> 
+column-list)</literal> clause. Defaults to <literal>null</literal>
 for most databases, meaning that
 multiple columns in a distinct COUNT clause are not supported.
                     </para>
@@ -1666,7 +1666,7 @@ generated by the <literal>mappingtool</literal>.
 <literal>DriverVendor</literal>: The vendor of the particular JDBC driver you
 are using. Some dictionaries must alter their behavior depending on the driver
 vendor. Dictionaries usually detect the driver vendor and set this property
-themselves.  See the <literal>VENDOR_XXX</literal> constants defined in the 
+themselves.  See the <literal>VENDOR_XXX</literal> constants defined in the
 <classname>DBDictionary</classname> Javadoc for available options.
                     </para>
                 </listitem>
@@ -1680,9 +1680,9 @@ themselves.  See the <literal>VENDOR_XXX</literal> constants defined in the
                             DropTableSQL
                         </secondary>
                     </indexterm>
-<literal>DropTableSQL</literal>: 
+<literal>DropTableSQL</literal>:
 The SQL statement used to drop a table.  Use the token <literal>{0}</literal>
-as the argument for the table name.  
+as the argument for the table name.
 Defaults to <literal>"DROP TABLE {0}"</literal>.
                     </para>
                 </listitem>
@@ -1696,13 +1696,13 @@ Defaults to <literal>"DROP TABLE {0}"</literal>.
                             FixedSizeTypeNames
                         </secondary>
                     </indexterm>
-<literal>FixedSizeTypeNames</literal>: 
-A comma separated list of additional database types that have a size 
+<literal>FixedSizeTypeNames</literal>:
+A comma separated list of additional database types that have a size
 defined by the database.  In other words, when a column of a fixed
 size type is declared, its size cannot be defined by the user.  Common
-examples would be <literal>DATE</literal>, <literal>FLOAT</literal>, 
+examples would be <literal>DATE</literal>, <literal>FLOAT</literal>,
 and <literal>INTEGER</literal>.
-Each database dictionary has its own internal set of fixed size type names 
+Each database dictionary has its own internal set of fixed size type names
 that include the names mentioned here and many others.
 Names added to this property are added to the dictionary's internal set.
 Defaults to <literal>null</literal>.
@@ -1764,10 +1764,10 @@ to <literal>"FOR UPDATE"</literal>.
                             GetStringVal
                         </secondary>
                     </indexterm>
-<literal>GetStringVal</literal>: 
-A special function to return the value of an XML 
-column in a select statement.  For example, Oracle uses 
-<literal>".getClobVal()"</literal>, as in 
+<literal>GetStringVal</literal>:
+A special function to return the value of an XML
+column in a select statement.  For example, Oracle uses
+<literal>".getClobVal()"</literal>, as in
 <literal>"SELECT t0.xmlcol.getClobVal() FROM xmltab t0"</literal>.
 Defaults to the empty string.
                     </para>
@@ -1782,9 +1782,9 @@ Defaults to the empty string.
                             InClauseLimit
                         </secondary>
                     </indexterm>
-<literal>InClauseLimit</literal>: 
+<literal>InClauseLimit</literal>:
 The maximum number of elements in an <literal>IN</literal> clause.  OpenJPA
-works around cases where the limit is exceeded.  Defaults to -1 meaning 
+works around cases where the limit is exceeded.  Defaults to -1 meaning
 no limit.
                     </para>
                 </listitem>
@@ -1883,7 +1883,7 @@ See <xref linkend="ref_guide_dbsetup_sql92"/>.
                         </tertiary>
                     </indexterm>
 <literal>LastGeneratedKeyQuery</literal>: The query to issue to obtain the last
-automatically generated key for an auto-increment column. For example, 
+automatically generated key for an auto-increment column. For example,
 <literal>"SELECT LAST_INSERT_ID()"</literal> for MySQL. This property is set
 automatically in the dictionary, and should not need to be overridden.
 If <literal>SupportsGetGeneratedKeys</literal> is true, the query will not
@@ -1905,7 +1905,7 @@ keys will be used instead.
 for a delimited identifier. The default value is a double quote,
 <literal>(")</literal>. See
 <xref linkend="ref_guide_dbsetup_dbsupport_delim_id"/> for
-the default value for some specific databases.                              	
+the default value for some specific databases.
                 	</para>
                 </listitem>
                 <listitem id="DBDictionary.LongVarbinaryTypeName">
@@ -1991,11 +1991,11 @@ a constraint name. Defaults to 128.
                             MaxEmbeddedBlobSize
                         </secondary>
                     </indexterm>
-<literal>MaxEmbeddedBlobSize</literal>: 
-When greater than -1, the maximum size of a <literal>BLOB</literal> value 
-that can be sent directly to the database within an insert or update statement.  
-Values whose size is greater than <literal>MaxEmbeddedBlobSize</literal> force 
-OpenJPA to work around this limitation.  A value of -1 means that there is 
+<literal>MaxEmbeddedBlobSize</literal>:
+When greater than -1, the maximum size of a <literal>BLOB</literal> value
+that can be sent directly to the database within an insert or update statement.
+Values whose size is greater than <literal>MaxEmbeddedBlobSize</literal> force
+OpenJPA to work around this limitation.  A value of -1 means that there is
 no limitation. Defaults to -1.
                     </para>
                 </listitem>
@@ -2009,11 +2009,11 @@ no limitation. Defaults to -1.
                             MaxEmbeddedClobSize
                         </secondary>
                     </indexterm>
-<literal>MaxEmbeddedClobSize</literal>: 
-When greater than -1, the maximum size of a <literal>CLOB</literal> value 
-that can be sent directly to the database within an insert or update statement.  
-Values whose size is greater than <literal>MaxEmbeddedClobSize</literal> force 
-OpenJPA to work around this limitation.  A value of -1 means that there is 
+<literal>MaxEmbeddedClobSize</literal>:
+When greater than -1, the maximum size of a <literal>CLOB</literal> value
+that can be sent directly to the database within an insert or update statement.
+Values whose size is greater than <literal>MaxEmbeddedClobSize</literal> force
+OpenJPA to work around this limitation.  A value of -1 means that there is
 no limitation. Defaults to -1.
                     </para>
                 </listitem>
@@ -2077,8 +2077,8 @@ table name. Defaults to 128.
                 			NameConcatenator
                 		</secondary>
                 	</indexterm>
-<literal>NameConcatenator</literal>: The value used when names are concatenated to 
-create a generated name. The default value is the underscore <literal>"_"</literal>.                	
+<literal>NameConcatenator</literal>: The value used when names are concatenated to
+create a generated name. The default value is the underscore <literal>"_"</literal>.
                 	</para>
                 </listitem>
                 <listitem id="DBDictionary.NextSequenceQuery">
@@ -2094,7 +2094,7 @@ create a generated name. The default value is the underscore <literal>"_"</liter
 <literal>NextSequenceQuery</literal>: A SQL string for obtaining a native
 sequence value. May use a placeholder of <literal>{0}</literal> for the variable
 sequence name and <literal>{1}</literal> for sequence increment.
-Defaults to a database-appropriate value. For example, 
+Defaults to a database-appropriate value. For example,
 <literal>"SELECT {0}.NEXTVAL FROM DUAL"</literal> for Oracle database.
                     </para>
                 </listitem>
@@ -2167,9 +2167,9 @@ Defaults to <literal>"LEFT OUTER JOIN"</literal>.
                             Platform
                         </secondary>
                     </indexterm>
-<literal>Platform</literal>: 
+<literal>Platform</literal>:
 The name of the database that this dictionary targets.
-Defaults to <literal>"Generic"</literal>, but all dictionaries override this 
+Defaults to <literal>"Generic"</literal>, but all dictionaries override this
 value.
                     </para>
                 </listitem>
@@ -2183,13 +2183,13 @@ value.
                             RangePosition
                         </secondary>
                     </indexterm>
-<literal>RangePosition</literal>: 
+<literal>RangePosition</literal>:
 Indicates where to specify in the SQL select statement the range, if any,
-of the result rows to be returned.  
+of the result rows to be returned.
 When limiting the number of returned result rows to a subset of all those
-that satisfy the query's conditions, the position of the range clause 
+that satisfy the query's conditions, the position of the range clause
 varies by database.
-Defaults to 0, meaning that the range 
+Defaults to 0, meaning that the range
 is expressed at the end of the select statement but before any locking clause.
 See the RANGE_XXX constants defined in <classname>DBDictionary</classname>.
                     </para>
@@ -2219,7 +2219,7 @@ generated by the <literal>mappingtool</literal>.
                             RefTypeName
                         </secondary>
                     </indexterm>
-<literal>RefTypeName</literal>: The overridden default column type for 
+<literal>RefTypeName</literal>: The overridden default column type for
 <literal>java.sql.Types.REF</literal>. This is used only when the schema is generated by
 the <literal>mappingtool</literal>.
                     </para>
@@ -2277,9 +2277,9 @@ can take place.
                             RequiresCastForComparisons
                         </secondary>
                     </indexterm>
-<literal>RequiresCastForComparisons</literal>: 
-When true, comparisons of two values of different types or 
-of two literals requires a cast in the generated SQL.   
+<literal>RequiresCastForComparisons</literal>:
+When true, comparisons of two values of different types or
+of two literals requires a cast in the generated SQL.
 Defaults to <literal>false</literal>.
                     </para>
                 </listitem>
@@ -2293,9 +2293,9 @@ Defaults to <literal>false</literal>.
                             RequiresCastForMathFunctions
                         </secondary>
                     </indexterm>
-<literal>RequiresCastForMathFunctions</literal>: 
-When true, math operations on two values of different types or 
-on two literals requires a cast in the generated SQL.   
+<literal>RequiresCastForMathFunctions</literal>:
+When true, math operations on two values of different types or
+on two literals requires a cast in the generated SQL.
 Defaults to <literal>false</literal>.
                     </para>
                 </listitem>
@@ -2371,16 +2371,16 @@ Available values are: <literal>upper, lower, preserve</literal>.
                             SearchStringEscape
                         </secondary>
                     </indexterm>
-<literal>SearchStringEscape</literal>: 
+<literal>SearchStringEscape</literal>:
 The default escape character used when generating SQL <literal>LIKE</literal>
-clauses.  The escape character is used to escape the wildcard meaning of the 
+clauses.  The escape character is used to escape the wildcard meaning of the
 <literal>_</literal> and <literal>%</literal> characters.
 Note: since JPQL provides the ability to define the escape character in
 the query, this setting is primarily used when translating other query
-languages, such as JDOQL.  Defaults to <literal>"\\"</literal> 
+languages, such as JDOQL.  Defaults to <literal>"\\"</literal>
 (a single backslash in Java speak).
                     </para>
-                </listitem>                
+                </listitem>
                 <listitem id="DBDictionary.RequiresSearchStringEscapeForLike">
                     <para>
                     <indexterm>
@@ -2408,9 +2408,9 @@ When true, the database requires an escape string for queries that use
                         </secondary>
                     </indexterm>
 <literal>SelectWords</literal>: A comma-separated list of keywords which may be
-used to start a SELECT statement for this database. If an application executes 
-a native SQL statement which begins with SelectWords OpenJPA will treat the 
-statement as a SELECT statement rather than an UPDATE statement. 
+used to start a SELECT statement for this database. If an application executes
+a native SQL statement which begins with SelectWords OpenJPA will treat the
+statement as a SELECT statement rather than an UPDATE statement.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.SequenceNameSQL">
@@ -2427,7 +2427,7 @@ statement as a SELECT statement rather than an UPDATE statement.
                         </tertiary>
                     </indexterm>
 <literal>SequenceNameSQL</literal>:
-Additional phrasing to use with <literal>SequenceSQL</literal>.  
+Additional phrasing to use with <literal>SequenceSQL</literal>.
 Defaults to <literal>null</literal>.
                     </para>
                 </listitem>
@@ -2444,14 +2444,14 @@ Defaults to <literal>null</literal>.
                             SequenceSQL
                         </tertiary>
                     </indexterm>
-<literal>SequenceSQL</literal>: 
-General structure of the SQL query to use when interrogating the database 
+<literal>SequenceSQL</literal>:
+General structure of the SQL query to use when interrogating the database
 for sequence names.
-As there is no standard way to obtain sequence names, 
+As there is no standard way to obtain sequence names,
 it defaults to <literal>null</literal>.
                     </para>
                 </listitem>
-                
+
                 <listitem id="DBDictionary.SequenceSchemaSQL">
                     <para>
                     <indexterm>
@@ -2465,8 +2465,8 @@ it defaults to <literal>null</literal>.
                             SequenceSchemaSQL
                         </tertiary>
                     </indexterm>
-<literal>SequenceSchemaSQL</literal>: 
-Additional phrasing to use with <literal>SequenceSQL</literal>.  
+<literal>SequenceSchemaSQL</literal>:
+Additional phrasing to use with <literal>SequenceSQL</literal>.
 Defaults to <literal>null</literal>.
                     </para>
                 </listitem>
@@ -2481,12 +2481,12 @@ Defaults to <literal>null</literal>.
                         </secondary>
                     </indexterm>
 <literal>SimulateLocking</literal>: Some databases do not support pessimistic
-locking, which will result in an exception when you attempt a 
-transaction while using the pessimistic lock manager. 
+locking, which will result in an exception when you attempt a
+transaction while using the pessimistic lock manager.
 Setting this property to <literal>true</literal> suppresses the
-locking of rows in the database, thereby allowing pessimistic transactions 
+locking of rows in the database, thereby allowing pessimistic transactions
 even on databases that do not support locking. At the same time, setting this
-property to <literal>true</literal> means that you do not obtain the semantics 
+property to <literal>true</literal> means that you do not obtain the semantics
 of a pessimistic
 transaction with the database. Defaults to <literal>false</literal>.
                     </para>
@@ -2547,15 +2547,15 @@ a warning.
                             StoreLargeNumbersAsStrings
                         </secondary>
                     </indexterm>
-<literal>StoreLargeNumbersAsStrings</literal>: When true, the dictionary 
-prefers to store Java fields of 
+<literal>StoreLargeNumbersAsStrings</literal>: When true, the dictionary
+prefers to store Java fields of
 type <classname>BigInteger</classname> and <classname>BigDecimal</classname>
 as string values in the database.  Likewise, the dictionary will instruct
-the mapping tool to map these Java types to character columns.   
-Because some databases have limitations on the number of digits that can 
-be stored in a numeric column (for example, Oracle can only store 38 
+the mapping tool to map these Java types to character columns.
+Because some databases have limitations on the number of digits that can
+be stored in a numeric column (for example, Oracle can only store 38
 digits), this option may be necessary for some applications.
-Note that this option may prevent OpenJPA from executing meaningful numeric 
+Note that this option may prevent OpenJPA from executing meaningful numeric
 queries against the columns. Defaults to <literal>false</literal>.
                     </para>
                 </listitem>
@@ -2614,7 +2614,7 @@ the substring of a string.
                         </secondary>
                     </indexterm>
 <literal>SupportsAlterTableWithAddColumn</literal>: When true, the database
-supports adding a new column in an ALTER TABLE statement. 
+supports adding a new column in an ALTER TABLE statement.
 Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -2629,7 +2629,7 @@ Defaults to <literal>true</literal>.
                         </secondary>
                     </indexterm>
 <literal>SupportsAlterTableWithDropColumn</literal>: When true, the database
-supports dropping a column in an ALTER TABLE statement. 
+supports dropping a column in an ALTER TABLE statement.
 Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -2643,8 +2643,8 @@ Defaults to <literal>true</literal>.
                             SupportsAutoAssign
                         </secondary>
                     </indexterm>
-<literal>SupportsAutoAssign</literal>: 
-When true, the database supports auto-assign columns, where the value of 
+<literal>SupportsAutoAssign</literal>:
+When true, the database supports auto-assign columns, where the value of
 column is assigned upon insertion of the row into the database.
 Defaults to <literal>false</literal>.
                     </para>
@@ -2660,7 +2660,7 @@ Defaults to <literal>false</literal>.
                         </secondary>
                     </indexterm>
 <literal>SupportsCascadeDeleteAction</literal>: When true, the database supports
-the <literal>CASCADE</literal> delete action on foreign keys. 
+the <literal>CASCADE</literal> delete action on foreign keys.
 Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -2674,8 +2674,8 @@ Defaults to <literal>true</literal>.
                             SupportsCascadeUpdateAction
                         </secondary>
                     </indexterm>
-<literal>SupportsCascadeUpdateAction</literal>: 
-When true, the database supports the <literal>CASCADE</literal> 
+<literal>SupportsCascadeUpdateAction</literal>:
+When true, the database supports the <literal>CASCADE</literal>
 update action on foreign keys.  Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -2689,8 +2689,8 @@ update action on foreign keys.  Defaults to <literal>true</literal>.
                             SupportsComments
                         </secondary>
                     </indexterm>
-<literal>SupportsComments</literal>: 
-When true, comments can be associated with the table in the table creation 
+<literal>SupportsComments</literal>:
+When true, comments can be associated with the table in the table creation
 statement.  Defaults to <literal>false</literal>.
                     </para>
                 </listitem>
@@ -2704,10 +2704,10 @@ statement.  Defaults to <literal>false</literal>.
                             SupportsCorrelatedSubselect
                         </secondary>
                     </indexterm>
-<literal>SupportsCorrelatedSubselect</literal>: 
-When true, the database supports correlated subselects.  Correlated 
-subselects are select statements nested within select statements that 
-refers to a column in the outer select statement.  For performance 
+<literal>SupportsCorrelatedSubselect</literal>:
+When true, the database supports correlated subselects.  Correlated
+subselects are select statements nested within select statements that
+refers to a column in the outer select statement.  For performance
 reasons, correlated subselects are generally a last resort.
 Defaults to <literal>true</literal>.
                     </para>
@@ -2723,7 +2723,7 @@ Defaults to <literal>true</literal>.
                         </secondary>
                     </indexterm>
 <literal>SupportsDefaultDeleteAction</literal>: When true, the database supports
-the <literal>SET DEFAULT</literal> delete action on foreign keys. 
+the <literal>SET DEFAULT</literal> delete action on foreign keys.
 Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -2737,8 +2737,8 @@ Defaults to <literal>true</literal>.
                             SupportsDefaultUpdateAction
                         </secondary>
                     </indexterm>
-<literal>SupportsDefaultUpdateAction</literal>: 
-When true, the database supports the <literal>SET DEFAULT</literal> update 
+<literal>SupportsDefaultUpdateAction</literal>:
+When true, the database supports the <literal>SET DEFAULT</literal> update
 action on foreign keys.  Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -2752,10 +2752,10 @@ action on foreign keys.  Defaults to <literal>true</literal>.
                             SupportsDeferredConstraints
                         </secondary>
                     </indexterm>
-<literal>SupportsDeferredConstraints</literal>: When true, the database 
+<literal>SupportsDeferredConstraints</literal>: When true, the database
 supports deferred constraints.  The
-database supports deferred constraints by checking for constraint 
-violations when the transaction commits, rather than checking for 
+database supports deferred constraints by checking for constraint
+violations when the transaction commits, rather than checking for
 violations immediately after receiving each SQL statement within the
 transaction. Defaults to <literal>true</literal>.
                     </para>
@@ -2771,7 +2771,7 @@ transaction. Defaults to <literal>true</literal>.
 						</secondary>
 					</indexterm>
 <literal>SupportsDelimitedIdentifiers</literal>: When true, the database
-supports delimited identifiers. It defaults to <literal>true</literal>.					
+supports delimited identifiers. It defaults to <literal>true</literal>.
                 	</para>
                 </listitem>
                 <listitem id="DBDictionary.SupportsForeignKeys">
@@ -2854,7 +2854,7 @@ clauses in selects.
                         </secondary>
                     </indexterm>
 <literal>SupportsLockingWithDistinctClause</literal>: When true, the
-database supports <literal>FOR UPDATE</literal> select clauses with 
+database supports <literal>FOR UPDATE</literal> select clauses with
 <literal>DISTINCT</literal> clauses.
                     </para>
                 </listitem>
@@ -2942,16 +2942,16 @@ database equivalent. Defaults to <literal>true</literal>.
                             SupportsModOperator
                         </secondary>
                     </indexterm>
-<literal>SupportsModOperator</literal>: 
-When true, the database supports the modulus operator (<literal>%</literal>) 
-instead of the <literal>MOD</literal> function.  
+<literal>SupportsModOperator</literal>:
+When true, the database supports the modulus operator (<literal>%</literal>)
+instead of the <literal>MOD</literal> function.
 Defaults to <literal>false</literal>.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.SupportsMultipleNontransactionalResultSets">
                     <para>
 <literal>SupportsMultipleNontransactionalResultSets</literal>: When true, a
-nontransactional connection is capable of having multiple open 
+nontransactional connection is capable of having multiple open
 <classname>ResultSet</classname> instances.
                     </para>
                 </listitem>
@@ -2965,8 +2965,8 @@ nontransactional connection is capable of having multiple open
                             SupportsNullDeleteAction
                         </secondary>
                     </indexterm>
-<literal>SupportsNullDeleteAction</literal>: When true, the database supports 
-the <literal>SET NULL</literal> delete action on foreign keys. 
+<literal>SupportsNullDeleteAction</literal>: When true, the database supports
+the <literal>SET NULL</literal> delete action on foreign keys.
 Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -3056,8 +3056,8 @@ information about all the tables. Defaults to <literal>false</literal>.
                             SupportsNullUpdateAction
                         </secondary>
                     </indexterm>
-<literal>SupportsNullUpdateAction</literal>: 
-When true, the database supports the <literal>SET NULL</literal> update 
+<literal>SupportsNullUpdateAction</literal>:
+When true, the database supports the <literal>SET NULL</literal> update
 action on foreign keys.  Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -3091,7 +3091,7 @@ calls to <methodname> java.sql.Statement.setQueryTimeout</methodname>.
                             AllowQueryTimeoutOnFindUpdate
                         </tertiary>
                     </indexterm>
-<literal>AllowQueryTimeoutOnFindUpdate</literal>: The JPA Specification defines the 
+<literal>AllowQueryTimeoutOnFindUpdate</literal>: The JPA Specification defines the
 javax.persistence.query.timeout, in milliseconds, as a hint to the provider.  The hint
 is used for Query operations.  This property, when set to true, will allow the query timeout hint
 to apply to EntityManager operations.  For example, when a 'find' is executed and the resultant
@@ -3109,8 +3109,8 @@ to false.
                             SupportsRestrictDeleteAction
                         </secondary>
                     </indexterm>
-<literal>SupportsRestrictDeleteAction</literal>: When true, the database 
-supports the <literal>RESTRICT</literal> delete action on foreign keys. 
+<literal>SupportsRestrictDeleteAction</literal>: When true, the database
+supports the <literal>RESTRICT</literal> delete action on foreign keys.
 Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -3124,8 +3124,8 @@ Defaults to <literal>true</literal>.
                             SupportsRestrictUpdateAction
                         </secondary>
                     </indexterm>
-<literal>SupportsRestrictUpdateAction</literal>: 
-When true, the database supports the <literal>RESTRICT</literal> update 
+<literal>SupportsRestrictUpdateAction</literal>:
+When true, the database supports the <literal>RESTRICT</literal> update
 action on foreign keys.  Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -3193,7 +3193,7 @@ select that is limited to the first N results.
                         </secondary>
                     </indexterm>
 <literal>SupportsSelectForUpdate</literal>: When true, the database supports
-<literal>SELECT</literal> statements with a pessimistic locking 
+<literal>SELECT</literal> statements with a pessimistic locking
 (<literal>FOR UPDATE</literal>) clause. Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -3264,8 +3264,8 @@ in queries.
                             SupportsTimestampNanos
                         </primary>
                     </indexterm>
-<literal>SupportsTimestampNanos</literal>: When true, the database supports 
-nanoseconds with TIMESTAMP columns.  
+<literal>SupportsTimestampNanos</literal>: When true, the database supports
+nanoseconds with TIMESTAMP columns.
 Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -3294,7 +3294,7 @@ unique constraints. Defaults to <literal>true</literal>.
                         </secondary>
                     </indexterm>
 <literal>SupportsXMLColumn</literal>:
-When true, the database supports an XML column type.  See 
+When true, the database supports an XML column type.  See
 <xref linkend="ref_guide_xmlmapping"/>
 for information on using this capability.  Defaults to <literal>false</literal>.
                     </para>
@@ -3353,7 +3353,7 @@ should be ignored.
                         </secondary>
                     </indexterm>
 <literal>TableForUpdateClause</literal>: The clause to append to the end of
-each table alias in queries that obtain pessimistic locks. 
+each table alias in queries that obtain pessimistic locks.
 Defaults to <literal>null</literal>.
                     </para>
                 </listitem>
@@ -3365,14 +3365,14 @@ Defaults to <literal>null</literal>.
                             SQL
                         </primary>
                         <secondary>
-                           tableLengthIncludesSchema 
+                           tableLengthIncludesSchema
                         </secondary>
                     </indexterm>
                     <literal>tableLengthIncludesSchema</literal>: Whether the max length for a table name includes the table's schema.
                     Defaults to <literal>false</literal>.
                 </para>
                 </listitem>
-               
+
                 <listitem id="DBDictionary.TableTypes">
                     <para>
                     <indexterm>
@@ -3481,9 +3481,9 @@ argument.
 for a delimited identifier. The default value is a double quote,
 <literal>(")</literal>. See
 <xref linkend="ref_guide_dbsetup_dbsupport_delim_id"/> for
-the default value for some specific databases.               	
+the default value for some specific databases.
                 	</para>
-                </listitem>                
+                </listitem>
                 <listitem id="DBDictionary.TrimBothFunction">
                     <para>
                     <indexterm>
@@ -3494,13 +3494,13 @@ the default value for some specific databases.
                             TrimBothFunction
                         </secondary>
                     </indexterm>
-<literal>TrimBothFunction</literal>: 
-The SQL function call to trim any number of a particular character 
+<literal>TrimBothFunction</literal>:
+The SQL function call to trim any number of a particular character
 from both the start and end of a string.
 Note: some databases do not support specifying the character in which
 case only spaces or whitespace can be trimmed.
-Use the token <literal>{1}</literal> when possible to represent the character, 
-and the token <literal>{0}</literal> to represent the string.  
+Use the token <literal>{1}</literal> when possible to represent the character,
+and the token <literal>{0}</literal> to represent the string.
 Defaults to <literal>"TRIM(BOTH {1} FROM {0})"</literal>.
                     </para>
                 </listitem>
@@ -3514,13 +3514,13 @@ Defaults to <literal>"TRIM(BOTH {1} FROM {0})"</literal>.
                             TrimLeadingFunction
                         </secondary>
                     </indexterm>
-<literal>TrimLeadingFunction</literal>: 
-The SQL function call to trim any number of a particular character 
+<literal>TrimLeadingFunction</literal>:
+The SQL function call to trim any number of a particular character
 from the start of a string.
 Note: some databases do not support specifying the character in which
 case only spaces or whitespace can be trimmed.
-Use the token <literal>{1}</literal> when possible to represent the character, 
-and the token <literal>{0}</literal> to represent the string.  
+Use the token <literal>{1}</literal> when possible to represent the character,
+and the token <literal>{0}</literal> to represent the string.
 Defaults to <literal>"TRIM(LEADING {1} FROM {0})"</literal>.
                     </para>
                 </listitem>
@@ -3549,13 +3549,13 @@ to <literal>false</literal>.
                             TrimTrailingFunction
                         </secondary>
                     </indexterm>
-<literal>TrimTrailingFunction</literal>: 
-The SQL function call to trim any number of a particular character 
+<literal>TrimTrailingFunction</literal>:
+The SQL function call to trim any number of a particular character
 from the end of a string.
 Note: some databases do not support specifying the character in which
 case only spaces or whitespace can be trimmed.
-Use the token <literal>{1}</literal> when possible to represent the character, 
-and the token <literal>{0}</literal> to represent the string.  
+Use the token <literal>{1}</literal> when possible to represent the character,
+and the token <literal>{0}</literal> to represent the string.
 Defaults to <literal>"TRIM(TRAILING {1} FROM {0})"</literal>.
                     </para>
                 </listitem>
@@ -3572,7 +3572,7 @@ Defaults to <literal>"TRIM(TRAILING {1} FROM {0})"</literal>.
                             UseGetBestRowIdentifierForPrimaryKeys
                         </tertiary>
                     </indexterm>
-<literal>UseGetBestRowIdentifierForPrimaryKeys</literal>: When true, 
+<literal>UseGetBestRowIdentifierForPrimaryKeys</literal>: When true,
 metadata queries will use <methodname>DatabaseMetaData.getBestRowIdentifier
 </methodname> to obtain information about primary keys, rather than <methodname>
 DatabaseMetaData.getPrimaryKeys</methodname>.
@@ -3635,12 +3635,12 @@ ResultSet.getString</methodname> will be used to obtain clob data rather than
                         </secondary>
                     </indexterm>
 <literal>UseJDBC4SetBinaryStream</literal>: When true, an attempt will be made to obtain
-a JDBC 4.0 version of <methodname>PreparedStatement.setBinaryStream</methodname>.  
+a JDBC 4.0 version of <methodname>PreparedStatement.setBinaryStream</methodname>.
 When false, a <methodname>setBinaryStream</methodname> is used which takes the length of the
 stream.  OpenJPA uses a -1 for the length since OpenJPA doesn't know the length of the stream.
 A few JDBC drivers check the length and throw an exception when the length is less than zero.
 When this property is set to true, and an applicable JDK and JDBC 4.0 driver is available, a
-version of <methodname>setBinaryStream</methodname> will be used which does not take a length. 
+version of <methodname>setBinaryStream</methodname> will be used which does not take a length.
 The default value of this property is true.
                     </para>
                 </listitem>
@@ -3654,14 +3654,14 @@ The default value of this property is true.
                             UseNativeSequenceCache
                         </secondary>
                     </indexterm>
-<literal>UseNativeSequenceCache</literal>: This property was introduced in 
-the 2.1.2 release to indicate (when set to <literal>false</literal>) that OpenJPA 
-should not use the <literal>CACHE</literal> clause when creating a native sequence; instead 
-the <literal>INCREMENT BY</literal> clause gets its value equal to the allocationSize 
-property.  In the 2.2.0 release, code was added to allow said functionality by 
+<literal>UseNativeSequenceCache</literal>: This property was introduced in
+the 2.1.2 release to indicate (when set to <literal>false</literal>) that OpenJPA
+should not use the <literal>CACHE</literal> clause when creating a native sequence; instead
+the <literal>INCREMENT BY</literal> clause gets its value equal to the allocationSize
+property.  In the 2.2.0 release, code was added to allow said functionality by
 default (see OPENJPA-1376).
-For forward compatibility, this property still remains, however it has 
-been deprecated and will eventually be removed.  Setting this property 
+For forward compatibility, this property still remains, however it has
+been deprecated and will eventually be removed.  Setting this property
 has no effect and any occurrence of it should be removed.
                     </para>
                 </listitem>
@@ -3791,11 +3791,11 @@ generated by the <literal>mappingtool</literal>.
 <literal>XmlTypeName</literal>:
 The column type name for XML columns.  This
 property is set automatically in the dictionary and should not need to be
-overridden.  It is used only when the schema is generated using the 
+overridden.  It is used only when the schema is generated using the
 <literal>mappingtool</literal>.  Defaults to <literal>"XML"</literal>.
                     </para>
                 </listitem>
-            <!-- Please keep the list of dictionary properties 
+            <!-- Please keep the list of dictionary properties
                  in alphabetical order -->
             </itemizedlist>
         </section>
@@ -3941,7 +3941,7 @@ Defaults to <literal>"innodb"</literal>.
                         </secondary>
                     </indexterm>
 <literal>UseClobs</literal>: Some older versions of MySQL do not handle CLOBs
-correctly. To disable CLOB functionality, set this to <literal>false</literal>. 
+correctly. To disable CLOB functionality, set this to <literal>false</literal>.
 Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
@@ -3965,17 +3965,17 @@ more info about <literal>deleteTableContents</literal>.) Defaults to
 <literal>false</literal>, since the statement may fail if using InnoDB
 tables and delete constraints.
                     </para>
-                    
+
                 </listitem>
             </itemizedlist>
-            
+
                     <para>
-Starting with Connector/J 3.1.7, MySQL supports a variant of the driver 
-<literal>com.mysql.jdbc.ReplicationDriver</literal> that automatically sends 
-queries to a read/write master, or a failover or round-robin load balanced set 
-of slaves based on the state of read-only status of the connection. 
+Starting with Connector/J 3.1.7, MySQL supports a variant of the driver
+<literal>com.mysql.jdbc.ReplicationDriver</literal> that automatically sends
+queries to a read/write master, or a failover or round-robin load balanced set
+of slaves based on the state of read-only status of the connection.
 See  <ulink url="http://dev.mysql.com/doc/refman/5.1/en/connector-j-reference-replication-connection.html">
-MySQL Reference</ulink> for more details. 
+MySQL Reference</ulink> for more details.
                     </para>
                     <para>
 This replication feature can be used transparently with OpenJPA application by
@@ -3994,7 +3994,7 @@ following configuration:
              <para>
 OpenJPA will use a read-only connection with replicated database configuration
 and will automatically switch the connection to a non-readonly mode if the
-transaction is writing to the database.             
+transaction is writing to the database.
              </para>
            </listitem>
          </itemizedlist>
@@ -4125,15 +4125,15 @@ CLOB to persist with the embedded method. Defaults to 4000 characters.
                     <para>
 <literal>SupportsSetClob</literal>: This property was used in releases previous
 to OpenJPA 2.2.0
-to indicate that OpenJPA should attempt to use a Reader-based JDBC 4.0 method to 
-set CLOB or XML data.  It allowed XMLType and CLOB values larger than 4000 bytes 
-to be used.  For OpenJPA 2.2.0 and later releases, code was added to allow said 
-functionality by default (see OPENJPA-1691).  For forward compatibility, this 
+to indicate that OpenJPA should attempt to use a Reader-based JDBC 4.0 method to
+set CLOB or XML data.  It allowed XMLType and CLOB values larger than 4000 bytes
+to be used.  For OpenJPA 2.2.0 and later releases, code was added to allow said
+functionality by default (see OPENJPA-1691).  For forward compatibility, this
 property still remains, however it has been deprecated and will eventually be
 removed.  Setting this property has no effect and any occurrence of it should
 be removed.
                     </para>
-                </listitem>                
+                </listitem>
                 <listitem id="OracleDictionary.UseSetFormOfUseForUnicode">
                     <para>
 <literal>UseSetFormOfUseForUnicode</literal>: Prior to Oracle 10i, statements
@@ -4181,13 +4181,13 @@ properties:
                         </secondary>
                     </indexterm>
 <literal>IgnoreNumericTruncation</literal>: If true, Sybase will ignore numeric
-truncation on SQL operations.  Otherwise, if numeric truncation is detected, 
+truncation on SQL operations.  Otherwise, if numeric truncation is detected,
 the operation will fail.
                     </para>
                 </listitem>
             </itemizedlist>
         </section>
-        
+
         <section id="ref_guide_dbsetup_dbsupport_db2">
             <title>
                 DB2 Properties
@@ -4215,11 +4215,11 @@ properties:
                             AppendExtendedExceptionText
                         </secondary>
                     </indexterm>
-<literal>AppendExtendedExceptionText</literal>: If false, OpenJPA will not call back to the database to 
+<literal>AppendExtendedExceptionText</literal>: If false, OpenJPA will not call back to the database to
 get extended exception text.
                     </para>
                 </listitem>
-            
+
             <listitem id="DB2Dictionary.SupportsRowNum">
                     <para>
                     <indexterm>
@@ -4234,15 +4234,15 @@ get extended exception text.
 for range based queries that set an offset and/or limit via <literal>setFirstResult()</literal>
 and <literal>setMaxResult()</literal> query methods. This property must be set to <literal>true</literal>
 alongwith <lietral>SupportsSelectStartIndex</lietral> and <lietral>SupportsSelectEndIndex</lietral>.
-By default, <literal>SupportsRowNum</literal> is set to <literal>false</literal>. 
-It is appropriate to set <literal>SupportsRowNum</literal> to <literal>true</literal> only when 
-DB2 version being used is 9.7 or later. 
+By default, <literal>SupportsRowNum</literal> is set to <literal>false</literal>.
+It is appropriate to set <literal>SupportsRowNum</literal> to <literal>true</literal> only when
+DB2 version being used is 9.7 or later.
 
                     </para>
                 </listitem>
             </itemizedlist>
-            
-        </section>        
+
+        </section>
         <section id="ref_guide_dbsetup_dbsupport_delim_id">
         	<title>
         		Delimited Identifiers Support
@@ -4252,20 +4252,20 @@ OpenJPA provides support for delimited identifiers as defined in the JPA 2.0 spe
 Identifiers can either be automatically delimited or individually manually
 delimited. To have OpenJPA automatically delimit identifiers, add the
 <literal>&lt;delimited-identifiers/&gt;</literal> tag
-to the mapping file as documented in the JPA specification. 
+to the mapping file as documented in the JPA specification.
 			</para>
 			<para>
 You can manually delimit individual identifiers either in the annotations or in the
 definitions in the mapping file. To delimit an identifier element in an annotation,
 surround it with double quotes. In a mapping file, add
-<literal>&amp;quote;</literal> to both the beginning and end of the element.	      	
+<literal>&amp;quote;</literal> to both the beginning and end of the element.
         	</para>
         	<para>
 When delimited identifiers has been specified, OpenJPA will delimit SQL identifiers
 in the generated SQL statements. It will use database-specific delimiters as defined
 in the appropriate database dictionary. By default, the leading and trailing
 delimiters are both double quotes, <literal>(")</literal>. Different defaults for other
-dictionaries provided by OpenJPA are in the following table.       	
+dictionaries provided by OpenJPA are in the following table.
         	</para>
         	<table tocentry="1">
         		<title>
@@ -4310,7 +4310,7 @@ dictionaries provided by OpenJPA are in the following table.
                     		<entry colname="trail" align="center">
                     			]
                     		</entry>
-                    	</row>                    	
+                    	</row>
                     </tbody>
         		</tgroup>
         	</table>
@@ -4324,22 +4324,22 @@ dictionary properties.
         	</para>
         	<para>
 You can specify whether or not the particular database that you are using supports delimited
-identifiers by setting the 
-<link linkend="DBDictionary.SupportsDelimitedIdentifiers"><literal>SupportsDelimitedIdentifiers</literal></link> 
+identifiers by setting the
+<link linkend="DBDictionary.SupportsDelimitedIdentifiers"><literal>SupportsDelimitedIdentifiers</literal></link>
 dictionary property. If this value is set to <literal>false</literal>, identifiers will not be automatically
 delimited, even if the <literal>&lt;delimited-identifiers/&gt;</literal> tag is specified
-in the mapping file.      	
+in the mapping file.
         	</para>
         	<para>
 <literal>Limitation:</literal> The <literal>columnDefinition</literal> elements in identifiers
-are not automatically delimited by OpenJPA when using the 
+are not automatically delimited by OpenJPA when using the
 <literal>&lt;delimited-identifiers/&gt;</literal> tag
 in the mapping file. If you want these to be delimited, you must manually delimit them in
-the annotation or mapping file definitions.      	
+the annotation or mapping file definitions.
         	</para>
         </section>
-               
-    </section>    
+
+    </section>
     <section id="ref_guide_dbsetup_isolation">
         <title>
             Setting the Transaction Isolation
@@ -4491,9 +4491,9 @@ configuration API, which is described in <xref linkend="ref_guide_runtime"/>.
                 Specifying the Join Syntax at Runtime
             </title>
 <programlisting>
-import org.apache.openjpa.persistence.jdbc.*; 
+import org.apache.openjpa.persistence.jdbc.*;
 
-... 
+...
 
 Query q = em.createQuery("select m from Magazine m where m.title = 'JDJ'");
 OpenJPAQuery kq = OpenJPAPersistence.cast(q);
@@ -4516,7 +4516,7 @@ List results = q.getResultList();
             </secondary>
         </indexterm>
         <para>
-Through the properties we've covered thus far, you can configure each 
+Through the properties we've covered thus far, you can configure each
 <classname>EntityManagerFactory</classname> to access a different
 database. If your application accesses multiple databases, we recommend that you
 maintain a separate persistence unit for each one. This will allow you to easily
@@ -4562,12 +4562,12 @@ property accepts the following values:
                 <para>
 <literal>always</literal>: Each <classname>EntityManager</classname> obtains a
 single connection and uses it until the <classname>EntityManager</classname>
-closes. Great care should be taken when using this property if the application 
-cannot close the EntityManager (i.e. container-managed EntityManagers in a JEE 
-Application Server). In this case the connection will remain open for an 
+closes. Great care should be taken when using this property if the application
+cannot close the EntityManager (i.e. container-managed EntityManagers in a JEE
+Application Server). In this case the connection will remain open for an
 undefined time and the application may not be able to recover from a terminated
-connection (for example, if a TCP/IP timeout severs the connection to the database). 
-For this reason the <literal>always</literal> option should not be used with 
+connection (for example, if a TCP/IP timeout severs the connection to the database).
+For this reason the <literal>always</literal> option should not be used with
 container-managed EntityManagers.
                 </para>
             </listitem>
@@ -4659,15 +4659,15 @@ results.
             </title>
             <tgroup rowsep="1" colsep="1" align="left" cols="5">
                 <colspec colname="col1"/>
-                
+
                 <colspec colname="col2"/>
-                
+
                 <colspec colname="col3"/>
-                
+
                 <colspec colname="col4"/>
-                
+
                 <colspec colname="col5"/>
-                
+
                 <thead>
                     <row>
                         <entry colname="col1">
@@ -4679,11 +4679,11 @@ FlushBeforeQueries = false
 FlushBeforeQueries = true
                         </entry>
                         <entry colname="col4">
-FlushBeforeQueries = with-connection; 
+FlushBeforeQueries = with-connection;
 ConnectionRetainMode = on-demand
                         </entry>
                         <entry colname="col5">
-FlushBeforeQueries = with-connection; 
+FlushBeforeQueries = with-connection;
 ConnectionRetainMode = transaction or always
                         </entry>
                     </row>
@@ -4812,28 +4812,28 @@ EntityManager em = emf.createEntityManager(props);
             </see>
         </indexterm>
         <para>
-In addition to connection pooling and prepared statement caching, OpenJPA 
-employs statement batching to speed up JDBC updates. Statement batching is 
-enabled by default for any JDBC driver that supports it. When batching is on, 
-OpenJPA automatically orders its SQL statements to maximize the size of each 
-batch. This can result in large performance gains for transactions that modify 
+In addition to connection pooling and prepared statement caching, OpenJPA
+employs statement batching to speed up JDBC updates. Statement batching is
+enabled by default for any JDBC driver that supports it. When batching is on,
+OpenJPA automatically orders its SQL statements to maximize the size of each
+batch. This can result in large performance gains for transactions that modify
 a lot of data.
 		</para>
 		<para>
-You configure statement batching through the system DBDictionary, which is 
-controlled by the openjpa.jdbc.DBDictionary configuration property. You can 
+You configure statement batching through the system DBDictionary, which is
+controlled by the openjpa.jdbc.DBDictionary configuration property. You can
 enable the statement batching by setting the batchLimit in the value. The batch
-limit is the maximum number of statements OpenJPA will ever batch 
+limit is the maximum number of statements OpenJPA will ever batch
 together. A value has the following meaning:
 			<itemizedlist>
             	<listitem>
                	 <para>
-<literal>-1</literal>: Unlimited number of statements for a batch. 
+<literal>-1</literal>: Unlimited number of statements for a batch.
                 </para>
                </listitem>
                <listitem>
                 <para>
-<literal>0</literal>: Disable batch support. This is the default for most 
+<literal>0</literal>: Disable batch support. This is the default for most
 dictionaries.
                 </para>
                </listitem>
@@ -4842,19 +4842,19 @@ dictionaries.
 <literal>any positive number</literal>: Maximum number of statements for a batch.
                 </para>
                </listitem>
-			</itemizedlist> 
+			</itemizedlist>
 			<note>
 		     <para>
-By default, the batch support is based on each Dictionary to define the default 
-batch limit. Currently only DB2 and Oracle dictionaries are set the default 
-batch limit to 100. The default batch limit for the rest of the dictionaries is set 
-to zero (disabled). 
+By default, the batch support is based on each Dictionary to define the default
+batch limit. Currently only DB2 and Oracle dictionaries are set the default
+batch limit to 100. The default batch limit for the rest of the dictionaries is set
+to zero (disabled).
 			</para>
 			</note>
 		</para>
 		<para>
-The example below shows how to enable and disable statement batching via 
-your configuration properties. 
+The example below shows how to enable and disable statement batching via
+your configuration properties.
         </para>
         <example id="ref_guide_dbsetup_stmtbatch_exmple1">
             <title>
@@ -4871,7 +4871,7 @@ Or
         <example id="ref_guide_dbsetup_stmtbatch_exmple2">
             <title>
                 Disable SQL statement batching
-            </title>            
+            </title>
 <programlisting>
 &lt;property name="openjpa.jdbc.DBDictionary" value="db2(batchLimit=0)"/&gt;
 Or
@@ -4879,28 +4879,28 @@ Or
 </programlisting>
         </example>
         <para>
-By default, org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager 
-is the default statement batching implementation. OPENJPA also 
-provides another update manager 
+By default, org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager
+is the default statement batching implementation. OPENJPA also
+provides another update manager
 org.apache.openjpa.jdbc.kernel.BatchingOperationOrderUpdateManager for the
 statements that required ordering.  You can plug-in this update manager through
 the "openjpa.jdbc.UpdateManager" property. Or you can plug-in your own
-statement batching implementation by providing the implementation that extends 
-from AbstractUpdateManager, ConstraitUpdateManager or OperationOrderUpdateManager. 
+statement batching implementation by providing the implementation that extends
+from AbstractUpdateManager, ConstraitUpdateManager or OperationOrderUpdateManager.
 Add this implementation
 class as a property in the persistence.xml file. For example, a custom
-statement batching implementation mycomp.MyUpdateManager extends 
+statement batching implementation mycomp.MyUpdateManager extends
 ConstraitUpdateManager. You specify this implementation in the persistence.xml
 file as the following example:
         </para>
          <example id="ref_guide_dbsetup_stmtbatch_exmple3">
             <title>
                 Plug-in custom statement batching implementation
-            </title>            
+            </title>
 <programlisting>
 &lt;property name="openjpa.jdbc.UpdateManager" value="mycomp.MyUpdateManager"/&gt;
 </programlisting>
-        </example>        
+        </example>
     </section>
     <section id="ref_guide_dbsetup_lrs">
         <title>
@@ -5142,16 +5142,16 @@ new tables created through OpenJPA tools, such as the mapping tool covered in
 <xref linkend="ref_guide_mapping_mappingtool"/>.
         </para>
         <para>
-If the entities are mapped to the same table name but with different schema 
-name within one <literal>PersistenceUnit</literal> intentionally, and the 
-strategy of <literal>GeneratedType.AUTO</literal> is used to generate the ID 
-for each entity, a schema name for each entity must be explicitly declared 
-either through the annotation or the mapping.xml file. Otherwise, the mapping 
-tool only creates the tables for those entities with the schema names under 
-each schema. In addition, there will be only one 
-<literal>OPENJPA_SEQUENCE_TABLE</literal> created for all the entities within 
-the <literal>PersistenceUnit</literal> if the entities are not identified 
-with the schema name. 
+If the entities are mapped to the same table name but with different schema
+name within one <literal>PersistenceUnit</literal> intentionally, and the
+strategy of <literal>GeneratedType.AUTO</literal> is used to generate the ID
+for each entity, a schema name for each entity must be explicitly declared
+either through the annotation or the mapping.xml file. Otherwise, the mapping
+tool only creates the tables for those entities with the schema names under
+each schema. In addition, there will be only one
+<literal>OPENJPA_SEQUENCE_TABLE</literal> created for all the entities within
+the <literal>PersistenceUnit</literal> if the entities are not identified
+with the schema name.
 Read <xref linkend="ref_guide_sequence"/> in the Reference Guide.
         </para>
     </section>
@@ -5242,7 +5242,7 @@ built-in options to choose from:
 <literal>dynamic</literal>: This is the default setting. It is an alias for the
 <ulink url="../../apidocs/org/apache/openjpa/jdbc/schema/DynamicSchemaFactory.html">
 <classname>
-org.apache.openjpa.jdbc.schema.DynamicSchemaFactory</classname></ulink>. The 
+org.apache.openjpa.jdbc.schema.DynamicSchemaFactory</classname></ulink>. The
 <classname>DynamicSchemaFactory</classname> is the most performant
 schema factory, because it does not validate mapping information against the
 database. Instead, it assumes all object-relational mapping information is
@@ -5261,8 +5261,8 @@ that OpenJPA can order its SQL statements to meet them.
 metadata and object-relational mapping information. This factory uses the
 <classname>java.sql.DatabaseMetaData</classname> interface to reflect on the
 schema and ensure that it is consistent with the mapping data being read.
-Use this factory if you want up-front validation that your mapping metadata is 
-consistent with the database during development. This factory accepts the 
+Use this factory if you want up-front validation that your mapping metadata is
+consistent with the database during development. This factory accepts the
 following important properties:
                     </para>
                     <itemizedlist>
@@ -5409,7 +5409,7 @@ dependencies. Thus the schema tool is useful as a general way to manipulate
 schemas.
         </para>
         <para>
-You can invoke the schema tool through its Java class, 
+You can invoke the schema tool through its Java class,
 <ulink url="../../apidocs/org/apache/openjpa/jdbc/schema/SchemaTool.html">
 <classname>org.apache.openjpa.jdbc.schema.SchemaTool</classname></ulink>. In
 addition to the universal flags of the <link linkend="ref_guide_conf">
@@ -5496,7 +5496,7 @@ manipulate foreign keys on existing tables. Defaults to <literal>true</literal>.
                 <para>
 <literal>-record/-r &lt;true/t | false/f&gt;</literal>: Use <literal>false
 </literal> to prevent writing the schema changes made by the tool to the current
-<link linkend="ref_guide_schema_info_factory"><literal>schema 
+<link linkend="ref_guide_schema_info_factory"><literal>schema
 factory</literal></link>. Defaults to <literal>true</literal>.
                 </para>
             </listitem>
@@ -5511,7 +5511,7 @@ openjpa.jdbc.Schemas</link> property for a single run.
         </itemizedlist>
         <para>
 The schema tool also accepts an <literal>-action</literal> or <literal>-a
-</literal> flag. Multiple actions can be composed in a comma-separated list. 
+</literal> flag. Multiple actions can be composed in a comma-separated list.
 The available actions are:
         </para>
         <itemizedlist>
@@ -5589,7 +5589,7 @@ record of the schema.
             </listitem>
             <listitem>
                 <para>
-<literal>deleteTableContents</literal>: Execute SQL to delete all rows from 
+<literal>deleteTableContents</literal>: Execute SQL to delete all rows from
 all tables that OpenJPA knows about.
                 </para>
             </listitem>
@@ -5664,7 +5664,7 @@ java org.apache.openjpa.jdbc.schema.SchemaTool -a createDB -f script.sql
                 </secondary>
             </indexterm>
             <para>
-Refresh the schema and delete all contents of all tables that OpenJPA 
+Refresh the schema and delete all contents of all tables that OpenJPA
 knows about:
             </para>
 <programlisting>
@@ -5740,11 +5740,11 @@ definitions in XML.
 &lt;!ATTLIST table name CDATA #REQUIRED&gt;
 
 &lt;!ELEMENT column EMPTY&gt;
-&lt;!ATTLIST column name CDATA #REQUIRED&gt; 
-&lt;!ATTLIST column type (array | bigint | binary | bit | blob | char | clob 
-    | date | decimal | distinct | double | float | integer | java_object 
-    | longvarbinary | longvarchar | null | numeric | other | real | ref 
-    | smallint | struct | time | timestamp | tinyint | varbinary | varchar) 
+&lt;!ATTLIST column name CDATA #REQUIRED&gt;
+&lt;!ATTLIST column type (array | bigint | binary | bit | blob | char | clob
+    | date | decimal | distinct | double | float | integer | java_object
+    | longvarbinary | longvarchar | null | numeric | other | real | ref
+    | smallint | struct | time | timestamp | tinyint | varbinary | varchar)
     #REQUIRED&gt;
 &lt;!ATTLIST column not-null (true|false) "false"&gt;
 &lt;!ATTLIST column auto-assign (true|false) "false"&gt;
@@ -5767,8 +5767,8 @@ definitions in XML.
 &lt;!ATTLIST index column CDATA #IMPLIED&gt;
 &lt;!ATTLIST index unique (true|false) "false"&gt;
 
-&lt;!-- the 'logical' attribute of pks should be set to 'true' if   --&gt; 
-&lt;!-- the primary key does not actually exist in the database,    --&gt; 
+&lt;!-- the 'logical' attribute of pks should be set to 'true' if   --&gt;
+&lt;!-- the primary key does not actually exist in the database,    --&gt;
 &lt;!-- but the given column should be used as a primary key for    --&gt;
 &lt;!-- O-R purposes                                                --&gt;
 &lt;!ELEMENT pk (on)*&gt;
@@ -5814,13 +5814,13 @@ A very basic schema definition.
         &lt;sequence name="S_ARTS"/&gt;
         &lt;table name="ARTICLE"&gt;
             &lt;column name="TITLE" type="varchar" size="255" not-null="true"/&gt;
-            &lt;column name="AUTHOR_FNAME" type="varchar" size="28"&gt; 
-            &lt;column name="AUTHOR_LNAME" type="varchar" size="28"&gt; 
-            &lt;column name="CONTENT" type="clob"&gt; 
+            &lt;column name="AUTHOR_FNAME" type="varchar" size="28"&gt;
+            &lt;column name="AUTHOR_LNAME" type="varchar" size="28"&gt;
+            &lt;column name="CONTENT" type="clob"&gt;
         &lt;/table&gt;
         &lt;table name="AUTHOR"&gt;
-            &lt;column name="FIRST_NAME" type="varchar" size="28" not-null="true"&gt; 
-            &lt;column name="LAST_NAME" type="varchar" size="28" not-null="true"&gt; 
+            &lt;column name="FIRST_NAME" type="varchar" size="28" not-null="true"&gt;
+            &lt;column name="LAST_NAME" type="varchar" size="28" not-null="true"&gt;
         &lt;/table&gt;
     &lt;/schema&gt;
 &lt;/schemas&gt;
@@ -5840,9 +5840,9 @@ of which span multiple columns.
         &lt;sequence name="S_ARTS"/&gt;
         &lt;table name="ARTICLE"&gt;
             &lt;column name="TITLE" type="varchar" size="255" not-null="true"/&gt;
-            &lt;column name="AUTHOR_FNAME" type="varchar" size="28"&gt; 
-            &lt;column name="AUTHOR_LNAME" type="varchar" size="28"&gt; 
-            &lt;column name="CONTENT" type="clob"&gt; 
+            &lt;column name="AUTHOR_FNAME" type="varchar" size="28"&gt;
+            &lt;column name="AUTHOR_LNAME" type="varchar" size="28"&gt;
+            &lt;column name="CONTENT" type="clob"&gt;
             &lt;pk column="TITLE"/&gt;
             &lt;fk to-table="AUTHOR" delete-action="exception"&gt;
                 &lt;join column="AUTHOR_FNAME" to-column="FIRST_NAME"/&gt;
@@ -5854,8 +5854,8 @@ of which span multiple columns.
             &lt;/index&gt;
         &lt;/table&gt;
         &lt;table name="AUTHOR"&gt;
-            &lt;column name="FIRST_NAME" type="varchar" size="28" not-null="true"&gt; 
-            &lt;column name="LAST_NAME" type="varchar" size="28" not-null="true"&gt; 
+            &lt;column name="FIRST_NAME" type="varchar" size="28" not-null="true"&gt;
+            &lt;column name="LAST_NAME" type="varchar" size="28" not-null="true"&gt;
             &lt;pk&gt;
                 &lt;on column="FIRST_NAME"/&gt;
                 &lt;on column="LAST_NAME"/&gt;

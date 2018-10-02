@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -30,9 +30,9 @@ import org.apache.openjpa.slice.jdbc.DistributedJDBCConfiguration;
 
 /**
  * Tests user-level configuration is set on per-slice basis.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class TestConfiguration extends SliceTestCase {
     protected String getPersistenceUnitName() {
@@ -62,7 +62,7 @@ public class TestConfiguration extends SliceTestCase {
         assertTrue(slices.contains("Two"));
         assertFalse(slices.contains("Three"));
     }
-    
+
     public void testDynamicConfiguration() {
         DistributedJDBCConfiguration conf = (DistributedJDBCConfiguration) emf.getConfiguration();
         List<String> slices = conf.getAvailableSliceNames();
@@ -76,9 +76,9 @@ public class TestConfiguration extends SliceTestCase {
         newProps.put("openjpa.slice.newslice.ConnectionDriverName",
                 "org.apache.derby.jdbc.EmbeddedDriver");
         bf.addSlice("newslice", newProps);
-        
+
         assertTrue(conf.getActiveSliceNames().contains("newslice"));
-        
-        
+
+
     }
 }

@@ -50,7 +50,7 @@ public class TestNonstandardMappingAnnotations
     public void setUp() {
         setUp(NonstandardMappingEntity.class, NonstandardMappingEntity3.class, ExtensionsEntity.class,
             NonstandardMappingMappedSuper.class, EmbedValue2.class, EmbedValue3.class,
-            EmbedValue.class, NonstandardMappingEntity4.class, NonstandardMappingMappedSuper4.class, 
+            EmbedValue.class, NonstandardMappingEntity4.class, NonstandardMappingMappedSuper4.class,
             CLEAR_TABLES, RETAIN_DATA);
 
         // trigger complete resolution of metadata etc.
@@ -212,9 +212,9 @@ public class TestNonstandardMappingAnnotations
     }
 
     public void testInsertAndRetrieve() {
-        if (_dict instanceof PostgresDictionary) 
+        if (_dict instanceof PostgresDictionary)
             return;
-        
+
         NonstandardMappingEntity pc = new NonstandardMappingEntity();
         pc.getSuperCollection().add("super");
         pc.setCustom(new Point(1, 2));
@@ -320,7 +320,7 @@ public class TestNonstandardMappingAnnotations
         pc.setPoint(point);
         pc.setId(1);
         pc.setName("name1");
-        
+
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(pc);
@@ -333,7 +333,7 @@ public class TestNonstandardMappingAnnotations
         assertEquals("name1", pc.getName());
         assertEquals(1.0, pc.getPoint().getX());
         assertEquals(2.0, pc.getPoint().getY());
-        
+
         for (int i = 0; i < 2; i++) {
             Query query = em.createQuery("select s from NonstandardMappingEntity4 s where s.point = :point");
             query.setParameter("point", new Point(1, 2));
@@ -344,7 +344,7 @@ public class TestNonstandardMappingAnnotations
             }
             em.clear();
         }
-        
+
         em.close();
     }
 }

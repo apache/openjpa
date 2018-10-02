@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -138,7 +138,7 @@ public class FieldMappingInfo
             return null;
 
         Table table = field.getDefiningMapping().getTable();
-        DBIdentifier schemaName = (table == null) ? DBIdentifier.NULL 
+        DBIdentifier schemaName = (table == null) ? DBIdentifier.NULL
             : table.getSchema().getIdentifier();
 
         // if we have no join columns defined, there may be class-level join
@@ -170,7 +170,7 @@ public class FieldMappingInfo
         }
         return null;
     }
-    
+
     /**
      * Return the join from the field table to the owning class table.
      */
@@ -180,12 +180,12 @@ public class FieldMappingInfo
     	// if the given field is embedded then consider primary table of owner
         return getJoin(field, table, adapt, getColumns());
     }
-    
+
     public ForeignKey getJoin(final FieldMapping field, Table table,
             boolean adapt, List<Column> cols) {
         if (cols.isEmpty()) {
         	ClassMapping mapping;
-        	if (field.isEmbedded() && 
+        	if (field.isEmbedded() &&
                     field.getDeclaringMapping().getEmbeddingMapping() != null) {
                 mapping = field.getDeclaringMapping().getEmbeddingMapping()
         			.getFieldMapping().getDeclaringMapping();
@@ -212,7 +212,7 @@ public class FieldMappingInfo
         return createForeignKey(field, "join", cols, def, table, cls, cls,
             false, adapt);
     }
-    
+
     private ClassMapping getDefiningMapping(FieldMapping field) {
         ClassMapping clm = field.getDefiningMapping();
         ValueMappingImpl value = (ValueMappingImpl)clm.getEmbeddingMetaData();
@@ -221,7 +221,7 @@ public class FieldMappingInfo
         FieldMapping field1 = value.getFieldMapping();
         return getDefiningMapping(field1);
     }
-    
+
     /**
      * Unique constraint on the field join.
      */
@@ -237,7 +237,7 @@ public class FieldMappingInfo
                 getJoinUnique(field, fk.getTable(), fk.getColumns());
         return createUnique(field, "join", unq, fk.getColumns(), adapt);
     }
-    
+
     /**
      * Add Unique Constraint to the Join Table.
      */
@@ -246,16 +246,16 @@ public class FieldMappingInfo
     		_joinTableUniques = new ArrayList<Unique>();
     	_joinTableUniques.add(u);
     }
-    
+
     /**
      * Get the unique constraints associated with the Sequence table.
      */
-    public Unique[] getJoinTableUniques(FieldMapping field, boolean def, 
+    public Unique[] getJoinTableUniques(FieldMapping field, boolean def,
     		boolean adapt) {
         return getUniques(field, _joinTableUniques, def, adapt);
-    }   
-    
-    private Unique[] getUniques(FieldMapping field, List<Unique> uniques, 
+    }
+
+    private Unique[] getUniques(FieldMapping field, List<Unique> uniques,
     		boolean def, boolean adapt) {
         if (uniques == null || uniques.isEmpty())
             return new Unique[0];
@@ -269,14 +269,14 @@ public class FieldMappingInfo
                 Column uniqueColumn = table.getColumn(columnName);
                 uniqueColumns[i] = uniqueColumn;
             }
-            Unique unique = createUnique(field, "unique", template,  
+            Unique unique = createUnique(field, "unique", template,
                 uniqueColumns, adapt);
             if (unique != null)
                 result.add(unique);
         }
         return result.toArray(new Unique[result.size()]);
-    }   
-    
+    }
+
    /**
      * Index on the field join.
      */
@@ -326,7 +326,7 @@ public class FieldMappingInfo
         } else {
             tmplate.setIdentifier(DBIdentifier.newColumn("ordr", delimit));
         }
-        
+
         tmplate.setJavaType(JavaTypes.INT);
         if (!def.populateOrderColumns(field, table, new Column[]{ tmplate })
             && _orderCol == null)
@@ -395,7 +395,7 @@ public class FieldMappingInfo
         else
             _orderCol = null;
     }
-    
+
     /**
      * Sets internal constraint information to match given mapped constraint.
      */

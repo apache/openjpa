@@ -28,7 +28,7 @@ public class SecondProvider extends AbstractInstrumentationProvider {
         "QueryCache","org.apache.openjpa.instrumentation.QCInstrument",
         "QuerySQLCache","org.apache.openjpa.instrumentation.QSCInstrument"
     };
-    
+
     public void start() {
         setStarted(true);
     }
@@ -47,7 +47,7 @@ public class SecondProvider extends AbstractInstrumentationProvider {
     public void stopInstrument(Instrument instrument, boolean force) {
         instrument.stop();
     }
-    
+
     @Override
     public String[] getInstrumentAliases() {
         return INSTRUMENT_ALIASES;

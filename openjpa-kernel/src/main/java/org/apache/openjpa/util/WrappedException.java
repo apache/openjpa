@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -25,8 +25,8 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * Identifiable exception type which wraps an internal runtime exception.
  */
 public class WrappedException extends OpenJPAException {
-    
-    /* 
+
+    /*
      * Methods extending OpenJPAException
      * See StoreException for similar behavior
      */
@@ -53,5 +53,5 @@ public class WrappedException extends OpenJPAException {
     @Override
     public int getType() {
         return WRAPPED;
-    }    
+    }
 }

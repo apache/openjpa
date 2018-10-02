@@ -19,17 +19,17 @@
 package org.apache.openjpa.trader.service;
 
 public class TradeEvent {
-    enum Type {LOGIN, ASK, BID, WITHDRAW, REFRESH, TRADE, MATCH, 
+    enum Type {LOGIN, ASK, BID, WITHDRAW, REFRESH, TRADE, MATCH,
                STOCK_LOOKUP, QUERY_TRADE, MARKET_FEED};
-    
+
     public final Type type;
     public final long time;
     public final String description;
-    
+
     public TradeEvent(Type type, long elapsedTime) {
         this(type, elapsedTime, "");
     }
-    
+
     public TradeEvent(Type type, long elapsedTime, String txt) {
         this.type = type;
         this.time = elapsedTime;

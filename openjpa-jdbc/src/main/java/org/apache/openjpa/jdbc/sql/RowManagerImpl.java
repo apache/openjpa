@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -80,10 +80,10 @@ public class RowManagerImpl
      * on construction.
      */
     public List<PrimaryRow> getOrdered() {
-        if(_primaryOrder == null ) { 
+        if(_primaryOrder == null ) {
             return Collections.emptyList();
         }
-        else { 
+        else {
             return _primaryOrder;
         }
     }
@@ -104,10 +104,10 @@ public class RowManagerImpl
      * Return all updated primary rows.
      */
     public Collection<PrimaryRow> getUpdates() {
-        if(_updates == null ){ 
+        if(_updates == null ){
             return Collections.emptyList();
         }
-        else { 
+        else {
             return _updates.values();
         }
     }
@@ -116,7 +116,7 @@ public class RowManagerImpl
      * Return all deleted primary rows.
      */
     public Collection<PrimaryRow> getDeletes() {
-        if(_deletes == null) { 
+        if(_deletes == null) {
             return Collections.emptyList();
         }
         else {
@@ -128,10 +128,10 @@ public class RowManagerImpl
      * Return all inserted and updated secondary rows.
      */
     public Collection<SecondaryRow> getSecondaryUpdates() {
-        if(_secondaryUpdates == null) { 
+        if(_secondaryUpdates == null) {
             return Collections.emptyList();
         }
-        else { 
+        else {
             return _secondaryUpdates;
         }
     }
@@ -140,10 +140,10 @@ public class RowManagerImpl
      * Return all deleted secondary rows.
      */
     public Collection<SecondaryRow> getSecondaryDeletes() {
-        if(_secondaryDeletes == null) { 
+        if(_secondaryDeletes == null) {
             return Collections.emptyList();
         }
-        else { 
+        else {
             return _secondaryDeletes;
         }
     }
@@ -152,10 +152,10 @@ public class RowManagerImpl
      * Return any 'all row' updates.
      */
     public Collection<Row> getAllRowUpdates() {
-        if(_allRowUpdates == null) { 
+        if(_allRowUpdates == null) {
             return Collections.emptyList();
         }
-        else { 
+        else {
             return _allRowUpdates;
         }
     }
@@ -164,13 +164,13 @@ public class RowManagerImpl
      * Return any 'all row' deletes.
      */
     public Collection<Row> getAllRowDeletes() {
-        if(_allRowDeletes == null) { 
+        if(_allRowDeletes == null) {
             return Collections.emptyList();
         }
-        else { 
+        else {
             return _allRowDeletes;
         }
-        
+
     }
 
     public Row getSecondaryRow(Table table, int action) {

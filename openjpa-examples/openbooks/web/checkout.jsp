@@ -1,4 +1,4 @@
-<%-- 
+<%--
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
 --%>
 <!-- ===============================================================================================      -->
 <!--      This JSP page demonstrates usage of OpenBookService to purchase Books.       -->
@@ -33,31 +33,31 @@
 <div id="help">
 <h3>Composite Relation and Derived Identity</h3>
 
-  You have just created a  
-  <a href="generated-html/openbook/domain/PurchaseOrder.java.html#init" type="popup">new Purchase Order 
-  </a>.  Each Book in 
+  You have just created a
+  <a href="generated-html/openbook/domain/PurchaseOrder.java.html#init" type="popup">new Purchase Order
+  </a>.  Each Book in
   the Shopping Cart is turned into separate line item for the order and the Purchase
   Order and all its line items are inserted as new database records. All this happened with
   this <a href="generated-html/openbook/server/OpenBookServiceImpl.java.html#placeOrder" type="popup">
-  few lines of Java Code</a> 
+  few lines of Java Code</a>
   <br>
   <ul>
   <li><b>Transitive Persistence</b>:
-  The line items are persisted without any <em>explicit</em> call to persist because persist operation 
-  <a href="generated-html/openbook/domain/PurchaseOrder.java.html#items" type="popup"> cascades 
+  The line items are persisted without any <em>explicit</em> call to persist because persist operation
+  <a href="generated-html/openbook/domain/PurchaseOrder.java.html#items" type="popup"> cascades
   via the order-line item relation</a>. During persist, the JPA provider generated a new
-  <a href="generated-html/openbook/domain/PurchaseOrder.java.html#id" type="popup"> identity of 
-  the Purchase Order</a> automatically. 
+  <a href="generated-html/openbook/domain/PurchaseOrder.java.html#id" type="popup"> identity of
+  the Purchase Order</a> automatically.
   </li>
   <li><b>Compound, Derived identity</b>:
-  The identity generation, in this case, is more interesting if you look at the 
+  The identity generation, in this case, is more interesting if you look at the
   <a href="generated-html/openbook/domain/LineItem.java.html#id" type="popup">
   identity used by the line items</a>. Line Item uses <em>compound, derived</em>
   identity. It is <em>compound</em> because more than one field make up the identity.
   It is <em>derived</em> because one of the identity field borrows its value
   from the owning Purchase Order's identity. Because of such dependency, the persistent
-  identity of a Line Item can only be assigned only after a new 
-  identity value for a Purchase Order gets generated during transaction commit.    
+  identity of a Line Item can only be assigned only after a new
+  identity value for a Purchase Order gets generated during transaction commit.
   </li>
   <li><b>Composite Relation</b>: Purchase Order - Line Item relationship is by semantics,
   a composite relation. Simply stated, life time of a Line Item is completely controlled
@@ -66,23 +66,23 @@
   <br>
   The Java language provides no support for composite
   relationship -- but it is a common pattern for persistent objects. The new JPA features
-  of derived identity combined with orphan delete (another new feature) and cascaded 
+  of derived identity combined with orphan delete (another new feature) and cascaded
   persistent operations provides an application to reliably express a classic Master-Details
-  pattern in their application.     
+  pattern in their application.
   </li>
   </ul>
-  
+
 </div>
 
 <div id="content" style="width: 600px; display: block">
-<% 
-   OpenBookService service = (OpenBookService)session.getAttribute(KEY_SERVICE); 
+<%
+   OpenBookService service = (OpenBookService)session.getAttribute(KEY_SERVICE);
    ShoppingCart cart = (ShoppingCart)session.getAttribute(KEY_CART);
    PurchaseOrder order = null;
    if (cart.isEmpty()) {
 %>
         <jsp:forward page="<%=PAGE_SEARCH%>"/>
-<% 
+<%
    } else {
          order = service.placeOrder(cart);
    }
@@ -90,14 +90,14 @@
 <h3>Thank you for ordering from OpenBooks</h3>
 <p>
 <table>
-  <caption>Order : <%= order.getId() %> on <%= JSPUtility.format(order.getPlacedOn()) %> 
+  <caption>Order : <%= order.getId() %> on <%= JSPUtility.format(order.getPlacedOn()) %>
      for <%= order.getItems().size() %> Book<%= order.getItems().size() == 0 ? "" : "s" %>
   </caption>
   <thead>
     <tr>
-      <th width="10em">Title</th> 
+      <th width="10em">Title</th>
       <th width="04em">Quantity</th>
-      <th width="06em">Price</th> 
+      <th width="06em">Price</th>
     </tr>
   </thead>
   <tfoot>

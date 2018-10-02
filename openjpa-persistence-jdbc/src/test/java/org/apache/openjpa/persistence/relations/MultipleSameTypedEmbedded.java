@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -29,7 +29,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Version;
 
 @Entity
-public class MultipleSameTypedEmbedded { 
+public class MultipleSameTypedEmbedded {
 
     @Id
     @GeneratedValue
@@ -50,31 +50,31 @@ public class MultipleSameTypedEmbedded {
     @Version
     private Integer optLock;
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
     public EmbeddableWithRelation getEmbed1() {
-        return embed1; 
+        return embed1;
     }
 
     public void setEmbed1(EmbeddableWithRelation embed1) {
-        this.embed1 = embed1; 
+        this.embed1 = embed1;
     }
 
     public EmbeddableWithRelation getEmbed2() {
-        return embed2; 
+        return embed2;
     }
 
     public void setEmbed2(EmbeddableWithRelation embed2) {
-        this.embed2 = embed2; 
+        this.embed2 = embed2;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 }

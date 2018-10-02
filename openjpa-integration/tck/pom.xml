@@ -180,10 +180,10 @@
                             <path refid="maven.test.classpath" />
                         </path>
                         <pathconvert property="cp.test.classpath" refid="cp.test" />
-                        
+
                         <!-- create missing directory for maven compile classpath -->
                         <mkdir dir="${basedir}/target/classes" />
-                        
+
                         <ant antfile="${basedir}/tck2-${tck2.level}.xml" inheritRefs="true">
                             <target name="run-tck" />
                             <property name="tck.db.name" value="${tck.db.name}" />
@@ -217,18 +217,18 @@
             <version>${slf4jVersion}</version>
           </dependency>
         </dependencies>
-        
+
         <!-- ^^^^^^^^^^^^^^^^^^^ -->
         <!-- JPA 2.0 TCK Profile -->
         <!-- ^^^^^^^^^^^^^^^^^^^ -->
       </profile>
-      
+
 
       <profile>
         <!-- vvvvvvvvvvvvvvvvvvvv -->
         <!-- JPA 1.0b TCK Profile -->
         <!-- vvvvvvvvvvvvvvvvvvvv -->
-        
+
         <id>tck-profile</id>
         <build>
           <plugins>
@@ -454,7 +454,7 @@ databaseName=${db.name}
             <version>${project.version}</version>
           </dependency>
         </dependencies>
-        
+
         <!-- ^^^^^^^^^^^^^^^^^^^^ -->
         <!-- JPA 1.0b TCK Profile -->
         <!-- ^^^^^^^^^^^^^^^^^^^^ -->

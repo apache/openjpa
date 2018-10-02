@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex1;
 
@@ -30,7 +30,7 @@ public class Division {
     int id;
 
     String name;
-    
+
     @OneToOne
     PhoneNumber phone;
 
@@ -66,12 +66,12 @@ public class Division {
             id == other.id)
             return true;
         return false;
-    } 
+    }
 
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + name.hashCode();
         ret = ret *31 + id;
         return ret;
-    }        
+    }
 }

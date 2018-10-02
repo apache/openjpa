@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -104,7 +104,7 @@ public class ImplHelper {
             } else if (load != StoreManager.FORCE_LOAD_NONE
                 || sm.getPCState() == PCState.HOLLOW) {
                 lm = sm.getContext().getLockManager();
-                if (!store.load(sm, sm.getUnloaded(fetch), fetch, 
+                if (!store.load(sm, sm.getUnloaded(fetch), fetch,
                     lm.getLockLevel(sm), context))
                     failed = addFailedId(sm, failed);
             } else if (!store.exists(sm, context))
@@ -141,7 +141,7 @@ public class ImplHelper {
      */
     public static Object generateFieldValue(StoreContext ctx,
         FieldMetaData fmd) {
-        return generateValue(ctx, fmd.getDefiningMetaData(), fmd, 
+        return generateValue(ctx, fmd.getDefiningMetaData(), fmd,
             fmd.getDeclaredTypeCode());
     }
 

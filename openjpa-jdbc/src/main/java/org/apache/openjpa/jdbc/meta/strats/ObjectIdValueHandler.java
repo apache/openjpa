@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -66,9 +66,9 @@ public class ObjectIdValueHandler
         _args = args.toArray();
         return vm.getColumns();
     }
-    
+
     private void setMapsIdCol(ValueMapping vm) {
-        if (!(vm instanceof FieldMapping)) 
+        if (!(vm instanceof FieldMapping))
             return;
         if (!((FieldMapping)vm).hasMapsIdCols())
             return;
@@ -79,7 +79,7 @@ public class ObjectIdValueHandler
         if (mapsIdColList.size() > 0 ) {
             setMapsIdCols(mapsIdColList, embeddedMeta);
             return;
-        } 
+        }
 
         FieldMapping[] fmds = embeddedMeta.getFieldMappings();
         for (int i = 0; i < fmds.length; i++) {
@@ -87,13 +87,13 @@ public class ObjectIdValueHandler
             if (mapsIdColList.size() == 0)
                 continue;
             ClassMapping embeddedMeta1 = (ClassMapping)fmds[i].getEmbeddedMetaData();
-            if (embeddedMeta1 != null) 
+            if (embeddedMeta1 != null)
                 setMapsIdCols(mapsIdColList, embeddedMeta1);
-            else 
+            else
                 setMapsIdCols(mapsIdColList, fmds[i]);
         }
     }
-    
+
     private void setMapsIdCols(List cols, ClassMapping cm) {
         for (int i = 0; i < cols.size(); i++) {
             DBIdentifier refColName = ((Column)cols.get(i)).getTargetIdentifier();
@@ -113,7 +113,7 @@ public class ObjectIdValueHandler
             fm.getValueInfo().setMapsIdColumns(cols);
             return;
         }
-            
+
         for (int i = 0; i < cols.size(); i++) {
             DBIdentifier refColName = ((Column)cols.get(i)).getTargetIdentifier();
             if (isReferenceField(fm, refColName)) {
@@ -124,7 +124,7 @@ public class ObjectIdValueHandler
             }
         }
     }
-    
+
     private FieldMapping getReferenceField(ClassMapping cm, DBIdentifier refColName) {
         FieldMapping[] fmds = cm.getFieldMappings();
         for (int i = 0; i < fmds.length; i++) {
@@ -133,16 +133,16 @@ public class ObjectIdValueHandler
         }
         return null;
     }
-    
+
     private boolean isReferenceField(FieldMapping fm, DBIdentifier refColName) {
         List cols = fm.getValueInfo().getColumns();
         if (cols.size() == 0) {
             if (fm.getName().equals(refColName.getName()))
-                return true;                
+                return true;
         } else {
             if (((Column)cols.get(0)).getIdentifier().equals(refColName))
                 return true;
-        } 
+        }
         return false;
     }
 

@@ -54,7 +54,7 @@ public class EmbedOwner {
 
     @ElementCollection
     Set<EmbedValue> embedCollection;
-    
+
     @Basic
     @Column(name = "OWN_BASIC")
     protected String basic;
@@ -82,7 +82,7 @@ public class EmbedOwner {
     public EmbedValue getEmbed() {
         return embed;
     }
-    
+
     public Set<EmbedValue> getEmbedCollection() {
         return embedCollection;
     }

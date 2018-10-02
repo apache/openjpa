@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.enhance.common.apps;
@@ -26,7 +26,7 @@ import javax.persistence.Entity;
 public class IDOwningClassTestEntity {
     @EmbeddedId
     EmbeddableEntityWithIDAnnotation pk = new EmbeddableEntityWithIDAnnotation(new Long(2012), new Long(2000));
-    
+
     String name;
-    
+
 }

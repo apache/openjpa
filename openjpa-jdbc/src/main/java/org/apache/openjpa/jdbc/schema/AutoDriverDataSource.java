@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.schema;
 
@@ -29,7 +29,7 @@ import java.util.Properties;
  */
 public class AutoDriverDataSource
     extends DBCPDriverDataSource {
-    
+
     @Override
     public Connection getConnection(Properties props) throws SQLException {
         // if we're using managed transactions, or user specified a DBCP driver

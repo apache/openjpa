@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -35,7 +35,7 @@ import org.apache.openjpa.kernel.StateManagerImpl;
  *
  * @author Abe White
  */
-public class ProxyCollections 
+public class ProxyCollections
     extends Proxies {
 
     /**
@@ -71,7 +71,7 @@ public class ProxyCollections
      * @param added whether the object was added
      * @return <code>added</code>, for convenience
      */
-    public static boolean afterAdd(ProxyCollection coll, Object value, 
+    public static boolean afterAdd(ProxyCollection coll, Object value,
         boolean added) {
         if (!isDirectAccess(coll) && added && coll.getChangeTracker() != null) {
             setDirectAccess(coll,true);
@@ -129,7 +129,7 @@ public class ProxyCollections
      * @param added whether the object was added
      * @return <code>added</code>, for convenience
      */
-    public static boolean afterOffer(ProxyCollection coll, Object value, 
+    public static boolean afterOffer(ProxyCollection coll, Object value,
         boolean added) {
         return afterAdd(coll, value, added);
     }
@@ -137,7 +137,7 @@ public class ProxyCollections
     /**
      * Override for {@link List#addAll(int, Collection)}.
      */
-    public static boolean addAll(ProxyCollection coll, int index, 
+    public static boolean addAll(ProxyCollection coll, int index,
         Collection values) {
         List list = (List) coll;
         for (Iterator itr = values.iterator(); itr.hasNext(); index++)
@@ -174,7 +174,7 @@ public class ProxyCollections
     /**
      * Wrap given iterator in a proxy.
      */
-    public static Iterator afterIterator(final ProxyCollection coll, 
+    public static Iterator afterIterator(final ProxyCollection coll,
         final Iterator itr) {
         // check for proxied; some coll impls delegate iterator methods
         if (itr instanceof ProxyIterator)
@@ -205,7 +205,7 @@ public class ProxyCollections
     /**
      * Wrap given iterator in a proxy.
      */
-    public static ListIterator afterListIterator(final ProxyCollection coll, 
+    public static ListIterator afterListIterator(final ProxyCollection coll,
         int idx, final ListIterator itr) {
         return afterListIterator(coll, itr);
     }
@@ -213,7 +213,7 @@ public class ProxyCollections
     /**
      * Wrap given iterator in a proxy.
      */
-    public static ListIterator afterListIterator(final ProxyCollection coll, 
+    public static ListIterator afterListIterator(final ProxyCollection coll,
         final ListIterator itr) {
         // check for proxied; some coll impls delegate iterator methods
         if (itr instanceof ProxyListIterator)
@@ -284,7 +284,7 @@ public class ProxyCollections
 
     /**
      * Call before invoking {@link List#remove(int)} on super.
-     */ 
+     */
     public static void beforeRemove(ProxyCollection coll, int index) {
         dirty(coll, false);
     }
@@ -294,8 +294,8 @@ public class ProxyCollections
      *
      * @param removed the removed object
      * @return the removed object, for convenience
-     */ 
-    public static Object afterRemove(ProxyCollection coll, int index, 
+     */
+    public static Object afterRemove(ProxyCollection coll, int index,
         Object removed) {
         if (coll.getChangeTracker() != null)
             ((CollectionChangeTracker) coll.getChangeTracker()).
@@ -306,7 +306,7 @@ public class ProxyCollections
 
     /**
      * Call before invoking {@link Vector#removeElementAt(int)} on super.
-     */ 
+     */
     public static void beforeRemoveElementAt(ProxyCollection coll, int index) {
         beforeRemove(coll, index);
     }
@@ -326,8 +326,8 @@ public class ProxyCollections
      *
      * @param removed whether the object was removed
      * @return whether the object was removed, for convenience
-     */ 
-    public static boolean afterRemove(ProxyCollection coll, Object o, 
+     */
+    public static boolean afterRemove(ProxyCollection coll, Object o,
         boolean removed){
         boolean isDelayed = isDelayed(coll);
         boolean direct = isDirectAccess(coll);
@@ -336,7 +336,7 @@ public class ProxyCollections
                 return false;
         }
         if (!direct && coll.getChangeTracker() != null) {
-            // switch on direct access to prevent the removed op from 
+            // switch on direct access to prevent the removed op from
             // inadvertently loading the collection
             setDirectAccess(coll, true);
             ((CollectionChangeTracker) coll.getChangeTracker()).removed(o);
@@ -355,7 +355,7 @@ public class ProxyCollections
         }
         return false;
     }
-    
+
     private static void setDirectAccess(ProxyCollection coll, boolean direct) {
         if (coll instanceof DelayedProxy) {
             DelayedProxy dpxy = (DelayedProxy)coll;
@@ -372,8 +372,8 @@ public class ProxyCollections
 
     /**
      * Call after invoking {@link Vector#removeElement} on super.
-     */ 
-    public static boolean afterRemoveElement(ProxyCollection coll, Object o, 
+     */
+    public static boolean afterRemoveElement(ProxyCollection coll, Object o,
         boolean removed) {
         return afterRemove(coll, o, removed);
     }
@@ -461,7 +461,7 @@ public class ProxyCollections
     /**
      * Call before invoking {@link List#set} on super.
      */
-    public static void beforeSet(ProxyCollection coll, int index, 
+    public static void beforeSet(ProxyCollection coll, int index,
         Object element) {
         assertAllowedType(element, coll.getElementType());
         dirty(coll, true);
@@ -473,7 +473,7 @@ public class ProxyCollections
      * @param replaced the replaced object
      * @return the replaced object, for convenience
      */
-    public static Object afterSet(ProxyCollection coll, int index, 
+    public static Object afterSet(ProxyCollection coll, int index,
         Object element, Object replaced) {
         if (replaced != element)
             removed(coll, replaced, false);
@@ -497,16 +497,16 @@ public class ProxyCollections
     }
 
     /**
-     * Marker interface for a proxied iterator. 
+     * Marker interface for a proxied iterator.
      */
-    public static interface ProxyIterator 
+    public static interface ProxyIterator
         extends Iterator {
     }
 
     /**
-     * Marker interface for a proxied list iterator. 
+     * Marker interface for a proxied list iterator.
      */
-    public static interface ProxyListIterator 
+    public static interface ProxyListIterator
         extends ProxyIterator, ListIterator {
     }
 
@@ -569,7 +569,7 @@ public class ProxyCollections
             }
         }
     }
-    
+
     public static boolean isDelayed(ProxyCollection proxy) {
         if (proxy instanceof DelayedProxy) {
             DelayedProxy dProxy = (DelayedProxy)proxy;
@@ -579,7 +579,7 @@ public class ProxyCollections
         }
         return false;
     }
-    
+
     private static boolean[] checkState(ProxyCollection proxy) {
         boolean[] state = new boolean[2];
         DelayedProxy dProxy = (DelayedProxy)proxy;
@@ -589,7 +589,7 @@ public class ProxyCollections
             // If the broker assigned to this proxy is null, closed or no longer
             // manages the pc, produce a new one
             Broker broker = sm.getContext().getBroker();
-            if (dProxy.isDetached() || broker == null || broker.isClosed() 
+            if (dProxy.isDetached() || broker == null || broker.isClosed()
                 || (!broker.isClosed() && !broker.isPersistent(sm.getPersistenceCapable()))) {
                 state[0] = true;
                 broker = dProxy.getBroker();
@@ -608,7 +608,7 @@ public class ProxyCollections
         }
         return state;
     }
-    
+
     private static void clearStateManager(ProxyCollection proxy) {
         OpenJPAStateManager sm = proxy.getOwner();
         if (sm != null) {

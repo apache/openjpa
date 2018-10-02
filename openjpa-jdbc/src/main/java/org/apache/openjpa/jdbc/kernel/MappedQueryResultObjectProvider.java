@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -404,12 +404,12 @@ class MappedQueryResultObjectProvider
                 return _res.getLong((Column) obj, joins);
             return _res.getLong(obj);
         }
-        
+
         /*
          * OPENJPA-2651: Added to allow the column to be translated (from the
          * actual column name to the name provided in an @SqlResultSetMapping/@FieldResult.
-         * 
-         * (non-Javadoc) 
+         *
+         * (non-Javadoc)
          * @see org.apache.openjpa.jdbc.sql.AbstractResult#getObject(org.apache.
          * openjpa.jdbc.schema.Column, java.lang.Object, org.apache.openjpa.jdbc.sql.Joins)
          */
@@ -428,10 +428,10 @@ class MappedQueryResultObjectProvider
                 if (resultCol != null) {
                     int javaType = col.getJavaType();
                     col = new Column(DBIdentifier.newColumn(resultCol.toString()), col.getTable());
-                    col.setJavaType(javaType);                    
+                    col.setJavaType(javaType);
                 }
                 return _res.getObject(col, arg, joins);
-            }                
+            }
             return _res.getObject(obj, metaTypeCode, arg);
         }
 
@@ -448,7 +448,7 @@ class MappedQueryResultObjectProvider
                 return _res.getObject((Column) obj, arg, joins);
             return _res.getObject(obj, metaTypeCode, arg);
         }
-        
+
         protected Ref getRefInternal(Object obj, Map map, Joins joins)
             throws SQLException {
             if (obj instanceof Column)

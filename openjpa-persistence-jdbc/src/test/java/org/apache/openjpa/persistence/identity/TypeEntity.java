@@ -33,8 +33,8 @@ public class TypeEntity {
 
 	@Id
 	private Long id;
-	
+
 	private String code;
-	
+
 	// ...
 }

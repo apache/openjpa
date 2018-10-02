@@ -42,9 +42,9 @@ import org.apache.openjpa.enhance.StateManager;
  * that is supplied at construction.
  * <br>
  * The table view uses specialized cell renderer to display single-valued and multi-valued
- * association.  
- * 
- * 
+ * association.
+ *
+ *
  * @author Pinaki Poddar
  *
  */
@@ -52,27 +52,27 @@ import org.apache.openjpa.enhance.StateManager;
 public class EntityTable<T> extends JTable {
     private InstanceCellRenderer instanceCellRenderer;
     private CollectionCellRenderer collectionCellRenderer;
-    
+
     public EntityTable(Class<T> cls, List<T> data, int styleBits, EntityManagerFactory unit) {
         super();
         instanceCellRenderer   = new InstanceCellRenderer(unit.getPersistenceUnitUtil());
         collectionCellRenderer = new CollectionCellRenderer();
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
+
         setModel(new EntityDataModel<T>(cls, data,  unit.getMetamodel(), styleBits));
         getModel().addTableModelListener(this);
         initColumnSizes();
         setFillsViewportHeight(true);
     }
-    
-    
+
+
     public InstanceCellRenderer getInstanceRenderer() {
         return instanceCellRenderer;
     }
-    
+
     /**
      * Gets the special renderer for single- and multi-valued association.
-     * Otherwise uses the super classes' renderer defined by the field type.    
+     * Otherwise uses the super classes' renderer defined by the field type.
      */
     public TableCellRenderer getCellRenderer(int row, int column) {
         Attribute<?,?> attr = ((EntityDataModel)getModel()).getAttribute(column);
@@ -89,10 +89,10 @@ public class EntityTable<T> extends JTable {
         if (renderer instanceof DefaultTableCellRenderer) {
             ((DefaultTableCellRenderer)renderer).setHorizontalAlignment(JLabel.CENTER);
         }
-        
+
         return renderer;
     }
-    
+
     public TableCellEditor getCellEditor(int row, int column) {
         Attribute<?,?> attr = ((EntityDataModel)getModel()).getAttribute(column);
         if (attr == null)
@@ -101,7 +101,7 @@ public class EntityTable<T> extends JTable {
             return new DefaultCellEditor((JComboBox)getCellRenderer(row, column));
         return super.getCellEditor(row, column);
     }
-    
+
     /**
      * Picks good column sizes.
      * If all column heads are wider than the column's cells'
@@ -112,7 +112,7 @@ public class EntityTable<T> extends JTable {
         TableColumn column = null;
         Component comp     = null;
         int headerWidth    = 0;
-        
+
         TableCellRenderer headerRenderer =  getTableHeader().getDefaultRenderer();
 
         for (int columnIndex = 0; columnIndex < model.getColumnCount(); columnIndex++) {
@@ -126,7 +126,7 @@ public class EntityTable<T> extends JTable {
             TableCellRenderer renderer = getCellRenderer(0, columnIndex);
             int rowCount = Math.min(model.getRowCount(), 10);
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                Object value = model.getValueAt(rowIndex, columnIndex); 
+                Object value = model.getValueAt(rowIndex, columnIndex);
                 comp = renderer.getTableCellRendererComponent(
                                  this, value,
                                  false, false, rowIndex, columnIndex);
@@ -135,26 +135,26 @@ public class EntityTable<T> extends JTable {
             column.setPreferredWidth(Math.max(headerWidth, cellWidth));
         }
     }
-    
+
     /**
      * Renders the value of a persistent entity in a table column as the persistent identifier.
      * The persistent identifier is extracted by the new {@link PersistenceUnitUtil utility} feature
      * of JPA 2.0 API.
-     * 
+     *
      * @author Pinaki Poddar
      *
      */
     public class InstanceCellRenderer extends DefaultTableCellRenderer {
         private final PersistenceUnitUtil util;
-        
+
         public InstanceCellRenderer(PersistenceUnitUtil util) {
             super();
             this.util = util;
         }
-        
+
         /**
          * Gets the stringified persistence identifier of the given instance.
-         * 
+         *
          */
         public String renderAsString(Object instance) {
             if (instance == null) {
@@ -178,10 +178,10 @@ public class EntityTable<T> extends JTable {
 
     }
 
-    
+
     /**
      * Renders a many-valued attribute as simply three dots.
-     * 
+     *
      * @author Pinaki Poddar
      *
      */
@@ -190,9 +190,9 @@ public class EntityTable<T> extends JTable {
             setPreferredSize(new Dimension(10,20));
         }
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, 
+        public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            return super.getTableCellRendererComponent(table, value == null ? null : "...", 
+            return super.getTableCellRendererComponent(table, value == null ? null : "...",
                     isSelected, hasFocus, row, column);
         }
 
@@ -200,5 +200,5 @@ public class EntityTable<T> extends JTable {
 
 
 
-    
+
 }

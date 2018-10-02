@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -44,14 +44,14 @@ import org.apache.openjpa.kernel.exps.Parameter;
 /**
  * Buffer for SQL statements that can be used to create
  * java.sql.PreparedStatements.
- * This buffer holds the SQL statement parameters and their corresponding 
+ * This buffer holds the SQL statement parameters and their corresponding
  * columns. The parameters introduced by the runtime system are distinguished
- * from the parameters set by the user.  
+ * from the parameters set by the user.
  *
  * @author Marc Prud'hommeaux
  * @author Abe White
  * @author Pinaki Poddar
- * 
+ *
  * @since 0.2.4
  */
 public final class SQLBuffer
@@ -64,12 +64,12 @@ public final class SQLBuffer
     private List _subsels = null;
     private List _params = null;
     private List _cols = null;
-    
+
     // Even element refers to an index of the _params list
     // Odd element refers to the user parameter
     private List _userIndex = null;
     private List _userParams = null;
-    
+
     /**
      * Default constructor.
      */
@@ -193,13 +193,13 @@ public final class SQLBuffer
             // fix up user parameter index(s)
             for (int i = 0; i < _userIndex.size(); i+=2) {
             	Object param = _userIndex.get(i+1);
-                
-            	Object previousParam = (i > 0) ? _userIndex.get(i-1) : null;            	
+
+            	Object previousParam = (i > 0) ? _userIndex.get(i-1) : null;
             	if ( param != previousParam) {
             		_userIndex.set(i, _userParams.indexOf(param));
             	}else{
-            		//if there are multiple parameters for the in clause or the combined PK field, 
-            		//we got duplicate param objects in _userParams list. 
+            		//if there are multiple parameters for the in clause or the combined PK field,
+            		//we got duplicate param objects in _userParams list.
             		//In order to find the right index, we have to skip params that's checked already.
             		int previousUserIndex = (Integer)_userIndex.get(i-2);
             		int userParamindex = 0;
@@ -211,11 +211,11 @@ public final class SQLBuffer
                       }
                       userParamindex++;
                 	}
-            	}            	
+            	}
             }
         }
     }
-    
+
     public SQLBuffer append(DBIdentifier name) {
         _sql.append(_dict.toDBName(name));
         return this;
@@ -305,13 +305,13 @@ public final class SQLBuffer
     public SQLBuffer appendValue(Object o, Column col) {
         return appendValue(o, col, null);
     }
-    
+
     /**
      * Append a user parameter value for a specific column. User parameters
      * are marked as opposed to the parameters inserted by the internal runtime
      * system. This helps to reuse the buffer by reparmeterizing it with new
      * set of user parameters while the 'internal' parameters remain unchanged.
-     * 
+     *
      * @param userParam if non-null, designates a 'user' parameter.
      */
     public SQLBuffer appendValue(Object o, Column col, Parameter userParam) {
@@ -368,7 +368,7 @@ public final class SQLBuffer
                     }
                 } else if (type == Boolean.class) {
                     Boolean b = (Boolean) o;
-                    // We store B(b)ooleans as ints. Convert 
+                    // We store B(b)ooleans as ints. Convert
                     _sql.append(_dict.getBooleanRepresentation().getRepresentation(b.booleanValue()));
                 } else {
                     _sql.append(o.toString());
@@ -380,8 +380,8 @@ public final class SQLBuffer
 
     private boolean validParamLiteralType(Class<?> type) {
         boolean ret = type == String.class
-                || type == Integer.class 
-                || type == Character.class 
+                || type == Integer.class
+                || type == Character.class
                 || type == Boolean.class
                 || type == Short.class
                 || type == Long.class
@@ -395,14 +395,14 @@ public final class SQLBuffer
     public List getParameters() {
         return (_params == null) ? Collections.EMPTY_LIST : _params;
     }
-    
+
     /**
-     * Get the user parameter positions in the list of parameters. The odd 
+     * Get the user parameter positions in the list of parameters. The odd
      * element of the returned list contains an integer index that refers
      * to the position in the {@link #getParameters()} list. The even element
-     * of the returned list refers to the user parameter key. 
-     * This structure is preferred over a normal map because a user parameter 
-     * may occur more than one in the parameters. 
+     * of the returned list refers to the user parameter key.
+     * This structure is preferred over a normal map because a user parameter
+     * may occur more than one in the parameters.
      */
     public List getUserParameters() {
         if (_userIndex == null)
@@ -416,7 +416,7 @@ public final class SQLBuffer
     public String getSQL() {
         return getSQL(false);
     }
-    
+
     /**
      * Returns the SQL for this buffer.
      *
@@ -648,7 +648,7 @@ public final class SQLBuffer
 
     /**
      * Replace current buffer string with the new string
-     * 
+     *
      * @param start replace start position
      * @param end replace end position
      * @param newString
@@ -656,7 +656,7 @@ public final class SQLBuffer
     public void replaceSqlString(int start, int end, String newString) {
         _sql.replace(start, end, newString);
     }
-    
+
     /**
      * Represents a subselect.
      */
@@ -681,11 +681,11 @@ public final class SQLBuffer
             return sub;
         }
     }
-    
+
     public void setParameters(List params) {
         _params = params;
     }
-    
+
     public List getColumns() {
         return _cols;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -66,7 +66,7 @@ public interface Joins {
      * Join the columns of the given foreign key, which represents a relation
      * via the given field name.
      */
-    public Joins outerJoinRelation(String name, ForeignKey fk, 
+    public Joins outerJoinRelation(String name, ForeignKey fk,
         ClassMapping target, int subclasses, boolean inverse, boolean toMany);
 
     /**
@@ -85,7 +85,7 @@ public interface Joins {
      * @param context
      */
     public Joins setJoinContext(Context context);
-    
+
     /**
      * Set the correlated variable name being traversed into
      * with the next join.

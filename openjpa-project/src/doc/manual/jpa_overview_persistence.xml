@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="jpa_overview_persistence">
     <title>
@@ -97,7 +97,7 @@ conf/META-INF/persistence.xml</filename>.
     <para>
 The <methodname>getPersistenceUtil</methodname> method returns a PersistenceUtil
 interface that can be used to determine whether an entity or attribute of an
-entity is loaded.  
+entity is loaded.
 </para>
 <programlisting>
 PersistenceUtil pUtil = Persistence.getPersistenceUtil();
@@ -114,14 +114,14 @@ if (!pUtil.isLoaded(myEntity)) {
 With the introduction of JPA 2.0, there are two versions of the
 <filename>persistence.xml</filename>.  The most current revision of the
 2.0 persistence schema is presented below.  Version 1.0 of the persistence
-schema can be found at 
+schema can be found at
 <ulink url="http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"/>.
         </para>
 <programlisting>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
     &lt;!-- persistence.xml schema --&gt;
 &lt;xsd:schema targetNamespace="http://java.sun.com/xml/ns/persistence"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:persistence="http://java.sun.com/xml/ns/persistence"
     elementFormDefault="qualified" attributeFormDefault="unqualified"
     version="2.0"&gt;
@@ -434,7 +434,7 @@ persistence-unit</literal> definitions. The root element should include the
 version attribute with the appropriate version, <literal>1.0</literal> for a
 version 1.0 file and <literal>2.0</literal> for a version 2.0 file.  Each
 persistence unit describes the configuration for the entity managers created by
-the persistence unit's entity manager factory. The persistence unit can specify 
+the persistence unit's entity manager factory. The persistence unit can specify
 these elements and attributes.
         </para>
         <itemizedlist>

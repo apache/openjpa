@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -299,7 +299,7 @@ public class OracleDictionary
                 String productVersion = meta.getDatabaseProductVersion()
                     .split("Release ",0)[1].split("\\.",0)[0];
                 int release = Integer.parseInt(productVersion);
-                
+
                 // warn sql92
                 if (release <= 8) {
                     if (joinSyntax == SYNTAX_SQL92 && log.isWarnEnabled())
@@ -498,7 +498,7 @@ public class OracleDictionary
             return super.toSelect(select, fetch, tables, where, group, having,
                 order, distinct, forUpdate, 0, Long.MAX_VALUE, sel);
         }
-        
+
         // if no skip, ordering, or distinct can use rownum directly
         SQLBuffer buf = new SQLBuffer(this);
         if (!requiresSubselectForRange(start, end, distinct, order)) {
@@ -638,7 +638,7 @@ public class OracleDictionary
     public void setClobString(PreparedStatement stmnt, int idx, String val,
         Column col)
         throws SQLException {
-    	
+
     	//We need a place to detect if the user is setting the 'supportsSetClob' property.
     	//While in previous releases this property had meaning, it is no longer useful
     	//given the code added via OPENJPA-1691.  As such, we need to warn user's the
@@ -779,10 +779,10 @@ public class OracleDictionary
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
         throws SQLException {
-        return getColumns(meta, 
-            DBIdentifier.newCatalog(catalog), 
-            DBIdentifier.newSchema(schemaName), 
-            DBIdentifier.newTable(tableName), 
+        return getColumns(meta,
+            DBIdentifier.newCatalog(catalog),
+            DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newTable(tableName),
             DBIdentifier.newColumn(columnName),conn);
     }
 
@@ -809,7 +809,7 @@ public class OracleDictionary
                 cols[i].setType(Types.VARCHAR);
             else if ("NCHAR".equalsIgnoreCase(typeName))
                 cols[i].setType(Types.CHAR);
-            else if ("XMLTYPE".equalsIgnoreCase(typeName)) { 
+            else if ("XMLTYPE".equalsIgnoreCase(typeName)) {
                 cols[i].setXML(true);
             }
         }
@@ -821,8 +821,8 @@ public class OracleDictionary
         String catalog, String schemaName, String tableName, Connection conn)
         throws SQLException {
         return getPrimaryKeys(meta,
-            DBIdentifier.newCatalog(catalog), 
-            DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newCatalog(catalog),
+            DBIdentifier.newSchema(schemaName),
             DBIdentifier.newTable(tableName), conn);
     }
 
@@ -882,8 +882,8 @@ public class OracleDictionary
         Connection conn)
         throws SQLException {
         return getIndexInfo(meta,
-            DBIdentifier.newCatalog(catalog), 
-            DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newCatalog(catalog),
+            DBIdentifier.newSchema(schemaName),
             DBIdentifier.newTable(tableName), unique, approx, conn);
     }
 
@@ -940,11 +940,11 @@ public class OracleDictionary
         String schemaName, String tableName, Connection conn, boolean partialKeys)
         throws SQLException {
         return getImportedKeys(meta,
-            DBIdentifier.newCatalog(catalog), 
-            DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newCatalog(catalog),
+            DBIdentifier.newSchema(schemaName),
             DBIdentifier.newTable(tableName), conn, partialKeys);
     }
-    
+
     @Override
     public ForeignKey[] getImportedKeys(DatabaseMetaData meta, DBIdentifier catalog,
         DBIdentifier schemaName, DBIdentifier tableName, Connection conn, boolean partialKeys)
@@ -996,7 +996,7 @@ public class OracleDictionary
                 setString(stmnt, idx++, convertSchemaCase(tableName), null);
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
-            List<ForeignKey> fkList = new ArrayList<ForeignKey>();            
+            List<ForeignKey> fkList = new ArrayList<ForeignKey>();
             Map<FKMapKey, ForeignKey> fkMap = new HashMap<FKMapKey, ForeignKey>();
 
             while (rs != null && rs.next()) {
@@ -1078,9 +1078,9 @@ public class OracleDictionary
      * {@link JavaTypes} or {@link JavaSQLTypes} constant.
      */
     @Override
-    public int getJDBCType(int metaTypeCode, boolean lob, int precis, 
-        int scale, boolean xml) {        
-        return getJDBCType(metaTypeCode, lob || xml, precis, scale);        
+    public int getJDBCType(int metaTypeCode, boolean lob, int precis,
+        int scale, boolean xml) {
+        return getJDBCType(metaTypeCode, lob || xml, precis, scale);
     }
 
     @Override
@@ -1177,7 +1177,7 @@ public class OracleDictionary
      * Returns a OpenJPA 3-compatible name for an auto-assign trigger.
      */
     protected String getOpenJPA3GeneratedKeyTriggerName(Column col) {
-        Table table = col.getTable();        
+        Table table = col.getTable();
         DBIdentifier sName = DBIdentifier.preCombine(table.getIdentifier(), "TRIG");
         return toDBName(getNamingUtil().makeIdentifierValid(sName, table.getSchema().
             getSchemaGroup(), maxTableNameLength, true));
@@ -1269,7 +1269,7 @@ public class OracleDictionary
             return EMPTY_CLOB;
 
         if (oracleClob_empty_lob_Method == null)
-            return null;       
+            return null;
 
         try {
             return EMPTY_CLOB = (Clob) oracleClob_empty_lob_Method.invoke(null, new Object[0]);
@@ -1297,11 +1297,11 @@ public class OracleDictionary
         return oraclePreparedStatementClass != null &&
             oraclePreparedStatementClass.isInstance(stmnt);
     }
-    
+
     /**
      * If this dictionary supports XML type,
      * use this method to append xml predicate.
-     * 
+     *
      * @param buf the SQL buffer to write the comparison
      * @param op the comparison operation to perform
      * @param lhs the left hand side of the comparison
@@ -1314,10 +1314,10 @@ public class OracleDictionary
             appendXmlComparison2(buf, op, lhs, rhs);
         else if (lhsxml)
             appendXmlComparison1(buf, op, lhs, rhs);
-        else 
+        else
             appendXmlComparison1(buf, op, rhs, lhs);
     }
-    
+
     /**
      * Append an xml comparison predicate
      *
@@ -1332,7 +1332,7 @@ public class OracleDictionary
         buf.append(" ").append(op).append(" ");
         rhs.appendTo(buf);
     }
-    
+
     /**
      * Append an xml comparison predicate (both operands map to xml column)
      *
@@ -1341,13 +1341,13 @@ public class OracleDictionary
      * @param lhs the left hand side of the comparison (maps to xml column)
      * @param rhs the right hand side of the comparison (maps to xml column)
      */
-    private void appendXmlComparison2(SQLBuffer buf, String op, 
+    private void appendXmlComparison2(SQLBuffer buf, String op,
         FilterValue lhs, FilterValue rhs) {
         appendXmlExtractValue(buf, lhs);
         buf.append(" ").append(op).append(" ");
         appendXmlExtractValue(buf, rhs);
     }
-    
+
     private void appendXmlExtractValue(SQLBuffer buf, FilterValue val) {
         buf.append("extractValue(").
             append(val.getColumnAlias(
@@ -1356,7 +1356,7 @@ public class OracleDictionary
         val.appendTo(buf);
         buf.append("')");
     }
-    
+
     public void insertClobForStreamingLoad(Row row, Column col, Object ob)
         throws SQLException {
         if (ob == null) {
@@ -1377,7 +1377,7 @@ public class OracleDictionary
         }
         return updateSuccessCnt;
     }
-    
+
     @Override
     public boolean isFatalException(int subtype, SQLException ex) {
         String errorState = ex.getSQLState();
@@ -1388,15 +1388,15 @@ public class OracleDictionary
                  errorCode == 4021 || errorCode == 4022))
                 || ("42000".equals(errorState) && errorCode == 2049))) {
             return false;
-        } 
+        }
         if ("72000".equals(errorState) && errorCode == 1013) {
             return false;
         }
         return super.isFatalException(subtype, ex);
     }
-    
+
     @Override
-    public void insertBlobForStreamingLoad(Row row, Column col, 
+    public void insertBlobForStreamingLoad(Row row, Column col,
         JDBCStore store, Object ob, Select sel) throws SQLException {
         if (ob == null) {
             col.setType(Types.OTHER);
@@ -1441,7 +1441,7 @@ public class OracleDictionary
             isJDBC4 = false;
         }
     }
-    
+
     @Override
     public String getIsNullSQL(String colAlias, int colType)  {
         switch(colType) {
@@ -1451,11 +1451,11 @@ public class OracleDictionary
         }
         return super.getIsNullSQL(colAlias, colType);
     }
-    
+
     @Override
-    public String getIsNotNullSQL(String colAlias, int colType) { 
-        switch(colType) { 
-            case Types.BLOB: 
+    public String getIsNotNullSQL(String colAlias, int colType) {
+        switch(colType) {
+            case Types.BLOB:
             case Types.CLOB:
                 return String.format("length (%s) != 0 ",  colAlias);
         }

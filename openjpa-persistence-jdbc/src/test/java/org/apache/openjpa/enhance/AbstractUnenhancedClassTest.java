@@ -206,13 +206,13 @@ public abstract class AbstractUnenhancedClassTest
                 ((UnenhancedSubtype) un).setIntField(17);
 
             assertTrue(em.isDirty(un));
-            
+
             em.getTransaction().commit();
 
             // make sure that the values are still up-to-date after
             // the commit happens
             assertEquals("baz", un.getStringField());
-            
+
             em.close();
 
             em = emf.createEntityManager();
@@ -312,7 +312,7 @@ public abstract class AbstractUnenhancedClassTest
         // we only expect lazy loading to work when we can redefine classes
         // or when accessing a property-access record that OpenJPA created.
         if (ClassRedefiner.canRedefineClasses(_log)
-            || (!userDefined 
+            || (!userDefined
             	&& AccessCode.isProperty(sm.getMetaData().getAccessType()))) {
 
             assertFalse(sm.getLoaded()

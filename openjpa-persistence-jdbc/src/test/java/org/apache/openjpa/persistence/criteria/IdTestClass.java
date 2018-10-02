@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -27,14 +27,14 @@ package org.apache.openjpa.persistence.criteria;
  * This class also must implement its <tt>equals()</tt> and <tt>hashCode()</tt> methods
  * properly i.e. involving the declared fields. Otherwise a JPA runtime will not work
  * properly.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class IdTestClass {
         String name;
         long   ssn;
-        
+
         @Override
         public int hashCode() {
                 final int prime = 31;
@@ -43,7 +43,7 @@ public class IdTestClass {
                 result = prime * result + (int) (ssn ^ (ssn >>> 32));
                 return result;
         }
-        
+
         @Override
         public boolean equals(Object obj) {
                 if (this == obj)

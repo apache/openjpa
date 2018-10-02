@@ -44,7 +44,7 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
         super.setUp(DROP_TABLES, Employee.class, Department.class, "openjpa.QueryCompilationCache", "all",
             "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm", "openjpa.QueryCache", "true"
             // This is a hack to work around using em.detach(...) w/ a 1.0 p.xml
-            , "openjpa.Compatibility", "CopyOnDetach=false" 
+            , "openjpa.Compatibility", "CopyOnDetach=false"
             );
 
         em = emf.createEntityManager();

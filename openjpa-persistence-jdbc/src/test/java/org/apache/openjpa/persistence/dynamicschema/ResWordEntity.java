@@ -30,7 +30,7 @@ public class ResWordEntity {
     private int id;
     private String alias;
     private int Boolean;
-    private Integer type; 
+    private Integer type;
 
     public void setId(int id) {
         this.id = id;

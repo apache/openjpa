@@ -34,7 +34,7 @@ import javax.persistence.metamodel.Type;
 
 /**
  * Static utility for analyzing persistent metadata model using JPA 2.0.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -44,25 +44,25 @@ public class MetamodelHelper {
     public static final int ATTR_BASIC   = 2;
     public static final int ATTR_SINGULAR_RELATION = 3;
     public static final int ATTR_PLURAL_RELATION   = 4;
-    
+
     public static final Color MIDNIGHT_BLUE = new Color(25,25,112);
     public static final Color DARK_GREEN = new Color(0,100,0);
     public static final Color KHAKI = new Color(240, 230, 140);
-    
+
     public static String getDisplayName(Type<?> type) {
         if (type instanceof EntityType) {
             return getDisplayName((EntityType<?>)type);
         }
         return getDisplayName(type.getJavaType());
     }
-    
+
     /**
      * Gets the displayed name of a given entity type.
      */
     public static String getDisplayName(EntityType<?> type) {
         return type.getName();
     }
-    
+
     public static String getDisplayName(Class<?> cls) {
       String fullName = cls.getName();
       if (fullName.startsWith("java.") || fullName.startsWith("openbook.domain.")) {
@@ -71,8 +71,8 @@ public class MetamodelHelper {
       }
       return fullName;
     }
-    
-    
+
+
     public static String getDisplayName(Attribute<?,?> attr) {
         StringBuilder buffer = new StringBuilder();
         buffer.append(getDisplayName(attr.getJavaType()));
@@ -81,18 +81,18 @@ public class MetamodelHelper {
                   .append(getDisplayName(((MapAttribute)attr).getElementType())).append(">");
         } else if (attr instanceof PluralAttribute) {
             buffer.append("<").append(getDisplayName(((PluralAttribute)attr).getElementType())).append(">");
-        } 
+        }
         buffer.append(" ").append(attr.getName());
         return buffer.toString();
     }
-    
-    
+
+
     public static <T> List<Attribute<? super T,?>> getAttributes(EntityType<T> type) {
         List<Attribute<? super T,?>> list = new ArrayList<Attribute<? super T,?>>(type.getAttributes());
         Collections.sort(list, new AttributeComparator());
         return list;
     }
-    
+
     public static int getAttributeType(Attribute<?, ?> a) {
         if (a instanceof SingularAttribute) {
             SingularAttribute<?, ?> sa = (SingularAttribute<?, ?>)a;
@@ -105,9 +105,9 @@ public class MetamodelHelper {
             if (a.isCollection()) return ATTR_PLURAL_RELATION;
         }
         return ATTR_BASIC;
-        
+
     }
-    
+
     public static <T> Set<SingularAttribute<? super T, ?>> getIdAttributes(EntityType<T> type) {
         Set<SingularAttribute<? super T,?>> attrs = type.getSingularAttributes();
         Set<SingularAttribute<? super T,?>> idAttrs = new HashSet<SingularAttribute<? super T,?>>();
@@ -118,7 +118,7 @@ public class MetamodelHelper {
         }
         return idAttrs;
     }
-    
+
     /**
      * Finds the derived target of the given type, if any. Otherwise null.
      */
@@ -132,7 +132,7 @@ public class MetamodelHelper {
         }
         return null;
     }
-    
+
     public static EntityType<?> getParentType(SingularAttribute<?,?> id) {
         if (id.getType() instanceof EntityType) {
             return (EntityType<?>)id.getType();
@@ -140,7 +140,7 @@ public class MetamodelHelper {
         return null;
     }
 
-    
+
     public static boolean isId(Attribute<?,?> a) {
         if (a instanceof SingularAttribute)
             return ((SingularAttribute<?,?>)a).isId();
@@ -151,7 +151,7 @@ public class MetamodelHelper {
             return ((SingularAttribute<?,?>)a).isVersion();
         return false;
     }
-    
+
     public static Color getColor(Attribute<?,?> attr) {
         if (isId(attr))
             return Color.RED;
@@ -159,7 +159,7 @@ public class MetamodelHelper {
             return Color.DARK_GRAY;
         return getColor(attr.getPersistentAttributeType());
     }
-    
+
     public static Color getColor(Attribute.PersistentAttributeType type) {
         switch (type) {
         case BASIC :             return Color.BLACK;
@@ -172,18 +172,18 @@ public class MetamodelHelper {
         default:                 return Color.BLACK;
         }
     }
-    
+
     public static Integer getAttributeTypeCode(Attribute<?,?> attr) {
         if (isId(attr))
             return 0;
         if (isVersion(attr))
             return 1;
-        
+
       switch (attr.getPersistentAttributeType()) {
-      case BASIC : 
+      case BASIC :
       case EMBEDDED:
           return 2;
-      case ONE_TO_ONE: 
+      case ONE_TO_ONE:
       case MANY_TO_ONE:
           return 3;
       case ONE_TO_MANY:
@@ -217,7 +217,7 @@ public class MetamodelHelper {
             return null;
         }
     }
-    
+
     private static Method getMethod(Class<?> type, String p) {
         try {
             String getter = "get" + Character.toUpperCase(p.charAt(0))+p.substring(1);
@@ -226,13 +226,13 @@ public class MetamodelHelper {
             e.printStackTrace();
         }
         return null;
-        
+
     }
 
-    
+
     /**
      * Compares EntityType by their dependency of derived targets.
-     * 
+     *
      * @author Pinaki Poddar
      *
      */
@@ -245,18 +245,18 @@ public class MetamodelHelper {
                 return -1;
             return o1.getName().compareTo(o2.getName());
         }
-        
+
     }
 
-    
+
     /**
      * Compares attribute by their qualification.
-     * Identity 
+     * Identity
      * Version
      * Basic
      * Singular association
      * Plural association
-     *  
+     *
      * @author Pinaki Poddar
      *
      */

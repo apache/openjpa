@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
@@ -24,7 +24,7 @@ import java.util.Map;
 public class StringParameterizable implements Parameterizable<String, String> {
 	private static final long serialVersionUID = -4289064323865338447L;
 	private Map<String, String> params = new HashMap<String, String>();
-	
+
 	public void addParameter(String key, String value) {
 		this.params.put(key, value);
 	}
@@ -44,7 +44,7 @@ public class StringParameterizable implements Parameterizable<String, String> {
 	public String getParameterValue(String key) {
 		return this.params.get(key);
 	}
-	
+
 	public void addAllParams(Map<String, String> newParams) {
 		if (newParams != null) {
 			params.putAll(newParams);

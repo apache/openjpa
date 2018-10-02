@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -42,7 +42,7 @@ public class ConcurrentDataCache
     private int _cacheSize = Integer.MIN_VALUE;
     private int _softRefs = Integer.MIN_VALUE;
     protected boolean _lru = false;
-    
+
     /**
      * Returns the underlying {@link CacheMap} that this cache is using.
      * This is not an unmodifiable view on the map, so care should be taken
@@ -127,7 +127,7 @@ public class ConcurrentDataCache
                 keyRemoved(key, expired);
             }
         };
-        
+
         return res;
     }
 
@@ -162,7 +162,7 @@ public class ConcurrentDataCache
     protected boolean unpinInternal(Object key) {
         return _cache.unpin (key);
 	}
-    
+
     protected boolean recacheUpdates() {
         return true;
     }

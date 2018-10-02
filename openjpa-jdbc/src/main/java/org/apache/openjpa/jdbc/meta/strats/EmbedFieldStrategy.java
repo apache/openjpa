@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -77,7 +77,7 @@ import org.apache.openjpa.util.MetaDataException;
  * @since 0.4.0
  */
 public class EmbedFieldStrategy
-    extends AbstractFieldStrategy   
+    extends AbstractFieldStrategy
     implements Embeddable {
 
     private static final int INSERT = 0;
@@ -409,9 +409,9 @@ public class EmbedFieldStrategy
             sm.storeObject(field.getIndex(), null);
             return;
         }
-        
+
         // handling of lazy embeddables.  if the embedded field is not part of any
-        // fetch group and the result does not contain any embeddable columns, 
+        // fetch group and the result does not contain any embeddable columns,
         // do not load the embeddable.
         if (fetch.requiresFetch(field) == FetchConfiguration.FETCH_NONE &&
             !containsEmbeddedResult(fetch, res)) {
@@ -430,45 +430,45 @@ public class EmbedFieldStrategy
 
         // After loading everything from result, load the rest of the
         // configured fields if anything is missing.
-        if (needsLoad && 
-            fetch.requiresFetch(field.getFieldMetaData()) == 
+        if (needsLoad &&
+            fetch.requiresFetch(field.getFieldMetaData()) ==
                 JDBCFetchConfiguration.FETCH_LOAD) {
           em.load(fetch);
         }
     }
 
     /*
-     * finds an eager fetch field and searches for it in the result.  
+     * finds an eager fetch field and searches for it in the result.
      * if the result does not contain it, assume that it contains no embeddable
-     * column data.  this is a fairly safe assumption given that the entire 
+     * column data.  this is a fairly safe assumption given that the entire
      * embeddable was marked lazy.
      */
     private boolean containsEmbeddedResult(FetchConfiguration fetch, Result res) {
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
         boolean containsUnloadedEagerField = false;
-        
+
         for (int i = 0; i < fields.length; i++) {
-            boolean inResultSet = checkResult(fields[i],res);                
+            boolean inResultSet = checkResult(fields[i],res);
             if (inResultSet) {
                 // At least one of the embeddable's field is in the ResultSet.
                 return true;
             }
-            
+
             if (fetch.requiresFetch(fields[i]) == FetchConfiguration.FETCH_LOAD) {
                 containsUnloadedEagerField = true;
             }
         }
-        
+
         // A field expected to be loaded eagerly was missing from the ResultSet.
         if (containsUnloadedEagerField == true) {
             return false;
         }
-        
-        // if all fields are lazy and in the default fetch group, populate the embeddable 
+
+        // if all fields are lazy and in the default fetch group, populate the embeddable
         // so its attributes can be loaded when accessed.
         return fetch.hasFetchGroup(FetchGroup.NAME_DEFAULT);
     }
-    
+
     private boolean checkResult(FieldMapping fm, Result res) {
         if (fm.getStrategy() instanceof Joinable) {
             Joinable strat = (Joinable)fm.getStrategy();
@@ -486,8 +486,8 @@ public class EmbedFieldStrategy
         // if the field is a collection, also check for an eager result which could result from
         // a non-lazy relationship in the embeddable
         int type = fm.getTypeCode();
-        if ((type == JavaTypes.ARRAY || 
-             type == JavaTypes.COLLECTION || 
+        if ((type == JavaTypes.ARRAY ||
+             type == JavaTypes.COLLECTION ||
              type == JavaTypes.MAP)
             && res.getEager(fm) != null) {
             return true;
@@ -515,7 +515,7 @@ public class EmbedFieldStrategy
                 } else {
                     fields[i].load(em, store, fetch, res);
                 }
-                needsLoad = needsLoad || (!em.getLoaded().get(i) && 
+                needsLoad = needsLoad || (!em.getLoaded().get(i) &&
                     fetch.requiresFetch(fields[i])
                         == FetchConfiguration.FETCH_LOAD);
             } finally {
@@ -613,7 +613,7 @@ public class EmbedFieldStrategy
 
         StoreContext ctx = store.getContext();
         // load primary key of owner entity
-        Object owner = field.getDefiningMapping().getObjectId(store, res, 
+        Object owner = field.getDefiningMapping().getObjectId(store, res,
             null, true, joins);
         OpenJPAStateManager em = ctx.embed(null, null, null, field);
         // set owner id
@@ -622,15 +622,15 @@ public class EmbedFieldStrategy
 
         // After loading everything from result, load the rest of the
         // configured fields if anything is missing.
-        if (needsLoad && 
-            fetch.requiresFetch(field.getFieldMetaData()) == 
+        if (needsLoad &&
+            fetch.requiresFetch(field.getFieldMetaData()) ==
                 JDBCFetchConfiguration.FETCH_LOAD) {
           em.load(fetch);
         }
-        
+
         return em.getManagedInstance();
     }
-    
+
     /////////////////////////////
     // Embeddable implementation
     /////////////////////////////
@@ -664,7 +664,7 @@ public class EmbedFieldStrategy
         else
             sm.storeObject(field.getIndex(), null);
     }
-    
+
 
     /**
      * State manager that represents a null embedded object.
@@ -1269,12 +1269,12 @@ public class EmbedFieldStrategy
         public boolean isDelayed(int field) {
             return false;
         }
-        
+
         @Override
         public void setDelayed(int field, boolean delay) {
             throw new InternalException();
         }
-        
+
         @Override
         public void loadDelayedField(int field) {
             throw new UnsupportedOperationException();

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -29,27 +29,27 @@ import javax.persistence.OneToMany;
 
 @Entity
 public class Department3 {
-    
+
     @Id
     int deptId;
-    
+
     @OneToMany(mappedBy="department", fetch=FetchType.EAGER)
     @MapKey(name="name")
     Map<EmployeeName3, Employee3> emps =
         new HashMap<EmployeeName3, Employee3>();
-    
+
     public int getDeptId() {
         return deptId;
     }
-    
+
     public void setDeptId(int deptId) {
         this.deptId = deptId;
     }
-    
+
     public Map<EmployeeName3, Employee3> getEmployees() {
         return emps;
     }
-    
+
     public void addEmployee(Employee3 emp) {
         emps.put(emp.getName(), emp);
     }

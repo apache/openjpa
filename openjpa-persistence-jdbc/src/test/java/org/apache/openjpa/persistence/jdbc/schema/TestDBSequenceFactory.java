@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
@@ -39,9 +39,9 @@ import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 public class TestDBSequenceFactory
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-        
+
     private Broker _broker;
-    
+
     /** Creates a new instance of TestDBSequenceFactory */
     public TestDBSequenceFactory() {
     }
@@ -95,7 +95,7 @@ public class TestDBSequenceFactory
                 seq.endConfiguration();
                 DataSource ds = conf.getDataSource2(null);
                 for (int i = 0; i < 51; i++)
-                    _set.add(seq.next(_broker, 
+                    _set.add(seq.next(_broker,
                         conf.getMetaDataRepositoryInstance().
                         getMetaData(RuntimeTest1.class, null, true)));
             } catch (Exception e) {
@@ -103,5 +103,5 @@ public class TestDBSequenceFactory
             }
         }
     }
-    
+
 }

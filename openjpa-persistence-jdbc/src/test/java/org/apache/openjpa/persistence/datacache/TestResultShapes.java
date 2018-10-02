@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -76,30 +76,30 @@ public class TestResultShapes extends AbstractTestCase {
     // FIXME Seetha Nov 3,2006
     // need to know about the 'this' parameter
 
-//	public void testCollectionOfCandidateClass() 
-//	{ 
+//	public void testCollectionOfCandidateClass()
+//	{
 //		Collection<String> ac = new ArrayList<String>();
 //		ac.add("this");
 //
 //		Collection<Class> bd = new ArrayList<Class>();
 //		bd.add(CacheObjectAChild1.class);
-//		
-//		arrayHelper(false, bd, null, true); 
+//
+//		arrayHelper(false, bd, null, true);
 //		mapHelper(false, bd, ac, true);
-//		rawHelper(false, CacheObjectAChild1.class, null, true); 
+//		rawHelper(false, CacheObjectAChild1.class, null, true);
 //	}
-//	
-//	public void testUniqueCandidateClass() 
-//	{ 
+//
+//	public void testUniqueCandidateClass()
+//	{
 //		Collection<String> ac = new ArrayList<String>();
 //		ac.add("this");
 //
 //		Collection<Class> bd = new ArrayList<Class>();
 //		bd.add(CacheObjectAChild1.class);
-//		
-//		arrayHelper(true, bd, null, true); 
+//
+//		arrayHelper(true, bd, null, true);
 //		mapHelper(true, bd, ac, true);
-//		rawHelper(true, CacheObjectAChild1.class, null, true); 
+//		rawHelper(true, CacheObjectAChild1.class, null, true);
 //	}
 
     public void testCollectionOfSingleValuedProjection() {

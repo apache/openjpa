@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -43,24 +43,24 @@ public class TestMappedById extends SingleEMFTestCase {
     public Map<Integer, Employee2> emps2 = new HashMap<Integer, Employee2>();
     public Map<String, Dependent2> deps2 = new HashMap<String, Dependent2>();
     public Map<String, Person1> persons1 = new HashMap<String, Person1>();
-    public Map<String, MedicalHistory1> medicals1 = 
+    public Map<String, MedicalHistory1> medicals1 =
         new HashMap<String, MedicalHistory1>();
     public Map<String, Person2> persons2 = new HashMap<String, Person2>();
-    public Map<String, MedicalHistory2> medicals2 = 
+    public Map<String, MedicalHistory2> medicals2 =
         new HashMap<String, MedicalHistory2>();
     public Map<String, Person3> persons3 = new HashMap<String, Person3>();
-    public Map<String, MedicalHistory3> medicals3 = new HashMap<String, 
+    public Map<String, MedicalHistory3> medicals3 = new HashMap<String,
         MedicalHistory3>();
     public Map<String, Person4> persons4 = new HashMap<String, Person4>();
     public Map<String, MedicalHistory4> medicals4 =
         new HashMap<String, MedicalHistory4>();
 
     public Map<Integer, Employee3> emps3 = new HashMap<Integer, Employee3>();
-    public Map<Object, Dependent3> depMap3 = 
+    public Map<Object, Dependent3> depMap3 =
     	new HashMap<Object, Dependent3>();
     public List dids3 = new ArrayList();
     public List<Dependent3> deps3 = new ArrayList<Dependent3>();
-    
+
     public int eId1 = 1;
     public int dId1 = 1;
     public int eId2 = 1;
@@ -79,13 +79,13 @@ public class TestMappedById extends SingleEMFTestCase {
     public int mId4 = 1;
 
     public void setUp() throws Exception {
-        super.setUp(DROP_TABLES, Dependent1.class, Employee.class, Employee1.class, 
+        super.setUp(DROP_TABLES, Dependent1.class, Employee.class, Employee1.class,
             DependentId1.class, Dependent2.class, Employee2.class,
             DependentId2.class, EmployeeId2.class, MedicalHistory1.class,
             Person1.class, PersonId1.class, MedicalHistory2.class,
-            Person2.class, Person3.class, MedicalHistory3.class, 
+            Person2.class, Person3.class, MedicalHistory3.class,
             Person4.class, PersonId4.class, MedicalHistory4.class,
-            Dependent3.class, Employee3.class, DependentId3.class, 
+            Dependent3.class, Employee3.class, DependentId3.class,
             Parent3.class, Dependent4.class, Employee4.class, PhoneNumber.class,
             BeneContact.class, BeneContactId.class, Beneficiary.class,
             Dependent5.class, Employee5.class, EmployeeId5.class);
@@ -108,7 +108,7 @@ public class TestMappedById extends SingleEMFTestCase {
         findObj2();
         queryObj2();
     }
-    
+
     /**
      * This is spec 2.4.1.2 Example 5, case(b)
      */
@@ -134,7 +134,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is a variation of spec 2.4.1.2 Example 1, case(b):
      * two MapsId annotations in Dependent3 and both parent
-     * classes use generated key 
+     * classes use generated key
      */
     public void testMapsId5() {
         // Not all databases support GenerationType.IDENTITY column(s)
@@ -186,7 +186,7 @@ public class TestMappedById extends SingleEMFTestCase {
         assertEquals(1, emp.getEmpId());
         em.close();
     }
-    
+
     public void testEmbeddedIdNestedInIdClass() {
         EntityManager em = emf.createEntityManager();
         EmployeeId5 eId1 = new EmployeeId5("Java", "Duke");
@@ -200,7 +200,7 @@ public class TestMappedById extends SingleEMFTestCase {
         em.flush();
         em.getTransaction().commit();
         em.clear();
-        
+
         DependentId5 depId1 = new DependentId5("1", eId1);
         Dependent5 newDep = em.find(Dependent5.class, depId1);
         assertNotNull(newDep);
@@ -208,51 +208,51 @@ public class TestMappedById extends SingleEMFTestCase {
         em.remove(newDep);
         em.getTransaction().commit();
         newDep = em.find(Dependent5.class, depId1);
-        assertNull(newDep);        
+        assertNull(newDep);
         em.close();
     }
-    
+
     public void testCountDistinctMultiCols() {
-        EntityManager em = emf.createEntityManager(); 
+        EntityManager em = emf.createEntityManager();
 
         Employee2 emp1 = new Employee2();
         EmployeeId2 empId1 = new EmployeeId2();
         empId1.setFirstName("James");
         empId1.setLastName("Bond");
         emp1.setEmpId(empId1);
-        
+
         Employee2 emp2 = new Employee2();
         EmployeeId2 empId2 = new EmployeeId2();
         empId2.setFirstName("James");
         empId2.setLastName("Obama");
         emp2.setEmpId(empId2);
-        
+
         Dependent2 dep1 = new Dependent2();
         DependentId2 depId1 = new DependentId2();
         depId1.setEmpPK(empId1);
         depId1.setName("Alan");
         dep1.setId(depId1);
-        
+
         Dependent2 dep2 = new Dependent2();
         DependentId2 depId2 = new DependentId2();
         depId2.setEmpPK(empId2);
         depId2.setName("Darren");
         dep2.setId(depId2);
-        
+
         em.persist(emp1);
         em.persist(emp2);
         em.persist(dep1);
         em.persist(dep2);
-        
+
         em.getTransaction().begin();
-        em.flush();        
+        em.flush();
         em.getTransaction().commit();
-        
+
         String[] jpqls = {
             "SELECT COUNT (DISTINCT d2.emp) FROM Dependent2 d2",
             "select count (DISTINCT d2) from Dependent2 d2",
         };
-        
+
         for (int i = 0; i < jpqls.length; i++) {
             Query q = em.createQuery(jpqls[i]) ;
             Long o = (Long)q.getSingleResult();
@@ -333,7 +333,7 @@ public class TestMappedById extends SingleEMFTestCase {
             d0.id.empPK = d0.emp.getEmpId();
         assertEquals(d0, d);
     }
-    
+
     public void createObj2() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -344,7 +344,7 @@ public class TestMappedById extends SingleEMFTestCase {
         tran.commit();
         em.close();
     }
-    
+
     public Employee2 createEmployee2(EntityManager em, int id) {
         Employee2 e = new Employee2();
         e.setEmpId(new EmployeeId2("f_" + id, "l_" + id));
@@ -392,14 +392,14 @@ public class TestMappedById extends SingleEMFTestCase {
         for (Dependent2 d : ds) {
             assertDependent2(d);
         }
-        
+
         jpql = "select d from Dependent2 d where d.id.name = 'dep_1' "
             + "AND d.emp.empId.firstName = 'f_1'";
         q = em.createQuery(jpql);
         ds = q.getResultList();
         for (Dependent2 d : ds) {
             assertDependent2(d);
-        }        
+        }
         em.close();
     }
 
@@ -410,7 +410,7 @@ public class TestMappedById extends SingleEMFTestCase {
         did0.setEmpPK(d0.getEmp().getEmpId());
         assertEquals(d0, d);
     }
-    
+
     public void createObj3() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -472,7 +472,7 @@ public class TestMappedById extends SingleEMFTestCase {
         for (MedicalHistory1 m : ms) {
             assertMedicalHistory1(m, firstName);
         }
-        
+
         jpql = "select m from MedicalHistory1 m where m.id.firstName = '"
             + firstName + "'";
         q = em.createQuery(jpql);
@@ -480,7 +480,7 @@ public class TestMappedById extends SingleEMFTestCase {
         for (MedicalHistory1 m : ms) {
             assertMedicalHistory1(m, firstName);
         }
-        
+
         tran.commit();
         em.close();
     }
@@ -489,7 +489,7 @@ public class TestMappedById extends SingleEMFTestCase {
         MedicalHistory1 m0 = medicals1.get(firstName);
         assertEquals(m0, m);
     }
-    
+
     public void createObj4() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -504,7 +504,7 @@ public class TestMappedById extends SingleEMFTestCase {
     public Person2 createPerson2(EntityManager em, int id) {
         Person2 p = new Person2();
         p.setName("p_" + id);
-        
+
         MedicalHistory2 m = createMedicalHistory2(em, mId2++);
         m.setPatient(p);  // automatically set the id
         p.setMedical(m);
@@ -548,7 +548,7 @@ public class TestMappedById extends SingleEMFTestCase {
         }
         tran.commit();
         em.close();
-        
+
         em = emf.createEntityManager();
         tran = em.getTransaction();
         tran.begin();
@@ -560,7 +560,7 @@ public class TestMappedById extends SingleEMFTestCase {
         }
         tran.commit();
         em.close();
-        
+
         findObj4(ssn);
     }
 
@@ -570,7 +570,7 @@ public class TestMappedById extends SingleEMFTestCase {
         MedicalHistory2 m1 = m.getPatient().getMedical();
         assertEquals(m1, m);
     }
-    
+
     public void createObj5() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -585,7 +585,7 @@ public class TestMappedById extends SingleEMFTestCase {
         	dids3.add(did.getId());
         	depMap3.put(did.getId(), d);
         }
-        
+
         em.close();
     }
 
@@ -647,7 +647,7 @@ public class TestMappedById extends SingleEMFTestCase {
             d0.id.empPK = d0.emp.getEmpId();
         assertEquals(d0, d);
     }
-    
+
     public void createObj6() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -686,18 +686,18 @@ public class TestMappedById extends SingleEMFTestCase {
         Person3 p1 = p.getMedical().getPatient();
         assertEquals(p, p1);
         em.clear();
-        
+
         MedicalHistory3 m = em.find(MedicalHistory3.class, new PersonId3("f_1", "l_1"));
         MedicalHistory3 m0 = medicals3.get("f_1");
         assertEquals(m, m0);
-        
+
         em.getTransaction().begin();
         em.remove(m);
         em.getTransaction().commit();
         em.close();
     }
 
-    public void queryObj6() { 
+    public void queryObj6() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         tran.begin();
@@ -718,7 +718,7 @@ public class TestMappedById extends SingleEMFTestCase {
         MedicalHistory3 m0 = medicals3.get(firstName);
         assertEquals(m0, m);
     }
-    
+
     public void createObj7() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -756,7 +756,7 @@ public class TestMappedById extends SingleEMFTestCase {
         Person4 p1 = p.getMedical().getPatient();
         assertEquals(p1, p);
         em.clear();
-        
+
         MedicalHistory4 m = em.find(MedicalHistory4.class, new PersonId4("f_1", "l_1"));
         MedicalHistory4 m0 = medicals4.get("f_1");
         assertEquals(m, m0);
@@ -785,7 +785,7 @@ public class TestMappedById extends SingleEMFTestCase {
         MedicalHistory4 m1 = m.getPatient().getMedical();
         assertEquals(m1, m);
     }
-    
+
     /**
      * Derived Identity with IdClass and generatedKey
      */
@@ -834,7 +834,7 @@ public class TestMappedById extends SingleEMFTestCase {
         em.persist(p);
         return p;
     }
-    
+
     public Dependent4 persistDependent4(EntityManager em, int id, Employee4 p) {
         Dependent4 c = new Dependent4();
         c.setId(id);
@@ -842,7 +842,7 @@ public class TestMappedById extends SingleEMFTestCase {
         em.persist(c);
         return c;
     }
-    
+
     public Employee4 mergeEmployee4(EntityManager em, int id) {
         Employee4 e = new Employee4();
         e.setAge(id);
@@ -857,7 +857,7 @@ public class TestMappedById extends SingleEMFTestCase {
         }
         return e;
     }
-    
+
     public void testEnumInEmbeddedId() {
         EntityManager em = emf.createEntityManager();
         Beneficiary b = new Beneficiary();
@@ -868,7 +868,7 @@ public class TestMappedById extends SingleEMFTestCase {
         BeneContactId id = new BeneContactId();
         id.setContactType(BeneContactId.ContactType.HOME);
         c.setBeneficiary(b);
-        
+
         c.setId(id);
         em.persist(c);
         contacts.add(c);

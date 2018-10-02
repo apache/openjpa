@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.persistence.*;
 
 //non-default mapping
-//Sec 11.1.36, Example 3: 
+//Sec 11.1.36, Example 3:
 //    Unidirectional One-to-Many association using a foreign key mapping
 //    In Customer class:
 //    @OneToMany(orphanRemoval=true)
@@ -43,31 +43,31 @@ public class Uni_1ToM_Map_FK {
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="Uni1MFK_ID")
     private Map<String, EntityC_U1M_Map_FK> entityCs = null;
-    
-    public long getId() { 
-        return id; 
+
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Map<String, EntityC_U1M_Map_FK> getEntityCs() { 
-        return entityCs; 
+    public Map<String, EntityC_U1M_Map_FK> getEntityCs() {
+        return entityCs;
     }
 
-    public void setEntityCs(Map<String, EntityC_U1M_Map_FK> entityCs) { 
-        this.entityCs = entityCs; 
+    public void setEntityCs(Map<String, EntityC_U1M_Map_FK> entityCs) {
+        this.entityCs = entityCs;
     }
 
     public int hashCode() {
         return name.hashCode();
     }
-    
+
     public boolean equals(Object o) {
         if (!(o instanceof Uni_1ToM_Map_FK)) return false;
         Uni_1ToM_Map_FK b = (Uni_1ToM_Map_FK)o;

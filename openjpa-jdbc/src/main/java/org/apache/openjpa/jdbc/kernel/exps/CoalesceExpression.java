@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -82,19 +82,19 @@ public class CoalesceExpression
 
     private static class CoalesceExpState
         extends ExpState {
-        
+
         public ExpState[] states;
-        
+
         public CoalesceExpState(Joins joins, ExpState[] states) {
             super(joins);
             this.states = states;
         }
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf, int index) {
         CoalesceExpState cstate = (CoalesceExpState) state;
-        
+
         buf.append(" COALESCE("); // MySQL does not like space before bracket
 
         for (int i = 0; i < _vals.length; i++) {
@@ -106,7 +106,7 @@ public class CoalesceExpression
         buf.append(")");
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         CoalesceExpState cstate = (CoalesceExpState) state;
 
@@ -128,7 +128,7 @@ public class CoalesceExpression
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         CoalesceExpState cstate = (CoalesceExpState) state;
-        for (int i = 0; i < _vals.length; i++)   
+        for (int i = 0; i < _vals.length; i++)
             _vals[i].calculateValue(sel, ctx, cstate.states[i], other, otherState);
     }
 
@@ -167,25 +167,25 @@ public class CoalesceExpression
     }
 
     public void setImplicitType(Class type) {
-        _cast = type;        
+        _cast = type;
     }
 
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
-    
+
     public void setOtherPath(Value other) {
         this.other = other;
     }
-    
+
     public Value getOtherPath() {
         return other;
     }
-    
+
     public void setOtherState(ExpState otherState) {
         this.otherState = otherState;
     }
-    
+
     public ExpState getOtherState() {
         return otherState;
     }

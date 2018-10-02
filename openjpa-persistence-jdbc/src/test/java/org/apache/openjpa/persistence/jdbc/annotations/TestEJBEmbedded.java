@@ -55,7 +55,7 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
 
     public void setUp() {
         setUp(EmbedOwner.class, EmbedValue.class, CLEAR_TABLES
-//        ,"openjpa.Log","SQL=trace"    
+//        ,"openjpa.Log","SQL=trace"
         );
     }
 
@@ -110,22 +110,22 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         try {
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();
-            
+
             EmbedOwner owner = new EmbedOwner();
             owner.setBasic("foo");
-            
+
             assertNull(owner.getEmbed());
             assertNull(owner.getEmbedCollection());
             em.persist(owner);
             assertNull(owner.getEmbed());
             assertNull(owner.getEmbedCollection());
-            
+
             int pk = owner.getPk();
             em.getTransaction().commit();
             assertNull(owner.getEmbed());
             assertNull(owner.getEmbedCollection());
             em.close();
-            assertNull(owner.getEmbed());            
+            assertNull(owner.getEmbed());
             assertNull(owner.getEmbedCollection());
 
             em = emf.createEntityManager();
@@ -136,8 +136,8 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
             assertNull(embed.getClob());
             assertNull(embed.getBasic());
             assertNull(embed.getBlob());
-            
-            Set<EmbedValue> embedCollection = owner.getEmbedCollection(); 
+
+            Set<EmbedValue> embedCollection = owner.getEmbedCollection();
             assertNotNull(embedCollection);
             assertEquals(0, embedCollection.size());
             em.close();

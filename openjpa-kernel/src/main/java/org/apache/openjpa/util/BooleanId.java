@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -25,9 +25,9 @@ package org.apache.openjpa.util;
  * @since 2.1.0
  */
 public class BooleanId extends OpenJPAId {
-    
+
     private final boolean key;
-    
+
     public BooleanId(Class cls, Boolean key) {
         this(cls, key.booleanValue());
     }
@@ -40,12 +40,12 @@ public class BooleanId extends OpenJPAId {
         super(cls);
         this.key = key;
     }
-    
+
     public BooleanId(Class cls, boolean key, boolean subs) {
         super(cls, subs);
         this.key = key;
     }
-    
+
     public boolean getId() {
         return key;
     }
@@ -54,7 +54,7 @@ public class BooleanId extends OpenJPAId {
     public Object getIdObject() {
         return Boolean.valueOf(key);
     }
-    
+
     public String toString() {
         return Boolean.toString(key);
     }

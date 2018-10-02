@@ -14,9 +14,9 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
- 
+
 /**
  * Shows a page in the right division.
  */
@@ -38,8 +38,8 @@ function popup(url) {
 
 /**
   * All hyperlink reference tags of type = 'popup' is re-written
-  * with onclick event handler to pop up a new window with 
-  * popup() function defined in this script  
+  * with onclick event handler to pop up a new window with
+  * popup() function defined in this script
   */
 function onload() {
    var x = document.getElementsByTagName('a');

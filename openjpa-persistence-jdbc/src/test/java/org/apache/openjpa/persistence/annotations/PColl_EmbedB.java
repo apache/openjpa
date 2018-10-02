@@ -24,18 +24,18 @@ import javax.persistence.ManyToOne;
 @Embeddable
 public class PColl_EmbedB {
     private String name;
-    
+
     @ManyToOne(cascade = CascadeType.PERSIST)
     private PColl_EntityC m2oC;
 
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public PColl_EntityC getM2oC() {
         return m2oC;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -77,7 +77,7 @@ public class SubQ
     public ClassMapping getCandidate() {
         return _candidate;
     }
-    
+
     public boolean getSubs() {
         return _subs;
     }
@@ -85,7 +85,7 @@ public class SubQ
     public void setSubqAlias(String subqAlias) {
         _subqAlias = subqAlias;
     }
-    
+
     public String getSubqAlias() {
         return _subqAlias;
     }
@@ -132,23 +132,23 @@ public class SubQ
         return ExpState.NULL;
     }
 
-    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state,
         Object val) {
         if (_exps.projections.length == 0)
             return _candidate.toDataStoreValue(val,
                 _candidate.getPrimaryKeyColumns(), ctx.store);
         if (_exps.projections.length == 1)
-            return ((Val) _exps.projections[0]).toDataStoreValue(sel, ctx, 
+            return ((Val) _exps.projections[0]).toDataStoreValue(sel, ctx,
                 state, val);
         return val;
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         selectColumns(sel, ctx, state, pks);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
@@ -157,7 +157,7 @@ public class SubQ
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
@@ -168,13 +168,13 @@ public class SubQ
         return buf;
     }
 
-    public Object load(ExpContext ctx, ExpState state, Result res) 
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         Value[] projs = _exps.projections;
         for (int i = 0; i < projs.length; i++) {
@@ -198,16 +198,16 @@ public class SubQ
         return 1;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         appendTo(sel, ctx, state, sql, index, false);
     }
 
-    private void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    private void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index, boolean size) {
         QueryExpressionsState substate = new QueryExpressionsState();
         Select sub = _cons.evaluate(ctx, sel, _subqAlias, _exps, substate);
-        _cons.select(sub, ctx, _candidate, _subs, _exps, substate, 
+        _cons.select(sub, ctx, _candidate, _subs, _exps, substate,
             JDBCFetchConfiguration.EAGER_NONE);
 
         if (size)
@@ -216,19 +216,19 @@ public class SubQ
             sql.append(sub, ctx.fetch);
     }
 
-    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         sql.append("NOT EXISTS ");
         appendTo(sel, ctx, state, sql, 0);
     }
 
-    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         sql.append("EXISTS ");
         appendTo(sel, ctx, state, sql, 0);
     }
 
-    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+    public void appendSize(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         appendTo(sel, ctx, state, sql, 0, true);
     }

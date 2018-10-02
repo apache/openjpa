@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.instrumentation;
 
@@ -26,9 +26,9 @@ package org.apache.openjpa.lib.instrumentation;
 public enum InstrumentationLevel {
     /**
      *  Start immediately (no special requirements on the broker or factory) and
-     *  stop when the configuration is closed. 
+     *  stop when the configuration is closed.
      */
-    IMMEDIATE, 
+    IMMEDIATE,
     /**
      * Start following factory initialization and stop when the factory is closed.
      */

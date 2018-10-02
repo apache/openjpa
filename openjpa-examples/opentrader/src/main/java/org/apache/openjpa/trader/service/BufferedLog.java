@@ -37,11 +37,11 @@ import org.apache.openjpa.trader.domain.LogStatement;
  * Specialized log to consolidate multiple logs into a single one.
  * Selects only query related messages.
  * <br>
- * Designed to capture multiple logs used by different slices. It would have 
+ * Designed to capture multiple logs used by different slices. It would have
  * been more useful to capture the slice thread that executed the query, but
  * that is not possible in all cases as the log statement is emitted from the
  * kernel's main thread.
- *      
+ *
  * @author Pinaki Poddar
  *
  */
@@ -52,12 +52,12 @@ public class BufferedLog implements LogFactory, Configurable  {
     static String[] SQL_MARKERS  = {"INSERT INTO", "SELECT", "UPDATE", "DELETE"};
     static String[] JPQL_MARKERS = {"Executing query: ["};
     static List<String> CHANNELS = Arrays.asList(OpenJPAConfiguration.LOG_QUERY, JDBCConfiguration.LOG_SQL);
-    
+
     private static LinkedList<LogStatement> _messageModel;
     static {
         _messageModel = new LinkedList<LogStatement>();
     }
-    
+
     public void setConfiguration(Configuration conf) {
         _conf = conf;
     }
@@ -68,17 +68,17 @@ public class BufferedLog implements LogFactory, Configurable  {
     public void startConfiguration() {
     }
 
-    
+
     public BufferedLog() {
         super();
     }
-    
+
     public void setDiagnosticContext(String ctx) {
         System.err.println(ctx);
         _diagCtx = ctx;
     }
-    
-    
+
+
     public Log getLog(String channel) {
         return new ChannelLog(channel);
     }
@@ -86,11 +86,11 @@ public class BufferedLog implements LogFactory, Configurable  {
     public void setHistory(int i) {
         _history = Math.max(i, 1);
     }
-    
+
     public int getHistory() {
         return _history;
     }
-    
+
     String getContext() {
         if (_diagCtx != null)
             return _diagCtx;
@@ -101,25 +101,25 @@ public class BufferedLog implements LogFactory, Configurable  {
             return _conf.getId();
         }
     }
-    
+
     void addStatement(LogStatement stmt) {
         _messageModel.addLast(stmt);
         if (_messageModel.size() > _history) {
             _messageModel.removeFirst();
         }
     }
-    
+
     boolean isEmpty(String s) {
         return s == null || s.trim().length() == 0;
     }
-    
+
     public List<LogStatement> get() {
         List<LogStatement> result = new ArrayList<LogStatement>(_messageModel);
         _messageModel.clear();
         return result;
     }
 
-    
+
     public class ChannelLog implements Log {
         final String _channel;
         final String _thread;
@@ -127,7 +127,7 @@ public class BufferedLog implements LogFactory, Configurable  {
             _channel = channel;
             _thread = Thread.currentThread().getName();
         }
-        
+
         public void error(Object o) {
             createLogStatement("ERROR", o, null);
         }
@@ -136,82 +136,82 @@ public class BufferedLog implements LogFactory, Configurable  {
             createLogStatement("ERROR", o, t);
         }
 
-        
+
         public void fatal(Object o) {
             createLogStatement("FATAL", o, null);
         }
 
-        
+
         public void fatal(Object o, Throwable t) {
             createLogStatement("FATAL", o, t);
         }
 
-        
+
         public void info(Object o) {
             createLogStatement("INFO", o, null);
         }
 
-        
+
         public void info(Object o, Throwable t) {
             createLogStatement("INFO", o, t);
         }
 
-        
+
         public boolean isErrorEnabled() {
             return true;
         }
-        
+
         public boolean isFatalEnabled() {
             return true;
         }
-        
+
         public boolean isInfoEnabled() {
             return CHANNELS.contains(_channel);
         }
-        
+
         public boolean isTraceEnabled() {
             return CHANNELS.contains(_channel);
         }
-        
+
         public boolean isWarnEnabled() {
             return true;
         }
 
-        
+
         public void trace(Object o) {
             createLogStatement("TRACE", o, null);
         }
-        
+
         public void trace(Object o, Throwable t) {
             createLogStatement("TRACE", o, t);
         }
-        
+
         public void warn(Object o) {
             createLogStatement("WARN", o, null);
         }
-        
+
         public void warn(Object o, Throwable t) {
             createLogStatement("WARN", o, t);
         }
-        
+
         protected void createLogStatement(String level, Object message, Throwable t) {
             String msg = message == null ? null : message.toString();
             msg = extractQuery(msg);
             if (msg == null) {
                 return;
             }
-            addStatement(new LogStatement(level, getContext(), 
+            addStatement(new LogStatement(level, getContext(),
                     _thread, _channel, msg));
             if (t != null) {
                 StringWriter buffer = new StringWriter();
                 t.printStackTrace(new PrintWriter(buffer));
                 addStatement(new LogStatement(
-                        level, getContext(), 
-                        Thread.currentThread().getName(), _channel, 
+                        level, getContext(),
+                        Thread.currentThread().getName(), _channel,
                         buffer.toString()));
             }
         }
-        
+
         public String extractQuery(String msg) {
             if (msg == null)
                 return null;
@@ -219,10 +219,10 @@ public class BufferedLog implements LogFactory, Configurable  {
                 return getQuery(msg, SQL_MARKERS, true);
             } else if ("openjpa.Query".equals(_channel)) {
                 return getQuery(msg, JPQL_MARKERS, false);
-            } 
+            }
             return null;
         }
-        
+
         private String getQuery(String message, String[] markers, boolean sql) {
             int k = -1;
             for (int i = 0; i < markers.length; i++) {
@@ -234,7 +234,7 @@ public class BufferedLog implements LogFactory, Configurable  {
             }
             return null;
         }
- 
+
     }
 
 

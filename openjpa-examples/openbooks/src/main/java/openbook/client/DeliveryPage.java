@@ -36,9 +36,9 @@ import openbook.server.OpenBookService;
 
 /**
  * A page to control delivery of pending orders.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class DeliveryPage extends JPanel {
@@ -147,7 +147,7 @@ public class DeliveryPage extends JPanel {
      * Gets the orders in a background (i.e. not AWT event dispatch thread)
      * thread. <br>
      * But blocks painting anyway, because that is what is intended.
-     * 
+     *
      */
     private List<PurchaseOrder> getOrders(final PurchaseOrder.Status status) {
         SwingWorker<List<PurchaseOrder>, Void> worker = new SwingWorker<List<PurchaseOrder>, Void>() {

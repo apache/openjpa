@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -47,8 +47,8 @@ public class ConstraintNull implements Serializable {
     @Basic
     private String nullInvalid;     // @NotNull constraint is on the getter
 
-    
-    /* 
+
+    /*
      * Some helper methods to create the entities to test with
      */
     public static ConstraintNull createInvalidNotNull() {
@@ -70,7 +70,7 @@ public class ConstraintNull implements Serializable {
         return c;
     }
 
-    
+
     /*
      * Main entity code
      */

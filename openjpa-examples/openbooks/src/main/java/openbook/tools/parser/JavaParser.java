@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package openbook.tools.parser;
 // $ANTLR 3.2 Sep 23, 2009 12:02:23 Java.g 2010-05-15 01:06:37
@@ -32,7 +32,7 @@ import java.io.IOException;
  *  and some nasty looking enums from 1.5, but have not really
  *  tested for 1.5 compatibility.
  *
- *  I built this with: java -Xmx100M org.antlr.Tool java.g 
+ *  I built this with: java -Xmx100M org.antlr.Tool java.g
  *  and got two errors that are ok (for now):
  *  java.g:691:9: Decision can match input such as
  *    "'0'..'9'{'E', 'e'}{'+', '-'}'0'..'9'{'D', 'F', 'd', 'f'}"
@@ -67,9 +67,9 @@ import java.io.IOException;
  *      Factored out an annotationName rule and used it in the annotation rule.
  *          Not sure why, but typeName wasn't recognizing references to inner
  *          annotations (e.g. @InterfaceName.InnerAnnotation())
- *      Factored out the elementValue section of an annotation reference.  Created 
- *          elementValuePair and elementValuePairs rules, then used them in the 
- *          annotation rule.  Allows it to recognize annotation references with 
+ *      Factored out the elementValue section of an annotation reference.  Created
+ *          elementValuePair and elementValuePairs rules, then used them in the
+ *          annotation rule.  Allows it to recognize annotation references with
  *          multiple, comma separated attributes.
  *      Updated elementValueArrayInitializer so that it allows multiple elements.
  *          (It was only allowing 0 or 1 element).
@@ -77,15 +77,15 @@ import java.io.IOException;
  *          doesn't appear to indicate this is legal, but it does work as of at least
  *          JDK 1.5.0_06.
  *      Moved the Identifier portion of annotationTypeElementRest to annotationMethodRest.
- *          Because annotationConstantRest already references variableDeclarator which 
- *          has the Identifier portion in it, the parser would fail on constants in 
- *          annotation definitions because it expected two identifiers.  
+ *          Because annotationConstantRest already references variableDeclarator which
+ *          has the Identifier portion in it, the parser would fail on constants in
+ *          annotation definitions because it expected two identifiers.
  *      Added optional trailing ';' to the alternatives in annotationTypeElementRest.
  *          Wouldn't handle an inner interface that has a trailing ';'.
- *      Swapped the expression and type rule reference order in castExpression to 
+ *      Swapped the expression and type rule reference order in castExpression to
  *          make it check for genericized casts first.  It was failing to recognize a
  *          statement like  "Class<Byte> TYPE = (Class<Byte>)...;" because it was seeing
- *          'Class<Byte' in the cast expression as a less than expression, then failing 
+ *          'Class<Byte' in the cast expression as a less than expression, then failing
  *          on the '>'.
  *      Changed createdName to use typeArguments instead of nonWildcardTypeArguments.
  *          Again, JLS doesn't seem to allow this, but java.lang.Class has an example of
@@ -94,7 +94,7 @@ import java.io.IOException;
  *          just 'arguments'.  The case it couldn't handle was a call to an explicit
  *          generic method invocation (e.g. this.<E>doSomething()).  Using identifierSuffix
  *          may be overly aggressive--perhaps should create a more constrained thisSuffix rule?
- *      
+ *
  *  Version 1.0.4 -- Hiroaki Nakamura, May 3, 2007
  *
  *  Fixed formalParameterDecls, localVariableDeclaration, forInit,
@@ -106,13 +106,13 @@ import java.io.IOException;
  *  Version 1.0.6 -- John Ridgway, March 17, 2008
  *      Made "assert" a switchable keyword like "enum".
  *      Fixed compilationUnit to disallow "annotation importDeclaration ...".
- *      Changed "Identifier ('.' Identifier)*" to "qualifiedName" in more 
+ *      Changed "Identifier ('.' Identifier)*" to "qualifiedName" in more
  *          places.
  *      Changed modifier* and/or variableModifier* to classOrInterfaceModifiers,
  *          modifiers or variableModifiers, as appropriate.
  *      Renamed "bound" to "typeBound" to better match language in the JLS.
- *      Added "memberDeclaration" which rewrites to methodDeclaration or 
- *      fieldDeclaration and pulled type into memberDeclaration.  So we parse 
+ *      Added "memberDeclaration" which rewrites to methodDeclaration or
+ *      fieldDeclaration and pulled type into memberDeclaration.  So we parse
  *          type and then move on to decide whether we're dealing with a field
  *          or a method.
  *      Modified "constructorDeclaration" to use "constructorBody" instead of
@@ -121,15 +121,15 @@ import java.io.IOException;
  *          out of expressions allowed me to simplify "primary".
  *      Changed variableDeclarator to simplify it.
  *      Changed type to use classOrInterfaceType, thus simplifying it; of course
- *          I then had to add classOrInterfaceType, but it is used in several 
+ *          I then had to add classOrInterfaceType, but it is used in several
  *          places.
  *      Fixed annotations, old version allowed "@X(y,z)", which is illegal.
  *      Added optional comma to end of "elementValueArrayInitializer"; as per JLS.
- *      Changed annotationTypeElementRest to use normalClassDeclaration and 
- *          normalInterfaceDeclaration rather than classDeclaration and 
+ *      Changed annotationTypeElementRest to use normalClassDeclaration and
+ *          normalInterfaceDeclaration rather than classDeclaration and
  *          interfaceDeclaration, thus getting rid of a couple of grammar ambiguities.
  *      Split localVariableDeclaration into localVariableDeclarationStatement
- *          (includes the terminating semi-colon) and localVariableDeclaration.  
+ *          (includes the terminating semi-colon) and localVariableDeclaration.
  *          This allowed me to use localVariableDeclaration in "forInit" clauses,
  *           simplifying them.
  *      Changed switchBlockStatementGroup to use multiple labels.  This adds an
@@ -139,7 +139,7 @@ import java.io.IOException;
  *      Added semantic predicates to test for shift operations rather than other
  *          things.  Thus, for instance, the string "< <" will never be treated
  *          as a left-shift operator.
- *      In "creator" we rule out "nonWildcardTypeArguments" on arrayCreation, 
+ *      In "creator" we rule out "nonWildcardTypeArguments" on arrayCreation,
  *          which are illegal.
  *      Moved "nonWildcardTypeArguments into innerCreator.
  *      Removed 'super' superSuffix from explicitGenericInvocation, since that
@@ -151,15 +151,15 @@ import java.io.IOException;
  *      Lexer -- removed "Exponent?" from FloatingPointLiteral choice 4, since it
  *          led to an ambiguity.
  *
- *      This grammar successfully parses every .java file in the JDK 1.5 source 
+ *      This grammar successfully parses every .java file in the JDK 1.5 source
  *          tree (excluding those whose file names include '-', which are not
  *          valid Java compilation units).
  *
  *  Known remaining problems:
  *      "Letter" and "JavaIDDigit" are wrong.  The actual specification of
  *      "Letter" should be "a character for which the method
- *      Character.isJavaIdentifierStart(int) returns true."  A "Java 
- *      letter-or-digit is a character for which the method 
+ *      Character.isJavaIdentifierStart(int) returns true."  A "Java
+ *      letter-or-digit is a character for which the method
  *      Character.isJavaIdentifierPart(int) returns true."
  */
 public class JavaParser extends DebugParser {
@@ -282,114 +282,114 @@ public class JavaParser extends DebugParser {
     // delegators
 
     public static final String[] ruleNames = new String[] {
-        "invalidRule", "synpred179_Java", "block", "synpred250_Java", "synpred137_Java", 
-        "synpred169_Java", "synpred154_Java", "catches", "relationalExpression", 
-        "synpred237_Java", "synpred105_Java", "synpred88_Java", "expression", 
-        "synpred242_Java", "synpred138_Java", "synpred151_Java", "typeList", 
-        "formalParameterDecls", "interfaceBodyDeclaration", "synpred74_Java", 
-        "typeName", "classDeclaration", "synpred252_Java", "selector", "synpred25_Java", 
-        "synpred7_Java", "modifiers", "exclusiveOrExpression", "synpred11_Java", 
-        "synpred164_Java", "variableModifiers", "synpred261_Java", "synpred42_Java", 
-        "synpred128_Java", "synpred245_Java", "synpred264_Java", "synpred100_Java", 
-        "synpred206_Java", "elementValuePair", "packageDeclaration", "variableModifier", 
-        "synpred196_Java", "synpred203_Java", "arguments", "synpred149_Java", 
-        "booleanLiteral", "synpred254_Java", "synpred96_Java", "synpred176_Java", 
-        "synpred195_Java", "innerCreator", "compilationUnit", "synpred22_Java", 
-        "integerLiteral", "annotationTypeDeclaration", "synpred165_Java", 
-        "synpred55_Java", "synpred106_Java", "synpred158_Java", "annotationMethodOrConstantRest", 
-        "synpred6_Java", "instanceOfExpression", "enumBody", "synpred262_Java", 
-        "synpred117_Java", "synpred228_Java", "synpred269_Java", "synpred97_Java", 
-        "synpred112_Java", "interfaceMethodOrFieldDecl", "switchBlockStatementGroups", 
-        "synpred210_Java", "synpred44_Java", "synpred188_Java", "statementExpression", 
-        "annotationTypeBody", "synpred170_Java", "synpred120_Java", "interfaceGenericMethodDecl", 
-        "synpred89_Java", "synpred205_Java", "synpred230_Java", "arrayCreatorRest", 
-        "synpred75_Java", "synpred130_Java", "annotationTypeElementRest", 
-        "creator", "variableDeclarator", "synpred93_Java", "synpred115_Java", 
-        "synpred119_Java", "synpred110_Java", "synpred186_Java", "synpred265_Java", 
-        "synpred202_Java", "synpred253_Java", "andExpression", "synpred32_Java", 
-        "synpred135_Java", "synpred148_Java", "synpred132_Java", "conditionalOrExpression", 
-        "relationalOp", "synpred21_Java", "qualifiedNameList", "synpred58_Java", 
-        "qualifiedName", "synpred51_Java", "conditionalExpression", "synpred175_Java", 
-        "synpred90_Java", "synpred181_Java", "synpred31_Java", "shiftExpression", 
-        "synpred197_Java", "fieldDeclaration", "synpred17_Java", "synpred231_Java", 
-        "literal", "expressionList", "classBody", "synpred3_Java", "synpred160_Java", 
-        "synpred190_Java", "synpred20_Java", "synpred219_Java", "synpred235_Java", 
-        "synpred184_Java", "synpred222_Java", "synpred94_Java", "synpred147_Java", 
-        "elementValue", "synpred64_Java", "synpred180_Java", "synpred82_Java", 
-        "synpred30_Java", "synpred26_Java", "statement", "inclusiveOrExpression", 
-        "multiplicativeExpression", "switchLabel", "synpred168_Java", "blockStatement", 
-        "synpred111_Java", "synpred270_Java", "synpred134_Java", "synpred236_Java", 
-        "enhancedForControl", "synpred213_Java", "synpred62_Java", "synpred227_Java", 
-        "classCreatorRest", "synpred54_Java", "synpred104_Java", "synpred136_Java", 
-        "synpred191_Java", "interfaceMemberDecl", "enumConstantName", "synpred67_Java", 
-        "synpred49_Java", "typeParameters", "synpred123_Java", "synpred50_Java", 
-        "synpred15_Java", "classOrInterfaceModifiers", "catchClause", "shiftOp", 
-        "synpred63_Java", "synpred86_Java", "synpred212_Java", "normalClassDeclaration", 
-        "methodDeclaratorRest", "conditionalAndExpression", "synpred79_Java", 
-        "synpred239_Java", "synpred260_Java", "equalityExpression", "synpred161_Java", 
-        "synpred221_Java", "annotationMethodRest", "synpred214_Java", "synpred113_Java", 
-        "synpred92_Java", "synpred101_Java", "synpred234_Java", "synpred272_Java", 
-        "synpred258_Java", "synpred95_Java", "synpred10_Java", "synpred125_Java", 
-        "enumBodyDeclarations", "additiveExpression", "synpred133_Java", 
-        "synpred14_Java", "interfaceMethodDeclaratorRest", "synpred248_Java", 
-        "synpred208_Java", "formalParameterDeclsRest", "primary", "synpred78_Java", 
-        "normalInterfaceDeclaration", "synpred145_Java", "synpred85_Java", 
-        "synpred33_Java", "localVariableDeclaration", "synpred211_Java", 
-        "synpred204_Java", "primitiveType", "switchBlockStatementGroup", 
-        "synpred40_Java", "interfaceDeclaration", "formalParameters", "synpred238_Java", 
-        "synpred99_Java", "synpred56_Java", "synpred177_Java", "synpred37_Java", 
-        "synpred249_Java", "synpred46_Java", "identifierSuffix", "synpred116_Java", 
-        "synpred69_Java", "synpred259_Java", "synpred65_Java", "synpred80_Java", 
-        "synpred68_Java", "synpred66_Java", "elementValuePairs", "synpred71_Java", 
-        "annotation", "synpred126_Java", "synpred102_Java", "synpred223_Java", 
-        "synpred87_Java", "synpred27_Java", "synpred34_Java", "arrayInitializer", 
-        "synpred77_Java", "typeArguments", "synpred187_Java", "synpred140_Java", 
-        "variableDeclarators", "memberDecl", "voidMethodDeclaratorRest", 
-        "enumConstant", "typeBound", "synpred70_Java", "synpred224_Java", 
-        "constructorBody", "synpred84_Java", "interfaceBody", "classOrInterfaceDeclaration", 
-        "synpred166_Java", "annotationName", "synpred251_Java", "synpred226_Java", 
-        "synpred189_Java", "synpred246_Java", "forControl", "synpred108_Java", 
-        "explicitConstructorInvocation", "synpred157_Java", "synpred4_Java", 
-        "memberDeclaration", "synpred12_Java", "synpred243_Java", "synpred201_Java", 
-        "parExpression", "synpred209_Java", "typeArgument", "synpred73_Java", 
-        "synpred167_Java", "synpred53_Java", "synpred59_Java", "classBodyDeclaration", 
-        "synpred233_Java", "explicitGenericInvocation", "synpred244_Java", 
-        "synpred215_Java", "synpred139_Java", "synpred122_Java", "synpred266_Java", 
-        "classOrInterfaceModifier", "synpred267_Java", "genericMethodOrConstructorDecl", 
-        "synpred271_Java", "synpred183_Java", "synpred216_Java", "nonWildcardTypeArguments", 
-        "variableDeclaratorId", "synpred131_Java", "constructorDeclaratorRest", 
-        "synpred268_Java", "typeDeclaration", "annotationTypeElementDeclaration", 
-        "synpred103_Java", "synpred127_Java", "synpred263_Java", "synpred23_Java", 
-        "synpred150_Java", "defaultValue", "constantDeclarator", "genericMethodOrConstructorRest", 
-        "synpred72_Java", "synpred217_Java", "synpred8_Java", "constantExpression", 
-        "synpred52_Java", "synpred152_Java", "createdName", "synpred178_Java", 
-        "synpred156_Java", "synpred162_Java", "synpred232_Java", "synpred118_Java", 
-        "synpred91_Java", "synpred19_Java", "synpred29_Java", "elementValueArrayInitializer", 
-        "synpred61_Java", "synpred141_Java", "synpred114_Java", "unaryExpression", 
-        "synpred45_Java", "synpred16_Java", "synpred229_Java", "synpred2_Java", 
-        "enumConstants", "synpred194_Java", "synpred43_Java", "importDeclaration", 
-        "localVariableDeclarationStatement", "synpred121_Java", "forUpdate", 
-        "synpred60_Java", "synpred143_Java", "forInit", "constantDeclaratorsRest", 
-        "annotationConstantRest", "synpred36_Java", "superSuffix", "synpred39_Java", 
-        "enumDeclaration", "synpred192_Java", "castExpression", "synpred1_Java", 
-        "formalParameter", "synpred107_Java", "synpred155_Java", "synpred163_Java", 
-        "synpred83_Java", "synpred129_Java", "synpred146_Java", "synpred207_Java", 
-        "synpred13_Java", "synpred218_Java", "classOrInterfaceType", "synpred109_Java", 
-        "synpred9_Java", "assignmentOperator", "synpred255_Java", "constantDeclaratorRest", 
-        "variableInitializer", "synpred256_Java", "synpred28_Java", "synpred35_Java", 
-        "synpred193_Java", "synpred174_Java", "synpred124_Java", "modifier", 
-        "synpred81_Java", "synpred159_Java", "synpred185_Java", "synpred38_Java", 
-        "synpred144_Java", "synpred199_Java", "typeParameter", "annotations", 
-        "synpred173_Java", "synpred172_Java", "synpred18_Java", "packageOrTypeName", 
-        "synpred241_Java", "synpred153_Java", "synpred247_Java", "synpred48_Java", 
-        "synpred47_Java", "synpred98_Java", "synpred5_Java", "interfaceMethodOrFieldRest", 
-        "synpred57_Java", "methodDeclaration", "synpred76_Java", "methodBody", 
-        "synpred41_Java", "synpred142_Java", "synpred198_Java", "synpred225_Java", 
-        "unaryExpressionNotPlusMinus", "synpred240_Java", "synpred200_Java", 
-        "voidInterfaceMethodDeclaratorRest", "synpred182_Java", "synpred24_Java", 
+        "invalidRule", "synpred179_Java", "block", "synpred250_Java", "synpred137_Java",
+        "synpred169_Java", "synpred154_Java", "catches", "relationalExpression",
+        "synpred237_Java", "synpred105_Java", "synpred88_Java", "expression",
+        "synpred242_Java", "synpred138_Java", "synpred151_Java", "typeList",
+        "formalParameterDecls", "interfaceBodyDeclaration", "synpred74_Java",
+        "typeName", "classDeclaration", "synpred252_Java", "selector", "synpred25_Java",
+        "synpred7_Java", "modifiers", "exclusiveOrExpression", "synpred11_Java",
+        "synpred164_Java", "variableModifiers", "synpred261_Java", "synpred42_Java",
+        "synpred128_Java", "synpred245_Java", "synpred264_Java", "synpred100_Java",
+        "synpred206_Java", "elementValuePair", "packageDeclaration", "variableModifier",
+        "synpred196_Java", "synpred203_Java", "arguments", "synpred149_Java",
+        "booleanLiteral", "synpred254_Java", "synpred96_Java", "synpred176_Java",
+        "synpred195_Java", "innerCreator", "compilationUnit", "synpred22_Java",
+        "integerLiteral", "annotationTypeDeclaration", "synpred165_Java",
+        "synpred55_Java", "synpred106_Java", "synpred158_Java", "annotationMethodOrConstantRest",
+        "synpred6_Java", "instanceOfExpression", "enumBody", "synpred262_Java",
+        "synpred117_Java", "synpred228_Java", "synpred269_Java", "synpred97_Java",
+        "synpred112_Java", "interfaceMethodOrFieldDecl", "switchBlockStatementGroups",
+        "synpred210_Java", "synpred44_Java", "synpred188_Java", "statementExpression",
+        "annotationTypeBody", "synpred170_Java", "synpred120_Java", "interfaceGenericMethodDecl",
+        "synpred89_Java", "synpred205_Java", "synpred230_Java", "arrayCreatorRest",
+        "synpred75_Java", "synpred130_Java", "annotationTypeElementRest",
+        "creator", "variableDeclarator", "synpred93_Java", "synpred115_Java",
+        "synpred119_Java", "synpred110_Java", "synpred186_Java", "synpred265_Java",
+        "synpred202_Java", "synpred253_Java", "andExpression", "synpred32_Java",
+        "synpred135_Java", "synpred148_Java", "synpred132_Java", "conditionalOrExpression",
+        "relationalOp", "synpred21_Java", "qualifiedNameList", "synpred58_Java",
+        "qualifiedName", "synpred51_Java", "conditionalExpression", "synpred175_Java",
+        "synpred90_Java", "synpred181_Java", "synpred31_Java", "shiftExpression",
+        "synpred197_Java", "fieldDeclaration", "synpred17_Java", "synpred231_Java",
+        "literal", "expressionList", "classBody", "synpred3_Java", "synpred160_Java",
+        "synpred190_Java", "synpred20_Java", "synpred219_Java", "synpred235_Java",
+        "synpred184_Java", "synpred222_Java", "synpred94_Java", "synpred147_Java",
+        "elementValue", "synpred64_Java", "synpred180_Java", "synpred82_Java",
+        "synpred30_Java", "synpred26_Java", "statement", "inclusiveOrExpression",
+        "multiplicativeExpression", "switchLabel", "synpred168_Java", "blockStatement",
+        "synpred111_Java", "synpred270_Java", "synpred134_Java", "synpred236_Java",
+        "enhancedForControl", "synpred213_Java", "synpred62_Java", "synpred227_Java",
+        "classCreatorRest", "synpred54_Java", "synpred104_Java", "synpred136_Java",
+        "synpred191_Java", "interfaceMemberDecl", "enumConstantName", "synpred67_Java",
+        "synpred49_Java", "typeParameters", "synpred123_Java", "synpred50_Java",
+        "synpred15_Java", "classOrInterfaceModifiers", "catchClause", "shiftOp",
+        "synpred63_Java", "synpred86_Java", "synpred212_Java", "normalClassDeclaration",
+        "methodDeclaratorRest", "conditionalAndExpression", "synpred79_Java",
+        "synpred239_Java", "synpred260_Java", "equalityExpression", "synpred161_Java",
+        "synpred221_Java", "annotationMethodRest", "synpred214_Java", "synpred113_Java",
+        "synpred92_Java", "synpred101_Java", "synpred234_Java", "synpred272_Java",
+        "synpred258_Java", "synpred95_Java", "synpred10_Java", "synpred125_Java",
+        "enumBodyDeclarations", "additiveExpression", "synpred133_Java",
+        "synpred14_Java", "interfaceMethodDeclaratorRest", "synpred248_Java",
+        "synpred208_Java", "formalParameterDeclsRest", "primary", "synpred78_Java",
+        "normalInterfaceDeclaration", "synpred145_Java", "synpred85_Java",
+        "synpred33_Java", "localVariableDeclaration", "synpred211_Java",
+        "synpred204_Java", "primitiveType", "switchBlockStatementGroup",
+        "synpred40_Java", "interfaceDeclaration", "formalParameters", "synpred238_Java",
+        "synpred99_Java", "synpred56_Java", "synpred177_Java", "synpred37_Java",
+        "synpred249_Java", "synpred46_Java", "identifierSuffix", "synpred116_Java",
+        "synpred69_Java", "synpred259_Java", "synpred65_Java", "synpred80_Java",
+        "synpred68_Java", "synpred66_Java", "elementValuePairs", "synpred71_Java",
+        "annotation", "synpred126_Java", "synpred102_Java", "synpred223_Java",
+        "synpred87_Java", "synpred27_Java", "synpred34_Java", "arrayInitializer",
+        "synpred77_Java", "typeArguments", "synpred187_Java", "synpred140_Java",
+        "variableDeclarators", "memberDecl", "voidMethodDeclaratorRest",
+        "enumConstant", "typeBound", "synpred70_Java", "synpred224_Java",
+        "constructorBody", "synpred84_Java", "interfaceBody", "classOrInterfaceDeclaration",
+        "synpred166_Java", "annotationName", "synpred251_Java", "synpred226_Java",
+        "synpred189_Java", "synpred246_Java", "forControl", "synpred108_Java",
+        "explicitConstructorInvocation", "synpred157_Java", "synpred4_Java",
+        "memberDeclaration", "synpred12_Java", "synpred243_Java", "synpred201_Java",
+        "parExpression", "synpred209_Java", "typeArgument", "synpred73_Java",
+        "synpred167_Java", "synpred53_Java", "synpred59_Java", "classBodyDeclaration",
+        "synpred233_Java", "explicitGenericInvocation", "synpred244_Java",
+        "synpred215_Java", "synpred139_Java", "synpred122_Java", "synpred266_Java",
+        "classOrInterfaceModifier", "synpred267_Java", "genericMethodOrConstructorDecl",
+        "synpred271_Java", "synpred183_Java", "synpred216_Java", "nonWildcardTypeArguments",
+        "variableDeclaratorId", "synpred131_Java", "constructorDeclaratorRest",
+        "synpred268_Java", "typeDeclaration", "annotationTypeElementDeclaration",
+        "synpred103_Java", "synpred127_Java", "synpred263_Java", "synpred23_Java",
+        "synpred150_Java", "defaultValue", "constantDeclarator", "genericMethodOrConstructorRest",
+        "synpred72_Java", "synpred217_Java", "synpred8_Java", "constantExpression",
+        "synpred52_Java", "synpred152_Java", "createdName", "synpred178_Java",
+        "synpred156_Java", "synpred162_Java", "synpred232_Java", "synpred118_Java",
+        "synpred91_Java", "synpred19_Java", "synpred29_Java", "elementValueArrayInitializer",
+        "synpred61_Java", "synpred141_Java", "synpred114_Java", "unaryExpression",
+        "synpred45_Java", "synpred16_Java", "synpred229_Java", "synpred2_Java",
+        "enumConstants", "synpred194_Java", "synpred43_Java", "importDeclaration",
+        "localVariableDeclarationStatement", "synpred121_Java", "forUpdate",
+        "synpred60_Java", "synpred143_Java", "forInit", "constantDeclaratorsRest",
+        "annotationConstantRest", "synpred36_Java", "superSuffix", "synpred39_Java",
+        "enumDeclaration", "synpred192_Java", "castExpression", "synpred1_Java",
+        "formalParameter", "synpred107_Java", "synpred155_Java", "synpred163_Java",
+        "synpred83_Java", "synpred129_Java", "synpred146_Java", "synpred207_Java",
+        "synpred13_Java", "synpred218_Java", "classOrInterfaceType", "synpred109_Java",
+        "synpred9_Java", "assignmentOperator", "synpred255_Java", "constantDeclaratorRest",
+        "variableInitializer", "synpred256_Java", "synpred28_Java", "synpred35_Java",
+        "synpred193_Java", "synpred174_Java", "synpred124_Java", "modifier",
+        "synpred81_Java", "synpred159_Java", "synpred185_Java", "synpred38_Java",
+        "synpred144_Java", "synpred199_Java", "typeParameter", "annotations",
+        "synpred173_Java", "synpred172_Java", "synpred18_Java", "packageOrTypeName",
+        "synpred241_Java", "synpred153_Java", "synpred247_Java", "synpred48_Java",
+        "synpred47_Java", "synpred98_Java", "synpred5_Java", "interfaceMethodOrFieldRest",
+        "synpred57_Java", "methodDeclaration", "synpred76_Java", "methodBody",
+        "synpred41_Java", "synpred142_Java", "synpred198_Java", "synpred225_Java",
+        "unaryExpressionNotPlusMinus", "synpred240_Java", "synpred200_Java",
+        "voidInterfaceMethodDeclaratorRest", "synpred182_Java", "synpred24_Java",
         "synpred257_Java", "type", "synpred220_Java", "synpred171_Java"
     };
-     
+
         public int ruleLevel = 0;
         public int getRuleLevel() { return ruleLevel; }
         public void incRuleLevel() { ruleLevel++; }
@@ -400,7 +400,7 @@ public class JavaParser extends DebugParser {
         public JavaParser(TokenStream input, int port, RecognizerSharedState state) {
             super(input, state);
             this.state.ruleMemo = new HashMap[407+1];
-             
+
             DebugEventSocketProxy proxy =
                 new DebugEventSocketProxy(this, port, null);
             setDebugListener(proxy);
@@ -414,7 +414,7 @@ public class JavaParser extends DebugParser {
     public JavaParser(TokenStream input, DebugEventListener dbg) {
         super(input, dbg, new RecognizerSharedState());
         this.state.ruleMemo = new HashMap[407+1];
-         
+
     }
     protected boolean evalPredicate(boolean result, String predicate) {
         dbg.semanticPredicate(result, predicate);
@@ -11518,8 +11518,8 @@ public class JavaParser extends DebugParser {
                     t3=(Token)match(input,51,FOLLOW_51_in_assignmentOperator4218); if (state.failed) return ;
                     dbg.location(723,9);
                     if ( !(evalPredicate( t1.getLine() == t2.getLine() &&
-                              t1.getCharPositionInLine() + 1 == t2.getCharPositionInLine() && 
-                              t2.getLine() == t3.getLine() && 
+                              t1.getCharPositionInLine() + 1 == t2.getCharPositionInLine() &&
+                              t2.getLine() == t3.getLine() &&
                               t2.getCharPositionInLine() + 1 == t3.getCharPositionInLine() ," $t1.getLine() == $t2.getLine() &&\n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() && \n          $t2.getLine() == $t3.getLine() && \n          $t2.getCharPositionInLine() + 1 == $t3.getCharPositionInLine() ")) ) {
                         if (state.backtracking>0) {state.failed=true; return ;}
                         throw new FailedPredicateException(input, "assignmentOperator", " $t1.getLine() == $t2.getLine() &&\n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() && \n          $t2.getLine() == $t3.getLine() && \n          $t2.getCharPositionInLine() + 1 == $t3.getCharPositionInLine() ");
@@ -11541,11 +11541,11 @@ public class JavaParser extends DebugParser {
                     dbg.location(727,52);
                     t4=(Token)match(input,51,FOLLOW_51_in_assignmentOperator4264); if (state.failed) return ;
                     dbg.location(728,9);
-                    if ( !(evalPredicate( t1.getLine() == t2.getLine() && 
+                    if ( !(evalPredicate( t1.getLine() == t2.getLine() &&
                               t1.getCharPositionInLine() + 1 == t2.getCharPositionInLine() &&
-                              t2.getLine() == t3.getLine() && 
+                              t2.getLine() == t3.getLine() &&
                               t2.getCharPositionInLine() + 1 == t3.getCharPositionInLine() &&
-                              t3.getLine() == t4.getLine() && 
+                              t3.getLine() == t4.getLine() &&
                               t3.getCharPositionInLine() + 1 == t4.getCharPositionInLine() ," $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() &&\n          $t2.getLine() == $t3.getLine() && \n          $t2.getCharPositionInLine() + 1 == $t3.getCharPositionInLine() &&\n          $t3.getLine() == $t4.getLine() && \n          $t3.getCharPositionInLine() + 1 == $t4.getCharPositionInLine() ")) ) {
                         if (state.backtracking>0) {state.failed=true; return ;}
                         throw new FailedPredicateException(input, "assignmentOperator", " $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() &&\n          $t2.getLine() == $t3.getLine() && \n          $t2.getCharPositionInLine() + 1 == $t3.getCharPositionInLine() &&\n          $t3.getLine() == $t4.getLine() && \n          $t3.getCharPositionInLine() + 1 == $t4.getCharPositionInLine() ");
@@ -11565,9 +11565,9 @@ public class JavaParser extends DebugParser {
                     dbg.location(734,41);
                     t3=(Token)match(input,51,FOLLOW_51_in_assignmentOperator4303); if (state.failed) return ;
                     dbg.location(735,9);
-                    if ( !(evalPredicate( t1.getLine() == t2.getLine() && 
-                              t1.getCharPositionInLine() + 1 == t2.getCharPositionInLine() && 
-                              t2.getLine() == t3.getLine() && 
+                    if ( !(evalPredicate( t1.getLine() == t2.getLine() &&
+                              t1.getCharPositionInLine() + 1 == t2.getCharPositionInLine() &&
+                              t2.getLine() == t3.getLine() &&
                               t2.getCharPositionInLine() + 1 == t3.getCharPositionInLine() ," $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() && \n          $t2.getLine() == $t3.getLine() && \n          $t2.getCharPositionInLine() + 1 == $t3.getCharPositionInLine() ")) ) {
                         if (state.backtracking>0) {state.failed=true; return ;}
                         throw new FailedPredicateException(input, "assignmentOperator", " $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() && \n          $t2.getLine() == $t3.getLine() && \n          $t2.getCharPositionInLine() + 1 == $t3.getCharPositionInLine() ");
@@ -12498,7 +12498,7 @@ public class JavaParser extends DebugParser {
                     dbg.location(778,30);
                     t2=(Token)match(input,51,FOLLOW_51_in_relationalOp4609); if (state.failed) return ;
                     dbg.location(779,9);
-                    if ( !(evalPredicate( t1.getLine() == t2.getLine() && 
+                    if ( !(evalPredicate( t1.getLine() == t2.getLine() &&
                               t1.getCharPositionInLine() + 1 == t2.getCharPositionInLine() ," $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() ")) ) {
                         if (state.backtracking>0) {state.failed=true; return ;}
                         throw new FailedPredicateException(input, "relationalOp", " $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() ");
@@ -12516,7 +12516,7 @@ public class JavaParser extends DebugParser {
                     dbg.location(781,30);
                     t2=(Token)match(input,51,FOLLOW_51_in_relationalOp4643); if (state.failed) return ;
                     dbg.location(782,9);
-                    if ( !(evalPredicate( t1.getLine() == t2.getLine() && 
+                    if ( !(evalPredicate( t1.getLine() == t2.getLine() &&
                               t1.getCharPositionInLine() + 1 == t2.getCharPositionInLine() ," $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() ")) ) {
                         if (state.backtracking>0) {state.failed=true; return ;}
                         throw new FailedPredicateException(input, "relationalOp", " $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() ");
@@ -12737,7 +12737,7 @@ public class JavaParser extends DebugParser {
                     dbg.location(793,30);
                     t2=(Token)match(input,40,FOLLOW_40_in_shiftOp4736); if (state.failed) return ;
                     dbg.location(794,9);
-                    if ( !(evalPredicate( t1.getLine() == t2.getLine() && 
+                    if ( !(evalPredicate( t1.getLine() == t2.getLine() &&
                               t1.getCharPositionInLine() + 1 == t2.getCharPositionInLine() ," $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() ")) ) {
                         if (state.backtracking>0) {state.failed=true; return ;}
                         throw new FailedPredicateException(input, "shiftOp", " $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() ");
@@ -12757,9 +12757,9 @@ public class JavaParser extends DebugParser {
                     dbg.location(796,41);
                     t3=(Token)match(input,42,FOLLOW_42_in_shiftOp4776); if (state.failed) return ;
                     dbg.location(797,9);
-                    if ( !(evalPredicate( t1.getLine() == t2.getLine() && 
+                    if ( !(evalPredicate( t1.getLine() == t2.getLine() &&
                               t1.getCharPositionInLine() + 1 == t2.getCharPositionInLine() &&
-                              t2.getLine() == t3.getLine() && 
+                              t2.getLine() == t3.getLine() &&
                               t2.getCharPositionInLine() + 1 == t3.getCharPositionInLine() ," $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() &&\n          $t2.getLine() == $t3.getLine() && \n          $t2.getCharPositionInLine() + 1 == $t3.getCharPositionInLine() ")) ) {
                         if (state.backtracking>0) {state.failed=true; return ;}
                         throw new FailedPredicateException(input, "shiftOp", " $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() &&\n          $t2.getLine() == $t3.getLine() && \n          $t2.getCharPositionInLine() + 1 == $t3.getCharPositionInLine() ");
@@ -12777,7 +12777,7 @@ public class JavaParser extends DebugParser {
                     dbg.location(801,30);
                     t2=(Token)match(input,42,FOLLOW_42_in_shiftOp4810); if (state.failed) return ;
                     dbg.location(802,9);
-                    if ( !(evalPredicate( t1.getLine() == t2.getLine() && 
+                    if ( !(evalPredicate( t1.getLine() == t2.getLine() &&
                               t1.getCharPositionInLine() + 1 == t2.getCharPositionInLine() ," $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() ")) ) {
                         if (state.backtracking>0) {state.failed=true; return ;}
                         throw new FailedPredicateException(input, "shiftOp", " $t1.getLine() == $t2.getLine() && \n          $t1.getCharPositionInLine() + 1 == $t2.getCharPositionInLine() ");
@@ -15349,7 +15349,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end "arguments"
 
     // $ANTLR start synpred5_Java
-    public final void synpred5_Java_fragment() throws RecognitionException {   
+    public final void synpred5_Java_fragment() throws RecognitionException {
         // Java.g:178:9: ( annotations ( packageDeclaration ( importDeclaration )* ( typeDeclaration )* | classOrInterfaceDeclaration ( typeDeclaration )* ) )
         dbg.enterAlt(1);
 
@@ -15544,7 +15544,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred5_Java
 
     // $ANTLR start synpred113_Java
-    public final void synpred113_Java_fragment() throws RecognitionException {   
+    public final void synpred113_Java_fragment() throws RecognitionException {
         // Java.g:492:13: ( explicitConstructorInvocation )
         dbg.enterAlt(1);
 
@@ -15562,7 +15562,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred113_Java
 
     // $ANTLR start synpred117_Java
-    public final void synpred117_Java_fragment() throws RecognitionException {   
+    public final void synpred117_Java_fragment() throws RecognitionException {
         // Java.g:496:9: ( ( nonWildcardTypeArguments )? ( 'this' | 'super' ) arguments ';' )
         dbg.enterAlt(1);
 
@@ -15626,7 +15626,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred117_Java
 
     // $ANTLR start synpred128_Java
-    public final void synpred128_Java_fragment() throws RecognitionException {   
+    public final void synpred128_Java_fragment() throws RecognitionException {
         // Java.g:528:9: ( annotation )
         dbg.enterAlt(1);
 
@@ -15644,7 +15644,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred128_Java
 
     // $ANTLR start synpred151_Java
-    public final void synpred151_Java_fragment() throws RecognitionException {   
+    public final void synpred151_Java_fragment() throws RecognitionException {
         // Java.g:601:9: ( localVariableDeclarationStatement )
         dbg.enterAlt(1);
 
@@ -15662,7 +15662,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred151_Java
 
     // $ANTLR start synpred152_Java
-    public final void synpred152_Java_fragment() throws RecognitionException {   
+    public final void synpred152_Java_fragment() throws RecognitionException {
         // Java.g:602:9: ( classOrInterfaceDeclaration )
         dbg.enterAlt(1);
 
@@ -15680,7 +15680,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred152_Java
 
     // $ANTLR start synpred157_Java
-    public final void synpred157_Java_fragment() throws RecognitionException {   
+    public final void synpred157_Java_fragment() throws RecognitionException {
         // Java.g:621:54: ( 'else' statement )
         dbg.enterAlt(1);
 
@@ -15700,7 +15700,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred157_Java
 
     // $ANTLR start synpred162_Java
-    public final void synpred162_Java_fragment() throws RecognitionException {   
+    public final void synpred162_Java_fragment() throws RecognitionException {
         // Java.g:626:11: ( catches 'finally' block )
         dbg.enterAlt(1);
 
@@ -15726,7 +15726,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred162_Java
 
     // $ANTLR start synpred163_Java
-    public final void synpred163_Java_fragment() throws RecognitionException {   
+    public final void synpred163_Java_fragment() throws RecognitionException {
         // Java.g:627:11: ( catches )
         dbg.enterAlt(1);
 
@@ -15744,7 +15744,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred163_Java
 
     // $ANTLR start synpred178_Java
-    public final void synpred178_Java_fragment() throws RecognitionException {   
+    public final void synpred178_Java_fragment() throws RecognitionException {
         // Java.g:662:9: ( switchLabel )
         dbg.enterAlt(1);
 
@@ -15762,7 +15762,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred178_Java
 
     // $ANTLR start synpred180_Java
-    public final void synpred180_Java_fragment() throws RecognitionException {   
+    public final void synpred180_Java_fragment() throws RecognitionException {
         // Java.g:666:9: ( 'case' constantExpression ':' )
         dbg.enterAlt(1);
 
@@ -15784,7 +15784,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred180_Java
 
     // $ANTLR start synpred181_Java
-    public final void synpred181_Java_fragment() throws RecognitionException {   
+    public final void synpred181_Java_fragment() throws RecognitionException {
         // Java.g:667:9: ( 'case' enumConstantName ':' )
         dbg.enterAlt(1);
 
@@ -15806,7 +15806,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred181_Java
 
     // $ANTLR start synpred182_Java
-    public final void synpred182_Java_fragment() throws RecognitionException {   
+    public final void synpred182_Java_fragment() throws RecognitionException {
         // Java.g:673:9: ( enhancedForControl )
         dbg.enterAlt(1);
 
@@ -15824,7 +15824,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred182_Java
 
     // $ANTLR start synpred186_Java
-    public final void synpred186_Java_fragment() throws RecognitionException {   
+    public final void synpred186_Java_fragment() throws RecognitionException {
         // Java.g:678:9: ( localVariableDeclaration )
         dbg.enterAlt(1);
 
@@ -15842,7 +15842,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred186_Java
 
     // $ANTLR start synpred188_Java
-    public final void synpred188_Java_fragment() throws RecognitionException {   
+    public final void synpred188_Java_fragment() throws RecognitionException {
         // Java.g:709:32: ( assignmentOperator expression )
         dbg.enterAlt(1);
 
@@ -15866,7 +15866,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred188_Java
 
     // $ANTLR start synpred198_Java
-    public final void synpred198_Java_fragment() throws RecognitionException {   
+    public final void synpred198_Java_fragment() throws RecognitionException {
         // Java.g:722:9: ( '<' '<' '=' )
         dbg.enterAlt(1);
 
@@ -15884,7 +15884,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred198_Java
 
     // $ANTLR start synpred199_Java
-    public final void synpred199_Java_fragment() throws RecognitionException {   
+    public final void synpred199_Java_fragment() throws RecognitionException {
         // Java.g:727:9: ( '>' '>' '>' '=' )
         dbg.enterAlt(1);
 
@@ -15904,7 +15904,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred199_Java
 
     // $ANTLR start synpred200_Java
-    public final void synpred200_Java_fragment() throws RecognitionException {   
+    public final void synpred200_Java_fragment() throws RecognitionException {
         // Java.g:734:9: ( '>' '>' '=' )
         dbg.enterAlt(1);
 
@@ -15922,7 +15922,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred200_Java
 
     // $ANTLR start synpred211_Java
-    public final void synpred211_Java_fragment() throws RecognitionException {   
+    public final void synpred211_Java_fragment() throws RecognitionException {
         // Java.g:778:9: ( '<' '=' )
         dbg.enterAlt(1);
 
@@ -15938,7 +15938,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred211_Java
 
     // $ANTLR start synpred212_Java
-    public final void synpred212_Java_fragment() throws RecognitionException {   
+    public final void synpred212_Java_fragment() throws RecognitionException {
         // Java.g:781:9: ( '>' '=' )
         dbg.enterAlt(1);
 
@@ -15954,7 +15954,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred212_Java
 
     // $ANTLR start synpred215_Java
-    public final void synpred215_Java_fragment() throws RecognitionException {   
+    public final void synpred215_Java_fragment() throws RecognitionException {
         // Java.g:793:9: ( '<' '<' )
         dbg.enterAlt(1);
 
@@ -15970,7 +15970,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred215_Java
 
     // $ANTLR start synpred216_Java
-    public final void synpred216_Java_fragment() throws RecognitionException {   
+    public final void synpred216_Java_fragment() throws RecognitionException {
         // Java.g:796:9: ( '>' '>' '>' )
         dbg.enterAlt(1);
 
@@ -15988,7 +15988,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred216_Java
 
     // $ANTLR start synpred217_Java
-    public final void synpred217_Java_fragment() throws RecognitionException {   
+    public final void synpred217_Java_fragment() throws RecognitionException {
         // Java.g:801:9: ( '>' '>' )
         dbg.enterAlt(1);
 
@@ -16004,7 +16004,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred217_Java
 
     // $ANTLR start synpred229_Java
-    public final void synpred229_Java_fragment() throws RecognitionException {   
+    public final void synpred229_Java_fragment() throws RecognitionException {
         // Java.g:826:9: ( castExpression )
         dbg.enterAlt(1);
 
@@ -16022,7 +16022,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred229_Java
 
     // $ANTLR start synpred233_Java
-    public final void synpred233_Java_fragment() throws RecognitionException {   
+    public final void synpred233_Java_fragment() throws RecognitionException {
         // Java.g:831:8: ( '(' primitiveType ')' unaryExpression )
         dbg.enterAlt(1);
 
@@ -16050,7 +16050,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred233_Java
 
     // $ANTLR start synpred234_Java
-    public final void synpred234_Java_fragment() throws RecognitionException {   
+    public final void synpred234_Java_fragment() throws RecognitionException {
         // Java.g:832:13: ( type )
         dbg.enterAlt(1);
 
@@ -16068,7 +16068,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred234_Java
 
     // $ANTLR start synpred236_Java
-    public final void synpred236_Java_fragment() throws RecognitionException {   
+    public final void synpred236_Java_fragment() throws RecognitionException {
         // Java.g:837:17: ( '.' Identifier )
         dbg.enterAlt(1);
 
@@ -16084,7 +16084,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred236_Java
 
     // $ANTLR start synpred237_Java
-    public final void synpred237_Java_fragment() throws RecognitionException {   
+    public final void synpred237_Java_fragment() throws RecognitionException {
         // Java.g:837:34: ( identifierSuffix )
         dbg.enterAlt(1);
 
@@ -16102,7 +16102,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred237_Java
 
     // $ANTLR start synpred242_Java
-    public final void synpred242_Java_fragment() throws RecognitionException {   
+    public final void synpred242_Java_fragment() throws RecognitionException {
         // Java.g:841:21: ( '.' Identifier )
         dbg.enterAlt(1);
 
@@ -16118,7 +16118,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred242_Java
 
     // $ANTLR start synpred243_Java
-    public final void synpred243_Java_fragment() throws RecognitionException {   
+    public final void synpred243_Java_fragment() throws RecognitionException {
         // Java.g:841:38: ( identifierSuffix )
         dbg.enterAlt(1);
 
@@ -16136,7 +16136,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred243_Java
 
     // $ANTLR start synpred249_Java
-    public final void synpred249_Java_fragment() throws RecognitionException {   
+    public final void synpred249_Java_fragment() throws RecognitionException {
         // Java.g:848:10: ( '[' expression ']' )
         dbg.enterAlt(1);
 
@@ -16158,7 +16158,7 @@ public class JavaParser extends DebugParser {
     // $ANTLR end synpred249_Java
 
     // $ANTLR start synpred262_Java
-    public final void synpred262_Java_fragment() throws RecognitionException {   
+    public final void synpred262_Java_fragment() throws RecognitionException {
         // Java.g:874:29: ( '[' expression ']' )
         dbg.enterAlt(1);
 
@@ -16783,10 +16783,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA8_1 = input.LA(1);
 
-                         
+
                         int index8_1 = input.index();
                         input.rewind();
                         s = -1;
@@ -16794,7 +16794,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index8_1);
                         if ( s>=0 ) return s;
                         break;
@@ -16911,10 +16911,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA81_2 = input.LA(1);
 
-                         
+
                         int index81_2 = input.index();
                         input.rewind();
                         s = -1;
@@ -16922,14 +16922,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_2);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA81_3 = input.LA(1);
 
-                         
+
                         int index81_3 = input.index();
                         input.rewind();
                         s = -1;
@@ -16937,14 +16937,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_3);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 : 
+                    case 2 :
                         int LA81_4 = input.LA(1);
 
-                         
+
                         int index81_4 = input.index();
                         input.rewind();
                         s = -1;
@@ -16952,14 +16952,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_4);
                         if ( s>=0 ) return s;
                         break;
-                    case 3 : 
+                    case 3 :
                         int LA81_5 = input.LA(1);
 
-                         
+
                         int index81_5 = input.index();
                         input.rewind();
                         s = -1;
@@ -16967,14 +16967,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_5);
                         if ( s>=0 ) return s;
                         break;
-                    case 4 : 
+                    case 4 :
                         int LA81_6 = input.LA(1);
 
-                         
+
                         int index81_6 = input.index();
                         input.rewind();
                         s = -1;
@@ -16982,14 +16982,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_6);
                         if ( s>=0 ) return s;
                         break;
-                    case 5 : 
+                    case 5 :
                         int LA81_7 = input.LA(1);
 
-                         
+
                         int index81_7 = input.index();
                         input.rewind();
                         s = -1;
@@ -16997,14 +16997,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_7);
                         if ( s>=0 ) return s;
                         break;
-                    case 6 : 
+                    case 6 :
                         int LA81_8 = input.LA(1);
 
-                         
+
                         int index81_8 = input.index();
                         input.rewind();
                         s = -1;
@@ -17012,14 +17012,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_8);
                         if ( s>=0 ) return s;
                         break;
-                    case 7 : 
+                    case 7 :
                         int LA81_9 = input.LA(1);
 
-                         
+
                         int index81_9 = input.index();
                         input.rewind();
                         s = -1;
@@ -17027,14 +17027,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_9);
                         if ( s>=0 ) return s;
                         break;
-                    case 8 : 
+                    case 8 :
                         int LA81_10 = input.LA(1);
 
-                         
+
                         int index81_10 = input.index();
                         input.rewind();
                         s = -1;
@@ -17042,14 +17042,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_10);
                         if ( s>=0 ) return s;
                         break;
-                    case 9 : 
+                    case 9 :
                         int LA81_11 = input.LA(1);
 
-                         
+
                         int index81_11 = input.index();
                         input.rewind();
                         s = -1;
@@ -17057,14 +17057,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_11);
                         if ( s>=0 ) return s;
                         break;
-                    case 10 : 
+                    case 10 :
                         int LA81_12 = input.LA(1);
 
-                         
+
                         int index81_12 = input.index();
                         input.rewind();
                         s = -1;
@@ -17072,14 +17072,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_12);
                         if ( s>=0 ) return s;
                         break;
-                    case 11 : 
+                    case 11 :
                         int LA81_13 = input.LA(1);
 
-                         
+
                         int index81_13 = input.index();
                         input.rewind();
                         s = -1;
@@ -17087,14 +17087,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_13);
                         if ( s>=0 ) return s;
                         break;
-                    case 12 : 
+                    case 12 :
                         int LA81_14 = input.LA(1);
 
-                         
+
                         int index81_14 = input.index();
                         input.rewind();
                         s = -1;
@@ -17102,7 +17102,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 15;}
 
-                         
+
                         input.seek(index81_14);
                         if ( s>=0 ) return s;
                         break;
@@ -17184,10 +17184,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA85_2 = input.LA(1);
 
-                         
+
                         int index85_2 = input.index();
                         input.rewind();
                         s = -1;
@@ -17195,14 +17195,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 3;}
 
-                         
+
                         input.seek(index85_2);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA85_4 = input.LA(1);
 
-                         
+
                         int index85_4 = input.index();
                         input.rewind();
                         s = -1;
@@ -17210,7 +17210,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 3;}
 
-                         
+
                         input.seek(index85_4);
                         if ( s>=0 ) return s;
                         break;
@@ -17325,10 +17325,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA106_1 = input.LA(1);
 
-                         
+
                         int index106_1 = input.index();
                         input.rewind();
                         s = -1;
@@ -17336,14 +17336,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (synpred152_Java()) ) {s = 5;}
 
-                         
+
                         input.seek(index106_1);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA106_2 = input.LA(1);
 
-                         
+
                         int index106_2 = input.index();
                         input.rewind();
                         s = -1;
@@ -17351,14 +17351,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (synpred152_Java()) ) {s = 5;}
 
-                         
+
                         input.seek(index106_2);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 : 
+                    case 2 :
                         int LA106_3 = input.LA(1);
 
-                         
+
                         int index106_3 = input.index();
                         input.rewind();
                         s = -1;
@@ -17366,14 +17366,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 14;}
 
-                         
+
                         input.seek(index106_3);
                         if ( s>=0 ) return s;
                         break;
-                    case 3 : 
+                    case 3 :
                         int LA106_4 = input.LA(1);
 
-                         
+
                         int index106_4 = input.index();
                         input.rewind();
                         s = -1;
@@ -17381,7 +17381,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 14;}
 
-                         
+
                         input.seek(index106_4);
                         if ( s>=0 ) return s;
                         break;
@@ -17669,10 +17669,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA123_59 = input.LA(1);
 
-                         
+
                         int index123_59 = input.index();
                         input.rewind();
                         s = -1;
@@ -17680,14 +17680,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_59);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA123_60 = input.LA(1);
 
-                         
+
                         int index123_60 = input.index();
                         input.rewind();
                         s = -1;
@@ -17695,14 +17695,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_60);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 : 
+                    case 2 :
                         int LA123_61 = input.LA(1);
 
-                         
+
                         int index123_61 = input.index();
                         input.rewind();
                         s = -1;
@@ -17710,14 +17710,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_61);
                         if ( s>=0 ) return s;
                         break;
-                    case 3 : 
+                    case 3 :
                         int LA123_62 = input.LA(1);
 
-                         
+
                         int index123_62 = input.index();
                         input.rewind();
                         s = -1;
@@ -17725,14 +17725,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_62);
                         if ( s>=0 ) return s;
                         break;
-                    case 4 : 
+                    case 4 :
                         int LA123_63 = input.LA(1);
 
-                         
+
                         int index123_63 = input.index();
                         input.rewind();
                         s = -1;
@@ -17740,14 +17740,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_63);
                         if ( s>=0 ) return s;
                         break;
-                    case 5 : 
+                    case 5 :
                         int LA123_64 = input.LA(1);
 
-                         
+
                         int index123_64 = input.index();
                         input.rewind();
                         s = -1;
@@ -17755,14 +17755,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_64);
                         if ( s>=0 ) return s;
                         break;
-                    case 6 : 
+                    case 6 :
                         int LA123_65 = input.LA(1);
 
-                         
+
                         int index123_65 = input.index();
                         input.rewind();
                         s = -1;
@@ -17770,14 +17770,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_65);
                         if ( s>=0 ) return s;
                         break;
-                    case 7 : 
+                    case 7 :
                         int LA123_66 = input.LA(1);
 
-                         
+
                         int index123_66 = input.index();
                         input.rewind();
                         s = -1;
@@ -17785,14 +17785,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_66);
                         if ( s>=0 ) return s;
                         break;
-                    case 8 : 
+                    case 8 :
                         int LA123_67 = input.LA(1);
 
-                         
+
                         int index123_67 = input.index();
                         input.rewind();
                         s = -1;
@@ -17800,14 +17800,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_67);
                         if ( s>=0 ) return s;
                         break;
-                    case 9 : 
+                    case 9 :
                         int LA123_68 = input.LA(1);
 
-                         
+
                         int index123_68 = input.index();
                         input.rewind();
                         s = -1;
@@ -17815,14 +17815,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_68);
                         if ( s>=0 ) return s;
                         break;
-                    case 10 : 
+                    case 10 :
                         int LA123_69 = input.LA(1);
 
-                         
+
                         int index123_69 = input.index();
                         input.rewind();
                         s = -1;
@@ -17830,14 +17830,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_69);
                         if ( s>=0 ) return s;
                         break;
-                    case 11 : 
+                    case 11 :
                         int LA123_70 = input.LA(1);
 
-                         
+
                         int index123_70 = input.index();
                         input.rewind();
                         s = -1;
@@ -17845,14 +17845,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_70);
                         if ( s>=0 ) return s;
                         break;
-                    case 12 : 
+                    case 12 :
                         int LA123_71 = input.LA(1);
 
-                         
+
                         int index123_71 = input.index();
                         input.rewind();
                         s = -1;
@@ -17860,14 +17860,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_71);
                         if ( s>=0 ) return s;
                         break;
-                    case 13 : 
+                    case 13 :
                         int LA123_72 = input.LA(1);
 
-                         
+
                         int index123_72 = input.index();
                         input.rewind();
                         s = -1;
@@ -17875,14 +17875,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_72);
                         if ( s>=0 ) return s;
                         break;
-                    case 14 : 
+                    case 14 :
                         int LA123_73 = input.LA(1);
 
-                         
+
                         int index123_73 = input.index();
                         input.rewind();
                         s = -1;
@@ -17890,14 +17890,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_73);
                         if ( s>=0 ) return s;
                         break;
-                    case 15 : 
+                    case 15 :
                         int LA123_74 = input.LA(1);
 
-                         
+
                         int index123_74 = input.index();
                         input.rewind();
                         s = -1;
@@ -17905,14 +17905,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_74);
                         if ( s>=0 ) return s;
                         break;
-                    case 16 : 
+                    case 16 :
                         int LA123_75 = input.LA(1);
 
-                         
+
                         int index123_75 = input.index();
                         input.rewind();
                         s = -1;
@@ -17920,14 +17920,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_75);
                         if ( s>=0 ) return s;
                         break;
-                    case 17 : 
+                    case 17 :
                         int LA123_78 = input.LA(1);
 
-                         
+
                         int index123_78 = input.index();
                         input.rewind();
                         s = -1;
@@ -17935,14 +17935,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_78);
                         if ( s>=0 ) return s;
                         break;
-                    case 18 : 
+                    case 18 :
                         int LA123_79 = input.LA(1);
 
-                         
+
                         int index123_79 = input.index();
                         input.rewind();
                         s = -1;
@@ -17950,14 +17950,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_79);
                         if ( s>=0 ) return s;
                         break;
-                    case 19 : 
+                    case 19 :
                         int LA123_80 = input.LA(1);
 
-                         
+
                         int index123_80 = input.index();
                         input.rewind();
                         s = -1;
@@ -17965,14 +17965,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_80);
                         if ( s>=0 ) return s;
                         break;
-                    case 20 : 
+                    case 20 :
                         int LA123_98 = input.LA(1);
 
-                         
+
                         int index123_98 = input.index();
                         input.rewind();
                         s = -1;
@@ -17980,14 +17980,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_98);
                         if ( s>=0 ) return s;
                         break;
-                    case 21 : 
+                    case 21 :
                         int LA123_104 = input.LA(1);
 
-                         
+
                         int index123_104 = input.index();
                         input.rewind();
                         s = -1;
@@ -17995,14 +17995,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_104);
                         if ( s>=0 ) return s;
                         break;
-                    case 22 : 
+                    case 22 :
                         int LA123_129 = input.LA(1);
 
-                         
+
                         int index123_129 = input.index();
                         input.rewind();
                         s = -1;
@@ -18010,7 +18010,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index123_129);
                         if ( s>=0 ) return s;
                         break;
@@ -18099,10 +18099,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA124_3 = input.LA(1);
 
-                         
+
                         int index124_3 = input.index();
                         input.rewind();
                         s = -1;
@@ -18110,14 +18110,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index124_3);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA124_4 = input.LA(1);
 
-                         
+
                         int index124_4 = input.index();
                         input.rewind();
                         s = -1;
@@ -18125,7 +18125,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 5;}
 
-                         
+
                         input.seek(index124_4);
                         if ( s>=0 ) return s;
                         break;
@@ -18207,10 +18207,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA126_9 = input.LA(1);
 
-                         
+
                         int index126_9 = input.index();
                         input.rewind();
                         s = -1;
@@ -18218,14 +18218,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_9);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA126_5 = input.LA(1);
 
-                         
+
                         int index126_5 = input.index();
                         input.rewind();
                         s = -1;
@@ -18233,14 +18233,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_5);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 : 
+                    case 2 :
                         int LA126_2 = input.LA(1);
 
-                         
+
                         int index126_2 = input.index();
                         input.rewind();
                         s = -1;
@@ -18248,14 +18248,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_2);
                         if ( s>=0 ) return s;
                         break;
-                    case 3 : 
+                    case 3 :
                         int LA126_11 = input.LA(1);
 
-                         
+
                         int index126_11 = input.index();
                         input.rewind();
                         s = -1;
@@ -18263,14 +18263,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_11);
                         if ( s>=0 ) return s;
                         break;
-                    case 4 : 
+                    case 4 :
                         int LA126_6 = input.LA(1);
 
-                         
+
                         int index126_6 = input.index();
                         input.rewind();
                         s = -1;
@@ -18278,14 +18278,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_6);
                         if ( s>=0 ) return s;
                         break;
-                    case 5 : 
+                    case 5 :
                         int LA126_1 = input.LA(1);
 
-                         
+
                         int index126_1 = input.index();
                         input.rewind();
                         s = -1;
@@ -18293,14 +18293,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_1);
                         if ( s>=0 ) return s;
                         break;
-                    case 6 : 
+                    case 6 :
                         int LA126_10 = input.LA(1);
 
-                         
+
                         int index126_10 = input.index();
                         input.rewind();
                         s = -1;
@@ -18308,14 +18308,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_10);
                         if ( s>=0 ) return s;
                         break;
-                    case 7 : 
+                    case 7 :
                         int LA126_7 = input.LA(1);
 
-                         
+
                         int index126_7 = input.index();
                         input.rewind();
                         s = -1;
@@ -18323,14 +18323,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_7);
                         if ( s>=0 ) return s;
                         break;
-                    case 8 : 
+                    case 8 :
                         int LA126_4 = input.LA(1);
 
-                         
+
                         int index126_4 = input.index();
                         input.rewind();
                         s = -1;
@@ -18338,14 +18338,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_4);
                         if ( s>=0 ) return s;
                         break;
-                    case 9 : 
+                    case 9 :
                         int LA126_8 = input.LA(1);
 
-                         
+
                         int index126_8 = input.index();
                         input.rewind();
                         s = -1;
@@ -18353,14 +18353,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_8);
                         if ( s>=0 ) return s;
                         break;
-                    case 10 : 
+                    case 10 :
                         int LA126_3 = input.LA(1);
 
-                         
+
                         int index126_3 = input.index();
                         input.rewind();
                         s = -1;
@@ -18368,7 +18368,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 12;}
 
-                         
+
                         input.seek(index126_3);
                         if ( s>=0 ) return s;
                         break;
@@ -18451,10 +18451,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA127_12 = input.LA(1);
 
-                         
+
                         int index127_12 = input.index();
                         input.rewind();
                         s = -1;
@@ -18462,14 +18462,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (LA127_12==51) && (synpred200_Java())) {s = 14;}
 
-                         
+
                         input.seek(index127_12);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA127_0 = input.LA(1);
 
-                         
+
                         int index127_0 = input.index();
                         input.rewind();
                         s = -1;
@@ -18495,7 +18495,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (LA127_0==42) ) {s = 11;}
 
-                         
+
                         input.seek(index127_0);
                         if ( s>=0 ) return s;
                         break;
@@ -18587,10 +18587,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA139_0 = input.LA(1);
 
-                         
+
                         int index139_0 = input.index();
                         input.rewind();
                         s = -1;
@@ -18598,14 +18598,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (LA139_0==42) ) {s = 2;}
 
-                         
+
                         input.seek(index139_0);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA139_3 = input.LA(1);
 
-                         
+
                         int index139_3 = input.index();
                         input.rewind();
                         s = -1;
@@ -18649,7 +18649,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (LA139_3==47) && (synpred217_Java())) {s = 23;}
 
-                         
+
                         input.seek(index139_3);
                         if ( s>=0 ) return s;
                         break;
@@ -18733,10 +18733,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA145_3 = input.LA(1);
 
-                         
+
                         int index145_3 = input.index();
                         input.rewind();
                         s = -1;
@@ -18744,7 +18744,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 4;}
 
-                         
+
                         input.seek(index145_3);
                         if ( s>=0 ) return s;
                         break;
@@ -18818,10 +18818,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA146_1 = input.LA(1);
 
-                         
+
                         int index146_1 = input.index();
                         input.rewind();
                         s = -1;
@@ -18829,7 +18829,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 3;}
 
-                         
+
                         input.seek(index146_1);
                         if ( s>=0 ) return s;
                         break;
@@ -18930,10 +18930,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA149_1 = input.LA(1);
 
-                         
+
                         int index149_1 = input.index();
                         input.rewind();
                         s = -1;
@@ -18941,14 +18941,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 4;}
 
-                         
+
                         input.seek(index149_1);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA149_3 = input.LA(1);
 
-                         
+
                         int index149_3 = input.index();
                         input.rewind();
                         s = -1;
@@ -18956,7 +18956,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 4;}
 
-                         
+
                         input.seek(index149_3);
                         if ( s>=0 ) return s;
                         break;
@@ -19057,10 +19057,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA151_1 = input.LA(1);
 
-                         
+
                         int index151_1 = input.index();
                         input.rewind();
                         s = -1;
@@ -19068,14 +19068,14 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 4;}
 
-                         
+
                         input.seek(index151_1);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA151_3 = input.LA(1);
 
-                         
+
                         int index151_3 = input.index();
                         input.rewind();
                         s = -1;
@@ -19083,7 +19083,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 4;}
 
-                         
+
                         input.seek(index151_3);
                         if ( s>=0 ) return s;
                         break;
@@ -19247,10 +19247,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA155_2 = input.LA(1);
 
-                         
+
                         int index155_2 = input.index();
                         input.rewind();
                         s = -1;
@@ -19258,7 +19258,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 1;}
 
-                         
+
                         input.seek(index155_2);
                         if ( s>=0 ) return s;
                         break;
@@ -19359,10 +19359,10 @@ public class JavaParser extends DebugParser {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA162_1 = input.LA(1);
 
-                         
+
                         int index162_1 = input.index();
                         input.rewind();
                         s = -1;
@@ -19370,7 +19370,7 @@ public class JavaParser extends DebugParser {
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index162_1);
                         if ( s>=0 ) return s;
                         break;
@@ -19382,7 +19382,7 @@ public class JavaParser extends DebugParser {
             throw nvae;
         }
     }
- 
+
 
     public static final BitSet FOLLOW_annotations_in_compilationUnit44 = new BitSet(new long[]{0x0000403F92000020L,0x0000000000000200L});
     public static final BitSet FOLLOW_packageDeclaration_in_compilationUnit58 = new BitSet(new long[]{0x0000403F9E000022L,0x0000000000000200L});

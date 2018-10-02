@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity;
 
@@ -30,15 +30,15 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that compound identity can consists of null component column value.
- * 
+ *
  * This test uses pre-defined database tables created by DDL explicitly.
  * The tables have <em>logical</em> compound primary keys in the sense non-null
- * constraint is <em>not</em> set on the primary columns. The tables are populated 
- * with SQL to contain null values in these columns. 
+ * constraint is <em>not</em> set on the primary columns. The tables are populated
+ * with SQL to contain null values in these columns.
  * The test verifies that results are returned as par expectation.
  * For more details, refer
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-1397">JIRA-1397</A>
- * 
+ *
  * @author Pinaki Poddar
  * @author Michael Vorburger
  */
@@ -62,7 +62,7 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
             tablesCreated = true;
         }
     }
-	
+
     public void testSimpleCompoundIdTestEntity() throws Exception  {
 			EntityManager em = emf.createEntityManager();
 			String jpql = "SELECT o FROM SimpleCompoundIdTestEntity o ORDER BY o.secondId";
@@ -70,14 +70,14 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
 			    .getResultList();
 			assertEquals(2, list.size());
 			assertEquals(Long.valueOf(123), list.get(0).getSecondId());
-			
+
 			SimpleCompoundIdTestEntity secondResult = list.get(1);
 			assertNotNull("BUG (JIRA-1397)! Result list contains null in second element", secondResult);
 			assertNull(secondResult.getSecondId());
 			em.close();
 	}
 
-	
+
 	public void testComplexCompoundIdTestEntity() throws Exception  {
 			EntityManager em = emf.createEntityManager();
 			String jpql = "SELECT o FROM ComplexCompoundIdTestEntity o ORDER BY o.type";
@@ -89,7 +89,7 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
 			assertNull("Result list's second record secondId field was not null", secondResult.getType());
 			em.close();
 	}
-	
+
 	/**
 	 * Create tables with logical compound keys without non-null constraint.
 	 * Populate them with null values in some of the columns.
@@ -109,7 +109,7 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
             conn.createStatement().execute("DROP TABLE test_complex");
         } catch (Exception e) {
         }
-        
+
         conn.createStatement().execute("CREATE TABLE test_simple(firstId NUMERIC, secondId NUMERIC)");
         conn.createStatement().execute("INSERT INTO test_simple(firstId, secondId) VALUES (1, 123)");
         conn.createStatement().execute("INSERT INTO test_simple(firstId, secondId) VALUES (1, NULL)");
@@ -123,10 +123,10 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
         conn.createStatement().execute("INSERT INTO test_complex(id, type_id) VALUES (1, NULL)");
 
         conn.close();
-        
+
         em.flush();
         em.getTransaction().commit();
         em.close();
     }
-	    
+
 }

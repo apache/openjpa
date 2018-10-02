@@ -34,25 +34,25 @@ import org.apache.openjpa.meta.ClassMetaData;
  * <br>
  * The policy checks for the given instance by its type whether the class name appears in
  * exclusion or inclusion lists. If the class name appears in exclusion list then the
- * instance is not cached. Otherwise, if an inclusion list exists and the class name appears in inclusion list 
+ * instance is not cached. Otherwise, if an inclusion list exists and the class name appears in inclusion list
  * or @DataCache annotation is specified on the class meta data, then the instance is cached.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
-public class TypeBasedCacheDistributionPolicy extends DefaultCacheDistributionPolicy 
+public class TypeBasedCacheDistributionPolicy extends DefaultCacheDistributionPolicy
     implements CacheDistributionPolicy {
     private Set<String> _excludedTypes;
     private Set<String> _includedTypes;
-    
-    
+
+
     /**
      * Gets the excluded types, if configured.
      */
     public Set<String> getExcludedTypes() {
         return _excludedTypes;
     }
-    
+
     /**
      * Sets excluded types from a semicolon separated list of type names.
      */
@@ -66,21 +66,21 @@ public class TypeBasedCacheDistributionPolicy extends DefaultCacheDistributionPo
     public Set<String> getIncludedTypes() {
         return _includedTypes;
     }
-    
+
     /**
      * Sets included types from a semicolon separated list of type names.
      */
     public void setIncludedTypes(String types) {
         _includedTypes = parseNames(types);
     }
-    
+
     private Set<String> parseNames(String types) {
         if (StringUtil.isEmpty(types))
             return Collections.emptySet();
         String[] names = StringUtil.split(types, ";", 0);
         Set<String> set = new HashSet<String>();
         set.addAll(Arrays.asList(names));
-        
+
         return  Collections.unmodifiableSet(set);
     }
 
@@ -88,14 +88,14 @@ public class TypeBasedCacheDistributionPolicy extends DefaultCacheDistributionPo
     public String selectCache(OpenJPAStateManager sm, Object context) {
         ClassMetaData meta = sm.getMetaData();
         String className = meta.getDescribedType().getName();
-        if (_excludedTypes != null && _excludedTypes.contains(className)) {  
+        if (_excludedTypes != null && _excludedTypes.contains(className)) {
             return null;
-        } 
+        }
         if (_includedTypes != null && !_includedTypes.isEmpty()) {
             if (_includedTypes.contains(className))
                 return meta.getDataCacheName();
             return (meta.getDataCacheEnabled()) ? meta.getDataCacheName() : null;
-                
+
         } else {
             return super.selectCache(sm, context);
         }

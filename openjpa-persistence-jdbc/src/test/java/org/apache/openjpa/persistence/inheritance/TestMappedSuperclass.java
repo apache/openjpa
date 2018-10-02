@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.inheritance;
 
@@ -28,8 +28,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * This test verifies basic Mapped Superclass functionality as dictated by
- * the JPA Specification contract. 
- * 
+ * the JPA Specification contract.
+ *
  * OpenJPA JIRA: {@link http://issues.apache.org/jira/browse/OPENJPA-1061}
  *
  */
@@ -53,7 +53,7 @@ public class TestMappedSuperclass extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
 
         // Create two entities, SubclassC and SubclassD, with the same
-        // primary key value     
+        // primary key value
         SubclassC sc = new SubclassC();
         sc.setId(42);
         sc.setName("SubclassCMappedSuperName");

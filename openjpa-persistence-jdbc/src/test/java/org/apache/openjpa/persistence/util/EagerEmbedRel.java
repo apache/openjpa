@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.util;
 
@@ -28,10 +28,10 @@ import javax.persistence.OneToMany;
 
 @Embeddable
 public class EagerEmbedRel {
-    
+
     @ElementCollection(fetch=FetchType.EAGER)
     private Set<Integer> intVals;
-    
+
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
     private Set<EagerEntity> eagerEnts;
 
@@ -43,7 +43,7 @@ public class EagerEmbedRel {
         return intVals;
     }
 
-    
+
     public void setEagerEnts(Set<EagerEntity> eagerEnts) {
         this.eagerEnts = eagerEnts;
     }

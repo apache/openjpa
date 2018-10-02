@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -34,10 +34,10 @@ class ENonTransState
     void initialize(StateManagerImpl context, PCState previous) {
         if (previous == null)
             return;
-        
+
         // spec says all proxies to second class objects should be reset
         context.proxyFields(true, true);
-        
+
         context.setDirty(false);
         context.clearSavedFields();
     }
@@ -78,7 +78,7 @@ class ENonTransState
     boolean isPersistent() {
         return true;
     }
-    
+
     public String toString() {
         return "Embedded-Nontransactional";
     }

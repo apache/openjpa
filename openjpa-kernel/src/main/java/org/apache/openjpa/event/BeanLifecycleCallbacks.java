@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.event;
 
@@ -60,14 +60,14 @@ public class BeanLifecycleCallbacks
         super(method, arg);
         _listener = newListener(cls);
     }
-    
+
     private Object newListener(Class<?> cls) {
         try {
             return AccessController.doPrivileged(
                 J2DoPrivHelper.newInstanceAction(cls));
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
-                t = ((PrivilegedActionException) t).getException();            
+                t = ((PrivilegedActionException) t).getException();
             throw new UserException(_loc.get("bean-constructor",
                 cls.getName()), t);
         }

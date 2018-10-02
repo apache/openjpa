@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -39,14 +39,14 @@ import javax.persistence.Table;
     @NamedQuery(name="FindAll", query="select s from simple s")
 })
 
-@NamedNativeQueries( { 
+@NamedNativeQueries( {
     @NamedNativeQuery(name = "findSimpleEntitites",
-        query = "SELECT ID, NAME, VALUE FROM SIMPLE_ENTITY", 
+        query = "SELECT ID, NAME, VALUE FROM SIMPLE_ENTITY",
         resultSetMapping = "simpleEntitiesResult") })
 
 @SqlResultSetMapping(name = "simpleEntitiesResult",
     entities = @EntityResult(
-    entityClass = org.apache.openjpa.integration.validation.SimpleEntity.class, 
+    entityClass = org.apache.openjpa.integration.validation.SimpleEntity.class,
     fields = {@FieldResult(name = "id", column = "ID"),
         @FieldResult(name = "name", column = "NAME"),
         @FieldResult(name = "value", column = "VALUE") }))

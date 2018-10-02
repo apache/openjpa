@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation;
 
@@ -41,23 +41,23 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
      * Value indicating that cache statistics are not available.
      */
     public static final long NO_STATS = -1;
-    
+
     private QueryCache _qc;
     private String _configId = null;
     private String _configRef = null;
-        
+
     public void setQueryCache(QueryCache qc) {
         _qc = qc;
     }
-    
+
     public void setConfigId(String cid) {
         _configId = cid;
     }
-    
+
     public void setContextRef(String cref) {
         _configRef = cref;
     }
-    
+
     public String getConfigId() {
         return _configId;
     }
@@ -65,11 +65,11 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
     public String getContextRef() {
         return _configRef;
     }
-    
+
     public void setPreparedQueryCache(QueryCache qc) {
         _qc = qc;
     }
-    
+
     private QueryStatistics<QueryKey> getStatistics() {
         if (_qc == null)
             return null;
@@ -143,23 +143,23 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
     public void reset() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
-            stats.reset();        
+            stats.reset();
     }
-    
+
     public Date sinceDate() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
             return stats.since();
         return null;
     }
-    
+
     public Date startDate() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
-            return stats.start();        
+            return stats.start();
         return null;
     }
-    
+
     /**
      * Returns number of total evictions since last reset
      */
@@ -169,7 +169,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
             return stats.getEvictionCount();
         return NO_STATS;
     }
-    
+
     /**
      * Returns number of total eviction requests since start.
      */
@@ -204,7 +204,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         }
         return null;
     }
-    
+
     public long count() {
         if (_qc == null) {
             return NO_STATS;

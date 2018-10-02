@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.conf;
 
@@ -67,8 +67,8 @@ public class TestSwitchConnection extends SingleEMFTestCase {
     protected EntityManagerFactory getEmf(String ...props) {
         return getEmf(false, props);
     }
-    
-    protected EntityManagerFactory getEmf(boolean syncMappings, String ...props) { 
+
+    protected EntityManagerFactory getEmf(boolean syncMappings, String ...props) {
         // null out the driver to prevent system properties from taking effect.
         // do not set connectionFactoryModeManaged - or connectionFactory2 will be used.
         int additionalProp = syncMappings ? 4 : 2;
@@ -98,7 +98,7 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         // split out so that we can try javax.persistence.jtaDataSource in the future.
         overridePropertyOnEM("openjpa.ConnectionFactoryName", jndiNames[0]);
     }
-    
+
     public void testJtaDataSource() {
         // Disable for non-Derby.
         // split out so that we can try javax.persistence.jtaDataSource in the future.
@@ -180,10 +180,10 @@ public class TestSwitchConnection extends SingleEMFTestCase {
             closeEMF(emf1);
         }
     }
-    
-    public void testDataCache() { 
+
+    public void testDataCache() {
         EntityManagerFactory emf1 = null;
-    
+
         try {
             emf1 = getEmf("openjpa.DataCache", "true",
                           "openjpa.ConnectionFactoryName", defaultJndiName);
@@ -191,16 +191,16 @@ public class TestSwitchConnection extends SingleEMFTestCase {
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
-            assertTrue(e.getMessage().contains("jdbc/NotReal")); 
-            assertTrue(e.getMessage().contains("L2 Cache")); 
+            assertTrue(e.getMessage().contains("jdbc/NotReal"));
+            assertTrue(e.getMessage().contains("L2 Cache"));
         } finally {
             closeEMF(emf1);
         }
     }
-    
-    public void testQueryCache() { 
+
+    public void testQueryCache() {
         EntityManagerFactory emf1 = null;
-    
+
         try {
             emf1 = getEmf("openjpa.QueryCache", "true",
                           "openjpa.ConnectionFactoryName", defaultJndiName);
@@ -208,16 +208,16 @@ public class TestSwitchConnection extends SingleEMFTestCase {
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
-            assertTrue(e.getMessage().contains("jdbc/NotReal")); 
-            assertTrue(e.getMessage().contains("openjpa.QueryCache")); 
+            assertTrue(e.getMessage().contains("jdbc/NotReal"));
+            assertTrue(e.getMessage().contains("openjpa.QueryCache"));
         } finally {
             closeEMF(emf1);
         }
     }
-    
-    public void testSyncMappings() { 
+
+    public void testSyncMappings() {
         EntityManagerFactory emf1 = null;
-    
+
         try {
             emf1 = getEmf("openjpa.jdbc.SynchronizeMappings", "buildSchema",
                           "openjpa.ConnectionFactoryName", defaultJndiName);
@@ -225,8 +225,8 @@ public class TestSwitchConnection extends SingleEMFTestCase {
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
-            assertTrue(e.getMessage().contains("jdbc/NotReal")); 
-            assertTrue(e.getMessage().contains("openjpa.jdbc.SynchronizeMappings")); 
+            assertTrue(e.getMessage().contains("jdbc/NotReal"));
+            assertTrue(e.getMessage().contains("openjpa.jdbc.SynchronizeMappings"));
         } finally {
             closeEMF(emf1);
         }

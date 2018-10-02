@@ -55,11 +55,11 @@ public class GeneratedValues {
 
     @GeneratedValue(generator="uuid-type4-string")
     private String uuidT4string;
-    
+
     public GeneratedValues() {
         super();
     }
-    
+
     public GeneratedValues(int id, long field, String uh, String us,
         String ut4h, String ut4s) {
         super();
@@ -94,7 +94,7 @@ public class GeneratedValues {
     public int getCustomSeqWithIndirectionField() {
         return customSeqWithIndirectionField;
     }
-    
+
     public void setUuidhex(String uuidhex) {
         this.uuidhex = uuidhex;
     }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.querycache;
 
@@ -37,13 +37,13 @@ public class TestQueryCache extends SQLListenerTestCase {
     public void setUp() {
         super.setUp(
             DROP_TABLES,
-            "openjpa.QueryCache", "true(name="+CACHE_NAME+")", 
+            "openjpa.QueryCache", "true(name="+CACHE_NAME+")",
             "openjpa.RemoteCommitProvider","sjvm",
             Entity1.class,Entity2.class
         // ,"openjpa.Log","SQL=trace"
             );
         em = emf.createEntityManager();
-        
+
         em.getTransaction().begin();
         //create and persist multiple entity1 instances
         for (int i = 0; i < 10; i++) {
@@ -56,13 +56,13 @@ public class TestQueryCache extends SQLListenerTestCase {
     }
 
     public void testCachedQuery(){
-        em.createQuery("Select object(o) from Entity1 o").getResultList().get(0);        
+        em.createQuery("Select object(o) from Entity1 o").getResultList().get(0);
         resetSQL();
         em.createQuery("Select object(o) from Entity1 o").getResultList().get(0);
         em.createQuery("Select object(o) from Entity1 o").getResultList().get(0);
-        
+
         assertEquals(0, getSQLCount());
-        
+
     }
     public void testResultList() {
         List list = em.createQuery("Select object(o) from Entity1 o")

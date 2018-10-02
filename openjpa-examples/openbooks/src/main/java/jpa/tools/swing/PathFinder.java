@@ -21,17 +21,17 @@ import java.util.List;
 
 /**
  * A* Algorithm to find rectilinear path through a {@link Maze}.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class PathFinder {
     private final Maze _maze;
-    
+
     public PathFinder(Maze maze) {
         _maze = maze;
     }
-    
+
     /**
      * A* algorithm to find a path through a maze.
      * The algorithm follows these steps
@@ -40,13 +40,13 @@ public class PathFinder {
      *   <LI> Current node is the lowest cost square on the open list
      *   <LI> Move current node to the closed list.
      *   <LI> For each of adjacent neighbor n to this current square
-     *   <LI> If n is not {@link Maze#isReachable(int, int) reachable} or if n is on the closed list, ignore. 
+     *   <LI> If n is not {@link Maze#isReachable(int, int) reachable} or if n is on the closed list, ignore.
      *        Otherwise do the following.
-     *   <LI> If n is not on the open list, add it to the open list. Make the current square 
-     *        the parent of n. Record the cost of n. 
-     *   <LI> If n is on the open list already, replace if this path to n is lower cost. 
+     *   <LI> If n is not on the open list, add it to the open list. Make the current square
+     *        the parent of n. Record the cost of n.
+     *   <LI> If n is on the open list already, replace if this path to n is lower cost.
      *   until the target node is added to the closed list, or fail to find the target square
-     *   i.e. the open list is empty.   
+     *   i.e. the open list is empty.
      *
      * @param x1 the x-coordinate of the starting point
      * @param y1 the y-coordinate of the starting point
@@ -69,11 +69,11 @@ public class PathFinder {
             }
         } while (!openList.isEmpty() && findMatchingNode(x2, y2, closedList) == null);
         target = findMatchingNode(x2, y2, closedList);
-        if (target == null) 
+        if (target == null)
             return traceBackPath(closedList.get(closedList.size()-1));
         return traceBackPath(target);
     }
-    
+
     private void exploreNeighbours(Node current, Node target, List<Node> openList, List<Node> closedList) {
         insertNeighbour(current, current.x+1, current.y, target, openList, closedList);
         insertNeighbour(current, current.x-1, current.y, target, openList, closedList);
@@ -81,7 +81,7 @@ public class PathFinder {
         insertNeighbour(current, current.x,   current.y-1, target, openList, closedList);
         Collections.sort(openList);
     }
-    
+
     private Node insertNeighbour(Node n, int x, int y, Node target, List<Node> openList, List<Node> closedList) {
         if (distance(x,y,target) != 0) {
             if (!_maze.isReachable(x, y) || findMatchingNode(x, y, closedList) != null) {
@@ -102,7 +102,7 @@ public class PathFinder {
         }
         return m;
     }
-    
+
     private Node findMatchingNode(int x, int y, List<Node> list) {
         for (Node n : list) {
             if (n.x == x && n.y == y)
@@ -110,17 +110,17 @@ public class PathFinder {
         }
         return null;
     }
-    
+
     int distance(Node n, Node m) {
         return Math.abs(n.x - m.x) + Math.abs(n.y - m.y);
     }
     int distance(int x, int y, Node m) {
         return Math.abs(x - m.x) + Math.abs(y - m.y);
     }
-    
+
     List<Point> traceBackPath(Node target) {
         LinkedList<Point> path = new LinkedList<Point>();
-        path.add(new Point(target.x, target.y));       
+        path.add(new Point(target.x, target.y));
         Node next = target.parent;
         while (next != null) {
             path.add(0,new Point(next.x, next.y));
@@ -128,7 +128,7 @@ public class PathFinder {
         }
         return straighten(path);
     }
-    
+
     List<Point> straighten(List<Point> path) {
         if (path.size() < 3)
             return path;
@@ -146,18 +146,18 @@ public class PathFinder {
         path.removeAll(mids);
         return path;
     }
-    
+
     private static class Node implements Comparable<Node> {
         int f,g,h;
         int x; int y;
         Node parent;
-        
+
         public Node(Node p, int x, int y) {
             parent = p;
             this.x = x;
             this.y = y;
         }
-        
+
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o instanceof Node) {
@@ -172,7 +172,7 @@ public class PathFinder {
             if (f == o.f) return 0;
             return f > o.f ? 1 : -1;
         }
-        
+
         public String toString() {
             return "(" + x + "," + y + ":" + g + ")";
         }

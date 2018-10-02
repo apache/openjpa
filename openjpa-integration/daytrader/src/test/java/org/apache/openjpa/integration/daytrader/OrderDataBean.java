@@ -72,45 +72,45 @@ public class OrderDataBean implements Serializable
             allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="orderIdGen")
-    @Column(name = "ORDERID", nullable = false)        
+    @Column(name = "ORDERID", nullable = false)
     private Integer orderID;            /* orderID */
-    
+
     @Column(name = "ORDERTYPE")
     private String orderType;           /* orderType (buy, sell, etc.) */
-    
+
     @Column(name = "ORDERSTATUS")
     private String orderStatus;         /* orderStatus (open, processing, completed, closed, cancelled) */
-    
+
     @Column(name = "OPENDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date openDate;              /* openDate (when the order was entered) */
-    
+
     @Column(name = "COMPLETIONDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date completionDate;		/* completionDate */
-    
+
     @Column(name = "QUANTITY", nullable = false)
     private double quantity;			/* quantity */
-    
+
     @Column(name = "PRICE")
     private BigDecimal price;				/* price */
-    
+
     @Column(name = "ORDERFEE")
     private BigDecimal orderFee;			/* price */
-    
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="ACCOUNT_ACCOUNTID")
     private AccountDataBean account;
-    
+
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="QUOTE_SYMBOL")
     private QuoteDataBean quote;
-    
+
     // Cause sell operation failed, see JIRA DAYTRADER-63 for details.
     @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "HOLDING_HOLDINGID")
     // Cause sell operation failed, see JIRA DAYTRADER-63 for details.
-    //@Transient    
+    //@Transient
     private HoldingDataBean holding;
 
 //    @Version
@@ -120,7 +120,7 @@ public class OrderDataBean implements Serializable
     @Transient
     private String symbol;
 
-    public OrderDataBean() {        
+    public OrderDataBean() {
     }
 
     public OrderDataBean(Integer orderID,
@@ -143,7 +143,7 @@ public class OrderDataBean implements Serializable
         setOrderFee(orderFee);
         setSymbol(symbol);
     }
-    
+
     public OrderDataBean(String orderType,
             String orderStatus,
             Date openDate,
@@ -366,7 +366,7 @@ public class OrderDataBean implements Serializable
         hash += (this.orderID != null ? this.orderID.hashCode() : 0);
         return hash;
     }
-    
+
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set

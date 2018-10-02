@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -37,11 +37,11 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
- * Tests when multiple user threads enter the same EntityManager and executes 
- * query. 
- * 
+ * Tests when multiple user threads enter the same EntityManager and executes
+ * query.
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class TestQueryMultiThreaded extends SliceTestCase {
 
@@ -50,7 +50,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     private int VALUE_MAX = VALUE_MIN + POBJECT_COUNT - 1;
     private static int THREADS = 5;
     private static int MAX_TIMEOUT = 300;
-    private ExecutorService group; 
+    private ExecutorService group;
     private Future[] futures;
 
     protected String getPersistenceUnitName() {
@@ -70,11 +70,11 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                     public Thread newThread(Runnable r) {
                         return new Thread(r);
                     }
-                
+
                 });
         futures = new Future[THREADS];
     }
-    
+
     public void tearDown()  throws Exception {
         group.shutdown();
         super.tearDown();
@@ -108,7 +108,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 
         em.getTransaction().commit();
     }
-    
+
     public void testQueryResultIsOrderedAcrossSlice() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -131,7 +131,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                 }
             });
         }
-        
+
         waitForTermination();
         em.getTransaction().rollback();
     }
@@ -153,7 +153,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                     Object min = minQ.getSingleResult();
                     Object sum = sumQ.getSingleResult();
                     Object minmax = minmaxQ.getSingleResult();
-                    
+
                     Object min1 = ((Object[]) minmax)[0];
                     Object max1 = ((Object[]) minmax)[1];
 
@@ -216,7 +216,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         waitForTermination();
         em.getTransaction().rollback();
     }
-    
+
     public void testHeavyLoad() {
         Thread[] threads = new Thread[800];
         for (int i = 0; i < 800; i++) {
@@ -349,7 +349,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 
         }
     }
-    
+
     String getStackDump(Throwable t) {
         StringWriter writer = new StringWriter();
         t.printStackTrace(new PrintWriter(writer));

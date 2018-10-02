@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.daytrader;
 
@@ -41,12 +41,12 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
 
     Log log = null;
     private TradeAction trade = null;
-    
+
     @Override
     public void setUp() {
         // Mimic EM pooling
         boolean poolEm = true;
-        
+
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,"
             + "SchemaAction='add,deleteTableContents')");
@@ -59,14 +59,14 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
         em.createQuery("DELETE FROM accountejb").executeUpdate();
         em.createQuery("DELETE FROM accountprofileejb").executeUpdate();
         em.getTransaction().commit();
-        
-        
+
+
         log = new LogFactoryImpl().getLog("test");
         TradeConfig.setRunTimeMode(TradeConfig.JPA);
         TradeConfig.setLog(log);
         trade = new TradeAction(log, emf, poolEm);
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         trade = null;
@@ -75,15 +75,15 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
         emf = null;
         super.tearDown();
     }
-    
+
     /**
      * Scenario being tested:
      *   - Creates 1000 quotes
      *   - Creates 500 user accounts w/ 10 holdings each
      *   - Perform the following 15 tasks for the first 50 user ids:
      *     login, home, account, update, home, portfolio, sell, buy, home, portfolio, sell, buy, home, account, logout
-     * @throws Exception 
-     *   
+     * @throws Exception
+     *
      */
     public void testTrade() throws Exception {
         log.info("TestDaytrader.testTrade() started");
@@ -101,7 +101,7 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
         }
         log.info("TestDaytrader.testTrade() completed");
     }
-    
+
     private EntityManagerFactory createEmf(final String pu, Object... props) {
         Map<String, Object> map = getPropertiesMap(props);
         EntityManagerFactory emf = null;

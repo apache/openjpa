@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
@@ -29,15 +29,15 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests "openjpa.jdbc.DriverDataSource=dbcp" option.
- *  
+ *
  * Further details can be found in
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2153">OPENJPA-2153</A>
- * 
+ *
  */
-public class TestNewJavaObjectQuery extends SingleEMFTestCase {   
+public class TestNewJavaObjectQuery extends SingleEMFTestCase {
     public void setUp() {
         super.setUp(CLEAR_TABLES, Game.class,
-                DtaSrc.class, DtaSrcField.class, 
+                DtaSrc.class, DtaSrcField.class,
                 "openjpa.jdbc.DriverDataSource", "dbcp");
     }
 
@@ -59,7 +59,7 @@ public class TestNewJavaObjectQuery extends SingleEMFTestCase {
     public void testNewJavaObjectQueryResultList() {
         String jpql = "SELECT new org.apache.openjpa.persistence.jdbc.query.model.GameBean(g) FROM Game g";
         EntityManager em = emf.createEntityManager();
-       
+
         List<?> names = em.createQuery(jpql).getResultList();
         assertNotNull(names);
         assertEquals(0, names.size());

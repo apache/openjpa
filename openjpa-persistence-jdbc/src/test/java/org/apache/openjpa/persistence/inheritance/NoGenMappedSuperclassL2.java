@@ -14,14 +14,14 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.inheritance;
 
 import javax.persistence.MappedSuperclass;
 
-@MappedSuperclass 
-public class NoGenMappedSuperclassL2 
+@MappedSuperclass
+public class NoGenMappedSuperclassL2
     extends NoGenMappedSuperclassBase {
 
     private int l2data;

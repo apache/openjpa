@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -36,7 +36,7 @@ import org.apache.openjpa.util.InternalException;
  */
 class Type
     extends UnaryOp {
-    
+
     Discriminator _disc = null;
 
     public Type(Val val) {
@@ -67,12 +67,12 @@ class Type
         return type.getClass();
     }
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, null, null);
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, 
+    public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         if (_disc != null && _disc.getColumns().length > 0)
             sel.select(_disc.getColumns(), state.joins);
@@ -80,7 +80,7 @@ class Type
             getValue().select(sel, ctx, state, pks);
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         getValue().calculateValue(sel, ctx, state, null, null);
         getValue().appendType(sel, ctx, state, sql);

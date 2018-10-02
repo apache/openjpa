@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:fo="http://www.w3.org/1999/XSL/Format"
@@ -116,18 +116,18 @@
 	<xsl:param name="label.from.part" select="1"/>
 
 	<xsl:param name="generate.toc">
-		/appendix  toc    
-		article   toc    
+		/appendix  toc
+		article   toc
 		book      toc,figure,table,example,equation
-		/chapter   toc    
-		part      toc    
-		/preface   toc    
-		qandadiv  toc    
-		qandaset  toc    
-		reference toc    
-		/section   toc    
-		set       toc    
-	</xsl:param>     
+		/chapter   toc
+		part      toc
+		/preface   toc
+		qandadiv  toc
+		qandaset  toc
+		reference toc
+		/section   toc
+		set       toc
+	</xsl:param>
 
 
 	<!-- small margins for the PDF -->
@@ -277,7 +277,7 @@
       <xsl:with-param name="object" select="parent::*"/>
     </xsl:call-template>
   </xsl:variable>
-      
+
   <xsl:variable name="deflabel">
     <xsl:choose>
       <xsl:when test="ancestor-or-self::*[@defaultlabel]">
@@ -323,7 +323,7 @@
   <xsl:param name="title"/>
   <xsl:param name="titlecontent"/>
 
-  <fo:block 
+  <fo:block
 	    font-size="14.4pt"
             font-family="{$title.fontset}"
             font-weight="bold"

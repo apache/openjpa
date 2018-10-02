@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.update;
 
@@ -25,8 +25,8 @@ import javax.persistence.Version;
 
 /**
  * An entity using a Timestamp as Version field.
- * 
- * 
+ *
+ *
  * @author Pinaki Poddar
  *
  */
@@ -35,12 +35,12 @@ public class NumericVersionedEntity {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private String name;
-	
+
 	@Version
 	private int version;
-	
+
 
 	public long getId() {
 		return id;
@@ -53,7 +53,7 @@ public class NumericVersionedEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public int getVersion() {
 	    return version;
 	}

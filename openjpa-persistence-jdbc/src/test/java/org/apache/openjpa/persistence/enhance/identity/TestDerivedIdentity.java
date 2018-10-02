@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -38,11 +38,11 @@ public class TestDerivedIdentity extends SingleEMFTestCase {
             fail("Wrong exception");
         } catch (ArgumentException e) {
             //Correct exception is thrown:
-            //"org.apache.openjpa.persistence.enhance.identity.Dependent5a.emp" defines a target of "xFIRSTNAME" 
+            //"org.apache.openjpa.persistence.enhance.identity.Dependent5a.emp" defines a target of "xFIRSTNAME"
             //for column "FIRSTNAME", but that target does not exist in table "Employee5".
         }
-        
-        
+
+
     }
 
 }

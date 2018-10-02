@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.test;
 
@@ -40,13 +40,13 @@ import org.apache.openjpa.persistence.PersistenceUnitInfoImpl;
  * This abstract test framework class provides scaffolding for using
  * PersistenceProvider.createContainerEntityManagerFactory from within
  * a JSE environment.  Tests which extend this class can specify a non-default
- * persistence file name by overriding the getPersistenceResourceName() 
+ * persistence file name by overriding the getPersistenceResourceName()
  * method.
- * 
+ *
  */
 public abstract class ContainerEMFTest extends SingleEMFTestCase {
 
-    // Use this constant as a config map key to specify a list of persistent 
+    // Use this constant as a config map key to specify a list of persistent
     // classes.  For example:
     // List<Class<?>> clist = new ArrayList<Class<?>>();
     // clist.add(com.my.Cls.class);
@@ -54,13 +54,13 @@ public abstract class ContainerEMFTest extends SingleEMFTestCase {
     // cfgMap.put(PERSISTENT_CLASS_LIST, clist);
     // emf = createContainerEMF("pu","persistence.xml", cfgMap);
     public static final String PERSISTENT_CLASS_LIST = "PERSISTENT_CLASS_LIST";
-    
+
     // The persistence file name to parse.  This file gets parsed
     // and converted into one or more PersistenceUnitInfo's
     public String getPersistenceResourceName() {
         return PersistenceProductDerivation.RSRC_DEFAULT;
     }
-    
+
     // Creates an EMF through the typical container path.  This EMF may be
     // a bit quirky, but provides some level of testing from within a JSE
     // environment.
@@ -84,7 +84,7 @@ public abstract class ContainerEMFTest extends SingleEMFTestCase {
             // Get the persistent class list
             clist = (List<Class<?>>)map.remove(PERSISTENT_CLASS_LIST);
         }
-        PersistenceProductDerivation.ConfigurationParser cfgParser = 
+        PersistenceProductDerivation.ConfigurationParser cfgParser =
             new PersistenceProductDerivation.ConfigurationParser(config);
         try {
             URL url = getResourceURL(persistenceFile);
@@ -98,14 +98,14 @@ public abstract class ContainerEMFTest extends SingleEMFTestCase {
                     break;
                 }
             }
-            
+
             // If there is a persistent class list, add each class to the puinfo
             if (clist != null) {
                 for (Class<?> cl : clist) {
                     ((PersistenceUnitInfoImpl)puinf).addManagedClassName(cl.getName());
                 }
             }
-            
+
             oemf = createContainerEMF(pu, puinf, config);
         }
         catch (IOException ioe) {
@@ -120,11 +120,11 @@ public abstract class ContainerEMFTest extends SingleEMFTestCase {
 
     // Creates an instance of the OpenJPA PersistenceProviderImpl and
     // returns an EMF via createContainerEntityManagerFactory
-    private OpenJPAEntityManagerFactorySPI createContainerEMF(String puName, 
+    private OpenJPAEntityManagerFactorySPI createContainerEMF(String puName,
         PersistenceUnitInfo pui, Map<String, Object> map) {
-        
+
         PersistenceProviderImpl  ppi = new PersistenceProviderImpl();
-        
+
         return (OpenJPAEntityManagerFactorySPI)ppi.createContainerEntityManagerFactory(pui, map);
     }
 
@@ -141,5 +141,5 @@ public abstract class ContainerEMFTest extends SingleEMFTestCase {
         return Collections.list(urls).get(0);
     }
 
-    
+
 }

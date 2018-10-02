@@ -68,7 +68,7 @@ public class MixedLockManagerGenericTest extends SequencedActionsTest {
 
     public void testCommon(String testName, LockModeType lockMode,
         int commitVersionIncrement, int updateCommitVersionIncrement) {
-        
+
         Object[][] threadTest = {
           { Act.CreateEm },
           { Act.StartTx },

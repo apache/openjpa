@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -28,13 +28,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * <b>TestCompatibile</b> is used to test various backwards compatibility scenarios between JPA 2.0 and JPA 1.2
- * 
+ *
  * <p>The following scenarios are tested:
  * <ol>
  * <li>preUpdate and postUpdate behavior in JPA 2.0 is different than in 1.2
  * <li>TBD
  * </ol>
- * <p> 
+ * <p>
  * <b>Note(s):</b>
  * <ul>
  * <li>The proper openjpa.Compatibility value(s) must be provided in order for the testcases to succeed
@@ -43,7 +43,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 public class TestMessageListener extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(Message.class, 
+        setUp(Message.class,
               "openjpa.Compatibility", "default",
               DROP_TABLES);
     }
@@ -106,7 +106,7 @@ public class TestMessageListener extends SingleEMFTestCase {
             } else {
                 // prior to 2.0, pre/postUpdate was called
                 assertStatus(2, 2, 1, 1, 0, 0, 0);
-            }            
+            }
 
             // Make an update to trigger the pre/postUpdater callbacks
             em.getTransaction().begin();
@@ -121,7 +121,7 @@ public class TestMessageListener extends SingleEMFTestCase {
                 assertStatus(2, 2, 1, 1, 0, 0, 0);
             } else {
                 assertStatus(2, 2, 2, 2, 0, 0, 0);
-            }            
+            }
         }
         finally {
             if (em != null && em.getTransaction().isActive())
@@ -129,7 +129,7 @@ public class TestMessageListener extends SingleEMFTestCase {
             if (em != null && em.isOpen())
                 em.close();
         }
-    } 
+    }
 
     public void testUpdateInPreUpdate2() {
         // Create a new EntityManager from the EntityManagerFactory. The
@@ -188,7 +188,7 @@ public class TestMessageListener extends SingleEMFTestCase {
             } else {
                 // prior to 2.0, pre/postUpdate was called
                 assertStatus(2, 1, 1, 1, 0, 0, 0);
-            }            
+            }
 
             em.getTransaction().commit();
 
@@ -200,7 +200,7 @@ public class TestMessageListener extends SingleEMFTestCase {
                 assertStatus(2, 2, 0, 0, 0, 0, 0);
             } else {
                 assertStatus(2, 2, 1, 1, 0, 0, 0);
-            }            
+            }
 
             // Make an update to trigger the pre/postUpdater callbacks
             em.getTransaction().begin();
@@ -215,7 +215,7 @@ public class TestMessageListener extends SingleEMFTestCase {
                 assertStatus(2, 2, 1, 1, 0, 0, 0);
             } else {
                 assertStatus(2, 2, 2, 2, 0, 0, 0);
-            }            
+            }
         }
         finally {
             if (em != null && em.getTransaction().isActive())
@@ -223,9 +223,9 @@ public class TestMessageListener extends SingleEMFTestCase {
             if (em != null && em.isOpen())
                 em.close();
         }
-    } 
+    }
 
-    private void assertStatus(int prePersist, int postPersist, int preUpdate, 
+    private void assertStatus(int prePersist, int postPersist, int preUpdate,
                               int postUpdate, int preRemove, int postRemove, int postLoad) {
         assertEquals("prePersist", prePersist, MessageListenerImpl.prePersistCount);
         assertEquals("postPersist", postPersist, MessageListenerImpl.postPersistCount);

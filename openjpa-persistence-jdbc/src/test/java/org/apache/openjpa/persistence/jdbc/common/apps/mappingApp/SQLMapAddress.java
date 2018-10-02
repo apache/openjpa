@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
@@ -32,30 +32,30 @@ import javax.persistence.*;
  * 1                     1+                 SINGLE_CLASS_AND_SCALAR
  * 1+                    0                  MULTI_CLASS
  * 1+                    1+                 MULTI_CLASS_AND_SCALAR
- * </pre> 
- * 
+ * </pre>
+ *
  */
 @SqlResultSetMappings(value={
 		/** Specifies only scalars and no entity.
-		 * 
-		 */		
+		 *
+		 */
 				@SqlResultSetMapping(name="SCALAR_ONLY",
 				    columns={
 						@ColumnResult(name="NAME")
 					}
 				),
 		/** Specifies one entity and no scalar.
-		 * 
-		 */		
+		 *
+		 */
 				@SqlResultSetMapping(name="SINGLE_CLASS",
 					entities={
                         @EntityResult(entityClass=SQLMapPerson.class)
 					}
 				),
-				
+
 				/** Specifies one entity and one or more scalar.
-				 * 
-				 */				
+				 *
+				 */
                 @SqlResultSetMapping(name="SINGLE_CLASS_AND_SCALAR",
 					entities={
                         @EntityResult(entityClass=SQLMapPerson.class)
@@ -64,20 +64,20 @@ import javax.persistence.*;
 						@ColumnResult(name="name")
 					}
 				),
-				
+
                 /** Specifies more than one entity and no scalar.
-				 * 
-				 */				
+				 *
+				 */
 				@SqlResultSetMapping(name="MULTI_CLASS",
 					entities={
                         @EntityResult(entityClass=SQLMapPerson.class),
                         @EntityResult(entityClass=SQLMapAddress.class)
 					}
 				),
-				
+
                 /** Specifies more than one entity and one or more scalar.
-				 * 
-				 */				
+				 *
+				 */
                 @SqlResultSetMapping(name="MULTI_CLASS_AND_SCALAR",
                     entities={
                         @EntityResult(entityClass=SQLMapPerson.class),
@@ -105,10 +105,10 @@ import javax.persistence.*;
                         })
 					}
 				)
-				
-				
+
+
 			}
-		) 
+		)
 
 
 @Entity
@@ -167,7 +167,7 @@ public class SQLMapAddress implements Serializable {
 	public void setZip(int zip) {
 		this.zip = zip;
 	}
-	
+
 	@PostLoad
 	protected void inform() {
 		System.out.println("Loaded" + this);

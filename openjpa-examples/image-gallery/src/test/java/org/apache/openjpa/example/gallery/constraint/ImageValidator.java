@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.example.gallery.constraint;
 
@@ -51,13 +51,13 @@ public class ImageValidator implements ConstraintValidator<ImageConstraint, Imag
         if (value == null) {
             return true;
         }
-        
+
         // All these values will be pre-validated with @NotNull constraints
         // so they are safe to use
         byte[] data = value.getData();
         String fileName = value.getFileName();
         ImageType type = value.getType();
-        
+
         // Verify the GIF type is correct, has the correct extension and
         // the data header is either GIF87 or GIF89
         if (allowedTypes.contains(ImageType.GIF) &&

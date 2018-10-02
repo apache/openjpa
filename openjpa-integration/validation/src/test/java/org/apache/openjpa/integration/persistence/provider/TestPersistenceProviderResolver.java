@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.persistence.provider;
 
@@ -52,44 +52,44 @@ public class TestPersistenceProviderResolver extends TestCase {
     String dummyProvider1 = "org.apache.openjpa.integration.persistence.provider.DummyProvider1";
     String dummyProvider2 = "org.apache.openjpa.integration.persistence.provider.DummyProvider2";
     DummyPersistenceProviderResolver dummyResolver = new DummyPersistenceProviderResolver();
-    
+
     ClassLoader originalLoader = null;
     TempUrlLoader tempLoader = null;
-    
+
     public void setUp() throws Exception {
         super.setUp();
-        
+
         currentDir = System.getProperty("user.dir");
-        
-        targetJar1 = new File(currentDir + File.separator + "target" + 
-            File.separator + 
+
+        targetJar1 = new File(currentDir + File.separator + "target" +
+            File.separator +
             "TestPersistenceProviderResolver1.jar");
-        targetJar2 = new File(currentDir + File.separator + "target" + 
-            File.separator + 
+        targetJar2 = new File(currentDir + File.separator + "target" +
+            File.separator +
             "TestPersistenceProviderResolver2.jar");
-        
+
         deleteTargetJars();
-        
+
         File classesDir = new File(currentDir + File.separator + "target" +
             File.separator + "test-classes" + File.separator);
         classesDirUrl = classesDir.toURI().toURL();
-        
+
         originalLoader = (URLClassLoader)Thread.currentThread().getContextClassLoader();
     }
-    
+
     protected void tearDown() throws Exception {
         super.tearDown();
         // Restore the original classloader, in case there was an exception
         Thread.currentThread().setContextClassLoader(originalLoader);
     }
-    
+
     public void testDefault() {
         List<String> providerNames = new LinkedList<String>();
         providerNames.add(openjpaProvider);
         checkProviders(providerNames);
     }
-    
-    
+
+
     public void testDefaultMultipleJars() throws Exception {
         String[] contents = new String[]{dummyProvider1};
         buildFile("testPersistenceProviderResolver1", contents);
@@ -98,61 +98,61 @@ public class TestPersistenceProviderResolver extends TestCase {
             ,originalLoader);
         AccessController.doPrivileged(J2DoPrivHelper
             .setContextClassLoaderAction(tempLoader));
-        
+
         List<String> providerNames = new LinkedList<String>();
         providerNames.add(openjpaProvider);
         providerNames.add(dummyProvider1);
         checkProviders(providerNames);
-        
+
         AccessController.doPrivileged(J2DoPrivHelper
             .setContextClassLoaderAction(originalLoader));
     }
-    
+
     public void testDefaultMultipleProviders() throws Exception {
         String[] contents = new String[]{dummyProvider1, dummyProvider2};
         buildFile("testPersistenceProviderResolver2", contents);
         buildTargetJar(targetJar2);
         tempLoader = new TempUrlLoader(new URL[]{targetJar2.toURI().toURL(), classesDirUrl}
-            ,originalLoader); 
-        
+            ,originalLoader);
+
         AccessController.doPrivileged(J2DoPrivHelper
             .setContextClassLoaderAction(tempLoader));
-        
+
         List<String> providerNames = new LinkedList<String>();
         providerNames.add(openjpaProvider);
         providerNames.add(dummyProvider1);
         providerNames.add(dummyProvider2);
         checkProviders(providerNames);
-        
-        
+
+
         AccessController.doPrivileged(J2DoPrivHelper
             .setContextClassLoaderAction(originalLoader));
     }
-    
+
     public void testClearCachedProviders() {
-        PersistenceProviderResolver resolver = 
+        PersistenceProviderResolver resolver =
             PersistenceProviderResolverHolder.getPersistenceProviderResolver();
         List<PersistenceProvider> providers = resolver.getPersistenceProviders();
         assertNotNull(providers);
         resolver.clearCachedProviders();
-        
+
         List<String> providerNames = new LinkedList<String>();
         providerNames.add(openjpaProvider);
         checkProviders(providerNames);
     }
-    
+
     public void testNonDefaultResolver() {
         PersistenceProviderResolver originalResolver =
             PersistenceProviderResolverHolder.getPersistenceProviderResolver();
         PersistenceProviderResolverHolder.setPersistenceProviderResolver(dummyResolver);
-        PersistenceProviderResolver retrievedResolver = 
+        PersistenceProviderResolver retrievedResolver =
             PersistenceProviderResolverHolder.getPersistenceProviderResolver();
         assertTrue(retrievedResolver instanceof DummyPersistenceProviderResolver);
-        
+
         PersistenceProviderResolverHolder.setPersistenceProviderResolver(originalResolver);
     }
-    
-    
+
+
     private void deleteTargetJars() {
         if (targetJar1.exists()) {
             targetJar1.delete();
@@ -161,7 +161,7 @@ public class TestPersistenceProviderResolver extends TestCase {
             targetJar2.delete();
         }
     }
-    
+
     private void buildFile(String dir, String[] contents) throws Exception {
         File servicesDir = new File(currentDir + File.separator + "target" + File.separator
             + "test-classes" + File.separator + dir + File.separator + "META-INF" + File.separator
@@ -179,7 +179,7 @@ public class TestPersistenceProviderResolver extends TestCase {
                 bw.write(line);
                 bw.newLine();
             }
-            
+
             bw.flush();
             bw.close();
         } catch (IOException e) {
@@ -188,13 +188,13 @@ public class TestPersistenceProviderResolver extends TestCase {
         }
         assertTrue(persistenceProviderFile.exists());
     }
-    
-    
+
+
     private void buildTargetJar(File targetJar) throws Exception {
         JarOutputStream out = new JarOutputStream(
             new BufferedOutputStream(new FileOutputStream(targetJar)));
-        
-        BufferedInputStream in = 
+
+        BufferedInputStream in =
             new BufferedInputStream(new FileInputStream(persistenceProviderFile));
 
         out.putNextEntry(new JarEntry("META-INF/"));
@@ -206,13 +206,13 @@ public class TestPersistenceProviderResolver extends TestCase {
         while ((i = in.read(buf)) != -1) {
           out.write(buf, 0, i);
         }
-        
+
         out.close();
-        in.close();        
+        in.close();
     }
-    
+
     private void checkProviders(List<String> providerNames) {
-        PersistenceProviderResolver resolver = 
+        PersistenceProviderResolver resolver =
             PersistenceProviderResolverHolder.getPersistenceProviderResolver();
         List<PersistenceProvider> providers = resolver.getPersistenceProviders();
         assertNotNull(providers);
@@ -225,7 +225,7 @@ public class TestPersistenceProviderResolver extends TestCase {
         }
         assertTrue(providerNames.isEmpty());
     }
-    
+
     class TempUrlLoader extends URLClassLoader {
         public TempUrlLoader(URL[] urls, ClassLoader parent) {
             super(urls,parent);

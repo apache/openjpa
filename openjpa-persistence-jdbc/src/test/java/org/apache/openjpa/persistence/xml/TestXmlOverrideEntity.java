@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.xml;
 
@@ -71,12 +71,12 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
 
     /**
      * Tests that the optional attribute on a basic field can be overrided by
-     * an xml descriptor. 
-     * 
+     * an xml descriptor.
+     *
      * XmlOverrideEntity.name is annotated with optional=false
-     * XmlOverrideEntity.description is annotated with optional=true. 
-     * 
-     * The optional attributes are reversed in orm.xml. 
+     * XmlOverrideEntity.description is annotated with optional=true.
+     *
+     * The optional attributes are reversed in orm.xml.
      */
     public void testOptionalAttributeOverride() {
         EntityManager em = emf.createEntityManager();
@@ -102,23 +102,23 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
         em.getTransaction().begin();
         em.remove(em.find(XmlOverrideEntity.class, optional.getId()));
         em.getTransaction().commit();
-        
+
         em.close();
     }
-    
-    
-    public void testColumnOverride() { 
+
+
+    public void testColumnOverride() {
         EntityManager em = emf.createEntityManager();
 
         ClassMapping mapping = getMapping("XmlOverride");
-        
+
         FieldMapping fm = mapping.getFieldMapping("picture");
-        
+
         Column[] columns = fm.getColumns();
-        
+
         assertEquals(1, columns.length);
         assertEquals("pic_xml", columns[0].getName());
-        
+
         em.close();
     }
 }

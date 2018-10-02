@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.puconf;
 
@@ -27,7 +27,7 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
     private String persistenceXmlResource;
 
     public TestPersistenceUnitConfig() {
-        persistenceXmlResource = getClass().getPackage().getName().replaceAll("\\.", "/") + 
+        persistenceXmlResource = getClass().getPackage().getName().replaceAll("\\.", "/") +
         "/META-INF/persistence.xml";
     }
 
@@ -38,7 +38,7 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
     public void testCreateEMFWithGoodPU() {
         EntityManagerFactory emf = null;
         try {
-            emf = createEmf("PUTest-Good");         
+            emf = createEmf("PUTest-Good");
             assertNotNull("Assert emf was successfully created.", emf);
         } finally {
             if (emf != null) {
@@ -50,7 +50,7 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
             }
         }
     }
-    
+
     public void testCreateEMFWithBadJarFileElement() {
         EntityManagerFactory emf = null;
         try {
@@ -106,5 +106,5 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
             }
         }
     }
-    
+
 }

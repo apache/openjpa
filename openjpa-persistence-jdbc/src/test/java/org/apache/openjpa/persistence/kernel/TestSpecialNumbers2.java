@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -57,7 +57,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         aftt.setTestshort(Short.MAX_VALUE);
         saveAndQuery(aftt, "testshort =", new Short(Short.MAX_VALUE));
     }
-    
+
     public void testShortMin() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestshort(Short.MIN_VALUE);
@@ -69,13 +69,13 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
                     "Empress cannot store min values");
         }
     }
-    
+
     public void testLongMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestlong(Long.MAX_VALUE);
         saveAndQuery(aftt, "testlong =", new Long(Long.MAX_VALUE));
     }
-    
+
     public void testLongMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -86,14 +86,14 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
                     "Some databases cannot store Long.MIN_VALUE");
         }
     }
-    
+
     public void testIntegerMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestint(Integer.MAX_VALUE);
         saveAndQuery(aftt, "testint =",
                 new Integer(Integer.MAX_VALUE));
     }
-    
+
     public void testIntegerMin() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestint(Integer.MIN_VALUE);
@@ -105,7 +105,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
                     "Empress cannot store min values");
         }
     }
-    
+
     public void testFloatMax() {
         try {
         	AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -117,7 +117,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
                     "Some datastores cannot store Float.MAX_VALUE");
         }
     }
-    
+
     public void testFloatMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -132,7 +132,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
                     "Some databases cannot store Float.MIN_VALUE");
         }
     }
-    
+
     public void testFloatNaN() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -142,7 +142,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             bug(461, t, "NaN problems");
         }
     }
-    
+
     public void testFloatNegativeInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -154,7 +154,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
                     "Some databases cannot store Float.NEGATIVE_INFINITY");
         }
     }
-    
+
     public void testFloatPostivieInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -166,7 +166,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
                     "Some databases cannot store Float.POSITIVE_INFINITY");
         }
     }
-    
+
     public void testDoubleMax() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -178,7 +178,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
                     "Some databases cannot store Double.MAX_VALUE");
         }
     }
-    
+
     public void testDoubleMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -199,7 +199,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
                     "Some databases cannot store Double.MIN_VALUE");
         }
     }
-    
+
     public void testDoubleNaN() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -209,7 +209,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             bug(461, t, "NaN problems");
         }
     }
-    
+
     public void testDoubleNegativeInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -220,7 +220,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             bug(461, t, "infinity problems");
         }
     }
-    
+
     public void testDoublePostivieInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
@@ -251,19 +251,19 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         aftt.setTestbyte(Byte.MAX_VALUE);
         saveAndQuery(aftt, "testbyte =", new Byte(Byte.MAX_VALUE));
     }
-    
+
     public void testZeroBigInteger() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestBigInteger(BigInteger.ZERO);
         saveAndQuery(aftt, "testBigInteger =", BigInteger.ZERO);
     }
-    
+
     public void testOneBigInteger() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestBigInteger(BigInteger.ONE);
         saveAndQuery(aftt, "testBigInteger =", BigInteger.ONE);
     }
-    
+
     private void saveAndQuery(Object obj, String query, Object param) {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);

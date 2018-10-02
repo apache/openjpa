@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -46,7 +46,7 @@ class GeneralCase
         for (int i = 0; i < _exp.length; i++) {
             boolean compare = ((WhenCondition) _exp[i]).getExp().
                 eval(candidate, orig, ctx, params);
-            
+
             if (compare)
                 return ((WhenCondition) _exp[i]).getVal().
                     eval(candidate, orig, ctx, params);
@@ -62,7 +62,7 @@ class GeneralCase
         for (int i = 0; i < _exp.length; i++) {
             boolean compare = ((WhenCondition) _exp[i]).getExp().
                 eval(candidate, null, ctx, params);
-                
+
             if (compare)
                 return ((WhenCondition) _exp[i]).getVal().
                     eval(candidate, null, ctx, params);

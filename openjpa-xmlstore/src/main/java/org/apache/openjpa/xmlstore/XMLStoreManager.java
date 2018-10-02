@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.xmlstore;
 
@@ -284,7 +284,7 @@ public class XMLStoreManager
         return new ListResultObjectProvider(pcs);
     }
     public boolean isCached(List<Object> oids, BitSet edata) {
-        // XMLStoreManager does not cache oids. 
+        // XMLStoreManager does not cache oids.
         return false;
     }
 }

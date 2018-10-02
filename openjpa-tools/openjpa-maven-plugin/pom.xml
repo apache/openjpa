@@ -33,14 +33,14 @@
 
     <artifactId>openjpa-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    
+
     <name>OpenJPA Maven Plugin</name>
     <description>
-        OpenJPA tasks for enhancing, SQL creation and schema mapping creation using 
+        OpenJPA tasks for enhancing, SQL creation and schema mapping creation using
         Apache maven (see http://maven.apache.org).
     </description>
     <inceptionYear>2011</inceptionYear>
-    
+
     <prerequisites>
         <maven>2.0.6</maven>
     </prerequisites>

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel;
 
@@ -167,7 +167,7 @@ public class NativeJDBCSeq
     public JDBCConfiguration getConfiguration() {
         return _conf;
     }
-    
+
     public void setConfiguration(Configuration conf) {
         _conf = (JDBCConfiguration) conf;
     }
@@ -188,10 +188,10 @@ public class NativeJDBCSeq
         // Increment step is needed for Firebird which uses non-standard sequence fetch syntax.
         // Use String.valueOf to get rid of possible locale-specific number formatting.
         _select = MessageFormat.format(format, new Object[]{name, String.valueOf(_allocate * _increment)});
-        
+
         type = dict.nativeSequenceType;
     }
-    
+
     @Override
     protected synchronized Object nextInternal(JDBCStore store, ClassMapping mapping)
         throws SQLException {
@@ -209,7 +209,7 @@ public class NativeJDBCSeq
 
     /**
      * Allocate additional sequence values.
-     * @param additional ignored - the allocation size is fixed and determined by allocate and increment properties. 
+     * @param additional ignored - the allocation size is fixed and determined by allocate and increment properties.
      * @param store used to obtain connection
      * @param mapping ignored
      */
@@ -242,7 +242,7 @@ public class NativeJDBCSeq
                         }
                     }
 
-                    alreadyLoggedAlterSeqDisabled = true; 
+                    alreadyLoggedAlterSeqDisabled = true;
                 }
             }
             _nextValue = getSequence(conn);
@@ -258,10 +258,10 @@ public class NativeJDBCSeq
     private void buildSequence() {
         QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(_seqName);
         DBIdentifier seqName = path.getIdentifier();
-        // JPA 2 added schema as a configurable attribute on  
+        // JPA 2 added schema as a configurable attribute on
         // sequence generator.  OpenJPA <= 1.x allowed this via
         // schema.sequence on the sequence name.  Specifying a schema
-        // name on the annotation or in the orm will override the old 
+        // name on the annotation or in the orm will override the old
         // behavior.
         DBIdentifier schemaName = _schema;
         if (DBIdentifier.isEmpty(schemaName)) {

@@ -38,31 +38,31 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  * <br>
  * This is a delegating interface to the original {@link TradingService} interface. This delegation
  * pattern serves several purposes
- * <LI> a) the delegator adds RuntimeException to each of the original service methods. 
- * The original {@link TradingService} has not defined the exception in its method signature, 
+ * <LI> a) the delegator adds RuntimeException to each of the original service methods.
+ * The original {@link TradingService} has not defined the exception in its method signature,
  * However, the actual implementation of {@link TradingService} is based on
  * JPA and hence will throw <code>javax.persistence.PersistenceException</code>. To propagate
- * these exceptions to the client, these exceptions need to be translated for serialization by 
- * GWT compiler and will bring in heavier dependency. 
+ * these exceptions to the client, these exceptions need to be translated for serialization by
+ * GWT compiler and will bring in heavier dependency.
  * <br>
  * On the other hand, GWT will not propagate a non-translatable exception to the client,
  * thereby making develop-debug cycles harder.
- * <LI> b) GWT requires the service interface to extend GWT-defined 
+ * <LI> b) GWT requires the service interface to extend GWT-defined
  * <code>com.google.gwt.user.client.rpc.RemoteService</code>. But the discipline used for this
  * application dictates that the <em>service interface</em> be independent of either
  * how it is implemented or how it will be accessed. That is why original {@link TradingService}
  * definition neither depends on <code>javax.persistence.*</code> nor on <code>com.google.gwt.*</code>.
  * <p>
- * Because the interface is delegated, it is not necessary to have the same method name or 
+ * Because the interface is delegated, it is not necessary to have the same method name or
  * even signature. It may not have to declare all the original service interface methods either.
  * <p>
- * 
+ *
  * Any type appearing in this interface must be serializable per GWT requirement.
  */
 
 /**
  * This <code>@RemoteServiceRelativePath</code> annotation defines the relative URL of the
- * deployed servlet. It appears in <code>web.xml</code> as: 
+ * deployed servlet. It appears in <code>web.xml</code> as:
  * <pre>
  *  &lt;servlet-mapping>
  *       &lt;servlet-name>opentrader&lt;/servlet-name>
@@ -77,31 +77,31 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("trade")
 public interface TradingServiceAdapter extends RemoteService {
-    Trader login(String name) 
+    Trader login(String name)
            throws RuntimeException;
-    List<Stock> getStocks()   
+    List<Stock> getStocks()
            throws RuntimeException;
-    Ask ask(Trader trader, Stock stock, int volume, double price) 
+    Ask ask(Trader trader, Stock stock, int volume, double price)
            throws RuntimeException;
-    Bid bid(Trader trader, Stock stock, int volume, double price) 
+    Bid bid(Trader trader, Stock stock, int volume, double price)
            throws RuntimeException;
-    Tradable withdraw(Tradable t) 
+    Tradable withdraw(Tradable t)
            throws RuntimeException;
-    Tradable refresh(Tradable t)  
+    Tradable refresh(Tradable t)
            throws RuntimeException;
-    List<Match> matchBid(Bid bid) 
+    List<Match> matchBid(Bid bid)
            throws RuntimeException;
-    List<Match> matchAsk(Ask ask) 
+    List<Match> matchAsk(Ask ask)
            throws RuntimeException;
-    Trade trade(Match match)      
+    Trade trade(Match match)
            throws RuntimeException;
-    List<Trade> getTrades(Timestamp from, Timestamp to) 
+    List<Trade> getTrades(Timestamp from, Timestamp to)
            throws RuntimeException;
-    List<Trade> getTrades(Trader trader, Boolean boughtOrsold, Timestamp from, Timestamp to) 
+    List<Trade> getTrades(Trader trader, Boolean boughtOrsold, Timestamp from, Timestamp to)
            throws RuntimeException;
-    Stock getStock(String symbol) 
+    Stock getStock(String symbol)
            throws RuntimeException;
-    List<LogStatement> getLog() 
+    List<LogStatement> getLog()
            throws RuntimeException;
     String getServiceURI()
     		throws RuntimeException;

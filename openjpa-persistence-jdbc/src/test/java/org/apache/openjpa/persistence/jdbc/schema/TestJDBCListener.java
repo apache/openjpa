@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
@@ -40,9 +40,9 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestJDBCListener
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-    
-    public static boolean commitOccurred;    
-    
+
+    public static boolean commitOccurred;
+
     /** Creates a new instance of TestJDBCListener */
     public TestJDBCListener() {
     }
@@ -54,13 +54,13 @@ public class TestJDBCListener
     public void testJDBCListener() {
         Map props=new HashMap();
         props.put("openjpa.jdbc.JDBCListeners", Listener.class.getName());
-        
+
         OpenJPAEntityManagerFactory factory =(OpenJPAEntityManagerFactory)
                 getEmf(props);
 
         commitOccurred = false;
-        OpenJPAEntityManager pm = factory.createEntityManager();     
-        
+        OpenJPAEntityManager pm = factory.createEntityManager();
+
         pm.getTransaction().begin();
         assertFalse(commitOccurred);
         pm.persist(new RuntimeTest1("Listener test", 99));
@@ -69,12 +69,12 @@ public class TestJDBCListener
             commitOccurred);
         pm.close();
     }
-    
+
     public static class Listener
         extends AbstractJDBCListener {
 
         public void beforeCommit(JDBCEvent event) {
             commitOccurred = true;
         }
-    }    
+    }
 }

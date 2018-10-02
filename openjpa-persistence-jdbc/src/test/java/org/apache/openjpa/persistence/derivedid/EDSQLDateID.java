@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.derivedid;
 
@@ -26,12 +26,12 @@ import javax.persistence.OneToOne;
 public class EDSQLDateID {
     @Id
     @OneToOne
-    private ESQLDateID rid;    
+    private ESQLDateID rid;
 
     private String name;
-    
+
     public EDSQLDateID() {}
-    
+
     public EDSQLDateID(ESQLDateID rid) {
         this.rid = rid;
         this.name = "Rel SQLDateID "+rid.getId();

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -163,7 +163,7 @@ public abstract class StoreCollectionFieldStrategy
                 union.abortUnion();
             union.select(new Union.Selector() {
                 public void select(Select sel, int idx) {
-                    selectEager(sel, elems[idx], sm, store, fetch, eagerMode, 
+                    selectEager(sel, elems[idx], sm, store, fetch, eagerMode,
                         true, false);
                 }
             });
@@ -176,10 +176,10 @@ public abstract class StoreCollectionFieldStrategy
         // the select has been modified such that parallel clones may produce
         // invalid sql
         boolean outer = field.getNullValue() != FieldMapping.NULL_EXCEPTION;
-        // force inner join for inner join fetch 
+        // force inner join for inner join fetch
         if (fetch.hasFetchInnerJoin(field.getFullName(false)))
             outer = false;
-        selectEager(sel, getDefaultElementMapping(true), sm, store, fetch, 
+        selectEager(sel, getDefaultElementMapping(true), sm, store, fetch,
             JDBCFetchConfiguration.EAGER_JOIN, false,
             outer);
     }
@@ -303,7 +303,7 @@ public abstract class StoreCollectionFieldStrategy
                 seq = res.getInt(field.getOrderColumn(), orderJoins) + 1;
 
             // for inverse relation field
-            setMappedBy(oid.equals(sm.getObjectId()) ? 
+            setMappedBy(oid.equals(sm.getObjectId()) ?
                 sm.getPersistenceCapable() : oid, res);
             Object val = loadElement(null, store, fetch, res, dataJoins);
             add(store, coll, val);
@@ -316,15 +316,15 @@ public abstract class StoreCollectionFieldStrategy
     private void setMappedBy(Object oid, Result res) {
         //  for inverse toOne relation field
         FieldMapping mappedByFieldMapping = field.getMappedByMapping();
-        
+
         if (mappedByFieldMapping != null) {
             ValueMapping val = mappedByFieldMapping.getValueMapping();
             ClassMetaData decMeta = val.getTypeMetaData();
             // this inverse field does not have corresponding classMapping
             // its value may be a collection/map etc.
-            if (decMeta == null) 
+            if (decMeta == null)
                 return;
-            
+
             res.setMappedByFieldMapping(mappedByFieldMapping);
             res.setMappedByValue(oid);
         }
@@ -335,21 +335,21 @@ public abstract class StoreCollectionFieldStrategy
         // for inverseEager field
         FieldMapping mappedByFieldMapping = field.getMappedByMapping();
         PersistenceCapable mappedByValue = null;
-        
+
         if (mappedByFieldMapping != null) {
             ValueMapping val = mappedByFieldMapping.getValueMapping();
             ClassMetaData decMeta = val.getTypeMetaData();
             // this inverse field does not have corresponding classMapping
             // its value may be a collection/map etc.
-            if (decMeta == null) 
+            if (decMeta == null)
                 return;
-        	
+
             StateManagerImpl owner = ((StateManagerImpl)sm).getObjectIdOwner();
             if (oid.equals(owner.getObjectId())) {
                 mappedByValue = owner.getPersistenceCapable();
                 res.setMappedByFieldMapping(mappedByFieldMapping);
                 res.setMappedByValue(mappedByValue);
-            } else if (coll instanceof Collection && 
+            } else if (coll instanceof Collection &&
                 ((Collection) coll).size() > 0) {
                 // Customer (1) <--> Orders(n)
                 // coll contains the values of the toMany field (Orders)
@@ -360,7 +360,7 @@ public abstract class StoreCollectionFieldStrategy
                     ((Collection) coll).iterator().next();
                 OpenJPAStateManager sm1 = (OpenJPAStateManager) pc.
                     pcGetStateManager();
-                
+
                 ClassMapping clm = ((ClassMapping) sm1.getMetaData());
                 FieldMapping fm = (FieldMapping) clm.getField(
                     mappedByFieldMapping.getName());
@@ -369,7 +369,7 @@ public abstract class StoreCollectionFieldStrategy
             } else {
                 res.setMappedByValue(null);
             }
-        }        
+        }
     }
 
     /**
@@ -487,7 +487,7 @@ public abstract class StoreCollectionFieldStrategy
     public void load(final OpenJPAStateManager sm, final JDBCStore store,
         final JDBCFetchConfiguration fetch)
         throws SQLException {
-        
+
         Object coll = null;
         final int fieldIndex = field.getIndex();
         final boolean delayed = sm.isDelayed(fieldIndex);
@@ -499,7 +499,7 @@ public abstract class StoreCollectionFieldStrategy
                 return;
             }
         }
-        
+
         if (field.isLRS()) {
             Proxy pcoll = newLRSProxy();
 
@@ -550,7 +550,7 @@ public abstract class StoreCollectionFieldStrategy
         if (delayed) {
             if (sm.isDetached() || sm.getOwner() == null) {
                 sm.getPersistenceCapable().pcProvideField(fieldIndex);
-                coll = 
+                coll =
                     ((FieldManager)sm.getPersistenceCapable().pcGetStateManager()).fetchObjectField(fieldIndex);
             } else {
                 coll = sm.fetchObjectField(fieldIndex);
@@ -624,21 +624,21 @@ public abstract class StoreCollectionFieldStrategy
     public ForeignKey getJoinForeignKey() {
         return getJoinForeignKey(getDefaultElementMapping(false));
     }
-    
+
     /**
      * Gets the identity value of the given instance that is suitable to join to the given foreign key.
-     * The special case of the foreign key being a relation identifier will encode the value. 
+     * The special case of the foreign key being a relation identifier will encode the value.
      */
     Object getObjectIdForJoin(ForeignKey fk, OpenJPAStateManager sm) {
         Object oid = sm.getObjectId();
         if (!RelationStrategies.isRelationId(fk)) {
             return oid;
         }
-        
+
         FieldMapping owningField = field.getMappedByMapping();
         if (owningField != null && owningField.getHandler() instanceof RelationId) {
             return ((RelationId)owningField.getHandler()).toRelationDataStoreValue(sm, null);
-        } 
+        }
         if (oid instanceof OpenJPAId) {
             return ((OpenJPAId)oid).getIdObject();
         }

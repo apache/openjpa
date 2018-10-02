@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -24,23 +24,23 @@ import javax.persistence.*;
 public class Employee1 {
     @Id
     int empId;
-    
+
     @ManyToOne
     @JoinColumn(name="dept_id")
     Department1 department;
-    
+
     public int getEmpId() {
         return empId;
     }
-    
+
     public void setEmpId(int empId) {
         this.empId = empId;
     }
-    
+
     public Department1 getDepartment() {
         return department;
     }
-    
+
     public void setDepartment(Department1 department) {
         this.department = department;
     }

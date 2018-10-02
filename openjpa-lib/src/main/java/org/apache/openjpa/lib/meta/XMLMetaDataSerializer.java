@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.meta;
 
@@ -96,10 +96,10 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
         if (files == null)
             return;
 
-        // for each file, serialize objects 
+        // for each file, serialize objects
         for (Entry<File, Collection<Object>> entry : files.entrySet()) {
             File file = entry.getKey();
-            Collection<Object> fileObjs = entry.getValue(); 
+            Collection<Object> fileObjs = entry.getValue();
             if (_log != null && _log.isInfoEnabled())
                 _log.info(_loc.get("ser-file", file));
 
@@ -159,7 +159,7 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
             new HashMap<File, Collection<Object>>();
         File file;
         Collection<Object> fileObjs;
-        for(Object obj : objs) { 
+        for(Object obj : objs) {
             file = getSourceFile(obj);
             if (file == null) {
                 if (_log != null && _log.isTraceEnabled())

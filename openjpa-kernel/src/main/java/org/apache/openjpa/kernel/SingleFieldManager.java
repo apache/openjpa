@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -58,8 +58,8 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
 
     private final StateManagerImpl _sm;
     private final BrokerImpl _broker;
-    private final boolean _checkDbOnCascadePersist; 
-    
+    private final boolean _checkDbOnCascadePersist;
+
     public SingleFieldManager(StateManagerImpl sm, BrokerImpl broker) {
         _sm = sm;
         _broker = broker;
@@ -156,7 +156,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
 
     /**
      * If the current field is a usable proxy and it should be a proxy, return it; else return null.
-     * 
+     *
      * This method will skim out Calendar instances that were proxied before we knew if they need to be proxied.
      */
     private Proxy checkProxy(FieldMetaData fmd) {
@@ -165,7 +165,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
 
         Proxy proxy = (Proxy) objval;
         if (proxy.getOwner() == null || Proxies.isOwner(proxy, _sm, field)) {
-            if (fmd.getProxyType().isAssignableFrom(proxy.getClass()) 
+            if (fmd.getProxyType().isAssignableFrom(proxy.getClass())
                     || (fmd.isLRS() && (objval instanceof LRSProxy))) {
                 return proxy;
             }
@@ -272,7 +272,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 _broker.persist(objval, true, call);
                 break;
             case JavaTypes.ARRAY:
-                _broker.persistAll(Arrays.asList((Object[]) objval), true, 
+                _broker.persistAll(Arrays.asList((Object[]) objval), true,
                     call);
                 break;
             case JavaTypes.COLLECTION:
@@ -306,7 +306,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
     private void delete(boolean immediate, OpCallbacks call) {
         delete(immediate, call, false);
     }
-        
+
     /**
      * Delete or dereference the stored field as necessary.
      */
@@ -322,7 +322,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 && fmd.getCascadeDelete() == ValueMetaData.CASCADE_IMMEDIATE) {
                 if (fmd.isEmbeddedPC() && deref) {
                     StateManagerImpl sm = _broker.getStateManagerImpl(objval, false);
-                    if (sm != null) 
+                    if (sm != null)
                         dereferenceEmbedDependent(sm);
                 }
                 delete(fmd, objval, call);
@@ -436,11 +436,11 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
         if (sm != null)
             sm.setDereferencedDependent(true, true);
     }
-    
+
     void dereferenceEmbedDependent(StateManagerImpl sm) {
     	sm.setDereferencedEmbedDependent(true);
     }
-    
+
     /**
      * Recursively invoke the broker to gather cascade-refresh objects in
      * the current field into the given set. This method is only called
@@ -505,7 +505,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
         InverseManager manager = _broker.getInverseManager();
         if (manager != null)
             manager.correctRelations(_sm, fmd, objval);
-        
+
         // perform pers-by-reach and dependent refs
         return preFlush(fmd, logical, call);
     }
@@ -561,7 +561,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
         // check for illegal nulls
         if (objval == null) {
             // If we have an AUTOASSIGN strategy that means that we have a field that is GenerationType.IDENTITY so
-            // skip checking to see if the value is null as it will get assigned later in flush processing. 
+            // skip checking to see if the value is null as it will get assigned later in flush processing.
             if (fmd.getValueStrategy() != ValueStrategies.AUTOASSIGN) {
                 if (fmd.getNullValue() == FieldMetaData.NULL_EXCEPTION || fmd.getDeclaredTypeCode() == JavaTypes.OID)
                     throw new InvalidStateException(_loc.get("null-value", fmd.getName(), _sm.getManagedInstance()))
@@ -635,7 +635,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                     if (external)
                         val = fmd.getExternalValue(val, _broker);
                     if (val != null)
-                        preFlushPCs(fmd.getElement(), (Object[]) val, logical, 
+                        preFlushPCs(fmd.getElement(), (Object[]) val, logical,
                             call);
                 }
                 break;
@@ -649,11 +649,11 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                     if (external)
                         val = fmd.getExternalValue(val, _broker);
                     else if (val instanceof Proxy) {
-                        // shortcut change trackers; also ensures we don't 
+                        // shortcut change trackers; also ensures we don't
                         // iterate lrs fields
                         ChangeTracker ct = ((Proxy) val).getChangeTracker();
                         if (ct != null && ct.isTracking()) {
-                            preFlushPCs(fmd.getElement(), ct.getAdded(), 
+                            preFlushPCs(fmd.getElement(), ct.getAdded(),
                                 logical, call);
                             preFlushPCs(fmd.getElement(), ct.getChanged(),
                                 logical, call);
@@ -680,7 +680,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                         val = fmd.getExternalValue(val, _broker);
                         external = false;
                     } else if (val instanceof Proxy) {
-                        // shortcut change trackers; also ensures we don't 
+                        // shortcut change trackers; also ensures we don't
                         // iterate lrs fields
                         MapChangeTracker ct = (MapChangeTracker) ((Proxy) val).
                             getChangeTracker();
@@ -704,7 +704,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                     if (external)
                         val = fmd.getExternalValue(val, _broker);
                     else if (val instanceof Proxy) {
-                        // shortcut change trackers; also ensures we don't 
+                        // shortcut change trackers; also ensures we don't
                         // iterate lrs fields
                         MapChangeTracker ct = (MapChangeTracker) ((Proxy) val).
                             getChangeTracker();
@@ -769,7 +769,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
         if (obj == null)
             return;
 
-        OpenJPAStateManager sm;        
+        OpenJPAStateManager sm;
 
         if (vmd.getCascadePersist() == ValueMetaData.CASCADE_NONE) {
             if (!_broker.isDetachedNew() && _broker.isDetached(obj, _checkDbOnCascadePersist)) {
@@ -778,12 +778,12 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
 
             sm = _broker.getStateManager(obj);
             if (sm == null || !sm.isPersistent()) {
-                if (((StoreContext)_broker).getAllowReferenceToSiblingContext() 
-                 && ImplHelper.isManageable(obj) 
+                if (((StoreContext)_broker).getAllowReferenceToSiblingContext()
+                 && ImplHelper.isManageable(obj)
                  && ((PersistenceCapable)obj).pcGetStateManager() != null) {
-                    return; 
+                    return;
                 } else {
-                    throw new InvalidStateException(_loc.get("cant-cascade-persist", 
+                    throw new InvalidStateException(_loc.get("cant-cascade-persist",
                             vmd.toString(), Exceptions.toString(obj),
                             sm == null ? " unmanaged" : sm.getPCState().getClass().getSimpleName()))
                     .setFailedObject(obj);
@@ -794,14 +794,14 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 if (!_broker.isDetachedNew() && _broker.isDetached(obj, _checkDbOnCascadePersist)) {
                     return; // allow but ignore
                 }
-            }        	
+            }
             sm = _broker.getStateManager(obj);
-            if (sm == null || !sm.isProvisional()) { 
+            if (sm == null || !sm.isProvisional()) {
                 sm = _broker.persist(obj, null, true, call);
                 // ensure generated IDs get assigned properly
                 if (!logical)
                     ((StateManagerImpl)sm).assignObjectId(false, true);
-                
+
                 // Call preFetch on this and any related persistent fields.
                 // This will ensure IDs get assigned to those that need them.
                 if (_broker.isFlushing()) {

@@ -35,7 +35,7 @@ public class TestFetchGroupStacks extends SingleEMTestCase {
         assertFetchGroups();
         em.getFetchPlan().addFetchGroup("foo");
         assertFetchGroups("foo");
-        
+
         { // add one new fetch group
             em.pushFetchPlan().addFetchGroup("bar"); // push 1
             assertFetchGroups("foo", "bar");

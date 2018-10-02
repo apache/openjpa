@@ -27,7 +27,7 @@ public class XMLOrderedOneToManyEntity implements IOrderedEntity, java.io.Serial
 
     private List<INameEntity> entities;
 
-    
+
     public int getId() {
         return id;
     }
@@ -50,7 +50,7 @@ public class XMLOrderedOneToManyEntity implements IOrderedEntity, java.io.Serial
         }
         entities.add(entity);
     }
-    
+
     public INameEntity removeEntity(int location) {
         INameEntity rtnVal = null;
         if( entities != null) {
@@ -58,7 +58,7 @@ public class XMLOrderedOneToManyEntity implements IOrderedEntity, java.io.Serial
         }
         return rtnVal;
     }
-    
+
     public void insertEntity(int location, INameEntity entity) {
         if( entities == null) {
             entities = new ArrayList<INameEntity>();

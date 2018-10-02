@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package demo;
@@ -25,7 +25,7 @@ import javax.persistence.EntityManager;
 
 /**
  * Loads some example Actor-Movie data.
- *  
+ *
  * @author Pinaki Poddar
  *
  */
@@ -38,14 +38,14 @@ public class DataLoader {
         new Object[] {"m3", "Al",     "Pacino",   Actor.Gender.Male, new Date(50, 1, 12)},
         new Object[] {"m4", "Jack",   "Nichelson",Actor.Gender.Male, new Date(40, 4, 14)},
         new Object[] {"m5", "Clint",  "Eastwood", Actor.Gender.Male, new Date(50, 1, 12)},
-        
+
         new Object[] {"f1", "Meryl",   "Streep",    Actor.Gender.Female, new Date(40, 4, 14)},
         new Object[] {"f2", "Fay",     "Dunaway",   Actor.Gender.Female, new Date(50, 1, 12)},
         new Object[] {"f3", "Jodie",   "Foster",    Actor.Gender.Female, new Date(40, 4, 14)},
         new Object[] {"f4", "Diane",   "Keaton",    Actor.Gender.Female, new Date(50, 1, 12)},
         new Object[] {"f5", "Catherine", "Hepburn", Actor.Gender.Female, new Date(40, 4, 14)},
     };
-    
+
     public static Object[][] MOVIE_DATA = {
         new Object[] {"1", "China Town", 1980},
         new Object[] {"2", "Taxi Driver", 1980},
@@ -53,7 +53,7 @@ public class DataLoader {
         new Object[] {"4", "Godfather", 1980},
         new Object[] {"5", "Horse Whisperer", 1980},
     };
-    
+
     public static int[][] MOVIE_ACTORS = {
         new int[] {3,6},
         new int[] {1,7},
@@ -61,7 +61,7 @@ public class DataLoader {
         new int[] {2,3,8},
         new int[] {0}
     };
-    
+
     public static int[][] PARTNERS = {
         new int[] {3,6},
         new int[] {1,7},
@@ -74,8 +74,8 @@ public class DataLoader {
             System.err.println("Found " + count + " Movie records in the database");
             return;
         }
-        
-        
+
+
         Actor[] actors = createActors();
         Movie[] movies = createMovies();
         linkActorAndMovie(movies, actors);
@@ -89,7 +89,7 @@ public class DataLoader {
         }
         em.getTransaction().commit();
     }
-    
+
     Actor[] createActors() {
         Actor[] actors = new Actor[ACTOR_DATA.length];
         for (int i = 0; i < ACTOR_DATA.length; i++) {
@@ -98,7 +98,7 @@ public class DataLoader {
         }
         return actors;
     }
-    
+
     Movie[] createMovies() {
         Movie[] movies = new Movie[MOVIE_DATA.length];
         for (int i = 0; i < MOVIE_DATA.length; i++) {
@@ -107,7 +107,7 @@ public class DataLoader {
         }
         return movies;
     }
-    
+
     void linkActorAndMovie(Movie[] movies, Actor[] actors) {
         for (int i = 0; i < MOVIE_ACTORS.length; i++) {
             int[] roles = MOVIE_ACTORS[i];
@@ -119,7 +119,7 @@ public class DataLoader {
             }
         }
     }
-    
+
     void makePartner(Actor[] actors) {
         for (int i = 0; i < PARTNERS.length; i++) {
             int[] partners = PARTNERS[i];
@@ -129,5 +129,5 @@ public class DataLoader {
             a2.setPartner(a1);
        }
     }
-    
+
 }

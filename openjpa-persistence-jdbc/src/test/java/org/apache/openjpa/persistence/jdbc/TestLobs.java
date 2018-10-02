@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -40,9 +40,9 @@ public class TestLobs extends SingleEMFTestCase {
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Lobs.class, Blobs.class);
     }
-    
-    // blob tests 
-    public void testBlobSetToNull() { 
+
+    // blob tests
+    public void testBlobSetToNull() {
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -58,7 +58,7 @@ public class TestLobs extends SingleEMFTestCase {
         }
         em.close();
     }
-    
+
     public void testBlobPersistQuery() {
         // test with null
         EntityManager em = emf.createEntityManager();
@@ -73,7 +73,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.persist(lobs);
         em.getTransaction().commit();
         em.close();
-        
+
         em = emf.createEntityManager();
         em.getTransaction().begin();
         Query query = em.createQuery("select e from Blobs e");
@@ -84,12 +84,12 @@ public class TestLobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testBlobZeroLengthByteArray() throws Exception { 
+    public void testBlobZeroLengthByteArray() throws Exception {
         // test with 0 length bytes
         byte[] bytes = new byte[0];
         EntityManager em = emf.createEntityManager();
         Blobs lobs = new Blobs();
-        
+
         em.getTransaction().begin();
         lobs.setLobNotNullable(bytes);
         lobs.setLobNullable(bytes);
@@ -120,7 +120,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testBlobLargeData() { 
+    public void testBlobLargeData() {
         // test with large data
         byte[] bytes = new byte[5000];
         for (int i = 0; i < bytes.length; i++)
@@ -147,7 +147,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
+
     // lob tests
 
     public void testLobPersistQuery() {
@@ -171,8 +171,8 @@ public class TestLobs extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
-    public void testLobSetToNull() { 
+
+    public void testLobSetToNull() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Lobs lobs = new Lobs();
@@ -187,7 +187,7 @@ public class TestLobs extends SingleEMFTestCase {
         }
         em.close();
     }
-   
+
     public void testLobEmptyString() {
         // test with ""
         EntityManager em = emf.createEntityManager();
@@ -202,7 +202,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.getTransaction().begin();
         Query query = em.createQuery("select e from Lobs e");
         lobs = (Lobs)query.getSingleResult();
-        
+
         if (lobs.getLobNullable() != null) {
             if (getDBDictionary() instanceof SybaseDictionary) {
                 // Sybase stores empty strings as " "
@@ -224,8 +224,8 @@ public class TestLobs extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
-    public void testLobLargeData() { 
+
+    public void testLobLargeData() {
         // test with large data
         String temp = "";
         for (int i = 0; i < 500; i++) // at 400 it changes from strings to Objects

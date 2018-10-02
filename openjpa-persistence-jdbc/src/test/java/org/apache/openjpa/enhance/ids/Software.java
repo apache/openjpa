@@ -27,20 +27,20 @@ import javax.persistence.Table;
 @Table(name="ID_SWTBL")
 @IdClass(SoftwareId.class)
 public class Software {
-        
+
     @Id
     private Integer idInteger;
-    
+
     @Id
     private int idInt;
-    
+
     @Id
     private String idString;
 
     public Software() {
-        
+
     }
-    
+
     public void setIdInteger(Integer idInteger) {
         this.idInteger = idInteger;
     }

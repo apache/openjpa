@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
@@ -47,13 +47,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test JPQL Index function on O2M, M2M and Element collections using annotations and XML.
- *  
+ *
  * @author Catalina Wei, Albert Lee, Donald Woods
  */
 public class TestIndex extends SingleEMFTestCase {
-    
+
     private Log log = null;
-    
+
     private enum JPQLIndexEntityClasses implements JPAEntityClassEnum {
         OrderedElementEntity(OrderedElementEntity.class),
         OrderedOneToManyEntity(OrderedOneToManyEntity.class),
@@ -100,7 +100,7 @@ public class TestIndex extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        super.setUp(CLEAR_TABLES, TreeNode.class, 
+        super.setUp(CLEAR_TABLES, TreeNode.class,
             OrderedElementEntity.class, UnorderedNameEntity.class,
             OrderedOneToManyEntity.class, OrderedManyToManyEntity.class,
             OrderedNameEntity.class);
@@ -117,13 +117,13 @@ public class TestIndex extends SingleEMFTestCase {
         createTreeNodeEntities(fanOuts);
         EntityManager em = emf.createEntityManager();
         String query = "SELECT index(c) from TreeNode t, in (t.childern) c" +
-            " WHERE index(c) = 2"; 
-        
+            " WHERE index(c) = 2";
+
         List<Object> rs = em.createQuery(query).getResultList();
         for (Object t: rs)
             assertEquals(2, Integer.parseInt(t.toString()));
-        
-        em.close();                
+
+        em.close();
     }
 
     // Testcases added by Donald with code reused from annonxml tests by Albert
@@ -164,13 +164,13 @@ public class TestIndex extends SingleEMFTestCase {
         TreeNode root = new TreeNode();
         root.createTree(original);
         assertArrayEquals(original, root.getFanOuts());
-        
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(root);
         em.getTransaction().commit();
         em.clear();
-        
+
         return root;
     }
 
@@ -182,7 +182,7 @@ public class TestIndex extends SingleEMFTestCase {
         for (int i = 0; i<a.length; i++)
             assertEquals(a[i], b[i]);
     }
-    
+
     private <C,E> void createEntities(JPQLIndexEntityClasses entityType, Class<E> elementClass)
     {
         if (IOrderedEntity.class.isAssignableFrom(entityType.getEntityClass())) {
@@ -203,14 +203,14 @@ public class TestIndex extends SingleEMFTestCase {
                 fail("createEntities(IOrderedElements) - Unexpected elementClass=" + elementClass.getSimpleName());
             }
         } else {
-            fail("createEntities() - Unexpected entityType=" + entityType.getEntityName());            
+            fail("createEntities() - Unexpected entityType=" + entityType.getEntityName());
         }
     }
-        
+
     private void createO2MEntities(JPQLIndexEntityClasses entityType, Class<INameEntity> elementClass)
     {
         EntityManager em = null;
-        
+
         try {
             Class<IOrderedEntity> entityClass =
                 (Class<IOrderedEntity>)Class.forName(entityType.getEntityClassName());
@@ -218,18 +218,18 @@ public class TestIndex extends SingleEMFTestCase {
             String elementClassName = elementClass.getName().substring(
                 elementClass.getName().lastIndexOf('.') + 1);
             Integer entityId = 1;
-            
+
             // create the entity
             IOrderedEntity newEntity = (IOrderedEntity)constructNewEntityObject(entityType);
             newEntity.setId(entityId);
-            
+
             // create the elements to add
             Constructor<INameEntity> elementConstrctor = elementClass.getConstructor(String.class);
             List<INameEntity> newElements = new ArrayList<INameEntity>();
             for (int i=0; i<Element_Names.length; i++) {
                 newElements.add(elementConstrctor.newInstance(Element_Names[i]));
             }
-            
+
             // add the entities
             em = emf.createEntityManager();
             em.getTransaction().begin();
@@ -262,18 +262,18 @@ public class TestIndex extends SingleEMFTestCase {
             }
         }
     }
-    
+
     private void createM2MEntities(JPQLIndexEntityClasses entityType, Class<IColumnEntity> elementClass)
     {
         EntityManager em = null;
-        
+
         try {
             Class<IOrderedEntity> entityClass =
                 (Class<IOrderedEntity>)Class.forName(entityType.getEntityClassName());
             String entityClassName = entityType.getEntityName();
             String elementClassName = elementClass.getName().substring(
                 elementClass.getName().lastIndexOf('.') + 1);
-            
+
             // create the EM and transaction
             em = emf.createEntityManager();
             em.getTransaction().begin();
@@ -286,7 +286,7 @@ public class TestIndex extends SingleEMFTestCase {
                 em.persist(newEntity);
                 newEntities.add(newEntity);
             }
-            
+
             // create and persist the elements
             Constructor<IColumnEntity> elementConstrctor = elementClass.getConstructor(String.class);
             List<INameEntity> newElements = new ArrayList<INameEntity>();
@@ -298,7 +298,7 @@ public class TestIndex extends SingleEMFTestCase {
                 em.persist(newElement);
                 newElements.add(newElement);
             }
-            
+
             // update entities with elements
             for (IOrderedEntity newEntity : newEntities) {
                 newEntity.setEntities(newElements);
@@ -328,17 +328,17 @@ public class TestIndex extends SingleEMFTestCase {
             }
         }
     }
-    
+
     private void createOrderedElements(JPQLIndexEntityClasses entityType)
     {
         EntityManager em = null;
-        
+
         try {
             Class<IOrderedElements> entityClass =
                 (Class<IOrderedElements>)Class.forName(entityType.getEntityClassName());
             String entityClassName = entityType.getEntityName();
             Integer entityId = 1;
-            
+
             IOrderedElements newEntity = (IOrderedElements)constructNewEntityObject(entityType);
             newEntity.setId(entityId);
             List<String> namesList = new ArrayList<String>();
@@ -374,7 +374,7 @@ public class TestIndex extends SingleEMFTestCase {
             }
         }
     }
-    
+
     private <C,E> void verifyEntities(JPQLIndexEntityClasses entityType, Class<E> elementClass)
     {
         if (IOrderedEntity.class.isAssignableFrom(entityType.getEntityClass())) {
@@ -395,14 +395,14 @@ public class TestIndex extends SingleEMFTestCase {
                 fail("verifyEntities(IOrderedElements) - Unexpected elementClass=" + elementClass.getSimpleName());
             }
         } else {
-            fail("verifyEntities() - Unexpected entityType=" + entityType.getEntityName());            
+            fail("verifyEntities() - Unexpected entityType=" + entityType.getEntityName());
         }
     }
-    
+
     private <E> void verifyO2MEntities(JPQLIndexEntityClasses entityType, Class<INameEntity> elementClass)
     {
         EntityManager em = null;
-        
+
         try {
             Class<IOrderedEntity> entityClass = (Class<IOrderedEntity>)Class.forName(entityType.getEntityClassName());
             String entityClassName = entityType.getEntityName();
@@ -413,7 +413,7 @@ public class TestIndex extends SingleEMFTestCase {
                     + Element_Names.length + " elements in this order: "
                     + Arrays.toString(Element_Names));
             }
-            
+
             em = emf.createEntityManager();
             em.clear();
             int idx = 0;
@@ -447,11 +447,11 @@ public class TestIndex extends SingleEMFTestCase {
             }
         }
     }
-    
+
     private <E> void verifyM2MEntities(JPQLIndexEntityClasses entityType, Class<IColumnEntity> elementClass)
     {
         EntityManager em = null;
-        
+
         try {
             Class<IOrderedEntity> entityClass = (Class<IOrderedEntity>)Class.forName(entityType.getEntityClassName());
             String entityClassName = entityType.getEntityName();
@@ -464,7 +464,7 @@ public class TestIndex extends SingleEMFTestCase {
                     + Element_Names.length + " elements in this order: "
                     + Arrays.toString(Element_Names));
             }
-            
+
             em = emf.createEntityManager();
             em.clear();
             int idx = 0, idx2 = 0;
@@ -481,7 +481,7 @@ public class TestIndex extends SingleEMFTestCase {
                         String name = (String) elementClass.getMethod("getName").invoke(oo);
                         assertEquals("  Verify element value is '"
                             + expectedEntityName + "'", expectedEntityName, name);
-                        
+
                         if (log.isTraceEnabled()) {
                             log.trace("Query " + elementClassName + " and verify 'entities' collection content");
                         }
@@ -519,11 +519,11 @@ public class TestIndex extends SingleEMFTestCase {
             }
         }
     }
-    
+
     private <E> void verifyOrderedElements(JPQLIndexEntityClasses entityType)
     {
         EntityManager em = null;
-        
+
         try {
             Class<IOrderedEntity> entityClass = (Class<IOrderedEntity>)Class.forName(entityType.getEntityClassName());
             String entityClassName = entityType.getEntityName();
@@ -534,7 +534,7 @@ public class TestIndex extends SingleEMFTestCase {
                     + Element_Names.length + " elements in this order: "
                     + Arrays.toString(Element_Names));
             }
-            
+
             em = emf.createEntityManager();
             em.clear();
             int idx = 0;
@@ -569,5 +569,5 @@ public class TestIndex extends SingleEMFTestCase {
             }
         }
     }
-    
+
 }

@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 
 /**
  * View of a persistent entity type as a JPanel.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -36,14 +36,14 @@ public class EntityTypeView<T> extends JPanel {
     final EntityType<T> type;
     final int hgap = 4;
     final int vgap = 4;
-    
+
     public EntityTypeView(EntityType<T> type) {
         this.type = type;
         GridLayout layout = new GridLayout(0,1);
         setLayout(layout);
         layout.setVgap(vgap);
         layout.setHgap(hgap);
-        
+
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createTitledBorder(MetamodelHelper.getDisplayName(type)));
 
@@ -58,12 +58,12 @@ public class EntityTypeView<T> extends JPanel {
         }
 //        setPreferredSize(new Dimension(w,h));
     }
-    
+
     public EntityType<T> getEntityType() {
         return type;
     }
-    
-    
+
+
     /**
      * Gets the top left position of the attribute label relative to this entity view.
      */

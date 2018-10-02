@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -32,12 +32,12 @@ public class Item {
     @Id
     @GeneratedValue
     private int id;
-    
+
 	private String name;
-	
+
     @OneToMany
 	private Map<String, Photo> photos;
-	
+
     public long getId() {
         return id;
     }
@@ -57,14 +57,14 @@ public class Item {
     public Photo getPhoto(String name) {
         return photos.get(name);
     }
-	
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
 
-	
+
 }

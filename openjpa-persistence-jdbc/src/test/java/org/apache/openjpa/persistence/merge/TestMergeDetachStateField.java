@@ -34,17 +34,17 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMergeDetachStateField extends SingleEMFTestCase {
     public void setUp() {
-        setUp(Label.class, ShipPackage.class, 
+        setUp(Label.class, ShipPackage.class,
         	  Label2.class, ShipPackage2.class,
         	  Car.class, Model.class, Make.class,
         	  CLEAR_TABLES);
     }
 
-    /** 
+    /**
      * Verify a merge graph is correct when an entity uses a detached state field.  When
      * a detached state field is used, the entity does not get populated with a DetachedStateManager
      * upon detachment.
-     *  
+     *
      * ShipPackage: Has DetachedStateManager after detach.
      * Label: Detached state field - no DSM after detach.
      * Initial graph:  Label <--> ShipPackage
@@ -59,7 +59,7 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
         	ShipPackage p = new ShipPackage();
             Label l = new Label(p);
             p.setLabel(l);
-            
+
             // Persist
             em.getTransaction().begin();
             em.persist(l);
@@ -71,7 +71,7 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
             assertFalse(em.contains(p));
             assertFalse(em.contains(l.getPackage()));
             assertFalse(em.contains(p.getLabel()));
-            
+
             em.getTransaction().begin();
             Label mergedLabel = em.merge(l);
 
@@ -92,17 +92,17 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
         }
     }
 
-    /** 
+    /**
      * Verify a merge graph is correct when an entity uses a detached state field.  When
      * a detached state field is used, the entity does not get populated with a DetachedStateManager
      * upon detachment.  Same as testCascadeMergeDetachState, except merge is on ShipPackage2,
      * which contains the cascade instead of Label2.
-     *  
+     *
      * ShipPackage: Has DetachedStateManager after detach.
      * Label: Detached state field - no DSM after detach.
      * Initial graph:  ShipPackage2 <--> Label2
      * Merge: ShipPackage2
-     * Verify after merge: ShipPackage2' <-->  Label2' 
+     * Verify after merge: ShipPackage2' <-->  Label2'
      */
     public void testCascadeMergeDetachState2() {
         EntityManager em = emf.createEntityManager();
@@ -112,7 +112,7 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
         	ShipPackage2 p = new ShipPackage2();
             Label2 l = new Label2(p);
             p.setLabel2(l);
-            
+
             // Persist
             em.getTransaction().begin();
             em.persist(p);
@@ -124,7 +124,7 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
             assertFalse(em.contains(p));
             assertFalse(em.contains(l.getPackage2()));
             assertFalse(em.contains(p.getLabel2()));
-            
+
             em.getTransaction().begin();
             ShipPackage2 mergedPackage = em.merge(p);
 
@@ -145,10 +145,10 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
         }
     }
 
-    /** 
+    /**
      * Verify a merge graph is correct when multiple entities of a complex
-     * graph use a detached state field.  When a detached state field is used, 
-     * the entity does not get populated with a DetachedStateManager upon 
+     * graph use a detached state field.  When a detached state field is used,
+     * the entity does not get populated with a DetachedStateManager upon
      * detachment, but merge should still succeed.
      */
     public void testCascadeMergeDetachStateComplex() {
@@ -166,13 +166,13 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
 
         	//populate bidirectional relationships
         	c1.setModel(md1);
-        	c2.setModel(md2);        	
+        	c2.setModel(md2);
         	md1.setCar(c1);
         	md1.setMake(mk1);
         	md2.setCar(c2);
         	md1.setMake(mk1);
         	mk1.setModels(models);
-        	            
+
             // Persist car1 - will cascade
             em.getTransaction().begin();
             em.persist(c1);
@@ -184,7 +184,7 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
             // verify all entities are detached and references to them
             // are also detached.
             verifyDetached(em, entities);
-            
+
             em.getTransaction().begin();
             // Merge model back in and verify all entities are newly merged entities
             Model mergedModel = em.merge(md1);
@@ -193,7 +193,7 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
             List<Model> mds = mergedModel.getMake().getModels();
             assertTrue(mds.contains(mergedModel));
             assertFalse(c1 == mergedModel.getCar());
-            assertTrue(mergedModel.getCar().getModel() == mergedModel);            
+            assertTrue(mergedModel.getCar().getModel() == mergedModel);
             em.remove(mergedModel);
             em.getTransaction().commit();
         } finally {

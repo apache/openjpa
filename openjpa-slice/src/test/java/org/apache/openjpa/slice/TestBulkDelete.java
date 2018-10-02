@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice;
 
@@ -28,14 +28,14 @@ import org.apache.openjpa.slice.policy.UniformDistributionPolicy;
 
 /**
  * Tests delete-by-query.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestBulkDelete extends SliceTestCase {
 	private static int SLICES = 3;
 	private static List<String> SLICE_NAMES;
-	
+
 	@Override
 	protected String getPersistenceUnitName() {
 		return "slice";
@@ -43,7 +43,7 @@ public class TestBulkDelete extends SliceTestCase {
 	public void setUp() throws Exception {
 		super.setUp(PObject.class, CLEAR_TABLES,
 				"openjpa.slice.DistributionPolicy", UniformDistributionPolicy.class.getName());
-		
+
 	}
 
 	public void tearDown() throws Exception {
@@ -55,7 +55,7 @@ public class TestBulkDelete extends SliceTestCase {
 		em.getTransaction().commit();
 		super.tearDown();
 	}
-	
+
 	/**
 	 * Creates N instances that are distributed in 3 slices.
 	 * Deletes all instances from only one slice.
@@ -69,7 +69,7 @@ public class TestBulkDelete extends SliceTestCase {
 		assertTrue(SLICES > 1);
 		int M = 4; // no of instances in each slice
 		int N = SLICES*M; // total number of instances in all 3 slices
-		
+
 		for (int i = 0; i < N; i++) {
 			PObject pc = new PObject();
 			em.persist(pc);
@@ -78,7 +78,7 @@ public class TestBulkDelete extends SliceTestCase {
 		String jpql = "select count(p) from PObject p";
 		long total = em.createQuery(jpql, Long.class).getSingleResult();
 		assertEquals(N, total);
-		
+
 		for (int i = 0; i < SLICES; i++) {
 			System.err.println("Query only on slice [" + SLICE_NAMES.get(i) + "]");
 			long count = em.createQuery(jpql,Long.class)
@@ -86,7 +86,7 @@ public class TestBulkDelete extends SliceTestCase {
 			               .getSingleResult();
 			assertEquals(M, count);
 		}
-		
+
 		em.getTransaction().begin();
 		System.err.println("Delete only from slice [" + SLICE_NAMES.get(0) + "]");
 		String delete = "delete from PObject p";

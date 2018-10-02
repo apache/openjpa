@@ -14,26 +14,26 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
 public class ZipcodeXml {
 	protected String zip;
 	protected String plusFour;
-	
+
 	public String getZip() {
 		return zip;
 	}
-	
+
 	public void setZip(String zip) {
 		this.zip = zip;
 	}
-	
+
 	public String getPlusFour() {
 		return plusFour;
 	}
-	
+
 	public void setPlusFour(String plusFour) {
 		this.plusFour = plusFour;
 	}

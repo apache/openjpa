@@ -36,37 +36,37 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * Tests that queries can convert to temporal types.
  * Also tests that parameter validation for mismatch between named parameter
  * and positional binding or vice versa.
- *  
- * Originally reported in 
+ *
+ * Originally reported in
  * <A HRE="http://issues.apache.org/jira/browse/OPENJPA-112>OPENJPA-497</A>
- *  
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 	private static Calendar PARAM_CALENDAR = Calendar.getInstance();
 	private  static long T1 = PARAM_CALENDAR.getTimeInMillis();
-	private  static long T2 = T1 + 2000; 
+	private  static long T2 = T1 + 2000;
 	private  static long T3 = T1 + 3000;
-	
+
 	private static Date     VALUE_DATE     = new Date(T1);
 	private static Time     VALUE_TIME     = new Time(T2);
 	private static Timestamp VALUE_TSTAMP   = new Timestamp(T3);
-	
-	
-	private static String JPQL_NAMED  = 
-		"SELECT p FROM TimeKeeper p " + 
+
+
+	private static String JPQL_NAMED  =
+		"SELECT p FROM TimeKeeper p " +
 		"WHERE p.date=:d AND p.time=:t AND p.tstamp=:ts";
-	private static String JPQL_POSITIONAL  = 
-		"SELECT p FROM TimeKeeper p " + 
+	private static String JPQL_POSITIONAL  =
+		"SELECT p FROM TimeKeeper p " +
 		"WHERE p.date=?1 AND p.time=?2 AND p.tstamp=?3";
-	
+
 	private EntityManager em;
 	@Override
 	public void setUp() throws Exception {
 		super.setUp(CLEAR_TABLES, TimeKeeper.class, TimeEntity.class);
 		em = emf.createEntityManager();
-		
+
 		TimeKeeper pc = new TimeKeeper();
 		pc.setDate(VALUE_DATE);
 		pc.setTime(VALUE_TIME);
@@ -81,13 +81,13 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 		te.setUDate2SDate(VALUE_DATE);
 		te.setUDate2Time(VALUE_DATE);
 		te.setUDate2Timestamp(VALUE_DATE);
-        
+
 		em.getTransaction().begin();
 		em.persist(pc);
 		em.persist(te);
 		em.getTransaction().commit();
 	}
-	
+
 	public void testNamedParameterConvertedFromCalendarValue() {
 		Calendar c1 = Calendar.getInstance();
 		Calendar c2 = Calendar.getInstance();
@@ -95,15 +95,15 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 		c1.setTimeInMillis(T1);
 		c2.setTimeInMillis(T2);
 		c3.setTimeInMillis(T3);
-		
+
 		Query q = em.createQuery(JPQL_NAMED);
 		q.setParameter("d",  c1, TemporalType.DATE);
 		q.setParameter("t",  c2, TemporalType.TIME);
 		q.setParameter("ts", c3, TemporalType.TIMESTAMP);
-		
+
 		assertEquals(1, q.getResultList().size());
 	}
-	
+
 	public void testPositionalParameterConvertedFromCalendarValue() {
 		Calendar c1 = Calendar.getInstance();
 		Calendar c2 = Calendar.getInstance();
@@ -111,50 +111,50 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 		c1.setTimeInMillis(T1);
 		c2.setTimeInMillis(T2);
 		c3.setTimeInMillis(T3);
-		
+
 		Query q = em.createQuery(JPQL_POSITIONAL);
 		q.setParameter(1,  c1, TemporalType.DATE);
 		q.setParameter(2,  c2, TemporalType.TIME);
 		q.setParameter(3,  c3, TemporalType.TIMESTAMP);
-		
+
 		assertEquals(1, q.getResultList().size());
 	}
 	public void testNamedParameterConvertedFromDateValue() {
 		Date d1 = new Date(T1);
 		Date d2 = new Date(T2);
 		Date d3 = new Date(T3);
-		
+
 		Query q = em.createQuery(JPQL_NAMED);
 		q.setParameter("d",  d1, TemporalType.DATE);
 		q.setParameter("t",  d2, TemporalType.TIME);
 		q.setParameter("ts", d3, TemporalType.TIMESTAMP);
-		
+
 		assertEquals(1, q.getResultList().size());
 	}
-	
+
 	public void testPositionalParameterConvertedFromDateValue() {
 		Date d1 = new Date(T1);
 		Date d2 = new Date(T2);
 		Date d3 = new Date(T3);
-		
+
 		Query q = em.createQuery(JPQL_POSITIONAL);
 		q.setParameter(1,  d1, TemporalType.DATE);
 		q.setParameter(2,  d2, TemporalType.TIME);
 		q.setParameter(3,  d3, TemporalType.TIMESTAMP);
-		
+
 		assertEquals(1, q.getResultList().size());
 	}
-	
-	
+
+
 	public void testNamedParameterWithMismatchedValue() {
 		Date d1 = new Date(T1);
 		Date d2 = new Date(T2);
 		Date d3 = new Date(T3);
-		
+
 		Query q = em.createQuery(JPQL_NAMED);
 		q.setParameter("d",  d1, TemporalType.TIME);
 		q.setParameter("ts",  d2, TemporalType.TIMESTAMP);
-		
+
 		try {
 	        q.setParameter("t",  d3, TemporalType.DATE);
 			fail("Expeceted " + ArgumentException.class.getName());
@@ -162,15 +162,15 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 			// good
 		}
 	}
-	
+
 	public void testPositionalParameterWithMismatchedValue() {
 		Date d1 = new Date(T1);
 		Date d2 = new Date(T2);
 		Date d3 = new Date(T3);
-		
+
 		Query q = em.createQuery(JPQL_POSITIONAL);
 		q.setParameter(1,  d1, TemporalType.TIME);
-		
+
 		try {
 	        q.setParameter(2,  d2, TemporalType.TIMESTAMP);
 			fail("Expeceted " + ArgumentException.class.getName());
@@ -184,27 +184,27 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
             // expected.
         }
 	}
-	
+
     public void testTemporalType() {
-        EntityManager em = emf.createEntityManager(); 
+        EntityManager em = emf.createEntityManager();
         Calendar endTime = PARAM_CALENDAR;
         Calendar startTime = PARAM_CALENDAR;
         startTime.add(14, -4);
-        
+
         //(1) Calendar to Timestamp
         String jpql = "SELECT COUNT(a) FROM TimeEntity a WHERE a.cal2Timestamp BETWEEN ?1 AND ?2";
         Query q = em.createQuery(jpql);
         assertSetTemporalParameter(q, 1, startTime, TemporalType.TIMESTAMP);
         assertSetTemporalParameter(q, 2, endTime, TemporalType.TIMESTAMP);
         assertEquals(1, q.getResultList().size());
-         
+
         //(2) Calendar to Time
         jpql = "SELECT COUNT(a) FROM TimeEntity a WHERE a.cal2Time BETWEEN ?1 AND ?2";
         q = em.createQuery(jpql);
         assertSetTemporalParameter(q, 1, startTime, TemporalType.TIME);
         assertSetTemporalParameter(q, 2, endTime, TemporalType.TIME);
         assertEquals(1, q.getResultList().size());
-        
+
         //(3)Calendar to Date
         jpql = "SELECT COUNT(a) FROM TimeEntity a WHERE a.cal2Date BETWEEN ?1 AND ?2";
         q = em.createQuery(jpql);
@@ -213,7 +213,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
         q.setParameter(1, startTime, TemporalType.DATE);
         q.setParameter(2, endTime, TemporalType.DATE);
         assertEquals(1, q.getResultList().size());
- 
+
         //(4)Date to Timestamp
         java.util.Date endDate = VALUE_DATE;
         java.util.Date startDate = new Date(T1 - 1000);
@@ -222,14 +222,14 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
         assertSetTemporalParameter(q, 1, startDate, TemporalType.TIMESTAMP);
         assertSetTemporalParameter(q, 2, endDate, TemporalType.TIMESTAMP);
         assertEquals(1, q.getResultList().size());
-        
+
         //(5) Date to Time
         jpql = "SELECT COUNT(a) FROM TimeEntity a WHERE a.udate2Time BETWEEN ?1 AND ?2";
         q = em.createQuery(jpql);
         assertSetTemporalParameter(q, 1, startDate, TemporalType.TIME);
         assertSetTemporalParameter(q, 2, endDate, TemporalType.TIME);
         assertEquals(1, q.getResultList().size());
-        
+
         //(6) Date to Date
         jpql = "SELECT COUNT(a) FROM TimeEntity a WHERE a.udate2SDate BETWEEN ?1 AND ?2";
         q = em.createQuery(jpql);
@@ -237,7 +237,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
         assertSetTemporalParameter(q, 2, endDate, TemporalType.DATE);
         assertEquals(1, q.getResultList().size());
     }
-    
+
 
     void verifyParams(String jpql, Class<? extends Exception> error,
         Object... params) {
@@ -260,11 +260,11 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
                     throw new RuntimeException("An unexpected exception " +
                             "occurred see initCause for details", e);
 				}
-			} 
+			}
 		}
 		em.getTransaction().commit();
 	}
-    
+
     void assertSetTemporalParameter(Query q, int pos, Date v, TemporalType temporalType) {
         try {
             q.setParameter(pos, v, temporalType);
@@ -281,5 +281,5 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
         }
     }
 
-    
+
 }

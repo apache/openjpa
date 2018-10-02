@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -111,7 +111,7 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
     protected void setChangeTracker(CollectionChangeTracker ct) {
         changeTracker = ct;
     }
-    
+
     @Override
     public Object copy(Object paramObject) {
         return new LinkedList((Collection) paramObject);
@@ -620,7 +620,7 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
             load();
         }
         return super.pollFirst();
-        
+
     }
 
     @Override
@@ -630,13 +630,13 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
         }
         return super.pollLast();
     }
-    
+
     @Override
     public Object getFirst() {
         if (!_directAccess && isDelayLoad()) {
             load();
         }
-        return super.getFirst();        
+        return super.getFirst();
     }
 
     @Override
@@ -646,7 +646,7 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
         }
         return super.getLast();
     }
-    
+
     @Override
     public Object peekFirst() {
         if (!_directAccess && isDelayLoad()) {
@@ -654,7 +654,7 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
         }
         return super.peekFirst();
     }
-    
+
     @Override
     public Object peekLast() {
         if (!_directAccess && isDelayLoad()) {
@@ -670,7 +670,7 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
         }
         return super.element();
     }
-    
+
     @Override
     public Object peek() {
         if (!_directAccess && isDelayLoad()) {
@@ -678,7 +678,7 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
         }
         return super.peek();
     }
-    
+
     @Override
     public void push(Object o) {
         if (!_directAccess && isDelayLoad()) {
@@ -686,7 +686,7 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
         }
         super.push(o);
     }
-    
+
     @Override
     public Object pop() {
         if (!_directAccess && isDelayLoad()) {

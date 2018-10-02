@@ -30,13 +30,13 @@ public class EntityD3 {
     @Column(name="\"entityD3 id\"")
     int id;
     String name;
-    
+
     public EntityD3() {}
-    
+
     public EntityD3(int id) {
         this.id = id;
     }
-    
+
     /**
      * @return the id
      */

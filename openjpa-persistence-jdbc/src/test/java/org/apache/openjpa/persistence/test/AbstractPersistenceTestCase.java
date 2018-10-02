@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.test;
 
@@ -85,7 +85,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
      * Create an entity manager factory. Put {@link #CLEAR_TABLES} in this list to tell the test framework to delete all
      * table contents before running the tests.
      * NOTE: Caller must close the returned EMF.
-     * 
+     *
      * @param props
      *            list of persistent types used in testing and/or configuration values in the form
      *            key,value,key,value...
@@ -105,7 +105,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
      * tell the test framework to delete all table contents before running the tests.
      * NOTE: Caller must close the returned EMF.
-     * 
+     *
      * @param props
      *            list of persistent types used in testing and/or configuration values in the form
      *            key,value,key,value...
@@ -127,7 +127,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
      * tell the test framework to delete all table contents before running the tests.
      * NOTE: Caller must close the returned EMF.
-     * 
+     *
      * @param props
      *            list of persistent types used in testing and/or configuration values in the form
      *            key,value,key,value...
@@ -172,9 +172,9 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
                     + "SchemaAction='drop,add')");
             } else if (props[i] instanceof Class<?>) {
                 types.add((Class<?>) props[i]);
-            } 
-            else if (props[i] instanceof Class<?>[]) { 
-                for(Class<?> clss : (Class<?>[]) props[i]) { 
+            }
+            else if (props[i] instanceof Class<?>[]) {
+                for(Class<?> clss : (Class<?>[]) props[i]) {
                     types.add(clss);
                 }
             }
@@ -241,7 +241,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
 
     /**
      * Safely close the given EM
-     * 
+     *
      * @param em
      */
     protected boolean closeEM(EntityManager em) {
@@ -258,7 +258,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         }
         return brc;
     }
-    
+
     /**
      * Closes all open entity managers after first rolling back any open transactions.
      */
@@ -313,7 +313,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
 
     /**
      * Delete all instances of the given types using bulk delete queries.
-     * 
+     *
      * @param emf
      *            The EntityManagerFactory to use. A new EntityManager will be created from this EMF and used to execute
      *            bulk updates.
@@ -341,7 +341,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             em.getTransaction().begin();
             for (ClassMetaData meta : types) {
                 if (!meta.isMapped() || meta.isEmbeddedOnly()
-                    || Modifier.isAbstract(meta.getDescribedType().getModifiers()) 
+                    || Modifier.isAbstract(meta.getDescribedType().getModifiers())
                     && !isBaseManagedInterface(meta, types)) {
                     continue;
                 }
@@ -366,7 +366,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     /**
      * Determines if the class associated with the provided {@link ClassMetaData} is a managed interface and does not
      * extend another managed interface.
-     * 
+     *
      * @param meta
      *            {@link ClassMetaData} for the class to examine
      * @param types
@@ -385,7 +385,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     /**
      * Determines if the class associated with the provided {@link ClassMetaData} is an interface and if it extends
      * another managed interface.
-     * 
+     *
      * @param meta
      *            {@link ClassMetaData} for the class to examine
      * @param types
@@ -445,7 +445,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     }
 
     /**
-     * Asserts that the given targetType is assignable from given actual Throwable. Asserts that the nestedType is 
+     * Asserts that the given targetType is assignable from given actual Throwable. Asserts that the nestedType is
      * nested (possibly recursively) within the given actual Throwable.
      *
      * @param actual
@@ -577,10 +577,10 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         }
         super.runTest();
     }
-    
+
     /**
      * Affirms if the test case or the test method is annotated with
-     * 
+     *
      * @AllowFailure. Method level annotation has higher precedence than Class level annotation.
      */
     protected AllowFailure getAllowFailure() {
@@ -601,7 +601,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     /**
      * Affirms if either this test has been annotated with @DatabasePlatform and at least one of the specified driver is
      * available in the classpath, or no such annotation is used.
-     * 
+     *
      */
     protected boolean isRunsOnCurrentPlatform() {
         DatabasePlatform anno = getClass().getAnnotation(DatabasePlatform.class);
@@ -628,7 +628,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
 
     /**
      * Determines whether specified platform is the target database platform in use by the test framework.
-     * 
+     *
      * @param target
      *            platform name (derby, db2, oracle, etc.)
      * @return true if the specified platform matches the platform in use
@@ -640,16 +640,16 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
 
     /**
      * Returns the platform in use by the test framework
-     * 
+     *
      * @return the database platform
      */
     public String getPlatform() {
         return System.getProperty("platform", "derby");
     }
-    
+
     /**
      * Assert whether the Cache contains an instance of the specified class and id.
-     * 
+     *
      * @param cache
      *            The JPA Cache to verify
      * @param clss
@@ -666,13 +666,13 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             assertFalse(String.format("Expected %s:%s not to exist in cache", clss, id), cache.contains(clss, id));
         }
     }
-    
+
     protected void setTestsDisabled(boolean disable) {
         synchronized (testsDisabled) {
             testsDisabled = new Boolean(disable);
         }
     }
-    
+
     protected boolean isTestsDisabled() {
         synchronized (testsDisabled) {
             return testsDisabled.booleanValue();

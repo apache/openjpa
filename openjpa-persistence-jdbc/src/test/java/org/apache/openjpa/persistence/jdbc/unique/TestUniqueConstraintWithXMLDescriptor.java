@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.unique;
 
@@ -30,10 +30,10 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * Tests unique constraints specified via XML Descriptor for primary/secondary
  * table, sequence generator, join tables have been defined on database by
  * examining DDL statements.
- * 
- * @see resources/org/apache/openjpa/persistence/jdbc/unique/orm.xml 
- * defines the ORM mapping. 
- * 
+ *
+ * @see resources/org/apache/openjpa/persistence/jdbc/unique/orm.xml
+ * defines the ORM mapping.
+ *
  * @author Pinaki Poddar
  *
  */
@@ -60,7 +60,7 @@ public class TestUniqueConstraintWithXMLDescriptor extends SQLListenerTestCase {
 		// Following verification techniques is fragile as databases DDL
 		// syntax vary greatly on UNIQUE CONSTRAINT
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_A_XML",
-				"UNIQUE .*\\(f1x, f2x\\)", 
+				"UNIQUE .*\\(f1x, f2x\\)",
 				"UNIQUE .*\\(f3x, f4x\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_B_XML",
 				"UNIQUE .*\\(f1x, f2x\\)");
@@ -75,7 +75,7 @@ public class TestUniqueConstraintWithXMLDescriptor extends SQLListenerTestCase {
 	void assertSQLFragnments(List<String> list, String... keys) {
 		if (SQLSniffer.matches(list, keys))
 			return;
-		fail("None of the following " + sql.size() + " SQL \r\n" + 
+		fail("None of the following " + sql.size() + " SQL \r\n" +
 				toString(sql) + "\r\n contains all keys \r\n"
 				+ toString(Arrays.asList(keys)));
 	}

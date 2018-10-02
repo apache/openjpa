@@ -22,10 +22,10 @@ import javax.persistence.EntityManager;
 
 /**
  * LockScopeTestCase subclass to test entity with:
- * - Uni-1xm - lazy fetch (default) 
- * - Uni-1xm - eager fetch 
- * - Uni-1xm use join table - lazy fetch (default) 
- * - Uni-1xm use join table - eager fetch 
+ * - Uni-1xm - lazy fetch (default)
+ * - Uni-1xm - eager fetch
+ * - Uni-1xm use join table - lazy fetch (default)
+ * - Uni-1xm use join table - eager fetch
  */
 public class Test1xmLockScope extends LockScopeTestCase {
 
@@ -85,7 +85,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
         eRt00.setLastName("lastName " + idRt00);
         eRt01.setId(idRt01);
         eRt01.setLastName("lastName " + idRt01);
-        
+
         LSE1xmLf eLf1 = new LSE1xmLf();
         LSE1xmRt eRt10 = new LSE1xmRt();
         LSE1xmRt eRt11 = new LSE1xmRt();
@@ -97,7 +97,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
         eRt10.setLastName("lastName " + idRt10);
         eRt11.setId(idRt11);
         eRt11.setLastName("lastName " + idRt11);
-       
+
         EntityManager em = null;
         try {
             em = emf.createEntityManager();
@@ -124,7 +124,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ?  
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ?
                             //      optimize for 1 row [params=(int) 2111101]
                             assertLockTestSQLs(Select + tableLfName + Where + NoDB2Lock);
                             break;
@@ -141,14 +141,14 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         switch (getDBType(em)) {    // **Check
                         case db2:
                             // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ?
-                            //      optimize for 1 row FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS 
+                            //      optimize for 1 row FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS
                             //      [params=(int) 2111102]
-                            // SELECT t0.version FROM LSE1xmLf t0 WHERE t0.id = ?  
+                            // SELECT t0.version FROM LSE1xmLf t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(int) 2111102]
                             assertLockTestSQLs(Select + tableLfName + Where + DB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ? FOR UPDATE 
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ? FOR UPDATE
                             //      [params=(int) 2111102]
                             // SELECT t0.version FROM LSE1xmLf t0 WHERE t0.id = ? FOR UPDATE [params=(int) 2111102]
                         case derby:
@@ -164,16 +164,16 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLf t0 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')  
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLf t0
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(String) firstName%2111101]
                             // SELECT t0.version FROM LSE1xmLf t0 WHERE t0.id = ?  [params=(int) 2111101]
                             assertLockTestSQLs(Select + tableLfName + Where + DB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLf t0 WHERE (t0.firstName LIKE ?) 
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLf t0 WHERE (t0.firstName LIKE ?)
                             //      FOR UPDATE [params=(String) firstName%2111101]
-                            // SELECT t0.version FROM LSE1xmLf t0 WHERE t0.id = ? [params=(int) 2111101] 
+                            // SELECT t0.version FROM LSE1xmLf t0 WHERE t0.id = ? [params=(int) 2111101]
                         case derby:
                             // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLf t0
                             //      WHERE (t0.firstName LIKE ? ESCAPE '\') FOR UPDATE WITH RR
@@ -187,12 +187,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ?  
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ?
                             //      optimize for 1 row [params=(int) 2111102]
                             assertLockTestSQLs(Select + tableLfName + Where + NoDB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ? [params=(int) 2111102] 
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ? [params=(int) 2111102]
                         case derby:
                             // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ? [params=(int) 2111102]
                         default:
@@ -203,16 +203,16 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLf t0 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')  
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLf t0
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(String) firstName%2111101]
                             // SELECT t0.version FROM LSE1xmLf t0 WHERE t0.id = ?  [params=(int) 2111101]
                             assertLockTestSQLs(Select + tableLfName + Where + DB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLf t0 WHERE (t0.firstName LIKE ?) 
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLf t0 WHERE (t0.firstName LIKE ?)
                             //      FOR UPDATE [params=(String) firstName%2111101]
-                            // SELECT t0.version FROM LSE1xmLf t0 WHERE t0.id = ? [params=(int) 2111101] 
+                            // SELECT t0.version FROM LSE1xmLf t0 WHERE t0.id = ? [params=(int) 2111101]
                         case derby:
                             // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLf t0
                             //      WHERE (t0.firstName LIKE ? ESCAPE '\') FOR UPDATE WITH RR
@@ -226,12 +226,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ?  
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ?
                             //      optimize for 1 row [params=(int) 2111102]
                             assertLockTestSQLs(Select + tableLfName + Where + NoDB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ? [params=(int) 2111102] 
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ? [params=(int) 2111102]
                         case derby:
                             // SELECT t0.version, t0.firstName FROM LSE1xmLf t0 WHERE t0.id = ? [params=(int) 2111102]
                         default:
@@ -273,7 +273,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
         eRt00.setLastName("lastName " + idRt00);
         eRt01.setId(idRt01);
         eRt01.setLastName("lastName " + idRt01);
-        
+
         LSE1xmLfEgr eLf1 = new LSE1xmLfEgr();
         LSE1xmRt eRt10 = new LSE1xmRt();
         LSE1xmRt eRt11 = new LSE1xmRt();
@@ -285,7 +285,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
         eRt10.setLastName("lastName " + idRt10);
         eRt11.setId(idRt11);
         eRt11.setLastName("lastName " + idRt11);
-       
+
         EntityManager em = null;
         try {
             em = emf.createEntityManager();
@@ -313,23 +313,23 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0 LEFT OUTER JOIN LSE1xmLfEgr_LSE1xmRt t1 
-                            //      ON t0.id = t1.LSE1XMLFEGR_ID LEFT OUTER JOIN LSE1xmRt t2 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0 LEFT OUTER JOIN LSE1xmLfEgr_LSE1xmRt t1
+                            //      ON t0.id = t1.LSE1XMLFEGR_ID LEFT OUTER JOIN LSE1xmRt t2
                             //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ?  [params=(int) 2111201]
                             assertLockTestSQLs(Select + joinTables + Where + NoDB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+) 
-                            //      [params=(int) 2111201] 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+)
+                            //      [params=(int) 2111201]
                             assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + NoForUpdate);
                             break;
                         case derby:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0 LEFT OUTER JOIN LSE1xmLfEgr_LSE1xmRt t1 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0 LEFT OUTER JOIN LSE1xmLfEgr_LSE1xmRt t1
                             //      ON t0.id = t1.LSE1XMLFEGR_ID LEFT OUTER JOIN LSE1xmRt t2 ON t1.UNIRIGHT_ID = t2.id
                             //      WHERE t0.id = ? [params=(int) 2111201]
                         default:
@@ -340,23 +340,23 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0 LEFT OUTER JOIN LSE1xmLfEgr_LSE1xmRt t1 
-                            //      ON t0.id = t1.LSE1XMLFEGR_ID LEFT OUTER JOIN LSE1xmRt t2 
-                            //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ?  
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0 LEFT OUTER JOIN LSE1xmLfEgr_LSE1xmRt t1
+                            //      ON t0.id = t1.LSE1XMLFEGR_ID LEFT OUTER JOIN LSE1xmRt t2
+                            //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ?
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(int) 2111202]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(int) 2121204]
-                            // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(int) 2121203]
-                            // SELECT t0.version FROM LSE1xmLfEgr t0 WHERE t0.id = ?  
+                            // SELECT t0.version FROM LSE1xmLfEgr t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(int) 2111202]
                             assertLockTestSQLs(Select + joinTables + Where + DB2Lock);
                             break;
                         case oracle:    // TODO: if jpa2, DO NOT lock LSE1xmRT using "FOR UPDATE OF col"
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+) 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+)
                             //      FOR UPDATE [params=(int) 2111202]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ? FOR UPDATE [params=(int) 2121203]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ? FOR UPDATE [params=(int) 2121204]
@@ -364,9 +364,9 @@ public class Test1xmLockScope extends LockScopeTestCase {
                             assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + ForUpdate);
                             break;
-                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt, 
+                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt,
                                         // if jpa2/extended, LOCK LSE1xmLfEgr_LSE1xmRt
-                            // The database is unable to lock this query.  Each object matching the query will be 
+                            // The database is unable to lock this query.  Each object matching the query will be
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
                             // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName
@@ -400,21 +400,21 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         switch (getDBType(em)) {    // **Check
                         case db2:       //TODO: **Non-atomic lock. if jpa2, DO NOT lock LSE1xmRt
                                         // if jpa2/extended, LOCK LSE1xmLfEgr_LSE1xmRt
-                            // The database is unable to lock this query.  Each object matching the query will be 
+                            // The database is unable to lock this query.  Each object matching the query will be
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')  
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(String) firstName%2111201]
-                            // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfEgr t0 
-                            //      INNER JOIN LSE1xmLfEgr_LSE1xmRt t1 ON t0.id = t1.LSE1XMLFEGR_ID 
-                            //      INNER JOIN LSE1xmRt t2 ON t1.UNIRIGHT_ID = t2.id 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\') ORDER BY t0.id ASC  
+                            // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfEgr t0
+                            //      INNER JOIN LSE1xmLfEgr_LSE1xmRt t1 ON t0.id = t1.LSE1XMLFEGR_ID
+                            //      INNER JOIN LSE1xmRt t2 ON t1.UNIRIGHT_ID = t2.id
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\') ORDER BY t0.id ASC
                             //      [params=(String) firstName%2111201]
-                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(int) 2121201]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  [params=(int) 2121201]
-                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(int) 2121202]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  [params=(int) 2121202]
                             // SELECT t0.version FROM LSE1xmLfEgr t0 WHERE t0.id = ?  [params=(int) 2111201]
@@ -424,10 +424,10 @@ public class Test1xmLockScope extends LockScopeTestCase {
                                     Select + NoJoin + Any + tableRtName + Any + NoJoin + Where + DB2Lock);
                             break;
                         case oracle:    // TODO: if jpa2, DO NOT lock LSE1xmRT using "FOR UPDATE OF col"
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0 WHERE (t0.firstName LIKE ?) 
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0 WHERE (t0.firstName LIKE ?)
                             //      FOR UPDATE [params=(String) firstName%2111201]
-                            // SELECT t0.id, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2 
+                            // SELECT t0.id, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2
                             //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSE1XMLFEGR_ID AND t1.UNIRIGHT_ID = t2.id
                             //      ORDER BY t0.id ASC FOR UPDATE [params=(String) firstName%2111201]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ? [params=(int) 2121202]
@@ -437,9 +437,9 @@ public class Test1xmLockScope extends LockScopeTestCase {
                                     Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + ForUpdate);
                             break;
-                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt, 
+                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt,
                                         // if jpa2/extended, LOCK LSE1xmLfEgr_LSE1xmRt
-                            // The database is unable to lock this query.  Each object matching the query will be 
+                            // The database is unable to lock this query.  Each object matching the query will be
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
                             // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0
@@ -469,17 +469,17 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0 LEFT OUTER JOIN LSE1xmLfEgr_LSE1xmRt t1 
-                            //      ON t0.id = t1.LSE1XMLFEGR_ID LEFT OUTER JOIN LSE1xmRt t2 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0 LEFT OUTER JOIN LSE1xmLfEgr_LSE1xmRt t1
+                            //      ON t0.id = t1.LSE1XMLFEGR_ID LEFT OUTER JOIN LSE1xmRt t2
                             //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ?  [params=(int) 2111202]
                             assertLockTestSQLs(Select + joinTables + Where + NoDB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+) 
-                            //      [params=(int) 2111202] 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+)
+                            //      [params=(int) 2111202]
                             assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + NoForUpdate);
                             break;
@@ -497,21 +497,21 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         switch (getDBType(em)) {    // **Check
                         case db2:   //TODO: **Non-atomic lock. if jpa2, DO NOT lock LSE1xmRt
                                     // if jpa2/extended, LOCK LSE1xmLfEgr_LSE1xmRt
-                            // The database is unable to lock this query.  Each object matching the query will be 
+                            // The database is unable to lock this query.  Each object matching the query will be
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')  
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(String) firstName%2111201]
-                            // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfEgr t0 
-                            //      INNER JOIN LSE1xmLfEgr_LSE1xmRt t1 ON t0.id = t1.LSE1XMLFEGR_ID 
-                            //      INNER JOIN LSE1xmRt t2 ON t1.UNIRIGHT_ID = t2.id 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\') ORDER BY t0.id ASC  
+                            // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfEgr t0
+                            //      INNER JOIN LSE1xmLfEgr_LSE1xmRt t1 ON t0.id = t1.LSE1XMLFEGR_ID
+                            //      INNER JOIN LSE1xmRt t2 ON t1.UNIRIGHT_ID = t2.id
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\') ORDER BY t0.id ASC
                             //      [params=(String) firstName%2111201]
-                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(int) 2121201]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  [params=(int) 2121201]
-                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(int) 2121202]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  [params=(int) 2121202]
                             // SELECT t0.version FROM LSE1xmLfEgr t0 WHERE t0.id = ?  [params=(int) 2111201]
@@ -521,11 +521,11 @@ public class Test1xmLockScope extends LockScopeTestCase {
                                     Select + NoJoin + Any + tableRtName + Any + NoJoin + Where + DB2Lock);
                             break;
                         case oracle:    // TODO: if jpa2, DO NOT lock LSE1xmRT using "FOR UPDATE OF col"
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0 WHERE (t0.firstName LIKE ?) 
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0 WHERE (t0.firstName LIKE ?)
                             //      FOR UPDATE [params=(String) firstName%2111201]
-                            // SELECT t0.id, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSE1XMLFEGR_ID AND t1.UNIRIGHT_ID = t2.id 
+                            // SELECT t0.id, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSE1XMLFEGR_ID AND t1.UNIRIGHT_ID = t2.id
                             //      ORDER BY t0.id ASC FOR UPDATE [params=(String) firstName%2111201]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ? [params=(int) 2121202]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ? [params=(int) 2121201]
@@ -534,12 +534,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
                                     Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + ForUpdate);
                             break;
-                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt, 
+                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt,
                                         // if jpa2/extended, LOCK LSE1xmLfEgr_LSE1xmRt
-                            // The database is unable to lock this query.  Each object matching the query will be 
+                            // The database is unable to lock this query.  Each object matching the query will be
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0 
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfEgr t0
                             //      WHERE (t0.firstName LIKE ? ESCAPE '\') FOR UPDATE WITH RR
                             //      [params=(String) firstName%2111201]
                             // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfEgr t0
@@ -566,16 +566,16 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0 LEFT OUTER JOIN LSE1xmLfEgr_LSE1xmRt t1 
-                            //      ON t0.id = t1.LSE1XMLFEGR_ID LEFT OUTER JOIN LSE1xmRt t2 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0 LEFT OUTER JOIN LSE1xmLfEgr_LSE1xmRt t1
+                            //      ON t0.id = t1.LSE1XMLFEGR_ID LEFT OUTER JOIN LSE1xmRt t2
                             //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ?  [params=(int) 2111202]
                             assertLockTestSQLs(Select + joinTables + Where + NoDB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+) 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfEgr t0, LSE1xmLfEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+)
                             //      [params=(int) 2111202]
                             assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + NoForUpdate);
@@ -623,7 +623,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
         eRt00.setLastName("lastName " + idRt00);
         eRt01.setId(idRt01);
         eRt01.setLastName("lastName " + idRt01);
-        
+
         LSE1xmLfJT eLf1 = new LSE1xmLfJT();
         LSE1xmRt eRt10 = new LSE1xmRt();
         LSE1xmRt eRt11 = new LSE1xmRt();
@@ -635,7 +635,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
         eRt10.setLastName("lastName " + idRt10);
         eRt11.setId(idRt11);
         eRt11.setLastName("lastName " + idRt11);
-       
+
         EntityManager em = null;
         try {
             em = emf.createEntityManager();
@@ -662,7 +662,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ?  
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ?
                             //      optimize for 1 row [params=(int) 2112101]
                             assertLockTestSQLs(Select + tableLfName + Where + NoDB2Lock);
                             break;
@@ -678,21 +678,21 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ?  
-                            //      optimize for 1 row FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS 
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ?
+                            //      optimize for 1 row FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS
                             //      [params=(int) 2112102]
-                            // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ?  
+                            // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(int) 2112102]
                             assertLockTestSQLs(Select + tableLfName + Where + DB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ? FOR UPDATE 
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ? FOR UPDATE
                             //      [params=(int) 2112102]
-                            // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ? FOR UPDATE [params=(int) 2112102] 
+                            // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ? FOR UPDATE [params=(int) 2112102]
                         case derby:
                             // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ? FOR UPDATE WITH RR
                             //      [params=(int) 2112102]
-                            // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ? FOR UPDATE WITH RR 
+                            // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ? FOR UPDATE WITH RR
                             //      [params=(int) 2112102]
                         default:
                             assertLockTestSQLs(Select + tableLfName + Where + ForUpdate);
@@ -702,16 +702,16 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJT t0 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')  
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJT t0
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(String) firstName%2112101]
                             // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ?  [params=(int) 2112101]
                             assertLockTestSQLs(Select + tableLfName + Where + DB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE (t0.firstName LIKE ?) 
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE (t0.firstName LIKE ?)
                             //      FOR UPDATE [params=(String) firstName%2112101]
-                            // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ? [params=(int) 2112101] 
+                            // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ? [params=(int) 2112101]
                         case derby:
                             // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJT t0
                             //      WHERE (t0.firstName LIKE ? ESCAPE '\') FOR UPDATE WITH RR
@@ -725,12 +725,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ? 
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ?
                             //      optimize for 1 row [params=(int) 2112102]
                             assertLockTestSQLs(Select + tableLfName + Where + NoDB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ? [params=(int) 2112102] 
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ? [params=(int) 2112102]
                         case derby:
                             // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ? [params=(int) 2112102]
                         default:
@@ -741,16 +741,16 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJT t0 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')  
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJT t0
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(String) firstName%2112101]
                             // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ?  [params=(int) 2112101]
                             assertLockTestSQLs(Select + tableLfName + Where + DB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE (t0.firstName LIKE ?) 
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE (t0.firstName LIKE ?)
                             //      FOR UPDATE [params=(String) firstName%2112101]
-                            // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ? [params=(int) 2112101] 
+                            // SELECT t0.version FROM LSE1xmLfJT t0 WHERE t0.id = ? [params=(int) 2112101]
                         case derby:
                             // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJT t0
                             //      WHERE (t0.firstName LIKE ? ESCAPE '\') FOR UPDATE WITH RR
@@ -764,12 +764,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ?  
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ?
                             //      optimize for 1 row [params=(int) 2112102]
                             assertLockTestSQLs(Select + tableLfName + Where + NoDB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ? [params=(int) 2112102] 
+                            // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ? [params=(int) 2112102]
                         case derby:
                             // SELECT t0.version, t0.firstName FROM LSE1xmLfJT t0 WHERE t0.id = ? [params=(int) 2112102]
                         default:
@@ -811,7 +811,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
         eRt00.setLastName("lastName " + idRt00);
         eRt01.setId(idRt01);
         eRt01.setLastName("lastName " + idRt01);
-        
+
         LSE1xmLfJTEgr eLf1 = new LSE1xmLfJTEgr();
         LSE1xmRt eRt10 = new LSE1xmRt();
         LSE1xmRt eRt11 = new LSE1xmRt();
@@ -823,7 +823,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
         eRt10.setLastName("lastName " + idRt10);
         eRt11.setId(idRt11);
         eRt11.setLastName("lastName " + idRt11);
-       
+
         EntityManager em = null;
         try {
             em = emf.createEntityManager();
@@ -851,16 +851,16 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfJTEgr t0 LEFT OUTER JOIN LSE1xmLfJTEgr_LSE1xmRt t1 
-                            //      ON t0.id = t1.LSE1XMLFJTEGR_ID LEFT OUTER JOIN LSE1xmRt t2 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfJTEgr t0 LEFT OUTER JOIN LSE1xmLfJTEgr_LSE1xmRt t1
+                            //      ON t0.id = t1.LSE1XMLFJTEGR_ID LEFT OUTER JOIN LSE1xmRt t2
                             //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ?  [params=(int) 2112201]
                             assertLockTestSQLs(Select + joinTables + Where + NoDB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFJTEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+) 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFJTEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+)
                             //      [params=(int) 2112201]
                             assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + NoForUpdate);
@@ -878,23 +878,23 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfJTEgr t0 LEFT OUTER JOIN LSE1xmLfJTEgr_LSE1xmRt t1 
-                            //      ON t0.id = t1.LSE1XMLFJTEGR_ID LEFT OUTER JOIN LSE1xmRt t2 
-                            //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ?  
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfJTEgr t0 LEFT OUTER JOIN LSE1xmLfJTEgr_LSE1xmRt t1
+                            //      ON t0.id = t1.LSE1XMLFJTEGR_ID LEFT OUTER JOIN LSE1xmRt t2
+                            //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ?
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(int) 2112202]
-                            // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(int) 2122203]
-                            // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?
                              //     FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(int) 2122204]
-                            // SELECT t0.version FROM LSE1xmLfJTEgr t0 WHERE t0.id = ?  
+                            // SELECT t0.version FROM LSE1xmLfJTEgr t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(int) 2112202]
                             assertLockTestSQLs(Select + joinTables + Where + DB2Lock);
                             break;
                         case oracle:    // TODO: if jpa2, DO NOT lock LSE1xmRT using "FOR UPDATE OF col"
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFJTEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+) 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFJTEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+)
                             //      FOR UPDATE [params=(int) 2112202]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ? FOR UPDATE [params=(int) 2122203]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ? FOR UPDATE [params=(int) 2122204]
@@ -902,12 +902,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
                             assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + ForUpdate);
                             break;
-                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt, 
+                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt,
                                         // if jpa2/extended, LOCK LSE1xmLfJTEgr_LSE1xmRt
-                            // The database is unable to lock this query.  Each object matching the query will be 
+                            // The database is unable to lock this query.  Each object matching the query will be
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName
                             //      FROM LSE1xmLfJTEgr t0 LEFT OUTER JOIN LSE1xmLfJTEgr_LSE1xmRt t1
                             //      ON t0.id = t1.LSE1XMLFJTEGR_ID LEFT OUTER JOIN LSE1xmRt t2
                             //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ? [params=(int) 2112202]
@@ -938,21 +938,21 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         switch (getDBType(em)) {    // **Check
                         case db2:       //TODO: **Non-atomic lock. if jpa2, DO NOT lock LSE1xmRt
                                         // if jpa2/extended, LOCK LSE1xmLfJTEgr_LSE1xmRt
-                            // The database is unable to lock this query.  Each object matching the query will be 
+                            // The database is unable to lock this query.  Each object matching the query will be
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJTEgr t0 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')  
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJTEgr t0
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(String) firstName%2112201]
-                            // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfJTEgr t0 
-                            //      INNER JOIN LSE1xmLfJTEgr_LSE1xmRt t1 ON t0.id = t1.LSE1XMLFJTEGR_ID 
-                            //      INNER JOIN LSE1xmRt t2 ON t1.UNIRIGHT_ID = t2.id 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\') ORDER BY t0.id ASC  
+                            // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfJTEgr t0
+                            //      INNER JOIN LSE1xmLfJTEgr_LSE1xmRt t1 ON t0.id = t1.LSE1XMLFJTEGR_ID
+                            //      INNER JOIN LSE1xmRt t2 ON t1.UNIRIGHT_ID = t2.id
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\') ORDER BY t0.id ASC
                             //      [params=(String) firstName%2112201]
-                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(int) 2122201]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  [params=(int) 2122201]
-                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(int) 2122202]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  [params=(int) 2122202]
                             // SELECT t0.version FROM LSE1xmLfJTEgr t0 WHERE t0.id = ?  [params=(int) 2112201]
@@ -962,12 +962,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
                                     Select + NoJoin + Any + tableRtName + Any + NoJoin + Where + DB2Lock);
                             break;
                         case oracle:    // TODO: if jpa2, DO NOT lock LSE1xmRT using "FOR UPDATE OF col"
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJTEgr t0 WHERE (t0.firstName LIKE ?) 
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJTEgr t0 WHERE (t0.firstName LIKE ?)
                             //      FOR UPDATE [params=(String) firstName%2112201]
-                            // SELECT t0.id, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSE1XMLFJTEGR_ID 
-                            //      AND t1.UNIRIGHT_ID = t2.id ORDER BY t0.id ASC FOR UPDATE 
+                            // SELECT t0.id, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSE1XMLFJTEGR_ID
+                            //      AND t1.UNIRIGHT_ID = t2.id ORDER BY t0.id ASC FOR UPDATE
                             //      [params=(String) firstName%2112201]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ? [params=(int) 2122201]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ? [params=(int) 2122202]
@@ -976,15 +976,15 @@ public class Test1xmLockScope extends LockScopeTestCase {
                                     Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + ForUpdate);
                             break;
-                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt, 
+                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt,
                                         // if jpa2/extended, LOCK LSE1xmLfEgr_LSE1xmRt
-                            // The database is unable to lock this query.  Each object matching the query will be 
+                            // The database is unable to lock this query.  Each object matching the query will be
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
                             // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJTEgr t0
                             //      WHERE (t0.firstName LIKE ? ESCAPE '\') FOR UPDATE WITH RR
                             //      [params=(String) firstName%2112201]
-                            // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfJTEgr t0 
+                            // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfJTEgr t0
                             //      NNER JOIN LSE1xmLfJTEgr_LSE1xmRt t1 ON t0.id = t1.LSE1XMLFJTEGR_ID
                             //      INNER JOIN LSE1xmRt t2 ON t1.UNIRIGHT_ID = t2.id
                             //      WHERE (t0.firstName LIKE ? ESCAPE '\') ORDER BY t0.id ASC
@@ -1008,16 +1008,16 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfJTEgr t0 LEFT OUTER JOIN LSE1xmLfJTEgr_LSE1xmRt t1 
-                            //      ON t0.id = t1.LSE1XMLFJTEGR_ID LEFT OUTER JOIN LSE1xmRt t2 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfJTEgr t0 LEFT OUTER JOIN LSE1xmLfJTEgr_LSE1xmRt t1
+                            //      ON t0.id = t1.LSE1XMLFJTEGR_ID LEFT OUTER JOIN LSE1xmRt t2
                             //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ?  [params=(int) 2112202]
                             assertLockTestSQLs(Select + joinTables + Where + NoDB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFJTEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+) 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFJTEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+)
                             //      [params=(int) 2112202]
                             assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + NoForUpdate);
@@ -1036,21 +1036,21 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         switch (getDBType(em)) {    // **Check
                         case db2:   //TODO: **Non-atomic lock. if jpa2, DO NOT lock LSE1xmRt
                                     // if jpa2/extended, LOCK LSE1xmLfJTEgr_LSE1xmRt
-                            // The database is unable to lock this query.  Each object matching the query will be 
+                            // The database is unable to lock this query.  Each object matching the query will be
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJTEgr t0 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')  
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJTEgr t0
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\')
                             //      FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS [params=(String) firstName%2112201]
-                            // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfJTEgr t0 
-                            //      INNER JOIN LSE1xmLfJTEgr_LSE1xmRt t1 ON t0.id = t1.LSE1XMLFJTEGR_ID 
-                            //      INNER JOIN LSE1xmRt t2 ON t1.UNIRIGHT_ID = t2.id 
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\') ORDER BY t0.id ASC  
+                            // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfJTEgr t0
+                            //      INNER JOIN LSE1xmLfJTEgr_LSE1xmRt t1 ON t0.id = t1.LSE1XMLFJTEGR_ID
+                            //      INNER JOIN LSE1xmRt t2 ON t1.UNIRIGHT_ID = t2.id
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\') ORDER BY t0.id ASC
                             //      [params=(String) firstName%2112201]
-                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(int) 2122201]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  [params=(int) 2122201]
-                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?  
+                            // SELECT t0.id FROM LSE1xmRt t0 WHERE t0.id = ?
                             //      FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS [params=(int) 2122202]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ?  [params=(int) 2122202]
                             // SELECT t0.version FROM LSE1xmLfJTEgr t0 WHERE t0.id = ?  [params=(int) 2112201]
@@ -1060,11 +1060,11 @@ public class Test1xmLockScope extends LockScopeTestCase {
                                     Select + NoJoin + Any + tableRtName + Any + NoJoin + Where + DB2Lock);
                             break;
                         case oracle:    // TODO: if jpa2, DO NOT lock LSE1xmRT using "FOR UPDATE OF col"
-                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJTEgr t0 WHERE (t0.firstName LIKE ?) 
+                            // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJTEgr t0 WHERE (t0.firstName LIKE ?)
                             //      FOR UPDATE [params=(String) firstName%2112201]
-                            // SELECT t0.id, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSE1XMLFJTEGR_ID 
+                            // SELECT t0.id, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSE1XMLFJTEGR_ID
                             //      AND t1.UNIRIGHT_ID = t2.id ORDER BY t0.id ASC FOR UPDATE
                             //      [params=(String) firstName%2112201]
                             // SELECT t0.version FROM LSE1xmRt t0 WHERE t0.id = ? [params=(int) 2122201]
@@ -1074,13 +1074,13 @@ public class Test1xmLockScope extends LockScopeTestCase {
                                     Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + ForUpdate);
                             break;
-                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt, 
+                        case derby:     //TODO: **Non-atomic lock. If jpa2, DO NOT lock LSE1xmRt,
                                         // if jpa2/extended, LOCK LSE1xmLfEgr_LSE1xmRt
-                            // The database is unable to lock this query.  Each object matching the query will be 
+                            // The database is unable to lock this query.  Each object matching the query will be
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
                             // SELECT t0.id, t0.version, t0.firstName FROM LSE1xmLfJTEgr t0
-                            //      WHERE (t0.firstName LIKE ? ESCAPE '\') FOR UPDATE WITH RR 
+                            //      WHERE (t0.firstName LIKE ? ESCAPE '\') FOR UPDATE WITH RR
                             //      params=(String) firstName%2112201]
                             // SELECT t0.id, t2.id, t2.version, t2.lastName FROM LSE1xmLfJTEgr t0
                             //      INNER JOIN LSE1xmLfJTEgr_LSE1xmRt t1 ON t0.id = t1.LSE1XMLFJTEGR_ID
@@ -1106,16 +1106,16 @@ public class Test1xmLockScope extends LockScopeTestCase {
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfJTEgr t0 LEFT OUTER JOIN LSE1xmLfJTEgr_LSE1xmRt t1 
-                            //      ON t0.id = t1.LSE1XMLFJTEGR_ID LEFT OUTER JOIN LSE1xmRt t2 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfJTEgr t0 LEFT OUTER JOIN LSE1xmLfJTEgr_LSE1xmRt t1
+                            //      ON t0.id = t1.LSE1XMLFJTEGR_ID LEFT OUTER JOIN LSE1xmRt t2
                             //      ON t1.UNIRIGHT_ID = t2.id WHERE t0.id = ?  [params=(int) 2112202]
                             assertLockTestSQLs(Select + joinTables + Where + NoDB2Lock);
                             break;
                         case oracle:
-                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName 
-                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2 
-                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFJTEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+) 
+                            // SELECT t0.version, t0.firstName, t1.LSE1XMLFJTEGR_ID, t2.id, t2.version, t2.lastName
+                            //      FROM LSE1xmLfJTEgr t0, LSE1xmLfJTEgr_LSE1xmRt t1, LSE1xmRt t2
+                            //      WHERE t0.id = ? AND t0.id = t1.LSE1XMLFJTEGR_ID(+) AND t1.UNIRIGHT_ID = t2.id(+)
                             //      [params=(int) 2112202]
                             assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + NoForUpdate);

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.derivedid;
 
@@ -26,12 +26,12 @@ import javax.persistence.OneToOne;
 public class EDBigIntegerID {
     @Id
     @OneToOne
-    private EBigIntegerID rid;    
+    private EBigIntegerID rid;
 
     private String name;
-    
+
     public EDBigIntegerID() {}
-    
+
     public EDBigIntegerID(EBigIntegerID rid) {
         this.rid = rid;
         this.name = "Rel BigIntegerID "+rid.getId();

@@ -28,17 +28,17 @@ public class TestMixedMappingLocation extends SingleEMFTestCase {
     protected String getPersistenceUnitName() {
         return "xml-persistence-unit";
     }
-    
+
     public void setUp() {
         setUp(DROP_TABLES,MixedMappingLocationEmbeddedId.class, MixedMappingLocation.class);
     }
     /**
      * Testcase for added OPENJPA859.
-     * 
+     *
      * This scenario is testing whether the default annotations are being generated for a class that
      * isn't annotated with a persistence class type (ie: @Entity, @MappedSuperclass, @Embeddable),
      * but it is in a mapping file.
-     * 
+     *
      * @throws Exception
      */
     public void testMixedOrmAnno() throws Exception {

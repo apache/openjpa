@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -121,7 +121,7 @@ public class TestCheckConsistency extends BaseKernelTest {
     }
 
     //FIXME jthomas
-/*    
+/*
     public void testInconsistentDatastoreTransaction() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
@@ -245,7 +245,7 @@ try {
         } catch (Exception jonfe) {
         }
     }
-//FIXME 
+//FIXME
     /*
 public void testInconsistentOptimisticTransactionWithoutRefresh() {
 OpenJPAEntityManager pm = getPM();
@@ -280,17 +280,17 @@ try {
     */
     //     }
 /*     assertFalse(pm.getRollbackOnly());
-        
+
         try {
             pm.commit();
             fail("Committed inconsistent transaction.");
         } catch (Exception je) {
         }
-        
+
         assertEquals(-1, pc.getIntField());
         assertFalse(pm.isPersistent(npc));
         endEm(pm,());
-        
+
         pm = getPM();
         try {
             pm.find(RuntimeTest1.class,noid);
@@ -301,24 +301,24 @@ try {
     }
  */
 
-//FIXME 
-/*    
+//FIXME
+/*
     public void testInconsistentOptimisticTransactionWithRefresh() {
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(true);
         pm.validateChanges();        // no-op outside trans
         pm.begin();
-        
+
         RuntimeTest1 pc = pm.find(RuntimeTest1.class,_oid);
         pc.setIntField(100);
-        
+
         OpenJPAEntityManager pm2 = getPM();
         pm2.begin();
         RuntimeTest1 copy = pm2.find(RuntimeTest1.class,_oid);
         copy.setIntField(-1);
         pm2.commit();
         pm2.close();
-        
+
         RuntimeTest1 npc = new RuntimeTest1();
         pm.persist(npc);
         try {
@@ -349,9 +349,9 @@ try {
      }
     */
 
-//FIXME 
+//FIXME
 
-/*    
+/*
 public void testInconsistentOptimisticTransactionWithRollback() {
 OpenJPAEntityManager pm = getPM();
 pm.setRetainState(false);

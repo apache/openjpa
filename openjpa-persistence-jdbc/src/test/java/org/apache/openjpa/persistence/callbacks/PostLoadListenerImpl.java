@@ -23,17 +23,17 @@ import javax.persistence.PostLoad;
 /**
  * JPA Listener which maintains changelog information of the {@link PostLoadListenerEntity}.
  * The &#064;PostLoad gets called once the entity is being loaded from the database.
- * This happens either if the entity get's loaded freshly into the EntityManager, or 
+ * This happens either if the entity get's loaded freshly into the EntityManager, or
  * while performing a call to EntityManager#merge(entity)
  */
 public class PostLoadListenerImpl {
 
     static String postLoadValue;
-    
+
     @PostLoad
     public void postLoad(Object o) {
         PostLoadListenerEntity ple = (PostLoadListenerEntity) o;
-        
+
         postLoadValue = ple.getValue();
     }
 }

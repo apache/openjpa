@@ -26,13 +26,13 @@ import javax.swing.JPanel;
 
 /**
  * Displays color codes of each attribute type.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 @SuppressWarnings("serial")
 public class AttributeLegendView extends JPanel {
-    
+
     public AttributeLegendView() {
         super(true);
         setBorder(BorderFactory.createTitledBorder("Attribute Legends"));
@@ -41,13 +41,13 @@ public class AttributeLegendView extends JPanel {
         add(createColoredLabel("VERSION", Color.DARK_GRAY));
         for (Attribute.PersistentAttributeType type : Attribute.PersistentAttributeType.values()) {
           add(createColoredLabel(type.toString().replace('_', ' '), MetamodelHelper.getColor(type)));
-      }        
+      }
     }
-    
+
     JComponent createColoredLabel(String text, Color c) {
         int width  = 40;
         int height = 20;
-        BufferedImage bimage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB); 
+        BufferedImage bimage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
                 bimage.setRGB(i, j, c.getRGB());

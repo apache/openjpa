@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
 public class TestDB2Dictionary {
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
-    
+
     final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
     final Statement mockStatement = context.mock(Statement.class);
     final Connection mockConnection = context.mock(Connection.class);
@@ -230,19 +230,19 @@ public class TestDB2Dictionary {
         context.checking(new Expectations()
         {
             {
-                // No activity on the connection other than getting the metadata. 
+                // No activity on the connection other than getting the metadata.
                 allowing(mockConnection).getMetaData();
                 will(returnValue(mockMetaData));
 
-                // anything on the configuration or DBMetaData is fair game. 
+                // anything on the configuration or DBMetaData is fair game.
                 allowing(mockMetaData);
                 allowing(mockConfiguration);
             }
         });
 
         DB2Dictionary dict = new DB2Dictionary();
-        
-        // skip all the meta data resolution code. 
+
+        // skip all the meta data resolution code.
         dict.db2ServerType = DB2Dictionary.db2UDBV82OrLater;
         dict.setMajorVersion(9);
         dict.setConfiguration(mockConfiguration);

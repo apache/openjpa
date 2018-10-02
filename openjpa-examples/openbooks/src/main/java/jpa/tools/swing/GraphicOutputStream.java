@@ -24,7 +24,7 @@ import javax.swing.text.StyleContext;
 /**
  * An output stream that uses a {@link ScrollingTextPane} as its sink.
  * Flushes the buffer at line end.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -35,15 +35,15 @@ public class GraphicOutputStream extends OutputStream {
     private Map<String, AttributeSet> _styles = new HashMap<String, AttributeSet>();
     private static AttributeSet _defaultStyle = StyleContext.getDefaultStyleContext()
                                                             .getStyle(StyleContext.DEFAULT_STYLE);
-    
+
     public GraphicOutputStream(ScrollingTextPane delegate) {
         _sink = delegate;
     }
-    
+
     public void registerStyle(String pattern, AttributeSet style) {
         _styles.put(pattern, style);
     }
-    
+
     @Override
     public void write(int b) throws IOException {
         buffer[count++] = (char)b;
@@ -51,7 +51,7 @@ public class GraphicOutputStream extends OutputStream {
             flushBuffer();
         }
     }
-    
+
     private void flushBuffer() {
         String txt = new String(buffer, 0, count);
         count = 0;
@@ -59,7 +59,7 @@ public class GraphicOutputStream extends OutputStream {
         _sink.setCharacterAttributes(style, true);
         _sink.appendText(txt);
     }
-    
+
     AttributeSet getStyle(String txt) {
         if (txt == null || txt.isEmpty())
             return _defaultStyle;

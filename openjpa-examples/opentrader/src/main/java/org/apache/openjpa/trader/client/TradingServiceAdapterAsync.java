@@ -34,9 +34,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * The asynchronous counterpart of the interface.
- * The equivalence between this asynchronous interface and its {@link TradingServiceAdapter 
+ * The equivalence between this asynchronous interface and its {@link TradingServiceAdapter
  * synchronous version} is validated during GWT compilation.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -62,12 +62,12 @@ public interface TradingServiceAdapterAsync {
     void matchBid(Bid bid, AsyncCallback<List<Match>> callback);
 
     void trade(Match match, AsyncCallback<Trade> callback);
-    
+
     void getLog(AsyncCallback<List<LogStatement>> callback);
 
     void withdraw(Tradable t, AsyncCallback<Tradable> callback);
-    
+
     void refresh(Tradable t, AsyncCallback<Tradable> callback);
-    
+
     void getServiceURI(AsyncCallback<String> callback);
 }

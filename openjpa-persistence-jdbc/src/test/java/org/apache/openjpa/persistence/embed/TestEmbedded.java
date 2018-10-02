@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed;
 
@@ -47,17 +47,17 @@ public class TestEmbedded extends SQLListenerTestCase {
         em.getTransaction().commit();
         em.close();
     }
-    
+
     /*
      * This variation verifies that an embedded entity can be accessed after
      * being detached.  An entity /w embedded is persisted and then queried.
      * The em is closed, detaching the entities, and then a getter is called
      * on the embeddeded.  If the embedded is still attached (it should not be)
-     * an IllegalStateException will be thrown.    
-     * 
+     * an IllegalStateException will be thrown.
+     *
      * JIRA Ref: OPENJPA-733
      * Authors: Chris Tillman, Jeremy Bauer
-     */    
+     */
     public void testDetachedQueryEmbedded() {
         Address a = new Address();
         a.setStreetAddress("456 Main St");
@@ -68,16 +68,16 @@ public class TestEmbedded extends SQLListenerTestCase {
         g.setLatitude(1.0f);
         g.setLongtitude(2.0f);
         a.setGeocode(g);
-        
+
         persistAddress(a);
-        
+
         Address a2 = queryAddresses(
                 "select address from Address address" +
                 " where address.streetAddress = '456 Main St'").get(0);
-        
+
         assertEquals(a2.getGeocode().getLatitude(),1.0f);
     }
-    
+
     public void testDeleteEmbeddedDoesNotSelectBeforeDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -85,7 +85,7 @@ public class TestEmbedded extends SQLListenerTestCase {
         String[] cities = {"C1", "C2", "C3"};
         String[] states = {"AB", "CD", "EF"};
         int[] zips = {123456, 345678, 456789};
-        
+
         for (int i = 0; i < streets.length; i++) {
             Address a = new Address();
             a.setStreetAddress(streets[i]);
@@ -97,10 +97,10 @@ public class TestEmbedded extends SQLListenerTestCase {
             g.setLongtitude(i+6.0f);
             a.setGeocode(g);
             em.persist(a);
-        } 
+        }
         em.getTransaction().commit();
         em.close();
-        
+
         em = emf.createEntityManager();
         em.getTransaction().begin();
         sql.clear();
@@ -110,7 +110,7 @@ public class TestEmbedded extends SQLListenerTestCase {
         assertEquals(1, count);
         em.getTransaction().commit();
         assertEquals(1, sql.size());
-        
+
         em.getTransaction().begin();
         sql.clear();
         count = em.createQuery("DELETE FROM Address").executeUpdate();

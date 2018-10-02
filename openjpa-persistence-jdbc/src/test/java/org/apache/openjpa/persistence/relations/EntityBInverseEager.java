@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -29,38 +29,38 @@ import javax.persistence.ManyToOne;
 public class EntityBInverseEager  {
 	@GeneratedValue
 	@Id private int id;
-    
+
     private String name;
 
 	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	private EntityAInverseEager entityA;
-	
+
     public EntityBInverseEager() {}
-    
+
     public EntityBInverseEager(String name) {
         this.name = name;
     }
-    
+
     public EntityAInverseEager getA() {
 		return entityA;
 	}
-	
+
 	public void setA(EntityAInverseEager entityA) {
 		this.entityA = entityA;
 	}
-	
+
     public int getId() {
 		return id;
 	}
-	
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
-    
-	
+
+
+
 }

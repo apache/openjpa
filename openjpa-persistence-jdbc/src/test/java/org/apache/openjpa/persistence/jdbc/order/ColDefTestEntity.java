@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -31,7 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 
 /*
- * Entity used for testing order column base values.  All metadata and 
+ * Entity used for testing order column base values.  All metadata and
  * mapping information is defined in order-orm.xml
  */
 
@@ -41,7 +41,7 @@ public class ColDefTestEntity {
     @Id
     @GeneratedValue
     private int id;
-    
+
     @OneToMany(cascade=CascadeType.PERSIST)
     @OrderColumn(name="one2McoldefOrder", columnDefinition="INTEGER")
     private List<ColDefTestElement> one2Mcoldef;
@@ -49,7 +49,7 @@ public class ColDefTestEntity {
     @ElementCollection
     @OrderColumn(name="colcoldefOrder", columnDefinition="INTEGER")
     private Set<ColDefTestElement> collcoldef;
-    
+
     @ManyToMany(cascade=CascadeType.PERSIST)
     @OrderColumn(name="m2McoldefOrder", columnDefinition="INTEGER")
     private List<ColDefTestElement> m2mcoldef;
@@ -84,5 +84,5 @@ public class ColDefTestEntity {
 
     public int getId() {
         return id;
-    }    
+    }
 }

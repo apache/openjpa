@@ -22,7 +22,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.query;
@@ -38,7 +38,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * <br>
  * Further details available at <br>
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-1440">OPENJPA-1440</HREF>
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -49,39 +49,39 @@ public class TestWildCardCount extends SQLListenerTestCase {
         em = emf.createEntityManager();
         sql.clear();
     }
-    
+
     public void testWildCardForCountInSingleProjectTerm() {
         String jpql = "select COUNT(p) from RuntimeTest1 p";
         executeAndAssert(jpql);
     }
-    
+
     public void testWildCardForCountInMultipleProjectTerms() {
         String jpql = "select COUNT(p.intField),SUM(p.intField) from RuntimeTest1 p GROUP BY p.intField";
         executeAndAssert(jpql);
     }
-    
+
     public void testWildCardForCountInMultipleProjectTermsButCountIsNotFirstTerm() {
         String jpql = "select SUM(p.intField),COUNT(p.intField) from RuntimeTest1 p GROUP BY p.intField";
         executeAndAssert(jpql);
     }
-    
+
     void executeAndAssert(String jpql) {
         executeAndAssert(true, jpql);
         executeAndAssert(false, jpql);
     }
-    
+
     void executeAndAssert(boolean useWildCard, String jpql) {
         setWildCardForCount(useWildCard);
         sql.clear();
         em.createQuery(jpql).getResultList();
         assertEquals(1, sql.size());
-        assertEquals(getWildCardForCount(), usesWildCardForCount(sql.get(0))); 
+        assertEquals(getWildCardForCount(), usesWildCardForCount(sql.get(0)));
     }
-    
+
     boolean getWildCardForCount() {
         return ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance().useWildCardForCount;
     }
-    
+
     void setWildCardForCount(boolean flag) {
         ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance().useWildCardForCount = flag;
     }

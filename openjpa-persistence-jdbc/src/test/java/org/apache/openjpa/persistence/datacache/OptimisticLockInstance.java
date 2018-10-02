@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -28,10 +28,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name="OPTIMISTIC_LOCK_INSTANCE")
 public class OptimisticLockInstance {
-    @Id @GeneratedValue 
+    @Id @GeneratedValue
     private int pk;
 
-    @Version 
+    @Version
     private int oplock;
 
     private String str;
@@ -55,4 +55,4 @@ public class OptimisticLockInstance {
         return str;
     }
 }
-  
+

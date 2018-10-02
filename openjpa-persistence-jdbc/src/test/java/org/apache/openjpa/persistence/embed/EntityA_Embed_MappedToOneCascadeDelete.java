@@ -35,13 +35,13 @@ public class EntityA_Embed_MappedToOneCascadeDelete implements Serializable {
 
     @Column(length=30)
     String name;
-    
+
     @Basic(fetch=FetchType.LAZY)
     int age;
 
     @Embedded
     protected Embed_MappedToOneCascadeDelete embed;
-    
+
     public int getAge() {
         return age;
     }
@@ -69,7 +69,7 @@ public class EntityA_Embed_MappedToOneCascadeDelete implements Serializable {
     public Embed_MappedToOneCascadeDelete getEmbed() {
         return embed;
     }
-    
+
     public void setEmbed(Embed_MappedToOneCascadeDelete embed) {
         this.embed = embed;
     }

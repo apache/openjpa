@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.jdbc;
 
@@ -53,7 +53,7 @@ import org.apache.openjpa.lib.util.Closeable;
  */
 public class DelegatingPreparedStatement
     implements PreparedStatement, Closeable {
-    
+
     private /*final*/ PreparedStatement _stmnt;
     private /*final*/ DelegatingPreparedStatement _del;
     private /*final*/ Connection _conn;
@@ -61,7 +61,7 @@ public class DelegatingPreparedStatement
     public DelegatingPreparedStatement(PreparedStatement stmnt, Connection conn) {
     	initialize(stmnt, conn);
     }
-    
+
     public void initialize(PreparedStatement stmnt, Connection conn) {
         _conn = conn;
         _stmnt = stmnt;
@@ -70,7 +70,7 @@ public class DelegatingPreparedStatement
         else
             _del = null;
     }
-    
+
     protected ResultSet wrapResult(ResultSet rs, boolean wrap) {
         if (!wrap || rs == null)
             return rs;
@@ -337,7 +337,7 @@ public class DelegatingPreparedStatement
     }
 
     /**
-     * @deprecated 
+     * @deprecated
      */
     public void setUnicodeStream(int i1, InputStream is, int i2)
         throws SQLException {
@@ -558,13 +558,13 @@ public class DelegatingPreparedStatement
     public void setPoolable(boolean poolable) throws SQLException {
         _stmnt.setPoolable(poolable);
     }
-    
+
     // Java 7 methods follow
-    
+
     public boolean isCloseOnCompletion() throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public void closeOnCompletion() throws SQLException{
     	throw new UnsupportedOperationException();
     }

@@ -25,7 +25,7 @@ public class XMLCallback extends XMLSuperCallback {
 
     public transient static int prePersistCount = 0;
 
-    public void prePersist() {    
+    public void prePersist() {
         prePersistCount++;
     }
 }

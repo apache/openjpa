@@ -34,7 +34,7 @@ public class SubclassE extends MidClass {
     public String getClassEName() {
         return classEName;
     }
-    
+
     public String toString() {
         return super.toString() + ";classEName=" + classEName;
     }

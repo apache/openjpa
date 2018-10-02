@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -136,7 +136,7 @@ public class EmpressDictionary
         // empress wants dropped columns in the form: ALTER TABLE foo
         // DELETE columnToDrop
         return new String[]{ "ALTER TABLE "
-            + getFullName(column.getTable(), false) + " DELETE " + 
+            + getFullName(column.getTable(), false) + " DELETE " +
             getColumnDBName(column) };
     }
 

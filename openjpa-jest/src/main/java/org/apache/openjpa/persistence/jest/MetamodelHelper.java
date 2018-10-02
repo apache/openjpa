@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.jest;
@@ -42,29 +42,29 @@ import org.apache.openjpa.persistence.meta.Members;
 public class MetamodelHelper {
     public static final char DASH = '-';
     public static final char UNDERSCORE = '_';
-    
+
     /**
      * Attribute Category makes a finer distinction over PersistentAttributeType declared in
      * {@link Attribute.PersistentAttributeType} such as id, version, lob or enum.
      * <br>
-     * <b>Important</b>: The name of the enumerated elements is important because 
-     * a) some of these names are same as in Attribute.PersistentAttributeType enumeration 
+     * <b>Important</b>: The name of the enumerated elements is important because
+     * a) some of these names are same as in Attribute.PersistentAttributeType enumeration
      * b) names are used by XML serialization with underscores replaced by dash and decapitalized
      *
      */
     public static enum AttributeCategory {
-        ID, VERSION, BASIC, ENUM, EMBEDDED, LOB, 
+        ID, VERSION, BASIC, ENUM, EMBEDDED, LOB,
         ONE_TO_ONE, MANY_TO_ONE, ONE_TO_MANY, ELEMENT_COLLECTION, MANY_TO_MANY
     }
-    
+
     public static List<Attribute<?,?>> getAttributesInOrder(Class<?> cls, Metamodel model) {
         return getAttributesInOrder(model.managedType(cls));
     }
-    
+
     public static List<Attribute<?,?>> getAttributesInOrder(ClassMetaData meta, Metamodel model) {
         return getAttributesInOrder(meta.getDescribedType(), model);
     }
-    
+
     /**
      * Gets the attributes of the given type in defined order.
      * @param type
@@ -80,13 +80,13 @@ public class MetamodelHelper {
             return ((SingularAttribute<?,?>)a).isId();
         return false;
     }
-    
+
     public static boolean isVersion(Attribute<?,?> a) {
         if (a instanceof SingularAttribute)
             return ((SingularAttribute<?,?>)a).isVersion();
         return false;
     }
-    
+
     public static boolean isEnum(Attribute<?,?> a) {
         if (a instanceof Members.Member) {
             int type = ((Members.Member<?,?>)a).fmd.getDeclaredTypeCode();
@@ -94,7 +94,7 @@ public class MetamodelHelper {
         }
         return false;
     }
-    
+
     public static boolean isLob(Attribute<?,?> a) {
         if (a instanceof Members.Member) {
             int type = ((Members.Member<?,?>)a).fmd.getDeclaredTypeCode();
@@ -105,7 +105,7 @@ public class MetamodelHelper {
 
     /**
      * Gets a ordinal value of enumerated persistent attribute category.
-     *  
+     *
      * @param attr
      */
     public static AttributeCategory getAttributeCategory(Attribute<?,?> attr) {
@@ -118,11 +118,11 @@ public class MetamodelHelper {
         if (isEnum(attr))
             return AttributeCategory.ENUM;
        switch (attr.getPersistentAttributeType()) {
-           case BASIC : 
+           case BASIC :
                return AttributeCategory.BASIC;
            case EMBEDDED:
                return AttributeCategory.EMBEDDED;
-           case ONE_TO_ONE: 
+           case ONE_TO_ONE:
                return AttributeCategory.ONE_TO_ONE;
            case MANY_TO_ONE:
                return AttributeCategory.MANY_TO_ONE;
@@ -134,11 +134,11 @@ public class MetamodelHelper {
       }
        throw new RuntimeException(attr.toString());
     }
-    
+
     public static String getTagByAttributeType(Attribute<?, ?> attr) {
         return getAttributeCategory(attr).name().replace(UNDERSCORE, DASH).toLowerCase();
     }
-    
+
     /**
      * Gets name of the attribute type. For collection and map type attribute, the name is
      * appended with generic type argument names.
@@ -164,7 +164,7 @@ public class MetamodelHelper {
         }
         return name.toString();
     }
-    
+
     /**
      * Compares attribute by their category and within the same category by name.
      *

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.jdbc;
 
@@ -23,27 +23,27 @@ import org.apache.openjpa.slice.Slice;
 
 /**
  * A specialized JDBCStoreManager for a slice.
- * 
- * @author Pinaki Poddar 
+ *
+ * @author Pinaki Poddar
  *
  */
 public class SliceStoreManager extends JDBCStoreManager {
 	private final Slice _slice;
-	
+
 	/**
-	 * Construct with immutable logical name of the slice. 
+	 * Construct with immutable logical name of the slice.
 	 */
 	public SliceStoreManager(Slice slice) {
 		_slice = slice;
 	}
-	
+
 	/**
 	 * Gets the slice for which this receiver is working.
 	 */
 	public Slice getSlice() {
 	    return _slice;
 	}
-	
+
 	public String getName() {
 	    return _slice.getName();
 	}

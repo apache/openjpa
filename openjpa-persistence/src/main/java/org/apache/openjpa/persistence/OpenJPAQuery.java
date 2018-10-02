@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -188,30 +188,30 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
     public OpenJPAQuery<X> setParameter(int position, Date value, TemporalType temporalType);
 
     public OpenJPAQuery<X> setParameter(int position, Calendar value, TemporalType temporalType);
-    
+
     /**
-     * Sets whether the type of user-supplied bind parameter value and the type of target persistent 
+     * Sets whether the type of user-supplied bind parameter value and the type of target persistent
      * property they bind to are checked with strong or weak constraint.
      * <br>
      * The same can be set via {@link Query#setHint(String, Object) hint} without puncturing standard
      * JPA API.
-     * 
+     *
      * @see Filters#canConvert(Class, Class, boolean)
      * @see Filters#convert(Object, Class, boolean)
-     * 
+     *
      * @param hint a String or Boolean value.
      */
     public void setRelaxBindParameterTypeChecking(Object hint);
-    
+
     /**
-     * Gets whether the type of user-supplied bind parameter value and the type of target persistent 
+     * Gets whether the type of user-supplied bind parameter value and the type of target persistent
      * property they bind to are checked with strong or weak constraint.
-     * 
+     *
      * @return the booelan state. False by default, i.e. the type of a bind parameter value is checked
-     * strongly against the target property type.  
+     * strongly against the target property type.
      */
     public boolean getRelaxBindParameterTypeChecking();
-    
+
 
     public OpenJPAQuery<X> setFlushMode(FlushModeType flushMode);
 
@@ -274,10 +274,10 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
      * method pierces the published-API boundary, as does the SPI cast.
      */
     public OpenJPAQuery<X> removeAggregateListener(org.apache.openjpa.kernel.exps.AggregateListener listener);
-    
+
     /**
      * Gets hints supported by this query.
-     * 
+     *
      * @since 2.0.0
      */
     public Set<String> getSupportedHints();

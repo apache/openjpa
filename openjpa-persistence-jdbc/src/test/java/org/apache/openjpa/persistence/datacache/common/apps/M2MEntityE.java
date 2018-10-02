@@ -28,12 +28,12 @@ public class M2MEntityE  {
 	@ManyToMany
 	@MapKey(name="id")
 	private Map<Integer,M2MEntityF> entityf;
-	
+
 	public M2MEntityE() {
 		entityf = new HashMap<Integer,M2MEntityF>();
 		name="entitye";
 	}
-		
+
 	public Map<Integer,M2MEntityF> getEntityF() {
 		return entityf;
 	}

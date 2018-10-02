@@ -7,9 +7,9 @@
 	to you under the Apache License, Version 2.0 (the
 	"License"); you may not use this file except in compliance
 	with the License.  You may obtain a copy of the License at
-	
+
 	http://www.apache.org/licenses/LICENSE-2.0
-	
+
 	Unless required by applicable law or agreed to in writing,
 	software distributed under the License is distributed on an
 	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,12 +21,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence orm_2_0.xsd"
 	version="2.0">
-	
+
 	<persistence-unit-metadata>
 		<xml-mapping-metadata-complete/>
 	</persistence-unit-metadata>
-	
-	
+
+
 	<package>org.apache.openjpa.persistence.jdbc.unique</package>
 	<entity name="NamedUniqueA" class="NamedUniqueA">
 		<table name="NX_UNIQUE_A">

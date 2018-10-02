@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta.vertical;
 
@@ -42,15 +42,15 @@ public class TestSubclassJoinRelations
     extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
     private String _outer = "OUTER";
     private Object _oid = null;
-    
+
     /** Creates a new instance of TestSubclassJoinRelations */
-    public TestSubclassJoinRelations(String name) 
+    public TestSubclassJoinRelations(String name)
     {
     	super(name);
     }
-    
+
     public boolean skipTest() {
-        //FIXME 
+        //FIXME
         /*
         return super.skipTest()
             || ((JDBCConfiguration) getConfiguration()).
@@ -457,5 +457,5 @@ public class TestSubclassJoinRelations
 
         assertEquals(1, sql.size());
         assertSQL(_outer);
-    }    
+    }
 }

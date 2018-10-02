@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package openbook.tools.ant;
 
@@ -30,7 +30,7 @@ import org.apache.tools.ant.taskdefs.MatchingTask;
 
 /**
  * An ant task to run {@linkplain Java2HTMLConverter Java2HTML Converter}.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -45,9 +45,9 @@ public class Java2HTMLConverterTask extends MatchingTask {
     private boolean addExplicitSpace = true;
     private String lineNumberFormat  = "%04d";
     private boolean verbose          = false;
-    
+
     private List<Arg> _args = new ArrayList<Arg>();
-    
+
     public String getSourcepath() {
         return sourcepath;
     }
@@ -55,7 +55,7 @@ public class Java2HTMLConverterTask extends MatchingTask {
     public void setSourcepath(String sourcepath) {
         this.sourcepath = sourcepath;
     }
-    
+
     @Override
     public void execute() throws BuildException {
         List<String> files = getFiles();
@@ -71,7 +71,7 @@ public class Java2HTMLConverterTask extends MatchingTask {
         args.add("-addExplicitSpace"); args.add(""+addExplicitSpace);
         args.add("-lineNumberFormat"); args.add(lineNumberFormat);
         args.add("-anchorLineNumber"); args.add(""+anchorLineNumber);
-        
+
         for (Arg a : _args) {
             args.add(a.getName());
             args.add(a.getValue());
@@ -85,7 +85,7 @@ public class Java2HTMLConverterTask extends MatchingTask {
             throw new BuildException(e);
         }
     }
-    
+
     List<String> getFiles() {
         List<String> list = new ArrayList<String>();
         DirectoryScanner scanner = getDirectoryScanner(new File(getSourcepath()));
@@ -97,13 +97,13 @@ public class Java2HTMLConverterTask extends MatchingTask {
         }
         return list;
     }
-    
+
     public Arg createArg() {
         Arg arg = new Arg();
         _args.add(arg);
         return arg;
     }
-    
+
 
     public String getDestDir() {
         return destDir;
@@ -120,7 +120,7 @@ public class Java2HTMLConverterTask extends MatchingTask {
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
     }
-    
+
     /**
      * @return the extension
      */
@@ -218,11 +218,11 @@ public class Java2HTMLConverterTask extends MatchingTask {
     public void setLineNumberFormat(String lineNumberFormat) {
         this.lineNumberFormat = lineNumberFormat;
     }
-    
+
     public static class Arg {
         String name;
         String value;
-        
+
         public String getName() {
             return name;
         }

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -34,19 +34,19 @@ public class DetachManagerLite {
     private final boolean _detachProxies;
     private final TransferFieldManager _tsm;
 
-    public DetachManagerLite(OpenJPAConfiguration conf) {       
+    public DetachManagerLite(OpenJPAConfiguration conf) {
         _detachProxies = conf.getDetachStateInstance().getDetachProxyFields();
         _tsm = new TransferFieldManager();
     }
 
     /**
      * This method will detach all provided StateManagers in place.
-     * 
+     *
      * @param states
      *            The StateManagers to be detached.
      */
     public void detachAll(Collection<StateManagerImpl> states) {
-        
+
         for (StateManagerImpl sm : states) {
             ClassMetaData cmd = sm.getMetaData();
             if (sm.isPersistent() && cmd.isDetachable()) {
@@ -67,7 +67,7 @@ public class DetachManagerLite {
 
     /**
      * Detach the provided proxy field.
-     * 
+     *
      * @param fmd
      *            The field to be detached.
      * @param pc
@@ -75,9 +75,9 @@ public class DetachManagerLite {
      * @param sm
      *            The StateManagerImpl that the PersistenceCapable belongs to.
      */
-    private void detachProxyField(FieldMetaData fmd, PersistenceCapable pc, 
+    private void detachProxyField(FieldMetaData fmd, PersistenceCapable pc,
         StateManagerImpl sm, TransferFieldManager fm) {
-        
+
         int fieldIndex = fmd.getIndex();
         if (fmd.isLRS() == true) {
             // need to null out LRS fields.
@@ -107,7 +107,7 @@ public class DetachManagerLite {
 
     /**
      * Private worker method that replaces the value at fieldIndex in sm with null.
-     * 
+     *
      * @param fieldIndex
      *            The index of the field to be nulled out.
      * @param pc

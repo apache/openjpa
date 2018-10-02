@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity;
 
@@ -27,7 +27,7 @@ package org.apache.openjpa.persistence.identity;
 public class CompoundBooleanId {
     public String stringId;
     public boolean booleanId;
-    
+
     @Override
     public int hashCode() {
         int result = 1;
@@ -35,7 +35,7 @@ public class CompoundBooleanId {
         result = result + ((booleanId == false) ? 0 : 1);
         return result;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -51,8 +51,8 @@ public class CompoundBooleanId {
             return false;
         if (booleanId != other.booleanId)
             return false;
-        
-        
+
+
         return true;
     }
 

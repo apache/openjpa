@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.property;
 
@@ -32,7 +32,7 @@ public class EmbeddableAddress implements IAddress {
 
     public String getLine1() {
         return line1;
-    }   
+    }
     public void setLine1(String line1) {
         this.line1 = line1;
     }
@@ -73,12 +73,12 @@ public class EmbeddableAddress implements IAddress {
     }
 
     public String toString() {
-        return( "org.apache.openjpa.persistence.compatible.EmbeddableAddress: " + 
-                " line1: " + getLine1() + 
-                " line2: " + getLine2() + 
-                " city: " + getCity() + 
-                " state: " + getState() + 
-                " zipCode: " + getZipCode() + 
+        return( "org.apache.openjpa.persistence.compatible.EmbeddableAddress: " +
+                " line1: " + getLine1() +
+                " line2: " + getLine2() +
+                " city: " + getCity() +
+                " state: " + getState() +
+                " zipCode: " + getZipCode() +
                 " country: " + getCountry() );
     }
 }

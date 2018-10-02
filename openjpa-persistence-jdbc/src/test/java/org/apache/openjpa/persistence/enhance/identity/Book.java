@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
@@ -32,12 +32,12 @@ import javax.persistence.OneToMany;
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
 
 /**
- * Entity used to test compound primary keys using entity as relationship to 
+ * Entity used to test compound primary keys using entity as relationship to
  * more than one level.
- * 
+ *
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-207">OPENJPA-207</A>
- *  
+ *
  * @author Jeffrey Blattman
  * @author Pinaki Poddar
  *
@@ -49,25 +49,25 @@ public class Book implements Serializable {
     @Id
     @Column(name="BOOK_NAME", nullable = false)
     private String name;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "book")
     private Set<Page> pages = new HashSet<Page>();
-    
+
     @Id
     @Column(nullable = false)
     @ManyToOne(cascade = CascadeType.MERGE)
     private Library library;
-    
+
     private String author;
-    
+
 	public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public Library getLibrary() {
         return library;
     }
@@ -84,12 +84,12 @@ public class Book implements Serializable {
         }
         return null;
     }
-    
+
     public void addPage(Page p) {
         p.setBook(this);
         pages.add(p);
     }
-    
+
 	public String getAuthor() {
 		return author;
 	}
@@ -102,13 +102,13 @@ public class Book implements Serializable {
         if (!(o instanceof Book)) {
             return false;
         }
-        
+
         Book other = (Book)o;
-        
+
         if (!getName().equals(other.getName())) {
             return false;
         }
-        
+
         return true;
     }
 

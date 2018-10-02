@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.criteria;
 
@@ -33,29 +33,29 @@ public class TransactionHistory {
     private int id;
 
     private Timestamp transDate;
-    
+
     private String details;
-    
+
     public int getId() {
         return id;
     }
-    
+
     public String getDetails() {
         return details;
     }
-    
+
     public void setDetails(String details) {
         this.details = details;
     }
-    
+
     public Timestamp getTimestamp() {
         return transDate;
     }
-    
+
     public void setTimestamp(Timestamp transDate) {
         this.transDate = transDate;
     }
-    
-    
-    
+
+
+
 }

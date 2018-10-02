@@ -39,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   5) Validation mode in createEMF(Map props) overrides no persistence.xml
  *   6) Validation mode in createEMF(Map props) overrides persistence.xml
  *   7) Validation mode in createEMF(Map props) can be a ValidationMode enum
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class TestValidationMode extends SingleEMFTestCase {
@@ -65,7 +65,7 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify default validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Default validation mode", 
+            assertEquals("Default validation mode",
                 String.valueOf(ValidationMode.AUTO),
                 conf.getValidationMode());
         } finally {
@@ -89,7 +89,7 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify expected validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode", 
+            assertEquals("Validation mode",
                 String.valueOf(ValidationMode.AUTO),
                 conf.getValidationMode());
         } finally {
@@ -114,7 +114,7 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode", 
+            assertEquals("Validation mode",
                 String.valueOf(ValidationMode.NONE),
                 conf.getValidationMode());
         } finally {
@@ -142,7 +142,7 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode", 
+            assertEquals("Validation mode",
                 String.valueOf(ValidationMode.CALLBACK),
                 conf.getValidationMode());
         } catch (PersistenceException e) {
@@ -177,7 +177,7 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode", 
+            assertEquals("Validation mode",
                 String.valueOf(ValidationMode.NONE),
                 conf.getValidationMode());
         } finally {
@@ -209,7 +209,7 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode", 
+            assertEquals("Validation mode",
                 String.valueOf(ValidationMode.NONE),
                 conf.getValidationMode());
         } finally {
@@ -241,7 +241,7 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode", 
+            assertEquals("Validation mode",
                 String.valueOf(ValidationMode.NONE),
                 conf.getValidationMode());
         } finally {
@@ -325,7 +325,7 @@ public class TestValidationMode extends SingleEMFTestCase {
 
         @Override
         public void afterStore(LifecycleEvent event) {
-            afterStoreCount++; 
+            afterStoreCount++;
         }
 
         public void assertCounts(int beforePersist, int afterPersist, int beforeStore, int afterStore) {
@@ -335,7 +335,7 @@ public class TestValidationMode extends SingleEMFTestCase {
             assertEquals(afterStore, afterStoreCount);
         }
     }
-    
+
     /**
      * Helper method to remove entities and close the emf an any open em's.
      * @param emf
@@ -343,6 +343,6 @@ public class TestValidationMode extends SingleEMFTestCase {
     private void cleanup(OpenJPAEntityManagerFactorySPI emf) {
         clear(emf);
         closeEMF(emf);
-    }    
+    }
 
 }

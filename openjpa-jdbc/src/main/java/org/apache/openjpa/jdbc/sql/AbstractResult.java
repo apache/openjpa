@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -379,7 +379,7 @@ public abstract class AbstractResult
         return (InputStream) checkNull(getStreamInternal(store, obj,
             JavaSQLTypes.BINARY_STREAM, null, joins));
     }
-    
+
     public Blob getBlob(Object obj)
         throws SQLException {
         return getBlobInternal(translate(obj, null), null);
@@ -705,7 +705,7 @@ public abstract class AbstractResult
 
     protected abstract Object getStreamInternal(JDBCStore store, Object obj,
             int metaType, Object arg, Joins joins) throws SQLException;
-    
+
     public Object getSQLObject(Object obj, Map map)
         throws SQLException {
         return getSQLObjectInternal(translate(obj, null), map, null);
@@ -868,7 +868,7 @@ public abstract class AbstractResult
             return this;
         }
 
-        public Joins joinRelation(String name, ForeignKey fk, 
+        public Joins joinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             return this;
         }
@@ -900,7 +900,7 @@ public abstract class AbstractResult
         public String getCorrelatedVariable() {
             return null;
         }
-        
+
         public void moveJoinsToParent() {
         }
     }

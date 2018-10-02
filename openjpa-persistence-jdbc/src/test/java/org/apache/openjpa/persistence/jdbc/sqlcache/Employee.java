@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
@@ -27,23 +27,23 @@ import javax.persistence.*;
 
 public class Employee {
     public enum Category {PERMANENT, CONTRACTOR, TEMP};
-    
+
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private String name;
-	
+
 	@ManyToOne
 	private Department department;
-	
+
 	@OneToOne
 	private Address address;
-	
+
 	private boolean isManager;
-	
+
 	private Category status;
-	
+
 	@Enumerated(EnumType.ORDINAL)
 	private Category hireStatus;
 
@@ -86,19 +86,19 @@ public class Employee {
 	public long getId() {
 		return id;
 	}
-	
+
     public Category getHireStatus() {
         return hireStatus;
     }
-    
+
     public Category setHireStatus(Category status) {
         return hireStatus;
     }
-    
+
     public Category getCurrentStatus() {
         return status;
     }
-    
+
     public Category getCurrentStatus(Category status) {
         return status;
     }

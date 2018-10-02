@@ -28,18 +28,18 @@ public class EntityG {
     @Id
     int id;
     String name;
-    
+
     public EntityG() {}
-    
+
     public EntityG(int id) {
         this.id = id;
     }
-    
+
     public EntityG(int id, String name) {
         this.id = id;
         this.name = name;
     }
-    
+
     /**
      * @return the id
      */

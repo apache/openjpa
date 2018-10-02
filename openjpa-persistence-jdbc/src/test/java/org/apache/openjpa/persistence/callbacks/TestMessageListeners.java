@@ -163,7 +163,7 @@ public class TestMessageListeners extends SingleEMFTestCase {
             message = em.find(Message.class,message.getId());
             message.setMessage("Update field and trigger pre/postUpdate");
             em.getTransaction().commit();
-            
+
             // Complete the 2nd @postPersist
             assertStatus(2, 2, 1, 1, 0, 0, 0);
 

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex3;
 
@@ -22,7 +22,7 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class EmployeeName {
-    
+
     String fName;
     String lName;
 

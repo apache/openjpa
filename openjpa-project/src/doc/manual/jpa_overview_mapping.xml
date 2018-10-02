@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="jpa_overview_mapping">
     <title>
@@ -90,7 +90,7 @@ areas of the model and show how we map the object layer to the relational layer.
         <imageobject>
             <!-- PNG image data, 553 x 580 (see README) -->
             <imagedata fileref="img/jpa-meta-model.png" width="369px"/>
-            
+
         </imageobject>
     </mediaobject>
     <para>
@@ -102,9 +102,9 @@ when the mapping is absent.
     <note>
         <para>
 Mapping metadata is used primarily with schema generation. This metadata should not
-be relied upon for validation prior to communicating with the database. 
+be relied upon for validation prior to communicating with the database.
 For example using the @Column(nullable=false) annotation does not do up front validation
-that the value in the entity is correct. 
+that the value in the entity is correct.
         </para>
     </note>
     <section id="jpa_overview_mapping_table">
@@ -285,8 +285,8 @@ public class TrialSubscription
 The same mapping information expressed in XML:
             </para>
 <programlisting>
-&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd"
     version="1.0"&gt;
     &lt;mapped-superclass class="org.mag.subscribe.Document"&gt;
@@ -379,7 +379,7 @@ unique constraint violation.
 <literal>String name</literal>: The name of the constraint. OpenJPA will choose
 a name if you do not provide one, or will create an anonymous constraint.
                 </para>
-            </listitem>            
+            </listitem>
             <listitem>
                 <para>
 <literal>String[] columnNames</literal>: The names of the columns the
@@ -713,7 +713,7 @@ diagram includes this data in its encoding of our mappings.
             <imageobject>
                 <!-- PNG image data, 513 x 410 (see README) -->
                 <imagedata fileref="img/jpa-mapping-identity.png" width="341px"/>
-                
+
             </imageobject>
         </mediaobject>
         <para>
@@ -841,7 +841,7 @@ expressed in XML form:
             &lt;column length="9"/&gt;
         &lt;/id&gt;
         &lt;id name="title"/&gt;
-      ...  
+      ...
     &lt;/attributes&gt;
 &lt;/entity&gt;
 &lt;entity class="org.mag.pub.Company"&gt;
@@ -1295,7 +1295,7 @@ public class Magazine {
 public class Article {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq") 
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq")
     private long id;
 
     ...
@@ -1342,7 +1342,7 @@ public abstract class Document {
     @Id
     @GeneratedValue(generate=GenerationType.IDENTITY)
     private long id;
- 
+
     ...
 }
 
@@ -1409,7 +1409,7 @@ expressed in XML form:
         &lt;id name="id"&gt;
             &lt;column name="AID" column-definition="INTEGER64"/&gt;
             &lt;generated-value strategy="TABLE" generator="AuthorGen"/&gt;
-            &lt;table-generator name="AuthorGen" table="AUTH_GEN" 
+            &lt;table-generator name="AuthorGen" table="AUTH_GEN"
                 pk-column-name="PK" value-column-name="AID"/&gt;
         &lt;/id&gt;
         ...
@@ -1546,7 +1546,7 @@ the hierarchy to the base class' table.
                 <imageobject>
                     <!-- PNG image data, 266 x 203 (see README) -->
                     <imagedata fileref="img/inher-superclass-table.png" width="177px"/>
-                    
+
                 </imageobject>
             </mediaobject>
             <para>
@@ -1718,7 +1718,7 @@ inheritance mapping.
                 <imageobject>
                     <!-- PNG image data, 256 x 229 (see README) -->
                     <imagedata fileref="img/jpa-inher-joined.png" width="171px"/>
-                    
+
                 </imageobject>
             </mediaobject>
             <para>
@@ -1961,7 +1961,7 @@ tables.
                 <imageobject>
                     <!-- PNG image data, 283 x 247 (see README) -->
                     <imagedata fileref="img/inher-tpc.png" width="189px"/>
-                    
+
                 </imageobject>
             </mediaobject>
             <para>
@@ -2082,7 +2082,7 @@ document with inheritance information. Here is the complete model:
                 <imageobject>
                     <!-- PNG image data, 513 x 410 (see README) -->
                     <imagedata fileref="img/jpa-inher-all.png" width="341px"/>
-                    
+
                 </imageobject>
             </mediaobject>
             <para>
@@ -2117,7 +2117,7 @@ public class Magazine {
 public class Article {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq") 
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq")
     private long id;
 
     ...
@@ -2212,8 +2212,8 @@ public class TrialSubscription
 The same metadata expressed in XML form:
                 </para>
 <programlisting>
-&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd"
     version="1.0"&gt;
     &lt;mapped-superclass class="org.mag.subscribe.Document"&gt;
@@ -2264,7 +2264,7 @@ The same metadata expressed in XML form:
             &lt;id name="id"&gt;
                 &lt;column name="AID" column-definition="INTEGER64"/&gt;
                 &lt;generated-value strategy="TABLE" generator="AuthorGen"/&gt;
-                &lt;table-generator name="AuthorGen" table="AUTH_GEN" 
+                &lt;table-generator name="AuthorGen" table="AUTH_GEN"
                     pk-column-name="PK" value-column-name="AID"/&gt;
             &lt;/id&gt;
             ...
@@ -2468,7 +2468,7 @@ JPA mappings. We first extend our diagram with discriminator columns:
             <imageobject>
                 <!-- PNG image data, 513 x 410 (see README) -->
                 <imagedata fileref="img/jpa-discrim-all.png" width="341px"/>
-                
+
             </imageobject>
         </mediaobject>
         <para>
@@ -2508,7 +2508,7 @@ public class Magazine {
 public class Article {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq") 
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq")
     private long id;
 
     ...
@@ -2606,8 +2606,8 @@ public class TrialSubscription
 The same metadata expressed in XML:
             </para>
 <programlisting>
-&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd"
     version="1.0"&gt;
     &lt;mapped-superclass class="org.mag.subscribe.Document"&gt;
@@ -2659,7 +2659,7 @@ The same metadata expressed in XML:
             &lt;id name="id"&gt;
                 &lt;column name="AID" column-definition="INTEGER64"/&gt;
                 &lt;generated-value strategy="TABLE" generator="AuthorGen"/&gt;
-                &lt;table-generator name="AuthorGen" table="AUTH_GEN" 
+                &lt;table-generator name="AuthorGen" table="AUTH_GEN"
                     pk-column-name="PK" value-column-name="AID"/&gt;
             &lt;/id&gt;
             ...
@@ -2973,7 +2973,7 @@ can override its mapped superclass' mappings.
                     <imageobject>
                         <!-- PNG image data, 580 x 553 (see README) -->
                         <imagedata fileref="img/jpa-basic-field.png" width="387px"/>
-                        
+
                     </imageobject>
                 </mediaobject>
                 <example id="jpa_overview_mapping_basicex">
@@ -2995,7 +2995,7 @@ public class Magazine {
 
     @Column(name="VERS")
     @Version private int version;
-    
+
     private String name;
     private double price;
 
@@ -3015,7 +3015,7 @@ public class Magazine {
 public class Article {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq") 
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq")
     private long id;
 
     @Column(name="VERS")
@@ -3168,8 +3168,8 @@ public class TrialSubscription
 The same metadata expressed in XML:
                     </para>
 <programlisting>
-&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd"
     version="1.0"&gt;
     &lt;mapped-superclass class="org.mag.subscribe.Document"&gt;
@@ -3240,7 +3240,7 @@ The same metadata expressed in XML:
             &lt;id name="id"&gt;
                 &lt;column name="AID" column-definition="INTEGER64"/&gt;
                 &lt;generated-value strategy="TABLE" generator="AuthorGen"/&gt;
-                &lt;table-generator name="AuthorGen" table="AUTH_GEN" 
+                &lt;table-generator name="AuthorGen" table="AUTH_GEN"
                     pk-column-name="PK" value-column-name="AID"/&gt;
             &lt;/id&gt;
             &lt;basic name="firstName"&gt;
@@ -3393,7 +3393,7 @@ secondary table, like so:
                 <imageobject>
                     <!-- PNG image data, 284 x 167 (see README) -->
                     <imagedata fileref="img/secondary-table.png" width="189px"/>
-                    
+
                 </imageobject>
             </mediaobject>
             <example id="jpa_overview_mapping_secondaryex">
@@ -3405,7 +3405,7 @@ package org.mag;
 
 @Entity
 @Table(name="ART")
-@SecondaryTable(name="ART_DATA", 
+@SecondaryTable(name="ART_DATA",
     pkJoinColumns=@PrimaryKeyJoinColumn(name="ART_ID", referencedColumnName="ID"))
 public class Article {
 
@@ -3472,7 +3472,7 @@ table.
                 <imageobject>
                     <!-- PNG image data, 464 x 203 (see README) -->
                     <imagedata fileref="img/jpa-embedded.png" width="309px"/>
-                    
+
                 </imageobject>
             </mediaobject>
             <para>
@@ -3560,7 +3560,7 @@ public class Company {
         @AttributeOverride(name="city", column=@Column(name="ACITY"))
     })
     private Address address;
-    
+
     ...
 }
 
@@ -3570,7 +3570,7 @@ public class Author {
 
     // use all defaults from Address class mappings
     private Address address;
-    
+
     ...
 }
 
@@ -3733,7 +3733,7 @@ represented in the database by foreign key columns:
                 <imageobject>
                     <!-- PNG image data, 374 x 386 (see README) -->
                     <imagedata fileref="img/jpa-direct-relation.png" width="249px"/>
-                    
+
                 </imageobject>
             </mediaobject>
             <para>
@@ -4018,7 +4018,7 @@ Article.authors</literal>.
                 <imageobject>
                     <!-- PNG image data, 391 x 407 (see README) -->
                     <imagedata fileref="img/jpa-assoc-table.png" width="261px"/>
-                    
+
                 </imageobject>
             </mediaobject>
             <para>
@@ -4259,7 +4259,7 @@ covered these additions in <xref linkend="jpa_overview_meta_mapkey"/>.
                 <imageobject>
                     <!-- PNG image data, 382 x 274 (see README) -->
                     <imagedata fileref="img/jpa-map.png" width="255px"/>
-                    
+
                 </imageobject>
             </mediaobject>
             <para>
@@ -4344,7 +4344,7 @@ We began this chapter with the goal of mapping the following object model:
             <imageobject>
                 <!-- PNG image data, 553 x 580 (see README) -->
                 <imagedata fileref="img/jpa-meta-model.png" width="369px"/>
-                
+
             </imageobject>
         </mediaobject>
         <para>
@@ -4356,7 +4356,7 @@ complete model. First, the database schema:
             <imageobject>
                 <!-- PNG image data, 490 x 662 (see README) -->
                 <imagedata fileref="img/jpa-data-model.png" width="326px"/>
-                
+
             </imageobject>
         </mediaobject>
         <para>
@@ -4382,14 +4382,14 @@ public class Magazine {
 
     @Column(name="VERS")
     @Version private int version;
-    
+
     private String name;
     private double price;
 
     @Column(name="COPIES")
     private int copiesSold;
 
-    @OneToOne(fetch=FetchType.LAZY, 
+    @OneToOne(fetch=FetchType.LAZY,
         cascade={CascadeType.PERSIST,CascadeType.REMOVE})
     @JoinColumn(name="COVER_ID")
     private Article coverArticle;
@@ -4406,7 +4406,7 @@ public class Magazine {
 
     @ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
     @JoinColumn(name="PUB_ID")
-    private Company publisher; 
+    private Company publisher;
 
     @Transient private byte[] data;
 
@@ -4424,7 +4424,7 @@ public class Magazine {
 public class Article {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq") 
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq")
     private long id;
 
     @Column(name="VERS")
@@ -4467,7 +4467,7 @@ public class Company {
         @AttributeOverride(name="city", column=@Column(name="ACITY"))
     })
     private Address address;
-    
+
     @OneToMany(mappedBy="publisher", cascade=CascadeType.PERSIST)
     private Collection&lt;Magazine&gt; mags;
 
@@ -4501,7 +4501,7 @@ public class Author {
     private String lastName;
 
     private Address address;
-    
+
     @ManyToMany(mappedBy="authors", cascade=CascadeType.PERSIST)
     private Collection&lt;Article&gt; arts;
 
@@ -4625,8 +4625,8 @@ public class TrialSubscription
 The same metadata expressed in XML form:
             </para>
 <programlisting>
-&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd"
     version="1.0"&gt;
     &lt;mapped-superclass class="org.mag.subscribe.Document"&gt;
@@ -4753,7 +4753,7 @@ The same metadata expressed in XML form:
             &lt;id name="id"&gt;
                 &lt;column name="AID" column-definition="INTEGER64"/&gt;
                 &lt;generated-value strategy="TABLE" generator="AuthorGen"/&gt;
-                &lt;table-generator name="AuthorGen" table="AUTH_GEN" 
+                &lt;table-generator name="AuthorGen" table="AUTH_GEN"
                     pk-column-name="PK" value-column-name="AID"/&gt;
             &lt;/id&gt;
             &lt;basic name="firstName"&gt;

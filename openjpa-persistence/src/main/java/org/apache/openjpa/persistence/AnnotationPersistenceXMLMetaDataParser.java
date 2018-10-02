@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -50,7 +50,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
     private final OpenJPAConfiguration _conf;
     private final Log _log;
     private MetaDataRepository _repos = null;
-    
+
     // cache the JAXB Xml... classes if they are present so we do not
     // have a hard-wired dependency on JAXB here
     private Class xmlTypeClass = null;
@@ -144,7 +144,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
     }
 
     /**
-     * Parse persistence metadata for the given field metadata. This parser/class is NOT threadsafe! The caller of 
+     * Parse persistence metadata for the given field metadata. This parser/class is NOT threadsafe! The caller of
      * this method needs to insure that the MetaData(/Mapping)Repository is locked prior to calling this method.
      */
     public synchronized void parse(Class<?> cls) {
@@ -168,12 +168,12 @@ public class AnnotationPersistenceXMLMetaDataParser {
 
         // find / create metadata
         XMLMetaData meta = getXMLMetaData(cls);
-        
+
         return meta;
     }
 
     /**
-     * Find or create xml metadata for the current type. 
+     * Find or create xml metadata for the current type.
      */
     private XMLMetaData getXMLMetaData(Class<?> cls) {
         XMLMetaData meta = getRepository().getCachedXMLMetaData(cls);
@@ -185,7 +185,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
         }
         return meta;
     }
-    
+
     private void parseXmlRootElement(Class type, XMLMetaData meta) {
         try {
             if (type.getAnnotation(xmlRootElementClass) != null) {
@@ -199,15 +199,15 @@ public class AnnotationPersistenceXMLMetaDataParser {
                 meta.setXmlname((String) xmlTypeName.invoke(type.getAnnotation
                     (xmlTypeClass), new Object[]{}));
                 meta.setXmlnamespace((String) xmlTypeNamespace.invoke(type
-                    .getAnnotation(xmlTypeClass), new Object[]{}));           
+                    .getAnnotation(xmlTypeClass), new Object[]{}));
             }
-        } catch (Exception e) {            
+        } catch (Exception e) {
         }
     }
 
     private void populateFromReflection(Class cls, XMLMetaData meta) {
         Member[] members;
-        
+
         Class superclass = cls.getSuperclass();
 
         // handle inheritance at sub-element level
@@ -250,7 +250,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                         field.setXmlname(xmlname);
                         field.setXmlnamespace((String) xmlElementNamespace
                             .invoke(el.getAnnotation(xmlElementClass)
-                            , new Object[]{}));                    
+                            , new Object[]{}));
                     }
                 }
                 else if (el.getAnnotation(xmlAttributeClass) != null) {

@@ -34,7 +34,7 @@ public class MidClass2 extends BaseClass5 {
     public String getMidClass2Name() {
         return midClass2Name;
     }
-    
+
     public String toString() {
         return super.toString() + ";midClass2Name=" + midClass2Name;
     }

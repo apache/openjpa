@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.jdbc;
 
@@ -132,7 +132,7 @@ public class DelegatingConnection implements Connection, Closeable {
         if (_del != null)
             stmnt = _del.prepareStatement(str, false);
         else
-            stmnt = _conn.prepareStatement(str, ResultSet.TYPE_FORWARD_ONLY, 
+            stmnt = _conn.prepareStatement(str, ResultSet.TYPE_FORWARD_ONLY,
                 ResultSet.CONCUR_READ_ONLY);
         if (wrap)
             stmnt = new DelegatingPreparedStatement(stmnt, this);
@@ -462,17 +462,17 @@ public class DelegatingConnection implements Connection, Closeable {
 
     /**
      * From java.sql.Wrapper javadoc:
-     * 
-     * Returns an object that implements the given interface to allow access to 
-     * non-standard methods, or standard methods not exposed by the proxy. If 
-     * the receiver implements the interface then the result is the receiver 
-     * or a proxy for the receiver. If the receiver is a wrapper and the 
-     * wrapped object implements the interface then the result is the wrapped 
-     * object or a proxy for the wrapped object. Otherwise return the the 
-     * result of calling unwrap recursively on the wrapped object or a proxy 
+     *
+     * Returns an object that implements the given interface to allow access to
+     * non-standard methods, or standard methods not exposed by the proxy. If
+     * the receiver implements the interface then the result is the receiver
+     * or a proxy for the receiver. If the receiver is a wrapper and the
+     * wrapped object implements the interface then the result is the wrapped
+     * object or a proxy for the wrapped object. Otherwise return the the
+     * result of calling unwrap recursively on the wrapped object or a proxy
      * for that result. If the receiver is not a wrapper and does not implement
      * the interface, then an SQLException is thrown.
-     * 
+     *
      */
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
@@ -526,25 +526,25 @@ public class DelegatingConnection implements Connection, Closeable {
     public void setClientInfo(String name, String value) throws SQLClientInfoException {
         _conn.setClientInfo(name, value);
     }
-    
+
     // Java 7 methods follow
-    
+
     public void abort(Executor executor) throws SQLException {
     	throw new UnsupportedOperationException();
     }
-    
+
     public int getNetworkTimeout() throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException{
     	throw new UnsupportedOperationException();
     }
-    
+
     public String getSchema() throws SQLException {
-    	throw new UnsupportedOperationException(); 
+    	throw new UnsupportedOperationException();
     }
-    
+
     public void setSchema(String schema)throws SQLException {
     	throw new UnsupportedOperationException();
     }

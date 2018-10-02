@@ -25,7 +25,7 @@ package org.apache.openjpa.jira1794;
  * is set so 0 is expected.
  */
 public class TestCompatAggregateFunctions extends TestAggregateFunctions {
-  
+
     @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES,

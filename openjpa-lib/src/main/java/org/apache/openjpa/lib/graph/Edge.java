@@ -185,7 +185,7 @@ public class Edge {
     public List<Edge> getCycle() {
         return _cycle;
     }
-    
+
     /**
      * List of edges forming a cycle. Only set for TYPE_BACK and TYPE_FORWARD
      * edges.

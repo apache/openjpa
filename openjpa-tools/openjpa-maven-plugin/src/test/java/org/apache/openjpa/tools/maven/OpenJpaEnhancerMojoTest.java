@@ -33,18 +33,18 @@ public class OpenJpaEnhancerMojoTest extends AbstractMojoTestCase {
     public void setUp() throws Exception {
         super.setUp();
     }
-    
-    
+
+
     public void testExecution() throws Exception {
       File testPom = new File( getBasedir(), "target/test-classes/projects/project-01/plugin-config.xml" );
-      
+
       OpenJpaEnhancerMojo mojo = (OpenJpaEnhancerMojo) lookupMojo( "enhance", testPom );
       assertNotNull( mojo );
-      
+
       mojo.classes = new File( getBasedir(), "target/test-classes/" );
       mojo.compileClasspathElements = new ArrayList<String>();
       mojo.compileClasspathElements.add( mojo.classes.getAbsolutePath() );
-      
+
       mojo.execute();
     }
 

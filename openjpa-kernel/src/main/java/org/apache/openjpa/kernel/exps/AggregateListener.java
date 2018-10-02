@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -56,7 +56,7 @@ public interface AggregateListener
      * @param candidates the candidate objects being evaluated
      * @param ctx the persistence context
      * @return the value of the aggregate
-     * @throws org.apache.openjpa.util.UserException if this aggregate does not 
+     * @throws org.apache.openjpa.util.UserException if this aggregate does not
      * support in-memory operation
      */
     public Object evaluate(Collection args, Class[] argClasses,

@@ -27,10 +27,10 @@ import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.
 
 @Entity
 @DiscriminatorValue("3")
-public class PIdJTIDMSCEntityB 
+public class PIdJTIDMSCEntityB
 extends PIdJTIDMSCRootEntity implements EntityB {
     private String entityBData;
-    
+
     public String getEntityBData() {
         return entityBData;
     }

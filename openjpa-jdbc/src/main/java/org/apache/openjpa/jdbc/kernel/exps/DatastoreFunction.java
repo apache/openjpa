@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -24,14 +24,14 @@ import org.apache.openjpa.kernel.exps.Arguments;
 
 /**
  * A unary operator that executes a datastore specific function with zero or more arguments.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 @SuppressWarnings("serial")
 public class DatastoreFunction extends UnaryOp {
     private final String _functionName;
-    
+
     public DatastoreFunction(String name, Class<?> resultType, Arguments args) {
         super((Val)args);
         _functionName = name;
@@ -43,16 +43,16 @@ public class DatastoreFunction extends UnaryOp {
         return _functionName;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         Args args = (Args) getValue();
         if (!ctx.store.getDBDictionary().requiresCastForMathFunctions || args.getValues().length == 1) {
             super.appendTo(sel, ctx, state, sql, index);
         } else {
             sql.append(getOperator());
-            sql.append("(");            
+            sql.append("(");
             args.appendTo(sel, ctx, state, sql, 0, getOperator());
             sql.append(")");
-        }            
+        }
     }
 }

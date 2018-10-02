@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -79,7 +79,7 @@ public interface Result
     public void close();
 
     /**
-     * Set to true if row locking has been issued for the row.  
+     * Set to true if row locking has been issued for the row.
      */
     public void setLocking(boolean locking);
 
@@ -167,30 +167,30 @@ public interface Result
 
     /**
      * If this is the result used to select a toMany relationship,
-     * the mappedByFieldMapping is field mapping representing 
-     * the inverse relationship. This is to avoid unneeded  
+     * the mappedByFieldMapping is field mapping representing
+     * the inverse relationship. This is to avoid unneeded
      * extra sql to retrieve the eager inverse field.
      */
     public FieldMapping getMappedByFieldMapping();
 
     /**
      * If this is the result used to select a toMany relationship,
-     * the mappedByFieldMapping is field mapping representing 
-     * the inverse relationship. This is to avoid unneeded  
+     * the mappedByFieldMapping is field mapping representing
+     * the inverse relationship. This is to avoid unneeded
      * extra sql to retrieve the eager inverse field.
      */
     public void setMappedByFieldMapping(FieldMapping fieldMapping);
 
     /**
      * If this is the result used to select a toMany relationship,
-     * the mappedByValue is value of the owner of the toMany relationship. 
+     * the mappedByValue is value of the owner of the toMany relationship.
      * This is to avoid unneeded extra sql to retrieve the eager inverse field.
      */
     public Object getMappedByValue();
 
     /**
      * If this is the result used to select a toMany relationship,
-     * the mappedByValue is value of the owner of the toMany relationship. 
+     * the mappedByValue is value of the owner of the toMany relationship.
      * This is to avoid unneeded extra sql to retrieve the eager inverse field.
      */
     public void setMappedByValue(Object mappedByValue);
@@ -247,7 +247,7 @@ public interface Result
      */
     public InputStream getBinaryStream(Object obj)
         throws SQLException;
-    
+
     public InputStream getLOBStream(JDBCStore store, Object obj)
         throws SQLException;
     /**

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
@@ -158,7 +158,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        
+
         query = "SELECT o.computerName FROM CompUser o WHERE o.name " +
                 "LIKE 'tes\\%'";
 
@@ -166,7 +166,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        
+
         query = "SELECT o.name FROM CompUser o WHERE o.name LIKE '_J%'";
 
         result = em.createQuery(query).getResultList();

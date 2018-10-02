@@ -1,4 +1,4 @@
-<%-- 
+<%--
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
 --%>
 <%@include file="header.jsp"%>
 
@@ -29,7 +29,7 @@
 <%-- Associates the current session with OpenBookService, if the request   --%>
 <%-- carries user parameter. Otherwise redirects to login page.            --%>
 <%-- ====================================================================  --%>
-<% 
+<%
     Object user = request.getParameter(KEY_USER);
     String nextPage = PAGE_HOME;
     if (user != null && user.toString().trim().length() > 0) {

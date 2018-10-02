@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.event;
 
@@ -25,9 +25,9 @@ import javax.persistence.PostRemove;
 
 /**
  * An entity for testing PostRemove callback.
- * 
+ *
  * @see TestPostRemove
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -36,9 +36,9 @@ public class PostRemoveCallbackEntity {
     @Id
     @GeneratedValue
     private long id;
-    
+
     private String name;
-    
+
     transient long postRemoveTime;
 
     public String getName() {
@@ -52,7 +52,7 @@ public class PostRemoveCallbackEntity {
     public long getId() {
         return id;
     }
-    
+
     @PostRemove
     public void postRemove() {
         if (postRemoveTime != 0) {
@@ -63,7 +63,7 @@ public class PostRemoveCallbackEntity {
 //        }
         postRemoveTime = System.nanoTime();
     }
-    
+
     public long getPostRemoveTime() {
         return postRemoveTime;
     }

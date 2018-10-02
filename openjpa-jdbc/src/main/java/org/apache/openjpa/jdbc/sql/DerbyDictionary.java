@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -38,7 +38,7 @@ public class DerbyDictionary
      * the DataSource.
      */
     public boolean shutdownOnClose = true;
-    
+
     public DerbyDictionary() {
         platform = "Apache Derby";
         validationSQL = "VALUES(1)";
@@ -47,7 +47,7 @@ public class DerbyDictionary
         toUpperCaseFunction = "UPPER(CAST({0} AS VARCHAR(" + varcharCastLength + ")))";
         toLowerCaseFunction = "LOWER(CAST({0} AS VARCHAR(" + varcharCastLength + ")))";
 
-        // Derby name length restriction has been relaxed 
+        // Derby name length restriction has been relaxed
         //http://www.archivum.info/derby-dev@db.apache.org/2004-12/msg00270.html
         maxConstraintNameLength = 128;
         maxIndexNameLength = 128;
@@ -66,7 +66,7 @@ public class DerbyDictionary
         requiresCastForComparisons = true;
         supportsSimpleCaseExpression = false;
         supportsNullUniqueColumn = false;
-        
+
         supportsComments = true;
 
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
@@ -83,27 +83,27 @@ public class DerbyDictionary
         // (i.e., without surrounding them with double-quotes)
         invalidColumnWordSet.addAll(Arrays.asList(new String[] {
             "ADD", "ALL", "ALLOCATE", "ALTER", "AND", "ANY", "ARE", "AS", "ASC",
-            "ASSERTION", "AT", "AUTHORIZATION", "AVG", "BEGIN", "BETWEEN", 
-            "BIT", "BOOLEAN", "BOTH", "BY", "CALL", "CASCADE", "CASCADED", 
+            "ASSERTION", "AT", "AUTHORIZATION", "AVG", "BEGIN", "BETWEEN",
+            "BIT", "BOOLEAN", "BOTH", "BY", "CALL", "CASCADE", "CASCADED",
             "CASE", "CAST", "CHAR", "CHARACTER", "CHARACTER_LENGTH", "CHECK",
             "CLOSE", "COALESCE", "COLLATE", "COLLATION", "COLUMN", "COMMIT", "CONNECT",
             "CONNECTION", "CONSTRAINT", "CONSTRAINTS", "CONTINUE", "CONVERT",
             "CORRESPONDING", "CREATE", "CURRENT", "CURRENT_DATE", "CURRENT_ROLE",
             "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "CURSOR",
             "DEALLOCATE", "DEC", "DECIMAL", "DECLARE", "DEFAULT", "DEFERRABLE",
-            "DEFERRED", "DELETE", "DESC", "DESCRIBE", "DIAGNOSTICS", 
-            "DISCONNECT", "DISTINCT", "DOUBLE", "DROP", "ELSE", "END", 
+            "DEFERRED", "DELETE", "DESC", "DESCRIBE", "DIAGNOSTICS",
+            "DISCONNECT", "DISTINCT", "DOUBLE", "DROP", "ELSE", "END",
             "END-EXEC", "ESCAPE", "EXCEPT", "EXCEPTION", "EXEC", "EXECUTE",
             "EXISTS", "EXPLAIN", "EXTERNAL", "FALSE", "FETCH", "FIRST", "FLOAT",
-            "FOR", "FOREIGN", "FOUND", "FROM", "FULL", "FUNCTION", "GET", 
+            "FOR", "FOREIGN", "FOUND", "FROM", "FULL", "FUNCTION", "GET",
             "GETCURRENTCONNECTION", "GLOBAL", "GO", "GOTO", "GRANT", "GROUP", "HAVING", "HOUR",
             "IDENTITY", "IMMEDIATE", "IN", "INDICATOR", "INITIALLY", "INNER",
             "INOUT", "INPUT", "INSENSITIVE", "INSERT", "INT", "INTEGER",
             "INTERSECT", "INTO", "IS", "ISOLATION", "JOIN", "KEY", "LAST",
             "LEADING", "LEFT", "LIKE", "LOWER", "LTRIM", "MATCH", "MAX", "MIN",
-            "MINUTE", "NATIONAL", "NATURAL", "NCHAR", "NEXT", "NO", "NONE", "NOT", 
+            "MINUTE", "NATIONAL", "NATURAL", "NCHAR", "NEXT", "NO", "NONE", "NOT",
             "NULL", "NULLIF", "NUMERIC", "NVARCHAR", "OF", "ON", "ONLY", "OPEN",
-            "OPTION", "OR", "ORDER", "OUT", "OUTER", "OUTPUT", "OVER", "OVERLAPS", 
+            "OPTION", "OR", "ORDER", "OUT", "OUTER", "OUTPUT", "OVER", "OVERLAPS",
             "PAD", "PARTIAL", "PREPARE", "PRESERVE", "PRIMARY", "PRIOR",
             "PRIVILEGES", "PROCEDURE", "PUBLIC", "READ", "REAL", "REFERENCES",
             "RELATIVE", "RESTRICT", "REVOKE", "RIGHT", "ROLLBACK", "ROWS",
@@ -117,7 +117,7 @@ public class DerbyDictionary
             "WRITE", "XML", "XMLEXISTS", "XMLPARSE", "XMLQUERY", "XMLSERIALIZE", "YEAR",
         }));
     }
-    
+
     @Override
     public void connectedConfiguration(Connection conn) throws SQLException {
     	super.connectedConfiguration(conn);
@@ -132,7 +132,7 @@ public class DerbyDictionary
      * <br>
      * A range query is never appended to a subselct clause.
      * <br>
-     * If this dictionary supports {@link DBDictionary#supportsSelectStartIndex offset} 
+     * If this dictionary supports {@link DBDictionary#supportsSelectStartIndex offset}
      * and {@link DBDictionary#supportsSelectEndIndex limit} on queries then the
      * syntax is <pre>
      * [ OFFSET {start} ROWS ]
@@ -144,11 +144,11 @@ public class DerbyDictionary
      * @param buf the SQL buffer to be appended
      * @param start starting offset. {@code 0} means offset is not used.
      * @param end number of rows to be fetched. {@code Long.MAX_VALUE} means no limit.
-     * @param subselect flags if the buffer represents a SQL Subquery clause 
+     * @param subselect flags if the buffer represents a SQL Subquery clause
      */
     protected void appendSelectRange(SQLBuffer buf, long start, long end, boolean subselect) {
         // do not generate FETCH FIRST clause for subselect
-    	if (subselect) 
+    	if (subselect)
     		return;
     	if (supportsSelectStartIndex && supportsSelectEndIndex) {
 	    	if (isUsingOffset(start))
@@ -185,7 +185,7 @@ public class DerbyDictionary
             }
         }
     }
-    
+
     @Override
     public boolean isFatalException(int subtype, SQLException ex) {
         int errorCode = ex.getErrorCode();
@@ -195,13 +195,13 @@ public class DerbyDictionary
         }
         return super.isFatalException(subtype, ex);
     }
-    
+
 	/**
 	 * Applies range calculation on the actual number of rows selected by a
 	 * {@code COUNT(*)} query. A range query may use either only the limit or
 	 * both offset and limit based on database dictionary support and
 	 * accordingly the number of rows in the result set needs to be modified.
-	 * 
+	 *
 	 * @param select
 	 * @param count
 	 * @return

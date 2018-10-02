@@ -19,10 +19,10 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for CAN_Address complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained
  * within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="CAN_Address">
  *   &lt;complexContent>
@@ -37,8 +37,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -57,10 +57,10 @@ public class CANAddress
 
     /**
      * Gets the value of the province property.
-     * 
+     *
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getProvince() {
         return province;
@@ -68,11 +68,11 @@ public class CANAddress
 
     /**
      * Sets the value of the province property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setProvince(String value) {
         this.province = value;
@@ -80,10 +80,10 @@ public class CANAddress
 
     /**
      * Gets the value of the postalCode property.
-     * 
+     *
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getPostalCode() {
         return postalCode;
@@ -91,11 +91,11 @@ public class CANAddress
 
     /**
      * Sets the value of the postalCode property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setPostalCode(String value) {
         this.postalCode = value;

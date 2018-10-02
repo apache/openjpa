@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation;
 
@@ -213,7 +213,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         CacheStatisticsSPI stats = (CacheStatisticsSPI) _dc.getStatistics();
         return stats.isEnabled();
     }
-    
+
     public Map<String, long[]> getCacheStatistics() {
         return _dc.getStatistics().toMap();
     }

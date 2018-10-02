@@ -30,19 +30,19 @@ import javax.persistence.Table;
 @Table(name="primary entityB", schema="delim id2")
 public class EntityB {
     @Id
-    @SequenceGenerator(name="entityB_seq_gen_name", 
+    @SequenceGenerator(name="entityB_seq_gen_name",
         sequenceName="entityB seq gen", schema="delim id2")
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, 
+    @GeneratedValue(strategy=GenerationType.SEQUENCE,
         generator="entityB_seq_gen_name")
     private int id;
     @Column(name="e_name")
     private String name;
-    
+
     public EntityB(String name) {
         this.name = name;
     }
-    
-    
+
+
     /**
      * @return the id
      */

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
@@ -35,7 +35,7 @@ public class TestCacheModeUnspecified extends AbstractCacheModeTestCase {
     private static Cache cache = null;
     private static List<String> sql = new ArrayList<String>();
     private static JDBCListener listener;
-    
+
     private static Class<?>[] expectedInCache = persistentTypes;
     private static Class<?>[] expectedNotInCache = {};
 
@@ -57,11 +57,11 @@ public class TestCacheModeUnspecified extends AbstractCacheModeTestCase {
         }
         return listener;
     }
-    
-    public List<String> getSql() { 
+
+    public List<String> getSql() {
         return sql;
     }
-    
+
     public void testCacheables() {
         assertCacheables(cache, false);
     }
@@ -83,7 +83,7 @@ public class TestCacheModeUnspecified extends AbstractCacheModeTestCase {
     protected Class<?>[] getExpectedNotInCache() {
         return expectedNotInCache;
     }
-    
+
     @Override
     public boolean getCacheEnabled() {
         return false;

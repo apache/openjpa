@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
@@ -27,25 +27,25 @@ import javax.persistence.*;
 @Table(name="COMPANY_PQC")
 
 @NamedQueries({
-	@NamedQuery(name="Company.PreparedQueryWithNoParameter", 
+	@NamedQuery(name="Company.PreparedQueryWithNoParameter",
 	    query="select x from Company x"),
-	@NamedQuery(name="Company.PreparedQueryWithNamedParameter", 
+	@NamedQuery(name="Company.PreparedQueryWithNamedParameter",
         query="select x from Company x "
             + "where x.name=:name and x.startYear=:startYear"),
-	@NamedQuery(name="Company.PreparedQueryWithPositionalParameter", 
+	@NamedQuery(name="Company.PreparedQueryWithPositionalParameter",
 	    query="select x from Company x where x.name=?1 and x.startYear=?2"),
-	@NamedQuery(name="Company.PreparedQueryWithLiteral", 
+	@NamedQuery(name="Company.PreparedQueryWithLiteral",
         query="select x from Company x where x.name='IBM' and x.startYear=1900")
 })
 public class Company {
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private String name;
-	
+
 	private int startYear;
-	
+
 	@OneToMany(mappedBy="company", cascade=CascadeType.ALL)
 	private Collection<Department> departments = new HashSet<Department>();
 

@@ -23,7 +23,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 public class QCInstrument extends AbstractQueryCacheInstrument {
 
     public static final String NAME = "SimpleQCInstrument";
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -40,5 +40,5 @@ public class QCInstrument extends AbstractQueryCacheInstrument {
 
     public void stop() {
         setStarted(false);
-    }    
+    }
 }

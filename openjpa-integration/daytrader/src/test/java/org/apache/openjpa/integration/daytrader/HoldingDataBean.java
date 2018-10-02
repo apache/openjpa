@@ -65,24 +65,24 @@ public class HoldingDataBean implements Serializable {
     @GeneratedValue(strategy=GenerationType.TABLE, generator="holdingIdGen")
     @Column(name = "HOLDINGID", nullable = false)
     private Integer holdingID;              /* holdingID */
-    
+
     @Column(name = "QUANTITY", nullable = false)
     private double quantity;                /* quantity */
-    
+
     @Column(name = "PURCHASEPRICE")
     private BigDecimal purchasePrice;       /* purchasePrice */
-    
+
     @Column(name = "PURCHASEDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date purchaseDate;              /* purchaseDate */
-    
+
     @Transient
     private String quoteID;                 /* Holding(*)  ---> Quote(1) */
-    
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="ACCOUNT_ACCOUNTID")
     private AccountDataBean account;
-    
+
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "QUOTE_SYMBOL")
     private QuoteDataBean quote;
@@ -205,7 +205,7 @@ public class HoldingDataBean implements Serializable {
          return getQuoteID();
      }
      */
-    
+
     public QuoteDataBean getQuote() {
         return quote;
     }
@@ -213,7 +213,7 @@ public class HoldingDataBean implements Serializable {
     public void setQuote(QuoteDataBean quote) {
         this.quote = quote;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;

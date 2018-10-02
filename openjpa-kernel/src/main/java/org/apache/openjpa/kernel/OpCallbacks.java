@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -43,7 +43,7 @@ public interface OpCallbacks {
     public static final int ACT_RUN = 2 << 1;
 
     /**
-     * Process operation argument. Throw proper 
+     * Process operation argument. Throw proper
      * {@link org.apache.openjpa.util.OpenJPAException} for illegal value.
      *
      * @param op the operation constant

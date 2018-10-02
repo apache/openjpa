@@ -14,7 +14,7 @@ s * Licensed to the Apache Software Foundation (ASF) under one
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.identity.entityasidentity;
 
@@ -27,12 +27,12 @@ import javax.persistence.Table;
 public class Person {
     @Id
     private Integer id;
-    
+
     private String firstName;
     private String lastName;
-    
+
     public Person() {
-        
+
     }
 
     public Integer getId() {

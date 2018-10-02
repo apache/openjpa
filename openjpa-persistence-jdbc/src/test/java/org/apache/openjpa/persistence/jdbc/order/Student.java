@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
@@ -31,20 +31,20 @@ import javax.persistence.Table;
 @Entity
 @Table(name="OCStudent")
 public class Student {
-    
+
     private int id;
-    
+
     private String name;
 
     private Set<Course> courses;
 
-    public Student() {        
+    public Student() {
     }
-    
+
     public Student(String name) {
         this.name = name;
     }
-    
+
     @ManyToMany(mappedBy="students",cascade=CascadeType.PERSIST)
     public Set<Course> getCourses() {
         return courses;
@@ -72,7 +72,7 @@ public class Student {
     public String getName() {
         return name;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof Student) {
             Student student = (Student)obj;

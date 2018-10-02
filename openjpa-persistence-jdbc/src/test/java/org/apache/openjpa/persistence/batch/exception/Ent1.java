@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.batch.exception;
 
@@ -25,19 +25,19 @@ import javax.persistence.Id;
 public class Ent1 {
     // primary key:
     @Id
-    private int pk;    
+    private int pk;
     public int getPk() {return pk;}
     public void setPk(int pk) {this.pk = pk;}
-    
+
     private String name;
     public String getName(){return name;}
     public void setName(String str){
         name = str;
     }
-    
-    public Ent1() {}    
-    public Ent1(int pk, String str) {this.pk = pk;name=str;}     
-    
+
+    public Ent1() {}
+    public Ent1(int pk, String str) {this.pk = pk;name=str;}
+
     public String toString(){
         return "Ent1 [pk = " + pk + ", " + name +"]";
     }
@@ -49,7 +49,7 @@ public class Ent1 {
         result = prime * result + pk;
         return result;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.update;
 
@@ -29,11 +29,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests for update on entity that uses a Timestamp as version.
- * 
+ *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-1583">OPENJPA-1583</A>
- *     
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 public class TestTimestampVersion extends SingleEMFTestCase {
 	public void setUp() {
@@ -55,7 +55,7 @@ public class TestTimestampVersion extends SingleEMFTestCase {
         em.getTransaction().begin();
         em.persist(pc);
         em.getTransaction().commit();
-        
+
         try {
             // delay to ensure the new timestamp exceeds the timer's resolution.
             Thread.sleep(1500);
@@ -70,14 +70,14 @@ public class TestTimestampVersion extends SingleEMFTestCase {
           .setParameter("oldname", "Original")
           .executeUpdate();
         em.getTransaction().commit();
-        
+
         em.getTransaction().begin();
         em.refresh(pc);
         Timestamp newVersion = pc.getVersion();
         assertTrue("Expected newVersion=" + newVersion.toString() + " to be after oldVersion=" + oldVersion.toString(),
             newVersion.after(oldVersion));
     }
-    
+
     public void testBulkUpdateOnNumericVersion() {
         NumericVersionedEntity pc = new NumericVersionedEntity();
         pc.setName("Original");
@@ -85,7 +85,7 @@ public class TestTimestampVersion extends SingleEMFTestCase {
         em.getTransaction().begin();
         em.persist(pc);
         em.getTransaction().commit();
-        
+
         em.getTransaction().begin();
         int oldVersion = pc.getVersion();
         String jpql = "UPDATE NumericVersionedEntity t SET t.name=:newname WHERE t.name=:oldname";
@@ -94,12 +94,12 @@ public class TestTimestampVersion extends SingleEMFTestCase {
           .setParameter("oldname", "Original")
           .executeUpdate();
         em.getTransaction().commit();
-        
+
         em.getTransaction().begin();
         em.refresh(pc);
         int newVersion = pc.getVersion();
         assertEquals(newVersion, oldVersion+1);
     }
 
-	
+
 }

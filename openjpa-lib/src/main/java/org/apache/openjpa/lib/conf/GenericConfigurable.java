@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.conf;
 
@@ -23,7 +23,7 @@ import org.apache.openjpa.lib.util.Options;
 /**
  * Implementations of this interface may perform additional
  * generic configuration with any key-value pairs that cannot be set
- * into the object via the normal 
+ * into the object via the normal
  * {@link org.apache.openjpa.lib.util.Options#setInto} means.
  *
  * @author Patrick Linskey

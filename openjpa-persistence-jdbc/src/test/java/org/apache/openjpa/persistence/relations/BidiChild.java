@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -42,31 +42,31 @@ public class BidiChild implements Serializable {
     @OneToOne(fetch=FetchType.LAZY)
     private BidiParent oneToOneParent;
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public BidiParent getOneToOneParent() { 
-        return oneToOneParent; 
+    public BidiParent getOneToOneParent() {
+        return oneToOneParent;
     }
 
-    public void setOneToOneParent(BidiParent parent) { 
-        oneToOneParent = parent; 
+    public void setOneToOneParent(BidiParent parent) {
+        oneToOneParent = parent;
     }
 
-    public BidiParent getOneToManyParent() { 
-        return oneToManyParent; 
+    public BidiParent getOneToManyParent() {
+        return oneToManyParent;
     }
 
-    public void setOneToManyParent(BidiParent parent) { 
-        oneToManyParent = parent; 
+    public void setOneToManyParent(BidiParent parent) {
+        oneToManyParent = parent;
     }
 }

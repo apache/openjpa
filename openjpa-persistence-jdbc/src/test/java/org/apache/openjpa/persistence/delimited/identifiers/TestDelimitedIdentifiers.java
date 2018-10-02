@@ -25,9 +25,9 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestDelimitedIdentifiers extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
-    
+
     EntityA entityA;
-    
+
     public void setUp() throws Exception {
         setSupportedDatabases(
             org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
@@ -35,14 +35,14 @@ public class TestDelimitedIdentifiers extends SQLListenerTestCase {
         if (isTestsDisabled()) {
             return;
         }
-        
+
         super.setUp(EntityA.class, DROP_TABLES);
         assertNotNull(emf);
-        
+
         em = emf.createEntityManager();
         assertNotNull(em);
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
@@ -56,7 +56,7 @@ public class TestDelimitedIdentifiers extends SQLListenerTestCase {
     protected OpenJPAEntityManagerFactorySPI createEMF(final Object... props) {
         return createNamedEMF("delimited-identifiers", props);
     }
-    
+
     public void createEntityA(int id) {
         entityA = new EntityA(id, "aName");
         entityA.setSecName("sec name");
@@ -65,24 +65,24 @@ public class TestDelimitedIdentifiers extends SQLListenerTestCase {
         entityA.addCollectionDelimSet("aaa");
         entityA.addCollectionDelimSet("bbb");
     }
-    
+
     public void testTableName() {
         id++;
         createEntityA(id);
-        
+
         em.getTransaction().begin();
         em.persist(entityA);
         em.getTransaction().commit();
-        
+
         int genId = entityA.getId();
         em.clear();
         em.getTransaction().begin();
         EntityA eA = em.find(EntityA.class, genId);
         assertEquals("aName", eA.getName());
-        
+
         em.getTransaction().commit();
         em.close();
     }
-    
+
     // TODO: validate with queries
 }

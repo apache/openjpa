@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -118,10 +118,10 @@ public interface QueryContext {
      * @since 0.3.0
      */
     public void setUnique(boolean unique);
-    
+
     /**
      * Affirms if this query results are distinct instance(s).
-     * 
+     *
      * @since 2.0.0
      */
     public boolean isDistinct();
@@ -193,7 +193,7 @@ public interface QueryContext {
      * if they're implicit, used.
      */
     public OrderedMap<Object,Class<?>> getOrderedParameterTypes();
-    
+
     /**
      * Return a map of parameter name to type for this query. The returned
      * map will iterate in the order that the parameters were declared or,
@@ -273,14 +273,14 @@ public interface QueryContext {
      * Helper method to delete the objects found by executing a query on
      * the given executor.
      */
-    public Number deleteInMemory(StoreQuery q, StoreQuery.Executor ex, 
+    public Number deleteInMemory(StoreQuery q, StoreQuery.Executor ex,
         Object[] params);
 
     /**
      * Helper method to update the objects found by executing a query on
      * the given executor.
      */
-    public Number updateInMemory(StoreQuery q, StoreQuery.Executor ex, 
+    public Number updateInMemory(StoreQuery q, StoreQuery.Executor ex,
         Object[] params);
 
     /**
@@ -293,7 +293,7 @@ public interface QueryContext {
     /**
      * Synchronize on the query's internal lock.
      */
-    public void lock (); 
+    public void lock ();
 
     /**
      * Unlock the query's internal lock.

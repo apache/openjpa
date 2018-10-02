@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.relations;
 
@@ -35,9 +35,9 @@ public class TestManyEagerSQL
     public void setUp() {
         setUp(DROP_TABLES,
             OneManyEagerParent.class, OneManyEagerChild.class,
-            OneManyLazyChild.class, OneOneParent.class, 
+            OneManyLazyChild.class, OneOneParent.class,
             OneOneChild.class);
-        
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -56,7 +56,7 @@ public class TestManyEagerSQL
             }
             em.persist(parent);
         }
-        
+
         for (int i = 0; i < 3; i++) {
         	OneOneParent parent = new OneOneParent();
         	parent.setName("parent" + i);
@@ -67,7 +67,7 @@ public class TestManyEagerSQL
         	em.persist(child);
         	em.persist(parent);
         }
-        
+
         em.flush();
         em.getTransaction().commit();
         em.close();
@@ -81,7 +81,7 @@ public class TestManyEagerSQL
         Query q = em.createQuery(query);
         List list = q.getResultList();
         assertEquals(4, list.size());
-        
+
         // Expected SQLs:
         //   SELECT t0.id, t0.optLock, t0.name, t1.id, t1.optLock, t1.name
         //       FROM OneManyEagerChild t0
@@ -93,7 +93,7 @@ public class TestManyEagerSQL
         //       ORDER BY t0.name ASC [params=(long) 2]
         //   SELECT t0.id, t0.optLock, t0.name FROM OneManyEagerChild t0
         //       WHERE t0.PARENT_ID = ? ORDER BY t0.name ASC [params=(long) 1]
-        //   SELECT t0.id, t0.optLock, t0.name, t0.PARENT_ID 
+        //   SELECT t0.id, t0.optLock, t0.name, t0.PARENT_ID
         //       FROM OneManyLazyChild t0 WHERE t0.PARENT_ID = ?
         //       ORDER BY t0.name ASC [params=(long) 1]
 
@@ -137,7 +137,7 @@ public class TestManyEagerSQL
         //  SELECT t0.optLock, t0.name, t1.PARENT_ID, t1.id, t1.optLock, t1.name
         //      FROM OneManyEagerParent t0
         //      LEFT OUTER JOIN OneManyEagerChild t1 ON t0.id = t1.PARENT_ID
-        //      WHERE t0.id = ? 
+        //      WHERE t0.id = ?
         //      ORDER BY t1.PARENT_ID ASC, t1.name ASC [params=(long) 252]
         //  SELECT t0.id, t0.optLock, t0.name, t0.PARENT_ID
         //      FROM OneManyLazyChild t0 WHERE t0.PARENT_ID = ?
@@ -145,7 +145,7 @@ public class TestManyEagerSQL
         //  SELECT t0.optLock, t0.name, t1.PARENT_ID, t1.id, t1.optLock, t1.name
         //      FROM OneManyEagerParent t0
         //      LEFT OUTER JOIN OneManyEagerChild t1 ON t0.id = t1.PARENT_ID
-        //      WHERE t0.id = ? 
+        //      WHERE t0.id = ?
         //      ORDER BY t1.PARENT_ID ASC, t1.name ASC [params=(long) 251]
         //  SELECT t0.id, t0.optLock, t0.name, t0.PARENT_ID
         //      FROM OneManyLazyChild t0 WHERE t0.PARENT_ID = ?
@@ -213,7 +213,7 @@ public class TestManyEagerSQL
 
         // Expected SQLs:
         //   SELECT t0.id, t0.optLock, t1.id, t1.optLock, t1.name, t0.name
-        //   FROM OneOneParent t0 
+        //   FROM OneOneParent t0
         //   LEFT OUTER JOIN OneOneChild t1 ON t0.id = t1.PARENT_ID
 
         assertEquals(1, sql.size());
@@ -239,8 +239,8 @@ public class TestManyEagerSQL
         assertEquals(3, list.size());
 
         // Expected SQLs:
-        //   SELECT t0.id, t0.optLock, t1.id, t1.optLock, t1.name, t0.name 
-        //   FROM OneOneParent t0 
+        //   SELECT t0.id, t0.optLock, t1.id, t1.optLock, t1.name, t0.name
+        //   FROM OneOneParent t0
         //   LEFT OUTER JOIN OneOneChild t1 ON t0.id = t1.PARENT_ID
 
         assertEquals(1, sql.size());

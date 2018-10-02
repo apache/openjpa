@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -29,7 +29,7 @@ import org.apache.openjpa.util.UserException;
  */
 public class ValueMetaDataImpl
     implements ValueMetaData {
-    
+
     private static final long serialVersionUID = 6766697443293395831L;
 
     private static final Localizer _loc = Localizer.forPackage
@@ -64,7 +64,7 @@ public class ValueMetaDataImpl
     protected ValueMetaDataImpl(FieldMetaData owner) {
         _owner = owner;
     }
-    
+
     /**
      * Constructor for serialization.
      */
@@ -187,7 +187,7 @@ public class ValueMetaDataImpl
             addEmbeddedMetaData();
         return _embeddedMeta;
     }
-   
+
     public ClassMetaData addEmbeddedMetaData(int access) {
         MetaDataRepository repos = _owner.getRepository();
         _embeddedMeta = repos.newEmbeddedClassMetaData(this);
@@ -211,7 +211,7 @@ public class ValueMetaDataImpl
 
         switch (_delete) {
             case CASCADE_NONE:
-                // if the user marks the owning field dependent and we 
+                // if the user marks the owning field dependent and we
                 // externalize to a pc type, then become dependent
                 if (this != _owner.getValue() && isTypePC()
                     && ((ValueMetaDataImpl) _owner.getValue())._delete
@@ -253,7 +253,7 @@ public class ValueMetaDataImpl
         if (_checkPUDefaultCascadePersist) {
             // Apply default <cascade-persist> only to entity relationships
             boolean applyDefaultCascadePersist = false;
-            
+
             switch (_owner.getAssociationType()) {
             case FieldMetaData.ONE_TO_ONE:
             case FieldMetaData.ONE_TO_MANY:
@@ -262,24 +262,24 @@ public class ValueMetaDataImpl
                 applyDefaultCascadePersist = true;
             default:
             }
-            
+
             if (applyDefaultCascadePersist) {
                 Boolean dcpe = getRepository().getMetaDataFactory().getDefaults().isDefaultCascadePersistEnabled();
                 if (dcpe != null && dcpe.equals(Boolean.TRUE) && _persist == CASCADE_NONE) {
                     _persist = CASCADE_IMMEDIATE;
                 }
-            }        
-            
+            }
+
             _checkPUDefaultCascadePersist = false;
         }
-        
+
         return _persist;
     }
 
     public void setCascadePersist(int persist) {
         setCascadePersist(persist, true);
     }
-    
+
     public void setCascadePersist(int persist, boolean checkPUDefault) {
         _persist = persist;
         _checkPUDefaultCascadePersist = checkPUDefault;
@@ -488,11 +488,11 @@ public class ValueMetaDataImpl
             _owner.getDefiningMetaData().getEnvClassLoader(), false);
         if (meta != null)
             _decCode = JavaTypes.PC;
-        
+
         if (meta != null && meta.isEmbeddedOnly() && !meta.isAbstract())
             setEmbedded(true);
-                
-        if (!isEmbedded()) 
+
+        if (!isEmbedded())
             _decTypeMeta = meta;
     }
 

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -230,7 +230,7 @@ public class DetachedStateManager
                     break;
                 case JavaTypes.SHORT:
                     if (_dirty.get(i))
-                        sm.settingShortField(pc, i, 
+                        sm.settingShortField(pc, i,
                             (!loaded.get(i)) ? (short) 0 : sm.fetchShortField(i), (short) longval, set);
                     else
                         sm.storeShortField(i, (short) longval);
@@ -268,7 +268,7 @@ public class DetachedStateManager
                         } else {
                         	objval = getReference(manager, objval, sm, fields[i]);
                         }
-                    } 
+                    }
                     else {
                         PersistenceCapable toPC = null;
                         if (objval != null && fields[i].isEmbeddedPC())
@@ -321,10 +321,10 @@ public class DetachedStateManager
         // if we were clean at least make sure a version check is done to
         // prevent using old state
         if (!sm.isVersionCheckRequired() && broker.isActive()
-            && _version != origVersion && (origVersion == null 
-            || broker.getStoreManager().compareVersion(sm, _version, 
+            && _version != origVersion && (origVersion == null
+            || broker.getStoreManager().compareVersion(sm, _version,
             origVersion) != StoreManager.VERSION_SAME)) {
-            broker.transactional(sm.getManagedInstance(), false, 
+            broker.transactional(sm.getManagedInstance(), false,
                 manager.getBehavior());
         }
 
@@ -440,7 +440,7 @@ public class DetachedStateManager
     public void accessingField(int idx) {
         if (!_access && !_loaded.get(idx))
             // do not access the pc fields by implictly invoking _pc.toString()
-            // may cause infinite loop if again tries to access unloaded field 
+            // may cause infinite loop if again tries to access unloaded field
             throw new IllegalStateException(_loc.get("unloaded-detached",
                Exceptions.toString(_pc)).getMessage());
     }
@@ -992,12 +992,12 @@ public class DetachedStateManager
         if (_lock != null)
             _lock.unlock();
     }
-    
+
     @Override
     public boolean isDelayed(int field) {
         return false;
     }
-    
+
     @Override
     public void setDelayed(int field, boolean delay) {
         throw new UnsupportedOperationException();

@@ -28,39 +28,39 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests a domain model with following characteristics:
- * a) A typical bidirectional ManyToOne/OneToMany relation 
+ * a) A typical bidirectional ManyToOne/OneToMany relation
  *    EntityA references a single instance of EntityB
  *    EntityB references a collection of EntityA
- * b) EntityB itself is abstract 
+ * b) EntityB itself is abstract
  * c) Many concrete subclasses of EntityB exist
- * d) EntityB uses TABLE_PER_CLASS inheritance strategy, hence no mapping table 
+ * d) EntityB uses TABLE_PER_CLASS inheritance strategy, hence no mapping table
  *    exists for EntityB itself.
  * e) Relation field in EntityA is declared as abstract type EntityB (for which
  * f) all the domain classes i.e. EntityA, EntityB and all its subclasses is
  *    derived from an abstract MappedSuperClass which holds primary key and
  *    version fields.
- *    
+ *
  *  The test addresses a reported error [1] in mapping the above domain model.
  *  The test verifies basic persist, query and delete operations on the domain
  *  model.
- *  
+ *
  *  [1] <A HREF="https://issues.apache.org/jira/browse/OPENJPA-602">
  *  OPENJPA-602</A>}
- *        
+ *
  * @author Pinaki Poddar
  *
  */
 public class TestTablePerClassInheritanceWithAbstractRoot extends
 		SingleEMFTestCase {
 	Class<?>[] UNJOINED_SUBCLASSES = {
-			EnglishParagraph.class, 
-			FrenchParagraph.class, 
+			EnglishParagraph.class,
+			FrenchParagraph.class,
 			GermanParagraph.class};
-	
+
     public void setUp() {
-        setUp(CLEAR_TABLES, 
+        setUp(CLEAR_TABLES,
         		Translation.class, BaseEntity.class,
-        		EnglishParagraph.class, FrenchParagraph.class, 
+        		EnglishParagraph.class, FrenchParagraph.class,
         		GermanParagraph.class, Translatable.class);
     }
 
@@ -68,35 +68,35 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         /**
-         * Aggregate query operations can not be performed on unjoined 
+         * Aggregate query operations can not be performed on unjoined
          * subclasses. Hence all concrete subclasses of abstract base
          * class is counted separately to count all Translatable instances.
          */
-        
+
         EnglishParagraph english = new EnglishParagraph();
         FrenchParagraph french   = new FrenchParagraph();
         GermanParagraph german   = new GermanParagraph();
-        
-        Translation translation1 = new Translation(); 
-        Translation translation2 = new Translation(); 
-        Translation translation3 = new Translation(); 
-        Translation translation4 = new Translation(); 
-        
+
+        Translation translation1 = new Translation();
+        Translation translation2 = new Translation();
+        Translation translation3 = new Translation();
+        Translation translation4 = new Translation();
+
         english.setContent("Hello");
         french.setContent("Bon jour");
         german.setContent("Guten Tag");
 
-        
+
         translation1.setTranslatable(english);
         translation2.setTranslatable(english);
         translation3.setTranslatable(french);
         translation4.setTranslatable(german);
-        
+
         english.addTranslation(translation1);
         english.addTranslation(translation2);
         french.addTranslation(translation3);
         german.addTranslation(translation4);
-        
+
         em.persist(translation1);
         em.persist(translation2);
         em.persist(translation3);
@@ -115,10 +115,10 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
         populate();
 		int nTranslatableAfter = count(UNJOINED_SUBCLASSES);
 		int nTranslationAfter  = count(Translation.class);
-		
+
 		assertEquals(nTranslatableBefore+3, nTranslatableAfter);
 		assertEquals(nTranslationBefore+4, nTranslationAfter);
-		
+
 		/**
          * Verify that if A refers to B then A must be a member of the set
 		 * referred by B
@@ -134,24 +134,24 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 		em.getTransaction().rollback();
 		em.close();
 	}
-	
-	
+
+
     void linkConsistently(Translation translation, Translatable translatable) {
 		translatable.addTranslation(translation);
 		translation.setTranslatable(translatable);
 	}
-	
+
 	/**
      * Count the number of instances in the given class by aggregate JPQL query.
 	 */
 	public int count(Class c) {
 		OpenJPAEntityManager em = emf.createEntityManager();
-		Number n = ((Number) em.createQuery("SELECT COUNT(p) FROM " + 
+		Number n = ((Number) em.createQuery("SELECT COUNT(p) FROM " +
                 c.getSimpleName() + " p").getSingleResult()).intValue();
 		closeEM(em);
 		return n.intValue();
 	}
-	
+
 	/**
      * Count total number of instances of all the given classes by separate JPQL
 	 * aggregate query. Useful when a base class has unjoined subclasses.
@@ -173,14 +173,14 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
         assertEquals(2, rs.size());
         for (int i=0; i < rs.size(); i++)
             assertTrue(rs.get(i) instanceof EnglishParagraph);
-        
+
         query = "select distinct tr from Translatable tr join tr.translations t where " +
             "TYPE(tr) = EnglishParagraph or TYPE(tr) = FrenchParagraph";
         rs = em.createQuery(query).getResultList();
         assertEquals(2, rs.size());
         for (int i=0; i < rs.size(); i++)
             assertTrue(!(rs.get(i) instanceof GermanParagraph));
-        
+
         query = "select distinct tr from Translatable tr join tr.translations t where " +
             "TYPE(tr) in (?1, ?2)";
         try {
@@ -190,7 +190,7 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
             // as expected
             //System.out.println(e.getMessage());
         }
-        
+
         query = "select tr from Translatable tr join tr.translations t where " +
             "TYPE(tr) <> EnglishParagraph";
         try {

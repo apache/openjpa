@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.policy;
 
@@ -26,12 +26,12 @@ import org.apache.openjpa.slice.TestQueryTargetPolicy;
 
 /**
  * A sample query target policy used to {@linkplain TestQueryTargetPolicy}.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class SampleQueryTargetPolicy implements QueryTargetPolicy {
-    public String[] getTargets(String query, Map<Object, Object> params, 
+    public String[] getTargets(String query, Map<Object, Object> params,
             String language, List<String> slices,
             Object context) {
         if (TestQueryTargetPolicy.QueryPersonByName.equals(query)) {

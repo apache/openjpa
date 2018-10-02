@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
@@ -43,15 +43,15 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestJoinToBaseClass
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-    
-    
-    
+
+
+
     /** Creates a new instance of TestJoinToBaseClass */
-    public TestJoinToBaseClass(String name) 
+    public TestJoinToBaseClass(String name)
     {
     	super(name);
     }
-    
+
     public void testMapping() {
         ClassMapping mapping = ((JDBCConfiguration) getConfiguration()).
             getMappingRepositoryInstance().
@@ -77,7 +77,7 @@ public class TestJoinToBaseClass
         OpenJPAEntityManagerFactory factory=null;
         OpenJPAEntityManager pm = factory.createEntityManager();
         startTx(pm);
-        
+
        deleteAll( MappingTest1.class,pm);
        deleteAll( MappingTest2.class,pm);
         endTx(pm);

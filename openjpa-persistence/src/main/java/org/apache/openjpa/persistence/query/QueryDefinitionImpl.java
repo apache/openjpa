@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -33,11 +33,11 @@ import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Implements QueryDefinition.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
-public class QueryDefinitionImpl extends ExpressionImpl 
+public class QueryDefinitionImpl extends ExpressionImpl
     implements QueryDefinition, Expression  {
 	private final QueryBuilderImpl _builder;
 	private List<AbstractDomainObject> _domains;
@@ -47,20 +47,20 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	private boolean  _distinct;
 	private Predicate _where;
 	private Predicate _having;
-	
+
 	private static enum Visit {PROJECTION, EXPRESSION, JOINABLE};
-	
-	protected static Localizer _loc = 
+
+	protected static Localizer _loc =
 		Localizer.forPackage(QueryDefinitionImpl.class);
-	
+
 	/**
-	 * 
+	 *
 	 * @param builder
 	 */
 	protected QueryDefinitionImpl(QueryBuilderImpl builder) {
 		_builder = builder;
 	}
-	
+
 	/**
 	 * Root domain object has no parent, no path but a non-null Class.
 	 */
@@ -69,7 +69,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		addDomain(root);
 		return root;
 	}
-	
+
 	public DomainObject addSubqueryRoot(PathExpression path) {
 		AbstractPath impl = (AbstractPath)path;
 		LinkedList<AbstractPath> paths = impl.split();
@@ -78,9 +78,9 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		while (i < paths.size() && owner.hasDomain(paths.get(i))) {
 			i++;
 		}
-		
+
 		AbstractPath next = paths.get(i);
-		DomainObject newRoot = new NavigationPath(this, 
+		DomainObject newRoot = new NavigationPath(this,
                 next.getParent(), next.getLastSegment().toString());
 		addDomain((AbstractDomainObject)newRoot);
 		i++;
@@ -90,11 +90,11 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		}
 		return newRoot;
 	}
-	
+
 	boolean hasDomain(PathExpression path) {
 		return _domains != null && _domains.contains(path);
 	}
-	
+
 	protected <T extends AbstractDomainObject> T addDomain(T path) {
 		if (_domains == null)
 			_domains = new ArrayList<AbstractDomainObject>();
@@ -292,7 +292,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	public QueryDefinition selectDistinct(List<SelectItem> items) {
 		return select(items, true);
 	}
-	
+
     private QueryDefinition select(List<SelectItem> items, boolean isDistinct) {
 		if (_projections == null) {
 			_projections = new ArrayList<SelectItem>();
@@ -341,7 +341,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		_where = predicate;
 		return this;
 	}
-	
+
 	private List<SelectItem> getProjections() {
 		if (_projections == null) {
             List<SelectItem> defaultProjection = new ArrayList<SelectItem>();
@@ -363,14 +363,14 @@ public class QueryDefinitionImpl extends ExpressionImpl
         fillBuffer(" GROUP BY ", buffer, ctx, _groupBys, Visit.EXPRESSION);
 		fillBuffer(" HAVING ", buffer, ctx, _having);
         fillBuffer(" ORDER BY ", buffer, ctx, _orderBys, Visit.EXPRESSION);
-		
+
 		return buffer.toString();
 	}
-	
+
 	public String asProjection(AliasContext ctx) {
 		return asExpression(ctx);
 	}
-	
+
     public void fillBuffer(String header, StringBuilder buffer, AliasContext ctx,
 		List list, Visit visit) {
 		if (list == null || list.isEmpty())
@@ -385,13 +385,13 @@ public class QueryDefinitionImpl extends ExpressionImpl
 			case EXPRESSION : buffer.append(v.asExpression(ctx))
                         .append(i != list.size()-1 ? ", " : " ");
 				break;
-            case JOINABLE   : buffer.append(i > 0 && v instanceof RootPath ? 
+            case JOINABLE   : buffer.append(i > 0 && v instanceof RootPath ?
                         ", " : " ").append(v.asJoinable(ctx));
 				break;
 			}
 		}
 	}
-	
+
     public void fillBuffer(String header, StringBuilder buffer, AliasContext ctx,
 			Predicate p) {
 		if (p == null)
@@ -400,7 +400,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		buffer.append(header);
 		buffer.append(v.asExpression(ctx));
 	}
-	
+
 	/**
      * Registers each domain with an alias. Also set alias for order by items
 	 * that are projected.
@@ -420,12 +420,12 @@ public class QueryDefinitionImpl extends ExpressionImpl
 			}
 		}
 	}
-	
+
 	static class DomainSorter implements Comparator<AbstractDomainObject> {
 		static List<Class> _order = Arrays.asList(new Class[] {
-                RootPath.class, NavigationPath.class, OperatorPath.class, 
+                RootPath.class, NavigationPath.class, OperatorPath.class,
 				JoinPath.class, FetchPath.class, } );
-		
+
         public int compare(AbstractDomainObject a, AbstractDomainObject b) {
             return _order.indexOf(a.getClass()) - _order.indexOf(b.getClass());
 		}

@@ -73,9 +73,9 @@ public class EntityListenerPostLoadTest extends SingleEMFTestCase {
             // reopen a new EntityManager
             em = emf.createEntityManager();
             em.getTransaction().begin();
-            
+
             assertTrue(em.isDetached(entity));
-            
+
             entity.setValue("val2");
             //X entity.setValue2("val2");
 

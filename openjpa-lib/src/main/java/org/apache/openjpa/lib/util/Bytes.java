@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -128,8 +128,8 @@ public final class Bytes {
      *
      * @param lhs - left hand value in the comparison operation.
      * @param rhs - right hand value in the comparison operation.
-     * @return  a negative integer, zero, or a positive integer as 
-     * <code>lhs</code> is less than, equal to, or greater than 
+     * @return  a negative integer, zero, or a positive integer as
+     * <code>lhs</code> is less than, equal to, or greater than
      * <code>rhs</code>.
      */
     public static int compareTo(byte[] lhs, byte[] rhs) {

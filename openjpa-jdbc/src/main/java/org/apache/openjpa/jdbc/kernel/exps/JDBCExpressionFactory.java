@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
@@ -57,7 +57,7 @@ public class JDBCExpressionFactory
     private final ClassMapping _type;
     private final SelectConstructor _cons = new SelectConstructor();
     private int _getMapValueAlias = 0;
-    
+
     private boolean _isBooleanLiteralAsNumeric = true;
 
     /**
@@ -70,7 +70,7 @@ public class JDBCExpressionFactory
     public void setBooleanLiteralAsNumeric(boolean isBooleanLiteralAsNumeric) {
         _isBooleanLiteralAsNumeric = isBooleanLiteralAsNumeric;
     }
-    
+
     /**
      * Use to create SQL select.
      */
@@ -111,13 +111,13 @@ public class JDBCExpressionFactory
             val.getMetaData().getPCSubclasses().length > 0))
             throw new UserException(_loc.
                 get("invalid-type-argument", path.last() != null ? path.getPCPathString() : path.getSchemaAlias()));
-        
+
         if (disc.getColumns().length == 0) {
             if (disc.getStrategy() instanceof NoneDiscriminatorStrategy) {
                 // limited support for table per class inheritance hierarchy
                 if (path.last() != null)
                     throw new UserException(_loc.
-                        get("type-argument-unsupported", path.last().getName())); 
+                        get("type-argument-unsupported", path.last().getName()));
                 if (isNotEqual) {
                     if (param != null && param instanceof Null)
                         throw new UserException(_loc.
@@ -129,7 +129,7 @@ public class JDBCExpressionFactory
             }
             if (param != null && param instanceof CollectionParam)
                 throw new UserException(_loc.
-                    get("collection-param-unsupported")); 
+                    get("collection-param-unsupported"));
         }
     }
 
@@ -220,7 +220,7 @@ public class JDBCExpressionFactory
     }
 
     public Expression not(Expression exp) {
-        if (!(exp instanceof IsNotEmptyExpression) && 
+        if (!(exp instanceof IsNotEmptyExpression) &&
             !(exp instanceof InSubQExpression) &&
             HasContainsExpressionVisitor.hasContains(exp))
             return new NotContainsExpression((Exp) exp);
@@ -275,10 +275,10 @@ public class JDBCExpressionFactory
         if (!(v2 instanceof Const))
             throw new UserException(_loc.get("const-only", "matches"));
         if (esc == null && _type.getMappingRepository().
-                getDBDictionary().requiresSearchStringEscapeForLike == true) { 
+                getDBDictionary().requiresSearchStringEscapeForLike == true) {
             esc = _type.getMappingRepository().
                 getDBDictionary().searchStringEscape;
-        }        
+        }
         return new MatchesExpression((Val) v1, (Const) v2, single, multi, esc);
     }
 
@@ -351,7 +351,7 @@ public class JDBCExpressionFactory
     public Arguments newArgumentList(Value v1, Value v2) {
         return new Args((Val) v1, (Val) v2);
     }
-    
+
     public Arguments newArgumentList(Value... vs) {
         if (vs == null)
            return new Args(null);
@@ -497,7 +497,7 @@ public class JDBCExpressionFactory
     }
 
     public Value getMapValue(Value map, Value arg) {
-        return new GetMapValue((Val) map, (Val) arg, 
+        return new GetMapValue((Val) map, (Val) arg,
             "gmv" + _getMapValueAlias++);
     }
 
@@ -505,7 +505,7 @@ public class JDBCExpressionFactory
         if (val instanceof Lit) {
             Lit lit = (Lit) val;
             StringBuilder value = new StringBuilder();
-            int pType = lit.getParseType(); 
+            int pType = lit.getParseType();
             if (pType == Literal.TYPE_SQ_STRING ||
                 pType == Literal.TYPE_STRING)
                 value.append("'").append(lit.getValue().toString()).append("'");
@@ -569,17 +569,17 @@ public class JDBCExpressionFactory
         val2 = getLiteralRawString(val2);
         return new NullIfExpression((Val) val1, (Val) val2);
     }
-    
+
     public Value newFunction(String functionName, Class<?> resultType, Value... args) {
         return new DatastoreFunction(functionName, resultType, newArgumentList(args));
     }
-    
+
     public boolean isVerticalType(Value val) {
         if (!(val instanceof Type))
             return false;
         ClassMapping cm = (ClassMapping)((Type)val).getMetaData();
-        String strat = cm.getMappingInfo().getHierarchyStrategy(); 
-        if (strat != null && strat.equals(VerticalClassStrategy.ALIAS)) 
+        String strat = cm.getMappingInfo().getHierarchyStrategy();
+        if (strat != null && strat.equals(VerticalClassStrategy.ALIAS))
             return true;
         return false;
     }

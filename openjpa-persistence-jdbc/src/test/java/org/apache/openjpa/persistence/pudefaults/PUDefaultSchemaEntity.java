@@ -30,7 +30,7 @@ import javax.persistence.SequenceGenerator;
 /*
  * An entity which has a sequence where the sequence doesn't defined a schema,
  * as such the persistence-unit-default schema (see pudefaults-orm.xml file)
- * should be used when SQL operations are performed on the sequence. 
+ * should be used when SQL operations are performed on the sequence.
  */
 @Entity
 public class PUDefaultSchemaEntity implements Serializable {

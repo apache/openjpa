@@ -33,11 +33,11 @@ import org.osgi.framework.Bundle;
 public class BundleDelegatingClassLoader extends ClassLoader {
 
   private final Bundle bundle;
-  
+
   public BundleDelegatingClassLoader(Bundle b) {
     bundle = b;
   }
-  
+
   @Override
   protected Class<?> findClass(String className) throws ClassNotFoundException {
     return bundle.loadClass(className);

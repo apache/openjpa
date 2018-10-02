@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jpql.version;
 
@@ -36,23 +36,23 @@ public class TestJoinVersionField extends SingleEMFTestCase {
         setUp(CLEAR_TABLES, Author.class,Document.class);
         createTestData();
     }
-    
+
     public void testGetDocuments(){
         EntityManager em = emf.createEntityManager();
         String str = "SELECT doc FROM Document doc JOIN doc.author auth";
         TypedQuery<Document> query = em.createQuery(str, Document.class);
         List<Document> documentList =  query.getResultList();
 
-        for (Document doc : documentList) {        
+        for (Document doc : documentList) {
             assertEquals("Author version field should have a value of 1.",
                 1, doc.getAuthor().getVersion());
         }
-        
+
         em.close();
     }
-    
+
     /**
-     * Prior to OPENJPA-2343, the version field in the Author entity is returned 
+     * Prior to OPENJPA-2343, the version field in the Author entity is returned
      * as null.
      */
     public void testGetDocumentsByExplicitAttributeSelection(){
@@ -65,11 +65,11 @@ public class TestJoinVersionField extends SingleEMFTestCase {
             assertEquals("Author version field should have a value of 1.",1,objects[2]);
         }
     }
-    
+
     public void createTestData() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        
+
         Author author = new Author();
         author.setId(10);
         em.persist(author);

@@ -22,7 +22,7 @@ package org.apache.openjpa.persistence.simple;
 // used by the TestMissingMetaData test case.
 public class Animal {
     private String name;
-    
+
     public Animal() {
     }
 }

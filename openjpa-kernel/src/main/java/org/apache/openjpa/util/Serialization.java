@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -126,7 +126,7 @@ public class Serialization {
             super(delegate);
         }
 
-        protected Class resolveClass(ObjectStreamClass desc) 
+        protected Class resolveClass(ObjectStreamClass desc)
             throws IOException, ClassNotFoundException {
             String name = BlacklistClassResolver.DEFAULT.check(desc.getName());
             MultiClassLoader loader = AccessController
@@ -205,6 +205,6 @@ public class Serialization {
         public ObjectIdMarker(Object oid) {
             this.oid = oid;
 		}
-	} 
+	}
 }
 

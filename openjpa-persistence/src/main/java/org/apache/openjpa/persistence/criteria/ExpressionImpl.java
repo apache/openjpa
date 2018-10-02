@@ -30,9 +30,9 @@ import org.apache.openjpa.kernel.exps.ExpressionFactory;
 /**
  * Expression node for Criteria query.
  * Acts a bridge pattern to equivalent kernel representation.
- * 
+ *
  * @param <X> the type of the value this expression represents.
- * 
+ *
  * @author Pinaki Poddar
  * @since 2.0.0
  */
@@ -46,8 +46,8 @@ abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<
 
     /**
      * Creates a new expression of the given type. If the given type is same as this expression's type then
-     * returns the same instance. 
-     * May cause runtime cast failure if this expression's immutable type is not convertible to the given type. 
+     * returns the same instance.
+     * May cause runtime cast failure if this expression's immutable type is not convertible to the given type.
      */
     public <Y> Expression<Y> as(Class<Y> type) {
        return type == getJavaType() ? (Expression<Y>)this : new Expressions.CastAs<Y>(type, this);
@@ -105,7 +105,7 @@ abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<
     public Predicate isNull() {
     	return new Expressions.IsNull(this);
     }
-    
+
     //  ------------------------------------------------------------------------------------
     //  Contract for bridge pattern to convert to an equivalent kernel representation.
     //  ------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<
      * @return an equivalent kernel value
      */
     abstract org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q);
-    
+
     /**
      * Bridge contract to convert this facade expression to a kernel expression.
      * @param factory creates the kernel expression

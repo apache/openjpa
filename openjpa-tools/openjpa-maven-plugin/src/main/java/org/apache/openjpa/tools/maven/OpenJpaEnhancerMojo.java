@@ -25,7 +25,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 /**
  * Processes Application model classes and enhances them by running OpenJPA
  * Enhancer tool.
- * 
+ *
  * @version $Id: OpenJpaEnhancerMojo.java 10954 2009-10-23 22:05:45Z struberg $
  * @since 1.0
  */

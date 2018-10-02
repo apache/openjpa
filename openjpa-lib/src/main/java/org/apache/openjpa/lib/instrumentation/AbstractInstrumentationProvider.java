@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.instrumentation;
 
@@ -36,7 +36,7 @@ import org.apache.openjpa.lib.conf.PluginListValue;
 public abstract class AbstractInstrumentationProvider implements InstrumentationProvider, Configurable {
 
     private Map<String, Instrument> _instruments = new ConcurrentHashMap<String, Instrument>();
-    
+
     private boolean _started = false;
     private PluginListValue _instrumentValues;
     private String _options;
@@ -45,39 +45,39 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
     public void setConfiguration(Configuration conf) {
         _config = conf;
     }
-    
+
     public Configuration getConfiguration() {
         return _config;
     }
-    
+
     public void startConfiguration() {
     }
 
     public void endConfiguration() {
     }
-    
+
     public void setInstrument(String instrument) {
         _instrumentValues = new PluginListValue("Instrument");
         if (getInstrumentAliases() != null) {
             _instrumentValues.setAliases(getInstrumentAliases());
         }
         _instrumentValues.setString(instrument);
-        
+
         Instrument[] instruments = (Instrument[])_instrumentValues.instantiate(Instrument.class, _config);
         for (Instrument inst : instruments) {
             inst.setProvider(this);
             _instruments.put(inst.getName(), inst);
         }
     }
-    
+
     public String getInstrument() {
         return _instrumentValues.getString();
     }
-    
+
     public void setOptions(String options) {
         _options = options;
     }
-    
+
     public String getOptions() {
         return _options;
     }
@@ -89,7 +89,7 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
         instrument.setProvider(this);
         _instruments.put(instrument.getName(), instrument);
     }
-    
+
     public void initializeInstrument(Instrument instrument, Object context) {
         initializeInstrument(instrument, _options, context);
     }
@@ -104,11 +104,11 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
     public Instrument getInstrumentByName(String name) {
         return _instruments.get(name);
     }
-    
+
     public Set<Instrument> getInstruments() {
         return new HashSet<Instrument>(_instruments.values());
     }
-    
+
     public void stopInstruments(InstrumentationLevel level, Object context) {
         try {
             Set<Instrument> instruments = getInstruments();
@@ -132,22 +132,22 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
             }
         }
     }
-    
+
     public void stopInstrument(Instrument instrument) {
         stopInstrument(instrument, true);
     }
-    
+
     public void removeInstrumentByName(String name) {
         Instrument ins = _instruments.remove(name);
         if (ins != null) {
             ins.stop();
         }
     }
-    
+
     public boolean isStarted() {
         return _started;
     }
-    
+
     protected void setStarted(boolean started) {
         _started = started;
     }
@@ -155,11 +155,11 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
     public String[] getInstrumentAliases() {
         return null;
     }
-    
+
     public abstract void start();
 
     public abstract void stop();
-    
+
     private static boolean contextEquals(Object ctx1, Object ctx2) {
         if (ctx1 == ctx2) {
             return true;
@@ -169,5 +169,5 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
         }
         return ctx1.equals(ctx2);
     }
-    
+
 }

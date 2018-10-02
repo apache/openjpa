@@ -24,14 +24,14 @@ import javax.persistence.MappedSuperclass;
 import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.MSC;
 
 @MappedSuperclass
-public class PIdSTSDMSCMappedSuperclass 
+public class PIdSTSDMSCMappedSuperclass
 extends PIdSTSDMSCRootEntity implements MSC {
     private String mappedSuperclassData;
-    
+
     public String getMappedSuperclassData() {
         return mappedSuperclassData;
     }
-    
+
     public void setMappedSuperclassData(String mappedSuperclassData) {
         this.mappedSuperclassData = mappedSuperclassData;
     }

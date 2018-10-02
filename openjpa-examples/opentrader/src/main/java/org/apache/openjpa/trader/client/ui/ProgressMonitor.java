@@ -44,15 +44,15 @@ public class ProgressMonitor extends Timer {
     private final int N = 10;
     private final  PopupPanel popup;
     private final  static ProgressMonitor _instance = new ProgressMonitor();
-    
+
     private ProgressMonitor() {
         popup = new PopupPanel();
         popup.addStyleName("progressMonitor");
-        
-        
+
+
         header = new HTML();
         bar = new FlexTable();
-        
+
         bar.setCellSpacing(0);
         bar.setCellPadding(0);
         bar.setWidget(0, 0, header);
@@ -65,7 +65,7 @@ public class ProgressMonitor extends Timer {
             bar.setWidget(1, i, box);
         }
         bar.getFlexCellFormatter().setColSpan(0, 0, N);
-        
+
         popup.add(bar);
     }
 
@@ -75,12 +75,12 @@ public class ProgressMonitor extends Timer {
         _instance.scheduleRepeating(10);
         _instance.run();
     }
-    
+
     public static void stop() {
         _instance.cancel();
         _instance.popup.hide();
     }
-    
+
     @Override
     public void run() {
         Element elem = bar.getWidget(1, current).getElement();

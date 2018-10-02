@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.datacache;
 
@@ -124,7 +124,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
      * Update all caches with the committed inserts, updates, and deletes.
      */
     private void updateCaches() {
-        if(_ctx.getFetchConfiguration().getCacheStoreMode() != DataCacheStoreMode.BYPASS ) { 
+        if(_ctx.getFetchConfiguration().getCacheStoreMode() != DataCacheStoreMode.BYPASS ) {
             // map each data cache to the modifications we need to perform
             Map<DataCache,Modifications> modMap = null;
             if ((_ctx.getPopulateDataCache() && _inserts != null) || _updates != null || _deletes != null)
@@ -155,7 +155,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             if (_updates != null) {
                 BitSet fields;
                 OpenJPAStateManager sm;
-                for (Map.Entry<OpenJPAStateManager, BitSet> entry : _updates.entrySet()) { 
+                for (Map.Entry<OpenJPAStateManager, BitSet> entry : _updates.entrySet()) {
                     sm = entry.getKey();
                     fields = entry.getValue();
 
@@ -192,7 +192,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
             // remove pcdatas for deletes
             if (_deletes != null) {
-                for (OpenJPAStateManager sm : _deletes) { 
+                for (OpenJPAStateManager sm : _deletes) {
                     cache = _mgr.selectCache(sm);
                     if (cache == null)
                         continue;
@@ -212,9 +212,9 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                     cache.writeLock();
                     try {
                         cache.commit(
-                                transformToVersionSafePCDatas(cache, mods.additions), 
-                                transformToVersionSafePCDatas(cache, mods.newUpdates), 
-                                transformToVersionSafePCDatas(cache, mods.existingUpdates), 
+                                transformToVersionSafePCDatas(cache, mods.additions),
+                                transformToVersionSafePCDatas(cache, mods.newUpdates),
+                                transformToVersionSafePCDatas(cache, mods.existingUpdates),
                                 mods.deletes);
                     } finally {
                         cache.writeUnlock();
@@ -330,7 +330,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         Object version = null;
         data = cache.get(sm.getObjectId());
         if (!isLocking(null) && data != null)
-            version = data.getVersion(); 
+            version = data.getVersion();
 
         // if we have a cached version update from there
         if (version != null) {
@@ -360,9 +360,9 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
         DataCachePCData data = cache.get(sm.getObjectId());
         CacheStatistics stats = cache.getStatistics();
-        boolean fromDatabase = false; 
-        boolean alreadyCached = data != null; 
-        if (sm.isEmbedded() 
+        boolean fromDatabase = false;
+        boolean alreadyCached = data != null;
+        if (sm.isEmbedded()
          || fetch.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS
          || fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
             // stats -- Skipped reading from the cache, noop
@@ -377,7 +377,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             } else {
                 if (!alreadyCached) {
                     if (stats.isEnabled()) {
-                        // Get the classname from MetaData... but this won't be right in every case. 
+                        // Get the classname from MetaData... but this won't be right in every case.
                         ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
                     }
                 }
@@ -401,9 +401,9 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         }
         return fromDatabase || alreadyCached;
     }
-    
+
     private void cacheStateManager(DataCache cache, OpenJPAStateManager sm, DataCachePCData data) {
-        if (sm.isFlushed()) { 
+        if (sm.isFlushed()) {
             return;
         }
         // make sure that we're not trying to cache an old version
@@ -421,7 +421,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 data = newPCData(sm, cache);
             }
             data.store(sm);
-            if (isNew) { 
+            if (isNew) {
                 cache.put(data);
             } else {
                 cache.update(data);
@@ -471,7 +471,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
     /**
      * Updates or inserts and item into the data cache.  If storeMode=USE and not in the cache,
-     * the item is inserted.  If storeMode=REFRESH the item is inserted, updated, or if found=false, 
+     * the item is inserted.  If storeMode=REFRESH the item is inserted, updated, or if found=false,
      * removed from the cache.
      * @param found whether the entity was found by the store manager
      * @param sm the state manager
@@ -491,11 +491,11 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         }
 
         DataCachePCData data = cache.get(sm.getObjectId());
-        
+
         // If loadedFieldsChanged = true, we don't care that data was already stored as we should update it.
         boolean alreadyCached = (data != null && !loadedFieldsChanged);
         DataCacheStoreMode storeMode = fetch.getCacheStoreMode();
-        
+
         if ((storeMode == DataCacheStoreMode.USE && !alreadyCached) || storeMode == DataCacheStoreMode.REFRESH) {
             // If not found in the DB and the item is in the cache, and not locking remove the item
             if (!found && data != null && !isLocking(fetch)) {
@@ -545,7 +545,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             } else if (!cache.contains(sm.getObjectId()))
                 unloaded = addUnloaded(sm, null, unloaded);
         }
-        
+
     for(Entry<DataCache,List<OpenJPAStateManager>> entry : caches.entrySet()){
             cache = entry.getKey();
             smList = entry.getValue();
@@ -554,7 +554,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             for (OpenJPAStateManager sm : smList) {
                 oidList.add((OpenJPAId) sm.getObjectId());
             }
-            
+
             Map<Object,DataCachePCData> dataMap = cache.getAll(oidList);
 
             for (OpenJPAStateManager sm : smList) {
@@ -614,7 +614,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
         boolean isNew;
 
-        for(Map.Entry<OpenJPAStateManager, BitSet> entry : unloaded.entrySet()) { 
+        for(Map.Entry<OpenJPAStateManager, BitSet> entry : unloaded.entrySet()) {
             OpenJPAStateManager sm = entry.getKey();
             fields = entry.getValue();
 
@@ -652,7 +652,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         }
         return failed;
     }
-    
+
     /**
      * Helper method to add an unloaded instance to the given map.
      */
@@ -689,10 +689,10 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
                 // may have been re-persisted
                 if (_deletes != null) {
-                    _deletes.remove(sm); 
+                    _deletes.remove(sm);
                 }
-            } else if (_inserts != null 
-                && (sm.getPCState() == PCState.PNEWDELETED 
+            } else if (_inserts != null
+                && (sm.getPCState() == PCState.PNEWDELETED
                 || sm.getPCState() == PCState.PNEWFLUSHEDDELETED)) {
                 _inserts.remove(sm);
             }
@@ -719,9 +719,9 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
      * will evict data from the cache for records that should have
      * successfully committed according to the data cache but
      * did not. The only predictable reason that could cause this behavior
-     * is a concurrent out-of-band modification to the database that was not 
-     * communicated to the cache. This logic makes OpenJPA's data cache 
-     * somewhat tolerant of such behavior, in that the cache will be cleaned 
+     * is a concurrent out-of-band modification to the database that was not
+     * communicated to the cache. This logic makes OpenJPA's data cache
+     * somewhat tolerant of such behavior, in that the cache will be cleaned
      * up as failures occur.
      */
     private void notifyOptimisticLockFailure(OptimisticException e) {
@@ -733,7 +733,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         boolean remove;
 
         // this logic could be more efficient -- we could aggregate
-        // all the cache->oid changes, and then use DataCache.removeAll() 
+        // all the cache->oid changes, and then use DataCache.removeAll()
         // and less write locks to do the mutation.
         DataCache cache = _mgr.selectCache(sm);
         if (cache == null)
@@ -748,17 +748,17 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             switch (compareVersion(sm, sm.getVersion(), data.getVersion())) {
                 case StoreManager.VERSION_LATER:
                 case StoreManager.VERSION_SAME:
-                    // This tx's current version is later than or the same as 
-                    // the data cache version. In this case, the commit should 
-                    // have succeeded from the standpoint of the cache. Remove 
-                    // the instance from cache in the hopes that the cache is 
+                    // This tx's current version is later than or the same as
+                    // the data cache version. In this case, the commit should
+                    // have succeeded from the standpoint of the cache. Remove
+                    // the instance from cache in the hopes that the cache is
                     // out of sync.
                     remove = true;
                     break;
                 case StoreManager.VERSION_EARLIER:
-                    // This tx's current version is earlier than the data 
-                    // cache version. This is a normal optimistic lock failure. 
-                    // Do not clean up the cache; it probably already has the 
+                    // This tx's current version is earlier than the data
+                    // cache version. This is a normal optimistic lock failure.
+                    // Do not clean up the cache; it probably already has the
                     // right values, and if not, it'll get cleaned up by a tx
                     // that fails in one of the other case statements.
                     remove = false;
@@ -787,7 +787,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         _ctx.getConfiguration().getRemoteCommitEventManager()
             .fireLocalStaleNotification(oid);
     }
-   
+
     /**
      * Create a new cacheable instance for the given state manager.
      */
@@ -801,13 +801,13 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
     /**
      * Affirms if a load operation must bypass the L2 cache.
      * If lock is active, always bypass.
-     * 
+     *
      */
     boolean bypass(FetchConfiguration fetch, int load) {
         // Order of checks are important
         if (isLocking(fetch))
             return true;
-        if (_ctx.getConfiguration().getRefreshFromDataCache()) 
+        if (_ctx.getConfiguration().getRefreshFromDataCache())
             return false;
         if (fetch.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS)
             return true;
@@ -823,8 +823,8 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         if (fetch == null)
             fetch = _ctx.getFetchConfiguration();
         return fetch.getReadLockLevel() > LockLevels.LOCK_NONE;
-    }  
-    
+    }
+
     /**
      * Structure used during the commit process to track cache modifications.
      */
@@ -837,7 +837,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
     }
 
     /**
-     * Utility structure holds the tuple of cacheable instance and its corresponding state manager. 
+     * Utility structure holds the tuple of cacheable instance and its corresponding state manager.
      *
      */
     private static class PCDataHolder {

@@ -49,9 +49,9 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
     private transient BrokerFactory _brokerFactory = null;
     private transient Broker _broker = null;
     private transient OpenJPAStateManager _delayedSm;
-    private transient int _delayedField; 
+    private transient int _delayedField;
     private transient boolean _detached = false;
-    
+
     public DelayedTreeSetProxy() {
     }
 
@@ -69,8 +69,8 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
 
     public void setOwner(OpenJPAStateManager paramOpenJPAStateManager, int paramInt)
     {
-      // If clearing the owner of this proxy, store away what is necessary for 
-      // delayed loading 
+      // If clearing the owner of this proxy, store away what is necessary for
+      // delayed loading
       if (sm != null && detaching(paramOpenJPAStateManager, paramInt)) {
           _detached = true;
           _delayedSm = sm;
@@ -78,7 +78,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
       } else {
           _detached = false;
       }
-      
+
       this.sm = paramOpenJPAStateManager;
       if (sm != null && sm.getPersistenceCapable() != null) {
           _ownerSm = (OpenJPAStateManager) sm.getPersistenceCapable().pcGetStateManager();
@@ -88,9 +88,9 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
           _brokerFactory = sm.getContext().getBroker().getBrokerFactory();
       }
     }
-    
+
     private boolean detaching(OpenJPAStateManager paramOpenJPAStateManager, int paramInt) {
-        if ((paramOpenJPAStateManager == null && paramInt == -1) || 
+        if ((paramOpenJPAStateManager == null && paramInt == -1) ||
             (paramOpenJPAStateManager != null && paramOpenJPAStateManager instanceof DetachedStateManager)) {
             return true;
         }
@@ -112,7 +112,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
     protected void setChangeTracker(CollectionChangeTracker ct) {
         changeTracker = ct;
     }
-    
+
     public Object copy(Object paramObject) {
         return new TreeSet((SortedSet) paramObject);
     }
@@ -124,7 +124,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
     protected void setElementType(Class<?> elemType) {
         elementType = elemType;
     }
-    
+
     public ProxyCollection newInstance(Class paramClass,
             Comparator paramComparator, boolean paramBoolean1,
             boolean paramBoolean2) {
@@ -157,7 +157,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         }
         return Proxies.writeReplace(this, true);
     }
-    
+
     ////////////////////////////////////////
     // DelayedProxy methods
     ////////////////////////////////////////
@@ -167,7 +167,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         }
         return field;
     }
-    
+
     public OpenJPAStateManager getDelayedOwner() {
         if (sm == null || _detached) {
             return _delayedSm;
@@ -178,11 +178,11 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
     public boolean isDirectAccess() {
         return _directAccess;
     }
-    
+
     public void setDirectAccess(boolean direct) {
         _directAccess = direct;
     }
-    
+
     public BrokerFactory getBrokerFactory() {
         return _brokerFactory;
     }
@@ -201,7 +201,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
       }
       return _broker;
     }
-    
+
     @Override
     public void closeBroker() {
         if (_broker != null && !_broker.isClosed()) {
@@ -215,7 +215,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
     public OpenJPAStateManager getOwnerStateManager() {
       return _ownerSm;
     }
-    
+
     @Override
     public boolean isDetached() {
         return _detached;
@@ -489,7 +489,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         }
         return super.tailSet(fromElement);
     }
-    
+
     @Override
     public boolean equals(Object paramObject) {
         if (!_directAccess && isDelayLoad()) {

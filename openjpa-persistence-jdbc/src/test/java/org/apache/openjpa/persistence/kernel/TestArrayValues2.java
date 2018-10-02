@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -221,7 +221,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     /*Fix Me aokeke - Takes a lot of time to run */
-//    public void testFirstClassObjectArray()throws Exception 
+//    public void testFirstClassObjectArray()throws Exception
 //    {
 //        int max = ((int) (Math.random() * 20)) + 5;
 //        ArraysTest[] array = new ArraysTest[max];

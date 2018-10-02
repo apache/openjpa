@@ -28,10 +28,10 @@ public class InnerJoinStrategy extends RelationFieldStrategy {
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
 
-        // add field to inner join to make sure that "inner join" is made 
-        // rather than default "left outer join"	 
-        fetch.addFetchInnerJoin(field.getFullName(false));	 
+        // add field to inner join to make sure that "inner join" is made
+        // rather than default "left outer join"
+        fetch.addFetchInnerJoin(field.getFullName(false));
         super.selectEagerJoin(sel, sm, store, fetch, eagerMode);
-    } 
+    }
 }
 

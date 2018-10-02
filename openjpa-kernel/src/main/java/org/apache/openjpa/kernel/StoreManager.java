@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel;
 
@@ -100,11 +100,11 @@ public interface StoreManager
      * if it does not.
      */
     public boolean exists(OpenJPAStateManager sm, Object edata);
-    
+
     /**
      * Verify that the given instance exists in the data store in memory; return false
-     * if it does not. When an object is found in memory the corresponding element of 
-     * the BitSet is set to 1. 
+     * if it does not. When an object is found in memory the corresponding element of
+     * the BitSet is set to 1.
      */
     public boolean isCached(List<Object> oids, BitSet edata);
 
@@ -203,7 +203,7 @@ public interface StoreManager
      * be included outside of refresh invocations if a user calls
      * <code>findAll</code> with the <code>validate</code>
      * parameter set to <code>true</code>.</li>
-     * </ul> 
+     * </ul>
      * Store managers that cannot efficiently batch load can simply test
      * for these conditions and delegate to the proper methods.
      *

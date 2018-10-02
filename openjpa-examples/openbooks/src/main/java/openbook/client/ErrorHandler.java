@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package openbook.client;
 
@@ -24,20 +24,20 @@ import jpa.tools.swing.ErrorDialog;
 
 /**
  * Handles error.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class ErrorHandler implements Thread.UncaughtExceptionHandler{
-   
+
     static {
         System.setProperty("sun.awt.exception.handler", ErrorHandler.class.getName());
     }
-    
+
     public void handle(Throwable e) {
         uncaughtException(Thread.currentThread(), e);
     }
-    
+
     public void uncaughtException(Thread t, Throwable e) {
         if (SwingUtilities.isEventDispatchThread()) {
             new ErrorDialog(null, Images.ERROR, e).setVisible(true);

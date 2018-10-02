@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
@@ -33,14 +33,14 @@ public class Customer {
 	public static class CustomerKey implements Serializable {
 		public String cyCode;
 		public int id;
-		
+
 		public CustomerKey(){}
-		
+
 		public  CustomerKey(String cc, int id){
 			cyCode=cc;
 			this.id=id;
 		}
-		
+
 		public String toString() {
 			return cyCode+"/"+id;
 		}
@@ -49,20 +49,20 @@ public class Customer {
 			if (obj==this) return true;
 			if ( ! (obj instanceof CustomerKey) ) return false;
 			CustomerKey key = (CustomerKey)obj;
-			if (key.cyCode.equals(this.cyCode) && 
+			if (key.cyCode.equals(this.cyCode) &&
 					key.id==this.id) return true;
 			return false;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return this.cyCode.hashCode()
 				^ this.id;
 		}
 	}
-	
+
 	public enum CreditRating { POOR, GOOD, EXCELLENT };
-	
+
 	@EmbeddedId
 	 CustomerKey cid;
 	@Column(length=30)
@@ -73,7 +73,7 @@ public class Customer {
 	 CreditRating creditRating;
 	@Version
 	 long version;
-	
+
     @OneToMany(fetch=FetchType.EAGER, mappedBy="customer")
     private Collection<Order> orders = new ArrayList<Order>();
 
@@ -81,13 +81,13 @@ public class Customer {
     private List<Account> accounts = new ArrayList<Account>();
 
 	public Customer() {}
-	
+
 	public Customer(CustomerKey cid, String name, CreditRating rating){
 		this.cid=cid;
 		this.name=name;
 		this.creditRating=rating;
 	}
-	
+
 
 	public String getName() {
 		return name;
@@ -108,17 +108,17 @@ public class Customer {
 	public void setOrders(Collection<Order> orders) {
 		this.orders = orders;
 	}
-    
+
     public List<Account> getAccounts() {
         return accounts;
     }
-    
+
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
-	
+
 	public String toString() {
-		return "Customer:"+cid+" name:"+name; 
+		return "Customer:"+cid+" name:"+name;
 	}
 
 	public CustomerKey getCid() {

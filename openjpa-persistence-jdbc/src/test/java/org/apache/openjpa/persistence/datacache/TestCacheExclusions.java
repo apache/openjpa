@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.datacache;
 
@@ -36,7 +36,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
 
     private static String[] ITEM_NAMES =
         { "Cup", "pen", "pencil", "phone", "laptop", "keyboard", "mouse" };
-    
+
     private static final String _tSep = ";";
 
     Item[] items = new Item[ITEM_NAMES.length];
@@ -87,7 +87,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             }
             em.getTransaction().commit();
             em.close();
-            
+
             emf.close();
         }
         emf = null;
@@ -200,7 +200,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         dataCacheSettings.append("true" + (hasIncludeOrExclude ? "(" : ""));
         if (hasIncludeOrExclude) {
             dataCacheSettings.append(includes);
-            if (includes.length() > 0 && excludes.length() > 0) 
+            if (includes.length() > 0 && excludes.length() > 0)
                 dataCacheSettings.append(",");
             dataCacheSettings.append(excludes);
             dataCacheSettings.append(")");

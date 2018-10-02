@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -29,24 +29,24 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 /**
- * Tests the Bean Validation support when using the em.merge() 
+ * Tests the Bean Validation support when using the em.merge()
  * operation.
- *      
+ *
  * @version $Rev$ $Date$
  */
 public class TestMerge extends AbstractPersistenceTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        emf = (OpenJPAEntityManagerFactorySPI) 
+        emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
                 "ConstraintPU",
                 "org/apache/openjpa/integration/validation/persistence.xml");
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         closeEMF(emf);
@@ -55,12 +55,12 @@ public class TestMerge extends AbstractPersistenceTestCase {
     }
 
     /**
-     * Verifies constraint validation occurs on a "new" merged entity only after 
-     * the state of the persistent entity is properly set. 
+     * Verifies constraint validation occurs on a "new" merged entity only after
+     * the state of the persistent entity is properly set.
      */
     public void testMergeNew() {
         getLog().trace("testMergeNew() started");
-        
+
         // Part 1 - Create and persist a valid entity
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -85,10 +85,10 @@ public class TestMerge extends AbstractPersistenceTestCase {
         } finally {
             closeEM(em);
         }
-        
+
         // Part 2 - Verify that merge throws a CVE when a constraint is not met.
         em = emf.createEntityManager();
-        assertNotNull(em);        
+        assertNotNull(em);
         try {
             Person p = createPerson(em);
             em.getTransaction().begin();
@@ -106,12 +106,12 @@ public class TestMerge extends AbstractPersistenceTestCase {
     }
 
     /**
-     * Verifies constraint validation occurs on a "new" merged entity only after 
-     * the state of the persistent entity is properly set. 
+     * Verifies constraint validation occurs on a "new" merged entity only after
+     * the state of the persistent entity is properly set.
      */
     public void testMergeExisting() {
         getLog().trace("testMergeExisting() started");
-        
+
         // Part 1 - Create and persist a valid entity
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -133,7 +133,7 @@ public class TestMerge extends AbstractPersistenceTestCase {
 
             // find the entity
             p = em.find(Person.class, p.getId());
-            
+
             // modify the entity and merge
             em.getTransaction().begin();
             p.setFirstName("NewFirst");
@@ -151,10 +151,10 @@ public class TestMerge extends AbstractPersistenceTestCase {
         } finally {
             closeEM(em);
         }
-        
+
         // Part 2 - Verify that merge throws a CVE when a constraint is not met.
         em = emf.createEntityManager();
-        assertNotNull(em);        
+        assertNotNull(em);
         try {
 
             // Create and persist a new entity
@@ -190,8 +190,8 @@ public class TestMerge extends AbstractPersistenceTestCase {
             closeEM(em);
         }
     }
-    
-    
+
+
     private Person createPerson(EntityManager em) {
         Person p = new Person();
         p.setFirstName("First");
@@ -217,7 +217,7 @@ public class TestMerge extends AbstractPersistenceTestCase {
 
     /**
      * Internal convenience method for getting the OpenJPA logger
-     * 
+     *
      */
     private Log getLog() {
         return emf.getConfiguration().getLog("Tests");

@@ -14,23 +14,23 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.inheritance.abstractjoinedappid;
 
 import java.io.Serializable;
 
 public abstract class SuperID implements Serializable {
-	
+
 	private Integer id;
 
 	public Integer getId() { return id; }
 	public void setId(Integer id) {	this.id = id; }
-	
+
 	public int hashCode() {
 		return id;
 	}
-	
+
 	public boolean equals(Object obj) {
 		if (obj == this) return true;
 		if (!(obj instanceof SuperID)) return false;

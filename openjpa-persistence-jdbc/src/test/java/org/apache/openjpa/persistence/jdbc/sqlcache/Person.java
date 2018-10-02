@@ -68,21 +68,21 @@ import javax.persistence.Table;
 public class Person {
     @Id
     private long id;
-    
+
     private String firstName;
     private String lastName;
     private short age;
     private int   yob;
-    
+
     @OneToOne
     private Address address;
-    
+
     private static AtomicLong idCounter = new AtomicLong(System.currentTimeMillis());
-    
+
     public Person() {
         this("?", "?", (short)0, 0);
     }
-    
+
     public Person(String firstName, String lastName, short age, int yob) {
         super();
         this.id = idCounter.getAndAdd(1);
@@ -91,38 +91,38 @@ public class Person {
         this.age = age;
         this.yob = yob;
     }
-    
+
     public String getFirstName() {
         return firstName;
     }
-    
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    
+
     public String getLastName() {
         return lastName;
     }
-    
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
+
     public short getAge() {
         return age;
     }
-    
+
     public void setAge(short age) {
         this.age = age;
     }
     public int getBirthYear() {
         return yob;
     }
-    
+
     public void setBirthYear(int yob) {
         this.yob = yob;
     }
-    
+
     public Address getAddress() {
         return address;
     }
@@ -134,7 +134,7 @@ public class Person {
     public long getId() {
         return id;
     }
-    
+
     public void setId(long id) {
         this.id = id;
     }

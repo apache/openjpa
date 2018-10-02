@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.meta;
 
@@ -112,7 +112,7 @@ public interface MetaDataFactory
      * @see MetaDataRepository#getPersistentTypeNames
      * @see MetaDataRepository#loadPersistentTypes
      */
-    public Set<String> getPersistentTypeNames(boolean devpath, 
+    public Set<String> getPersistentTypeNames(boolean devpath,
     		ClassLoader envLoader);
 
     /**
@@ -125,7 +125,7 @@ public interface MetaDataFactory
      */
     public Class<?> getResultSetMappingScope(String resultSetMappingName,
         ClassLoader loader);
-    
+
     /**
      * Return a properly-configured class arg parser for our expected
      * metadata format.
@@ -152,35 +152,35 @@ public interface MetaDataFactory
      * metadata should be added directly to the repository.
      */
     public void loadXMLMetaData(Class<?> cls);
-    
+
     /**
      * Gets the name of the meta-model class for the given fully-qualified
      * managed class name.
-     * 
+     *
      * @since 2.0.0
      */
     public String getMetaModelClassName(String managedClassName);
-    
+
     /**
      * Gets the name of the managed class for the given fully-qualified
      * meta-model class name.
-     * 
+     *
      * @since 2.0.0
      */
     public String getManagedClassName(String metamodelClassName);
-    
+
     /**
      * Affirms if the given class is a meta-class.
-     * 
+     *
      * @since 2.0.0
      */
     public boolean isMetaClass(Class<?> c);
-    
+
     /**
      * Gets the managed class corresponding to the given meta-class.
-     * 
+     *
      * @return null if the given input is not a meta-class.
-     * 
+     *
      * @since 2.0.0
      */
     public Class<?> getManagedClass(Class<?> c);

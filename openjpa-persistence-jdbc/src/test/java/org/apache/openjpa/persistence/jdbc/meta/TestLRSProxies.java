@@ -23,7 +23,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
@@ -38,78 +38,78 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestLRSProxies
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-   
+
     private Object _oid = null;
     private Object _coid = null;
-    
+
     public TestLRSProxies(String casename) {
         super(casename);
     }
-    
-    
+
+
     /** Creates a new instance of TestLRSProxies */
     public TestLRSProxies() {
     }
     public void setUp() {
        deleteAll(LRSPC.class);
        deleteAll(LRSCompoundPC.class);
-        
+
         LRSPC pc = new LRSPC("main");
-        
+
         pc.getStringSet().add("val1");
         pc.getStringSet().add("val2");
         pc.getStringSet().add("val3");
-        
+
         pc.getRelSet().add(new LRSPC("set1"));
         pc.getRelSet().add(new LRSPC("set2"));
         pc.getRelSet().add(new LRSPC("set3"));
-        
+
         pc.getStringCollection().add("val1");
         pc.getStringCollection().add("val2");
         pc.getStringCollection().add("val3");
-        
+
         pc.getRelCollection().add(new LRSPC("set1"));
         pc.getRelCollection().add(new LRSPC("set2"));
         pc.getRelCollection().add(new LRSPC("set3"));
-        
+
         pc.getStringMap().put("key1", "1");
         pc.getStringMap().put("key2", "2");
         pc.getStringMap().put("key3", "3");
-        
+
         pc.getRelMap().put("key1", new LRSPC("map1"));
         pc.getRelMap().put("key2", new LRSPC("map2"));
         pc.getRelMap().put("key3", new LRSPC("map3"));
-        
+
         LRSCompoundPC cpc = new LRSCompoundPC("main");
-        
+
         cpc.getStringSet().add("val1");
         cpc.getStringSet().add("val2");
         cpc.getStringSet().add("val3");
-        
+
         cpc.getRelSet().add(new LRSCompoundPC("set1"));
         cpc.getRelSet().add(new LRSCompoundPC("set2"));
         cpc.getRelSet().add(new LRSCompoundPC("set3"));
-        
+
         cpc.getStringCollection().add("val1");
         cpc.getStringCollection().add("val2");
         cpc.getStringCollection().add("val3");
-        
+
         cpc.getRelCollection().add(new LRSCompoundPC("set1"));
         cpc.getRelCollection().add(new LRSCompoundPC("set2"));
         cpc.getRelCollection().add(new LRSCompoundPC("set3"));
-        
+
         cpc.getStringMap().put("key1", "1");
         cpc.getStringMap().put("key2", "2");
         cpc.getStringMap().put("key3", "3");
-        
+
         cpc.getRelMap().put("key1", new LRSCompoundPC("map1"));
         cpc.getRelMap().put("key2", new LRSCompoundPC("map2"));
         cpc.getRelMap().put("key3", new LRSCompoundPC("map3"));
-        
-        
-        
+
+
+
         OpenJPAEntityManager pm = getEm(false, false);
-        
+
         startTx(pm);
         pm.persist(pc);
         pm.persist(cpc);
@@ -118,36 +118,36 @@ public class TestLRSProxies
         _coid = pm.getObjectId(cpc);
         pm.close();
     }
-    
+
     public void testStringSet() {
         stringCollectionTest(_oid, true, true);
         stringCollectionTest(_coid, true, true);
     }
-    
+
     public void testStringSetRetain() {
         stringCollectionTest(_oid, false, true);
         stringCollectionTest(_coid, false, true);
     }
-    
+
     public void testStringCollection() {
         stringCollectionTest(_oid, true, false);
         stringCollectionTest(_coid, true, false);
     }
-    
+
     public void testStringCollectionRetain() {
         stringCollectionTest(_oid, false, false);
         stringCollectionTest(_coid, false, false);
     }
-    
+
     private void stringCollectionTest(Object oid, boolean close,
             boolean isSet) {
         //FIXME jthomas
         //PersistenceManager pm = getPM(!close, !close);
         OpenJPAEntityManager pm =null;
         startTx(pm);
-        
+
         LRSPCIntf pc = (LRSPCIntf) pm.getObjectId(oid);
-        
+
         // check that orig values are correct
         Collection set = isSet ? pc.getStringSet() : pc.getStringCollection();
         assertEquals(3, set.size());
@@ -162,7 +162,7 @@ public class TestLRSProxies
             //FIXME jthomas
             //KodoJDOHelper.close(itr);
         }
-        
+
         // do some mods to try to confuse the proxy
         set.remove("val1");
         set.remove("val1");
@@ -176,14 +176,14 @@ public class TestLRSProxies
             pm.close();
             pm = getEm(false, false);
         }
-        
+
         // re-retrieve and check set
         pc = (LRSPCIntf) pm.getObjectId(oid);
         set = isSet ? pc.getStringSet() : pc.getStringCollection();
         assertStringCollectionChanged(set, isSet);
         pm.close();
     }
-    
+
     private void assertStringCollectionChanged(Collection set, boolean isSet) {
         assertEquals(4, set.size());
         assertTrue(!set.contains("val1"));
@@ -203,29 +203,29 @@ public class TestLRSProxies
             //KodoJDOHelper.close(itr);
         }
     }
-    
+
     public void testStringMap() {
         stringMapTest(_oid, true);
         stringMapTest(_coid, true);
     }
-    
+
     public void testStringMapRetain() {
         stringMapTest(_oid, false);
         stringMapTest(_coid, false);
     }
-    
+
     private void stringMapTest(Object oid, boolean close) {
         OpenJPAEntityManager pm = getEm(!close, !close);
         startTx(pm);
         LRSPCIntf pc = (LRSPCIntf) pm.getObjectId(oid);
-        
+
         // check that orig values are correct
         Map map = pc.getStringMap();
         assertEquals(3, map.size());
         assertEquals("1", map.get("key1"));
         assertEquals("2", map.get("key2"));
         assertEquals("3", map.get("key3"));
-        
+
         // do some mods to try to confuse the proxy
         map.put("key1", "1a");
         map.put("key1", "1b");
@@ -235,19 +235,19 @@ public class TestLRSProxies
         map.put("key5", "5");
         assertStringMapChanged(map);
         endTx(pm);
-        
+
         if (close) {
             pm.close();
             pm = getEm(false, false);
         }
-        
+
         // re-retrieve and check map
         pc = (LRSPCIntf) pm.getObjectId(oid);
         map = pc.getStringMap();
         assertStringMapChanged(map);
         pm.close();
     }
-    
+
     private void assertStringMapChanged(Map map) {
         assertEquals(3, map.size());
         assertEquals("1b", map.get("key1"));
@@ -258,7 +258,7 @@ public class TestLRSProxies
         assertFalse(map.containsKey("key2"));
         assertTrue(map.containsValue("5"));
         assertFalse(map.containsValue("1"));
-        
+
         Iterator itr = map.entrySet().iterator();
         Map.Entry entry;
         int count = 0;
@@ -277,32 +277,32 @@ public class TestLRSProxies
         //FIXME
         //KodoJDOHelper.close(itr);
     }
-    
+
     public void testRelSet() {
         relCollectionTest(_oid, true, true);
         relCollectionTest(_coid, true, true);
     }
-    
+
     public void testRelSetRetain() {
         relCollectionTest(_oid, false, true);
         relCollectionTest(_coid, false, true);
     }
-    
+
     public void testRelCollection() {
         relCollectionTest(_oid, true, false);
         relCollectionTest(_coid, true, false);
     }
-    
+
     public void testRelCollectionRetain() {
         relCollectionTest(_oid, false, false);
         relCollectionTest(_coid, false, false);
     }
-    
+
     private void relCollectionTest(Object oid, boolean close, boolean isSet) {
         OpenJPAEntityManager pm = getEm(!close, !close);
         startTx(pm);
         LRSPCIntf pc = (LRSPCIntf) pm.getObjectId(oid);
-        
+
         // check that orig values are correct
         Collection set = isSet ? pc.getRelSet() : pc.getRelCollection();
         assertEquals(3, set.size());
@@ -325,7 +325,7 @@ public class TestLRSProxies
         }
         assertTrue(set.contains(set1));
         assertFalse(set.contains(pc));
-        
+
         // do some mods to try to confuse the proxy
         set.remove(set1);
         set.remove(set1);
@@ -336,18 +336,18 @@ public class TestLRSProxies
         set.add(set5);
         assertRelCollectionChanged(pc, isSet);
         endTx(pm);
-        
+
         if (close) {
             pm.close();
             pm = getEm(false, false);
         }
-        
+
         // re-retrieve and check set
         pc = (LRSPCIntf) pm.getObjectId(oid);
         assertRelCollectionChanged(pc, isSet);
         pm.close();
     }
-    
+
     private void assertRelCollectionChanged(LRSPCIntf pc, boolean isSet) {
         Collection set = isSet ? pc.getRelSet() : pc.getRelCollection();
         assertEquals(3, set.size());
@@ -371,22 +371,22 @@ public class TestLRSProxies
         assertTrue(set.contains(set2));
         assertFalse(set.contains(pc));
     }
-    
+
     public void testRelMap() {
         relMapTest(_oid, true);
         relMapTest(_coid, true);
     }
-    
+
     public void testRelMapRetain() {
         relMapTest(_oid, false);
         relMapTest(_coid, false);
     }
-    
+
     private void relMapTest(Object oid, boolean close) {
         OpenJPAEntityManager pm = getEm(!close, !close);
         startTx(pm);
         LRSPCIntf pc = (LRSPCIntf) pm.getObjectId(oid);
-        
+
         // check that orig values are correct
         Map map = pc.getRelMap();
         assertEquals(3, map.size());
@@ -400,7 +400,7 @@ public class TestLRSProxies
         assertFalse(map.containsKey("key4"));
         assertTrue(map.containsValue(map1));
         assertFalse(map.containsValue(pc));
-        
+
         // do some mods to try to confuse the proxy
         LRSPCIntf map1a = pc.newInstance("map1a");
         map.put("key1", map1a);
@@ -413,18 +413,18 @@ public class TestLRSProxies
         map.put("key5", pc.newInstance("map5"));
         assertRelMapChanged(pc);
         endTx(pm);
-        
+
         if (close) {
             pm.close();
             pm = getEm(false, false);
         }
-        
+
         // re-retrieve and check map
         pc = (LRSPCIntf) pm.getObjectId(oid);
         assertRelMapChanged(pc);
         pm.close();
     }
-    
+
     private void assertRelMapChanged(LRSPCIntf pc) {
         Map map = pc.getRelMap();
         assertEquals(3, map.size());
@@ -438,7 +438,7 @@ public class TestLRSProxies
         assertFalse(map.containsKey("key2"));
         assertTrue(map.containsValue(map1b));
         assertFalse(map.containsValue(pc));
-        
+
         Iterator itr = map.entrySet().iterator();
         Map.Entry entry;
         int count = 0;
@@ -457,20 +457,20 @@ public class TestLRSProxies
         //FIXME
         //KodoJDOHelper.close(itr);
     }
-    
+
     public void testTransfer() {
         // cannot transfer an lrs from one field to another
-        
+
         OpenJPAEntityManager pm = getEm(true, true);
         LRSPC pc = (LRSPC) pm.getObjectId(_oid);
         LRSPC map1 = (LRSPC) pc.getRelMap().get("key1");
         assertNotNull(map1);
-        
+
         startTx(pm);
         Map map = pc.getRelMap();
         pc.setRelMap(null);
         map1.setRelMap(map);
-        
+
         try {
             endTx(pm);
             fail("Allowed transfer of lrs field");
@@ -480,13 +480,13 @@ public class TestLRSProxies
             pm.getTransaction().rollback();
         pm.close();
     }
-    
+
     public void testShare() {
         OpenJPAEntityManager pm = getEm(true, true);
         LRSPC pc = (LRSPC) pm.getObjectId(_oid);
         LRSPC map1 = (LRSPC) pc.getRelMap().get("key1");
         assertNotNull(map1);
-        
+
         startTx(pm);
         Map map = pc.getRelMap();
         map1.setRelMap(map);
@@ -495,7 +495,7 @@ public class TestLRSProxies
         assertEquals(3, map1.getRelMap().size());
         assertTrue(map1.getRelMap().containsValue(map1));
         pm.close();
-        
+
         // make sure it sticks
         pm = getEm(true, true);
         pc = (LRSPC) pm.getObjectId(_oid);
@@ -503,7 +503,7 @@ public class TestLRSProxies
         assertEquals(map1, map1.getRelMap().get("key1"));
         pm.close();
     }
-    
+
     public void testRollback() {
         //FIXME
         //PersistenceManagerFactory factory = getPMFactory(new String[]{
@@ -521,30 +521,30 @@ public class TestLRSProxies
         pm.close();
         factory.close();
     }
-    
+
     public void testReplace() {
         OpenJPAEntityManager pm = getEm(false, false);
         startTx(pm);
         LRSPC pc = (LRSPC) pm.getObjectId(_oid);
-        
+
         // totally replace set
         Collection set = new HashSet();
         set.add("new");
         pc.setStringCollection(set);
-        
+
         endTx(pm);
         pm.close();
-        
+
         // re-retrieve and check set
         pm = getEm(false, false);
         pc = (LRSPC) pm.getObjectId(_oid);
-        
+
         set = pc.getStringCollection();
         assertEquals(1, set.size());
         assertTrue(set.contains("new"));
         pm.close();
     }
-    
+
     public void testAdd()
     throws Exception {
 /*
@@ -573,7 +573,7 @@ public class TestLRSProxies
         }
  */
     }
-    
+
     private OpenJPAEntityManager getEm(boolean optimistic,
             boolean retainValues) {
         OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
@@ -582,14 +582,14 @@ public class TestLRSProxies
         em.setOptimistic(optimistic);
         return em;
     }
-    
+
     //FIXME - could not find AbstractJDBCListener because of package imports in
     //source file
 /*
     public static class Listener extends AbstractJDBCListener {
- 
+
         public int count = 0;
- 
+
         public void afterExecuteStatement(JDBCEvent ev) {
             count++;
         }

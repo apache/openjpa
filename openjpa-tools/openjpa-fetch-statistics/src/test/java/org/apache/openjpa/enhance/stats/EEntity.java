@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.enhance.stats;
@@ -34,11 +34,11 @@ public class EEntity {
     }
 
     String code;
-    
+
     public EEntity (String desc, String code) {
         this.extraDesc = desc;
         this.code = code;
     }
-    
-    
+
+
 }

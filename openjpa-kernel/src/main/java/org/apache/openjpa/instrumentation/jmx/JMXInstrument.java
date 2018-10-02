@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.instrumentation.jmx;
 
@@ -26,7 +26,7 @@ import org.apache.openjpa.lib.instrumentation.Instrument;
  * Interface for JMX-specific instruments
  */
 public interface JMXInstrument extends Instrument {
-    
+
     /**
      * Returns the JMX object name for the instrument
      */
@@ -35,24 +35,24 @@ public interface JMXInstrument extends Instrument {
     /**
      * Sets the context reference for the instrument.  Required to register
      * the instrument under a unique id.
-     * @param cref the context reference for the instrument 
+     * @param cref the context reference for the instrument
      */
     public void setContextRef(String cref);
-    
+
     /**
      * Gets the context reference for the instrument.  Required to register
      * the instrument under a unique id.
      * @param cref the context reference for the instrument
      */
     public String getContextRef();
-    
+
     /**
      * Sets the config id for the instrument.  Required to register
      * the instrument under a unique id.
      * @return the config id of the instrument
      */
     public String getConfigId();
-    
+
     /**
      * Gets the config id for the instrument.  Required to register
      * the instrument under a unique id.

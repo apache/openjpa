@@ -27,19 +27,19 @@ import java.util.List;
  * source code for this dependent packages. The purpose of this translator is to translate
  * the stack trace of those exceptions, such as <code>org.apache.openjpa.persistence.PersistenceException</code>
  * <em>without</em> bringing in that dependency.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class ExceptionAdapter {
     static List<String> exceptionTypes = Arrays.asList("org.apache.openjpa.persistence.PersistenceException");
-    
+
     private boolean _printStackTrace;
-    
+
     public void setPrintServerSideStackTrace(boolean flag) {
     	_printStackTrace = flag;
     }
-    
+
     public RuntimeException translate(Throwable t) {
     	if (_printStackTrace)
     		t.printStackTrace();
@@ -51,7 +51,7 @@ public class ExceptionAdapter {
         e.setStackTrace(t.getStackTrace());
         return e;
     }
-    
+
     private Throwable searchForKnownButNonTranslatableException(Throwable t) {
         if (isAssignable(t.getClass()))
             return t;
@@ -61,7 +61,7 @@ public class ExceptionAdapter {
         }
         return null;
     }
-    
+
     private boolean isAssignable(Class<?> t) {
         if (exceptionTypes.contains(t.getName())) {
             return true;

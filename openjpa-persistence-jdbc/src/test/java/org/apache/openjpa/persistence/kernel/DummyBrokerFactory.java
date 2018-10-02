@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.kernel;
 
@@ -31,18 +31,18 @@ public class DummyBrokerFactory extends JDBCBrokerFactory {
         super(conf);
         _conf = conf;
     }
-    
+
     public static DummyBrokerFactory newInstance(ConfigurationProvider cp) {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         cp.setInto(conf);
         return new DummyBrokerFactory(conf);
-    }   
-    
+    }
+
     @Override
     protected StoreManager newStoreManager() {
         // Do something with the config.
         _conf.getLog();
-        
+
         return super.newStoreManager();
     }
 }

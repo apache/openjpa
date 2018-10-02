@@ -59,7 +59,7 @@ public class CacheMarshallerImpl
 
     // temporary storage for resource location specification
     private String _inputResourceLocation;
-    
+
     private boolean _consumeErrors = true;
 
     public Object load() {

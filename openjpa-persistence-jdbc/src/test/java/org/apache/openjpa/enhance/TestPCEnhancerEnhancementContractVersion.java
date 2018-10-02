@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.enhance;
 
@@ -36,7 +36,7 @@ public class TestPCEnhancerEnhancementContractVersion extends AbstractPersistenc
     public void testCurrentLevel() {
         assertFalse(PCEnhancer.checkEnhancementLevel(Country.class, log));
     }
-    
+
     public void testDownLevel(){
         assertTrue(PCEnhancer.checkEnhancementLevel(DummyPersistenceCapeable.class, log));
     }

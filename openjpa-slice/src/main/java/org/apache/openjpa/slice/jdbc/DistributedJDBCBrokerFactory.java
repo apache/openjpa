@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.slice.jdbc;
 
@@ -38,15 +38,15 @@ import org.apache.openjpa.slice.Slice;
 
 /**
  * A factory for distributed JDBC datastores.
- * 
+ *
  * @author Pinaki Poddar
- * 
+ *
  */
 @SuppressWarnings("serial")
-public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory 
+public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
     implements DistributedBrokerFactory {
 	private static final Localizer _loc = Localizer.forPackage(DistributedJDBCBrokerFactory.class);
-	
+
 	/**
      * Factory method for constructing a factory from properties. Invoked from
 	 * {@link Bootstrap#newBrokerFactory}.
@@ -91,12 +91,12 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	public DistributedJDBCBrokerFactory(DistributedJDBCConfiguration conf) {
 		super(conf);
 	}
-	
+
 	@Override
 	public DistributedJDBCConfiguration getConfiguration() {
 	    return (DistributedJDBCConfiguration)super.getConfiguration();
 	}
-	
+
 	public Slice addSlice(String name, Map properties) {
 	    Slice slice = ((DistributedJDBCConfigurationImpl)getConfiguration()).addSlice(name, properties);
         ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
@@ -112,12 +112,12 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	protected DistributedJDBCStoreManager newStoreManager() {
 		return new DistributedJDBCStoreManager(getConfiguration());
 	}
-    
+
     @Override
     public DistributedBroker newBroker() {
         return new DistributedBrokerImpl();
     }
-    
+
     protected void synchronizeMappings(ClassLoader loader) {
         List<Slice> slices = getConfiguration().getSlices(Slice.Status.ACTIVE);
         for (Slice slice : slices) {

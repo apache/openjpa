@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
 
@@ -348,7 +348,7 @@ public class Version
         throws SQLException {
         return assertStrategy().load(sm, store, res, joins);
     }
-    
+
     public void afterLoad(OpenJPAStateManager sm, JDBCStore store) {
         assertStrategy().afterLoad(sm, store);
     }

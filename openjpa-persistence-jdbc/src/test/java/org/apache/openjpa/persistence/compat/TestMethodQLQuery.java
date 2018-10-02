@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.compat;
 
@@ -35,12 +35,12 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 /**
  * <b>Compatible testcases</b> are used to test various backwards compatibility scenarios between JPA 2.0 and JPA 1.2
- * 
+ *
  * <p>The following scenarios are tested:
  * <ol>
  * <li>query.setParameter()
  * </ol>
- * <p> 
+ * <p>
  * <b>Note(s):</b>
  * <ul>
  * <li>The proper openjpa.Compatibility value(s) must be provided in order for the testcase(s) to succeed
@@ -78,7 +78,7 @@ public class TestMethodQLQuery extends SingleEMTestCase {
                 throw iae;
             }
         }
-    } 
+    }
 
     public static ResultObjectProvider echo(StoreContext ctx,
         ClassMetaData meta, boolean subs, Map params, FetchConfiguration conf) {

@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex3;
 
@@ -39,11 +39,11 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
     public int numDepartments = 2;
     public int numEmployeesPerDept = 2;
     public List<String> namedQueries = new ArrayList<String>();
-    
+
     public int deptId = 1;
     public int empId = 1;
     public List rsAllDepartments = null;
-    
+
     public void setUp() {
         super.setUp(DROP_TABLES,
             Department.class,
@@ -57,14 +57,14 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
-    
+
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
-    public void setCandidate(Query q, Class clz) 
+    public void setCandidate(Query q, Class clz)
         throws Exception {
-        org.apache.openjpa.persistence.QueryImpl q1 = 
+        org.apache.openjpa.persistence.QueryImpl q1 =
             (org.apache.openjpa.persistence.QueryImpl) q;
         org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
         org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
@@ -77,7 +77,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
         String query = "select KEY(e) from Department d, " +
             " in (d.emps) e order by d.deptId, e.empId";
         Query q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         List rs = q.getResultList();
         EmployeeName d = (EmployeeName) rs.get(0);
@@ -86,18 +86,18 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
         query = "select ENTRY(e) from Department d, " +
             " in (d.emps) e order by d.deptId, e.empId";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()));
-        
+
         // test ORDER BY qualified path
         query = "select KEY(e), KEY(e).fName from Department d, " +
             " in (d.emps) e order by KEY(e).fName";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
         d = (EmployeeName) ((Object[]) rs.get(0))[0];
@@ -110,7 +110,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
         query = "select COUNT(KEY(e).fName) from Department d " +
             " left join d.emps e GROUP BY KEY(e).fName";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)
@@ -120,7 +120,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
             " in (d.emps) e where VALUE(e).department.deptId = 1" +
             " ORDER BY KEY(e).fName";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)
@@ -130,7 +130,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
             " in (d.emps) e where VALUE(e).name.fName = 'f1'" +
             " ORDER BY KEY(e).fName";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)
@@ -140,7 +140,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
             " in (d.emps) e where SUBSTRING(VALUE(e).name.fName, 1) = 'f1'" +
             " ORDER BY KEY(e).fName";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)
@@ -150,7 +150,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
             " in (d.emps) e where LOCATE(VALUE(e).name.fName, 'f1') <> 0" +
             " ORDER BY KEY(e).fName";
         q = em.createQuery(query);
-        if (inMemory) 
+        if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)

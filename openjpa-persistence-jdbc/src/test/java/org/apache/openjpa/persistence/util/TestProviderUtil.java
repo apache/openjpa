@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.util;
 
@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestProviderUtil extends SingleEMFTestCase{
-    
+
     public void setUp() {
         setUp(CLEAR_TABLES, EagerEntity.class, LazyEmbed.class,
             LazyEntity.class, EagerEmbed.class, EagerEmbedRel.class,
@@ -42,82 +42,82 @@ public class TestProviderUtil extends SingleEMFTestCase{
     }
 
     /*
-     * Verifies an entity and its persistent attributes are in the proper 
+     * Verifies an entity and its persistent attributes are in the proper
      * LOADED state.
      */
-    public void testIsLoadedEager() {        
+    public void testIsLoadedEager() {
         verifyIsLoadedEagerState(LoadState.LOADED);
     }
 
     /*
-     * Verifies an entity and its persistent attributes are in the proper 
+     * Verifies an entity and its persistent attributes are in the proper
      * NOT_LOADED state.
      */
     public void testNotLoadedLazy() {
-        verifyIsLoadedEagerState(LoadState.NOT_LOADED);       
+        verifyIsLoadedEagerState(LoadState.NOT_LOADED);
     }
 
     /*
-     * Verifies an entity and its persistent attributes are in the proper 
+     * Verifies an entity and its persistent attributes are in the proper
      * LOADED state.
      */
-    public void testIsLoadedLazy() {        
+    public void testIsLoadedLazy() {
         verifyIsLoadedLazyState(LoadState.LOADED);
     }
 
     /*
-     * Verifies an entity and its persistent attributes are in the proper 
+     * Verifies an entity and its persistent attributes are in the proper
      * NOT_LOADED state.
      */
     public void testNotLoadedEager() {
-        verifyIsLoadedEagerState(LoadState.NOT_LOADED);       
+        verifyIsLoadedEagerState(LoadState.NOT_LOADED);
     }
 
-    
+
     private void verifyIsLoadedEagerState(LoadState state) {
         ProviderUtil pu = getProviderUtil();
         EntityManager em = emf.createEntityManager();
         EagerEntity ee = createEagerEntity(true);
-        
+
         // Vfy LoadState is unknown for the unmanaged entity
         assertEquals(LoadState.UNKNOWN, pu.isLoaded(ee));
-        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ee, 
+        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ee,
             "id"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithoutReference(ee,
             "id"));
-        
+
         em.getTransaction().begin();
         em.persist(ee);
         em.getTransaction().commit();
         em.clear();
-        
+
         if (state == LoadState.LOADED)
             ee = em.find(EagerEntity.class, ee.getId());
         else
             ee = em.getReference(EagerEntity.class, ee.getId());
-        
+
         assertEquals(state, pu.isLoaded(ee));
-        assertEquals(state, pu.isLoadedWithReference(ee, 
+        assertEquals(state, pu.isLoadedWithReference(ee,
             "id"));
         assertEquals(state, pu.isLoadedWithoutReference(ee,
             "id"));
-        assertEquals(state, pu.isLoadedWithReference(ee, 
+        assertEquals(state, pu.isLoadedWithReference(ee,
             "name"));
         assertEquals(state, pu.isLoadedWithoutReference(ee,
             "name"));
-        assertEquals(state, pu.isLoadedWithReference(ee, 
+        assertEquals(state, pu.isLoadedWithReference(ee,
             "eagerEmbed"));
         assertEquals(state, pu.isLoadedWithoutReference(ee,
             "eagerEmbed"));
-        assertEquals(state, pu.isLoadedWithReference(ee, 
+        assertEquals(state, pu.isLoadedWithReference(ee,
             "eagerEmbedColl"));
         assertEquals(state, pu.isLoadedWithoutReference(ee,
             "eagerEmbedColl"));
-        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ee, 
+        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ee,
             "transField"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithoutReference(ee,
             "transField"));
-        
+
         em.close();
     }
 
@@ -125,49 +125,49 @@ public class TestProviderUtil extends SingleEMFTestCase{
         ProviderUtil pu = getProviderUtil();
         EntityManager em = emf.createEntityManager();
         LazyEntity le = createLazyEntity();
-        
+
         // Vfy LoadState is unknown for the unmanaged entity
         assertEquals(LoadState.UNKNOWN, pu.isLoaded(le));
-        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(le, 
+        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(le,
             "id"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithoutReference(le,
             "id"));
-        
+
         em.getTransaction().begin();
         em.persist(le);
         em.getTransaction().commit();
         em.clear();
-        
+
         // Use find or getReference based upon expected state
         if (state == LoadState.LOADED)
             le = em.find(LazyEntity.class, le.getId());
         else
             le = em.getReference(LazyEntity.class, le.getId());
-        
+
         assertEquals(state, pu.isLoaded(le));
-        assertEquals(state, pu.isLoadedWithReference(le, 
+        assertEquals(state, pu.isLoadedWithReference(le,
             "id"));
         assertEquals(state, pu.isLoadedWithoutReference(le,
             "id"));
         // Name is lazy fetch so it should not be loaded
-        assertEquals(LoadState.NOT_LOADED, pu.isLoadedWithReference(le, 
+        assertEquals(LoadState.NOT_LOADED, pu.isLoadedWithReference(le,
             "name"));
         assertEquals(LoadState.NOT_LOADED, pu.isLoadedWithoutReference(le,
             "name"));
-        assertEquals(state, pu.isLoadedWithReference(le, 
+        assertEquals(state, pu.isLoadedWithReference(le,
             "lazyEmbed"));
         assertEquals(state, pu.isLoadedWithoutReference(le,
             "lazyEmbed"));
         // lazyEmbedColl is lazy fetch so it should not be loaded
-        assertEquals(LoadState.NOT_LOADED, pu.isLoadedWithReference(le, 
+        assertEquals(LoadState.NOT_LOADED, pu.isLoadedWithReference(le,
             "lazyEmbedColl"));
         assertEquals(LoadState.NOT_LOADED, pu.isLoadedWithoutReference(le,
-            "lazyEmbedColl"));        
-        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(le, 
+            "lazyEmbedColl"));
+        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(le,
             "transField"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithoutReference(le,
             "transField"));
-        
+
         em.close();
     }
 
@@ -179,16 +179,16 @@ public class TestProviderUtil extends SingleEMFTestCase{
         ProviderUtil pu = getProviderUtil();
         EntityManager em = emf.createEntityManager();
         EagerEntity ee = createEagerEntity(true);
-        
+
         em.getTransaction().begin();
         em.persist(ee);
         em.getTransaction().commit();
         em.clear();
-        
+
         ee = em.getReference(EagerEntity.class, ee.getId());
         assertNotNull(ee);
         assertEagerLoadState(pu, ee, LoadState.NOT_LOADED);
-        
+
         ee.setName("AppEagerName");
         EagerEmbed emb = createEagerEmbed();
         ee.setEagerEmbed(emb);
@@ -197,23 +197,23 @@ public class TestProviderUtil extends SingleEMFTestCase{
         // Vfy the set values are applied to the entity
         assertEquals("AppEagerName", ee.getName());
         assertEquals(emb, ee.getEagerEmbed());
-        
+
         em.close();
     }
-        
+
     /*
-     * Verifies that an entity not managed by a PU 
+     * Verifies that an entity not managed by a PU
      */
     public void testIsLoadedUnknown() {
         ProviderUtil pu = getProviderUtil();
-        
+
         EagerEntity ee = new EagerEntity();
-        
+
         assertEquals(LoadState.UNKNOWN, pu.isLoaded(ee));
-        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ee, 
+        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ee,
             "id"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithoutReference(ee,
-            "id"));        
+            "id"));
     }
 
     private EagerEntity createEagerEntity(boolean createRels) {
@@ -239,7 +239,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
         }
         return al;
     }
-    
+
     private EagerEmbed createEagerEmbed() {
         EagerEmbed emb = new EagerEmbed();
         emb.setEndDate(new Date(System.currentTimeMillis()));
@@ -260,7 +260,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
             ints.add(new Integer(i));
         }
         emb.setIntVals(ints);
-        
+
         emb.setEagerEnts(ee);
         return emb;
     }
@@ -290,33 +290,33 @@ public class TestProviderUtil extends SingleEMFTestCase{
         return al;
     }
 
-    private void assertEagerLoadState(ProviderUtil pu, Object ent, 
+    private void assertEagerLoadState(ProviderUtil pu, Object ent,
         LoadState state) {
         assertEquals(state, pu.isLoaded(ent));
-        assertEquals(state, pu.isLoadedWithReference(ent, 
+        assertEquals(state, pu.isLoadedWithReference(ent,
             "id"));
         assertEquals(state, pu.isLoadedWithoutReference(ent,
             "id"));
-        assertEquals(state, pu.isLoadedWithReference(ent, 
+        assertEquals(state, pu.isLoadedWithReference(ent,
             "name"));
         assertEquals(state, pu.isLoadedWithoutReference(ent,
             "name"));
-        assertEquals(state, pu.isLoadedWithReference(ent, 
+        assertEquals(state, pu.isLoadedWithReference(ent,
             "eagerEmbed"));
         assertEquals(state, pu.isLoadedWithoutReference(ent,
             "eagerEmbed"));
-        assertEquals(state, pu.isLoadedWithReference(ent, 
+        assertEquals(state, pu.isLoadedWithReference(ent,
             "eagerEmbedRel"));
         assertEquals(state, pu.isLoadedWithoutReference(ent,
             "eagerEmbedRel"));
-        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ent, 
+        assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ent,
             "transField"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithoutReference(ent,
-            "transField"));        
+            "transField"));
     }
-    
+
     private ProviderUtil getProviderUtil() {
-        PersistenceProvider pp = new PersistenceProviderImpl(); 
+        PersistenceProvider pp = new PersistenceProviderImpl();
         ProviderUtil pu = pp.getProviderUtil();
         return pu;
     }

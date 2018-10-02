@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -23,7 +23,7 @@ package org.apache.openjpa.util;
  *
  * @author Abe White
  */
-public final class DoubleId 
+public final class DoubleId
     extends OpenJPAId {
 
     private final double key;
@@ -59,7 +59,7 @@ public final class DoubleId
     }
 
     protected int idHash() {
-        return (int) (Double.doubleToLongBits(key) 
+        return (int) (Double.doubleToLongBits(key)
             ^ (Double.doubleToLongBits(key) >>> 32));
     }
 

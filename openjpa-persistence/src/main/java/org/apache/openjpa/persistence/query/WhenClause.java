@@ -14,38 +14,38 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
 /**
  * Denotes WHEN ... THEN ... clause of a Case Statement.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
 public class WhenClause {
 	private final Object when;
 	private Object then;
-	
+
 	WhenClause(Object op) {
 		when = op;
 	}
-	
+
 	Object getThen() {
 		return then;
 	}
-	
+
 	void setThen(Object then) {
 		if (hasThen())
             throw new IllegalStateException("then() is already set");
 		this.then = then;
 	}
-	
+
 	boolean hasThen() {
 		return then != null;
 	}
-	
+
 	public String toJPQL(AliasContext ctx) {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append(" WHEN ").append(JPQLHelper.toJPQL(ctx, when))

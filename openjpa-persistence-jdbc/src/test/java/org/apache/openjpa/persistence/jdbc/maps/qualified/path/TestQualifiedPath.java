@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.maps.qualified.path;
 
@@ -30,24 +30,24 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 /**
  * Test queries containing qualified paths of the form:
  * <pre>
- * general_identification_variable.{single_valued_object_field.}*single_valued_object_field 
+ * general_identification_variable.{single_valued_object_field.}*single_valued_object_field
  *    or
- * general_identification_variable.{single_valued_object_field.}*collection_valued_field 
+ * general_identification_variable.{single_valued_object_field.}*collection_valued_field
  * </pre>
  */
 public class TestQualifiedPath extends SQLListenerTestCase {
     private int numDivisions = 2;
     private int numEmployeesPerDivision = 3;
     private int numMobilePhonesPerEmployee = 2;
-    
+
     private int divisionId = 0;
     private int employeeId = 0;
     private int nameCount = 0;
     private int phoneId = 0;
     private int phoneNumber = 1234567890;
-    
+
     OpenJPAEntityManager em;
-    
+
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Division.class, Employee.class, Phone.class, PersonalInfo.class);
@@ -59,12 +59,12 @@ public class TestQualifiedPath extends SQLListenerTestCase {
 
     public void testQueries() {
         em.clear();
-        String query = "select p " + 
+        String query = "select p " +
             " from Division d, in(d.employees) e, in(KEY(e).personalInfo.phones) p";
         Query q = em.createQuery(query);
         List<?> rs = q.getResultList();
         assertEquals(numDivisions*numEmployeesPerDivision*(2 + numMobilePhonesPerEmployee), rs.size());
-       
+
         em.clear();
         query = "select KEY(e) " +
             "from Division d, in(d.employees) e " +
@@ -74,7 +74,7 @@ public class TestQualifiedPath extends SQLListenerTestCase {
         assertEquals(1, rs.size());
         Employee employee = (Employee)rs.get(0);
         assertEquals("lName2", employee.getPersonalInfo().getLastName());
-        
+
         em.clear();
         query = "select KEY(e) " +
             "from Division d, in(d.employees) e " +
@@ -86,7 +86,7 @@ public class TestQualifiedPath extends SQLListenerTestCase {
         assertTrue(employee.getPersonalInfo().getLastName().equals("lName1"));
         employee = (Employee)rs.get(1);
         assertTrue(employee.getPersonalInfo().getLastName().equals("lName2"));
-        
+
         em.clear();
         query = "select KEY(e).personalInfo.lastName " +
             "from Division d, in (d.employees) e " +
@@ -98,7 +98,7 @@ public class TestQualifiedPath extends SQLListenerTestCase {
         em.close();
         em = null;
     }
-    
+
     private void createObj() {
         em.getTransaction().begin();
         for (int i = 0; i < numDivisions; i++) {
@@ -107,7 +107,7 @@ public class TestQualifiedPath extends SQLListenerTestCase {
         em.flush();
         em.getTransaction().commit();
     }
-    
+
     private void createDivision(int id) {
         Division division = new Division();
         division.setId(id);
@@ -119,15 +119,15 @@ public class TestQualifiedPath extends SQLListenerTestCase {
         division.setEmployees(employees);
         em.persist(division);
     }
-    
+
     private Employee createEmployee(int id) {
         Employee employee = new Employee();
         employee.setId(id);
-        
+
         PersonalInfo personalInfo = new PersonalInfo();
         personalInfo.setFirstName("fName" + nameCount++);
         personalInfo.setLastName("lName" + nameCount);
-        
+
         Phone homePhone = new Phone(phoneId++, Phone.HOME, phoneNumber++);
         personalInfo.addPhone(homePhone);
         Phone officePhone = new Phone(phoneId++, Phone.OFFICE, phoneNumber++);
@@ -136,11 +136,11 @@ public class TestQualifiedPath extends SQLListenerTestCase {
             Phone mobilePhone = new Phone(phoneId++, Phone.MOBILE, phoneNumber++);
             personalInfo.addPhone(mobilePhone);
         }
-        
+
         employee.setPersonalInfo(personalInfo);
-        
+
         em.persist(employee);
-        
+
         return employee;
     }
 

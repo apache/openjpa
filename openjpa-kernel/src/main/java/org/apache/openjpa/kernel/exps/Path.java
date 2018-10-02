@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.kernel.exps;
 
@@ -47,19 +47,19 @@ public interface Path
     /**
      * Traverse into the given field that maps to xml column, and update
      * the current object to that field value.
-     * 
+     *
      * @param fmd field maps to xml column
      * @param meta associated xml mapping
      */
     public void get(FieldMetaData fmd, XMLMetaData meta);
-    
+
     /**
      * Traverse into the gevin xpath name of the current object, and update
      * the current object to that xpath field.
-     * 
+     *
      */
     public void get(XMLMetaData meta, String name);
-    
+
     /**
      * Return the current XPath's xmlmapping metadata.
      * @return Return xmlmapping
@@ -71,9 +71,9 @@ public interface Path
      * this path is begin with.
      */
     public void setSchemaAlias(String schemaAlias);
-        
+
     public String getSchemaAlias();
-    
+
     public void setSubqueryContext(Context context, String correlationVar);
 
     public String getCorrelationVar();

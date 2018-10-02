@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.integration.validation;
 
@@ -32,13 +32,13 @@ public class MixedGrpEntity {
 
     @NotNull
     private String defNotNull;
-    
+
     @NotNull(groups=ValGroup1.class)
     private String vg1NotNull;
-    
+
     @NotNull(groups=ValGroup2.class)
     private String vg2NotNull;
-    
+
     @NotNull(groups={ValGroup1.class, ValGroup2.class})
     private String vg12NotNull;
 

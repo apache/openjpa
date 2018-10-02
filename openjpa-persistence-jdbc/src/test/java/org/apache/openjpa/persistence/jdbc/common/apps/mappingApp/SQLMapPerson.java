@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
@@ -22,7 +22,7 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
-/** 
+/**
  * @author ppoddar
  *
  */
@@ -57,11 +57,11 @@ public class SQLMapPerson implements Serializable {
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="ADDRESS_ID")
 	public SQLMapAddress getAddress() {

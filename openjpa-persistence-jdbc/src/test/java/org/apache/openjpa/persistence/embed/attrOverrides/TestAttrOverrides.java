@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
@@ -27,14 +27,14 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestAttrOverrides  extends SQLListenerTestCase { 
+public class TestAttrOverrides  extends SQLListenerTestCase {
     public int numPersons = 4;
     public int numPropertiesPerPersons = 4;
     public int eId = 1;
     public int pId = 1;
 
     public void setUp() throws Exception {
-        super.setUp(DROP_TABLES, Address.class, Customer.class, 
+        super.setUp(DROP_TABLES, Address.class, Customer.class,
             PropertyInfo.class, PropertyOwner.class, PropertyRecord.class,
             Zipcode.class, Person.class);
     }
@@ -62,7 +62,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         queryObj2();
         assertAttrOverrides("PROPREC_ATTROVER_parcels");
     }
-    
+
     /**
      * This is spec 10.1.35. Example 3
      * Test OrderBy on embeddable field
@@ -201,7 +201,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         tran.commit();
         em.close();
     }
-    
+
     public void assertAttrOverrides(String tableName) {
         boolean found = false;
         for (String sqlStr : sql) {
@@ -225,7 +225,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         if (!found)
             fail();
     }
-    
+
     public void createObj3() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -241,7 +241,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         Person p = new Person();
         p.setSsn("ssn" + id);
         p.setName("name_" + id);
-    
+
         for (int i = 4; i > 0; i--) {
             Address addr = new Address();
             addr.setCity("city_" + id + "_" + i );
@@ -275,7 +275,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
             assertEquals(expPlusFour, plusFour);
             i++;
         }
-        
+
         List<String> nickNames = p.getNickNames();
         assertEquals(4, nickNames.size());
         i = 4;

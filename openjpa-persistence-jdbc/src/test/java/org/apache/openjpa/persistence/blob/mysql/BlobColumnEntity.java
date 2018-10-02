@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.blob.mysql;
 
@@ -35,15 +35,15 @@ public class BlobColumnEntity {
     @Lob
     @Column(length = 300)
     protected byte[] oldLob;
-    
+
     @Lob
     @Column(length = 66000)
     protected byte[] medLob;
-    
+
     @Lob
     @Column(length = 16777216)
     protected byte[] longLob;
-    
+
     @Lob
     protected byte[] defaultLob;
 

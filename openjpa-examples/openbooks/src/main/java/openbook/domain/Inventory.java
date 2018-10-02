@@ -24,7 +24,7 @@ import javax.persistence.Version;
 
 /**
  * A mutable persistent entity.
- * 
+ *
  * @author Pinaki Poddar
  *
  */
@@ -34,18 +34,18 @@ public class Inventory implements Serializable {
     @Id
     @OneToOne(fetch=FetchType.EAGER, optional=false)
     private Book book;
-    
+
     private int supplied;
-    
+
     private int sold;
-    
+
     protected Inventory() {
-        
+
     }
     /**
      * Construct with the given Book and initial inventory count.
      * Package protected because only a Book can create its own inventory.
-     * 
+     *
      * @param book non-null Book.
      * @param initialSupply must be greater than zero.
      */
@@ -58,16 +58,16 @@ public class Inventory implements Serializable {
         this.book = book;
         increment(initialSupply);
     }
-    
+
     /**
      * Gets the Book that this inventory represents.
-     * 
+     *
      * @return non-null Book.
      */
     public Book getBook() {
         return book;
     }
-    
+
     /**
      * Gets the available quantity.
      * This is an <em>in-flight</em> value representing the difference between the quantity supplied and quantity sold
@@ -76,52 +76,52 @@ public class Inventory implements Serializable {
     public int getInStock() {
         return supplied - sold;
     }
-    
+
     /**
      * Gets the quantity supplied so far.
-     * 
+     *
      * @return a monotonically increasing positive number.
      */
     public int getSupplied() {
         return supplied;
     }
-    
+
     /**
      * Gets the quantity sold so far.
-     * 
+     *
      * @return a monotonically increasing positive number.
      */
     public int getSold() {
         return sold;
     }
-    
+
     /**
      * Increment this inventory by the given quantity.
-     * 
+     *
      * @param supplied must be positive.
      */
     public void increment(int supplied) {
         if (supplied < 1)
-            throw new IllegalArgumentException("Can not add " + supplied + " supplies to " + this + 
+            throw new IllegalArgumentException("Can not add " + supplied + " supplies to " + this +
                     " Suuplied quanlity must be greater than zero.");
         this.supplied += supplied;
     }
-    
+
     /**
      * Decrement this inventory by the given quantity.
-     * 
+     *
      * @param sold must be positive.
      */
     public void decrement(int sold) {
         if (sold < 1)
-            throw new IllegalArgumentException("can not sell " + sold + "quantity to " + this 
+            throw new IllegalArgumentException("can not sell " + sold + "quantity to " + this
                     + "Sold quantity Must be greater than zero.");
         this.sold += sold;
     }
-    
+
     @Version
     private int version;
-    
+
     public int getVersion() {
         return version;
     }

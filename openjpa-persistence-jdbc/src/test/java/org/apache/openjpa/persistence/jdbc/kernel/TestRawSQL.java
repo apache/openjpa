@@ -15,7 +15,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
@@ -46,7 +46,7 @@ import org.apache.openjpa.kernel.FetchConfiguration;
 
 
 public class TestRawSQL extends BaseJDBCTest {
-    
+
     /** Creates a new instance of TestRawSQL */
     private Object[] _oids = new Object[3];
     private String[] _strings = new String[]{ "a", "b", "c" };
@@ -75,10 +75,10 @@ public class TestRawSQL extends BaseJDBCTest {
 
     public void testLoadWithResult()
         throws Exception {
-        
+
         EntityManager em = currentEntityManager();
         Broker broker = JPAFacadeHelper.toBroker(em);
-       
+
         JDBCStore store = (JDBCStore)broker.getStoreManager();
 
         Connection conn = store.getConnection();
@@ -98,8 +98,8 @@ public class TestRawSQL extends BaseJDBCTest {
 
         public void testLoadWithPCROP()
         throws Exception {
-            
-        EntityManager em = currentEntityManager();    
+
+        EntityManager em = currentEntityManager();
         Broker broker = JPAFacadeHelper.toBroker(em);
         ResultObjectProvider rop = new AbstractPCResultObjectProvider(broker) {
             private int _row = -1;
@@ -136,7 +136,7 @@ public class TestRawSQL extends BaseJDBCTest {
                 return RawSQL.class;
             }
 
-            protected void load(OpenJPAStateManager sm, 
+            protected void load(OpenJPAStateManager sm,
                 FetchConfiguration fetch) {
                 ClassMetaData meta = sm.getMetaData();
                 sm.storeStringField(meta.getField("stringField").getIndex(),
@@ -154,8 +154,8 @@ public class TestRawSQL extends BaseJDBCTest {
         broker.close();
     }
 
-    
-    
+
+
     private void check(ResultList rl, Broker broker) {
         RawSQL raw;
         int i = 0;
@@ -171,6 +171,6 @@ public class TestRawSQL extends BaseJDBCTest {
         assertEquals(_oids.length, i);
         assertEquals(_oids.length, rl.size());
     }
-    
-    
+
+
 }

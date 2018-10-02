@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
@@ -111,7 +111,7 @@ public class RelationMapTableFieldStrategy
     }
 
     public void selectValue(Select sel, ClassMapping val,
-        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch, 
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         Joins joins) {
         selectElement(sel, val, store, fetch, JDBCFetchConfiguration.EAGER_NONE,
             joins);
@@ -165,7 +165,7 @@ public class RelationMapTableFieldStrategy
                 key.getForeignKey(clss[0]), clss[0], key.getSelectSubclasses(),
                 false, false);
         return joins.joinRelation(field.getName(),
-            key.getForeignKey(clss[0]), clss[0], key.getSelectSubclasses(), 
+            key.getForeignKey(clss[0]), clss[0], key.getSelectSubclasses(),
             false, false);
     }
 

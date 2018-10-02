@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
  package org.apache.openjpa.persistence.conf;
 
@@ -28,21 +28,21 @@ import javax.persistence.Version;
 @Entity(name="confPerson")
 @Table(name="CONF_PERSON")
 public class Person {
-    
+
     @Id
     private int id;
 
     @Version
     private int version;
-    
+
     @Column(length=16)
     private String name;
-    
-    public Person() { 
+
+    public Person() {
         super();
     }
-   
-    public Person(int id) { 
+
+    public Person(int id) {
         super();
         setId(id);
     }

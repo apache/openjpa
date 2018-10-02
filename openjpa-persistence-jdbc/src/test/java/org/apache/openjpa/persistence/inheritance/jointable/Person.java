@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.inheritance.jointable;
 
@@ -37,7 +37,7 @@ import javax.persistence.TableGenerator;
 public abstract class Person {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="JWTGen")
-    private long OID; 
+    private long OID;
 
     @Basic
     private String name;
@@ -52,11 +52,11 @@ public abstract class Person {
 	public String getName() {
 		return name;
 	}
-	
+
 	public long getOID() {
 		return OID;
 	}
-	
+
 	public void setOID(long oid) {
 		this.OID = oid;
 	}

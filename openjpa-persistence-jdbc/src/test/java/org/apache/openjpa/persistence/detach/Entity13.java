@@ -34,7 +34,7 @@ public class Entity13 {
     @MapKey(name = "name")
     @OneToMany(cascade=(CascadeType.ALL))
     private Map<String, Entity11> map;
-    
+
     public Entity13() {
     }
 

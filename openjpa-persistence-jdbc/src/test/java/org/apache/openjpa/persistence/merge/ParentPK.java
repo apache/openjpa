@@ -44,7 +44,7 @@ public class ParentPK implements Serializable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#hashCode()
    */
   @Override
@@ -59,7 +59,7 @@ public class ParentPK implements Serializable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
