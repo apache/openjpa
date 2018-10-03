@@ -40,11 +40,13 @@ public class TestBasic extends SliceTestCase {
      * Specify persistence unit name as System property <code>-Dunit</code> or
      * use the default value as <code>"slice"</code>.
      */
+    @Override
     protected String getPersistenceUnitName() {
         return System.getProperty("unit","slice");
     }
 
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
         	CLEAR_TABLES);
@@ -54,7 +56,7 @@ public class TestBasic extends SliceTestCase {
      * Persist N independent objects.
      */
     List<PObject> createIndependentObjects(int N) {
-        List<PObject> pcs = new ArrayList<PObject>();
+        List<PObject> pcs = new ArrayList<>();
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < N; i++) {
@@ -319,6 +321,7 @@ public class TestBasic extends SliceTestCase {
     public void testDynamicSlice() {
         DistributedConfiguration conf = (DistributedConfiguration)emf.getConfiguration();
         conf.setDistributionPolicyInstance(new DistributionPolicy() {
+            @Override
             public String distribute(Object pc, List<String> slices,
                     Object context) {
                 if (PObject.class.isInstance(pc)) {

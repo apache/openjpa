@@ -24,7 +24,7 @@ package org.apache.openjpa.persistence.enhance.common.apps;
  */
 public interface SubclassTestInstance {
 
-    public void setStringField(String s);
+    void setStringField(String s);
 
-    public String getStringField();
+    String getStringField();
 }

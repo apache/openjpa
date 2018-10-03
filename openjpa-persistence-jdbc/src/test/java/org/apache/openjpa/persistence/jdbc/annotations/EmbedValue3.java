@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 
 import java.awt.Point;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 import org.apache.openjpa.persistence.Persistent;
 import org.apache.openjpa.persistence.jdbc.Strategy;

@@ -28,7 +28,6 @@ import java.util.Objects;
 
 import javax.sql.DataSource;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -36,6 +35,7 @@ import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
 

@@ -39,6 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         File f = new File("target/orm.xml");

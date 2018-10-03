@@ -27,19 +27,20 @@ package org.apache.openjpa.kernel;
  *
  * @author Steve Kim
  */
-@SuppressWarnings("serial")
-class TLoadedState
-    extends PCState {
+class TLoadedState extends PCState {
+    private static final long serialVersionUID = 1L;
 
     @Override
     void initialize(StateManagerImpl context, PCState previous) {
         context.setLoaded(true);
     }
 
+    @Override
     PCState release(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     public String toString() {
         return "Transient-Loaded";
     }

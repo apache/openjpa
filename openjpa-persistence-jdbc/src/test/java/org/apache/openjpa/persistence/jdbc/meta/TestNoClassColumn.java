@@ -27,14 +27,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
-
-import org.apache.openjpa.persistence.OpenJPAQuery;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.common.apps.NoClassColumn;
 
 
 public class TestNoClassColumn

@@ -19,7 +19,8 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 
-import javax.persistence.*;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 
 /**

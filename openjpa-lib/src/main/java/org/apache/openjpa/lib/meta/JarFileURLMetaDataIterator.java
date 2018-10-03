@@ -45,7 +45,7 @@ public class JarFileURLMetaDataIterator implements MetaDataIterator, MetaDataFil
 
     private int index = 0;
     private JarEntry _last = null;
-    private final ArrayList<JarEntry> _entryList = new ArrayList<JarEntry>();
+    private final ArrayList<JarEntry> _entryList = new ArrayList<>();
 
     public JarFileURLMetaDataIterator(URL url, MetaDataFilter filter) throws IOException {
         if (url == null) {
@@ -81,6 +81,7 @@ public class JarFileURLMetaDataIterator implements MetaDataIterator, MetaDataFil
     /**
      * Return whether there is another resource to iterate over.
      */
+    @Override
     public boolean hasNext() throws IOException {
         if (_entryList.size() <= index) {
             return false;
@@ -101,6 +102,7 @@ public class JarFileURLMetaDataIterator implements MetaDataIterator, MetaDataFil
     /**
      * Return the next metadata resource.
      */
+    @Override
     public Object next() throws IOException {
         if (!hasNext()) {
             throw new NoSuchElementException();
@@ -116,6 +118,7 @@ public class JarFileURLMetaDataIterator implements MetaDataIterator, MetaDataFil
     /**
      * Return the last-iterated metadata resource content as a stream.
      */
+    @Override
     public InputStream getInputStream() throws IOException {
         if (_last == null)
             throw new IllegalStateException();
@@ -125,6 +128,7 @@ public class JarFileURLMetaDataIterator implements MetaDataIterator, MetaDataFil
     /**
      * Return the last-iterated metadata resource content as a file, or null if not an extant file.
      */
+    @Override
     public File getFile() throws IOException {
         if (_last == null)
             throw new IllegalStateException();
@@ -134,6 +138,7 @@ public class JarFileURLMetaDataIterator implements MetaDataIterator, MetaDataFil
     /**
      * Close the resources used by this iterator.
      */
+    @Override
     public void close() {
         try {
             if (_jarFile != null)
@@ -149,6 +154,7 @@ public class JarFileURLMetaDataIterator implements MetaDataIterator, MetaDataFil
     /**
      * The name of the resource.
      */
+    @Override
     public String getName() {
         if (index < _entryList.size()) {
             return _entryList.get(index).getName();
@@ -160,6 +166,7 @@ public class JarFileURLMetaDataIterator implements MetaDataIterator, MetaDataFil
     /**
      * Resource content.
      */
+    @Override
     public byte[] getContent() throws IOException {
         if (_entryList.size() <= index) {
             return new byte[0];

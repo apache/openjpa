@@ -32,18 +32,22 @@ public class MapElementPC
         this.elementData = elementData;
     }
 
+    @Override
     public String getElementData() {
         return this.elementData;
     }
 
+    @Override
     public int hashCode() {
         return elementData.hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         return ((MapElementPC) other).elementData.equals(elementData);
     }
 
+    @Override
     public String toString() {
         return super.toString() + "::" + elementData;
     }

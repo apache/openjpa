@@ -21,8 +21,8 @@ package org.apache.openjpa.datacache;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.openjpa.util.OpenJPAId;
 
@@ -34,8 +34,8 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     private static final int ARRAY_SIZE = 3;
     private long[] totalStat = new long[ARRAY_SIZE];
     private long[] stat = new long[ARRAY_SIZE];
-    private Map<String, long[]> stats = new HashMap<String, long[]>();
-    private Map<String, long[]> totalStats = new HashMap<String, long[]>();
+    private Map<String, long[]> stats = new HashMap<>();
+    private Map<String, long[]> totalStats = new HashMap<>();
 
     private Date start = new Date();
     private Date since = new Date();
@@ -45,101 +45,125 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     private static final int HIT = 1;
     private static final int WRITE = 2;
 
+    @Override
     public long getReadCount() {
         return stat[READ];
     }
 
+    @Override
     public long getHitCount() {
         return stat[HIT];
     }
 
+    @Override
     public long getWriteCount() {
         return stat[WRITE];
     }
 
+    @Override
     public long getTotalReadCount() {
         return totalStat[READ];
     }
 
+    @Override
     public long getTotalHitCount() {
         return totalStat[HIT];
     }
 
+    @Override
     public long getTotalWriteCount() {
         return totalStat[WRITE];
     }
 
+    @Override
     public long getReadCount(Class<?> c) {
         return getReadCount(c.getName());
     }
 
+    @Override
     public long getReadCount(String str){
         return getCount(stats, str, READ);
     }
 
+    @Override
     public long getHitCount(Class<?> c) {
         return getHitCount(c.getName());
     }
 
+    @Override
     public long getHitCount(String str) {
         return getCount(stats, str, HIT);
     }
 
+    @Override
     public long getWriteCount(Class<?> c) {
         return getWriteCount(c.getName());
     }
+    @Override
     public long getWriteCount(String str) {
         return getCount(stats, str, WRITE);
     }
 
+    @Override
     public long getTotalReadCount(Class<?> c) {
         return getTotalReadCount(c.getName());
     }
 
+    @Override
     public long getTotalReadCount(String str) {
         return getCount(totalStats, str, READ);
     }
 
+    @Override
     public long getTotalHitCount(Class<?> c) {
         return getTotalHitCount(c.getName());
     }
 
+    @Override
     public long getTotalHitCount(String str) {
         return getCount(totalStats, str, HIT);
     }
 
+    @Override
     public long getTotalWriteCount(Class<?> c) {
         return getCount(totalStats, c.getName(), WRITE);
     }
 
+    @Override
     public long getTotalWriteCount(String str) {
         return getCount(totalStats, str, WRITE);
     }
 
+    @Override
     public Date since() {
         return since;
     }
 
+    @Override
     public Date start() {
         return start;
     }
 
+    @Override
     public void reset() {
         stat = new long[ARRAY_SIZE];
         stats.clear();
         since = new Date();
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public Set<String> classNames() {
         return totalStats.keySet();
     }
 
+    @Override
     public Map<String, long[]> toMap() {
-        Map<String, long[]> res = new HashMap<String, long[]>();
+        Map<String, long[]> res = new HashMap<>();
         for(Entry<String, long[]> s  : stats.entrySet()){
             res.put(s.getKey(), s.getValue());
         }
@@ -149,14 +173,17 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     /**
      * SPI implementation
      */
+    @Override
     public void enable() {
         enabled = true;
     }
 
+    @Override
     public void disable() {
         enabled = false;
     }
 
+    @Override
     public void newGet(Class<?> cls, boolean hit) {
         if (!enabled) {
             return;
@@ -178,6 +205,7 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
         }
     }
 
+    @Override
     public void newPut(Class<?> cls) {
         if (!enabled) {
             return;

@@ -26,9 +26,8 @@ import java.util.Collection;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public class QueryResult
-    extends ArrayList<Object> {
+public class QueryResult extends ArrayList<Object> {
+    private static final long serialVersionUID = 1L;
 
     private final long _ex;
 

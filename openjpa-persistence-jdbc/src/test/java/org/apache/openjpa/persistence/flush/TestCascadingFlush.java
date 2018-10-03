@@ -36,6 +36,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
 
     boolean supportsNativeSequence = false;
 
+    @Override
     public void setUp() {
         setUp(Assignment.class, ClassPeriod.class, Course.class, SubTopic.class, Topic.class, CLEAR_TABLES);
 
@@ -183,13 +184,13 @@ public class TestCascadingFlush extends SingleEMFTestCase {
         Assignment assignment1 = new Assignment();
         assignment1.setAssignmentText("Lab: Nuclear Fusion");
 
-        Set<Assignment> assignments = new HashSet<Assignment>();
+        Set<Assignment> assignments = new HashSet<>();
         assignments.add(assignment1);
 
         SubTopic subtopic1 = new SubTopic();
         subtopic1.setSubtopicText("Nuclear Fusion");
 
-        Set<SubTopic> subtopics = new HashSet<SubTopic>();
+        Set<SubTopic> subtopics = new HashSet<>();
         subtopics.add(subtopic1);
 
         Topic topic1 = new Topic();
@@ -200,7 +201,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
         assignment1.setTopic(topic1);
         subtopic1.setTopic(topic1);
 
-        Set<Topic> topics = new HashSet<Topic>();
+        Set<Topic> topics = new HashSet<>();
         topics.add(topic1);
 
         ClassPeriod cp1 = new ClassPeriod();
@@ -210,7 +211,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
 
         topic1.setClassPeriod(cp1);
 
-        Set<ClassPeriod> cps = new HashSet<ClassPeriod>();
+        Set<ClassPeriod> cps = new HashSet<>();
         cps.add(cp1);
 
         course.setClassPeriods(cps);
@@ -224,13 +225,13 @@ public class TestCascadingFlush extends SingleEMFTestCase {
         Assignment assignment = new Assignment();
         assignment.setAssignmentText("Read pages 442-645");
 
-        Set<Assignment> assignments = new HashSet<Assignment>();
+        Set<Assignment> assignments = new HashSet<>();
         assignments.add(assignment);
 
         SubTopic subTopic = new SubTopic();
         subTopic.setSubtopicText("Newton");
 
-        Set<SubTopic> subTopics = new HashSet<SubTopic>();
+        Set<SubTopic> subTopics = new HashSet<>();
         subTopics.add(subTopic);
 
         Topic topic = new Topic();
@@ -241,20 +242,20 @@ public class TestCascadingFlush extends SingleEMFTestCase {
         assignment.setTopic(topic);
         subTopic.setTopic(topic);
 
-        Set<Topic> topics = new HashSet<Topic>();
+        Set<Topic> topics = new HashSet<>();
         topics.add(topic);
 
         // Add another topic
         Assignment assignment2 = new Assignment();
         assignment2.setAssignmentText("Read pages 645-785");
 
-        Set<Assignment> assignments2 = new HashSet<Assignment>();
+        Set<Assignment> assignments2 = new HashSet<>();
         assignments2.add(assignment2);
 
         SubTopic subTopic2 = new SubTopic();
         subTopic2.setSubtopicText("Forces");
 
-        Set<SubTopic> subTopics2 = new HashSet<SubTopic>();
+        Set<SubTopic> subTopics2 = new HashSet<>();
         subTopics2.add(subTopic2);
 
         Topic topic2 = new Topic();

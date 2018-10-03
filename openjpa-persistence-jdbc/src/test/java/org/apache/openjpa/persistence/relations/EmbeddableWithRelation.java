@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import javax.persistence.Embeddable;
 import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
 @Embeddable

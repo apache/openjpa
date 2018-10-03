@@ -40,6 +40,7 @@ public class XMLSuperFieldEntity {
         return name;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLSuperFieldEntity) {
             XMLSuperFieldEntity sfe = (XMLSuperFieldEntity)obj;

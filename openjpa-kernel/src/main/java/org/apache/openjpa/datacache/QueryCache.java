@@ -42,7 +42,7 @@ public interface QueryCache
      *
      * @since 0.4.1
      */
-    public void initialize(DataCacheManager manager);
+    void initialize(DataCacheManager manager);
 
     /**
      * Return a list of oids for the given query key. This is an
@@ -50,7 +50,7 @@ public interface QueryCache
      *
      * @return The query results matching the given key, or null if none
      */
-    public QueryResult get(QueryKey qk);
+    QueryResult get(QueryKey qk);
 
     /**
      * Set the list of OIDs for the given query key. A reference
@@ -61,7 +61,7 @@ public interface QueryCache
      * the key was not previously cached. See {@link Map#put}
      * for more information.
      */
-    public QueryResult put(QueryKey qk, QueryResult oids);
+    QueryResult put(QueryKey qk, QueryResult oids);
 
     /**
      * Remove the value stored under the given query key.
@@ -75,12 +75,12 @@ public interface QueryCache
      * the key was not previously cached. See {@link Map#remove}
      * for more information.
      */
-    public QueryResult remove(QueryKey qk);
+    QueryResult remove(QueryKey qk);
 
     /**
      * Remove all data from this cache.
      */
-    public void clear();
+    void clear();
 
     /**
      * Pin the value stored under <code>qk</code> into the
@@ -94,7 +94,7 @@ public interface QueryCache
      * @return <code>true</code> if <code>key</code>'s value was
      * pinned into the cache; <code>false</code> if the key is not in the cache.
      */
-    public boolean pin(QueryKey qk);
+    boolean pin(QueryKey qk);
 
     /**
      * Unpin the value stored under <code>key</code> into the cache.
@@ -106,41 +106,41 @@ public interface QueryCache
      * unpinned from the cache; <code>false</code> if the
      * key is not in the cache.
      */
-    public boolean unpin(QueryKey qk);
+    boolean unpin(QueryKey qk);
 
     /**
      * Obtain a write lock on the cache.
      */
-    public void writeLock();
+    void writeLock();
 
     /**
      * Release the write lock on the cache.
      */
-    public void writeUnlock();
+    void writeUnlock();
 
     /**
      * Add a new types event listener to this cache.
      *
      * @since 0.3.3
      */
-    public void addTypesChangedListener(TypesChangedListener listen);
+    void addTypesChangedListener(TypesChangedListener listen);
 
     /**
      * Remove an types event listener from this cache.
      *
      * @since 0.3.3
      */
-    public boolean removeTypesChangedListener(TypesChangedListener listen);
+    boolean removeTypesChangedListener(TypesChangedListener listen);
 
     /**
      * Free the resources used by this cache.
 	 */
-	public void close ();
+	@Override void close ();
 
 	   /**
      * Gets the simple statistics for query results.
      * If the statistics gathering is disabled, an empty statistics is returned.
      * @since 2.1.0
      */
-    public QueryStatistics<QueryKey> getStatistics();
+    QueryStatistics<QueryKey> getStatistics();
 }

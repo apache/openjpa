@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.jdbc;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.meta.MetaDataFactory;
+import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataParser;
+import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataSerializer;
 import org.apache.openjpa.persistence.PersistenceMetaDataFactory;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataSerializer;
-import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataParser;
-import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataSerializer;
 
 /**
  * {@link MetaDataFactory} for JPA mapping information.
@@ -49,6 +49,7 @@ public class PersistenceMappingFactory
         return parser;
     }
 
+    @Override
     protected AnnotationPersistenceMetaDataSerializer newAnnotationSerializer()
     {
         AnnotationPersistenceMappingSerializer ser =
@@ -70,6 +71,7 @@ public class PersistenceMappingFactory
         return parser;
     }
 
+    @Override
     protected XMLPersistenceMetaDataSerializer newXMLSerializer() {
         XMLPersistenceMappingSerializer ser =
             new XMLPersistenceMappingSerializer((JDBCConfiguration)

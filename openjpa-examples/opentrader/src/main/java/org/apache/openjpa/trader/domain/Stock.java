@@ -31,9 +31,9 @@ import javax.persistence.Id;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 @Entity
 public class Stock implements Serializable {
+    private static final long serialVersionUID = 1L;
     /**
      * The primary identity of a Stock.
      * The uniqueness of the primary keys are often warranted by the persistence provider.

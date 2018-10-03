@@ -102,6 +102,7 @@ public class PluginValue extends ObjectValue {
     /**
      * Instantiate the plugin as an instance of the given class.
      */
+    @Override
     public Object instantiate(Class<?> type, Configuration conf, boolean fatal)
     {
         Object obj = newInstance(_name, type, conf, fatal);
@@ -137,6 +138,7 @@ public class PluginValue extends ObjectValue {
 	/**
      * Configure the given object.
      */
+    @Override
     public Object configure(Object obj, Configuration conf, boolean fatal) {
         Configurations.configureInstance(obj, conf, _props,
             (fatal) ? getProperty() : null);
@@ -146,6 +148,7 @@ public class PluginValue extends ObjectValue {
     }
 
 
+    @Override
     public void set(Object obj, boolean derived) {
         if (!_singleton)
             throw new IllegalStateException(_loc.get("not-singleton",
@@ -153,10 +156,12 @@ public class PluginValue extends ObjectValue {
         super.set(obj, derived);
     }
 
+    @Override
     public String getString() {
         return Configurations.getPlugin(alias(_name), _props);
     }
 
+    @Override
     public void setString(String str) {
     	assertChangeable();
         _name = Configurations.getClassName(str);
@@ -167,21 +172,25 @@ public class PluginValue extends ObjectValue {
         valueChanged();
     }
 
+    @Override
     public Class<Object> getValueType() {
         return Object.class;
     }
 
+    @Override
     protected void objectChanged() {
         Object obj = get();
         _name = (obj == null) ? unalias(null) : obj.getClass().getName();
         _props = null;
     }
 
+    @Override
     protected String getInternalString() {
         // should never get called
         throw new IllegalStateException();
     }
 
+    @Override
     protected void setInternalString(String str) {
         // should never get called
         throw new IllegalStateException();

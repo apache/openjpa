@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * part of its Id
  */
 public class TestMergeNew extends SQLListenerTestCase {
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, Parent.class,
             Child.class, GrandChild.class);

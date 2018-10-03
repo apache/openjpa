@@ -37,27 +37,27 @@ public interface JPAServletContext {
     /**
      * Get the persistence context of the operational context.
      */
-    public OpenJPAEntityManager getPersistenceContext();
+    OpenJPAEntityManager getPersistenceContext();
 
     /**
      * Get the persistence unit name.
      */
-    public String getPersistenceUnitName();
+    String getPersistenceUnitName();
 
     /**
      * Get the HTTP Request.
      */
-    public HttpServletRequest getRequest();
+    HttpServletRequest getRequest();
 
     /**
      * Get the HTTP Response.
      */
-    public HttpServletResponse getResponse();
+    HttpServletResponse getResponse();
 
     /**
      * Get the requested URI.
      */
-    public String getRequestURI();
+    String getRequestURI();
 
     /**
      * Resolve the given alias to meta-data of the persistent type.
@@ -68,12 +68,12 @@ public interface JPAServletContext {
      * @exception raises runtime exception if the given name can not be identified to a persistent
      * Java type.
      */
-    public ClassMetaData resolve(String alias);
+    ClassMetaData resolve(String alias);
 
     /**
      * Logging message.
      * @param level OpenJPA defined {@link Log#INFO log levels}. Invalid levels will print the message on console.
      * @param message a printable message.
      */
-    public void log(short level, String message);
+    void log(short level, String message);
 }

@@ -19,16 +19,18 @@
 package org.apache.openjpa.persistence.query;
 
 import java.util.Collection;
+
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.simple.AllFieldTypes;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEscapedSingleQuotesInJPQL
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
 

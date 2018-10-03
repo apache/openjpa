@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.managedinterface;
 
 public interface NonMappedInterface {
-    public int getIntField();
+    int getIntField();
 
-    public void setIntField(int i);
+    void setIntField(int i);
 }

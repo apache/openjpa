@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.merge.model.ToyBox;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestInverseManager extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, Toy.class, ToyBox.class, "openjpa.InverseManager", "true(ManageLRS=true)");
     }

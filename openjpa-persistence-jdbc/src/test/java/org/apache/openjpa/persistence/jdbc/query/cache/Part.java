@@ -47,7 +47,7 @@ abstract public class Part {
     int inventory;
 
     @OneToMany(mappedBy="child",cascade=CascadeType.PERSIST)
-    protected Collection<Usage> usedIn = new ArrayList<Usage>();
+    protected Collection<Usage> usedIn = new ArrayList<>();
 
     @Version
     long version;

@@ -23,19 +23,22 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import javax.persistence.*;
 
 public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, Security1.class, Country1.class,
             Security.class, Country.class);
     }
 
+    @Override
     protected String getPersistenceUnitName() {
         return "test-persistence-xml-orm";
     }
@@ -62,10 +65,10 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         em.getTransaction().commit();
         em.clear();
 
-        ArrayList<String> XMLsql = new ArrayList<String>();
-        ArrayList<String> Annsql = new ArrayList<String>();
+        ArrayList<String> XMLsql = new ArrayList<>();
+        ArrayList<String> Annsql = new ArrayList<>();
 
-        super.sql = new ArrayList<String>();
+        super.sql = new ArrayList<>();
         aUS_country = em.find(Country1.class, aUS_sid);
         Iterator itr = super.sql.iterator();
         while (itr.hasNext()) {
@@ -73,7 +76,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         }
         super.sql.clear();
 
-        super.sql = new ArrayList<String>();
+        super.sql = new ArrayList<>();
         aUS_countryAnn = em.find(Country.class, aUS_sid);
         itr = super.sql.iterator();
         while (itr.hasNext()) {
@@ -84,7 +87,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         Annsql.clear();
         XMLsql.clear();
 
-        super.sql = new ArrayList<String>();
+        super.sql = new ArrayList<>();
         aI_security = em.find(Security1.class, aI_sid);
         itr = super.sql.iterator();
         while (itr.hasNext()) {
@@ -92,7 +95,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         }
         super.sql.clear();
 
-        super.sql = new ArrayList<String>();
+        super.sql = new ArrayList<>();
         aI_securityAnn = em.find(Security.class, aI_sid);
         itr = super.sql.iterator();
         while (itr.hasNext()) {
@@ -103,7 +106,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         Annsql.clear();
         XMLsql.clear();
 
-        super.sql = new ArrayList<String>();
+        super.sql = new ArrayList<>();
         Country1 aUS_country1 = aI_security.getCountry1();
         itr = super.sql.iterator();
         while (itr.hasNext()) {
@@ -111,7 +114,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         }
         super.sql.clear();
 
-        super.sql = new ArrayList<String>();
+        super.sql = new ArrayList<>();
         Country aUS_country2 = aI_securityAnn.getCountry();
         itr = super.sql.iterator();
         while (itr.hasNext()) {

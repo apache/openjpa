@@ -35,7 +35,8 @@ public class TestMapUpdate extends SQLListenerTestCase {
     private MultilingualString entity1;
 	private OpenJPAEntityManagerSPI em;
 
-	public void setUp() {
+	@Override
+    public void setUp() {
         super.setUp(CLEAR_TABLES,
             MultilingualString.class,
             LocalizedString.class);

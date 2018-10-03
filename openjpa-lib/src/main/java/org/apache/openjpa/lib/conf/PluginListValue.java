@@ -81,6 +81,7 @@ public class PluginListValue extends ObjectValue {
     /**
      * Instantiate the plugins as instances of the given class.
      */
+    @Override
     public Object instantiate(Class<?> elemType, Configuration conf,
         boolean fatal) {
         Object[] ret;
@@ -102,6 +103,7 @@ public class PluginListValue extends ObjectValue {
      * Override to recognize aliases of the class name without the attached
      * properties string.
      */
+    @Override
     public String getString() {
         if (_names.length == 0)
             return null;
@@ -122,6 +124,7 @@ public class PluginListValue extends ObjectValue {
      * Override to recognize aliases of the plugin name without the attached
      * properties string.
      */
+    @Override
     public void setString(String str) {
         if (StringUtil.isEmpty(str))
             str = getDefault();
@@ -135,7 +138,7 @@ public class PluginListValue extends ObjectValue {
 
         // split up the string; each element might be a class name, or a
         // class name with properties settings
-        List<String> plugins = new ArrayList<String>();
+        List<String> plugins = new ArrayList<>();
         StringBuilder plugin = new StringBuilder();
         boolean inParen = false;
         char c;
@@ -166,8 +169,8 @@ public class PluginListValue extends ObjectValue {
             plugins.add(plugin.toString());
 
         // parse each plugin element into its name and properties
-        List<String> names = new ArrayList<String>();
-        List<String> props = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
+        List<String> props = new ArrayList<>();
         String clsName;
         for(String s : plugins) {
             clsName = unalias(Configurations.getClassName(s));
@@ -182,10 +185,12 @@ public class PluginListValue extends ObjectValue {
         valueChanged();
     }
 
+    @Override
     public Class<Object []> getValueType() {
         return Object[].class;
     }
 
+    @Override
     protected void objectChanged() {
         Object[] vals = (Object[]) get();
         if (vals == null || vals.length == 0)
@@ -199,11 +204,13 @@ public class PluginListValue extends ObjectValue {
         _props = EMPTY;
     }
 
+    @Override
     protected String getInternalString() {
         // should never get called
         throw new IllegalStateException();
     }
 
+    @Override
     protected void setInternalString(String str) {
         // should never get called
         throw new IllegalStateException();

@@ -37,7 +37,8 @@ import org.apache.openjpa.util.ProxyCollection;
  *
  */
 public class TestProxyCollection extends SingleEMFTestCase {
-	public void setUp() {
+	@Override
+    public void setUp() {
 		super.setUp(CLEAR_TABLES, TreeNode.class, ConcreteEntity.class, AbstractEntity.class);
 	}
 	/**

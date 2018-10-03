@@ -20,7 +20,6 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.lang.reflect.Modifier;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;
@@ -28,6 +27,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 
 /**
@@ -38,10 +38,8 @@ import org.apache.openjpa.meta.JavaTypes;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public class DiscriminatorMappingInfo
-    extends MappingInfo {
-
+public class DiscriminatorMappingInfo extends MappingInfo {
+    private static final long serialVersionUID = 1L;
     private String _value = null;
 
     /**
@@ -150,11 +148,13 @@ public class DiscriminatorMappingInfo
             setStrategy(strat);
     }
 
+    @Override
     protected void clear(boolean canFlags) {
         super.clear(canFlags);
         _value = null;
     }
 
+    @Override
     public void copy(MappingInfo info) {
         super.copy(info);
         if (!(info instanceof DiscriminatorMappingInfo))

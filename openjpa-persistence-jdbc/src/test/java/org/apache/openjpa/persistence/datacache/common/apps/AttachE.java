@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.datacache.common.apps;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -27,6 +28,9 @@ import javax.persistence.Table;
 @Table(name="L2_AttachE")
 public class AttachE
     implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     private Object version;
 

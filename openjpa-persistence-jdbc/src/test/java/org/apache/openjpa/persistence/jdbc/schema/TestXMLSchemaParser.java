@@ -58,6 +58,7 @@ public class TestXMLSchemaParser
         super(test);
     }
 
+    @Override
     public void setUp()
     throws Exception {
         this.conf = new JDBCConfigurationImpl();

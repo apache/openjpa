@@ -20,12 +20,12 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.util.Arrays;
 import java.util.HashSet;
+
 import javax.persistence.EntityManager;
 
-
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.AllFieldsTypeTest;
 import org.apache.openjpa.persistence.kernel.common.apps.ObjectCollectionHolder;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 /**
  * Tests that Collections of type {@link Object} can hold all
@@ -48,11 +48,13 @@ public class TestEJBObjectCollections extends AbstractTestCase {
             .getHashSet().size());
     }
 
+    @Override
     public void setUp() {
         deleteAll(ObjectCollectionHolder.class);
         deleteAll(AllFieldsTypeTest.class);
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

@@ -154,6 +154,7 @@ public class IngresDictionary extends DBDictionary {
     /* (non-Javadoc)
      * @see org.apache.openjpa.jdbc.sql.DBDictionary#connectedConfiguration(java.sql.Connection)
      */
+    @Override
     public void connectedConfiguration(Connection conn) throws SQLException {
         super.connectedConfiguration(conn);
 
@@ -191,6 +192,7 @@ public class IngresDictionary extends DBDictionary {
      * @param subselect
      *            - Is the SQL query part of a subselect statement?
      */
+    @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
         if (!supportsSelectStartIndex && start > 0)

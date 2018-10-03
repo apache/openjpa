@@ -66,6 +66,7 @@ public class ClassRedefiner {
                 log.trace(_loc.get("retransform-types", classes.keySet()));
 
                 t = new ClassFileTransformer() {
+                    @Override
                     public byte[] transform(ClassLoader loader, String clsName,
                         Class<?> classBeingRedefined, ProtectionDomain pd,
                         byte[] classfileBuffer) {

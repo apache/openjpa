@@ -21,13 +21,13 @@ package org.apache.openjpa.lib.util;
 import java.util.Locale;
 import java.util.MissingResourceException;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.lib.util.testlocalizer.LocalizerTestHelper;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-
-import org.apache.openjpa.lib.util.Localizer.Message;
-import org.apache.openjpa.lib.util.testlocalizer.LocalizerTestHelper;
 
 /**
  * Tests the Localizer.
@@ -42,6 +42,7 @@ public class TestLocalizer extends TestCase {
         super(test);
     }
 
+    @Override
     public void setUp() {
         _locals = Localizer.forPackage(LocalizerTestHelper.class);
     }

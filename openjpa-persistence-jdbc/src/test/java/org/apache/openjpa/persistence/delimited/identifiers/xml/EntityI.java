@@ -24,7 +24,7 @@ import java.util.HashSet;
 public class EntityI {
     private int id;
     private String name;
-    private Collection<EntityH> eHs = new HashSet<EntityH>();
+    private Collection<EntityH> eHs = new HashSet<>();
 
     public EntityI() {}
 

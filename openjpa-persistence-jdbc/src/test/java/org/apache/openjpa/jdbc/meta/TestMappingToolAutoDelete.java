@@ -28,8 +28,8 @@ import javax.persistence.Persistence;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 
 import junit.framework.TestCase;
@@ -41,6 +41,7 @@ public class TestMappingToolAutoDelete
     private JDBCConfiguration _conf;
     private OpenJPAEntityManagerFactorySPI emf;
 
+    @Override
     public void setUp() {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory",
@@ -56,6 +57,7 @@ public class TestMappingToolAutoDelete
         em.close();
     }
 
+    @Override
     public void tearDown() {
         emf.close();
     }

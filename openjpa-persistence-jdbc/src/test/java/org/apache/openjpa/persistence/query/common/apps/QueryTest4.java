@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.query.common.apps;
 
 import java.util.Collection;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;

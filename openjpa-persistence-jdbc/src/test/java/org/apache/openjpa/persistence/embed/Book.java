@@ -21,7 +21,13 @@ package org.apache.openjpa.persistence.embed;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="BK_EMD")
@@ -34,7 +40,7 @@ public class Book {
 
     @ElementCollection
     @CollectionTable(name="listing")
-    protected Set<Listing> listings = new HashSet<Listing>();
+    protected Set<Listing> listings = new HashSet<>();
 
     public Book(){}
 
@@ -71,6 +77,7 @@ public class Book {
 	}
 
 
+    @Override
     public String toString(){
     	String res ="Book isbn: " + isbn + "\nListings: ";
     	for(Listing l : listings){

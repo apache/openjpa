@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.slice;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Version;
 
 @Entity
 public class Address {
@@ -79,6 +83,7 @@ public class Address {
         return id;
     }
 
+    @Override
     public String toString() {
         return city;
     }

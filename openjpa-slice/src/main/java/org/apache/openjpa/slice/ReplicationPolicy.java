@@ -55,7 +55,8 @@ public interface ReplicationPolicy {
 	 *
 	 */
 	public static class Default implements ReplicationPolicy {
-		public String[] replicate(Object pc, List<String> slices,
+		@Override
+        public String[] replicate(Object pc, List<String> slices,
 			Object context) {
 			return slices.toArray(new String[slices.size()]);
 		}

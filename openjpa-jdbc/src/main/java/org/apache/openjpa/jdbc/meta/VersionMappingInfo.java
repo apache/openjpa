@@ -47,6 +47,8 @@ import org.apache.openjpa.util.UserException;
 public class VersionMappingInfo
     extends MappingInfo {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
     	(VersionMappingInfo.class);
     /**
@@ -71,8 +73,7 @@ public class VersionMappingInfo
     	Table primaryTable = vers.getClassMapping().getTable();
     	List<DBIdentifier> secondaryTableNames = Arrays.asList(vers
                 .getClassMapping().getMappingInfo().getSecondaryTableIdentifiers());
-        Map<Table, List<Column>> assign = new LinkedHashMap<Table,
-                List<Column>>();
+        Map<Table, List<Column>> assign = new LinkedHashMap<>();
     	for (Column col : templates) {
     	    DBIdentifier tableName = col.getTableIdentifier();
     	    Table table;
@@ -90,7 +91,7 @@ public class VersionMappingInfo
     		assign.get(table).add(col);
     	}
     	MappingDefaults def = vers.getMappingRepository().getMappingDefaults();
-    	List<Column> result = new ArrayList<Column>();
+    	List<Column> result = new ArrayList<>();
 
         Set<Map.Entry<Table,List<Column>>> assignSet = assign.entrySet();
         for (Map.Entry<Table,List<Column>> assignEntry : assignSet) {
@@ -150,7 +151,7 @@ public class VersionMappingInfo
     boolean spansMultipleTables(Column[] cols) {
     	if (cols == null || cols.length <= 1)
     		return false;
-    	Set<DBIdentifier> tables = new HashSet<DBIdentifier>();
+    	Set<DBIdentifier> tables = new HashSet<>();
     	for (Column col : cols)
     		if (tables.add(col.getTableIdentifier()) && tables.size() > 1)
     			return true;

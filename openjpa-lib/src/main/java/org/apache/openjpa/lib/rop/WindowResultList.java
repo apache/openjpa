@@ -64,14 +64,17 @@ public class WindowResultList extends AbstractNonSequentialResultList {
         }
     }
 
+    @Override
     public boolean isProviderOpen() {
         return _state == OPEN;
     }
 
+    @Override
     public boolean isClosed() {
         return _state == CLOSED;
     }
 
+    @Override
     public void close() {
         if (_state != CLOSED) {
             free();
@@ -79,6 +82,7 @@ public class WindowResultList extends AbstractNonSequentialResultList {
         }
     }
 
+    @Override
     public int size() {
         assertOpen();
         if (_size != -1)
@@ -96,6 +100,7 @@ public class WindowResultList extends AbstractNonSequentialResultList {
         }
     }
 
+    @Override
     public Object getInternal(int index) {
         // out of range?
         if (index < 0 || (_size != -1 && index >= _size))

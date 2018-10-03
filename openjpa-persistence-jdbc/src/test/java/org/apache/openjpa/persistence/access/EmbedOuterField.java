@@ -36,6 +36,7 @@ public class EmbedOuterField {
         outName = outerName;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof EmbedOuterField) {
             EmbedOuterField ps = (EmbedOuterField)obj;

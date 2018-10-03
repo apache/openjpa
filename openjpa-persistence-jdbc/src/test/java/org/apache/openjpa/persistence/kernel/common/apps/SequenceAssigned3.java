@@ -46,9 +46,8 @@ public class SequenceAssigned3 {
         return pk;
     }
 
-    @SuppressWarnings("serial")
     public static class seq3Id implements java.io.Serializable {
-
+        private static final long serialVersionUID = 1L;
         public Long pk;
 
         public seq3Id() {
@@ -58,15 +57,18 @@ public class SequenceAssigned3 {
             pk = Long.valueOf(str);
         }
 
+        @Override
         public int hashCode() {
             return (int) (pk == null ? 0 : pk.longValue()
-                % (long) Integer.MAX_VALUE);
+                % Integer.MAX_VALUE);
         }
 
+        @Override
         public String toString() {
             return pk + "";
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o == null || !(o instanceof seq3Id))
                 return false;

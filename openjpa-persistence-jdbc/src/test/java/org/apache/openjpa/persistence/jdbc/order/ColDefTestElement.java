@@ -57,7 +57,8 @@ public class ColDefTestElement {
       return id;
   }
 
-  public boolean equals(Object obj) {
+  @Override
+public boolean equals(Object obj) {
       if (obj instanceof ColDefTestElement) {
           ColDefTestElement bte = (ColDefTestElement)obj;
           return getId() == bte.getId() &&

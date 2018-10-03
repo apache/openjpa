@@ -32,7 +32,7 @@ public class GraphicOutputStream extends OutputStream {
     ScrollingTextPane _sink;
     private char[] buffer = new char[1024];
     private int count;
-    private Map<String, AttributeSet> _styles = new HashMap<String, AttributeSet>();
+    private Map<String, AttributeSet> _styles = new HashMap<>();
     private static AttributeSet _defaultStyle = StyleContext.getDefaultStyleContext()
                                                             .getStyle(StyleContext.DEFAULT_STYLE);
 

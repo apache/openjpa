@@ -18,15 +18,15 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAVersion;
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.StoreContext;
-import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
+import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAQuery;

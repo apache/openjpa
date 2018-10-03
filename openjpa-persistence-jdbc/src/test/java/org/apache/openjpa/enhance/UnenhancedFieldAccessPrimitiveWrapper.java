@@ -18,6 +18,7 @@
 package org.apache.openjpa.enhance;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,6 +35,8 @@ import javax.persistence.Version;
 public class UnenhancedFieldAccessPrimitiveWrapper
     implements UnenhancedType, Serializable, Cloneable {
 
+    
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue
     private Integer id;
@@ -44,22 +47,27 @@ public class UnenhancedFieldAccessPrimitiveWrapper
     @Basic(fetch = FetchType.LAZY)
     private String lazyField = "lazy";
 
+    @Override
     public int getId() {
         return id == null ? -1 : id;
     }
 
+    @Override
     public void setStringField(String s) {
         stringField = s;
     }
 
+    @Override
     public String getStringField() {
         return stringField;
     }
 
+    @Override
     public String getLazyField() {
         return lazyField;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this)
             return true;
@@ -71,10 +79,12 @@ public class UnenhancedFieldAccessPrimitiveWrapper
         return id == ((UnenhancedFieldAccessPrimitiveWrapper) o).id;
     }
 
+    @Override
     public int hashCode() {
         return id == null ? 0 : id;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }

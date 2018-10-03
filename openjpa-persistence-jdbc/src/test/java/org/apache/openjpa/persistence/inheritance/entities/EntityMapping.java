@@ -98,46 +98,55 @@ public class EntityMapping {
         // Primitive Identity defined on a Mapped Superclass,
         // Joined Table Entity Inheritance, Integer Discriminator
         PIdJTIDMSCRootEntity {
+            @Override
             public Class getEntityClass() {
                 return PIdJTIDMSCRootEntity.class;
             }
         },
         PIdJTIDMSCLeafA {
+            @Override
             public Class getEntityClass() {
                 return PIdJTIDMSCLeafA.class;
             }
         },
         PIdJTIDMSCEntityB {
+            @Override
             public Class getEntityClass() {
                 return PIdJTIDMSCEntityB.class;
             }
         },
         PIdJTIDMSCLeafB1 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTIDMSCLeafB1.class;
             }
         },
         PIdJTIDMSCLeafB2 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTIDMSCLeafB2.class;
             }
         },
         PIdJTIDMSCLeafC {
+            @Override
             public Class getEntityClass() {
                 return PIdJTIDMSCLeafC.class;
             }
         },
         PIdJTIDMSCEntityD {
+            @Override
             public Class getEntityClass() {
                 return PIdJTIDMSCEntityD.class;
             }
         },
         PIdJTIDMSCLeafD1 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTIDMSCLeafD1.class;
             }
         },
         PIdJTIDMSCLeafD2 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTIDMSCLeafD2.class;
             }
@@ -146,46 +155,55 @@ public class EntityMapping {
         // Primitive Identity defined on a Mapped Superclass,
         // Joined Table Entity Inheritance, Char Discriminator
         PIdJTCDMSCRootEntity {
+            @Override
             public Class getEntityClass() {
                 return PIdJTCDMSCRootEntity.class;
             }
         },
         PIdJTCDMSCLeafA {
+            @Override
             public Class getEntityClass() {
                 return PIdJTCDMSCLeafA.class;
             }
         },
         PIdJTCDMSCEntityB {
+            @Override
             public Class getEntityClass() {
                 return PIdJTCDMSCEntityB.class;
             }
         },
         PIdJTCDMSCLeafB1 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTCDMSCLeafB1.class;
             }
         },
         PIdJTCDMSCLeafB2 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTCDMSCLeafB2.class;
             }
         },
         PIdJTCDMSCLeafC {
+            @Override
             public Class getEntityClass() {
                 return PIdJTCDMSCLeafC.class;
             }
         },
         PIdJTCDMSCEntityD {
+            @Override
             public Class getEntityClass() {
                 return PIdJTCDMSCEntityD.class;
             }
         },
         PIdJTCDMSCLeafD1 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTCDMSCLeafD1.class;
             }
         },
         PIdJTCDMSCLeafD2 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTCDMSCLeafD2.class;
             }
@@ -194,46 +212,55 @@ public class EntityMapping {
         // Primitive Identity defined on a Mapped Superclass,
         // Joined Table Entity Inheritance, String Discriminator
         PIdJTSDMSCRootEntity {
+            @Override
             public Class getEntityClass() {
                 return PIdJTSDMSCRootEntity.class;
             }
         },
         PIdJTSDMSCLeafA {
+            @Override
             public Class getEntityClass() {
                 return PIdJTSDMSCLeafA.class;
             }
         },
         PIdJTSDMSCEntityB {
+            @Override
             public Class getEntityClass() {
                 return PIdJTSDMSCEntityB.class;
             }
         },
         PIdJTSDMSCLeafB1 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTSDMSCLeafB1.class;
             }
         },
         PIdJTSDMSCLeafB2 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTSDMSCLeafB2.class;
             }
         },
         PIdJTSDMSCLeafC {
+            @Override
             public Class getEntityClass() {
                 return PIdJTSDMSCLeafC.class;
             }
         },
         PIdJTSDMSCEntityD {
+            @Override
             public Class getEntityClass() {
                 return PIdJTSDMSCEntityD.class;
             }
         },
         PIdJTSDMSCLeafD1 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTSDMSCLeafD1.class;
             }
         },
         PIdJTSDMSCLeafD2 {
+            @Override
             public Class getEntityClass() {
                 return PIdJTSDMSCLeafD2.class;
             }
@@ -247,46 +274,55 @@ public class EntityMapping {
         // Primitive Identity defined on a Mapped Superclass,
         // Single Table Entity Inheritance, Integer Discriminator
         PIdSTIDMSCRootEntity {
+            @Override
             public Class getEntityClass() {
                 return PIdSTIDMSCRootEntity.class;
             }
         },
         PIdSTIDMSCLeafA {
+            @Override
             public Class getEntityClass() {
                 return PIdSTIDMSCLeafA.class;
             }
         },
         PIdSTIDMSCEntityB {
+            @Override
             public Class getEntityClass() {
                 return PIdSTIDMSCEntityB.class;
             }
         },
         PIdSTIDMSCLeafB1 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTIDMSCLeafB1.class;
             }
         },
         PIdSTIDMSCLeafB2 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTIDMSCLeafB2.class;
             }
         },
         PIdSTIDMSCLeafC {
+            @Override
             public Class getEntityClass() {
                 return PIdSTIDMSCLeafC.class;
             }
         },
         PIdSTIDMSCEntityD {
+            @Override
             public Class getEntityClass() {
                 return PIdSTIDMSCEntityD.class;
             }
         },
         PIdSTIDMSCLeafD1 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTIDMSCLeafD1.class;
             }
         },
         PIdSTIDMSCLeafD2 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTIDMSCLeafD2.class;
             }
@@ -295,46 +331,55 @@ public class EntityMapping {
         // Primitive Identity defined on a Mapped Superclass,
         // Single Table Entity Inheritance, Char Discriminator
         PIdSTCDMSCRootEntity {
+            @Override
             public Class getEntityClass() {
                 return PIdSTCDMSCRootEntity.class;
             }
         },
         PIdSTCDMSCLeafA {
+            @Override
             public Class getEntityClass() {
                 return PIdSTCDMSCLeafA.class;
             }
         },
         PIdSTCDMSCEntityB {
+            @Override
             public Class getEntityClass() {
                 return PIdSTCDMSCEntityB.class;
             }
         },
         PIdSTCDMSCLeafB1 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTCDMSCLeafB1.class;
             }
         },
         PIdSTCDMSCLeafB2 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTCDMSCLeafB2.class;
             }
         },
         PIdSTCDMSCLeafC {
+            @Override
             public Class getEntityClass() {
                 return PIdSTCDMSCLeafC.class;
             }
         },
         PIdSTCDMSCEntityD {
+            @Override
             public Class getEntityClass() {
                 return PIdSTCDMSCEntityD.class;
             }
         },
         PIdSTCDMSCLeafD1 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTCDMSCLeafD1.class;
             }
         },
         PIdSTCDMSCLeafD2 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTCDMSCLeafD2.class;
             }
@@ -343,46 +388,55 @@ public class EntityMapping {
         // Primitive Identity defined on a Mapped Superclass,
         // Single Table Entity Inheritance, String Discriminator
         PIdSTSDMSCRootEntity {
+            @Override
             public Class getEntityClass() {
                 return PIdSTSDMSCRootEntity.class;
             }
         },
         PIdSTSDMSCLeafA {
+            @Override
             public Class getEntityClass() {
                 return PIdSTSDMSCLeafA.class;
             }
         },
         PIdSTSDMSCEntityB {
+            @Override
             public Class getEntityClass() {
                 return PIdSTSDMSCEntityB.class;
             }
         },
         PIdSTSDMSCLeafB1 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTSDMSCLeafB1.class;
             }
         },
         PIdSTSDMSCLeafB2 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTSDMSCLeafB2.class;
             }
         },
         PIdSTSDMSCLeafC {
+            @Override
             public Class getEntityClass() {
                 return PIdSTSDMSCLeafC.class;
             }
         },
         PIdSTSDMSCEntityD {
+            @Override
             public Class getEntityClass() {
                 return PIdSTSDMSCEntityD.class;
             }
         },
         PIdSTSDMSCLeafD1 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTSDMSCLeafD1.class;
             }
         },
         PIdSTSDMSCLeafD2 {
+            @Override
             public Class getEntityClass() {
                 return PIdSTSDMSCLeafD2.class;
             }
@@ -393,36 +447,43 @@ public class EntityMapping {
          * Non Entity PC-Aware Types
          */
         PrimitiveIDMappedSuperclass {
+            @Override
             public Class getEntityClass() {
                 return PrimitiveIDMappedSuperclass.class;
             }
         },
         PIdJTIDMSCMappedSuperclass {
+            @Override
             public Class getEntityClass() {
                 return PIdJTIDMSCMappedSuperclass.class;
             }
         },
         PIdJTICMSCMappedSuperclass {
+            @Override
             public Class getEntityClass() {
                 return PIdJTCDMSCMappedSuperclass.class;
             }
         },
         PIdJTISMSCMappedSuperclass {
+            @Override
             public Class getEntityClass() {
                 return PIdJTSDMSCMappedSuperclass.class;
             }
         },
         PIdSTIDMSCMappedSuperclass {
+            @Override
             public Class getEntityClass() {
                 return PIdSTIDMSCMappedSuperclass.class;
             }
         },
         PIdSTICMSCMappedSuperclass {
+            @Override
             public Class getEntityClass() {
                 return PIdSTCDMSCMappedSuperclass.class;
             }
         },
         PIdSTISMSCMappedSuperclass {
+            @Override
             public Class getEntityClass() {
                 return PIdSTSDMSCMappedSuperclass.class;
             }

@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel;
 
 import java.util.ArrayList;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
@@ -30,6 +31,7 @@ public class TestEJBTransactions extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() {
     }
 
@@ -46,6 +48,7 @@ public class TestEJBTransactions extends AbstractTestCase {
         endTx(em);
 
         Thread thread = new Thread() {
+            @Override
             @SuppressWarnings("unchecked")
             public void run() {
                 try {

@@ -37,12 +37,13 @@ import javax.transaction.TransactionManager;
  *
  */
 public class SimpleTransactionManager implements TransactionManager {
-    private static ThreadLocal<SimpleTransaction> txns = new ThreadLocal<SimpleTransaction>();
+    private static ThreadLocal<SimpleTransaction> txns = new ThreadLocal<>();
 
     /**
      * Begins a new transaction associated with the current thread.
      *
      */
+    @Override
     public void begin() throws NotSupportedException, SystemException {
         SimpleTransaction txn = getTransaction();
         int status = txn.getStatus();
@@ -58,6 +59,7 @@ public class SimpleTransactionManager implements TransactionManager {
      * Raises IllegalStateException if no transaction is associated with the current thread.
      *
      */
+    @Override
     public void commit() throws HeuristicMixedException, HeuristicRollbackException, IllegalStateException,
             RollbackException, SecurityException, SystemException {
         assertActiveTransaction();
@@ -74,6 +76,7 @@ public class SimpleTransactionManager implements TransactionManager {
     /**
      * Gets the status of the transaction associated with the current thread.
      */
+    @Override
     public int getStatus() throws SystemException {
         if (txns.get() == null)
             return Status.STATUS_NO_TRANSACTION;
@@ -85,6 +88,7 @@ public class SimpleTransactionManager implements TransactionManager {
      * If no transaction is associated then creates a transaction and
      * associates with the current thread.
      */
+    @Override
     public SimpleTransaction getTransaction() throws SystemException {
         SimpleTransaction txn = txns.get();
         if (txn == null) {
@@ -99,6 +103,7 @@ public class SimpleTransactionManager implements TransactionManager {
      * Not implemented.
      * Raises UnsupportedOperationException.
      */
+    @Override
     public void resume(Transaction arg0) throws IllegalStateException, InvalidTransactionException, SystemException {
         throw new UnsupportedOperationException();
     }
@@ -108,6 +113,7 @@ public class SimpleTransactionManager implements TransactionManager {
      * Raises IllegalStateException if no transaction is associated with the current thread.
      *
      */
+    @Override
     public void rollback() throws IllegalStateException, SecurityException, SystemException {
         assertActiveTransaction();
         try {
@@ -124,6 +130,7 @@ public class SimpleTransactionManager implements TransactionManager {
      * Raises IllegalStateException if no transaction is associated with the current thread.
      *
      */
+    @Override
     public void setRollbackOnly() throws IllegalStateException, SystemException {
         assertActiveTransaction();
         getTransaction().setRollbackOnly();
@@ -133,6 +140,7 @@ public class SimpleTransactionManager implements TransactionManager {
      * Not implemented.
      * Raises UnsupportedOperationException.
      */
+    @Override
     public void setTransactionTimeout(int arg0) throws SystemException {
         throw new UnsupportedOperationException();
     }
@@ -141,6 +149,7 @@ public class SimpleTransactionManager implements TransactionManager {
      * Not implemented.
      * Raises UnsupportedOperationException.
      */
+    @Override
     public Transaction suspend() throws SystemException {
         throw new UnsupportedOperationException();
     }

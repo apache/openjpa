@@ -22,8 +22,9 @@ import java.util.Collection;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test Multi-OneToMany relationship with different fetch types.
@@ -32,6 +33,7 @@ public class TestOneToManyWithEagerLazyFetch extends SingleEMFTestCase {
 
     final int TestUtil1xm_TestRow_Id = 100;
 
+    @Override
     public void setUp() {
         setUp(Util1xmLf.class, Util1xmRt.class);
 

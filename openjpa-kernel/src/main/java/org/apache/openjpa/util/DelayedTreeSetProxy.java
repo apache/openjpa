@@ -67,6 +67,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         super(paramSortedSet);
     }
 
+    @Override
     public void setOwner(OpenJPAStateManager paramOpenJPAStateManager, int paramInt)
     {
       // If clearing the owner of this proxy, store away what is necessary for
@@ -97,14 +98,17 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         return false;
     }
 
+    @Override
     public OpenJPAStateManager getOwner() {
         return this.sm;
     }
 
+    @Override
     public int getOwnerField() {
         return this.field;
     }
 
+    @Override
     public ChangeTracker getChangeTracker() {
         return this.changeTracker;
     }
@@ -113,10 +117,12 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         changeTracker = ct;
     }
 
+    @Override
     public Object copy(Object paramObject) {
         return new TreeSet((SortedSet) paramObject);
     }
 
+    @Override
     public Class getElementType() {
         return this.elementType;
     }
@@ -125,6 +131,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         elementType = elemType;
     }
 
+    @Override
     public ProxyCollection newInstance(Class paramClass,
             Comparator paramComparator, boolean paramBoolean1,
             boolean paramBoolean2) {
@@ -161,6 +168,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
     ////////////////////////////////////////
     // DelayedProxy methods
     ////////////////////////////////////////
+    @Override
     public int getDelayedField() {
         if (field == -1 || _detached) {
             return _delayedField;
@@ -168,6 +176,7 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         return field;
     }
 
+    @Override
     public OpenJPAStateManager getDelayedOwner() {
         if (sm == null || _detached) {
             return _delayedSm;
@@ -175,10 +184,12 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         return sm;
     }
 
+    @Override
     public boolean isDirectAccess() {
         return _directAccess;
     }
 
+    @Override
     public void setDirectAccess(boolean direct) {
         _directAccess = direct;
     }

@@ -18,8 +18,10 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
-import javax.persistence.*;
-import java.io.*;
+import java.io.Serializable;
+
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
 
 @Entity
 public class Employee5 implements Serializable {

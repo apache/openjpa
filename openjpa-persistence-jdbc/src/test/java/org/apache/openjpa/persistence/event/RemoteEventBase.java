@@ -23,10 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -36,6 +32,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.StoreCache;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.util.Id;
 
 public class RemoteEventBase extends AbstractTestCase {
@@ -110,7 +108,8 @@ public class RemoteEventBase extends AbstractTestCase {
         endTx(pm);
 
         try {
-            Thread.currentThread().sleep(250);
+            Thread.currentThread();
+            Thread.sleep(250);
         }
         catch (InterruptedException ie) {
         }
@@ -144,7 +143,8 @@ public class RemoteEventBase extends AbstractTestCase {
         endTx(pm);
 
         try {
-            Thread.currentThread().sleep(250);
+            Thread.currentThread();
+            Thread.sleep(250);
         }
         catch (InterruptedException ie) {
         }
@@ -176,7 +176,8 @@ public class RemoteEventBase extends AbstractTestCase {
         endTx(pm);
 
         try {
-            Thread.currentThread().sleep(250);
+            Thread.currentThread();
+            Thread.sleep(250);
         }
         catch (InterruptedException ie) {
         }
@@ -212,12 +213,14 @@ public class RemoteEventBase extends AbstractTestCase {
 
         transient Collection deleted;
 
+        @Override
         public void afterCommit(RemoteCommitEvent event) {
             this.added = event.getPersistedObjectIds();
             this.updated = event.getUpdatedObjectIds();
             this.deleted = event.getDeletedObjectIds();
         }
 
+        @Override
         public void close() {
         }
     }
@@ -227,10 +230,12 @@ public class RemoteEventBase extends AbstractTestCase {
 
         boolean commitNotificationReceived = false;
 
+        @Override
         public void afterCommit(RemoteCommitEvent event) {
             commitNotificationReceived = true;
         }
 
+        @Override
         public void close() {
         }
     }

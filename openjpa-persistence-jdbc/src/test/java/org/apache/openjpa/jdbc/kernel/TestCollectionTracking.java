@@ -18,8 +18,11 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
-import java.util.*;
-import javax.persistence.*;
+import java.util.Iterator;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -27,6 +30,7 @@ public class TestCollectionTracking extends SingleEMFTestCase {
 
     private JDBCConfiguration _conf;
 
+    @Override
     public void setUp() {
         super.setUp(A.class,"openjpa.Compatibility","autoOff=false");
     }

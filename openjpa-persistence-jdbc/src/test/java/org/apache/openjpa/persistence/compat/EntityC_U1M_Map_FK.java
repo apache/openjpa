@@ -19,7 +19,10 @@
 package org.apache.openjpa.persistence.compat;
 
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="C_U1M_Map_FK")
@@ -43,10 +46,12 @@ public class EntityC_U1M_Map_FK {
         this.name = name;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode() + (int)id;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof EntityC_U1M_Map_FK)) return false;
         EntityC_U1M_Map_FK c = (EntityC_U1M_Map_FK)o;

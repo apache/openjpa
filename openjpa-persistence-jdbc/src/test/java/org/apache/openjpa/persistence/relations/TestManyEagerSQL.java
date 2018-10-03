@@ -23,15 +23,16 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.textui.TestRunner;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+import junit.textui.TestRunner;
 
 
 public class TestManyEagerSQL
     extends SQLListenerTestCase {
 
+    @Override
     public void setUp() {
         setUp(DROP_TABLES,
             OneManyEagerParent.class, OneManyEagerChild.class,

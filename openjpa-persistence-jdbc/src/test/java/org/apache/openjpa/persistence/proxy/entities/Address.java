@@ -35,46 +35,58 @@ public class Address implements IAddress {
 	private String zipCode;
 	private String country;
 
-	@Column(name="CITY")
+	@Override
+    @Column(name="CITY")
 	public String getCity() {
 		return city;
 	}
-	public void setCity(String city) {
+	@Override
+    public void setCity(String city) {
 		this.city = city;
 	}
-	@Column(name="COUNTRY")
+	@Override
+    @Column(name="COUNTRY")
 	public String getCountry() {
 		return country;
 	}
-	public void setCountry(String country) {
+	@Override
+    public void setCountry(String country) {
 		this.country = country;
 	}
-	@Column(name="LINE1")
+	@Override
+    @Column(name="LINE1")
 	public String getLine1() {
 		return line1;
 	}
-	public void setLine1(String line1) {
+	@Override
+    public void setLine1(String line1) {
 		this.line1 = line1;
 	}
-	@Column(name="LINE2")
+	@Override
+    @Column(name="LINE2")
 	public String getLine2() {
 		return line2;
 	}
-	public void setLine2(String line2) {
+	@Override
+    public void setLine2(String line2) {
 		this.line2 = line2;
 	}
-	@Column(name="STATE")
+	@Override
+    @Column(name="STATE")
 	public String getState() {
 		return state;
 	}
-	public void setState(String state) {
+	@Override
+    public void setState(String state) {
 		this.state = state;
 	}
-	@Column(name="ZIP_CODE")
+	@Override
+    @Column(name="ZIP_CODE")
 	public String getZipCode() {
 		return zipCode;
 	}
-	public void setZipCode(String zipCode) {
+	@Override
+    public void setZipCode(String zipCode) {
 		this.zipCode = zipCode;
 	}
 }

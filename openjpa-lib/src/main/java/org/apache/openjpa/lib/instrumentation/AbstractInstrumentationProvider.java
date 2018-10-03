@@ -35,27 +35,32 @@ import org.apache.openjpa.lib.conf.PluginListValue;
  */
 public abstract class AbstractInstrumentationProvider implements InstrumentationProvider, Configurable {
 
-    private Map<String, Instrument> _instruments = new ConcurrentHashMap<String, Instrument>();
+    private Map<String, Instrument> _instruments = new ConcurrentHashMap<>();
 
     private boolean _started = false;
     private PluginListValue _instrumentValues;
     private String _options;
     private Configuration _config;
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _config = conf;
     }
 
+    @Override
     public Configuration getConfiguration() {
         return _config;
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
     }
 
+    @Override
     public void setInstrument(String instrument) {
         _instrumentValues = new PluginListValue("Instrument");
         if (getInstrumentAliases() != null) {
@@ -70,18 +75,22 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
         }
     }
 
+    @Override
     public String getInstrument() {
         return _instrumentValues.getString();
     }
 
+    @Override
     public void setOptions(String options) {
         _options = options;
     }
 
+    @Override
     public String getOptions() {
         return _options;
     }
 
+    @Override
     public void addInstrument(Instrument instrument) {
         if (instrument == null) {
             return;
@@ -90,10 +99,12 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
         _instruments.put(instrument.getName(), instrument);
     }
 
+    @Override
     public void initializeInstrument(Instrument instrument, Object context) {
         initializeInstrument(instrument, _options, context);
     }
 
+    @Override
     public void initializeInstrument(Instrument instrument, String options, Object context) {
         instrument.setProvider(this);
         instrument.setOptions(options);
@@ -101,14 +112,17 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
         instrument.initialize();
     }
 
+    @Override
     public Instrument getInstrumentByName(String name) {
         return _instruments.get(name);
     }
 
+    @Override
     public Set<Instrument> getInstruments() {
-        return new HashSet<Instrument>(_instruments.values());
+        return new HashSet<>(_instruments.values());
     }
 
+    @Override
     public void stopInstruments(InstrumentationLevel level, Object context) {
         try {
             Set<Instrument> instruments = getInstruments();
@@ -123,6 +137,7 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
         }
     }
 
+    @Override
     public void startInstruments(InstrumentationLevel level, Object context) {
         Set<Instrument> instruments = getInstruments();
         for (Instrument instrument : instruments) {
@@ -133,10 +148,12 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
         }
     }
 
+    @Override
     public void stopInstrument(Instrument instrument) {
         stopInstrument(instrument, true);
     }
 
+    @Override
     public void removeInstrumentByName(String name) {
         Instrument ins = _instruments.remove(name);
         if (ins != null) {
@@ -144,6 +161,7 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
         }
     }
 
+    @Override
     public boolean isStarted() {
         return _started;
     }
@@ -152,12 +170,15 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
         _started = started;
     }
 
+    @Override
     public String[] getInstrumentAliases() {
         return null;
     }
 
+    @Override
     public abstract void start();
 
+    @Override
     public abstract void stop();
 
     private static boolean contextEquals(Object ctx1, Object ctx2) {

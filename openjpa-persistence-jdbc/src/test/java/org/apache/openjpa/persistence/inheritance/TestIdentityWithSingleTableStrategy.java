@@ -42,7 +42,8 @@ public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 	private Admin admin;
 	private RegularUser user;
 
-	public void setUp() {
+	@Override
+    public void setUp() {
 		super.setUp(CLEAR_TABLES, Admin.class, RegularUser.class,
 				ComputerUser.class);
 

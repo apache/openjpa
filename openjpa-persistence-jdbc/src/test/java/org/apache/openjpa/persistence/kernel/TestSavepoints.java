@@ -29,17 +29,14 @@ package org.apache.openjpa.persistence.kernel;
 import java.util.Iterator;
 import java.util.Properties;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
-import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest5;
-
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest5;
 
 public class TestSavepoints extends BaseKernelTest {
 
@@ -54,12 +51,14 @@ public class TestSavepoints extends BaseKernelTest {
         return "in-mem";
     }
 
+    @Override
     public Properties getProperties(String[] props) {
         Properties properties = super.getProperties(props);
         properties.put("openjpa.SavepointManager", getSavepointPlugin());
         return properties;
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class, RuntimeTest4.class, RuntimeTest5.class);
     }

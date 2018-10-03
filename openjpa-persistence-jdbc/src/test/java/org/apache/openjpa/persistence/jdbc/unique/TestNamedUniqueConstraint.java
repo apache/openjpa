@@ -91,8 +91,8 @@ public class TestNamedUniqueConstraint extends SQLListenerTestCase {
     }
 
     public static String getUniqueConstraint(DBDictionary dict, String unique) {
-        List<String> tokens = new ArrayList<String>();
-        List<String> tokens1 = new ArrayList<String>();
+        List<String> tokens = new ArrayList<>();
+        List<String> tokens1 = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(unique);
         while (st.hasMoreTokens()) {
             tokens.add(st.nextToken());

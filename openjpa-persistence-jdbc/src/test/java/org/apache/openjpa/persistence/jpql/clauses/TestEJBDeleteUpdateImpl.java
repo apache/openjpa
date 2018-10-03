@@ -34,6 +34,7 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
         super(name, "jpqlclausescactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
 

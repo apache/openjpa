@@ -75,6 +75,7 @@ public class ValueTableJDBCSeq
         _value = value;
     }
 
+    @Override
     protected Column addPrimaryKeyColumn(Table table) {
         DBDictionary dict = getConfiguration().getDBDictionaryInstance();
         Column pkColumn = table.addColumn(dict.getValidColumnName
@@ -85,6 +86,7 @@ public class ValueTableJDBCSeq
         return pkColumn;
     }
 
+    @Override
     protected Object getPrimaryKey(ClassMapping mapping) {
         return _value;
     }
@@ -123,6 +125,7 @@ public class ValueTableJDBCSeq
         final String[] arguments = opts.setFromCmdLine(args);
         boolean ret = Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts) throws Exception {
                 JDBCConfiguration conf = new JDBCConfigurationImpl();
                 try {

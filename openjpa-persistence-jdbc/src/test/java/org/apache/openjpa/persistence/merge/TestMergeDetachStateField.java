@@ -33,6 +33,7 @@ import org.apache.openjpa.persistence.merge.model.ShipPackage2;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMergeDetachStateField extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         setUp(Label.class, ShipPackage.class,
         	  Label2.class, ShipPackage2.class,
@@ -158,7 +159,7 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
         	Car c1 = new Car();
         	Car c2 = new Car();
         	Make mk1 = new Make();
-        	ArrayList<Model> models = new ArrayList<Model>();
+        	ArrayList<Model> models = new ArrayList<>();
         	Model md1 = new Model();
         	models.add(md1);
         	Model md2 = new Model();

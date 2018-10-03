@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -40,6 +41,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
 
     private static final Date DATE = new Date();
 
+    @Override
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class, CLEAR_TABLES);
     }

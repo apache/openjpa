@@ -28,8 +28,8 @@ import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.jdbc.query.domain.Applicant;
 import org.apache.openjpa.persistence.jdbc.query.domain.Game;
-import org.apache.openjpa.persistence.jdbc.query.procedure.DerbyProcedureList;
 import org.apache.openjpa.persistence.jdbc.query.procedure.AbstractProcedureList;
+import org.apache.openjpa.persistence.jdbc.query.procedure.DerbyProcedureList;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -75,6 +75,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
         }
     }
 
+    @Override
     public void tearDown() throws Exception {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();

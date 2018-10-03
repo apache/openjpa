@@ -381,6 +381,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
             c.get(customer_.getSingularAttribute("status", Integer.class)), param));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("stat", 1);
             }

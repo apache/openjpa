@@ -33,7 +33,7 @@ public class PColl_EntityStringLazy {
     private int id;
 
     @PersistentCollection(fetch=FetchType.LAZY)
-    private Set<String> collectionOfStrings = new HashSet<String>();
+    private Set<String> collectionOfStrings = new HashSet<>();
 
     public int getId() {
         return id;

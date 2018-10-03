@@ -27,9 +27,6 @@ import javax.persistence.PostPersist;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.
-        CallbackStorage;
-
 @Entity
 public class LifeCycleDDEntity2
 {

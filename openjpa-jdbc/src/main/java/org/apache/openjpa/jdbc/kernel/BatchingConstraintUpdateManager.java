@@ -43,6 +43,7 @@ import org.apache.openjpa.util.OpenJPAException;
 
 public class BatchingConstraintUpdateManager extends ConstraintUpdateManager {
 
+    @Override
     protected PreparedStatementManager newPreparedStatementManager(
         JDBCStore store, Connection conn) {
         int batchLimit = dict.getBatchLimit();
@@ -54,6 +55,7 @@ public class BatchingConstraintUpdateManager extends ConstraintUpdateManager {
      * Override this method to flush any remaining batched row in the
      * PreparedStatementManager.
      */
+    @Override
     protected Collection flush(RowManager rowMgr,
         PreparedStatementManager psMgr, Collection exceps) {
         exceps = super.flush(rowMgr, psMgr, exceps);

@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.persistence.common.apps;
 
-import javax.persistence.*;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue(value="M")

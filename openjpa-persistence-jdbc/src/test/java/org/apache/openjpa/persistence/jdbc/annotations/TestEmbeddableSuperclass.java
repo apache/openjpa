@@ -30,6 +30,7 @@ import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.RelationFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.StringFieldStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -42,6 +43,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestEmbeddableSuperclass
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(EmbeddableSuper.class, EmbeddableSuperSub.class, CLEAR_TABLES);
     }
@@ -60,7 +62,7 @@ public class TestEmbeddableSuperclass
             getMapping(EmbeddableSuperSub.class, null, true);
         assertTrue(!cls.isEmbeddedOnly());
         assertTrue(cls.getStrategy() instanceof FullClassStrategy);
-        assertEquals(ClassMapping.ID_APPLICATION, cls.getIdentityType());
+        assertEquals(ClassMetaData.ID_APPLICATION, cls.getIdentityType());
         assertTrue(cls.isOpenJPAIdentity());
 
         FieldMapping fm = cls.getFieldMapping("pk");

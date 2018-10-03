@@ -30,17 +30,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
-
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.OpenJPASavepoint;
 import org.apache.openjpa.kernel.SavepointManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 
 public class TestSavepointOrdering extends BaseKernelTest {
 
@@ -48,7 +45,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
     private static final int RELEASED = 2;
     private static final int ROLLBACK = 4;
 
-    static Map<String, TrackingSavepoint> _assigned = new HashMap<String, TrackingSavepoint>();
+    static Map<String, TrackingSavepoint> _assigned = new HashMap<>();
 
     /**
      * Creates a new instance of TestSavepointOrdering
@@ -57,6 +54,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
         _assigned.clear();
@@ -71,7 +69,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
     }
 
     public void doCleanUpTest(boolean commit) {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName());
         OpenJPAEntityManagerFactory pmf = getEmf(props);
@@ -97,7 +95,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
     }
 
     private void doOrderingTest(boolean rollback) {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName());
         OpenJPAEntityManagerFactory pmf = getEmf(props);
@@ -143,7 +141,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
     }
 
     public void testDisallowFlush() {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=false)");
         OpenJPAEntityManagerFactory pmf = getEmf(props);
@@ -161,7 +159,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
     }
 
     public void testDisallowFlush2() {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=false)");
         OpenJPAEntityManagerFactory pmf = getEmf(props);
@@ -180,7 +178,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
     }
 
     public void testAllowFlush() {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=true)");
         OpenJPAEntityManagerFactory pmf = getEmf(props);
@@ -199,7 +197,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
     }
 
     public void testAllowFlush2() {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=true)");
         OpenJPAEntityManagerFactory pmf = getEmf(props);
@@ -228,10 +226,12 @@ public class TestSavepointOrdering extends BaseKernelTest {
 
         public boolean allowFlush = false;
 
+        @Override
         public boolean supportsIncrementalFlush() {
             return allowFlush;
         }
 
+        @Override
         public OpenJPASavepoint newSavepoint(String name, Broker broker) {
             TrackingSavepoint sp = new TrackingSavepoint(broker, name);
             _assigned.put(sp.getName(), sp);
@@ -241,12 +241,15 @@ public class TestSavepointOrdering extends BaseKernelTest {
 
     private static class TrackingSavepoint extends OpenJPASavepoint {
 
+        
+        private static final long serialVersionUID = 1L;
         int flags = 0;
 
         public TrackingSavepoint(Broker broker, String name) {
             super(broker, name, false);
         }
 
+        @Override
         public Collection rollback(Collection previous) {
             if ((flags & (ROLLBACK | RELEASED)) != 0)
                 fail("already used");
@@ -254,6 +257,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
             return super.rollback(previous);
         }
 
+        @Override
         public void release(boolean user) {
             if ((flags & (ROLLBACK | RELEASED)) != 0)
                 fail("already used");

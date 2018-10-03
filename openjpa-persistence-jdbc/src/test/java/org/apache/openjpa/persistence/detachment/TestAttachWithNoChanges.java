@@ -21,8 +21,9 @@ package org.apache.openjpa.persistence.detachment;
 import javax.persistence.EntityManager;
 import javax.persistence.OptimisticLockException;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that attaching an instance without having changed it still overwrites
@@ -33,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestAttachWithNoChanges
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(DetachmentOneManyParent.class, DetachmentOneManyChild.class);
     }

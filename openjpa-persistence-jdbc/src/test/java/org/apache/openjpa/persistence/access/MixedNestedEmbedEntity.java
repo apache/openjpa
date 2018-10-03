@@ -78,6 +78,7 @@ public class MixedNestedEmbedEntity {
         eip = ep;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof MixedNestedEmbedEntity) {
             MixedNestedEmbedEntity ps = (MixedNestedEmbedEntity)obj;

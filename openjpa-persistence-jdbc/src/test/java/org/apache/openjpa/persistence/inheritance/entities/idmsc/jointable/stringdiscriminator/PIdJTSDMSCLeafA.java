@@ -30,11 +30,13 @@ public class PIdJTSDMSCLeafA
 extends PIdJTSDMSCRootEntity implements LeafA {
     private String leafAData;
 
+    @Override
     public String getLeafAData()
     {
         return leafAData;
     }
 
+    @Override
     public void setLeafAData(String leafAData) {
         this.leafAData = leafAData;
     }

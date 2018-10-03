@@ -31,6 +31,8 @@ import org.apache.openjpa.kernel.StoreContext;
 abstract class CompareExpression
     extends Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val1;
     private final Val _val2;
 
@@ -42,6 +44,7 @@ abstract class CompareExpression
         _val2 = val2;
     }
 
+    @Override
     protected boolean eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object o1 = _val1.eval(candidate, orig, ctx, params);
@@ -54,6 +57,7 @@ abstract class CompareExpression
         return compare(o1, o2);
     }
 
+    @Override
     protected boolean eval(Collection candidates, StoreContext ctx,
         Object[] params) {
         Collection c1 = _val1.eval(candidates, null, ctx, params);
@@ -76,6 +80,7 @@ abstract class CompareExpression
      */
     protected abstract boolean compare(Object o1, Object o2);
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val1.acceptVisit(visitor);

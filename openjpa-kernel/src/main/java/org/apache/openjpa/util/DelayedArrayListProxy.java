@@ -63,6 +63,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         super(paramInt);
     }
 
+    @Override
     public void setOwner(OpenJPAStateManager paramOpenJPAStateManager,
             int paramInt) {
         // If clearing the owner of this proxy, store away what is necessary for
@@ -95,6 +96,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return false;
     }
 
+    @Override
     public int getDelayedField() {
         if (field == -1 || _detached) {
             return _delayedField;
@@ -102,6 +104,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return field;
     }
 
+    @Override
     public OpenJPAStateManager getDelayedOwner() {
         if (sm == null || _detached) {
             return _delayedSm;
@@ -109,14 +112,17 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return sm;
     }
 
+    @Override
     public OpenJPAStateManager getOwner() {
         return sm;
     }
 
+    @Override
     public int getOwnerField() {
         return field;
     }
 
+    @Override
     public Object clone() {
         if (isDirectAccess()) {
             return super.clone();
@@ -129,6 +135,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return localProxy;
     }
 
+    @Override
     public ChangeTracker getChangeTracker() {
         return this.changeTracker;
     }
@@ -137,6 +144,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         changeTracker = ct;
     }
 
+    @Override
     public Object copy(Object paramObject) {
         if (isDelayLoad()) {
             load();
@@ -144,6 +152,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return new ArrayList((Collection) paramObject);
     }
 
+    @Override
     public Class getElementType() {
         return this.elementType;
     }
@@ -163,6 +172,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return proxy;
     }
 
+    @Override
     public boolean add(Object paramObject) {
         if (_directAccess) {
             return super.add(paramObject);
@@ -172,6 +182,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return ProxyCollections.afterAdd(this, paramObject, bool);
     }
 
+    @Override
     public void add(int paramInt, Object paramObject) {
         if (!_directAccess) {
             if (isDelayLoad()) {
@@ -182,6 +193,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         super.add(paramInt, paramObject);
     }
 
+    @Override
     public void clear() {
         if (!_directAccess) {
             if (isDelayLoad()) {
@@ -192,6 +204,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         super.clear();
     }
 
+    @Override
     public boolean addAll(int paramInt, Collection paramCollection) {
         if (isDelayLoad()) {
             load();
@@ -199,6 +212,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return ProxyCollections.addAll(this, paramInt, paramCollection);
     }
 
+    @Override
     public boolean addAll(Collection paramCollection) {
         if (_directAccess) {
             return super.addAll(paramCollection);
@@ -206,6 +220,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return ProxyCollections.addAll(this, paramCollection);
     }
 
+    @Override
     public boolean remove(Object paramObject) {
         if (_directAccess) {
             return super.remove(paramObject);
@@ -217,6 +232,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return ProxyCollections.afterRemove(this, paramObject, bool);
     }
 
+    @Override
     public Object remove(int paramInt) {
         if (_directAccess) {
             return super.remove(paramInt);
@@ -229,6 +245,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return ProxyCollections.afterRemove(this, paramInt, localObject);
     }
 
+    @Override
     public Object set(int paramInt, Object paramObject) {
         if (_directAccess) {
             return super.set(paramInt, paramObject);
@@ -242,6 +259,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
                 localObject);
     }
 
+    @Override
     public Iterator iterator() {
         if (_directAccess) {
             return super.iterator();
@@ -253,6 +271,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return ProxyCollections.afterIterator(this, localIterator);
     }
 
+    @Override
     public ListIterator listIterator(int paramInt) {
         if (_directAccess) {
             return super.listIterator(paramInt);
@@ -265,6 +284,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
                 localListIterator);
     }
 
+    @Override
     public ListIterator listIterator() {
         if (_directAccess) {
             return super.listIterator();
@@ -276,6 +296,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return ProxyCollections.afterListIterator(this, localListIterator);
     }
 
+    @Override
     public boolean removeAll(Collection paramCollection) {
         if (_directAccess) {
             return super.removeAll(paramCollection);
@@ -283,6 +304,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return ProxyCollections.removeAll(this, paramCollection);
     }
 
+    @Override
     public boolean retainAll(Collection paramCollection) {
         if (_directAccess) {
             return super.retainAll(paramCollection);
@@ -384,6 +406,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return super.toArray(array);
     }
 
+    @Override
     public boolean equals(Object paramObject) {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -391,6 +414,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return super.equals(paramObject);
     }
 
+    @Override
     public int hashCode() {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -398,10 +422,12 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return super.hashCode();
     }
 
+    @Override
     public boolean isDirectAccess() {
         return _directAccess;
     }
 
+    @Override
     public void setDirectAccess(boolean direct) {
         _directAccess = direct;
     }

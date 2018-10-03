@@ -38,6 +38,8 @@ import org.apache.openjpa.util.Id;
 class IdentityJoinable
     implements Joinable {
 
+    
+    private static final long serialVersionUID = 1L;
     private final ClassMapping mapping;
 
     /**
@@ -47,10 +49,12 @@ class IdentityJoinable
         this.mapping = mapping;
     }
 
+    @Override
     public int getFieldIndex() {
         return -1;
     }
 
+    @Override
     public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
         JDBCStore store, Joins joins)
         throws SQLException {
@@ -63,20 +67,24 @@ class IdentityJoinable
         return id;
     }
 
+    @Override
     public Column[] getColumns() {
         return mapping.getPrimaryKeyColumns();
     }
 
+    @Override
     public Object getJoinValue(Object val, Column col, JDBCStore store) {
         return val;
     }
 
+    @Override
     public Object getJoinValue(OpenJPAStateManager sm, Column col,
         JDBCStore store) {
         Id id = (Id) sm.getObjectId();
         return (id == null) ? null : id.getIdObject();
     }
 
+    @Override
     public void setAutoAssignedValue(OpenJPAStateManager sm, JDBCStore store,
         Column col, Object autogen) {
         long id = ((Number) autogen).longValue();

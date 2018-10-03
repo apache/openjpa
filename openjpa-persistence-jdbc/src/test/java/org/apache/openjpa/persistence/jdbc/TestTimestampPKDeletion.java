@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestTimestampPKDeletion extends SQLListenerTestCase {
 
+    @Override
     public void setUp() {
         setUp(EntityWithTimestampPK.class);
     }

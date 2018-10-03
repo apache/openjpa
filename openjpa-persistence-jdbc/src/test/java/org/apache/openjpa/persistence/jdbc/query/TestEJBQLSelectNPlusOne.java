@@ -31,7 +31,8 @@ public class TestEJBQLSelectNPlusOne
 		super(name);
 	}
 
-	public void setUp()
+	@Override
+    public void setUp()
 	{
 		deleteAll (RuntimeTest1.class);
 		EntityManager pm = currentEntityManager();

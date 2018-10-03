@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestValueStrategy extends SQLListenerTestCase {
+    @Override
     public void setUp(){
         setUp(ValueStrategyEntity.class, DROP_TABLES,
                 "openjpa.RuntimeUnenhancedClasses", "supported");

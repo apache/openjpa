@@ -47,6 +47,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         return !(dict instanceof OracleDictionary);
     }
 
+    @Override
     public void setUp() throws SQLException {
         OpenJPAEntityManagerFactorySPI emf = createEMF();
 

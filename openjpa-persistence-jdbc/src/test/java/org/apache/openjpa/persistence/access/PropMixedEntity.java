@@ -83,6 +83,7 @@ public class PropMixedEntity {
         ema = ef;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof PropMixedEntity) {
             PropMixedEntity ps = (PropMixedEntity)obj;

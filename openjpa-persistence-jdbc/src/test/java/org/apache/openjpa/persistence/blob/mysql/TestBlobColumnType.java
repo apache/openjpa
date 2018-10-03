@@ -36,6 +36,7 @@ public class TestBlobColumnType extends SingleEMFTestCase {
     private static boolean _firstRun=true;
     private boolean _runTest = false; // only test with MySQL
 
+    @Override
     public void setUp() throws Exception {
 
         // create EMF solely to obtain a DBDictionary.

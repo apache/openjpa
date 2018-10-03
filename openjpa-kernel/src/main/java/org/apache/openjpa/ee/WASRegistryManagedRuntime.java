@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.ee;
 
+import com.ibm.websphere.uow.UOWSynchronizationRegistry;
 import com.ibm.wsspi.uow.UOWAction;
 import com.ibm.wsspi.uow.UOWActionException;
 import com.ibm.wsspi.uow.UOWException;
-import com.ibm.wsspi.uow.UOWManager;
 import com.ibm.wsspi.uow.UOWManagerFactory;
 
 /**
@@ -36,11 +36,12 @@ public class WASRegistryManagedRuntime extends RegistryManagedRuntime {
      * provides an interface to submit work outside of the current tran.
      * </P>
      */
+    @Override
     public void doNonTransactionalWork(Runnable runnable)
             throws RuntimeException, UnsupportedOperationException {
         try {
             UOWManagerFactory.getUOWManager().runUnderUOW(
-                UOWManager.UOW_TYPE_LOCAL_TRANSACTION, false,
+                UOWSynchronizationRegistry.UOW_TYPE_LOCAL_TRANSACTION, false,
                 new DelegatingUOWAction(runnable));
         }
         catch(UOWActionException e ) {
@@ -67,6 +68,7 @@ public class WASRegistryManagedRuntime extends RegistryManagedRuntime {
             _del = delegate;
         }
 
+        @Override
         public void run() throws Exception {
             _del.run();
         }

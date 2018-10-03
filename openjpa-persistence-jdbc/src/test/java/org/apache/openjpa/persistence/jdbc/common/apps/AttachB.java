@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.persistence.Entity;
 
@@ -26,6 +29,8 @@ import javax.persistence.Entity;
 public class AttachB
     extends AttachA {
 
+    
+    private static final long serialVersionUID = 1L;
     private String bstr;
     private int bint;
     private double bdbl;

@@ -24,6 +24,8 @@ import javax.persistence.Entity;
 public class LockGroupSubclass
     extends HorizB {
 
+    
+    private static final long serialVersionUID = 1L;
     private String nonDefaultLockGroupField;
     private String defaultLockGroupField;
 

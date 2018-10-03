@@ -23,13 +23,13 @@ import java.util.Calendar;
 
 public interface IPayout extends IAnnuityObject{
 
-	public void setTaxableAmount(BigDecimal taxableAmount);
-	public BigDecimal getTaxableAmount();
-	public void setStartDate(Calendar startDate);
-	public Calendar getStartDate();
-	public void setEndDate(Calendar payoutEndDate);
-	public Calendar getEndDate();
-	public IAnnuity getAnnuity();
-	public void setAnnuity(IAnnuity annuity);
+	void setTaxableAmount(BigDecimal taxableAmount);
+	BigDecimal getTaxableAmount();
+	void setStartDate(Calendar startDate);
+	Calendar getStartDate();
+	void setEndDate(Calendar payoutEndDate);
+	Calendar getEndDate();
+	IAnnuity getAnnuity();
+	void setAnnuity(IAnnuity annuity);
 
 }

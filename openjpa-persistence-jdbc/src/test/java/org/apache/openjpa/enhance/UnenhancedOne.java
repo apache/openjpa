@@ -17,12 +17,13 @@
  */
 package org.apache.openjpa.enhance;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class UnenhancedOne implements Serializable, Cloneable {
@@ -32,7 +33,7 @@ public class UnenhancedOne implements Serializable, Cloneable {
     private int id;
 
     @OneToMany
-    Collection<UnenhancedMany> many = new HashSet<UnenhancedMany>();
+    Collection<UnenhancedMany> many = new HashSet<>();
 
     public UnenhancedOne() {
     }
@@ -49,6 +50,7 @@ public class UnenhancedOne implements Serializable, Cloneable {
         return many;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this) return true;
         if (o == null) return false;
@@ -57,10 +59,12 @@ public class UnenhancedOne implements Serializable, Cloneable {
         return id == ((UnenhancedOne) o).id;
     }
 
+    @Override
     public int hashCode() {
         return id;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }

@@ -25,15 +25,15 @@ package org.apache.openjpa.lib.xml;
  */
 public interface Commentable {
 
-    public static final String[] EMPTY_COMMENTS = new String[0];
+    String[] EMPTY_COMMENTS = new String[0];
 
     /**
      * Set comments.
      */
-    public void setComments(String[] comments);
+    void setComments(String[] comments);
 
     /**
      * Return comments, or empty array if none.
      */
-    public String[] getComments();
+    String[] getComments();
 }

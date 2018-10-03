@@ -26,7 +26,9 @@ import java.io.Serializable;
  *
  */
 public class CompositeId implements Serializable {
-	public Integer id;
+	
+    private static final long serialVersionUID = 1L;
+    public Integer id;
 	public String  name;
 
 	public CompositeId ()
@@ -66,7 +68,8 @@ public class CompositeId implements Serializable {
 		this.name = name;
 	}
 
-	public String toString()
+	@Override
+    public String toString()
 	{
 		return id + ":" + name;
 	}

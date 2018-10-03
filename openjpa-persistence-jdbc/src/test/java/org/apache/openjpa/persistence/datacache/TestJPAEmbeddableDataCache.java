@@ -30,6 +30,7 @@ public class TestJPAEmbeddableDataCache extends SingleEMFTestCase {
     Object[] params = new Object[] { Person.class, ContactInfo.class, Phone.class, "openjpa.DataCache", "true",
         CLEAR_TABLES };
 
+    @Override
     protected void setUp(Object... props) {
         super.setUp(params);
 

@@ -45,6 +45,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestEmbeddableSuperclass
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(EmbeddableSuper.class, EmbeddableSuperSub.class, CLEAR_TABLES);
     }

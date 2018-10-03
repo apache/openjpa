@@ -37,8 +37,8 @@ import org.apache.openjpa.meta.ClassMetaData;
  */
 public final class FetchStatsCollector {
     // Fully qualified persistent field name -> number of access
-    private static ConcurrentHashMap<String, AtomicInteger> _used = new ConcurrentHashMap<String, AtomicInteger>();
-    private static Set<String> _entities = new TreeSet<String>();
+    private static ConcurrentHashMap<String, AtomicInteger> _used = new ConcurrentHashMap<>();
+    private static Set<String> _entities = new TreeSet<>();
 
     private static Log _log;
     private static final Localizer _loc = Localizer.forPackage(FetchStatsCollector.class);
@@ -56,8 +56,10 @@ public final class FetchStatsCollector {
     static {
         Runtime.getRuntime().addShutdownHook(new Shutdown());
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            @Override
             public Object run() {
                 TimerTask statsOutputTask = new TimerTask() {
+                    @Override
                     public void run() {
                         dump();
                     }
@@ -94,7 +96,7 @@ public final class FetchStatsCollector {
 
     public static Set<String> getStatistics() {
         // TreeSet for a sorted set.
-        Set<String> noAccess = new TreeSet<String>();
+        Set<String> noAccess = new TreeSet<>();
         for (Map.Entry<String, AtomicInteger> entry : _used.entrySet()) {
             if (entry.getValue().intValue() == 0) {
                 noAccess.add(entry.getKey());

@@ -37,8 +37,8 @@ import org.w3c.dom.Document;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class ProcessingException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
     private final JPAServletContext ctx;
     private final int _errorCode;
 
@@ -74,6 +74,7 @@ public class ProcessingException extends RuntimeException {
      * @param response
      * @throws IOException
      */
+    @Override
     public void printStackTrace() {
         HttpServletResponse response = ctx.getResponse();
         response.setContentType(MIME_TYPE_XML);

@@ -37,6 +37,7 @@ public class TestTypedProperties extends TestCase {
         super(test);
     }
 
+    @Override
     public void setUp() {
         _props = new TypedProperties();
         _props.setProperty("bool", "true");

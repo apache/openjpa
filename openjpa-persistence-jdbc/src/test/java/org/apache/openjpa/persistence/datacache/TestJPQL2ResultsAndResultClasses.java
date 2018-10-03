@@ -23,22 +23,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.EntityManagerFactory;
-
-
-import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
-import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectAChild1;
-import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectB;
-import org.apache.openjpa.persistence.datacache.common.apps.
-        CacheObjectWithExternalizedFields;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
+import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectAChild1;
+import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectB;
+import org.apache.openjpa.persistence.datacache.common.apps.
+        CacheObjectWithExternalizedFields;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="surefire excluded")
 public class TestJPQL2ResultsAndResultClasses
@@ -50,6 +49,7 @@ public class TestJPQL2ResultsAndResultClasses
 
     private BrokerFactory _factory;
 
+    @Override
     public void setUp() {
         deleteAll(CacheObjectA.class);
         deleteAll(CacheObjectWithExternalizedFields.class);
@@ -103,6 +103,7 @@ public class TestJPQL2ResultsAndResultClasses
         CacheTestHelper.cacheManager(_factory).getSystemQueryCache().clear();
     }
 
+    @Override
     public void tearDown()
         throws Exception {
         _factory.close();

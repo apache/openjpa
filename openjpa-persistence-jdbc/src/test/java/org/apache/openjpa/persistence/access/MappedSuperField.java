@@ -59,6 +59,7 @@ public class MappedSuperField {
         return name;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof MappedSuperField) {
             MappedSuperField ps = (MappedSuperField)obj;

@@ -24,6 +24,8 @@ import javax.persistence.Entity;
 public class HorizD
     extends HorizC {
 
+    
+    private static final long serialVersionUID = 1L;
     private String stringD;
     private int intD;
 

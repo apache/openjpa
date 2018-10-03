@@ -38,6 +38,7 @@ public class ErrorHandler implements Thread.UncaughtExceptionHandler{
         uncaughtException(Thread.currentThread(), e);
     }
 
+    @Override
     public void uncaughtException(Thread t, Throwable e) {
         if (SwingUtilities.isEventDispatchThread()) {
             new ErrorDialog(null, Images.ERROR, e).setVisible(true);

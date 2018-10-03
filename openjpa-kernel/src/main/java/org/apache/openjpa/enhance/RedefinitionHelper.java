@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.enhance;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
@@ -222,6 +222,7 @@ public class RedefinitionHelper {
         final StateManagerImpl sm) {
         InvocationHandler handler = new InvocationHandler() {
 
+            @Override
             public Object invoke(Object proxy, Method method, Object[] args)
                 throws Throwable {
                 // this will replace the field in the instance, so the dynamic

@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -27,6 +28,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.kernel.StoreContext;
+import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.StoreException;
@@ -47,10 +49,12 @@ public abstract class AbstractJDBCSeq
     /**
      * Records the sequence type.
      */
+    @Override
     public void setType(int type) {
         this.type = type;
     }
 
+    @Override
     public Object next(StoreContext ctx, ClassMetaData meta) {
         JDBCStore store = getStore(ctx);
         try {
@@ -66,6 +70,7 @@ public abstract class AbstractJDBCSeq
         }
     }
 
+    @Override
     public Object current(StoreContext ctx, ClassMetaData meta) {
         JDBCStore store = getStore(ctx);
         try {
@@ -79,6 +84,7 @@ public abstract class AbstractJDBCSeq
         }
     }
 
+    @Override
     public void allocate(int additional, StoreContext ctx, ClassMetaData meta) {
         JDBCStore store = getStore(ctx);
         try {
@@ -95,12 +101,14 @@ public abstract class AbstractJDBCSeq
     /**
      * No-op.
      */
+    @Override
     public void addSchema(ClassMapping mapping, SchemaGroup group) {
     }
 
     /**
      * No-op.
      */
+    @Override
     public void close() {
     }
 

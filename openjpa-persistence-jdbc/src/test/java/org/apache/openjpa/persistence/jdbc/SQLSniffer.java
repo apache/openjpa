@@ -33,7 +33,7 @@ import org.apache.regexp.RE;
  */
 public class SQLSniffer {
 
-	private static Map<String, RE> cache = new HashMap<String, RE>();
+	private static Map<String, RE> cache = new HashMap<>();
 	/**
      * Checks that the given set of regular expressions occur in at least one of
 	 * the given input SQL.

@@ -19,6 +19,7 @@
 package org.apache.openjpa.datacache;
 
 import java.util.Objects;
+
 import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
@@ -68,10 +69,12 @@ public class DelegatingQueryCache
         return (_del == null) ? _cache : _del.getInnermostDelegate();
     }
 
+    @Override
     public int hashCode() {
         return getInnermostDelegate().hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -87,6 +90,7 @@ public class DelegatingQueryCache
         return (_trans == null) ? re : _trans.translate(re);
     }
 
+    @Override
     public void initialize(DataCacheManager mgr) {
         if (_cache == null)
             return;
@@ -97,6 +101,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public void onTypesChanged(TypesChangedEvent e) {
         if (_cache == null)
             return;
@@ -107,6 +112,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public QueryResult get(QueryKey qk) {
         if (_cache == null)
             return null;
@@ -117,6 +123,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public QueryResult put(QueryKey qk, QueryResult oids) {
         if (_cache == null)
             return null;
@@ -127,6 +134,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public QueryResult remove(QueryKey qk) {
         if (_cache == null)
             return null;
@@ -137,6 +145,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public void clear() {
         if (_cache == null)
             return;
@@ -147,6 +156,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public boolean pin(QueryKey qk) {
         if (_cache == null)
             return false;
@@ -157,6 +167,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public boolean unpin(QueryKey qk) {
         if (_cache == null)
             return false;
@@ -167,6 +178,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public void writeLock() {
         if (_cache == null)
             return;
@@ -177,6 +189,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public void writeUnlock() {
         if (_cache == null)
             return;
@@ -187,6 +200,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public void addTypesChangedListener(TypesChangedListener listen) {
         if (_cache == null)
             return;
@@ -197,6 +211,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public boolean removeTypesChangedListener(TypesChangedListener listen) {
         if (_cache == null)
             return false;
@@ -207,6 +222,7 @@ public class DelegatingQueryCache
         }
     }
 
+    @Override
     public void close() {
         if (_cache == null)
             return;
@@ -217,6 +233,7 @@ public class DelegatingQueryCache
 		}
 	}
 
+    @Override
     public QueryStatistics<QueryKey> getStatistics() {
         if (_cache == null)
             return null;

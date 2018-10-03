@@ -47,8 +47,8 @@ import java.util.TreeSet;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class Options extends TypedProperties {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Immutable empty instance.
@@ -103,7 +103,7 @@ public class Options extends TypedProperties {
 
         String key = null;
         String value = null;
-        List<String> remainder = new LinkedList<String>();
+        List<String> remainder = new LinkedList<>();
         for (int i = 0; i < args.length + 1; i++) {
             if (i == args.length || args[i].startsWith("-")) {
                 key = trimQuote(key);
@@ -254,7 +254,7 @@ public class Options extends TypedProperties {
      * names will have initial caps. They will be ordered alphabetically.
      */
     public static Collection<String> findOptionsFor(Class<?> type) {
-        Collection<String> names = new TreeSet<String>();
+        Collection<String> names = new TreeSet<>();
         // look for a setter method matching the key
         Method[] meths = type.getMethods();
         Class<?>[] params;
@@ -626,10 +626,15 @@ public class Options extends TypedProperties {
      */
     private static class EmptyOptions extends Options {
 
+        
+        private static final long serialVersionUID = 1L;
+
+        @Override
         public Object setProperty(String key, String value) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Object put(Object key, Object value) {
             throw new UnsupportedOperationException();
         }

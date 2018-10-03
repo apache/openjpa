@@ -29,6 +29,9 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class UnsupportedException
     extends OpenJPAException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public UnsupportedException() {
         setFatal(true);
     }
@@ -48,6 +51,7 @@ public class UnsupportedException
         setFatal(true);
     }
 
+    @Override
     public int getType() {
         return UNSUPPORTED;
     }

@@ -119,20 +119,20 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
         ColDefTestElement cdel3 = new ColDefTestElement("Element3");
 
         List<ColDefTestElement> one2Mcoldef =
-            new ArrayList<ColDefTestElement>();
+            new ArrayList<>();
         one2Mcoldef.add(cdel3);
         one2Mcoldef.add(cdel2);
         one2Mcoldef.add(cdel1);
         cdent.setOne2Mcoldef(one2Mcoldef);
 
         Set<ColDefTestElement> collcoldef =
-            new LinkedHashSet<ColDefTestElement>();
+            new LinkedHashSet<>();
         collcoldef.add(cdel1);
         collcoldef.add(cdel2);
         collcoldef.add(cdel3);
         cdent.setCollcoldef(collcoldef);
 
-        List<ColDefTestElement> m2mcoldef = new ArrayList<ColDefTestElement>();
+        List<ColDefTestElement> m2mcoldef = new ArrayList<>();
         m2mcoldef.add(cdel2);
         m2mcoldef.add(cdel1);
         m2mcoldef.add(cdel3);
@@ -200,7 +200,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
             em = emf1.createEntityManager();
 
             ObOcEntity ent = new ObOcEntity();
-            List<Integer> intList = new ArrayList<Integer>();
+            List<Integer> intList = new ArrayList<>();
             intList.add(new Integer(10));
             intList.add(new Integer(20));
             ent.setIntList(intList);

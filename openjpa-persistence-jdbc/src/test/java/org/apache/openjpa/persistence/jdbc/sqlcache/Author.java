@@ -56,7 +56,7 @@ public class Author extends Person {
 
     public void addBook(Book b) {
         if (books == null)
-            books = new HashSet<Book>();
+            books = new HashSet<>();
         if (books.add(b)) {
             b.addAuthor(this);
         }

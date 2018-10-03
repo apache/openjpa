@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.jdbc.meta;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.kernel.common.apps.*;
+import org.apache.openjpa.persistence.kernel.common.apps.ByteArray;
 
 public class TestEJBByteArray
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
@@ -35,7 +35,8 @@ public class TestEJBByteArray
 		super(name);
 	}
 
-	public void setUp() throws Exception
+	@Override
+    public void setUp() throws Exception
 	{
 		deleteAll(ByteArray.class);
 

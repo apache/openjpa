@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class ExistsExpression extends UnaryExpressionPredicate {
-	public ExistsExpression(QueryDefinitionImpl op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public ExistsExpression(QueryDefinitionImpl op) {
 		super(op, UnaryConditionalOperator.EXISTS,
 			UnaryConditionalOperator.EXISTS_NOT);
 	}

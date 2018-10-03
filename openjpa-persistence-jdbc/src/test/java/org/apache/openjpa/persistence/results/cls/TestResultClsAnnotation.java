@@ -28,6 +28,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestResultClsAnnotation extends SQLListenerTestCase {
+    @Override
     public void setUp() {
         setUp(ResultClsAnnotation.class, DROP_TABLES);
         assertNotNull(emf);

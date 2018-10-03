@@ -19,18 +19,19 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
-import java.util.*;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.FetchPlan;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
+import org.apache.openjpa.persistence.jdbc.common.apps.ComplexEmbeddedPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.EmbeddedOwnerPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.EmbeddedPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.RecursivelyEmbeddedPC;
 
 
 /**
@@ -53,13 +54,15 @@ public class TestEmbeddedPessimisticLocking
     	super(name);
     }
 
-	public void setUp() throws Exception{
+	@Override
+    public void setUp() throws Exception{
 		super.setUp();
 		emf = (OpenJPAEntityManagerFactory)getEmf(getProps());
 	}
 
 
 
+    @Override
     public void setUpTestCase() {
 
         JDBCConfiguration conf =

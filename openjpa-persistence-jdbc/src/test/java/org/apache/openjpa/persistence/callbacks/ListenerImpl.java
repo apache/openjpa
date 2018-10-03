@@ -18,13 +18,13 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
-import javax.persistence.PrePersist;
-import javax.persistence.PostPersist;
 import javax.persistence.PostLoad;
-import javax.persistence.PreUpdate;
-import javax.persistence.PostUpdate;
-import javax.persistence.PreRemove;
+import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
+import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
+import javax.persistence.PreUpdate;
 
 public class ListenerImpl {
 

@@ -40,6 +40,7 @@ public class TestReferenceSet extends TestCase {
         super(test);
     }
 
+    @Override
     public void setUp() {
         _coll.add(_heldValue);
         _coll.add(new Integer(1));

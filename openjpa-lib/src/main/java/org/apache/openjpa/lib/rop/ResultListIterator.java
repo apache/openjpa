@@ -46,30 +46,36 @@ public class ResultListIterator extends AbstractListIterator {
         return _rl;
     }
 
+    @Override
     public boolean hasNext() {
         if (_rl.isClosed())
             return false;
         return _li.hasNext();
     }
 
+    @Override
     public boolean hasPrevious() {
         return _li.hasPrevious();
     }
 
+    @Override
     public Object next() {
         if (_rl.isClosed())
             throw new NoSuchElementException(_loc.get("closed").getMessage());
         return _li.next();
     }
 
+    @Override
     public int nextIndex() {
         return _li.nextIndex();
     }
 
+    @Override
     public Object previous() {
         return _li.previous();
     }
 
+    @Override
     public int previousIndex() {
         return _li.previousIndex();
     }

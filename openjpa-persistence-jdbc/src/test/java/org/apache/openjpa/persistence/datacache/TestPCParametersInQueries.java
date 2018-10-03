@@ -21,20 +21,19 @@ package org.apache.openjpa.persistence.datacache;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.EntityManagerFactory;
-
-
-import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
-import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
-import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectJ;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
+import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
+import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectJ;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
  * New test case.
@@ -49,6 +48,7 @@ public class TestPCParametersInQueries extends AbstractTestCase {
     private BrokerFactory _factory;
     private Object _eId;
 
+    @Override
     public void setUp() {
         deleteAll(CacheObjectA.class);
 

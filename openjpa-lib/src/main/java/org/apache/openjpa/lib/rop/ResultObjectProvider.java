@@ -38,25 +38,25 @@ public interface ResultObjectProvider extends Closeable {
     /**
      * Return true if this provider supports random access.
      */
-    public boolean supportsRandomAccess();
+    boolean supportsRandomAccess();
 
     /**
      * Open the result. This will be called before
      * {@link #next}, {@link #absolute}, or {@link #size}.
      */
-    public void open() throws Exception;
+    void open() throws Exception;
 
     /**
      * Instantiate the current result object. This method will only be
      * called after {@link #next} or {@link #absolute}.
      */
-    public Object getResultObject() throws Exception;
+    Object getResultObject() throws Exception;
 
     /**
      * Advance the input to the next position. Return <code>true</code> if
      * there is more data; otherwise <code>false</code>.
      */
-    public boolean next() throws Exception;
+    boolean next() throws Exception;
 
     /**
      * Move to the given 0-based position. This method is
@@ -65,13 +65,13 @@ public interface ResultObjectProvider extends Closeable {
      * otherwise <code>false</code>. This may be invoked in place of
      * {@link #next}.
      */
-    public boolean absolute(int pos) throws Exception;
+    boolean absolute(int pos) throws Exception;
 
     /**
      * Return the number of items in the input, or {@link Integer#MAX_VALUE}
      * if the size in unknown.
      */
-    public int size() throws Exception;
+    int size() throws Exception;
 
     /**
      * Reset this provider. This is an optional operation. If supported,
@@ -79,17 +79,17 @@ public interface ResultObjectProvider extends Closeable {
      * element. Non-random-access providers may be able to support this
      * method by re-acquiring all resources as if the result were just opened.
      */
-    public void reset() throws Exception;
+    void reset() throws Exception;
 
     /**
      * Free the resources associated with this provider.
      */
-    public void close() throws Exception;
+    @Override void close() throws Exception;
 
     /**
      * Any checked exceptions that are thrown will be passed to this method.
      * The provider should re-throw the exception as an appropriate unchecked
      * exception.
      */
-    public void handleCheckedException(Exception e);
+    void handleCheckedException(Exception e);
 }

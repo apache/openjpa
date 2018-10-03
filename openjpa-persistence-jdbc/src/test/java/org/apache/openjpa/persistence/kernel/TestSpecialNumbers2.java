@@ -18,17 +18,17 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.math.BigInteger;
-
-import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import junit.framework.Assert;
-import junit.framework.AssertionFailedError;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
+
+import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
 
 /**
  * Test various special numbers, such as Double.NaN.
@@ -41,6 +41,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         try {
             deleteAll(AllFieldTypesTest.class);

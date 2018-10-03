@@ -22,7 +22,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
-import org.apache.openjpa.integration.validation.ValGroup1;
 
 @Entity
 public class NonDefGrpEntity {

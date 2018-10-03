@@ -76,10 +76,12 @@ public abstract class AbstractChangeTracker
         _autoOff = autoOff;
     }
 
+    @Override
     public boolean isTracking() {
         return _track;
     }
 
+    @Override
     public void startTracking() {
         _track = true;
         if (_seq == -1)
@@ -96,6 +98,7 @@ public abstract class AbstractChangeTracker
         return 0;
     }
 
+    @Override
     public void stopTracking() {
         _track = false;
         _seq = -1;
@@ -115,14 +118,17 @@ public abstract class AbstractChangeTracker
         _identity = null;
     }
 
+    @Override
     public Collection getAdded() {
         return (add == null) ? Collections.EMPTY_LIST : add;
     }
 
+    @Override
     public Collection getRemoved() {
         return (rem == null) ? Collections.EMPTY_LIST : rem;
     }
 
+    @Override
     public Collection getChanged() {
         return (change == null) ? Collections.EMPTY_LIST : change;
     }
@@ -172,10 +178,12 @@ public abstract class AbstractChangeTracker
      */
     protected abstract void change(Object val);
 
+    @Override
     public int getNextSequence() {
         return _seq;
     }
 
+    @Override
     public void setNextSequence(int seq) {
         _seq = seq;
     }

@@ -46,6 +46,7 @@ public class MultiLoaderClassResolver implements ClassResolver {
         return _loader.addClassLoader(loader);
     }
 
+    @Override
     public ClassLoader getClassLoader(Class ctx, ClassLoader envLoader) {
         return _loader;
     }

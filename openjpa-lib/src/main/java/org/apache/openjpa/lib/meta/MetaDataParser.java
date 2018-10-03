@@ -35,35 +35,35 @@ public interface MetaDataParser {
      * The classloader to use to resolve resources, or null for impl-defined
      * default.
      */
-    public void setClassLoader(ClassLoader loader);
+    void setClassLoader(ClassLoader loader);
 
     /**
      * Return the results from the last parse.
      */
-    public List getResults();
+    List getResults();
 
     /**
      * Parse the given resource.
      */
-    public void parse(String rsrc) throws IOException;
+    void parse(String rsrc) throws IOException;
 
     /**
      * Parse the given resource.
      */
-    public void parse(URL url) throws IOException;
+    void parse(URL url) throws IOException;
 
     /**
      * Parse the given file, which may be a directory, in which case it
      * will be scanned recursively for metadata files.
      */
-    public void parse(File file) throws IOException;
+    void parse(File file) throws IOException;
 
     /**
      * Parse all possible metadata locations for the given class, going
      * top-down or bottom-up. If the class is null, only top-level locations
      * will be parsed.
      */
-    public void parse(Class<?> cls, boolean topDown) throws IOException;
+    void parse(Class<?> cls, boolean topDown) throws IOException;
 
     /**
      * Parse the metadata in the given reader.
@@ -72,15 +72,15 @@ public interface MetaDataParser {
      * @param sourceName the name of the source being parsed, for use
      * in error messages
      */
-    public void parse(Reader content, String sourceName) throws IOException;
+    void parse(Reader content, String sourceName) throws IOException;
 
     /**
      * Parse the metadata supplied by the given iterator.
      */
-    public void parse(MetaDataIterator itr) throws IOException;
+    void parse(MetaDataIterator itr) throws IOException;
 
     /**
      * Clears the cache of parsed resource names.
      */
-    public void clear();
+    void clear();
 }

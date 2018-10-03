@@ -27,6 +27,9 @@ import static org.apache.openjpa.persistence.query.PathOperator.NAVIGATION;
  *
  */
 public class JoinPath extends AbstractDomainObject implements DomainObject {
+    
+    private static final long serialVersionUID = 1L;
+
     public JoinPath(AbstractDomainObject parent, PathOperator join, String attr)
     {
 		super(parent.getOwner(), parent, join, attr);
@@ -75,7 +78,8 @@ public class JoinPath extends AbstractDomainObject implements DomainObject {
 		       + getLastSegment();
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
         return getOperator() + getParent().toString() + "*" + getLastSegment();
 	}
 

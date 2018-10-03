@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
-import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.*;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="EMP2_MBI")
@@ -29,7 +33,7 @@ public class Employee2 {
     EmployeeId2 empId;
 
     @OneToMany(mappedBy="emp")
-    List<Dependent2> dependents = new ArrayList<Dependent2>();
+    List<Dependent2> dependents = new ArrayList<>();
 
     public EmployeeId2 getEmpId() {
         return empId;
@@ -51,6 +55,7 @@ public class Employee2 {
         dependents.add(d);
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof Employee2)) return false;
@@ -68,6 +73,7 @@ public class Employee2 {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + empId.hashCode();

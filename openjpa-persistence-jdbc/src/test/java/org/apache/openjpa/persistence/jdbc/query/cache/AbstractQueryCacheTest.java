@@ -36,6 +36,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
     protected boolean deleteData = false;
     protected boolean recreateData = true;
 
+    @Override
     public void setUp(Object... props) {
         int arrLen = entityClassTypes.length + props.length;
         Object args[] = new Object[arrLen];
@@ -63,6 +64,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         }
     }
 
+    @Override
     public void tearDown() throws Exception {
         if (deleteData) {
             deleteAllData();

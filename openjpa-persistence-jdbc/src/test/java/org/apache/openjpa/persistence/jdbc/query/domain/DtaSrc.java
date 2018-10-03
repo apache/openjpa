@@ -19,11 +19,16 @@
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import org.apache.openjpa.persistence.Generator;
-
-import java.util.List;
 
 /**
  * The persistent class for the DtaSrc database table.

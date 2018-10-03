@@ -20,17 +20,18 @@ package org.apache.openjpa.persistence.managedinterface;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.query.SimpleEntity;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestSimpleManagedInterface
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(SimpleManagedInterface.class, SimpleEntity.class, CLEAR_TABLES);
     }

@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex4;
 
-import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="MEx4Phone")
@@ -28,7 +33,7 @@ public class PhoneNumber {
     @Id int number;
 
     @ManyToMany(mappedBy="phones")
-    Map<Division, Employee> emps = new HashMap<Division, Employee>();
+    Map<Division, Employee> emps = new HashMap<>();
 
     public int getNumber() {
         return number;
@@ -50,6 +55,7 @@ public class PhoneNumber {
         emps.remove(d);
     }
 
+    @Override
     public boolean equals(Object o) {
         PhoneNumber p = (PhoneNumber) o;
         Map<Division, Employee> map = p.getEmployees();

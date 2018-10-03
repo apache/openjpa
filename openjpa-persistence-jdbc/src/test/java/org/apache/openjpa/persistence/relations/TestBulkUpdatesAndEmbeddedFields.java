@@ -26,6 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestBulkUpdatesAndEmbeddedFields
     extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(MultipleSameTypedEmbedded.class, EmbeddableWithRelation.class,
             CLEAR_TABLES);

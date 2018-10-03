@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.lib.conf.test;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.Properties;
@@ -43,14 +43,17 @@ public class ConfigurationTestProductDerivation
 
     public static boolean closed = false;
 
+    @Override
     public int getType() {
         return ProductDerivation.TYPE_PRODUCT;
     }
 
+    @Override
     public void beforeConfigurationClose(Configuration conf) {
         closed = true;
     }
 
+    @Override
     public ConfigurationProvider loadGlobals(ClassLoader loader)
         throws IOException {
         return load(null, loader);

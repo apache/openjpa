@@ -28,12 +28,14 @@ public class Payor extends AnnuityPersistebleObject implements IPayor {
 	private static final long serialVersionUID = 3462390122289537362L;
 	private String name;
 
-	@Column(name="NAME")
+	@Override
+    @Column(name="NAME")
 	public String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	@Override
+    public void setName(String name) {
 		this.name = name;
 	}
 

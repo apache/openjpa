@@ -30,6 +30,7 @@ public class SingleIdString implements SingleId {
     private String pk;
     private String str;
 
+    @Override
     public boolean correctIdClass(Class c) {
         return StringId.class.equals(c);
     }
@@ -38,6 +39,7 @@ public class SingleIdString implements SingleId {
         return pk;
     }
 
+    @Override
     public String getPkString() {
         return pk;
     }
@@ -46,10 +48,12 @@ public class SingleIdString implements SingleId {
         pk = i;
     }
 
+    @Override
     public String getString() {
         return str;
     }
 
+    @Override
     public void setString(String s) {
         str = s;
     }

@@ -19,6 +19,7 @@
 package org.apache.openjpa.event;
 
 import java.util.Properties;
+
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -96,6 +97,7 @@ public class JMSRemoteCommitProvider
      * constructor for JNDI lookups. Implementation of
      * {@link GenericConfigurable}.
      */
+    @Override
     public void setInto(Options opts) {
         if (opts != null && !opts.isEmpty()) {
             _ctxProps = new Properties();
@@ -117,6 +119,7 @@ public class JMSRemoteCommitProvider
 
     // ---------- RemoteCommitProvider implementation ----------
 
+    @Override
     public void broadcast(RemoteCommitEvent event) {
         try {
             _publisher.publish(createMessage(event));
@@ -128,6 +131,7 @@ public class JMSRemoteCommitProvider
         }
     }
 
+    @Override
     public void close() {
         try {
             if (_connection != null) {
@@ -150,6 +154,7 @@ public class JMSRemoteCommitProvider
      * Subclasses that need to perform actions in
      * {@link Configurable#endConfiguration} must invoke this method.
      */
+    @Override
     public void endConfiguration() {
         super.endConfiguration();
         _appClassLoader = Thread.currentThread().getContextClassLoader();
@@ -199,6 +204,7 @@ public class JMSRemoteCommitProvider
      */
     protected MessageListener getMessageListener() {
         return new MessageListener() {
+            @Override
             public void onMessage(Message m) {
                 if (!(m instanceof ObjectMessage)) {
                     if (log.isWarnEnabled())
@@ -249,6 +255,7 @@ public class JMSRemoteCommitProvider
         return _session.createObjectMessage(event);
     }
 
+    @Override
     public void onException(JMSException ex) {
         if (log.isWarnEnabled())
             log.warn(s_loc.get("jms-listener-error", _topicName), ex);

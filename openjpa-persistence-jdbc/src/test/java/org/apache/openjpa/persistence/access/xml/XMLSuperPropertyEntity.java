@@ -40,6 +40,7 @@ public class XMLSuperPropertyEntity {
         return name;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLSuperPropertyEntity) {
             XMLSuperPropertyEntity sfe = (XMLSuperPropertyEntity)obj;

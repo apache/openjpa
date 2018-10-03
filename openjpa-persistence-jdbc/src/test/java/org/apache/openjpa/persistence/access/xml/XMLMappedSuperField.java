@@ -44,6 +44,7 @@ public class XMLMappedSuperField {
         return name;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLMappedSuperField) {
             XMLMappedSuperField ps = (XMLMappedSuperField)obj;

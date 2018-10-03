@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.xmlmapping.entities;
 
-import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.Address;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 import org.apache.openjpa.persistence.Persistent;
 import org.apache.openjpa.persistence.jdbc.Strategy;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.Address;
 
 @Entity
 @Table(name="TORDERXML")
@@ -83,6 +87,7 @@ public class Order {
         return oid;
     }
 
+    @Override
     public String toString(){
         return "Order:" + oid + " amount:" + amount + " delivered:" + delivered
         + " customer:" + ((customer != null) ? customer.getCid() : -1);

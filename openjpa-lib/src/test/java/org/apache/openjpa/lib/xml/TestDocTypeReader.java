@@ -23,16 +23,18 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+
 import javax.xml.parsers.SAXParser;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Tests the {@link DocTypeReader} by comparing the results of passing
@@ -54,6 +56,7 @@ public class TestDocTypeReader extends TestCase {
         super(test);
     }
 
+    @Override
     public void setUp() {
         StringBuffer docType = new StringBuffer();
         docType.append("<!DOCTYPE foo [\n");
@@ -206,10 +209,12 @@ public class TestDocTypeReader extends TestCase {
 
     private static class Handler extends DefaultHandler {
 
+        @Override
         public void error(SAXParseException spe) throws SAXException {
             throw spe;
         }
 
+        @Override
         public void fatalError(SAXParseException spe) throws SAXException {
             throw spe;
         }

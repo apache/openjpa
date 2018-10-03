@@ -29,6 +29,7 @@ public class TestSJVMCache
         super(test);
     }
 
+    @Override
     protected String[] getConfs() {
         return new String[]{
             // the second cache is there solely to differentiate between
@@ -41,6 +42,7 @@ public class TestSJVMCache
         };
     }
 
+    @Override
     protected String[] getConfs2() {
         return new String[]{
             // the second cache is there solely to differentiate between

@@ -37,13 +37,13 @@ public interface LockManager
      * This will be invoked in the lock manager before any other methods are
      * called.
      */
-    public void setContext(StoreContext ctx);
+    void setContext(StoreContext ctx);
 
     /**
      * Return the lock level of the specified instance, or
      * {@link LockLevels#LOCK_NONE} if not locked.
      */
-    public int getLockLevel(OpenJPAStateManager sm);
+    int getLockLevel(OpenJPAStateManager sm);
 
     /**
      * Obtain a lock on the specified object. This method may be called when
@@ -67,14 +67,14 @@ public interface LockManager
      * obtained in the given number of milliseconds
      * @see OpenJPAStateManager#setLock
      */
-    public void lock(OpenJPAStateManager sm, int level, int timeout,
+    void lock(OpenJPAStateManager sm, int level, int timeout,
         Object sdata);
 
     /**
      * Perform the same function as previous lock method and has the option
      * to perform a version check after the lock function has completed.
      */
-    public void refreshLock(OpenJPAStateManager sm, int level, int timeout,
+    void refreshLock(OpenJPAStateManager sm, int level, int timeout,
         Object sdata);
 
     /**
@@ -82,7 +82,7 @@ public interface LockManager
      *
      * @see #lock
      */
-    public void lockAll(Collection sms, int level, int timeout,
+    void lockAll(Collection sms, int level, int timeout,
         Object sdata);
 
     /**
@@ -96,23 +96,23 @@ public interface LockManager
      *
      * @see OpenJPAStateManager#setLock
      */
-    public void release(OpenJPAStateManager sm);
+    void release(OpenJPAStateManager sm);
 
     /**
      * Notification that a transaction is beginning. Locks are only obtained
      * within transactions, so an implementation might use this method to
      * initialize bookkeeping datastructures, etc.
      */
-    public void beginTransaction();
+    void beginTransaction();
 
     /**
      * Notification that the current transaction has ended. Clear all
      * datastructures, release any left over locks, etc.
      */
-    public void endTransaction();
+    void endTransaction();
 
     /**
      * Free any resources.
      */
-    public void close ();
+    @Override void close ();
 }

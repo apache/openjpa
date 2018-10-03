@@ -37,6 +37,9 @@ import org.apache.openjpa.jdbc.sql.Select;
 public abstract class ContainerFieldStrategy
     extends AbstractFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Return all independent mappings to which this strategy must join in
      * order to access collection elements, or empty array if none.
@@ -48,18 +51,22 @@ public abstract class ContainerFieldStrategy
     protected abstract ClassMapping[] getIndependentElementMappings
         (boolean traverse);
 
+    @Override
     public void appendIsEmpty(SQLBuffer sql, Select sel, Joins joins) {
         testEmpty(sql, sel, joins, true);
     }
 
+    @Override
     public void appendIsNotEmpty(SQLBuffer sql, Select sel, Joins joins) {
         testEmpty(sql, sel, joins, false);
     }
 
+    @Override
     public void appendIsNull(SQLBuffer sql, Select sel, Joins joins) {
         testEmpty(sql, sel, joins, true);
     }
 
+    @Override
     public void appendIsNotNull(SQLBuffer sql, Select sel, Joins joins) {
         testEmpty(sql, sel, joins, false);
     }
@@ -79,6 +86,7 @@ public abstract class ContainerFieldStrategy
 
     public abstract ForeignKey getJoinForeignKey();
 
+    @Override
     public void appendSize(SQLBuffer sql, Select sel, Joins joins) {
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         dict.assertSupport(dict.supportsSubselect, "SupportsSubselect");
@@ -91,6 +99,7 @@ public abstract class ContainerFieldStrategy
         appendJoinCount(sql, sel, joins, dict, field, fk);
     }
 
+    @Override
     public void appendIndex(SQLBuffer sql, Select sel, Joins joins) {
         sql.append(sel.getColumnAlias(field.getOrderColumn(),
             field.getName()));

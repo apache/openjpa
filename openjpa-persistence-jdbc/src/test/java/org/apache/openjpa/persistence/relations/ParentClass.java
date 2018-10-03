@@ -19,9 +19,9 @@
 
 package org.apache.openjpa.persistence.relations;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,7 +35,7 @@ import org.apache.openjpa.persistence.PersistentCollection;
 public abstract class ParentClass {
 
     @PersistentCollection(fetch=FetchType.EAGER)
-    private Set<String> items = new HashSet<String>();
+    private Set<String> items = new HashSet<>();
 
     protected ParentClass() {
     }

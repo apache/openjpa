@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.distinctjoin;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
@@ -32,9 +36,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This is a test entity to demonstrate OPENJPA-2179
@@ -43,6 +44,9 @@ import java.util.List;
 @Table(name="ORACOURSE")
 public class Course implements Serializable
 {
+
+    
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
@@ -136,7 +140,7 @@ public class Course implements Serializable
      */
     void addLecturer(Lecturer lecturer) {
         if (lecturers == null) {
-            lecturers = new ArrayList<Lecturer>();
+            lecturers = new ArrayList<>();
         }
         lecturers.add(lecturer);
     }

@@ -24,14 +24,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.AttachA;
-import org.apache.openjpa.persistence.kernel.common.apps.AttachB;
-import org.apache.openjpa.persistence.kernel.common.apps.AttachD;
-import org.apache.openjpa.persistence.kernel.common.apps.AttachE;
-import org.apache.openjpa.persistence.kernel.common.apps.DetachSMPC;
-
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.PCEnhancer;
@@ -41,6 +33,11 @@ import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.persistence.DetachStateType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.kernel.common.apps.AttachA;
+import org.apache.openjpa.persistence.kernel.common.apps.AttachB;
+import org.apache.openjpa.persistence.kernel.common.apps.AttachD;
+import org.apache.openjpa.persistence.kernel.common.apps.AttachE;
+import org.apache.openjpa.persistence.kernel.common.apps.DetachSMPC;
 
 public class TestDetachedStateManager extends BaseKernelTest {
 
@@ -61,6 +58,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         deleteAll(AttachD.class);
     }
 
+    @Override
     public OpenJPAEntityManager getPM() {
         OpenJPAEntityManager pm = super.getPM();
         //FIXME jthomas
@@ -68,6 +66,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         return pm;
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 

@@ -20,5 +20,5 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 public interface MapElementIntf {
 
-    public String getElementData();
+    String getElementData();
 }

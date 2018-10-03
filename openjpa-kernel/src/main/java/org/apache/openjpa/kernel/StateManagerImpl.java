@@ -84,6 +84,8 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  */
 public class StateManagerImpl implements OpenJPAStateManager, Serializable {
+    
+    private static final long serialVersionUID = 1L;
     public static final int LOAD_FGS = 0;
     public static final int LOAD_ALL = 1;
     public static final int LOAD_SERIALIZE = 2;
@@ -307,6 +309,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     // OpenJPAStateManager implementation
     //////////////////////////////////////
 
+    @Override
     public void initialize(Class cls, PCState state) {
         // check to see if our current object id instance is the
         // correct id type for the specified class; this is for cases
@@ -422,6 +425,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return _broker.fireLifecycleEvent(getManagedInstance(), null, _meta, type);
     }
 
+    @Override
     public void load(FetchConfiguration fetch) {
         load(fetch, LOAD_FGS, null, null, false);
     }
@@ -451,6 +455,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return ret;
     }
 
+    @Override
     public Object getManagedInstance() {
         if (_pc instanceof ManagedInstanceProvider)
             return ((ManagedInstanceProvider) _pc).getManagedInstance();
@@ -458,18 +463,22 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             return _pc;
     }
 
+    @Override
     public PersistenceCapable getPersistenceCapable() {
         return _pc;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public OpenJPAStateManager getOwner() {
         return _owner;
     }
 
+    @Override
     public int getOwnerIndex() {
         return _ownerIndex;
     }
@@ -478,23 +487,28 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         _ownerId = oid;
     }
 
+    @Override
     public boolean isEmbedded() {
         // _owner may not be set if embed object is from query result
         return _owner != null || _state instanceof ENonTransState;
     }
 
+    @Override
     public boolean isFlushed() {
         return (_flags & FLAG_FLUSHED) > 0;
     }
 
+    @Override
     public boolean isFlushedDirty() {
         return (_flags & FLAG_FLUSHED_DIRTY) > 0;
     }
 
+    @Override
     public BitSet getLoaded() {
         return _loaded;
     }
 
+    @Override
     public BitSet getUnloaded(FetchConfiguration fetch) {
         // collect fields to load from data store based on fetch configuration
         BitSet fields = getUnloadedInternal(fetch, LOAD_FGS, null);
@@ -539,6 +553,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return fields;
     }
 
+    @Override
     public StoreContext getContext() {
         return _broker;
     }
@@ -550,10 +565,12 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return _broker;
     }
 
+    @Override
     public Object getId() {
         return _id;
     }
 
+    @Override
     public Object getObjectId() {
         StateManagerImpl sm = this;
         while (sm.getOwner() != null)
@@ -563,6 +580,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return sm._oid;
     }
 
+    @Override
     public void setObjectId(Object oid) {
         _oid = oid;
         if (_pc != null && oid instanceof OpenJPAId)
@@ -575,6 +593,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             sm = (StateManagerImpl) sm.getOwner();
         return sm;
     }
+    @Override
     public boolean assignObjectId(boolean flush) {
         lock();
         try {
@@ -695,18 +714,22 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return !preFlushing;
     }
 
+    @Override
     public Object getLock() {
         return _lock;
     }
 
+    @Override
     public void setLock(Object lock) {
         _lock = lock;
     }
 
+    @Override
     public Object getVersion() {
         return _version;
     }
 
+    @Override
     public void setVersion(Object version) {
         _loadVersion = version;
         assignVersionField(version);
@@ -716,6 +739,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return _loadVersion;
     }
 
+    @Override
     public void setNextVersion(Object version) {
         assignVersionField(version);
     }
@@ -763,14 +787,17 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             store(vfield.getIndex(), JavaTypes.convert(version, vfield.getTypeCode()));
     }
 
+    @Override
     public PCState getPCState() {
         return _state;
     }
 
+    @Override
     public synchronized Object getImplData() {
         return _impl;
     }
 
+    @Override
     public synchronized Object setImplData(Object data, boolean cacheable) {
         Object old = _impl;
         _impl = data;
@@ -781,18 +808,22 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return old;
     }
 
+    @Override
     public boolean isImplDataCacheable() {
         return (_flags & FLAG_IMPL_CACHE) != 0;
     }
 
+    @Override
     public Object getImplData(int field) {
         return getExtraFieldData(field, true);
     }
 
+    @Override
     public Object setImplData(int field, Object data) {
         return setExtraFieldData(field, data, true);
     }
 
+    @Override
     public synchronized boolean isImplDataCacheable(int field) {
         if (_fieldImpl == null || !_loaded.get(field))
             return false;
@@ -802,10 +833,12 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return idx != -1 && _fieldImpl[idx] != null;
     }
 
+    @Override
     public Object getIntermediate(int field) {
         return getExtraFieldData(field, false);
     }
 
+    @Override
     public void setIntermediate(int field, Object data) {
         setExtraFieldData(field, data, false);
     }
@@ -848,11 +881,13 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return old;
     }
 
+    @Override
     public Object fetch(int field) {
         Object val = fetchField(field, false);
         return _meta.getField(field).getExternalValue(val, _broker);
     }
 
+    @Override
     public Object fetchField(int field, boolean transitions) {
         FieldMetaData fmd = _meta.getField(field);
         if (fmd == null)
@@ -891,11 +926,13 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void store(int field, Object val) {
         val = _meta.getField(field).getFieldValue(val, _broker);
         storeField(field, val);
     }
 
+    @Override
     public void storeField(int field, Object val) {
         storeField(field, val, this);
     }
@@ -953,6 +990,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return true;
     }
 
+    @Override
     public Object fetchInitialField(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (_broker.getRestoreState() == RestoreState.RESTORE_NONE
@@ -1024,6 +1062,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void setRemote(int field, Object value) {
         lock();
         try {
@@ -1307,6 +1346,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public boolean beforeRefresh(boolean refreshAll) {
         // note: all logic placed here rather than in the states for
         // optimization; this method public b/c used by remote package
@@ -1470,6 +1510,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     /**
      * @return whether or not unloaded fields should be closed.
      */
+    @Override
     public boolean serializing() {
         // if the broker is in the midst of a serialization, then no special
         // handling should be performed on the instance, and no subsequent
@@ -1489,6 +1530,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public boolean writeDetached(ObjectOutput out)
         throws IOException {
         BitSet idxs = new BitSet(_meta.getFields().length);
@@ -1515,11 +1557,13 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void proxyDetachedDeserialized(int idx) {
         // we don't serialize state manager impls
         throw new InternalException();
     }
 
+    @Override
     public boolean isTransactional() {
         // special case for TCLEAN, which we want to appear non-trans to
         // internal code, but which publicly should be transactional
@@ -1530,34 +1574,42 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return _state.isPendingTransactional();
     }
 
+    @Override
     public boolean isProvisional() {
         return _state.isProvisional();
     }
 
+    @Override
     public boolean isPersistent() {
         return _state.isPersistent();
     }
 
+    @Override
     public boolean isNew() {
         return _state.isNew();
     }
 
+    @Override
     public boolean isDeleted() {
         return _state.isDeleted();
     }
 
+    @Override
     public boolean isDirty() {
         return _state.isDirty();
     }
 
+    @Override
     public boolean isDetached() {
         return (_flags & FLAG_DETACHING) != 0;
     }
 
+    @Override
     public Object getGenericContext() {
         return _broker;
     }
 
+    @Override
     public Object fetchObjectId() {
         try {
             if (hasGeneratedKey() && _state instanceof PNewState &&
@@ -1585,6 +1637,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return false;
     }
 
+    @Override
     public Object getPCPrimaryKey(Object oid, int field) {
         FieldMetaData fmd = _meta.getField(field);
         Object pk = ApplicationIds.get(oid, fmd);
@@ -1608,10 +1661,12 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return PersistenceCapable.LOAD_REQUIRED;
     }
 
+    @Override
     public StateManager replaceStateManager(StateManager sm) {
         return sm;
     }
 
+    @Override
     public void accessingField(int field) {
         // possibly change state
         try {
@@ -1627,6 +1682,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public boolean isDelayed(int field) {
         if (_delayed == null) {
             return false;
@@ -1634,6 +1690,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return _delayed.get(field);
     }
 
+    @Override
     public void setDelayed(int field, boolean delay) {
         if (_delayed == null) {
             _delayed = new BitSet();
@@ -1648,6 +1705,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     /**
      * Loads a delayed access field.
      */
+    @Override
     public void loadDelayedField(int field) {
         if (!isDelayed(field)) {
             return;
@@ -1698,6 +1756,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void dirty(String field) {
         FieldMetaData fmd = _meta.getField(field);
         if (fmd == null)
@@ -1708,6 +1767,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         dirty(fmd.getIndex(), null, true);
     }
 
+    @Override
     public void dirty(int field) {
         dirty(field, null, true);
     }
@@ -1818,7 +1878,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
                 // make sure the field's fetch group is loaded
                 if (loadFetchGroup && isPersistent()
-                    && fmd.getManagement() == fmd.MANAGE_PERSISTENT)
+                    && fmd.getManagement() == FieldMetaData.MANAGE_PERSISTENT)
                     loadField(field, lockLevel, true, true);
             }
             obtainLocks(active, true, lockLevel, null, null);
@@ -1851,6 +1911,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             fireLifecycleEvent(LifecycleEvent.AFTER_DIRTY_FLUSHED);
     }
 
+    @Override
     public void removed(int field, Object removed, boolean key) {
         if (removed == null)
             return;
@@ -1868,6 +1929,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public Object newProxy(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -1892,6 +1954,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return null;
     }
 
+    @Override
     public Object newFieldProxy(int field) {
         FieldMetaData fmd = _meta.getField(field);
         ProxyManager mgr = _broker.getConfiguration().
@@ -1919,6 +1982,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return null;
     }
 
+    @Override
     public boolean isDefaultValue(int field) {
         lock();
         try {
@@ -1936,6 +2000,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     // Record that the field is dirty (which might load DFG)
     /////////////////////////////////////////////////////////
 
+    @Override
     public void settingBooleanField(PersistenceCapable pc, int field,
         boolean curVal, boolean newVal, int set) {
         if (set != SET_REMOTE) {
@@ -1955,6 +2020,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void settingByteField(PersistenceCapable pc, int field,
         byte curVal, byte newVal, int set) {
         if (set != SET_REMOTE) {
@@ -1974,6 +2040,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void settingCharField(PersistenceCapable pc, int field,
         char curVal, char newVal, int set) {
         if (set != SET_REMOTE) {
@@ -1993,6 +2060,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void settingDoubleField(PersistenceCapable pc, int field,
         double curVal, double newVal, int set) {
         if (set != SET_REMOTE) {
@@ -2012,6 +2080,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void settingFloatField(PersistenceCapable pc, int field,
         float curVal, float newVal, int set) {
         if (set != SET_REMOTE) {
@@ -2031,6 +2100,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void settingIntField(PersistenceCapable pc, int field,
         int curVal, int newVal, int set) {
         if (set != SET_REMOTE) {
@@ -2050,6 +2120,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void settingLongField(PersistenceCapable pc, int field,
         long curVal, long newVal, int set) {
         if (set != SET_REMOTE) {
@@ -2069,6 +2140,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void settingObjectField(PersistenceCapable pc, int field,
         Object curVal, Object newVal, int set) {
         if (set != SET_REMOTE) {
@@ -2139,6 +2211,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void settingShortField(PersistenceCapable pc, int field,
         short curVal, short newVal, int set) {
         if (set != SET_REMOTE) {
@@ -2158,6 +2231,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void settingStringField(PersistenceCapable pc, int field,
         String curVal, String newVal, int set) {
         if (set != SET_REMOTE) {
@@ -2203,92 +2277,112 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     // Delegate to FieldManager
     ////////////////////////////
 
+    @Override
     public void providedBooleanField(PersistenceCapable pc, int field,
         boolean curVal) {
         _fm.storeBooleanField(field, curVal);
     }
 
+    @Override
     public void providedByteField(PersistenceCapable pc, int field,
         byte curVal) {
         _fm.storeByteField(field, curVal);
     }
 
+    @Override
     public void providedCharField(PersistenceCapable pc, int field,
         char curVal) {
         _fm.storeCharField(field, curVal);
     }
 
+    @Override
     public void providedDoubleField(PersistenceCapable pc, int field,
         double curVal) {
         _fm.storeDoubleField(field, curVal);
     }
 
+    @Override
     public void providedFloatField(PersistenceCapable pc, int field,
         float curVal) {
         _fm.storeFloatField(field, curVal);
     }
 
+    @Override
     public void providedIntField(PersistenceCapable pc, int field,
         int curVal) {
         _fm.storeIntField(field, curVal);
     }
 
+    @Override
     public void providedLongField(PersistenceCapable pc, int field,
         long curVal) {
         _fm.storeLongField(field, curVal);
     }
 
+    @Override
     public void providedObjectField(PersistenceCapable pc, int field,
         Object curVal) {
         _fm.storeObjectField(field, curVal);
     }
 
+    @Override
     public void providedShortField(PersistenceCapable pc, int field,
         short curVal) {
         _fm.storeShortField(field, curVal);
     }
 
+    @Override
     public void providedStringField(PersistenceCapable pc, int field,
         String curVal) {
         _fm.storeStringField(field, curVal);
     }
 
+    @Override
     public boolean replaceBooleanField(PersistenceCapable pc, int field) {
         return _fm.fetchBooleanField(field);
     }
 
+    @Override
     public byte replaceByteField(PersistenceCapable pc, int field) {
         return _fm.fetchByteField(field);
     }
 
+    @Override
     public char replaceCharField(PersistenceCapable pc, int field) {
         return _fm.fetchCharField(field);
     }
 
+    @Override
     public double replaceDoubleField(PersistenceCapable pc, int field) {
         return _fm.fetchDoubleField(field);
     }
 
+    @Override
     public float replaceFloatField(PersistenceCapable pc, int field) {
         return _fm.fetchFloatField(field);
     }
 
+    @Override
     public int replaceIntField(PersistenceCapable pc, int field) {
         return _fm.fetchIntField(field);
     }
 
+    @Override
     public long replaceLongField(PersistenceCapable pc, int field) {
         return _fm.fetchLongField(field);
     }
 
+    @Override
     public Object replaceObjectField(PersistenceCapable pc, int field) {
         return _fm.fetchObjectField(field);
     }
 
+    @Override
     public short replaceShortField(PersistenceCapable pc, int field) {
         return _fm.fetchShortField(field);
     }
 
+    @Override
     public String replaceStringField(PersistenceCapable pc, int field) {
         return _fm.fetchStringField(field);
     }
@@ -2297,6 +2391,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     // Implementation of FieldManager
     //////////////////////////////////
 
+    @Override
     public boolean fetchBoolean(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2306,6 +2401,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return ((Boolean) fmd.getExternalValue(val, _broker)).booleanValue();
     }
 
+    @Override
     public boolean fetchBooleanField(int field) {
         lock();
         try {
@@ -2319,6 +2415,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public byte fetchByte(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2328,6 +2425,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return ((Number) fmd.getExternalValue(val, _broker)).byteValue();
     }
 
+    @Override
     public byte fetchByteField(int field) {
         lock();
         try {
@@ -2341,6 +2439,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public char fetchChar(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2350,6 +2449,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return ((Character) fmd.getExternalValue(val, _broker)).charValue();
     }
 
+    @Override
     public char fetchCharField(int field) {
         lock();
         try {
@@ -2363,6 +2463,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public double fetchDouble(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2372,6 +2473,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return ((Number) fmd.getExternalValue(val, _broker)).doubleValue();
     }
 
+    @Override
     public double fetchDoubleField(int field) {
         lock();
         try {
@@ -2385,6 +2487,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public float fetchFloat(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2394,6 +2497,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return ((Number) fmd.getExternalValue(val, _broker)).floatValue();
     }
 
+    @Override
     public float fetchFloatField(int field) {
         lock();
         try {
@@ -2407,6 +2511,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public int fetchInt(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2416,6 +2521,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return ((Number) fmd.getExternalValue(val, _broker)).intValue();
     }
 
+    @Override
     public int fetchIntField(int field) {
         lock();
         try {
@@ -2429,6 +2535,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public long fetchLong(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2438,6 +2545,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return ((Number) fmd.getExternalValue(val, _broker)).longValue();
     }
 
+    @Override
     public long fetchLongField(int field) {
         lock();
         try {
@@ -2451,6 +2559,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public Object fetchObject(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2460,6 +2569,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return fmd.getExternalValue(val, _broker);
     }
 
+    @Override
     public Object fetchObjectField(int field) {
         lock();
         try {
@@ -2473,6 +2583,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public short fetchShort(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2482,6 +2593,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return ((Number) fmd.getExternalValue(val, _broker)).shortValue();
     }
 
+    @Override
     public short fetchShortField(int field) {
         lock();
         try {
@@ -2495,6 +2607,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public String fetchString(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2504,6 +2617,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         return (String) fmd.getExternalValue(val, _broker);
     }
 
+    @Override
     public String fetchStringField(int field) {
         lock();
         try {
@@ -2517,6 +2631,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeBoolean(int field, boolean externalVal) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2527,6 +2642,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeBooleanField(int field, boolean curVal) {
         lock();
         try {
@@ -2539,6 +2655,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeByte(int field, byte externalVal) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2548,6 +2665,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 _broker));
     }
 
+    @Override
     public void storeByteField(int field, byte curVal) {
         lock();
         try {
@@ -2560,6 +2678,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeChar(int field, char externalVal) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2569,6 +2688,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 _broker));
     }
 
+    @Override
     public void storeCharField(int field, char curVal) {
         lock();
         try {
@@ -2581,6 +2701,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeDouble(int field, double externalVal) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2589,6 +2710,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             storeField(field, fmd.getFieldValue(Double.valueOf(externalVal), _broker));
     }
 
+    @Override
     public void storeDoubleField(int field, double curVal) {
         lock();
         try {
@@ -2601,6 +2723,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeFloat(int field, float externalVal) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2609,6 +2732,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             storeField(field, fmd.getFieldValue(Float.valueOf(externalVal), _broker));
     }
 
+    @Override
     public void storeFloatField(int field, float curVal) {
         lock();
         try {
@@ -2621,6 +2745,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeInt(int field, int externalVal) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2630,6 +2755,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 _broker));
     }
 
+    @Override
     public void storeIntField(int field, int curVal) {
         lock();
         try {
@@ -2642,6 +2768,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeLong(int field, long externalVal) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2651,6 +2778,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 _broker));
     }
 
+    @Override
     public void storeLongField(int field, long curVal) {
         lock();
         try {
@@ -2663,6 +2791,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeObject(int field, Object externalVal) {
         FieldMetaData fmd = _meta.getField(field);
         externalVal = fmd.order(externalVal);
@@ -2672,6 +2801,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             storeField(field, fmd.getFieldValue(externalVal, _broker));
     }
 
+    @Override
     public void storeObjectField(int field, Object curVal) {
         lock();
         try {
@@ -2685,6 +2815,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeShort(int field, short externalVal) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2694,6 +2825,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 _broker));
     }
 
+    @Override
     public void storeShortField(int field, short curVal) {
         lock();
         try {
@@ -2706,6 +2838,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public void storeString(int field, String externalVal) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
@@ -2714,6 +2847,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             storeField(field, fmd.getFieldValue(externalVal, _broker));
     }
 
+    @Override
     public void storeStringField(int field, String curVal) {
         lock();
         try {
@@ -2799,7 +2933,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         FieldMetaData[] fmds = _meta.getFields();
         for (int i = 0; i < fmds.length; i++) {
             if (!fmds[i].isPrimaryKey()
-                && fmds[i].getManagement() == fmds[i].MANAGE_PERSISTENT)
+                && fmds[i].getManagement() == FieldMetaData.MANAGE_PERSISTENT)
                 setLoaded(i, val);
         }
         if (!val) {
@@ -3362,6 +3496,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     /**
      * Returns whether this instance needs a version check.
      */
+    @Override
     public boolean isVersionCheckRequired() {
         // explicit flag for version check
         if ((_flags & FLAG_VERSION_CHECK) != 0)
@@ -3386,6 +3521,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     /**
      * Returns whether this instance needs a version update.
      */
+    @Override
     public boolean isVersionUpdateRequired() {
         return (_flags & FLAG_VERSION_UPDATE) > 0;
     }
@@ -3504,6 +3640,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         _broker = ctx;
     }
 
+    @Override
     public BitSet getFlushed() {
         if (_flush == null) {
             _flush = new BitSet(_meta.getFields().length);
@@ -3527,6 +3664,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public BitSet getDirty() {
         if (_dirty == null) {
             _dirty = new BitSet(_meta.getFields().length);
@@ -3554,6 +3692,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         }
     }
 
+    @Override
     public String toString() {
     	return "SM[" + _meta.getDescribedType().getSimpleName() + "]:" + getObjectId();
     }

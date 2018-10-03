@@ -34,11 +34,13 @@ import javax.persistence.EntityManager;
 public class TestReplication extends SingleEMFTestCase {
     private static int CHILD_COUNT = 3;
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES);
         createData();
     }
 
+    @Override
     protected String getPersistenceUnitName() {
         return "replication";
     }

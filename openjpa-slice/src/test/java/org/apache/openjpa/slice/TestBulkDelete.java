@@ -22,8 +22,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-
-import org.apache.openjpa.slice.SlicePersistence;
 import org.apache.openjpa.slice.policy.UniformDistributionPolicy;
 
 /**
@@ -40,13 +38,15 @@ public class TestBulkDelete extends SliceTestCase {
 	protected String getPersistenceUnitName() {
 		return "slice";
 	}
-	public void setUp() throws Exception {
+	@Override
+    public void setUp() throws Exception {
 		super.setUp(PObject.class, CLEAR_TABLES,
 				"openjpa.slice.DistributionPolicy", UniformDistributionPolicy.class.getName());
 
 	}
 
-	public void tearDown() throws Exception {
+	@Override
+    public void tearDown() throws Exception {
 		System.err.println("Delete all instances from all slices");
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();

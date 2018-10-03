@@ -46,6 +46,7 @@ public class TestFactoryMethod extends AbstractTestCase {
         super(test, "metacactusapp");
     }
 
+    @Override
     public void setUp() throws Exception {
         _repos = getRepository();
         _metaTest7 = _repos.getMetaData(MetaTest7.class, null, true);

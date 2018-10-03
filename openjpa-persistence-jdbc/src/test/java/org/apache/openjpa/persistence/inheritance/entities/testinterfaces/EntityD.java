@@ -20,6 +20,6 @@
 package org.apache.openjpa.persistence.inheritance.entities.testinterfaces;
 
 public interface EntityD {
-    public String getEntityDData();
-    public void setEntityDData(String entityDData);
+    String getEntityDData();
+    void setEntityDData(String entityDData);
 }

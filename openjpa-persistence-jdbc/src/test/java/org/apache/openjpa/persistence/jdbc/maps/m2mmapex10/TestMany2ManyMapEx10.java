@@ -29,12 +29,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+import junit.framework.Assert;
 
 public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
 
@@ -42,14 +42,14 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
     public int numPhoneNumbers = numEmployees + 1;
     public int numEmployeesPerPhoneNumber = 2;
     public int numPhoneNumbersPerEmployee = 2;
-    public List<String> namedQueries = new ArrayList<String>();
-    public List<EmployeePK> empPKs = new ArrayList<EmployeePK>();
-    public List<PhonePK> phonePKs = new ArrayList<PhonePK>();
+    public List<String> namedQueries = new ArrayList<>();
+    public List<EmployeePK> empPKs = new ArrayList<>();
+    public List<PhonePK> phonePKs = new ArrayList<>();
 
     public Map<String, Employee> empMap =
-        new HashMap<String, Employee>();
+        new HashMap<>();
     public Map<PhonePK, PhoneNumber> phoneMap =
-        new HashMap<PhonePK, PhoneNumber>();
+        new HashMap<>();
 
     public int empId = 1;
     public int phoneId = 1;
@@ -57,6 +57,7 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
     public List rsAllPhones = null;
     public List rsAllEmps = null;
 
+    @Override
     public void setUp() {
         super.setUp(DROP_TABLES,EmployeePK.class, PhonePK.class,
             Employee.class, PhoneNumber.class);

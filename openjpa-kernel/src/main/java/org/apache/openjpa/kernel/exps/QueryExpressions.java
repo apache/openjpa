@@ -29,7 +29,6 @@ import java.util.Stack;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreQuery;
-import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -40,10 +39,8 @@ import org.apache.openjpa.meta.FieldMetaData;
  * @author Abe White
  * @since 0.3.2
  */
-@SuppressWarnings("serial")
-public class QueryExpressions
-    implements Serializable {
-
+public class QueryExpressions implements Serializable {
+    private static final long serialVersionUID = 1L;
     public static final int DISTINCT_AUTO = 2 << 0;
     public static final int DISTINCT_TRUE = 2 << 1;
     public static final int DISTINCT_FALSE = 2 << 2;
@@ -123,7 +120,7 @@ public class QueryExpressions
      */
     public void putUpdate(Path path, Value val) {
         if (updates == Collections.EMPTY_MAP)
-            updates = new LinkedHashMap<Path, Value>();
+            updates = new LinkedHashMap<>();
         updates.put(path, val);
     }
 
@@ -148,6 +145,7 @@ public class QueryExpressions
             return v._agg;
         }
 
+        @Override
         public void enter(Value val) {
             if (_agg)
                 return;
@@ -158,6 +156,7 @@ public class QueryExpressions
                 _sub = val;
         }
 
+        @Override
         public void exit(Value val) {
             if (val == _sub)
                 _sub = null;
@@ -171,10 +170,11 @@ public class QueryExpressions
      */
     private static class ParameterExpressionVisitor extends AbstractExpressionVisitor {
         private FieldMetaData _parameterized;
-        private List<FieldMetaData> _collected = new ArrayList<FieldMetaData>();
+        private List<FieldMetaData> _collected = new ArrayList<>();
         /**
          * Enters the current node.
          */
+        @Override
         public void enter(Value val) {
             if (val instanceof Parameter) {
                 if (_parameterized != null) {

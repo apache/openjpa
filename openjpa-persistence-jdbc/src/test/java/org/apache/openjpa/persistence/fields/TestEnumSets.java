@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestEnumSets
     extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(EnumSetOwner.class, CLEAR_TABLES);
     }

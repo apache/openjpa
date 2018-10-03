@@ -36,12 +36,14 @@ class ROPStoreManager
         super(delegate);
     }
 
+    @Override
     public boolean exists(OpenJPAStateManager sm, Object context) {
         if (context instanceof PCResultObjectProvider)
             context = null;
         return super.exists(sm, context);
     }
 
+    @Override
     public boolean initialize(OpenJPAStateManager sm, PCState state,
         FetchConfiguration fetch, Object context) {
         if (context instanceof PCResultObjectProvider) {
@@ -57,6 +59,7 @@ class ROPStoreManager
         return super.initialize(sm, state, fetch, context);
     }
 
+    @Override
     public boolean syncVersion(OpenJPAStateManager sm, Object context) {
         // the only way this gets called with a rop context is if the
         // rop didn't load any version info on initialize, so just null
@@ -67,6 +70,7 @@ class ROPStoreManager
         return super.syncVersion(sm, context);
     }
 
+    @Override
     public boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object context) {
         // the only way this gets called with a rop context is if the

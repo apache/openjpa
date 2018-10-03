@@ -26,8 +26,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="OCGame")
@@ -68,6 +68,7 @@ public class Game {
         return playedIn;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Game) {
             Game game = (Game)obj;

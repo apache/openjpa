@@ -37,7 +37,7 @@ public class PartComposite extends  Part  {
     double massIncrement;
 
     @OneToMany( mappedBy="parent")
-    Collection<Usage> partsUsed = new ArrayList<Usage>();
+    Collection<Usage> partsUsed = new ArrayList<>();
 
     public PartComposite() {}
 
@@ -74,6 +74,7 @@ public class PartComposite extends  Part  {
         this.massIncrement = massIncrement;
     }
 
+    @Override
     public String toString() {
 
         return "PartComposite:"+partno+" name:+"+name+" assemblyCost:"+

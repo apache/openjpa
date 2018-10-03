@@ -41,10 +41,10 @@ public class CachedEntityStatistics {
     protected int version;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    Set<CachedEntityStatistics> eagerList = new HashSet<CachedEntityStatistics>();
+    Set<CachedEntityStatistics> eagerList = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<CachedEntityStatistics> lazyList = new HashSet<CachedEntityStatistics>();
+    Set<CachedEntityStatistics> lazyList = new HashSet<>();
 
     String firstName, lastName;
 
@@ -103,6 +103,7 @@ public class CachedEntityStatistics {
         lazyList.add(p);
     }
 
+    @Override
     public int hashCode() {
         int res = id * 31;
         for (CachedEntityStatistics m : eagerList) {

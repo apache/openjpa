@@ -101,6 +101,7 @@ public class CANAddress
         this.postalCode = value;
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(super.toString())

@@ -38,6 +38,9 @@ public class RollbackException
     extends javax.persistence.RollbackException
     implements Serializable, ExceptionInfo {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private transient Object _failed = null;
 
     private transient Throwable[] _nested;
@@ -47,26 +50,32 @@ public class RollbackException
         _nested = new Throwable[]{ e };
     }
 
+    @Override
     public int getType() {
         return STORE;
     }
 
+    @Override
     public int getSubtype() {
         return GENERAL;
     }
 
+    @Override
     public boolean isFatal() {
         return true;
     }
 
+    @Override
     public Throwable getCause() {
         return PersistenceExceptions.getCause(_nested);
     }
 
+    @Override
     public Throwable[] getNestedThrowables() {
         return _nested;
     }
 
+    @Override
     public Object getFailedObject() {
         return _failed;
     }
@@ -76,19 +85,23 @@ public class RollbackException
         return this;
     }
 
+    @Override
     public String toString() {
         return Exceptions.toString(this);
     }
 
+    @Override
     public void printStackTrace() {
         printStackTrace(System.err);
     }
 
+    @Override
     public void printStackTrace(PrintStream out) {
         super.printStackTrace(out);
         Exceptions.printNestedThrowables(this, out);
     }
 
+    @Override
     public void printStackTrace(PrintWriter out) {
         super.printStackTrace(out);
         Exceptions.printNestedThrowables(this, out);

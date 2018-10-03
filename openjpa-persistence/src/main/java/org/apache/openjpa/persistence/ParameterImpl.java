@@ -64,14 +64,17 @@ public class ParameterImpl<T> implements Parameter<T> {
         _expectedValueType = expectedValueType;
     }
 
+    @Override
     public final String getName() {
         return _name;
     }
 
+    @Override
     public final Integer getPosition() {
         return _position;
     }
 
+    @Override
     public Class<T> getParameterType() {
       return _expectedValueType;
     }
@@ -99,6 +102,7 @@ public class ParameterImpl<T> implements Parameter<T> {
             ^ ((_position != null) ? _position.hashCode() : 0);
     }
 
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder("Parameter");
         buf.append("<" + getParameterType().getSimpleName() + ">");

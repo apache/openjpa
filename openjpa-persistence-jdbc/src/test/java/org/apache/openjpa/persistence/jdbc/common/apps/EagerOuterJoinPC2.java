@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+
 import javax.persistence.Entity;
 
 /**
@@ -50,6 +52,7 @@ public class EagerOuterJoinPC2 {
         this.ref = ref;
     }
 
+    @Override
     public String toString() {
         return getClass().getName() + ": " + name;
     }

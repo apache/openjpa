@@ -30,22 +30,22 @@ public interface Subquery
     /**
      * Return the candidate alias for this subquery.
      */
-    public String getCandidateAlias();
+    String getCandidateAlias();
 
     /*
      * Set the candidate alias for this subquery.
      */
-    public void setSubqAlias(String subqAlias);
+    void setSubqAlias(String subqAlias);
 
     /*
      * Return the subqAlias
      */
-    public String getSubqAlias();
+    String getSubqAlias();
 
     /**
      * Set the parsed subquery.
      */
-    public void setQueryExpressions(QueryExpressions query);
+    void setQueryExpressions(QueryExpressions query);
 
-    public Object getSelect();
+    Object getSelect();
 }

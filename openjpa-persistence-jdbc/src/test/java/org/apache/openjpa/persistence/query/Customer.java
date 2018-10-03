@@ -18,12 +18,22 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.*;
-
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity
 @Table(name="TCUS")
@@ -31,7 +41,9 @@ public class Customer {
 
     @Embeddable
 	public static class CustomerKey implements Serializable {
-		public String cyCode;
+		
+        private static final long serialVersionUID = 1L;
+        public String cyCode;
 		public int id;
 
 		public CustomerKey(){}
@@ -41,7 +53,8 @@ public class Customer {
 			this.id=id;
 		}
 
-		public String toString() {
+		@Override
+        public String toString() {
 			return cyCode+"/"+id;
 		}
 		@Override
@@ -75,10 +88,10 @@ public class Customer {
 	 long version;
 
     @OneToMany(fetch=FetchType.EAGER, mappedBy="customer")
-    private Collection<Order> orders = new ArrayList<Order>();
+    private Collection<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy="cust")
-    private List<Account> accounts = new ArrayList<Account>();
+    private List<Account> accounts = new ArrayList<>();
 
 	public Customer() {}
 
@@ -117,7 +130,8 @@ public class Customer {
         this.accounts = accounts;
     }
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return "Customer:"+cid+" name:"+name;
 	}
 

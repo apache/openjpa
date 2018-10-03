@@ -18,7 +18,13 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import javax.persistence.Entity;
 
 /**
@@ -45,62 +51,77 @@ public class LRSPC
         stringField = str;
     }
 
+    @Override
     public LRSPCIntf newInstance(String stringField) {
         return new LRSPC(stringField);
     }
 
+    @Override
     public Set getStringSet() {
         return this.stringSet;
     }
 
+    @Override
     public void setStringSet(Set stringSet) {
         this.stringSet = stringSet;
     }
 
+    @Override
     public Set getRelSet() {
         return this.relSet;
     }
 
+    @Override
     public void setRelSet(Set relSet) {
         this.relSet = relSet;
     }
 
+    @Override
     public Collection getStringCollection() {
         return this.stringCollection;
     }
 
+    @Override
     public void setStringCollection(Collection stringCollection) {
         this.stringCollection = stringCollection;
     }
 
+    @Override
     public Collection getRelCollection() {
         return this.relCollection;
     }
 
+    @Override
     public void setRelCollection(Collection relCollection) {
         this.relCollection = relCollection;
     }
 
+    @Override
     public Map getStringMap() {
         return this.stringMap;
     }
 
+    @Override
     public void setStringMap(Map stringMap) {
         this.stringMap = stringMap;
     }
 
+    @Override
     public Map getRelMap() {
         return this.relMap;
     }
 
+    @Override
     public void setRelMap(Map relMap) {
         this.relMap = relMap;
     }
 
+    @Override
     public String getStringField() {
         return this.stringField;
     }
 
+    @Override
     public int compareTo(Object other) {
         return stringField.compareTo(((LRSPC) other).stringField);
     }

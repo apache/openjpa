@@ -34,6 +34,7 @@ public class SoftRandomAccessResultList extends RandomAccessResultList {
         super(rop);
     }
 
+    @Override
     protected Map newRowMap() {
         return new ReferenceMap();
     }

@@ -50,6 +50,7 @@ public class Address {
         coordinates = c;
     }
 
+    @Override
     public String toString() {
         return street + " " + city + ", " + state + " " + zip;
     }

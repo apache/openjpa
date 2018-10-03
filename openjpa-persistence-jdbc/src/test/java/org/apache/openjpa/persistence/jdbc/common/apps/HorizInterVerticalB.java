@@ -33,18 +33,22 @@ public class HorizInterVerticalB
     private String stringB;
     private int intB;
 
+    @Override
     public void setStringB(String stringB) {
         this.stringB = stringB;
     }
 
+    @Override
     public String getStringB() {
         return this.stringB;
     }
 
+    @Override
     public void setIntB(int intB) {
         this.intB = intB;
     }
 
+    @Override
     public int getIntB() {
         return this.intB;
     }

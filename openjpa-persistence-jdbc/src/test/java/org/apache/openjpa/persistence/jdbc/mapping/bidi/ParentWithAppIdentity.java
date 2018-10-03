@@ -57,30 +57,36 @@ public class ParentWithAppIdentity implements IParent {
     @ElementJoinColumn(name="FK_PARENT_APP_ID", referencedAttributeName="id")
 	private Set<Child> children;
 
-	public long getId() {
+	@Override
+    public long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	@Override
+    public void setId(long id) {
 		this.id = id;
 		postIdSet();
 	}
 
-	public String getName() {
+	@Override
+    public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	@Override
+    public void setName(String name) {
 		this.name = name;
 	}
 
-	public Collection<Child> getChildren() {
+	@Override
+    public Collection<Child> getChildren() {
 		return children;
 	}
 
-	public void addChild(Child child) {
+	@Override
+    public void addChild(Child child) {
 		if (children == null)
-			children = new HashSet<Child>();
+			children = new HashSet<>();
 		children.add(child);
 		child.setAppParentId(this.id);
 	}

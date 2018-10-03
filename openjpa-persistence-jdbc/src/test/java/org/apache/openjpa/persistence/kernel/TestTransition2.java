@@ -20,14 +20,13 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
-import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
-import org.apache.openjpa.persistence.kernel.common.apps.PersistenceAware;
-
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.RestoreStateType;
+import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.PersistenceAware;
 
 public class TestTransition2 extends BaseKernelTest {
 
@@ -45,6 +44,7 @@ public class TestTransition2 extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class, PersistenceAware.class);
         try {

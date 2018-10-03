@@ -29,6 +29,9 @@ import javax.persistence.OrderColumn;
 @Entity
 public class OrderedOneToManyEntity implements IOrderedEntity, java.io.Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     private int id;
 
@@ -37,29 +40,35 @@ public class OrderedOneToManyEntity implements IOrderedEntity, java.io.Serializa
     private List<INameEntity> entities;
 
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public List<INameEntity> getEntities() {
         return entities;
     }
 
+    @Override
     public void setEntities(List<INameEntity> names) {
         this.entities = names;
     }
 
+    @Override
     public void addEntity(INameEntity name) {
         if( entities == null) {
-            entities = new ArrayList<INameEntity>();
+            entities = new ArrayList<>();
         }
         entities.add(name);
     }
 
+    @Override
     public INameEntity removeEntity(int location) {
         INameEntity rtnVal = null;
         if( entities != null) {
@@ -68,13 +77,15 @@ public class OrderedOneToManyEntity implements IOrderedEntity, java.io.Serializa
         return rtnVal;
     }
 
+    @Override
     public void insertEntity(int location, INameEntity name) {
         if( entities == null) {
-            entities = new ArrayList<INameEntity>();
+            entities = new ArrayList<>();
         }
         entities.add(location, name);
     }
 
+    @Override
     public String toString() {
         return "OrderedOneToManyEntity[" + id + "]=" + entities;
     }

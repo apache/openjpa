@@ -23,17 +23,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
-import org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest2;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.event.TCPRemoteCommitProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.util.Id;
 
 @AllowFailure(message="surefire excluded")
@@ -52,6 +51,7 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
         super(test, "datacachecactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);
@@ -59,18 +59,20 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
 
     private interface ChangeOperation {
 
-        public String getName();
+        String getName();
 
-        public void operation(OpenJPAEntityManagerFactory kpmf,
+        void operation(OpenJPAEntityManagerFactory kpmf,
             boolean asLarge);
     }
 
     private class performAsModify implements ChangeOperation {
 
+        @Override
         public String getName() {
             return "Modify SpecialRuntimeTest1";
         }
 
+        @Override
         public void operation(OpenJPAEntityManagerFactory kpmf,
             boolean asLarge) {
             OpenJPAEntityManager pm;
@@ -90,10 +92,12 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
 
     private class performAsDelete implements ChangeOperation {
 
+        @Override
         public String getName() {
             return "Delete SpecialRuntimeTest1";
         }
 
+        @Override
         public void operation(OpenJPAEntityManagerFactory kpmf,
             boolean asLarge) {
             OpenJPAEntityManager pm;
@@ -335,8 +339,10 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
 
     private void pause(double seconds) {
         try {
-            Thread.currentThread().yield();
-            Thread.currentThread().sleep((int) seconds * 1000);
+            Thread.currentThread();
+            Thread.yield();
+            Thread.currentThread();
+            Thread.sleep((int) seconds * 1000);
         }
         catch (Exception e) {
         }

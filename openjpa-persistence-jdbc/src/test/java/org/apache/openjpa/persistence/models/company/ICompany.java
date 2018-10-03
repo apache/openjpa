@@ -18,19 +18,19 @@
  */
 package org.apache.openjpa.persistence.models.company;
 
-import java.util.*;
+import java.util.Set;
 
 public interface ICompany {
 
-    public void setName(String name);
-    public String getName();
+    void setName(String name);
+    String getName();
 
-    public void setAddress(IAddress address);
-    public IAddress getAddress();
+    void setAddress(IAddress address);
+    IAddress getAddress();
 
-    public void setEmployees(Set<? extends IEmployee> employees);
-    public Set<? extends IEmployee> getEmployees();
+    void setEmployees(Set<? extends IEmployee> employees);
+    Set<? extends IEmployee> getEmployees();
 
-    public void setProducts(Set<? extends IProduct> products);
-    public Set<? extends IProduct> getProducts();
+    void setProducts(Set<? extends IProduct> products);
+    Set<? extends IProduct> getProducts();
 }

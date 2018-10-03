@@ -24,9 +24,8 @@ package org.apache.openjpa.kernel;
  *
  * @author Steve Kim
  */
-@SuppressWarnings("serial")
-class PNonTransNewState
-    extends PCState {
+class PNonTransNewState extends PCState {
+    private static final long serialVersionUID = 1L;
 
     @Override
     void initialize(StateManagerImpl context, PCState previous) {
@@ -34,34 +33,42 @@ class PNonTransNewState
         context.setDirty(true);
     }
 
+    @Override
     PCState delete(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState transactional(StateManagerImpl context) {
         return PNEW;
     }
 
+    @Override
     PCState release(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     boolean isPersistent() {
         return true;
     }
 
+    @Override
     boolean isNew() {
         return true;
     }
 
+    @Override
     boolean isDirty() {
         return true;
     }
 
+    @Override
     boolean isPendingTransactional() {
         return true;
     }
 
+    @Override
     public String toString() {
         return "Persistent-Notransactional-New";
     }

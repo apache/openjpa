@@ -47,6 +47,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     private OpenJPAEntityManagerFactory emf;
     private OpenJPAEntityManager em;
 
+    @Override
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         super.setUp();
@@ -243,7 +244,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
         Boolean original = (Boolean)props.get("openjpa.IgnoreChanges");
         assertNotNull(original);
 
-        Map<String,Boolean> config = new HashMap<String, Boolean>();
+        Map<String,Boolean> config = new HashMap<>();
         Boolean invert = !original.booleanValue();
         config.put("openjpa.IgnoreChanges", invert);
 

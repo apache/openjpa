@@ -22,11 +22,11 @@ import java.util.List;
 
 public interface IColumnEntity extends INameEntity {
 
-    public List<IOrderedEntity> getEntities();
+    List<IOrderedEntity> getEntities();
 
-    public void setEntities(List<IOrderedEntity> columns);
+    void setEntities(List<IOrderedEntity> columns);
 
-    public void addEntity(IOrderedEntity entity);
+    void addEntity(IOrderedEntity entity);
 
-    public IOrderedEntity removeEntity(IOrderedEntity entity);
+    IOrderedEntity removeEntity(IOrderedEntity entity);
 }

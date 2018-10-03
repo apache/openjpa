@@ -37,6 +37,7 @@ import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FinderQuery;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Id;
@@ -106,14 +107,17 @@ public class FinderQueryImpl
 
     }
 
+    @Override
     public ClassMapping getIdentifier() {
         return _mapping;
     }
 
+    @Override
     public SelectExecutor getDelegate() {
         return _select;
     }
 
+    @Override
     public String getQueryString() {
         return _sql;
     }
@@ -125,7 +129,7 @@ public class FinderQueryImpl
     private Object[] getPKValues(OpenJPAStateManager sm, JDBCStore store) {
         Object[] pks = null;
         Object oid = sm.getObjectId();
-        if (_mapping.getIdentityType() == ClassMapping.ID_APPLICATION)
+        if (_mapping.getIdentityType() == ClassMetaData.ID_APPLICATION)
             pks = ApplicationIds.toPKValues(oid, _mapping);
 
         Object[] val = new Object[_pkCols.length];
@@ -142,6 +146,7 @@ public class FinderQueryImpl
         return val;
     }
 
+    @Override
     public Result execute(OpenJPAStateManager sm, StoreManager store,
         FetchConfiguration fetch) {
         boolean forUpdate = false;
@@ -184,6 +189,7 @@ public class FinderQueryImpl
         return null;
     }
 
+    @Override
     public String toString() {
         return _mapping + ": [" + getQueryString() + "]";
     }

@@ -25,6 +25,8 @@ package org.apache.openjpa.util;
  */
 public final class ByteId extends OpenJPAId {
 
+    
+    private static final long serialVersionUID = 1L;
     private final byte key;
 
     public ByteId(Class cls, Byte key) {
@@ -49,18 +51,22 @@ public final class ByteId extends OpenJPAId {
         return key;
     }
 
+    @Override
     public Object getIdObject() {
         return Byte.valueOf(key);
     }
 
+    @Override
     public String toString() {
         return Byte.toString(key);
     }
 
+    @Override
     protected int idHash() {
         return key;
     }
 
+    @Override
     protected boolean idEquals(OpenJPAId o) {
         return key == ((ByteId) o).key;
     }

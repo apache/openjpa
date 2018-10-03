@@ -42,6 +42,8 @@ public class HorizRelation
     // One to one mappings
     ///////////////////////
 
+    
+    private static final long serialVersionUID = 1L;
     private HorizA obHorizA;
     private HorizB obHorizB;
     private HorizC obHorizC;

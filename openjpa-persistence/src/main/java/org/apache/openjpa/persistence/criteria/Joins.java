@@ -63,8 +63,8 @@ import org.apache.openjpa.persistence.meta.Members.Member;
 abstract class Joins {
 
     static Join clone(Join join) {
-        java.util.List<Members.Member> members = new ArrayList<Members.Member>();
-        java.util.List<JoinType> jts = new ArrayList<JoinType>();
+        java.util.List<Members.Member> members = new ArrayList<>();
+        java.util.List<JoinType> jts = new ArrayList<>();
         FromImpl<?, ?> root = getMembers((PathImpl)join, members, jts);
         Members.Member<?, ?> member = members.get(0);
         JoinType jt = jts.get(0);
@@ -128,14 +128,17 @@ abstract class Joins {
             allowNull = joinType != JoinType.INNER;
         }
 
+        @Override
         public JoinType getJoinType() {
             return joinType;
         }
 
+        @Override
         public FromImpl<?, Z> getParent() {
             return (FromImpl<?, Z>) _parent;
         }
 
+        @Override
         public Member<? extends Z, X> getMember() {
             return (Member<? extends Z, X>) _member;
         }
@@ -159,6 +162,7 @@ abstract class Joins {
          * Return the metamodel attribute corresponding to the join.
          * @return metamodel attribute type corresponding to the join
          */
+        @Override
         public Attribute<? super Z, ?> getAttribute() {
             return  (Attribute<? super Z, ?> )_member;
         }
@@ -340,6 +344,7 @@ abstract class Joins {
             allowNull = joinType != JoinType.INNER;
         }
 
+        @Override
         public final JoinType getJoinType() {
             return joinType;
         }
@@ -347,14 +352,17 @@ abstract class Joins {
         /**
          * Gets the parent of this join.
          */
+        @Override
         public final FromImpl<?, Z> getParent() {
             return (FromImpl<?, Z>) _parent;
         }
 
+        @Override
         public Attribute<? super Z, E> getAttribute() {
             return (Member<? super Z, E>)_member;
         }
 
+        @Override
         public PluralAttribute<? super Z, C, E> getModel() {
             return (PluralAttribute<? super Z, C, E>) _member.getType();
         }
@@ -527,6 +535,7 @@ abstract class Joins {
             throw new UnsupportedOperationException("JPA 2.1");
         }
 
+        @Override
         public CollectionAttribute<? super Z, E> getModel() {
             return (CollectionAttribute<? super Z, E>)_member;
         }
@@ -559,6 +568,7 @@ abstract class Joins {
             throw new UnsupportedOperationException("JPA 2.1");
         }
 
+        @Override
         public SetAttribute<? super Z, E> getModel() {
             return (SetAttribute<? super Z, E>)_member;
         }
@@ -593,10 +603,12 @@ abstract class Joins {
             throw new UnsupportedOperationException("JPA 2.1");
         }
 
+        @Override
         public ListAttribute<? super Z, E> getModel() {
             return (ListAttribute<? super Z, E>)_member;
         }
 
+        @Override
         public Expression<Integer> index() {
             return new Expressions.Index(this);
         }
@@ -633,6 +645,7 @@ abstract class Joins {
             throw new UnsupportedOperationException("JPA 2.1");
         }
 
+        @Override
         public MapAttribute<? super Z, K,V> getModel() {
             return (MapAttribute<? super Z, K,V>) _member;
         }
@@ -649,19 +662,22 @@ abstract class Joins {
             AbstractManagedType<java.util.Map<K,V>> pseudoOwner = (AbstractManagedType<java.util.Map<K,V>>)
                _member.owner.model.getType(getModel().getJavaType());
             KeyAttributeImpl<java.util.Map<K,V>, K> keyAttr =
-              new Members.KeyAttributeImpl<java.util.Map<K,V>, K>(pseudoOwner, _member.fmd);
-            _keyJoin = new KeyJoin<K, V>((FromImpl<?,java.util.Map<K,V>>)this, keyAttr, jt);
+              new Members.KeyAttributeImpl<>(pseudoOwner, _member.fmd);
+            _keyJoin = new KeyJoin<>((FromImpl<?,java.util.Map<K,V>>)this, keyAttr, jt);
             return _keyJoin;
         }
 
+        @Override
         public Expression<java.util.Map.Entry<K, V>> entry() {
-            return new MapEntry<K,V>(this);
+            return new MapEntry<>(this);
         }
 
+        @Override
         public Path<K> key() {
-            return new MapKey<Z,K>(this);
+            return new MapKey<>(this);
         }
 
+        @Override
         public Path<V> value() {
             return this;
         }

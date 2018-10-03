@@ -26,9 +26,8 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class ENonTransState
-    extends PCState {
+class ENonTransState extends PCState {
+    private static final long serialVersionUID = 1L;
 
     @Override
     void initialize(StateManagerImpl context, PCState previous) {
@@ -42,11 +41,13 @@ class ENonTransState
         context.clearSavedFields();
     }
 
+    @Override
     PCState delete(StateManagerImpl context) {
         context.preDelete();
         return EDELETED;
     }
 
+    @Override
     PCState transactional(StateManagerImpl context) {
         // state is discarded when entering the transaction
         if (!context.getBroker().getOptimistic())
@@ -54,31 +55,38 @@ class ENonTransState
         return ECLEAN;
     }
 
+    @Override
     PCState release(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState evict(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState beforeRead(StateManagerImpl context, int field) {
         return error("embed-ref", context);
     }
 
+    @Override
     PCState beforeWrite(StateManagerImpl context, int field, boolean mutate) {
         return error("embed-ref", context);
     }
 
+    @Override
     PCState beforeOptimisticWrite(StateManagerImpl context, int field,
         boolean mutate) {
         return EDIRTY;
     }
 
+    @Override
     boolean isPersistent() {
         return true;
     }
 
+    @Override
     public String toString() {
         return "Embedded-Nontransactional";
     }

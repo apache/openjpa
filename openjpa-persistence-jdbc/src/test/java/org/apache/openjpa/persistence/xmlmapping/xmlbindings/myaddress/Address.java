@@ -12,6 +12,7 @@ package org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -108,7 +109,7 @@ public class Address {
      */
     public List<String> getStreet() {
         if (street == null) {
-            street = new ArrayList<String>();
+            street = new ArrayList<>();
         }
         return this.street;
     }
@@ -145,6 +146,7 @@ public class Address {
         this.city = value;
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.name);

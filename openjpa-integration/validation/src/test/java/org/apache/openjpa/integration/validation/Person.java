@@ -58,28 +58,34 @@ public class Person implements IPerson, Serializable {
     private Address homeAddress;
 
 
+    @Override
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    @Override
     public String getFirstName() {
         return this.firstName;
     }
 
 
+    @Override
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
+    @Override
     public String getLastName() {
         return this.lastName;
     }
 
 
+    @Override
     public void setHomeAddress(IAddress homeAddress) {
         this.homeAddress = (Address) homeAddress;
     }
 
+    @Override
     public IAddress getHomeAddress() {
         return this.homeAddress;
     }

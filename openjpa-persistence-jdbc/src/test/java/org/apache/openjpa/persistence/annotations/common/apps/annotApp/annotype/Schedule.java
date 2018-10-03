@@ -19,10 +19,20 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
@@ -94,7 +104,8 @@ public class Schedule
 		this.name = name;
 	}
 
-	public String toString()
+	@Override
+    public String toString()
 	{
 		return "Schedule "+name+" Date "+startDate;
 	}

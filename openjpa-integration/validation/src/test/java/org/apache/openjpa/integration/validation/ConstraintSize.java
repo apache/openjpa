@@ -110,7 +110,7 @@ public class ConstraintSize implements Serializable {
 
 
     private void setInvalidMap() {
-        Map<String,String> m = new HashMap<String,String>();
+        Map<String,String> m = new HashMap<>();
         m.put("a", "a value");
         m.put("b", "b value");
         m.put("c", "c value");
@@ -118,7 +118,7 @@ public class ConstraintSize implements Serializable {
     }
 
     private void setValidMap() {
-        Map<String,String> m = new HashMap<String,String>();
+        Map<String,String> m = new HashMap<>();
         m.put("a", "a value");
         setMyMap(m);
     }

@@ -41,6 +41,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestBadVersionField extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, Data.class);
     }

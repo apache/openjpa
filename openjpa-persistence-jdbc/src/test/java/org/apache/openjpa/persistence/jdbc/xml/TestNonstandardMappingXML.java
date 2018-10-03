@@ -23,6 +23,7 @@ import org.apache.openjpa.persistence.jdbc.annotations.TestNonstandardMappingAnn
 public class TestNonstandardMappingXML extends
     TestNonstandardMappingAnnotations {
 
+    @Override
     public void setUp() {
         super.setUp();
     }

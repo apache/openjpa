@@ -19,8 +19,14 @@
 package org.apache.openjpa.persistence.jpql.joins;
 
 import java.io.Serializable;
-import java.lang.String;
-import javax.persistence.*;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 /**
  * Entity implementation class for Entity: Child
@@ -84,6 +90,7 @@ public class Employee implements Serializable {
         this.dept = dept;
     }
 
+    @Override
     public String toString() {
         return "[Employee:id=" + empno + ", version=" + version + ", name="
                 + name + ']';

@@ -25,16 +25,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.Bindable.BindableType;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.ManagedType;
+import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Attribute.PersistentAttributeType;
-import javax.persistence.metamodel.Bindable.BindableType;
-import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.meta.ClassMetaData;
@@ -57,6 +57,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestMetamodel extends SingleEMFTestCase {
     private static MetamodelImpl model;
 
+    @Override
     public void setUp() {
         if (model == null) {
     	super.setUp(

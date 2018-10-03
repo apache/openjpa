@@ -27,15 +27,15 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
+import java.util.List;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.Join;
-import org.apache.openjpa.persistence.OpenJPAQuery;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
+import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.common.apps.EagerPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC2;
 
 
 public class TestEagerDistinct
@@ -49,9 +49,10 @@ public class TestEagerDistinct
 
     public boolean skipTest() {
         return ((JDBCConfiguration) getConfiguration()).
-                getDBDictionaryInstance().joinSyntax == Join.SYNTAX_TRADITIONAL;
+                getDBDictionaryInstance().joinSyntax == JoinSyntaxes.SYNTAX_TRADITIONAL;
     }
 
+    @Override
     public void setUpTestCase() {
        deleteAll(EagerPC.class);
        deleteAll(HelperPC.class);
@@ -83,6 +84,7 @@ public class TestEagerDistinct
         pm.close();
     }
 
+    @Override
     public OpenJPAEntityManager getPM() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().setMaxFetchDepth(-1);

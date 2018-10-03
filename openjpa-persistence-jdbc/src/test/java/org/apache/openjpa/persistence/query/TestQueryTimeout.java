@@ -248,7 +248,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         OpenJPAEntityManager em = null;
         Integer setTime = new Integer(0);
         // create the Map to test overrides
-        Map<String,String >props = new HashMap<String,String>();
+        Map<String,String >props = new HashMap<>();
         props.put("javax.persistence.query.timeout", "0");
 
         try {
@@ -498,7 +498,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         Integer setTime = new Integer(0);
 
         // create the Map to test overrides
-        Map<String,String> props = new HashMap<String,String>();
+        Map<String,String> props = new HashMap<>();
         props.put("javax.persistence.query.timeout", "0");
 
         try {

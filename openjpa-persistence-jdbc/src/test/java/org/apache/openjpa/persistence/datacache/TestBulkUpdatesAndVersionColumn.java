@@ -23,15 +23,16 @@ import javax.persistence.LockModeType;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.RollbackException;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestBulkUpdatesAndVersionColumn
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() throws Exception {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",

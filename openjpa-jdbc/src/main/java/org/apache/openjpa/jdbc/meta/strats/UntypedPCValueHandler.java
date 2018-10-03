@@ -33,8 +33,8 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.StoreException;
 
 /**
  * Handler for unknown persistence-capable object fields that stores
@@ -45,6 +45,8 @@ public class UntypedPCValueHandler
     extends AbstractValueHandler
     implements RelationId {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (UntypedPCValueHandler.class);
     private static final UntypedPCValueHandler _instance =
@@ -60,6 +62,8 @@ public class UntypedPCValueHandler
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
         DBDictionary dict = vm.getMappingRepository().getDBDictionary();
@@ -76,14 +80,17 @@ public class UntypedPCValueHandler
         return new Column[]{ col };
     }
 
+    @Override
     public boolean isVersionable(ValueMapping vm) {
         return true;
     }
 
+    @Override
     public boolean objectValueRequiresLoad(ValueMapping vm) {
         return true;
     }
 
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         // in the past we've been lenient about being able to translate objects
@@ -98,6 +105,7 @@ public class UntypedPCValueHandler
         return RelationStrategies.getStateManager(val, store.getContext());
     }
 
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch)
         throws SQLException {
@@ -126,6 +134,7 @@ public class UntypedPCValueHandler
         return store.find(oid, vm, fetch);
     }
 
+    @Override
     public Object toRelationDataStoreValue(OpenJPAStateManager sm, Column col) {
         if (sm == null || sm.getObjectId() == null)
             return null;

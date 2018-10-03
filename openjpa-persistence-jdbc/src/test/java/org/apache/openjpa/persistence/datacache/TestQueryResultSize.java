@@ -41,6 +41,7 @@ public class TestQueryResultSize
     private EntityManagerFactory _pmf;
     private OpenJPAEntityManager pm;
 
+    @Override
     public void setUp() {
         System.out.println("****Deleted Records "
             + deleteAll(CacheObjectE.class));

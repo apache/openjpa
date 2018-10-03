@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.access;
 
+import static javax.persistence.AccessType.FIELD;
+
 import javax.persistence.Access;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -25,8 +27,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Version;
-
-import static javax.persistence.AccessType.FIELD;
 
 @Entity
 @Access(value=FIELD)
@@ -69,6 +69,7 @@ public class FieldAccess {
         return getStrField();
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof FieldAccess) {
             FieldAccess fa = (FieldAccess)obj;

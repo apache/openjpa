@@ -589,6 +589,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         super.copyInto(anArray);
     }
 
+    @Override
     public synchronized void trimToSize() {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -596,6 +597,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         super.trimToSize();
     }
 
+    @Override
     public synchronized void ensureCapacity(int minCapacity) {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -603,6 +605,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         super.ensureCapacity(minCapacity);
     }
 
+    @Override
     public synchronized int capacity() {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -610,6 +613,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         return super.capacity();
     }
 
+    @Override
     public Enumeration elements() {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -617,6 +621,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         return super.elements();
     }
 
+    @Override
     public synchronized int lastIndexOf(Object o, int index) {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -624,6 +629,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         return super.lastIndexOf(o, index);
     }
 
+    @Override
     public synchronized Object elementAt(int index) {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -631,6 +637,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         return super.elementAt(index);
     }
 
+    @Override
     public synchronized Object firstElement() {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -638,6 +645,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         return super.firstElement();
     }
 
+    @Override
     public synchronized Object lastElement() {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -645,6 +653,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         return super.lastElement();
     }
 
+    @Override
     public synchronized String toString() {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -652,6 +661,7 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         return super.toString();
     }
 
+    @Override
     protected synchronized void removeRange(int fromIndex, int toIndex) {
         if (!_directAccess && isDelayLoad()) {
             load();

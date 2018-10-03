@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -98,10 +99,12 @@ public class ArraysTest
     public ArraysTest() {
     }
 
+    @Override
     public boolean equals(Object other) {
         return (other instanceof ArraysTest) && id == ((ArraysTest) other).id;
     }
 
+    @Override
     public int compareTo(Object other) {
         ArraysTest t = (ArraysTest) other;
         if (id < t.id)

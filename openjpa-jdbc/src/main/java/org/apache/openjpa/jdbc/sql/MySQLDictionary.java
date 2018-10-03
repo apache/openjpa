@@ -41,6 +41,7 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.StoreException;
 
 /**
@@ -433,7 +434,7 @@ public class MySQLDictionary
     protected int matchErrorState(Map<Integer,Set<String>> errorStates, SQLException ex) {
         int state = super.matchErrorState(errorStates, ex);
         // OPENJPA-1616 - Special case for MySQL not returning a SQLState for timeouts
-        if (state == StoreException.GENERAL && ex.getErrorCode() == 0 && ex.getSQLState() == null) {
+        if (state == ExceptionInfo.GENERAL && ex.getErrorCode() == 0 && ex.getSQLState() == null) {
             // look at the nested MySQL exception for more details
             SQLException sqle = ex.getNextException();
             if (sqle != null && sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException")) {

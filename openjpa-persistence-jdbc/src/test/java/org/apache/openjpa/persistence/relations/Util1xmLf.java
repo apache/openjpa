@@ -36,9 +36,9 @@ public class Util1xmLf {
 
     private String firstName;
 
-    public Collection<Util1xmRt> uniRightLzy = new HashSet<Util1xmRt>();
+    public Collection<Util1xmRt> uniRightLzy = new HashSet<>();
 
-    public Collection<Util1xmRt> uniRightEgr = new HashSet<Util1xmRt>();
+    public Collection<Util1xmRt> uniRightEgr = new HashSet<>();
 
     @Id
     public int getId() {

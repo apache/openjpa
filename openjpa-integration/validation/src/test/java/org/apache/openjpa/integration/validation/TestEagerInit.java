@@ -31,7 +31,7 @@ public class TestEagerInit extends AbstractPersistenceTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("openjpa.InitializeEagerly", "true");
         _emf =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory("simple-callback-mode",

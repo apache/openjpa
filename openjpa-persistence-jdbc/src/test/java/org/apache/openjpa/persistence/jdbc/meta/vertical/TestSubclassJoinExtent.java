@@ -27,16 +27,19 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta.vertical;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.Join;
+import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.persistence.Extent;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.Base;
+import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1;
+import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1Sub1;
+import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1Sub2;
+import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub2;
 
 
 public class TestSubclassJoinExtent
@@ -60,6 +63,7 @@ public class TestSubclassJoinExtent
         return false;
     }
 
+    @Override
     public void setUpTestCase() {
         // make sure all classes are registered
         Class[] reg = new Class[]{
@@ -68,7 +72,7 @@ public class TestSubclassJoinExtent
         };
 
         if (((JDBCConfiguration) getConfiguration()).getDBDictionaryInstance().
-                joinSyntax == Join.SYNTAX_DATABASE)
+                joinSyntax == JoinSyntaxes.SYNTAX_DATABASE)
             _outer = "(+)";
 
        deleteAll(Base.class);

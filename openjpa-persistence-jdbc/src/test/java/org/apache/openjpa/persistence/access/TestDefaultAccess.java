@@ -34,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestDefaultAccess extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES,
             PropEntity.class, MappedCallbackSup.class);

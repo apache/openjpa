@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
+import static javax.persistence.InheritanceType.SINGLE_TABLE;
+
 import java.util.Collection;
 
 import javax.persistence.CascadeType;
@@ -30,8 +32,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
-
-import static javax.persistence.InheritanceType.SINGLE_TABLE;
 
 @Entity
 @Table(name="OC_OWNER")

@@ -33,6 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestPersistentCollection extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(PColl_EntityA.class, PColl_EmbedB.class, PColl_EntityC.class,
                 PColl_EntityA1.class, PColl_EntityB.class, PColl_EntityStringEager.class,

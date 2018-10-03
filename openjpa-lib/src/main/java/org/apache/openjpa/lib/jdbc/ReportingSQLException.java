@@ -27,9 +27,9 @@ import java.sql.Statement;
  *
  * @author Marc Prud'hommeaux
  */
-@SuppressWarnings("serial")
 public class ReportingSQLException extends SQLException {
 
+    private static final long serialVersionUID = 1L;
     private final transient Statement _stmnt;
     private final SQLException _sqle;
     private final String       _sql;
@@ -59,6 +59,7 @@ public class ReportingSQLException extends SQLException {
     /**
      * Returns the SQL state of the underlying {@link SQLException}.
      */
+    @Override
     public String getSQLState() {
         return _sqle.getSQLState();
     }
@@ -66,6 +67,7 @@ public class ReportingSQLException extends SQLException {
     /**
      * Returns the error code of the underlying {@link SQLException}.
      */
+    @Override
     public int getErrorCode() {
         return _sqle.getErrorCode();
     }

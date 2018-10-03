@@ -26,7 +26,6 @@ import java.util.Properties;
 import java.util.zip.ZipFile;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
-
 import org.apache.openjpa.lib.util.StringUtil;
 
 /**

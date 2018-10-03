@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.callbacks;
 
 public interface ListenerTestEntity {
 
-    public long getId();
+    long getId();
 
-    public int getValue();
+    int getValue();
 
-    public void setValue(int val);
+    void setValue(int val);
 }

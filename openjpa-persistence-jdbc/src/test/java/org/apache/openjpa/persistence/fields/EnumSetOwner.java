@@ -18,15 +18,16 @@
  */
 package org.apache.openjpa.persistence.fields;
 
-import java.util.EnumSet;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
+
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Version;
-import javax.persistence.Entity;
 
-import org.apache.openjpa.persistence.Persistent;
 import org.apache.openjpa.persistence.Externalizer;
+import org.apache.openjpa.persistence.Persistent;
 
 @Entity
 public class EnumSetOwner {

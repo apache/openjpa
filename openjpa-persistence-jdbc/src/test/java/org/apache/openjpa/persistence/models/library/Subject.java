@@ -18,9 +18,17 @@
  */
 package org.apache.openjpa.persistence.models.library;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="LIBSUBJECT")
@@ -48,7 +56,7 @@ public class Subject {
             throw new IllegalArgumentException("name cannot be empty or null");
 
         this.name = name;
-        books = new HashSet<Book>();
+        books = new HashSet<>();
     }
 
     public String getName() {
@@ -56,7 +64,7 @@ public class Subject {
     }
 
     public List<Book> getBooks() {
-        return new ArrayList<Book>(books);
+        return new ArrayList<>(books);
     }
 
     boolean addBook(Book book) {
@@ -73,10 +81,12 @@ public class Subject {
         return false;
     }
 
+    @Override
     public String toString() {
         return "category [" + oid + "] \"" + name + "\"";
     }
 
+    @Override
     public int hashCode() {
         return oid;
     }
@@ -84,6 +94,7 @@ public class Subject {
     /**
      * Uses the object's persistent identity value to determine equivalence.
      */
+    @Override
     public boolean equals(Object other) {
         // standard fare
         if (other == this)

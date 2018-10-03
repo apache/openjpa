@@ -37,6 +37,8 @@ import org.apache.openjpa.lib.util.StringUtil;
 class MatchesExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private final Const _const;
     private final String _single;
@@ -55,12 +57,14 @@ class MatchesExpression
         _escape = escape;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         ExpState s1 = _val.initialize(sel, ctx, 0);
         ExpState s2 = _const.initialize(sel, ctx, 0);
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -151,6 +155,7 @@ class MatchesExpression
         return repbuf.toString();
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -158,6 +163,7 @@ class MatchesExpression
         _const.selectColumns(sel, ctx, bstate.state2, true);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

@@ -62,16 +62,16 @@ public class EntityF {
     @ElementCollection
     // CollectionTable with default name generation
     @CollectionTable
-    private Set<String> nscs = new HashSet<String>();
+    private Set<String> nscs = new HashSet<>();
 
     @ElementCollection
     @CollectionTable(name="\"nsc DelSet\"")
-    private Set<String> nscds = new HashSet<String>();
+    private Set<String> nscds = new HashSet<>();
 
     @ElementCollection
     // MapKeyColumn with default name generation
     @MapKeyColumn
-    private Map<String, String> nscollMap = new HashMap<String, String>();
+    private Map<String, String> nscollMap = new HashMap<>();
 
     @ElementCollection
     // Note: Delimited column definition is not supported on some DBs, so
@@ -79,7 +79,7 @@ public class EntityF {
     // TODO: create a separate entity and conditionally run the test on a supported DB
     @MapKeyColumn(name="\"nsmap Key\"", columnDefinition="varchar(20)", table="\"nsd c map\"")
     private Map<String, String> delimCollectionMap =
-        new HashMap<String, String>();
+        new HashMap<>();
 
     public EntityF(String name) {
         this.name = name;

@@ -40,6 +40,7 @@ public class TestDistinctCriteria extends CriteriaTest {
         }
     }
 
+    @Override
     public void tearDown() throws Exception {
         try {
             deleteDataForTestDistinct();
@@ -62,7 +63,7 @@ public class TestDistinctCriteria extends CriteriaTest {
         Order o2 = new Order(); o2.setCustomer(c1);
         Order o3 = new Order(); o3.setCustomer(c2);
 
-        Set<Order> orders = new HashSet<Order>();
+        Set<Order> orders = new HashSet<>();
         orders.add(o1); orders.add(o2);
         c1.setOrders(orders);
         orders.clear();

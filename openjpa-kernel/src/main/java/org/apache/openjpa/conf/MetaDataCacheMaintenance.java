@@ -26,11 +26,12 @@ import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.Query;
-import org.apache.openjpa.lib.util.Options;
-import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.conf.MapConfigurationProvider;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
+import org.apache.openjpa.lib.conf.MapConfigurationProvider;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
@@ -79,6 +80,7 @@ public class MetaDataCacheMaintenance {
     /**
      * @deprecated logging is routed to the logging system now.
      */
+    @Deprecated
     public MetaDataCacheMaintenance(BrokerFactory factory, boolean devpath,
         boolean verbose) {
         this(factory, devpath);
@@ -116,7 +118,7 @@ public class MetaDataCacheMaintenance {
      */
     public void store() {
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
-        repos.setSourceMode(MetaDataRepository.MODE_ALL);
+        repos.setSourceMode(MetaDataModes.MODE_ALL);
         Collection types = repos.loadPersistentTypes(devpath, null);
         for (Iterator iter = types.iterator(); iter.hasNext(); )
             repos.getMetaData((Class) iter.next(), null, true);

@@ -27,12 +27,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.MultiA;
+import org.apache.openjpa.persistence.jdbc.common.apps.MultiC;
 
 
 public class TestMultiTableSelfCollection
@@ -55,6 +55,7 @@ public class TestMultiTableSelfCollection
     public TestMultiTableSelfCollection() {
     }
 
+    @Override
     public void setUp() {
        deleteAll(MultiA.class);
 

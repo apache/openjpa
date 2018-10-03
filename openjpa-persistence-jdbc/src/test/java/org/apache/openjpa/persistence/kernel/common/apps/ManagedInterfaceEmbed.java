@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 public interface ManagedInterfaceEmbed {
 
-    public int getIntField();
+    int getIntField();
 
-    public void setIntField(int i);
+    void setIntField(int i);
 }

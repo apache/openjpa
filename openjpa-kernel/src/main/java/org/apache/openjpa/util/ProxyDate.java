@@ -30,5 +30,5 @@ public interface ProxyDate
     /**
      * Return a new instance of this date type.
      */
-    public ProxyDate newInstance();
+    ProxyDate newInstance();
 }

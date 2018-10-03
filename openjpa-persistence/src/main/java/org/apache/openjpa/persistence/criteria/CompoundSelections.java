@@ -50,7 +50,7 @@ class CompoundSelections {
         if (s instanceof CompoundSelectionImpl) {
             return ((CompoundSelectionImpl<X>)s).getFillStrategy();
         } else {
-            return new FillStrategy.Assign<X>();
+            return new FillStrategy.Assign<>();
         }
     }
 
@@ -67,6 +67,7 @@ class CompoundSelections {
             _args = args == null ? (List<Selection<?>>)Collections.EMPTY_LIST : Arrays.asList(args);
         }
 
+        @Override
         public final boolean isCompoundSelection() {
             return true;
         }
@@ -77,6 +78,7 @@ class CompoundSelections {
          * @throws IllegalStateException if selection is not a compound
          *           selection
          */
+        @Override
         public final List<Selection<?>> getCompoundSelectionItems() {
             return Expressions.returnCopy(_args);
         }
@@ -129,8 +131,9 @@ class CompoundSelections {
             }
         }
 
+        @Override
         public FillStrategy<X> getFillStrategy() {
-            return new FillStrategy.Array<X>(getJavaType());
+            return new FillStrategy.Array<>(getJavaType());
         }
     }
 
@@ -143,9 +146,10 @@ class CompoundSelections {
         private FillStrategy.NewInstance<X> strategy;
         public NewInstance(Class<X> cls, Selection<?>... selections) {
             super(cls, selections);
-            strategy = new FillStrategy.NewInstance<X>(findConstructor(cls, selections));
+            strategy = new FillStrategy.NewInstance<>(findConstructor(cls, selections));
         }
 
+        @Override
         public FillStrategy<X> getFillStrategy() {
             return strategy;
         }
@@ -181,10 +185,11 @@ class CompoundSelections {
             super(javax.persistence.Tuple.class, selections);
         }
 
+        @Override
         public FillStrategy<javax.persistence.Tuple> getFillStrategy() {
             List<Selection<?>> terms = getCompoundSelectionItems();
             TupleFactory factory = new TupleFactory(terms.toArray(new TupleElement[terms.size()]));
-            return new FillStrategy.Factory<javax.persistence.Tuple>(factory, TupleImpl.PUT);
+            return new FillStrategy.Factory<>(factory, TupleImpl.PUT);
         }
     }
 
@@ -198,17 +203,18 @@ class CompoundSelections {
             super(result, selections);
         }
 
+        @Override
         public FillStrategy<T> getFillStrategy() {
             Class<?> resultClass = getJavaType();
             List<Selection<?>> terms = getCompoundSelectionItems();
             FillStrategy<?> strategy = null;
             if (javax.persistence.Tuple.class.isAssignableFrom(resultClass)) {
                 TupleFactory factory = new TupleFactory(terms.toArray(new TupleElement[terms.size()]));
-                strategy = new FillStrategy.Factory<javax.persistence.Tuple>(factory,  TupleImpl.PUT);
+                strategy = new FillStrategy.Factory<>(factory,  TupleImpl.PUT);
            } else if (resultClass == Object.class) {
                if (terms.size() > 1) {
                    resultClass = Object[].class;
-                   strategy = new FillStrategy.Array<Object[]>(Object[].class);
+                   strategy = new FillStrategy.Array<>(Object[].class);
                } else {
                    strategy = new FillStrategy.Assign();
                }

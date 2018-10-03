@@ -19,11 +19,11 @@
 package org.apache.openjpa.persistence.enhance;
 
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.enhance.common.apps.NoClone;
 import org.apache.openjpa.persistence.enhance.common.apps.PCClone;
 import org.apache.openjpa.persistence.enhance.common.apps.SubclassClone;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestClone
     extends AbstractTestCase {
@@ -32,6 +32,7 @@ public class TestClone
         super(name, "enhancecactusapp");
     }
 
+    @Override
     public void setUp() {
 
         deleteAll(NoClone.class);

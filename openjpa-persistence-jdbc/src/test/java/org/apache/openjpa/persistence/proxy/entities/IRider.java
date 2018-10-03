@@ -22,16 +22,16 @@ import java.util.Date;
 
 public interface IRider extends IAnnuityObject {
 
-	public Date getEffectiveDate();
+	Date getEffectiveDate();
 
-	public void setEffectiveDate(Date date);
+	void setEffectiveDate(Date date);
 
-	public String getRule();
+	String getRule();
 
-	public void setRule(String rule);
+	void setRule(String rule);
 
-	public RiderType getType();
+	RiderType getType();
 
-	public void setType(RiderType type);
+	void setType(RiderType type);
 
 }

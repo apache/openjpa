@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import java.util.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="PhoneEmbedTest")
@@ -30,7 +34,7 @@ public class PhoneNumber {
     int number;
 
     @ManyToMany(mappedBy="contactInfo.phoneNumbers")
-    Collection<Employee> employees = new ArrayList<Employee>();
+    Collection<Employee> employees = new ArrayList<>();
 
     public int getNumber() {
         return number;

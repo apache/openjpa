@@ -1,6 +1,5 @@
 package org.apache.openjpa.persistence.querycache.common.apps;
 
-import javax.persistence.*;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,6 +18,12 @@ import javax.persistence.*;
  * specific language governing permissions and limitations
  * under the License.
  */
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Version;
+
+import org.apache.openjpa.persistence.datacache.TestDataCacheBehavesIdentical;
 
 /**
  * A persistent entity that is owned by unidirectional single-valued
@@ -82,7 +87,8 @@ public class BidirectionalOne2OneOwned {
 		return version;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return this.getClass().getSimpleName() + ":" + id + ":" + name;
 	}
 

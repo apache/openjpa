@@ -38,15 +38,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
-import junit.framework.TestResult;
-
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+
+import junit.framework.TestCase;
+import junit.framework.TestResult;
 
 /**
  * Base class for Persistence TestCases. This class contains utility methods but does not maintain an EntityManager or
@@ -113,7 +113,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     protected OpenJPAEntityManagerFactorySPI createNamedEMF(final String pu, Object... props) {
         Map<String, Object> map = getPropertiesMap(props);
         OpenJPAEntityManagerFactorySPI oemf = null;
-        Map<Object, Object> config = new HashMap<Object, Object>(System.getProperties());
+        Map<Object, Object> config = new HashMap<>(System.getProperties());
         config.putAll(map);
         oemf = (OpenJPAEntityManagerFactorySPI) Persistence.createEntityManagerFactory(pu, config);
         if (oemf == null) {
@@ -135,7 +135,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     protected OpenJPAEntityManagerFactorySPI createNamedOpenJPAEMF(final String pu,
             String res, Map<String,Object> props) {
         OpenJPAEntityManagerFactorySPI oemf = null;
-        Map<Object, Object> config = new HashMap<Object, Object>(System.getProperties());
+        Map<Object, Object> config = new HashMap<>(System.getProperties());
         if (props != null)
             config.putAll(props);
         oemf = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(pu, res, props);
@@ -147,9 +147,9 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     }
 
     protected Map<String, Object> getPropertiesMap(Object... props) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("openjpa.DynamicEnhancementAgent", "false");
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        List<Class<?>> types = new ArrayList<>();
         boolean prop = false;
 
         for (int i = 0; props != null && i < props.length; i++) {
@@ -289,7 +289,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             return;
         }
 
-        List<ClassMetaData> metas = new ArrayList<ClassMetaData>(types.length);
+        List<ClassMetaData> metas = new ArrayList<>(types.length);
         for (Class<?> c : types) {
             ClassMetaData meta = JPAFacadeHelper.getMetaData(emf, c);
             if (meta != null) {

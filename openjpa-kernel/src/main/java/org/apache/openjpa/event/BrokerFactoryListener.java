@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.event;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.BrokerFactory;
+
 /**
  * Interface for listening to {@link BrokerFactoryEvent} objects. Should be
  * registered with a {@link OpenJPAConfiguration}'s
@@ -31,5 +34,5 @@ public interface BrokerFactoryListener {
      * Invoked after a {@link BrokerFactory} has been fully created.
      * This happens after the factory has been made read-only.
      */
-    public void eventFired(BrokerFactoryEvent event);
+    void eventFired(BrokerFactoryEvent event);
 }

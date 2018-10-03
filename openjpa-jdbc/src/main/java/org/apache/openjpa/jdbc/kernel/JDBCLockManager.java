@@ -39,16 +39,16 @@ public interface JDBCLockManager
      * Return whether to issue the given select FOR UPDATE, depending on
      * the capabilities of the dictionary and the fetch configuration.
      */
-    public boolean selectForUpdate(Select sel, int lockLevel);
+    boolean selectForUpdate(Select sel, int lockLevel);
 
     /**
      * Notification that the given instance was loaded via a result set
      * produced by a FOR UPDATE select.
      */
-    public void loadedForUpdate(OpenJPAStateManager sm);
+    void loadedForUpdate(OpenJPAStateManager sm);
 
     /**
      * Return true if locking is not desired for relation fields.
      */
-    public boolean skipRelationFieldLock();
+    boolean skipRelationFieldLock();
 }

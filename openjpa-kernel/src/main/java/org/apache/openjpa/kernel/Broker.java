@@ -53,144 +53,144 @@ public interface Broker
      * after the first invocation with non-null arguments,
      * subsequent invocations of this method are ignored.
      */
-    public void setImplicitBehavior(OpCallbacks call,
+    void setImplicitBehavior(OpCallbacks call,
         RuntimeExceptionTranslator ex);
 
     /**
      * Return the factory that produced this broker.
      */
-    public BrokerFactory getBrokerFactory();
+    BrokerFactory getBrokerFactory();
 
     /**
      * Return the connection retain mode for this broker.
      */
-    public int getConnectionRetainMode();
+    int getConnectionRetainMode();
 
     /**
      * Return the managed runtime in use.
      */
-    public ManagedRuntime getManagedRuntime();
+    ManagedRuntime getManagedRuntime();
 
     /**
      * Return the inverse manager in use.
      *
      * @since 0.3.2
      */
-    public InverseManager getInverseManager();
+    InverseManager getInverseManager();
 
     /**
      * Whether the broker or its managed instances are used in a multithreaded
      * environment.
      */
-    public boolean getMultithreaded();
+    boolean getMultithreaded();
 
     /**
      * Whether the broker or its managed instances are used in a multithreaded
      * environment.
      */
-    public void setMultithreaded(boolean multi);
+    void setMultithreaded(boolean multi);
 
     /**
      * Whether to take into account changes in the transaction when executing
      * a query or iterating an extent.
      */
-    public boolean getIgnoreChanges();
+    boolean getIgnoreChanges();
 
     /**
      * Whether to take into account changes in the transaction when executing
      * a query or iterating an extent.
      */
-    public void setIgnoreChanges(boolean ignore);
+    void setIgnoreChanges(boolean ignore);
 
     /**
      * Whether to allow nontransactional access to persistent state.
      */
-    public boolean getNontransactionalRead();
+    boolean getNontransactionalRead();
 
     /**
      * Whether to allow nontransactional access to persistent state.
      */
-    public void setNontransactionalRead(boolean read);
+    void setNontransactionalRead(boolean read);
 
     /**
      * Whether to allow nontransactional changes to persistent state.
      */
-    public boolean getNontransactionalWrite();
+    boolean getNontransactionalWrite();
 
     /**
      * Whether to allow nontransactional changes to persistent state.
      */
-    public void setNontransactionalWrite(boolean write);
+    void setNontransactionalWrite(boolean write);
 
     /**
      * Whether to restore an object's original state on rollback.
      */
-    public int getRestoreState();
+    int getRestoreState();
 
     /**
      * Whether to restore an object's original state on rollback.
      */
-    public void setRestoreState(int restore);
+    void setRestoreState(int restore);
 
     /**
      * Whether to use optimistic transactional semantics.
      */
-    public boolean getOptimistic();
+    boolean getOptimistic();
 
     /**
      * Whether to use optimistic transactional semantics.
      */
-    public void setOptimistic(boolean opt);
+    void setOptimistic(boolean opt);
 
     /**
      * Whether objects retain their persistent state on transaction commit.
      */
-    public boolean getRetainState();
+    boolean getRetainState();
 
     /**
      * Whether objects retain their persistent state on transaction commit.
      */
-    public void setRetainState(boolean retain);
+    void setRetainState(boolean retain);
 
     /**
      * Whether objects clear when entering transactions.
      */
-    public int getAutoClear();
+    int getAutoClear();
 
     /**
      * Whether objects clear when entering transactions.
      */
-    public void setAutoClear(int clear);
+    void setAutoClear(int clear);
 
     /**
      * Whether to check for a global transaction upon every managed,
      * non-transactional operation. Defaults to false.
      */
-    public boolean getSyncWithManagedTransactions();
+    boolean getSyncWithManagedTransactions();
 
     /**
      * Whether to check for a global transaction upon every managed,
      * non-transactional operation. Defaults to false.
      */
-    public void setSyncWithManagedTransactions(boolean resync);
+    void setSyncWithManagedTransactions(boolean resync);
 
     /**
      * Bit flags marked in {@link AutoDetach} which indicate when persistent
      * managed objects should be automatically detached in-place.
      */
-    public int getAutoDetach();
+    int getAutoDetach();
 
     /**
      * Bit flags marked in {@link AutoDetach} which indicate when persistent
      * managed objects should be automatically detached in-place.
      */
-    public void setAutoDetach(int flags);
+    void setAutoDetach(int flags);
 
     /**
      * Bit flags marked in {@link AutoDetach} which indicate when persistent
      * managed objects should be automatically detached in-place.
      */
-    public void setAutoDetach(int flag, boolean on);
+    void setAutoDetach(int flag, boolean on);
 
     /**
      * Retrieve the current properties for this broker Some of these properties
@@ -200,7 +200,7 @@ public interface Broker
      *
      * @since 2.0.0
      */
-    public Map<String, Object> getProperties();
+    Map<String, Object> getProperties();
 
     /**
      * Return the supported properties for this broker as property keys. If a
@@ -208,30 +208,30 @@ public interface Broker
      *
      * @since 2.0.0
      */
-    public Set<String> getSupportedProperties();
+    Set<String> getSupportedProperties();
 
     /**
      * Whether to treat relations to detached instances during persist
      * operations as new or as pseudo-hollow instances.
      */
-    public boolean isDetachedNew();
+    boolean isDetachedNew();
 
     /**
      * Whether to treat relations to detached instances as new.
      */
-    public void setDetachedNew(boolean isNew);
+    void setDetachedNew(boolean isNew);
 
     /**
      * Whether to also evict an object from the store cache when it is
      * evicted through this broker.
      */
-    public boolean getEvictFromDataCache();
+    boolean getEvictFromDataCache();
 
     /**
      * Whether to also evict an object from the store cache when it is
      * evicted through this broker.
      */
-    public void setEvictFromDataCache(boolean evict);
+    void setEvictFromDataCache(boolean evict);
 
     /**
      * Put the specified key-value pair into the map of user objects. Use
@@ -239,47 +239,47 @@ public interface Broker
      *
      * @since 0.3.2
      */
-    public Object putUserObject(Object key, Object val);
+    Object putUserObject(Object key, Object val);
 
     /**
      * Get the value for the specified key from the map of user objects.
      *
      * @since 0.3.2
      */
-    public Object getUserObject(Object key);
+    Object getUserObject(Object key);
 
     /**
      * Register a listener for transaction-related events.
      *
      * @since 0.2.5
      */
-    public void addTransactionListener(Object listener);
+    void addTransactionListener(Object listener);
 
     /**
      * Remove a listener for transaction-related events.
      *
      * @since 0.2.5
      */
-    public void removeTransactionListener(Object listener);
+    void removeTransactionListener(Object listener);
 
     /**
      * Gets an umodifiable collection of currently registered lsteners.
      *
      * @since 2.0.0
      */
-    public Collection<Object> getTransactionListeners();
+    Collection<Object> getTransactionListeners();
 
     /**
      * The callback mode for handling exceptions from transaction event
      * listeners.
      */
-    public int getTransactionListenerCallbackMode();
+    int getTransactionListenerCallbackMode();
 
     /**
      * The callback mode for handling exceptions from transaction event
      * listeners.
      */
-    public void setTransactionListenerCallbackMode(int mode);
+    void setTransactionListenerCallbackMode(int mode);
 
     /**
      * Register a listener for lifecycle-related events on the specified
@@ -288,29 +288,29 @@ public interface Broker
      *
      * @since 0.3.3
      */
-    public void addLifecycleListener(Object listener, Class[] classes);
+    void addLifecycleListener(Object listener, Class[] classes);
 
     /**
      * Remove a listener for lifecycle-related events.
      *
      * @since 0.3.3
      */
-    public void removeLifecycleListener(Object listener);
+    void removeLifecycleListener(Object listener);
 
     /**
      * Return the lifecycle event manager associated with the broker.
      */
-    public LifecycleEventManager getLifecycleEventManager();
+    LifecycleEventManager getLifecycleEventManager();
 
     /**
      * The callback mode for handling exceptions from lifecycle event listeners.
      */
-    public int getLifecycleListenerCallbackMode();
+    int getLifecycleListenerCallbackMode();
 
     /**
      * The callback mode for handling exceptions from lifecycle event listeners.
      */
-    public void setLifecycleListenerCallbackMode(int mode);
+    void setLifecycleListenerCallbackMode(int mode);
 
 
     /**
@@ -318,7 +318,7 @@ public interface Broker
      *
      * @since 2.0.0
      */
-    public boolean getCachePreparedQuery();
+    boolean getCachePreparedQuery();
 
     /**
      * Sets whether this receiver will cache prepared queries during its
@@ -327,28 +327,28 @@ public interface Broker
      *
      * @since 2.0.0
      */
-    public void setCachePreparedQuery(boolean flag);
+    void setCachePreparedQuery(boolean flag);
 
     /**
      * Begin a transaction.
      */
-    public void begin();
+    void begin();
 
     /**
      * Commit the current transaction.
      */
-    public void commit();
+    void commit();
 
     /**
      * Rollback the current transaction.
      */
-    public void rollback();
+    void rollback();
 
     /**
      * Attempt to synchronize with a current managed transaction, returning
      * true if successful, false if no managed transaction is active.
      */
-    public boolean syncWithManagedTransaction();
+    boolean syncWithManagedTransaction();
 
     /**
      * Issue a commit and then start a new transaction. This is identical to:
@@ -360,7 +360,7 @@ public interface Broker
      * @see #begin()
      * @since 0.2.4
      */
-    public void commitAndResume();
+    void commitAndResume();
 
     /**
      * Issue a rollback and then start a new transaction. This is identical to:
@@ -372,17 +372,17 @@ public interface Broker
      * @see #begin()
      * @since 0.2.4
      */
-    public void rollbackAndResume();
+    void rollbackAndResume();
 
     /**
      * Return whether the current transaction has been marked for rollback.
      */
-    public boolean getRollbackOnly();
+    boolean getRollbackOnly();
 
     /**
      * Mark the current transaction for rollback.
      */
-    public void setRollbackOnly();
+    void setRollbackOnly();
 
     /**
      * Mark the current transaction for rollback with the specified cause
@@ -390,7 +390,7 @@ public interface Broker
      *
      * @since 0.9.7
      */
-    public void setRollbackOnly(Throwable cause);
+    void setRollbackOnly(Throwable cause);
 
     /**
      * Returns the Throwable that caused the transaction to be
@@ -400,37 +400,37 @@ public interface Broker
      *
      * @since 0.9.7
      */
-    public Throwable getRollbackCause();
+    Throwable getRollbackCause();
 
     /**
      * Set a transactional savepoint where operations after this savepoint
      * will be rolled back.
      */
-    public void setSavepoint(String name);
+    void setSavepoint(String name);
 
     /**
      * Rollback the current transaction to the last savepoint.
      * Savepoints set after this one will become invalid.
      */
-    public void rollbackToSavepoint();
+    void rollbackToSavepoint();
 
     /**
      * Rollback the current transaction to the given savepoint name.
      * Savepoints set after this one will become invalid.
      */
-    public void rollbackToSavepoint(String name);
+    void rollbackToSavepoint(String name);
 
     /**
      * Release the last set savepoint and any resources associated with it.
      * The given savepoint and any set after it will become invalid.
      */
-    public void releaseSavepoint();
+    void releaseSavepoint();
 
     /**
      * Release the savepoint and any resources associated with it.
      * The given savepoint and any set after it will become invalid.
      */
-    public void releaseSavepoint(String name);
+    void releaseSavepoint(String name);
 
     /**
      * Flush all transactional instances to the data store. This method may
@@ -439,7 +439,7 @@ public interface Broker
      *
      * @since 0.2.5
      */
-    public void flush();
+    void flush();
 
     /**
      * Run pre-flush actions on transactional objects, including
@@ -449,7 +449,7 @@ public interface Broker
      *
      * @since 0.3.3
      */
-    public void preFlush();
+    void preFlush();
 
     /**
      * Validate the changes made in this transaction, reporting any optimistic
@@ -459,17 +459,17 @@ public interface Broker
      * datastore-level transaction, however, it will only report exceptions
      * that would occur on flush, without retaining any datastore resources.
      */
-    public void validateChanges();
+    void validateChanges();
 
     /**
      * Persist the given object.
      */
-    public void persist(Object obj, OpCallbacks call);
+    void persist(Object obj, OpCallbacks call);
 
     /**
      * Persist the given objects.
      */
-    public void persistAll(Collection objs, OpCallbacks call);
+    void persistAll(Collection objs, OpCallbacks call);
 
     /**
      * Make the given instance persistent. Unlike other persist operations,
@@ -480,66 +480,66 @@ public interface Broker
      * @param id the id to give the state manager; may be null for default
      * @return the state manager for the newly persistent instance
      */
-    public OpenJPAStateManager persist(Object pc, Object id, OpCallbacks call);
+    OpenJPAStateManager persist(Object pc, Object id, OpCallbacks call);
 
     /**
      * Delete the given object.
      */
-    public void delete(Object pc, OpCallbacks call);
+    void delete(Object pc, OpCallbacks call);
 
     /**
      * Delete the given objects.
      */
-    public void deleteAll(Collection objs, OpCallbacks call);
+    void deleteAll(Collection objs, OpCallbacks call);
 
     /**
      * Release the given object from management. This operation is not
      * recursive.
      */
-    public void release(Object pc, OpCallbacks call);
+    void release(Object pc, OpCallbacks call);
 
     /**
      * Release the given objects from management. This operation is not
      * recursive.
      */
-    public void releaseAll(Collection objs, OpCallbacks call);
+    void releaseAll(Collection objs, OpCallbacks call);
 
     /**
      * Refresh the state of the given object.
      */
-    public void refresh(Object pc, OpCallbacks call);
+    void refresh(Object pc, OpCallbacks call);
 
     /**
      * Refresh the state of the given objects.
      */
-    public void refreshAll(Collection objs, OpCallbacks call);
+    void refreshAll(Collection objs, OpCallbacks call);
 
     /**
      * Evict the given object.
      */
-    public void evict(Object pc, OpCallbacks call);
+    void evict(Object pc, OpCallbacks call);
 
     /**
      * Evict the given objects.
      */
-    public void evictAll(Collection objs, OpCallbacks call);
+    void evictAll(Collection objs, OpCallbacks call);
 
     /**
      * Evict all clean objects.
      */
-    public void evictAll(OpCallbacks call);
+    void evictAll(OpCallbacks call);
 
     /**
      * Evict all persistent-clean and persistent-nontransactional
      * instances in the given {@link Extent}.
      */
-    public void evictAll(Extent extent, OpCallbacks call);
+    void evictAll(Extent extent, OpCallbacks call);
 
     /**
      * Detach all objects in place.  A flush will be performed before
      * detaching the entities.
      */
-    public void detachAll(OpCallbacks call);
+    void detachAll(OpCallbacks call);
 
     /**
      * Detach all objects in place, with the option of performing a
@@ -549,7 +549,7 @@ public interface Broker
      * flush before detaching the entities (true, do the flush;
      * false, don't do the flush)
      */
-    public void detachAll(OpCallbacks call, boolean flush);
+    void detachAll(OpCallbacks call, boolean flush);
 
     /**
      * Detach the specified object from the broker.
@@ -557,7 +557,7 @@ public interface Broker
      * @param pc the instance to detach
      * @return the detached instance
      */
-    public Object detach(Object pc, OpCallbacks call);
+    Object detach(Object pc, OpCallbacks call);
 
     /**
      * Detach the specified objects from the broker. The objects returned can
@@ -573,7 +573,7 @@ public interface Broker
      * @param objs the instances to detach
      * @return the detached instances
      */
-    public Object[] detachAll(Collection objs, OpCallbacks call);
+    Object[] detachAll(Collection objs, OpCallbacks call);
 
     /**
      * Import the specified detached object into the broker.
@@ -582,7 +582,7 @@ public interface Broker
      * @return the re-attached instance
      * @param copyNew whether to copy new instances
      */
-    public Object attach(Object pc, boolean copyNew, OpCallbacks call);
+    Object attach(Object pc, boolean copyNew, OpCallbacks call);
 
     /**
      * Import the specified objects into the broker. Instances that were
@@ -594,7 +594,7 @@ public interface Broker
      * @return the re-attached instances
      * @param copyNew whether to copy new instances
      */
-    public Object[] attachAll(Collection objs, boolean copyNew,
+    Object[] attachAll(Collection objs, boolean copyNew,
         OpCallbacks call);
 
     /**
@@ -608,43 +608,43 @@ public interface Broker
      * @throws IllegalArgumentException if <code>cls</code> is not a managed
      * type or interface.
      */
-    public Object newInstance(Class cls);
+    Object newInstance(Class cls);
 
     /**
      * Returns <code>true</code> if <code>obj</code> is a detached object
      * (one that can be reattached to a {@link Broker} via a call to
      * {@link Broker#attach}); otherwise returns <code>false</code>.
      */
-    public boolean isDetached(Object obj);
+    boolean isDetached(Object obj);
 
     /**
      * Return an extent of the given class, optionally including subclasses.
      */
-    public Extent newExtent(Class cls, boolean subs);
+    Extent newExtent(Class cls, boolean subs);
 
     /**
      * Create a new query from the given data, with the given candidate class
      * and language.
      */
-    public Query newQuery(String language, Class cls, Object query);
+    Query newQuery(String language, Class cls, Object query);
 
     /**
      * Create a new query in the given language.
      */
-    public Query newQuery(String language, Object query);
+    Query newQuery(String language, Object query);
 
     /**
      * Returns a {@link Seq} for the datastore identity values of the
      * specified persistent class, or null if the class' identity cannot be
      * represented as a sequence.
      */
-    public Seq getIdentitySequence(ClassMetaData meta);
+    Seq getIdentitySequence(ClassMetaData meta);
 
     /**
      * Returns a {@link Seq} for the generated values of the specified
      * field, or null if the field is not generated.
      */
-    public Seq getValueSequence(FieldMetaData fmd);
+    Seq getValueSequence(FieldMetaData fmd);
 
     /**
      * Ensure that the given instance is locked at the given lock level.
@@ -655,7 +655,7 @@ public interface Broker
      * giving up, or -1 for no limit
      * @since 0.3.1
      */
-    public void lock(Object pc, int level, int timeout, OpCallbacks call);
+    void lock(Object pc, int level, int timeout, OpCallbacks call);
 
     /**
      * Ensure that the given instance is locked at the current lock level, as
@@ -663,7 +663,7 @@ public interface Broker
      *
      * @since 0.3.1
      */
-    public void lock(Object pc, OpCallbacks call);
+    void lock(Object pc, OpCallbacks call);
 
     /**
      * Ensure that the given instances are locked at the given lock level.
@@ -674,7 +674,7 @@ public interface Broker
      * giving up, or -1 for no limit
      * @since 0.3.1
      */
-    public void lockAll(Collection objs, int level, int timeout,
+    void lockAll(Collection objs, int level, int timeout,
         OpCallbacks call);
 
     /**
@@ -683,7 +683,7 @@ public interface Broker
      *
      * @since 0.3.1
      */
-    public void lockAll(Collection objs, OpCallbacks call);
+    void lockAll(Collection objs, OpCallbacks call);
 
     /**
      * Cancel all pending data store statements. If statements are cancelled
@@ -693,14 +693,14 @@ public interface Broker
      * @return true if any statements were cancelled, false otherwise
      * @since 0.3.1
      */
-    public boolean cancelAll();
+    boolean cancelAll();
 
     /**
      * Mark the given class as dirty within the current transaction.
      *
      * @since 0.3.0
      */
-    public void dirtyType(Class cls);
+    void dirtyType(Class cls);
 
     /**
      * Begin a logical operation. This indicates to the broker the
@@ -712,7 +712,7 @@ public interface Broker
      * this operation requiring a re-check of global tx
      * @return whether this is the outermost operation on the stack
      */
-    public boolean beginOperation(boolean syncTrans);
+    boolean beginOperation(boolean syncTrans);
 
     /**
      * End a logical operation. This indicates to the broker the
@@ -721,43 +721,43 @@ public interface Broker
      *
      * @return whether this is the outermost operation on the stack
      */
-    public boolean endOperation();
+    boolean endOperation();
 
     /**
      * Whether the broker is closed.
      */
-    public boolean isClosed();
+    boolean isClosed();
 
     /**
      * Whether {@link #close} has been invoked, though the broker might
      * remain open until the current managed transaction completes.
      */
-    public boolean isCloseInvoked();
+    boolean isCloseInvoked();
 
     /**
      * Close the broker.
      */
-    public void close();
+    @Override void close();
 
     /**
      * Throw an exception if this broker has been closed.
      */
-    public void assertOpen();
+    void assertOpen();
 
     /**
      * Throw an exception if there is no active transaction.
      */
-    public void assertActiveTransaction();
+    void assertActiveTransaction();
 
     /**
      * Throw an exception if there is no transaction active and
      * nontransactional reading is not enabled.
 	 */
-	public void assertNontransactionalRead ();
+	void assertNontransactionalRead ();
 
 	/**
 	 * Throw an exception if a write operation is not permitted (there is
 	 * no active transaction and nontransactional writing is not enabled).
 	 */
-	public void assertWriteOperation ();
+	void assertWriteOperation ();
 }

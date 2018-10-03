@@ -251,7 +251,7 @@ public final class ObjectData
         FieldMetaData[] fmds = _meta.getFields();
         for (int i = 0; i < fmds.length; i++) {
             if (sm.getDirty().get(i)
-                && fmds[i].getManagement() == fmds[i].MANAGE_PERSISTENT)
+                && fmds[i].getManagement() == FieldMetaData.MANAGE_PERSISTENT)
                 _data[i] = toStorable(fmds[i], sm.fetch(i), sm.getContext());
         }
     }
@@ -343,6 +343,7 @@ public final class ObjectData
     /**
      * Clone this data.
      */
+    @Override
     public Object clone() {
         ObjectData data = new ObjectData(_oid, _meta);
         data.setVersion(_version);
@@ -371,6 +372,7 @@ public final class ObjectData
         return data;
     }
 
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append("Class: (" + _meta.getDescribedType().getName() + ")\n");

@@ -82,7 +82,8 @@ public class MarketSummaryDataBean implements Serializable
 		);
 	}
 
-	public String toString()
+	@Override
+    public String toString()
 	{
 		String ret = "\n\tMarket Summary at: " + getSummaryDate()
 			+ "\n\t\t        TSIA:" + getTSIA()

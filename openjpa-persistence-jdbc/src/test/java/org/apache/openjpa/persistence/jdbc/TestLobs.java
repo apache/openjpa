@@ -22,12 +22,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.RollbackException;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.kernel.common.apps.Blobs;
 import org.apache.openjpa.persistence.kernel.common.apps.Lobs;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.framework.AssertionFailedError;
 
 public class TestLobs extends SingleEMFTestCase {
     /**
@@ -37,6 +37,7 @@ public class TestLobs extends SingleEMFTestCase {
         return new Byte((byte) (Math.random() * Byte.MAX_VALUE));
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Lobs.class, Blobs.class);
     }

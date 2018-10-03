@@ -34,6 +34,7 @@ public class OpenJPAVersionAndConfigurationTypeValidationPolicy
 
     private String confClassName;
 
+    @Override
     public Object getCacheableData(Object o) {
         return new Object[] {
             OpenJPAVersion.VERSION_ID,
@@ -42,6 +43,7 @@ public class OpenJPAVersionAndConfigurationTypeValidationPolicy
         };
     }
 
+    @Override
     public Object getValidData(Object o) {
         Object[] array = (Object[]) o;
         if (array.length != 3)
@@ -54,13 +56,16 @@ public class OpenJPAVersionAndConfigurationTypeValidationPolicy
             return null;
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
         confClassName = conf.getClass().getName();
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
     }
 }

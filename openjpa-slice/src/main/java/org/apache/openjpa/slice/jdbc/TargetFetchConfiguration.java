@@ -31,8 +31,8 @@ import org.apache.openjpa.util.UserException;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class TargetFetchConfiguration extends JDBCFetchConfigurationImpl implements FetchConfiguration {
+    private static final long serialVersionUID = 1L;
     boolean _explicitTarget = false;
 
     public TargetFetchConfiguration() {
@@ -53,6 +53,7 @@ public class TargetFetchConfiguration extends JDBCFetchConfigurationImpl impleme
         _explicitTarget = SlicePersistence.HINT_TARGET.equals(key);
     }
 
+    @Override
     public void setHint(String key, Object value, Object original) {
         super.setHint(key, value, original);
         _explicitTarget = SlicePersistence.HINT_TARGET.equals(key);
@@ -94,6 +95,7 @@ public class TargetFetchConfiguration extends JDBCFetchConfigurationImpl impleme
         }
     }
 
+    @Override
     protected TargetFetchConfiguration newInstance(ConfigurationState state) {
         JDBCConfigurationState jstate = (state == null) ? null : _state;
         return new TargetFetchConfiguration(state, jstate);

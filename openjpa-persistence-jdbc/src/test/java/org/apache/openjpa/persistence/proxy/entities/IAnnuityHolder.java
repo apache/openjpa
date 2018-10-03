@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.proxy.entities;
 
 public interface IAnnuityHolder extends IPerson {
 
-	public AnnuityHolderCategory getCategory();
-	public void setCategory(AnnuityHolderCategory category);
+	AnnuityHolderCategory getCategory();
+	void setCategory(AnnuityHolderCategory category);
 
 
 }

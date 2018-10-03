@@ -20,9 +20,9 @@ package org.apache.openjpa.integration.validation;
 
 public interface ICustomer extends IPerson {
 
-    public void setShippingAddress(IAddress shippingAddress);
-    public IAddress getShippingAddress();
+    void setShippingAddress(IAddress shippingAddress);
+    IAddress getShippingAddress();
 
-    public void setBillingAddress(IAddress billingAddress);
-    public IAddress getBillingAddress();
+    void setBillingAddress(IAddress billingAddress);
+    IAddress getBillingAddress();
 }

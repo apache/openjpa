@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.FlushModeType;
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
@@ -28,6 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestInMemoryQueryMatchEscapes
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(AllFieldTypes.class);
     }

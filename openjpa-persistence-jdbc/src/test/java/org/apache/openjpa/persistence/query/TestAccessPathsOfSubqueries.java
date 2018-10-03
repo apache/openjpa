@@ -30,14 +30,13 @@ package org.apache.openjpa.persistence.query;
 import java.util.Arrays;
 import java.util.Collection;
 
-
-import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.query.common.apps.RuntimeTest4;
-import org.apache.openjpa.persistence.query.common.apps.RuntimeTest5;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.query.common.apps.RuntimeTest4;
+import org.apache.openjpa.persistence.query.common.apps.RuntimeTest5;
 
 public class TestAccessPathsOfSubqueries extends BaseQueryTest {
 

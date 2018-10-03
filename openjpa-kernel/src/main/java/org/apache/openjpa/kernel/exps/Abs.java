@@ -29,6 +29,9 @@ import org.apache.openjpa.kernel.Filters;
 class Abs
     extends UnaryMathVal {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the number whose absolute value to calculate.
      */
@@ -36,6 +39,7 @@ class Abs
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         Class wrap = Filters.wrap(c);
         if (wrap == Integer.class
@@ -48,6 +52,7 @@ class Abs
         return int.class;
     }
 
+    @Override
     protected Object operate(Object o, Class c) {
         c = Filters.wrap(c);
         if (c == Integer.class)

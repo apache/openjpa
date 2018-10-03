@@ -64,6 +64,7 @@ public class SuperFieldEntity {
         return name;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof SuperFieldEntity) {
             SuperFieldEntity sfe = (SuperFieldEntity)obj;

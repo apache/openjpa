@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -45,6 +46,7 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
@@ -62,31 +64,39 @@ public abstract class MapTableFieldStrategy
     extends ContainerFieldStrategy
     implements LRSMapFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (MapTableFieldStrategy.class);
 
+    @Override
     public FieldMapping getFieldMapping() {
         return field;
     }
 
+    @Override
     public ClassMapping[] getIndependentKeyMappings(boolean traverse) {
         return (traverse) ? field.getKeyMapping().getIndependentTypeMappings()
             : ClassMapping.EMPTY_MAPPINGS;
     }
 
+    @Override
     public ClassMapping[] getIndependentValueMappings(boolean traverse) {
         return (traverse) ? field.getElementMapping().
             getIndependentTypeMappings() : ClassMapping.EMPTY_MAPPINGS;
     }
 
+    @Override
     public ForeignKey getJoinForeignKey(ClassMapping cls) {
         return field.getJoinForeignKey();
     }
 
+    @Override
     public Object deriveKey(JDBCStore store, Object value) {
         return null;
     }
 
+    @Override
     public Object deriveValue(JDBCStore store, Object key) {
         return null;
     }
@@ -94,6 +104,7 @@ public abstract class MapTableFieldStrategy
     /**
      * Invokes {@link FieldStrategy#joinKeyRelation} by default.
      */
+    @Override
     public Joins joinKeyRelation(Joins joins, ClassMapping key) {
         return joinKeyRelation(joins, false, false);
     }
@@ -101,10 +112,12 @@ public abstract class MapTableFieldStrategy
     /**
      * Invokes {@link FieldStrategy#joinRelation} by default.
      */
+    @Override
     public Joins joinValueRelation(Joins joins, ClassMapping val) {
         return joinRelation(joins, false, false);
     }
 
+    @Override
     public void map(boolean adapt) {
         if (field.getTypeCode() != JavaTypes.MAP)
             throw new MetaDataException(_loc.get("not-map", field));
@@ -119,6 +132,7 @@ public abstract class MapTableFieldStrategy
         field.getValueInfo().assertNoSchemaComponents(field, !adapt);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getAllRows(field.getTable(), Row.ACTION_DELETE);
@@ -126,11 +140,13 @@ public abstract class MapTableFieldStrategy
         rm.flushAllRows(row);
     }
 
+    @Override
     public int supportsSelect(Select sel, int type, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch) {
         return 0;
     }
 
+    @Override
     public void load(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch)
         throws SQLException {
@@ -142,7 +158,7 @@ public abstract class MapTableFieldStrategy
         // select all and load into a normal proxy
         Joins[] joins = new Joins[2];
         Result[] res = getResults(sm, store, fetch,
-            JDBCFetchConfiguration.EAGER_PARALLEL, joins, false);
+            EagerFetchModes.EAGER_PARALLEL, joins, false);
         try {
             Map map = (Map) sm.newProxy(field.getIndex());
             Object key, val;
@@ -162,30 +178,36 @@ public abstract class MapTableFieldStrategy
         }
     }
 
+    @Override
     public Object loadKeyProjection(JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         return loadKey(null, store, fetch, res, joins);
     }
 
+    @Override
     public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
         return loadValue(null, store, fetch, res, joins);
     }
 
+    @Override
     public Joins join(Joins joins, boolean forceOuter) {
         return field.join(joins, forceOuter, true);
     }
 
+    @Override
     public Joins joinKey(Joins joins, boolean forceOuter) {
         return field.join(joins, forceOuter, true);
     }
 
+    @Override
     public ForeignKey getJoinForeignKey() {
         return field.getJoinForeignKey();
     }
 
+    @Override
     protected ClassMapping[] getIndependentElementMappings(boolean traverse) {
         return ClassMapping.EMPTY_MAPPINGS;
     }
@@ -196,15 +218,15 @@ public abstract class MapTableFieldStrategy
         FieldMapping mapped = field.getMappedByMapping();
         if (mapped != null) {
             field.getValueInfo().assertNoSchemaComponents(field, !adapt);
-            mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
+            mapped.resolve(MetaDataModes.MODE_META | MetaDataModes.MODE_MAPPING);
 
             if (!mapped.isMapped() || mapped.isSerialized())
                 throw new MetaDataException(_loc.get("mapped-by-unmapped",
                     field, mapped));
 
             if (mapped.getTypeCode() == JavaTypes.PC) {
-                if (mapped.getJoinDirection() == mapped.JOIN_FORWARD) {
-                    field.setJoinDirection(field.JOIN_INVERSE);
+                if (mapped.getJoinDirection() == ValueMapping.JOIN_FORWARD) {
+                    field.setJoinDirection(ValueMapping.JOIN_INVERSE);
                     field.setColumns(mapped.getDefiningMapping().
                         getPrimaryKeyColumns());
                 } else if (isTypeUnjoinedSubclass(mapped))

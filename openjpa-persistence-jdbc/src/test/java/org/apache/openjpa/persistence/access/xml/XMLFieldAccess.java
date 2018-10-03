@@ -50,6 +50,7 @@ public class XMLFieldAccess {
         return getStrField();
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLFieldAccess) {
             XMLFieldAccess fa = (XMLFieldAccess)obj;

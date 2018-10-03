@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -214,6 +215,7 @@ public class AllFieldTypesTest {
         }
     }
 
+    @Override
     public String toString() {
         return "\n{"
             + "testint=" + testint + ";"
@@ -239,6 +241,7 @@ public class AllFieldTypesTest {
             + "}";
     }
 
+    @Override
     public int hashCode() {
         return (int) ((
             testint
@@ -259,6 +262,7 @@ public class AllFieldTypesTest {
             % Integer.MAX_VALUE;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == null && !(other instanceof AllFieldTypesTest))
             return false;

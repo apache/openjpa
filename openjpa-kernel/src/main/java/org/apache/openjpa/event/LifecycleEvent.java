@@ -31,6 +31,9 @@ import java.util.EventObject;
 public class LifecycleEvent
     extends EventObject {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Event type before an instance is made persistent
      */

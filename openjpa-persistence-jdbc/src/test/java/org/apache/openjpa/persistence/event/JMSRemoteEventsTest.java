@@ -31,10 +31,8 @@ import javax.jms.TopicSubscriber;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
-
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
-
 import org.apache.openjpa.event.JMSRemoteCommitProvider;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 
 /**
  * So named to prevent the autobuild from running this -- we don't
@@ -47,6 +45,7 @@ public class JMSRemoteEventsTest
         super(s);
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }
@@ -83,6 +82,7 @@ public class JMSRemoteEventsTest
     private static class DebugMessageListener
         implements MessageListener {
 
+        @Override
         public void onMessage(Message m) {
             try {
                 if (m instanceof ObjectMessage) {

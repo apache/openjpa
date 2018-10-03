@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestHandlerToHandlerMaps
     extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(HandlerToHandlerMapInstance.class,
             CLEAR_TABLES);

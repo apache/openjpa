@@ -36,10 +36,13 @@ import org.apache.openjpa.util.UserException;
 public class JPQLParser
     implements ExpressionParser {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc =
         Localizer.forPackage(JPQLParser.class);
     public static final String LANG_JPQL = "javax.persistence.JPQL";
 
+    @Override
     public Object parse(String ql, ExpressionStoreQuery query) {
         if (query.getContext().getParameterDeclaration() != null)
             throw new UserException(_loc.get("param-decs-invalid"));
@@ -52,6 +55,7 @@ public class JPQLParser
         }
     }
 
+    @Override
     public void populate(Object parsed, ExpressionStoreQuery query) {
         if (!(parsed instanceof JPQLExpressionBuilder.ParsedJPQL))
             throw new ClassCastException(parsed == null ? null + ""
@@ -60,6 +64,7 @@ public class JPQLParser
         ((JPQLExpressionBuilder.ParsedJPQL) parsed).populate(query);
     }
 
+    @Override
     public QueryExpressions eval(Object parsed, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate) {
         try {
@@ -72,11 +77,13 @@ public class JPQLParser
         }
     }
 
+    @Override
     public Value[] eval(String[] vals, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate) {
         return null;
     }
 
+    @Override
     public String getLanguage() {
         return JPQLParser.LANG_JPQL;
     }

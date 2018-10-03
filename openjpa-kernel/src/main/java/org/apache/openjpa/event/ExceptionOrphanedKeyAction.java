@@ -35,6 +35,7 @@ public class ExceptionOrphanedKeyAction
     private static final Localizer _loc = Localizer.forPackage
         (ExceptionOrphanedKeyAction.class);
 
+    @Override
     public Object orphan(Object oid, OpenJPAStateManager sm,
         ValueMetaData vmd) {
         throw new ObjectNotFoundException(_loc.get("orphaned-key", oid, vmd));

@@ -29,6 +29,7 @@ public class TestWindowResultList extends ResultListTest {
         super(test);
     }
 
+    @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new WindowResultList(provider, 10);
     }

@@ -18,14 +18,14 @@
  */
 package org.apache.openjpa.persistence.access;
 
+import static javax.persistence.AccessType.PROPERTY;
+
 import javax.persistence.Access;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Version;
-
-import static javax.persistence.AccessType.PROPERTY;
 
 @Entity
 @Access(value=PROPERTY)
@@ -67,6 +67,7 @@ public class PropAccess {
         return strField;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof PropAccess) {
             PropAccess pa = (PropAccess)obj;

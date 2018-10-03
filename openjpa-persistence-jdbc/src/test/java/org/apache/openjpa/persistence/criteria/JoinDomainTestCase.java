@@ -65,6 +65,7 @@ public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
         super.tearDown();
     }
 
+    @Override
     protected OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         return emf;
     }
@@ -73,6 +74,7 @@ public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
         JoinDomainTestCase.emf = emf;
     }
 
+    @Override
     protected SQLAuditor getAuditor() {
         return auditor;
     }
@@ -89,6 +91,7 @@ public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
         this.cb = cb;
     }
 
+    @Override
     protected EntityManager getEntityManager() {
         return em;
     }

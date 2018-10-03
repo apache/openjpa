@@ -21,8 +21,10 @@ package org.apache.openjpa.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Vector;
 
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerImpl;
@@ -182,15 +184,18 @@ public class ProxyCollections
         return new ProxyIterator() {
             private Object _last = null;
 
+            @Override
             public boolean hasNext() {
                 return itr.hasNext();
             }
 
+            @Override
             public Object next() {
                 _last = itr.next();
                 return _last;
             }
 
+            @Override
             public void remove() {
                 dirty(coll, false);
                 itr.remove();
@@ -221,32 +226,39 @@ public class ProxyCollections
         return new ProxyListIterator() {
             private Object _last = null;
 
+            @Override
             public boolean hasNext() {
                 return itr.hasNext();
             }
 
+            @Override
             public int nextIndex() {
                 return itr.nextIndex();
             }
 
+            @Override
             public Object next() {
                 _last = itr.next();
                 return _last;
             }
 
+            @Override
             public boolean hasPrevious() {
                 return itr.hasPrevious();
             }
 
+            @Override
             public int previousIndex() {
                 return itr.previousIndex();
             }
 
+            @Override
             public Object previous() {
                 _last = itr.previous();
                 return _last;
             }
 
+            @Override
             public void set(Object o) {
                 assertAllowedType(o, coll.getElementType());
                 dirty(coll, false);
@@ -257,6 +269,7 @@ public class ProxyCollections
                 _last = o;
             }
 
+            @Override
             public void add(Object o) {
                 assertAllowedType(o, coll.getElementType());
                 dirty(coll, false);
@@ -271,6 +284,7 @@ public class ProxyCollections
                 _last = o;
             }
 
+            @Override
             public void remove() {
                 dirty(coll, false);
                 itr.remove();
@@ -499,14 +513,14 @@ public class ProxyCollections
     /**
      * Marker interface for a proxied iterator.
      */
-    public static interface ProxyIterator
+    public interface ProxyIterator
         extends Iterator {
     }
 
     /**
      * Marker interface for a proxied list iterator.
      */
-    public static interface ProxyListIterator
+    public interface ProxyListIterator
         extends ProxyIterator, ListIterator {
     }
 

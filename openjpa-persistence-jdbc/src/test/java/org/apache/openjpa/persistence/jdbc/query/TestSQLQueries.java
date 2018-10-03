@@ -28,23 +28,26 @@
 package org.apache.openjpa.persistence.jdbc.query;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.persistence.OpenJPAQuery;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.common.apps.AttachA;
+import org.apache.openjpa.persistence.jdbc.common.apps.AttachD;
+import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
 
 
 public class TestSQLQueries
@@ -67,6 +70,7 @@ public class TestSQLQueries
     private String _stringColName = null;
     private String _relColName = null;
 
+    @Override
     public void setUp() {
        deleteAll(RuntimeTest1.class);
 

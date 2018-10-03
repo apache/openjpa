@@ -25,9 +25,9 @@ import java.util.Stack;
 import org.apache.openjpa.meta.MetaDataRepository;
 
 class AliasContext {
-	private Stack<Object> _operating = new Stack<Object>();
+	private Stack<Object> _operating = new Stack<>();
 	private Map<ExpressionImpl, String> _aliases =
-		new HashMap<ExpressionImpl, String>();
+		new HashMap<>();
 	private final MetaDataRepository _repos;
 
 	public AliasContext(MetaDataRepository repos) {

@@ -33,6 +33,6 @@ public interface RelationId {
      * Return the serialized value for the given related object, now that
      * its id has been assigned.
      */
-    public Object toRelationDataStoreValue(OpenJPAStateManager sm, Column col);
+    Object toRelationDataStoreValue(OpenJPAStateManager sm, Column col);
 }
 

@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.merge.model.Outer;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestLazyFields extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, Outer.class, Inner.class);
     }

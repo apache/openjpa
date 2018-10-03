@@ -123,6 +123,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         }
     }
 
+    @Override
     public String getMimeType() {
         return MIME_TYPE_XML;
     }
@@ -134,6 +135,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
      * @param sm a collection of managed instances.
      * @param parent the parent node to which the new node be attached.
      */
+    @Override
     public Document encode(final Collection<OpenJPAStateManager> sms, Metamodel model) {
         Element root = newDocument(ROOT_ELEMENT_INSTANCE);
         Closure closure = new Closure(sms);
@@ -148,6 +150,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
      *
      * @param model a persistent domain model. Must not be null.
      */
+    @Override
     public Document encode(Metamodel model) {
         Element root = newDocument(ROOT_ELEMENT_MODEL);
         for (ManagedType<?> t : model.getManagedTypes()) {

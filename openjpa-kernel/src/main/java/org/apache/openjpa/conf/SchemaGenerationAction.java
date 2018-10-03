@@ -22,11 +22,11 @@ package org.apache.openjpa.conf;
  * @author Roberto Cortez
  */
 public interface SchemaGenerationAction {
-    public static final int NONE = 0;
+    int NONE = 0;
 
-    public static final int CREATE = 1;
+    int CREATE = 1;
 
-    public static final int DROP_AND_CREATE = 2;
+    int DROP_AND_CREATE = 2;
 
-    public static final int DROP = 3;
+    int DROP = 3;
 }

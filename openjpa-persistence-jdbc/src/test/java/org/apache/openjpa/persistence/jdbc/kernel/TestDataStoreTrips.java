@@ -27,23 +27,21 @@
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
-import java.util.*;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.util.Iterator;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.Extent;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.jdbc.common.apps.DataStoreTripsPC;
 
 
 
@@ -63,6 +61,7 @@ public class TestDataStoreTrips extends BaseJDBCTest{
         super(name);
     }
 
+    @Override
     public void setUp()
         throws Exception {
        deleteAll(DataStoreTripsPC.class);
@@ -185,6 +184,7 @@ public class TestDataStoreTrips extends BaseJDBCTest{
             _table = table;
         }
 
+        @Override
         public void beforeExecuteStatement(JDBCEvent event) {
             if (event.getSQL().indexOf(_table) != -1)
                 selects++;

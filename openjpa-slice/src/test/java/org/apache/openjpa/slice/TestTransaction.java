@@ -39,11 +39,13 @@ public class TestTransaction extends SliceTestCase {
     private static final Random rng = new Random(System.currentTimeMillis());
     Manufacturer[] manufacturers;
 
+    @Override
     protected String getPersistenceUnitName() {
         return System.getProperty("unit","car");
     }
 
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES,
                 Car.class, Manufacturer.class,
@@ -143,6 +145,7 @@ public class TestTransaction extends SliceTestCase {
      */
     @Ignore
     public static class CarDistributorPolicy implements DistributionPolicy {
+        @Override
         public String distribute(Object pc, List<String> slices, Object context) {
             if (pc instanceof Manufacturer) {
                 return ((Manufacturer)pc).getName();

@@ -24,6 +24,7 @@ import javax.persistence.LockModeType;
  * Test JPA 2.0 em.find(LockMode) behaviors with "mixed" lock manager.
  */
 public class TestMixedLockManagerFindBasic extends SequencedActionsTest {
+    @Override
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"

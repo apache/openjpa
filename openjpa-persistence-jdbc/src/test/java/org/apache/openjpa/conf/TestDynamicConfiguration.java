@@ -34,7 +34,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDynamicConfiguration extends SingleEMFTestCase {
 
-	public void setUp() throws Exception {
+	@Override
+    public void setUp() throws Exception {
 		super.setUp(PObject.class);
 	}
 

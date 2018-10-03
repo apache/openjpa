@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestDataStoreActions
     extends SingleEMTestCase {

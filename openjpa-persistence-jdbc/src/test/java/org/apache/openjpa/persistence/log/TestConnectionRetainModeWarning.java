@@ -31,19 +31,22 @@ import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 public class TestConnectionRetainModeWarning extends AbstractPersistenceTestCase implements LogFactory {
-    private static List<String> messages = new ArrayList<String>();
+    private static List<String> messages = new ArrayList<>();
 
     Localizer _loc = Localizer.forPackage(PersistenceProviderImpl.class);
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         messages.clear();
     }
 
     // Start LogFactory implementation
+    @Override
     public Log getLog(String channel) {
         return new AbstractLog() {
 
+            @Override
             protected boolean isEnabled(short logLevel) {
                 return true;
             }
@@ -53,6 +56,7 @@ public class TestConnectionRetainModeWarning extends AbstractPersistenceTestCase
                 messages.add(message.toString());
             }
 
+            @Override
             protected void log(short type, String message, Throwable t) {
                 messages.add(message);
             }

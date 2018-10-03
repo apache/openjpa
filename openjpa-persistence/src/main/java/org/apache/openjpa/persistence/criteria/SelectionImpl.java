@@ -50,6 +50,7 @@ abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
     /**
      * Gets the immutable type represented by this selection term.
      */
+    @Override
     public Class<X> getJavaType() {
         return _cls;
     }
@@ -57,6 +58,7 @@ abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
     /**
      * Gets the alias set of this selection term.
      */
+    @Override
     public String getAlias() {
         return _alias;
     }
@@ -65,6 +67,7 @@ abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
      * Sets the alias on this selection term.
      * Alias can only be set once.
      */
+    @Override
     public Selection<X> alias(String alias) {
         assertValidName(alias);
         if (isAliased())
@@ -105,6 +108,7 @@ abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
     /**
      * Throws IllegalStateException because a selection term, by default, consists of single value.
      */
+    @Override
     public List<Selection<?>> getCompoundSelectionItems() {
         throw new IllegalStateException(this + " is not a compound selection");
     }
@@ -112,6 +116,7 @@ abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
     /**
      * Returns false because a selection term, by default, consists of single value.
      */
+    @Override
     public boolean isCompoundSelection() {
         return false;
     }
@@ -130,19 +135,23 @@ abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
     //  Contract for CriteriaExpression implemented mostly as a no-op for easier derivation.
     //  ------------------------------------------------------------------------------------
 
+    @Override
     public StringBuilder asValue(AliasContext q) {
         throw new IllegalStateException(this.getClass().getSimpleName() + " can not be rendered as value");
     }
 
+    @Override
     public StringBuilder asVariable(AliasContext q) {
         throw new IllegalStateException(this.getClass().getSimpleName() + " can not be rendered as variable");
     }
 
+    @Override
     public StringBuilder asProjection(AliasContext q) {
         String as = (isAutoAliased() ? "" : " AS " + getAlias());
         return asValue(q).append(as);
     }
 
+    @Override
     public void acceptVisit(CriteriaExpressionVisitor visitor) {
         Expressions.acceptVisit(visitor, this, (Expression<?>[])null);
     }

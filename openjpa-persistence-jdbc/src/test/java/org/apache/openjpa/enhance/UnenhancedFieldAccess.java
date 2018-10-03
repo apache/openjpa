@@ -19,15 +19,16 @@
 package org.apache.openjpa.enhance;
 
 import java.io.Serializable;
+
+import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.Version;
-import javax.persistence.Id;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
-import javax.persistence.Basic;
-import javax.persistence.FetchType;
+import javax.persistence.Version;
 
 @Entity
 @Table(name="UN_FIELD")
@@ -35,6 +36,8 @@ import javax.persistence.FetchType;
 public class UnenhancedFieldAccess
     implements UnenhancedType, Serializable, Cloneable {
 
+    
+    private static final long serialVersionUID = 1L;
     @Id @GeneratedValue private int id;
     @Version public int version;
     protected String stringField = "foo";
@@ -42,22 +45,27 @@ public class UnenhancedFieldAccess
     @Basic(fetch = FetchType.LAZY)
     private String lazyField = "lazy";
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setStringField(String s) {
         stringField = s;
     }
 
+    @Override
     public String getStringField() {
         return stringField;
     }
 
+    @Override
     public String getLazyField() {
         return lazyField;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this)
             return true;
@@ -69,10 +77,12 @@ public class UnenhancedFieldAccess
         return id == ((UnenhancedFieldAccess) o).id;
     }
 
+    @Override
     public int hashCode() {
         return id;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }

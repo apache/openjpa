@@ -37,18 +37,18 @@ import java.util.Set;
  */
 public interface ProductDerivation {
 
-    public static final int TYPE_PRODUCT = 100;
-    public static final int TYPE_FEATURE = 1000;
+    int TYPE_PRODUCT = 100;
+    int TYPE_FEATURE = 1000;
 
     /**
      * Return the type of derivation.
      */
-    public int getType();
+    int getType();
 
     /**
      * Return the configuration prefix for properties of this product.
      */
-    public String getConfigurationPrefix();
+    String getConfigurationPrefix();
 
     /**
      * Ensure that this derivation is valid.  This action might consist of
@@ -56,21 +56,21 @@ public interface ProductDerivation {
      * they exist.  Throw any throwable to indicate an invalid derivation.
      * Invalid derivations will not be used.
      */
-    public void validate()
+    void validate()
         throws Exception;
 
     /**
      * Load globals into the returned ConfigurationProvider, or return null if
      * no globals are found.
      */
-    public ConfigurationProvider loadGlobals(ClassLoader loader)
+    ConfigurationProvider loadGlobals(ClassLoader loader)
         throws Exception;
 
     /**
      * Load defaults into the returned ConfigurationProvider, or return null if
      * no defaults are found.
      */
-    public ConfigurationProvider loadDefaults(ClassLoader loader)
+    ConfigurationProvider loadDefaults(ClassLoader loader)
         throws Exception;
 
     /**
@@ -81,7 +81,7 @@ public interface ProductDerivation {
      * @param anchor optional named anchor within a multiple-configuration
      * resource
      */
-    public ConfigurationProvider load(String resource, String anchor,
+    ConfigurationProvider load(String resource, String anchor,
         ClassLoader loader)
         throws Exception;
 
@@ -91,7 +91,7 @@ public interface ProductDerivation {
      *
      * @param anchor optional named anchor within a multiple-configuration file
      */
-    public ConfigurationProvider load(File file, String anchor)
+    ConfigurationProvider load(File file, String anchor)
         throws Exception;
 
     /**
@@ -101,7 +101,7 @@ public interface ProductDerivation {
      *
      * @since 1.1.0
      */
-    public String getDefaultResourceLocation();
+    String getDefaultResourceLocation();
 
     /**
      * Return a List<String> of all the anchors defined in <code>file</code>.
@@ -113,7 +113,7 @@ public interface ProductDerivation {
      *
      * @since 1.1.0
      */
-    public List<String> getAnchorsInFile(File file) throws IOException,
+    List<String> getAnchorsInFile(File file) throws IOException,
             Exception;
 
     /**
@@ -126,7 +126,7 @@ public interface ProductDerivation {
      *
      * @since 1.1.0
      */
-    public List<String> getAnchorsInResource(String resource) throws Exception;
+    List<String> getAnchorsInResource(String resource) throws Exception;
 
     /**
      * Provides the instance with a callback to mutate the initial properties
@@ -136,7 +136,7 @@ public interface ProductDerivation {
      *
      * @return true if given ConfigurationProvider has been mutated.
      */
-    public boolean beforeConfigurationConstruct(ConfigurationProvider cp);
+    boolean beforeConfigurationConstruct(ConfigurationProvider cp);
 
     /**
      * Provides the instance with the opportunity to mutate
@@ -144,21 +144,21 @@ public interface ProductDerivation {
      *
      * @return true if given Configuration has been mutated.
      */
-    public boolean beforeConfigurationLoad(Configuration conf);
+    boolean beforeConfigurationLoad(Configuration conf);
 
     /**
      * Called after the specification has been set.
      *
      * @return true if given Configuration has been mutated.
      */
-    public boolean afterSpecificationSet(Configuration conf);
+    boolean afterSpecificationSet(Configuration conf);
 
     /**
      * Called before the given Configuration is closed.
      *
      * @since 0.9.7
      */
-    public void beforeConfigurationClose(Configuration conf);
+    void beforeConfigurationClose(Configuration conf);
 
 
     /**
@@ -166,6 +166,6 @@ public interface ProductDerivation {
      *
      * @since 2.0.0
      */
-    public Set<String> getSupportedQueryHints();
+    Set<String> getSupportedQueryHints();
 
 }

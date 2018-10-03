@@ -25,6 +25,8 @@ package org.apache.openjpa.util;
  */
 public final class ShortId extends OpenJPAId {
 
+    
+    private static final long serialVersionUID = 1L;
     private final short key;
 
     public ShortId(Class cls, Short key) {
@@ -49,18 +51,22 @@ public final class ShortId extends OpenJPAId {
         return key;
     }
 
+    @Override
     public Object getIdObject() {
         return Short.valueOf(key);
     }
 
+    @Override
     public String toString() {
         return Short.toString(key);
     }
 
+    @Override
     protected int idHash() {
         return key;
     }
 
+    @Override
     protected boolean idEquals(OpenJPAId o) {
         return key == ((ShortId) o).key;
     }

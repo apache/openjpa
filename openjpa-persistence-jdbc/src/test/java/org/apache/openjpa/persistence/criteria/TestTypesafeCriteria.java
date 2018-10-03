@@ -544,6 +544,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         q.select(c).where(cb.equal(c.get(Customer_.status), param));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("stat", 1);
             }
@@ -561,6 +562,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
                 cb.equal(c.get(Customer_.name), param2)));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("stat", 1);
                 q.setParameter("name", "test");
@@ -577,6 +579,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         q.select(c).where(cb.equal(c.get(Customer_.status), param));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("stat", 1);
             }
@@ -593,6 +596,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         q.select(c).where(cb.and(cb.equal(c.get(Customer_.status), param1),
                 cb.equal(c.get(Customer_.name), param2)));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("stat", 1);
                 q.setParameter("name", "test");
@@ -612,6 +616,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         vals.add(1);
         vals.add(2);
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("coll", vals);
             }
@@ -949,7 +954,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -969,7 +974,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -988,7 +993,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1007,7 +1012,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1028,7 +1033,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1048,7 +1053,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1067,7 +1072,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1085,7 +1090,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1106,7 +1111,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1125,7 +1130,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1144,7 +1149,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1163,7 +1168,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1186,7 +1191,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1205,7 +1210,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1224,7 +1229,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1243,7 +1248,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.multiselect(item.get(Item_.name), photo);
-        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        Map<String, Photo> photo1 = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             Photo p1 = new Photo();
             p1.setLabel("label" + i);
@@ -1386,6 +1391,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
          .having(cb.gt(cb.count(country), 3));
 
         assertEquivalence(new QueryDecorator(){
+            @Override
             public void decorate(Query q) {
                 q.setMaxResults(20);
             }

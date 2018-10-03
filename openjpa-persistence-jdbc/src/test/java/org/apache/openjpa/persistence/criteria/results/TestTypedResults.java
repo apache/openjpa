@@ -30,9 +30,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -51,6 +51,7 @@ public class TestTypedResults extends SingleEMFTestCase {
 
     DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 
+    @Override
     public void setUp() throws Exception {
         setUp(CLEAR_TABLES, Order.class, Item.class, Shop.class, Producer.class,
              "openjpa.DynamicEnhancementAgent", "false");
@@ -92,6 +93,7 @@ public class TestTypedResults extends SingleEMFTestCase {
         em.close();
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

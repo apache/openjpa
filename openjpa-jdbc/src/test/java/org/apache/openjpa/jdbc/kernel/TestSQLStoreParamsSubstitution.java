@@ -74,7 +74,7 @@ public class TestSQLStoreParamsSubstitution extends TestCase {
                 }
             };
         try {
-            List<Integer> paramOrder = new ArrayList<Integer>();
+            List<Integer> paramOrder = new ArrayList<>();
 
             for (String sqlNrtn[] : sqlNrtns) {
                 paramOrder.clear();

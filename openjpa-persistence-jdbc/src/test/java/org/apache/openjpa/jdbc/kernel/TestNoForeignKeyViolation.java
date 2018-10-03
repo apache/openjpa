@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -39,6 +40,7 @@ public class TestNoForeignKeyViolation
     private EntityC entityC;
     private EntityD entityD;
 
+    @Override
     public void setUp() {
         setUp(EntityA.class, EntityB.class, EntityC.class, EntityD.class,
               EntityE.class, EntityF.class, EntityG.class);
@@ -194,7 +196,7 @@ public class TestNoForeignKeyViolation
             EntityF f = new EntityF();
             f.setId(1);
 
-            List<EntityG> listG = new ArrayList<EntityG>();
+            List<EntityG> listG = new ArrayList<>();
             EntityG g1 = new EntityG();
             g1.setId(1);
             listG.add(g1);

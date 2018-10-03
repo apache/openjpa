@@ -29,10 +29,9 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 
 public class TestCheckConsistency extends BaseKernelTest {
 
@@ -45,6 +44,7 @@ public class TestCheckConsistency extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class);
 

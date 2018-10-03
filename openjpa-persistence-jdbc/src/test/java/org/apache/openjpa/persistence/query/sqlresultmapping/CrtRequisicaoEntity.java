@@ -20,11 +20,9 @@ package org.apache.openjpa.persistence.query.sqlresultmapping;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.OneToOne;
 
 @javax.persistence.Table(name = "CRT_REQUISICAO")
 @Entity

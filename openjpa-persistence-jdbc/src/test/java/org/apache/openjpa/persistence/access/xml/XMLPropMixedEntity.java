@@ -51,6 +51,7 @@ public class XMLPropMixedEntity {
         setEma(ef);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropMixedEntity) {
             XMLPropMixedEntity ps = (XMLPropMixedEntity)obj;

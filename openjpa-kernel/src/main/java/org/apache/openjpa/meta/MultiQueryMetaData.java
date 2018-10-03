@@ -36,12 +36,12 @@ import org.apache.openjpa.kernel.QueryLanguages;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class MultiQueryMetaData extends QueryMetaData {
+    private static final long serialVersionUID = 1L;
     private final String _procedureName;
     private final boolean _isTemporary;
-    private final List<QueryMetaData> _parts = new ArrayList<QueryMetaData>();
-    private final List<Parameter> _params = new ArrayList<MultiQueryMetaData.Parameter>();
+    private final List<QueryMetaData> _parts = new ArrayList<>();
+    private final List<Parameter> _params = new ArrayList<>();
 
     /**
      * Create this meta data given a scope of definition, a logical identifier, a procedure name

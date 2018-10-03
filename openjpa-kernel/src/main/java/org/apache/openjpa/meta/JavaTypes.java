@@ -86,7 +86,7 @@ public class JavaTypes {
 
     private static final Localizer _loc = Localizer.forPackage(JavaTypes.class);
 
-    private static final Map<Class<?>, Integer> _typeCodes = new HashMap<Class<?>, Integer>();
+    private static final Map<Class<?>, Integer> _typeCodes = new HashMap<>();
 
     static {
         _typeCodes.put(String.class, STRING);
@@ -459,11 +459,11 @@ public class JavaTypes {
             // if an object array, use built-in list function
             l = Arrays.asList((T[]) val);
             if (mutable)
-                l = new ArrayList<T>(l);
+                l = new ArrayList<>(l);
         } else {
             // convert to list of wrapper objects
             int length = Array.getLength(val);
-            l = new ArrayList<T>(length);
+            l = new ArrayList<>(length);
             for (int i = 0; i < length; i++)
                 l.add((T)Array.get(val, i));
         }

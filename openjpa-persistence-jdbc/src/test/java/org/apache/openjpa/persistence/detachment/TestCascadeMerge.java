@@ -32,6 +32,7 @@ public class TestCascadeMerge extends SingleEMFTestCase {
     private EntityG enG1;
     private EntityG enG2;
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES,EntityF.class, EntityG.class);
 
@@ -62,7 +63,7 @@ public class TestCascadeMerge extends SingleEMFTestCase {
             EntityF enF1 = em.find(EntityF.class, 1);
             enG1.setEntityF(enF1);
             enG2.setEntityF(enF1);
-            List<EntityG> l = new ArrayList<EntityG>();
+            List<EntityG> l = new ArrayList<>();
             l.add(enG1);
             l.add(enG2);
             enF1.setListG(l);

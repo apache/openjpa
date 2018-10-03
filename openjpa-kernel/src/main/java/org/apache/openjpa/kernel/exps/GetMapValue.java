@@ -30,6 +30,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class GetMapValue
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _map;
     private final Val _arg;
 
@@ -41,17 +43,21 @@ class GetMapValue
         _arg = arg;
     }
 
+    @Override
     public boolean isVariable() {
         return false;
     }
 
+    @Override
     public Class getType() {
         return Object.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return ((Map) _map.eval(candidate, orig, ctx, params)).

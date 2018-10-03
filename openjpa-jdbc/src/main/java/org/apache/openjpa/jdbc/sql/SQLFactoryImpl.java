@@ -39,25 +39,31 @@ public class SQLFactoryImpl
         return _conf;
     }
 
+    @Override
     public Select newSelect() {
         return new SelectImpl(_conf);
     }
 
+    @Override
     public Union newUnion(int selects) {
         return new LogicalUnion(_conf, selects);
     }
 
+    @Override
     public Union newUnion(Select[] selects) {
         return new LogicalUnion(_conf, selects);
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _conf = (JDBCConfiguration) conf;
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
     }
 }

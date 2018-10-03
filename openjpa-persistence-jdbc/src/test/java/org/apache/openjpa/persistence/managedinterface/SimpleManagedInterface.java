@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.managedinterface;
 
-import javax.persistence.Id;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import org.apache.openjpa.persistence.ManagedInterface;
 
@@ -27,10 +27,9 @@ import org.apache.openjpa.persistence.ManagedInterface;
 @Entity
 public interface SimpleManagedInterface {
 
-    @Id
-    public int getId();
-    public void setId(int id);
+    @Id int getId();
+    void setId(int id);
 
-    public String getString();
-    public void setString(String s);
+    String getString();
+    void setString(String s);
 }

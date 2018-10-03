@@ -34,6 +34,7 @@ import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.MetaDataException;
@@ -46,15 +47,20 @@ import org.apache.openjpa.util.MetaDataException;
 public class FullClassStrategy
     extends AbstractClassStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final String ALIAS = "full";
 
     private static final Localizer _loc = Localizer.forPackage
         (FullClassStrategy.class);
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     public void map(boolean adapt) {
         if (cls.getEmbeddingMetaData() != null)
             throw new MetaDataException(_loc.get("not-full", cls));
@@ -74,7 +80,7 @@ public class FullClassStrategy
 
         // find primary key column
         Column[] pkCols = null;
-        if (cls.getIdentityType() == cls.ID_DATASTORE) {
+        if (cls.getIdentityType() == ClassMetaData.ID_DATASTORE) {
             Column id = new Column();
             DBDictionary dict = cls.getMappingRepository().getDBDictionary();
             DBIdentifier idName = DBIdentifier.newColumn("id", dict != null ? dict.delimitAll() : false);
@@ -105,23 +111,26 @@ public class FullClassStrategy
         }
 
         // set joinable
-        if (cls.getIdentityType() == ClassMapping.ID_DATASTORE)
+        if (cls.getIdentityType() == ClassMetaData.ID_DATASTORE)
             cls.setJoinable(cls.getPrimaryKeyColumns()[0],
                 new IdentityJoinable(cls));
     }
 
+    @Override
     public boolean supportsEagerSelect(Select sel, OpenJPAStateManager sm,
         JDBCStore store, ClassMapping base, JDBCFetchConfiguration fetch) {
         return false;
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getRow(cls.getTable(), Row.ACTION_INSERT, sm, true);
-        if (cls.getIdentityType() == cls.ID_DATASTORE)
+        if (cls.getIdentityType() == ClassMetaData.ID_DATASTORE)
             row.setPrimaryKey(cls.getColumnIO(), sm);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getRow(cls.getTable(), Row.ACTION_UPDATE, sm, false);
@@ -129,12 +138,14 @@ public class FullClassStrategy
             row.wherePrimaryKey(sm);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getRow(cls.getTable(), Row.ACTION_DELETE, sm, true);
         row.wherePrimaryKey(sm);
     }
 
+    @Override
     public boolean isPrimaryKeyObjectId(boolean hasAll) {
         return true;
     }

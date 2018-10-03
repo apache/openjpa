@@ -30,8 +30,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.apache.openjpa.persistence.FetchGroup;
 import org.apache.openjpa.persistence.FetchAttribute;
+import org.apache.openjpa.persistence.FetchGroup;
 import org.apache.openjpa.persistence.FetchGroups;
 import org.apache.openjpa.persistence.kernel.TestIndirectRecursion;
 
@@ -42,12 +42,13 @@ import org.apache.openjpa.persistence.kernel.TestIndirectRecursion;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 @Entity
 @FetchGroups( {
         @FetchGroup(name = "State_OutgoingTransitions", attributes = { @FetchAttribute(name = "outgoingTransitions") }),
         @FetchGroup(name = "State_IncomingTransitions", attributes = { @FetchAttribute(name = "incomingTransitions")})})
 public class State implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -79,7 +80,7 @@ public class State implements Serializable {
 
     public void addOutgoingTransitions(Transition outgoingTransition) {
         if (outgoingTransitions == null)
-            outgoingTransitions = new ArrayList<Transition>();
+            outgoingTransitions = new ArrayList<>();
         outgoingTransitions.add(outgoingTransition);
     }
 
@@ -89,7 +90,7 @@ public class State implements Serializable {
 
     public void addIncomingTransitions(Transition incomingTransition) {
         if (incomingTransitions == null)
-            incomingTransitions = new ArrayList<Transition>();
+            incomingTransitions = new ArrayList<>();
         incomingTransitions.add(incomingTransition);
     }
 }

@@ -37,8 +37,9 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
     EntityManagerFactory emf2 = null;
     Log log = null;
 
+    @Override
     public void setUp() {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("javax.persistence.validation.group.pre-remove", "javax.validation.groups.Default");
 
         // This test case uses a different persistence xml file because validation require 2.0 xsd.

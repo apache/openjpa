@@ -28,10 +28,10 @@ public interface PersistListener {
     /**
      * Invoked before an instance is persisted.
      */
-    public void beforePersist(LifecycleEvent event);
+    void beforePersist(LifecycleEvent event);
 
     /**
      * Invoked when an instance is persisted.
      */
-    public void afterPersist(LifecycleEvent event);
+    void afterPersist(LifecycleEvent event);
 }

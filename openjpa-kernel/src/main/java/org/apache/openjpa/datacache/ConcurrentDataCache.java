@@ -35,6 +35,9 @@ public class ConcurrentDataCache
     extends AbstractDataCache
     implements RemoteCommitListener {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (ConcurrentDataCache.class);
 
@@ -90,6 +93,7 @@ public class ConcurrentDataCache
         return _cache.getSoftReferenceSize();
     }
 
+    @Override
     public void initialize(DataCacheManager mgr) {
         super.initialize(mgr);
         conf.getRemoteCommitEventManager().addInternalListener(this);
@@ -103,16 +107,19 @@ public class ConcurrentDataCache
         }
     }
 
+    @Override
     public void unpinAll(Class<?> cls, boolean subs) {
         if (log.isWarnEnabled())
             log.warn(_loc.get("cache-class-unpin-all", getName()));
         unpinAll(_cache.getPinnedKeys());
     }
 
+    @Override
     public void writeLock() {
         _cache.writeLock();
     }
 
+    @Override
     public void writeUnlock() {
         _cache.writeUnlock();
     }
@@ -123,6 +130,7 @@ public class ConcurrentDataCache
      */
     protected CacheMap newCacheMap() {
         CacheMap res = new CacheMap(_lru) {
+            @Override
             protected void entryRemoved(Object key, Object value, boolean expired) {
                 keyRemoved(key, expired);
             }
@@ -131,18 +139,22 @@ public class ConcurrentDataCache
         return res;
     }
 
+    @Override
     protected DataCachePCData getInternal(Object key) {
         return (DataCachePCData) _cache.get(key);
     }
 
+    @Override
     protected DataCachePCData putInternal(Object key, DataCachePCData pc) {
         return (DataCachePCData) _cache.put(key, pc);
     }
 
+    @Override
     protected DataCachePCData removeInternal(Object key) {
         return (DataCachePCData) _cache.remove(key);
     }
 
+    @Override
     protected void removeAllInternal(Class<?> cls, boolean subs) {
         // The performance in this area can be improved upon, however it seems
         // unlikely that this method will be called in a performance intensive
@@ -151,18 +163,22 @@ public class ConcurrentDataCache
         _cache.clear();
     }
 
+    @Override
     protected void clearInternal() {
         _cache.clear();
     }
 
+    @Override
     protected boolean pinInternal(Object key) {
         return _cache.pin(key);
     }
 
+    @Override
     protected boolean unpinInternal(Object key) {
         return _cache.unpin (key);
 	}
 
+    @Override
     protected boolean recacheUpdates() {
         return true;
     }

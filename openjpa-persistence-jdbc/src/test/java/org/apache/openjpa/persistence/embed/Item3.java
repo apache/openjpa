@@ -21,7 +21,12 @@ package org.apache.openjpa.persistence.embed;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.MapKeyColumn;
 
 @Entity
 public class Item3 {
@@ -32,7 +37,7 @@ public class Item3 {
     @MapKeyColumn(name="IMAGE_NAME")
     @Column(name="IMAGE_FILENAME")
     @CollectionTable(name="IMAGE_MAPPING")
-    Map<String, String> images = new HashMap<String, String>();
+    Map<String, String> images = new HashMap<>();
 
     public int getId() {
         return id;

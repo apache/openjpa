@@ -34,13 +34,15 @@ public class AnnuityHolder extends Person implements IAnnuityHolder{
 	private static final long serialVersionUID = 3307367871936336517L;
 	private AnnuityHolderCategory category;
 
-	@Column(name="CATEGORY")
+	@Override
+    @Column(name="CATEGORY")
 	@Enumerated(EnumType.ORDINAL)
 	public AnnuityHolderCategory getCategory() {
 		return this.category;
 	}
 
-	public void setCategory(AnnuityHolderCategory category) {
+	@Override
+    public void setCategory(AnnuityHolderCategory category) {
 		this.category = category;
 	}
 

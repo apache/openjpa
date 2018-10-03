@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class MinExpression extends UnaryOperatorExpression {
-	public MinExpression(Expression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public MinExpression(Expression op) {
 		super(op, UnaryFunctionalOperator.MIN);
 	}
 }

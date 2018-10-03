@@ -52,7 +52,10 @@ import org.apache.openjpa.persistence.jdbc.OrderColumn;
 @Entity
 @DetachedState
 public class TreeNode implements Serializable {
-	@Id
+	
+    private static final long serialVersionUID = 1L;
+
+    @Id
 	@GeneratedValue
 	private long id;
 
@@ -62,7 +65,7 @@ public class TreeNode implements Serializable {
 	@ElementJoinColumn(name = "ParentID")
 	@OrderColumn(name = "Sequence")
 	@ElementDependent
-	private List<TreeNode> childern = new ArrayList<TreeNode>();
+	private List<TreeNode> childern = new ArrayList<>();
 
 	@Version
 	private int version;

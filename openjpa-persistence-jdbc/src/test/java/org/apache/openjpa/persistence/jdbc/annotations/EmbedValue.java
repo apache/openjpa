@@ -19,7 +19,13 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 @Embeddable
 public class EmbedValue {

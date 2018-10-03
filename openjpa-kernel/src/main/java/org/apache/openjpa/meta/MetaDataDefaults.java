@@ -35,62 +35,62 @@ public interface MetaDataDefaults
      * Return the default access type for a base persistent class with
      * {@link ClassMetaData#ACCESS_UNKNOWN} access type.
      */
-    public int getDefaultAccessType();
+    int getDefaultAccessType();
 
     /**
      * Return the default identity type for unmapped classes without primary
      * key fields.
      */
-    public int getDefaultIdentityType();
+    int getDefaultIdentityType();
 
     /**
      * What to do on lifecycle callback exceptions.
      */
-    public int getCallbackMode();
+    int getCallbackMode();
 
     /**
      * If callbacks are fired before listeners for the given
      * event type. Defaults to false.
      */
-    public boolean getCallbacksBeforeListeners(int type);
+    boolean getCallbacksBeforeListeners(int type);
 
     /**
      * Whether declared interfaces of a class are treated as persistent
      * types. Defaults to true.
      */
-    public boolean isDeclaredInterfacePersistent();
+    boolean isDeclaredInterfacePersistent();
 
     /**
      * Whether the field in the object id class corresponding to a
      * datastore id persistence-capable primary key field is the simple
      * datastore id value of the related instance.  Defaults to false.
      */
-    public boolean isDataStoreObjectIdFieldUnwrapped();
+    boolean isDataStoreObjectIdFieldUnwrapped();
 
     /**
      * Whether to ignore members which are not persistent by default
      * during metadata population. Defaults to true.
      */
-    public void setIgnoreNonPersistent(boolean ignore);
+    void setIgnoreNonPersistent(boolean ignore);
 
     /**
      * Populate the given metadata with default settings.
      *
      * @param access access type constant from {@link ClassMetaData}
      */
-    public void populate(ClassMetaData meta, int access);
+    void populate(ClassMetaData meta, int access);
 
     /**
      * Populate the given metadata with default settings.
      *
      * @param access access type constant from {@link ClassMetaData}
      */
-    public void populate(ClassMetaData meta, int access, boolean ignoreTransient);
+    void populate(ClassMetaData meta, int access, boolean ignoreTransient);
 
     /**
      * Return the backing member for the given field metadata.
      */
-    public Member getBackingMember(FieldMetaData field);
+    Member getBackingMember(FieldMetaData field);
 
     /**
      * Get the field or getter for the given attribute of the given class.
@@ -105,44 +105,44 @@ public interface MetaDataDefaults
      *
      * @since 2.0.0
      */
-    public Member getMemberByProperty(ClassMetaData meta, String attribute,
+    Member getMemberByProperty(ClassMetaData meta, String attribute,
     	int access, boolean scanAnnotation);
 
     /**
      * Return a runtime exception class to throw for un-implemented
      * managed interface methods.
      */
-    public Class getUnimplementedExceptionType();
+    Class getUnimplementedExceptionType();
 
     /**
      * Whether the relationship in MappedSuper class must be
      * uni-directional.
      * @since 2.0.0
      */
-    public boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf);
+    boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf);
 
     /**
      * Whether non-default mapping is allowed.
      * @since 2.0.0
      */
-    public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf);
+    boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf);
 
     /**
      * Whether cascade-persist was declared in the persistence unit defaults.
      */
-    public Boolean isDefaultCascadePersistEnabled();
+    Boolean isDefaultCascadePersistEnabled();
 
-    public void setDefaultCascadePersistEnabled(Boolean bool);
+    void setDefaultCascadePersistEnabled(Boolean bool);
 
     /**
      * Returns the default schema.
      * @since 2.2.3
      */
-    public String getDefaultSchema();
+    String getDefaultSchema();
 
     /**
      * Sets the default schema.
      * @since 2.2.3
      */
-    public void setDefaultSchema(String schema);
+    void setDefaultSchema(String schema);
 }

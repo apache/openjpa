@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 public class TestCacheModeAllDataCacheCustomized extends TestCacheModeAll {
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
-        Map<String, Object> props = new HashMap<String, Object>();
+        Map<String, Object> props = new HashMap<>();
         props.put("openjpa.DataCache",
             "org.apache.openjpa.persistence.cache.jpa.DataCacheTestExtension(CacheSize=5000, "
                 + "ExcludedTypes=org.apache.openjpa.persistence.cache.jpa.model.UncacheableEntity)");

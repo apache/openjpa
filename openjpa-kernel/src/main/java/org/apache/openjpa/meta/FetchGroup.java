@@ -25,11 +25,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.openjpa.lib.util.StringUtil;
-import java.util.Objects;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
@@ -40,9 +40,10 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * Defines two <em>standard</em> fetch group named <tt>default</tt> and <tt>all</tt>.
  */
-@SuppressWarnings("serial")
 public class FetchGroup
     implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Name of the default fetch group.
@@ -117,7 +118,7 @@ public class FetchGroup
             }
         }
         if (fg._containedBy != null) {
-        	this._containedBy = new HashSet<String>(fg._containedBy);
+        	this._containedBy = new HashSet<>(fg._containedBy);
         }
         if (fg._depths != null) {
             for (Map.Entry<FieldMetaData,Number> entry : fg._depths.entrySet()) {
@@ -145,7 +146,7 @@ public class FetchGroup
         if (StringUtil.isEmpty(fgName))
             throw new MetaDataException(_loc.get("null-include-fg", this));
         if (_includes == null)
-            _includes = new ArrayList<String>();
+            _includes = new ArrayList<>();
         if (!_includes.contains(fgName))
             _includes.add(fgName);
     }
@@ -200,7 +201,7 @@ public class FetchGroup
     public boolean addContainedBy(FetchGroup parent) {
     	parent.addDeclaredInclude(this.getName());
     	if (_containedBy==null)
-    		_containedBy = new HashSet<String>();
+    		_containedBy = new HashSet<>();
     	return _containedBy.add(parent.getName());
     }
 
@@ -236,7 +237,7 @@ public class FetchGroup
             throw new MetaDataException(_loc.get("invalid-fg-depth", _name, fm,
                 depth));
         if (_depths == null)
-            _depths = new HashMap<FieldMetaData, Number>();
+            _depths = new HashMap<>();
         _depths.put(fm, depth);
     }
 
@@ -368,6 +369,7 @@ public class FetchGroup
     /**
      * Affirms equality if the other has the same name and declaring type.
      */
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -378,10 +380,12 @@ public class FetchGroup
             && Objects.equals(_meta, that._meta);
     }
 
+    @Override
     public int hashCode() {
         return _name.hashCode() + ((_meta == null) ? 0 : _meta.hashCode());
     }
 
+    @Override
     public String toString() {
         return ((_meta == null) ? "Builtin" : _meta.toString ()) + "." + _name;
     }

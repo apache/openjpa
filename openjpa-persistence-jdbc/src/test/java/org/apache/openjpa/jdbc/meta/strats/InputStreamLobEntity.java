@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.io.InputStream;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -40,18 +41,22 @@ public class InputStreamLobEntity implements LobEntity {
     @Persistent
     private InputStream stream;
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public Object getStream() {
         return stream;
     }
 
+    @Override
     public void setStream(Object o) {
         stream = (InputStream) o;
     }

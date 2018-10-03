@@ -432,6 +432,7 @@ public class InformixDictionary
      *
      * @return A constant indicating the category of error as defined in {@link StoreException}.
      */
+    @Override
     protected int matchErrorState(Map<Integer,Set<String>> errorStates, SQLException ex) {
         // Informix SQLState IX000 is a general SQLState that applies to many possible conditions
         // If the underlying cause is also an IX000 with error code:

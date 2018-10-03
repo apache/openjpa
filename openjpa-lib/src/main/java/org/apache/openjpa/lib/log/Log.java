@@ -26,105 +26,105 @@ package org.apache.openjpa.lib.log;
  */
 public interface Log {
 
-    public static final short TRACE = 1;
+    short TRACE = 1;
     // the old DEBUG constant was 2. Leaving a hole for compatibility.
-    public static final short INFO = 3;
-    public static final short WARN = 4;
-    public static final short ERROR = 5;
-    public static final short FATAL = 6;
+    short INFO = 3;
+    short WARN = 4;
+    short ERROR = 5;
+    short FATAL = 6;
 
     /**
      * Returns if the {@link #TRACE} log level is enabled.
      */
-    public boolean isTraceEnabled();
+    boolean isTraceEnabled();
 
     /**
      * Returns if the {@link #INFO} log level is enabled.
      */
-    public boolean isInfoEnabled();
+    boolean isInfoEnabled();
 
     /**
      * Returns if the {@link #WARN} log level is enabled.
      */
-    public boolean isWarnEnabled();
+    boolean isWarnEnabled();
 
     /**
      * Returns if the {@link #ERROR} log level is enabled.
      */
-    public boolean isErrorEnabled();
+    boolean isErrorEnabled();
 
     /**
      * Returns if the {@link #FATAL} log level is enabled.
      */
-    public boolean isFatalEnabled();
+    boolean isFatalEnabled();
 
     /**
      * Write out a log message at the {@link #TRACE}
      * level with the stringification of <code>o</code> as the body
      * of the message.
      */
-    public void trace(Object o);
+    void trace(Object o);
 
     /**
      * Write out a log message at the {@link #TRACE}
      * level with the stringification of <code>o</code> as the body
      * of the message, also outputting <code>t</code> to the log.
      */
-    public void trace(Object o, Throwable t);
+    void trace(Object o, Throwable t);
 
     /**
      * Write out a log message at the {@link #INFO}
      * level with the stringification of <code>o</code> as the body
      * of the message, also outputting <code>t</code> to the log.
      */
-    public void info(Object o);
+    void info(Object o);
 
     /**
      * Write out a log message at the {@link #INFO}
      * level with the stringification of <code>o</code> as the body
      * of the message, also outputting <code>t</code> to the log.
      */
-    public void info(Object o, Throwable t);
+    void info(Object o, Throwable t);
 
     /**
      * Write out a log message at the {@link #WARN}
      * level with the stringification of <code>o</code> as the body
      * of the message, also outputting <code>t</code> to the log.
      */
-    public void warn(Object o);
+    void warn(Object o);
 
     /**
      * Write out a log message at the {@link #WARN}
      * level with the stringification of <code>o</code> as the body
      * of the message, also outputting <code>t</code> to the log.
      */
-    public void warn(Object o, Throwable t);
+    void warn(Object o, Throwable t);
 
     /**
      * Write out a log message at the {@link #ERROR}
      * level with the stringification of <code>o</code> as the body
      * of the message, also outputting <code>t</code> to the log.
      */
-    public void error(Object o);
+    void error(Object o);
 
     /**
      * Write out a log message at the {@link #ERROR}
      * level with the stringification of <code>o</code> as the body
      * of the message, also outputting <code>t</code> to the log.
      */
-    public void error(Object o, Throwable t);
+    void error(Object o, Throwable t);
 
     /**
      * Write out a log message at the {@link #FATAL}
      * level with the stringification of <code>o</code> as the body
      * of the message, also outputting <code>t</code> to the log.
      */
-    public void fatal(Object o);
+    void fatal(Object o);
 
     /**
      * Write out a log message at the {@link #FATAL}
      * level with the stringification of <code>o</code> as the body
      * of the message, also outputting <code>t</code> to the log.
      */
-    public void fatal(Object o, Throwable t);
+    void fatal(Object o, Throwable t);
 }

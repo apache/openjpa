@@ -31,9 +31,11 @@ public class PIdJTIDMSCLeafB2
 extends PIdJTIDMSCEntityB implements LeafB2 {
 private String leafB2Data;
 
+    @Override
     public String getLeafB2Data() {
         return leafB2Data;
     }
+    @Override
     public void setLeafB2Data(String leafB2Data) {
         this.leafB2Data = leafB2Data;
     }

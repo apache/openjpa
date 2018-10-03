@@ -33,12 +33,13 @@ public class TestFetchGroups extends SingleEMTestCase {
     private static final int mgrCount = 3;
     private static final int empCount = mgrCount * empPerMgr;
 
-    private HashSet<FGEmployee> employeeSet = new HashSet<FGEmployee>();
-    private HashSet<FGManager> managerSet = new HashSet<FGManager>();
+    private HashSet<FGEmployee> employeeSet = new HashSet<>();
+    private HashSet<FGManager> managerSet = new HashSet<>();
 
     private static final String empDescriptionFieldStr =
         "org.apache.openjpa.persistence.fetchgroups.FGEmployee.description";
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, FGManager.class, FGDepartment.class, FGEmployee.class, FGAddress.class);
         createEmployeeData();

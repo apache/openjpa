@@ -26,15 +26,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.common.utils.BufferedLogFactory;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.Value;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.common.utils.BufferedLogFactory;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
  * <p>Tests the JDO configuration classes.</p>

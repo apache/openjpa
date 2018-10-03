@@ -39,6 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMappedSuperClass extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(CashBaseEntity.class,
               SituationDA.class, ValuableItemDA.class,

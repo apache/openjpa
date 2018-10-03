@@ -28,14 +28,20 @@ import org.apache.openjpa.kernel.StoreContext;
 class This
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
+
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return orig;
     }
 
+    @Override
     public Class getType() {
         return getMetaData().getDescribedType();
     }

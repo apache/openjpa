@@ -21,13 +21,8 @@ package org.apache.openjpa.persistence.event;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
-
-
-import org.apache.openjpa.persistence.event.common.apps.Duration;
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
@@ -36,6 +31,10 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.event.common.apps.Duration;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="surefire excluded")
 public class TestTCPRemoteClassChanges
@@ -45,6 +44,7 @@ public class TestTCPRemoteClassChanges
         super(s, "eventcactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }
@@ -58,8 +58,10 @@ public class TestTCPRemoteClassChanges
 
     private void pause(double seconds) {
         try {
-            Thread.currentThread().yield();
-            Thread.currentThread().sleep((int) seconds * 1000);
+            Thread.currentThread();
+            Thread.yield();
+            Thread.currentThread();
+            Thread.sleep((int) seconds * 1000);
         } catch (Exception e) {
         }
     }
@@ -235,6 +237,7 @@ public class TestTCPRemoteClassChanges
 
         int receivedExtentEvCount = 0;
 
+        @Override
         public synchronized void afterCommit(RemoteCommitEvent event) {
             totalAddedClasses += event.getPersistedTypeNames().size();
             if (event.getPayloadType() == RemoteCommitEvent.PAYLOAD_EXTENTS) {
@@ -261,9 +264,11 @@ public class TestTCPRemoteClassChanges
             totalOidDeleted = 0;
         }
 
+        @Override
         public void close() {
         }
 
+        @Override
         public String toString() {
             String returnString = "Clsses add=" + totalAddedClasses + " dels=" +
                 totalDeletedClasses + " ups=" + totalUpdatedClasses;

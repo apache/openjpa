@@ -69,7 +69,7 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
                 J2DoPrivHelper.getResourcesAction(loader, rsrc));
             while (e.hasMoreElements()) {
                 if (_urls == null)
-                    _urls = new ArrayList<URL>(3);
+                    _urls = new ArrayList<>(3);
                 _urls.add(e.nextElement());
             }
         } catch (PrivilegedActionException pae) {
@@ -77,16 +77,19 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
         }
     }
 
+    @Override
     public boolean hasNext() {
         return _urls != null && _url + 1 < _urls.size();
     }
 
+    @Override
     public URL next() {
         if (!hasNext())
             throw new NoSuchElementException();
         return _urls.get(++_url);
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
@@ -98,6 +101,7 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
         }
     }
 
+    @Override
     public File getFile() throws IOException {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
@@ -106,6 +110,7 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
             J2DoPrivHelper.existsAction(file))).booleanValue()) ? file :null;
     }
 
+    @Override
     public void close() {
     }
 }

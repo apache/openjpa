@@ -39,10 +39,9 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import javax.sql.DataSource;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -54,8 +53,10 @@ import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.MetaDataSerializer;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.InvalidStateException;
 
 /**
@@ -476,7 +477,7 @@ public class SchemaTool {
         throws SQLException {
         SchemaGroup group = getSchemaGroup();
         Schema[] schemas = group.getSchemas();
-        Collection<Table> tables = new LinkedHashSet<Table>();
+        Collection<Table> tables = new LinkedHashSet<>();
         for (int i = 0; i < schemas.length; i++) {
             Table[] ts = schemas[i].getTables();
             for (int j = 0; j < ts.length; j++)
@@ -515,7 +516,7 @@ public class SchemaTool {
         try {
             reader = new BufferedReader(new InputStreamReader(url.openStream()));
             String sql;
-            List<String> script = new ArrayList<String>();
+            List<String> script = new ArrayList<>();
             while ((sql = reader.readLine()) != null) {
                 sql = sql.trim();
                 if (sql.startsWith("--") || sql.startsWith("/*") || sql.startsWith("//")) {
@@ -645,7 +646,7 @@ public class SchemaTool {
         }
 
         // tables
-        Set<Table> newTables = new HashSet<Table>();
+        Set<Table> newTables = new HashSet<>();
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
@@ -847,7 +848,7 @@ public class SchemaTool {
         // columns
         Column[] cols;
         Column col;
-        Collection<Table> drops = new LinkedList<Table>();
+        Collection<Table> drops = new LinkedList<>();
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
@@ -924,7 +925,7 @@ public class SchemaTool {
         // calculate tables to drop; we can only drop tables if we're sure
         // the user listed the entire table definition in the stuff they want
         // dropped; else they might just want to drop a few columns
-        Collection<Table> drops = new LinkedList<Table>();
+        Collection<Table> drops = new LinkedList<>();
         Table[] tabs;
         Table dbTable;
         Column[] dbCols;
@@ -1294,7 +1295,7 @@ public class SchemaTool {
                 // group; some may not exist yet, which is OK; we just need
                 // to make sure we can detect the changes to the ones that
                 // do exist
-                Collection<DBIdentifier> tables = new LinkedList<DBIdentifier>();
+                Collection<DBIdentifier> tables = new LinkedList<>();
                 SchemaGroup group = assertSchemaGroup();
                 Schema[] schemas = group.getSchemas();
                 Table[] tabs;
@@ -1533,6 +1534,7 @@ public class SchemaTool {
         final String[] arguments = opts.setFromCmdLine(args);
         boolean ret = Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts) throws Exception {
                 JDBCConfiguration conf = new JDBCConfigurationImpl();
                 try {

@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class InExpression extends BinaryExpressionPredicate  {
-	public InExpression(Expression op, ArrayExpression op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public InExpression(Expression op, ArrayExpression op2) {
 		super(op, BinaryConditionalOperator.IN,
 			BinaryConditionalOperator.IN_NOT, op2);
 	}

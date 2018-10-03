@@ -80,10 +80,12 @@ public class TestIndex extends SingleEMFTestCase {
             return clazz;
         }
 
+        @Override
         public String getEntityClassName() {
             return fullEntityName;
         }
 
+        @Override
         public String getEntityName() {
             return entityName;
         }
@@ -225,7 +227,7 @@ public class TestIndex extends SingleEMFTestCase {
 
             // create the elements to add
             Constructor<INameEntity> elementConstrctor = elementClass.getConstructor(String.class);
-            List<INameEntity> newElements = new ArrayList<INameEntity>();
+            List<INameEntity> newElements = new ArrayList<>();
             for (int i=0; i<Element_Names.length; i++) {
                 newElements.add(elementConstrctor.newInstance(Element_Names[i]));
             }
@@ -279,7 +281,7 @@ public class TestIndex extends SingleEMFTestCase {
             em.getTransaction().begin();
 
             // create and persist the entities
-            List<IOrderedEntity> newEntities = new ArrayList<IOrderedEntity>();
+            List<IOrderedEntity> newEntities = new ArrayList<>();
             for (int i=0; i<3; i++) {
                 IOrderedEntity newEntity = (IOrderedEntity)constructNewEntityObject(entityType);
                 newEntity.setId(i);
@@ -289,7 +291,7 @@ public class TestIndex extends SingleEMFTestCase {
 
             // create and persist the elements
             Constructor<IColumnEntity> elementConstrctor = elementClass.getConstructor(String.class);
-            List<INameEntity> newElements = new ArrayList<INameEntity>();
+            List<INameEntity> newElements = new ArrayList<>();
             IColumnEntity newElement;
             for (int i=0; i<Element_Names.length; i++) {
                 newElement = elementConstrctor.newInstance(Element_Names[i]);
@@ -341,7 +343,7 @@ public class TestIndex extends SingleEMFTestCase {
 
             IOrderedElements newEntity = (IOrderedElements)constructNewEntityObject(entityType);
             newEntity.setId(entityId);
-            List<String> namesList = new ArrayList<String>();
+            List<String> namesList = new ArrayList<>();
             for (int i=0; i<Element_Names.length; i++) {
                 namesList.add(Element_Names[i]);
             }

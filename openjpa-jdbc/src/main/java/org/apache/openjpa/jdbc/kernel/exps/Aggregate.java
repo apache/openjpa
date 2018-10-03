@@ -37,6 +37,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 class Aggregate
     extends AbstractVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private final JDBCAggregateListener _listener;
     private final Val _arg;
     private final ClassMapping _candidate;
@@ -53,18 +55,22 @@ class Aggregate
         _candidate = candidate;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
 
+    @Override
     public boolean isAggregate() {
         return true;
     }
 
+    @Override
     public Class getType() {
         if (_cast != null)
             return _cast;
@@ -79,10 +85,12 @@ class Aggregate
         return new Class[]{ _arg.getType() };
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _cast = type;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         if (_arg == null)
             return ExpState.NULL;
@@ -96,22 +104,26 @@ class Aggregate
         return _arg.initialize(sel, ctx, JOIN_REL);
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
         sel.setAggregate(true);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         if (_arg != null)
             _arg.selectColumns(sel, ctx, state, true);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false,
@@ -125,22 +137,26 @@ class Aggregate
         return buf;
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this, JavaSQLTypes.JDBC_DEFAULT,
             null), getType());
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         if (_arg != null)
             _arg.calculateValue(sel, ctx, state, null, null);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         _listener.appendTo(sql, getArgs(sel, ctx, state), _candidate,
@@ -158,6 +174,7 @@ class Aggregate
         };
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         if (_arg != null)

@@ -37,14 +37,17 @@ public class BrokerLevelInstrument extends AbstractInstrument {
         setInitialized(true);
     }
 
+    @Override
     public void start() {
         setStarted(true);
     }
 
+    @Override
     public void stop() {
         setStarted(false);
     }
 
+    @Override
     public InstrumentationLevel getLevel() {
         return InstrumentationLevel.BROKER;
     }

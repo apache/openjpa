@@ -49,13 +49,13 @@ public class ChainEntityA {
 
 	public void addChildEntityB (ChainEntityB bean) {
 		if (null == chainEntityBSet)
-			chainEntityBSet = new LinkedHashSet<ChainEntityB> ();
+			chainEntityBSet = new LinkedHashSet<> ();
 		chainEntityBSet.add (bean);
 	}
 
 	public Collection<ChainEntityB> getChildren () {
 		if (null == chainEntityBSet)
-			chainEntityBSet = new LinkedHashSet<ChainEntityB> ();
+			chainEntityBSet = new LinkedHashSet<> ();
 		return chainEntityBSet;
 	}
 

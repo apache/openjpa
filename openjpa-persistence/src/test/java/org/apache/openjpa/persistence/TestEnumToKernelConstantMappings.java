@@ -20,14 +20,15 @@ package org.apache.openjpa.persistence;
 
 import java.util.EnumSet;
 
-import junit.framework.TestCase;
-import org.apache.openjpa.kernel.ConnectionRetainModes;
-import org.apache.openjpa.kernel.DetachState;
-import org.apache.openjpa.kernel.RestoreState;
+import org.apache.openjpa.event.CallbackModes;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.AutoDetach;
+import org.apache.openjpa.kernel.ConnectionRetainModes;
+import org.apache.openjpa.kernel.DetachState;
 import org.apache.openjpa.kernel.QueryOperations;
-import org.apache.openjpa.event.CallbackModes;
+import org.apache.openjpa.kernel.RestoreState;
+
+import junit.framework.TestCase;
 
 public class TestEnumToKernelConstantMappings
     extends TestCase {

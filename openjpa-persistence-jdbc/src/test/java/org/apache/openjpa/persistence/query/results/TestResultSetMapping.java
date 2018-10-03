@@ -31,6 +31,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestResultSetMapping extends SQLListenerTestCase{
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, ShipRate.class);
     }

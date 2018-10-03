@@ -18,14 +18,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static javax.persistence.GenerationType.SEQUENCE;
+
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.Table;
-
-import static javax.persistence.GenerationType.SEQUENCE;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="NativeSeqEnt")

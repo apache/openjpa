@@ -24,6 +24,6 @@ package org.apache.openjpa.lib.util;
  */
 public interface Clearable {
 
-    public void clear();
+    void clear();
 
 }

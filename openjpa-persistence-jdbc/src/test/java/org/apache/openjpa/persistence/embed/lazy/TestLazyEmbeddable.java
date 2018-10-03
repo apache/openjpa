@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
 
-    protected List<String> _sql = new ArrayList<String>();
+    protected List<String> _sql = new ArrayList<>();
 
     /*
      * Verifies an entity with annotated (@Persistent) lazy embeddable and xml-tagged
@@ -43,7 +43,7 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
      */
     public void testLazyEmbeddableFields() throws Exception {
         _sql.clear();
-        HashMap<String, Object> props = new HashMap<String, Object>();
+        HashMap<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.JDBCListeners",
             new JDBCListener[] { new SQLListener() });
         OpenJPAEntityManagerFactorySPI emf1 =

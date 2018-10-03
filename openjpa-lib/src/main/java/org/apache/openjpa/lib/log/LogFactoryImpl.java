@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -38,7 +39,6 @@ import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Default {@link LogFactory} implementation. For ease of automatic
@@ -74,7 +74,7 @@ public class LogFactoryImpl
      * The {@link Log}s that this factory manages, keyed by log channel name.
      */
     private Map<String, LogImpl> _logs =
-        new ConcurrentHashMap<String, LogImpl>();
+        new ConcurrentHashMap<>();
 
     /**
      * The default logging level.
@@ -85,7 +85,7 @@ public class LogFactoryImpl
      * Storage for logging level configuration specified at configuration time.
      */
     private Map<String, Short> _configuredLevels =
-        new HashMap<String, Short>();
+        new HashMap<>();
 
     /**
      * The stream to write to. Defaults to System.err.
@@ -106,6 +106,7 @@ public class LogFactoryImpl
         initializationMillis = System.currentTimeMillis();
     }
 
+    @Override
     public Log getLog(String channel) {
         // no locking; ok if same log created multiple times
         LogImpl l = _logs.get(channel);
@@ -259,18 +260,22 @@ public class LogFactoryImpl
 
     // ---------- Configurable implementation ----------
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _conf = conf;
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
     }
 
     // ---------- GenericConfigurable implementation ----------
 
+    @Override
     public void setInto(Options opts) {
         if (!opts.isEmpty()) {
             Map.Entry<Object, Object> e;
@@ -296,10 +301,12 @@ public class LogFactoryImpl
         private short _level = INFO;
         private String _channel;
 
+        @Override
         protected boolean isEnabled(short level) {
             return level >= _level;
         }
 
+        @Override
         protected void log(short level, String message, Throwable t) {
             String msg = formatMessage(level, message, t);
             _out.println(msg);

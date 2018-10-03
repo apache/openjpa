@@ -34,6 +34,7 @@ public class JoinSubclassBase
         this.baseField = baseField;
     }
 
+    @Override
     public int compareTo(Object other) {
         if (other == this)
             return 0;

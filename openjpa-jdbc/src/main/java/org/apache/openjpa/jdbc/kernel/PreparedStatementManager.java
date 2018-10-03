@@ -32,16 +32,16 @@ public interface PreparedStatementManager {
     /**
      * Return the exceptions encountered during all flushes.
      */
-    public Collection getExceptions();
+    Collection getExceptions();
 
     /**
      * Flush the given row.
      */
-    public void flush(RowImpl row);
+    void flush(RowImpl row);
 
     /**
      * This method must be called after the last row has been
      * flushed, to flush any remaining statements.
      */
-    public void flush();
+    void flush();
 }

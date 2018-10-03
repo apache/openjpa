@@ -20,13 +20,13 @@ package org.apache.openjpa.persistence.meta;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.EntityManagerFactory;
 
-
-import org.apache.openjpa.persistence.meta.common.apps.ValueStrategyPC;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.meta.common.apps.ValueStrategyPC;
 import org.apache.openjpa.util.OpenJPAException;
 
 /**
@@ -42,6 +42,7 @@ public class TestValueStrategies
         super(test, "metacactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(ValueStrategyPC.class);
     }

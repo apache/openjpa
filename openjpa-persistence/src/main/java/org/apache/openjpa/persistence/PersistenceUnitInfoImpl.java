@@ -66,7 +66,7 @@ public class PersistenceUnitInfoImpl
         (PersistenceUnitInfoImpl.class);
 
     private String _name;
-    private final HashMap<Object,Object> _props = new HashMap<Object, Object>();
+    private final HashMap<Object,Object> _props = new HashMap<>();
     private PersistenceUnitTransactionType _transType =
         PersistenceUnitTransactionType.RESOURCE_LOCAL;
 
@@ -98,16 +98,19 @@ public class PersistenceUnitInfoImpl
     // - an application client jar file
     private URL _root;
 
+    @Override
     public ClassLoader getClassLoader() {
         return null;
     }
 
+    @Override
     public ClassLoader getNewTempClassLoader() {
         return AccessController.doPrivileged(J2DoPrivHelper
             .newTemporaryClassLoaderAction(AccessController
                 .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())));
     }
 
+    @Override
     public String getPersistenceUnitName() {
         return _name;
     }
@@ -116,6 +119,7 @@ public class PersistenceUnitInfoImpl
         _name = emName;
     }
 
+    @Override
     public String getPersistenceProviderClassName() {
         return _providerClassName;
     }
@@ -124,6 +128,7 @@ public class PersistenceUnitInfoImpl
         _providerClassName = providerClassName;
     }
 
+    @Override
     public PersistenceUnitTransactionType getTransactionType() {
         return _transType;
     }
@@ -142,6 +147,7 @@ public class PersistenceUnitInfoImpl
             _jtaDataSource = null;
     }
 
+    @Override
     public DataSource getJtaDataSource() {
         return _jtaDataSource;
     }
@@ -162,6 +168,7 @@ public class PersistenceUnitInfoImpl
             _nonJtaDataSource = null;
     }
 
+    @Override
     public DataSource getNonJtaDataSource() {
         return _nonJtaDataSource;
     }
@@ -172,6 +179,7 @@ public class PersistenceUnitInfoImpl
             _nonJtaDataSourceName = null;
     }
 
+    @Override
     public URL getPersistenceUnitRootUrl() {
         return _root;
     }
@@ -180,6 +188,7 @@ public class PersistenceUnitInfoImpl
         _root = root;
     }
 
+    @Override
     public boolean excludeUnlistedClasses() {
         return _excludeUnlisted;
     }
@@ -188,6 +197,7 @@ public class PersistenceUnitInfoImpl
         _excludeUnlisted = excludeUnlisted;
     }
 
+    @Override
     public List<String> getMappingFileNames() {
         if (_mappingFileNames == null)
             return Collections.emptyList();
@@ -196,10 +206,11 @@ public class PersistenceUnitInfoImpl
 
     public void addMappingFileName(String name) {
         if (_mappingFileNames == null)
-            _mappingFileNames = new ArrayList<String>();
+            _mappingFileNames = new ArrayList<>();
         _mappingFileNames.add(name);
     }
 
+    @Override
     public List<URL> getJarFileUrls() {
         if (_jarFiles == null)
             return Collections.emptyList();
@@ -208,7 +219,7 @@ public class PersistenceUnitInfoImpl
 
     public void addJarFile(URL jar) {
         if (_jarFiles == null)
-            _jarFiles = new ArrayList<URL>();
+            _jarFiles = new ArrayList<>();
         _jarFiles.add(jar);
     }
 
@@ -217,7 +228,7 @@ public class PersistenceUnitInfoImpl
         // the XML has been parsed and it has been confirmed that OpenJPA is the desired JPA provider.
 
         if (_jarFileNames == null) {
-            _jarFileNames = new ArrayList<String>();
+            _jarFileNames = new ArrayList<>();
         }
         _jarFileNames.add(name);
     }
@@ -292,6 +303,7 @@ public class PersistenceUnitInfoImpl
             getMessage());
     }
 
+    @Override
     public List<String> getManagedClassNames() {
         if (_entityClassNames == null)
             return Collections.emptyList();
@@ -300,10 +312,11 @@ public class PersistenceUnitInfoImpl
 
     public void addManagedClassName(String name) {
         if (_entityClassNames == null)
-            _entityClassNames = new ArrayList<String>();
+            _entityClassNames = new ArrayList<>();
         _entityClassNames.add(name);
     }
 
+    @Override
     public Properties getProperties() {
         Properties copy = new Properties();
         copy.putAll(_props);
@@ -314,6 +327,7 @@ public class PersistenceUnitInfoImpl
         _props.put(key, value);
     }
 
+    @Override
     public void addTransformer(ClassTransformer transformer) {
         throw new UnsupportedOperationException();
     }
@@ -387,7 +401,7 @@ public class PersistenceUnitInfoImpl
      */
     public static Map toOpenJPAProperties(PersistenceUnitInfo info) {
         Map map = new HashMap<String,Object>();
-        Set<String> added = new HashSet<String>();
+        Set<String> added = new HashSet<>();
         if (info.getTransactionType() == PersistenceUnitTransactionType.JTA)
             replaceAsOpenJPAProperty(map, added, "TransactionMode", "managed");
 
@@ -520,6 +534,7 @@ public class PersistenceUnitInfoImpl
 
     // --------------------
 
+    @Override
     public File getSourceFile() {
         if (_persistenceXmlFile == null)
             return null;
@@ -531,22 +546,27 @@ public class PersistenceUnitInfoImpl
         }
     }
 
+    @Override
     public Object getSourceScope() {
         return null;
     }
 
+    @Override
     public int getSourceType() {
         return SRC_XML;
     }
 
+    @Override
     public int getLineNumber() {
         return 0;
     }
 
+    @Override
     public int getColNumber() {
         return 0;
     }
 
+    @Override
     public String getResourceName() {
         return "PersistenceUnitInfo:" + _name;
     }
@@ -563,11 +583,13 @@ public class PersistenceUnitInfoImpl
             _loader = loader;
         }
 
+        @Override
         public ClassLoader getClassLoader(Class ctx, ClassLoader env) {
             return _loader;
         }
 	}
 
+    @Override
     public String getPersistenceXMLSchemaVersion() {
         return _schemaVersion;
     }
@@ -576,6 +598,7 @@ public class PersistenceUnitInfoImpl
         _schemaVersion = version;
     }
 
+    @Override
     public ValidationMode getValidationMode() {
         return _validationMode;
     }
@@ -584,6 +607,7 @@ public class PersistenceUnitInfoImpl
         _validationMode = mode;
     }
 
+    @Override
     public SharedCacheMode getSharedCacheMode() {
         return _sharedCacheMode;
     }

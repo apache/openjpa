@@ -40,8 +40,8 @@ import openbook.server.OpenBookService;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class DeliveryPage extends JPanel {
+    private static final long serialVersionUID = 1L;
     private final JButton _deliver;
     private EntityTableView<PurchaseOrder> _orders;
     private final OpenBookService _service;
@@ -55,7 +55,7 @@ public class DeliveryPage extends JPanel {
 
         _service = service;
 
-        _orders = new EntityTableView<PurchaseOrder>(PurchaseOrder.class, getOrders(PurchaseOrder.Status.PENDING),
+        _orders = new EntityTableView<>(PurchaseOrder.class, getOrders(PurchaseOrder.Status.PENDING),
                 EntityDataModel.ALL_ATTR, service.getUnit());
 
         _title = new JLabel(_orders.getDataModel().getRowCount() + " " + PurchaseOrder.Status.PENDING
@@ -116,7 +116,7 @@ public class DeliveryPage extends JPanel {
                 new SwingWorker<List<PurchaseOrder>, Void>() {
                     @Override
                     protected List<PurchaseOrder> doInBackground() throws Exception {
-                        List<PurchaseOrder> updated = new ArrayList<PurchaseOrder>();
+                        List<PurchaseOrder> updated = new ArrayList<>();
                         EntityDataModel<PurchaseOrder> orders = _orders.getDataModel();
                         int n = orders.getRowCount();
                         for (int i = 0; i < n; i++) {

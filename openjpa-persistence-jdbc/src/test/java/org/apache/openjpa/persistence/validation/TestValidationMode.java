@@ -162,7 +162,7 @@ public class TestValidationMode extends SingleEMFTestCase {
         getLog().trace("testValidationMode5() - Map(NONE) overrides default");
 
         // create the Map to test overrides
-        Map<String,String> props = new HashMap<String,String>();
+        Map<String,String> props = new HashMap<>();
         props.put("javax.persistence.validation.mode",
             String.valueOf(ValidationMode.NONE));
 
@@ -194,7 +194,7 @@ public class TestValidationMode extends SingleEMFTestCase {
             "provided mode=callback");
 
         // create the Map to test overrides
-        Map<String,String> props = new HashMap<String,String>();
+        Map<String,String> props = new HashMap<>();
         props.put("javax.persistence.validation.mode",
             String.valueOf(ValidationMode.NONE));
 
@@ -226,7 +226,7 @@ public class TestValidationMode extends SingleEMFTestCase {
             "overrides PU provided mode=callback");
 
         // create the Map to test overrides
-        Map<String,Object> props = new HashMap<String,Object>();
+        Map<String,Object> props = new HashMap<>();
         props.put("javax.persistence.validation.mode",
             ValidationMode.NONE);
 
@@ -256,7 +256,7 @@ public class TestValidationMode extends SingleEMFTestCase {
     public void testUniqueLifecycleManager() {
         getLog().trace("testUniqueLifecycleManager() - Life cycle event tests");
         // create our EMF
-        Map<String,String> prop = new HashMap<String,String>();
+        Map<String,String> prop = new HashMap<>();
         prop.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
 //        prop.put("openjpa.Compatibility", "SingletonLifecycleEventManager=true");
 

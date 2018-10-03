@@ -18,9 +18,16 @@
  */
 package org.apache.openjpa.persistence.models.company.fetchlazy;
 
-import java.util.*;
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import java.util.Date;
+
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
+
+import org.apache.openjpa.persistence.models.company.ICompany;
+import org.apache.openjpa.persistence.models.company.IEmployee;
+import org.apache.openjpa.persistence.models.company.IFullTimeEmployee;
 
 @Entity(name="LAZ_Employee")
 public abstract class Employee extends Person implements IEmployee {
@@ -36,37 +43,45 @@ public abstract class Employee extends Person implements IEmployee {
     @Basic(fetch=FetchType.LAZY)
     private Date hireDate;
 
+    @Override
     public void setManager(IFullTimeEmployee manager) {
         this.manager = (FullTimeEmployee) manager;
     }
 
+    @Override
     public IFullTimeEmployee getManager() {
         return this.manager;
     }
 
 
+    @Override
     public void setCompany(ICompany company) {
         this.company = (Company) company;
     }
 
+    @Override
     public ICompany getCompany() {
         return this.company;
     }
 
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public String getTitle() {
         return this.title;
     }
 
 
+    @Override
     public void setHireDate(Date hireDate) {
         this.hireDate = hireDate;
     }
 
+    @Override
     public Date getHireDate() {
         return this.hireDate;
     }

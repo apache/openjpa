@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Relations {
 

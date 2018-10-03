@@ -45,10 +45,11 @@ public class PersistenceActivator implements BundleActivator {
     /* (non-Javadoc)
      * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
      */
+    @Override
     public void start(BundleContext ctx) throws Exception {
-        this.ctx = ctx;
+        PersistenceActivator.ctx = ctx;
         PersistenceProvider provider = new PersistenceProviderImpl();
-        Hashtable<String, String> props = new Hashtable<String, String>();
+        Hashtable<String, String> props = new Hashtable<>();
         // Aries queries for service providers by property "javax.persistence.provider"
         props.put(PERSISTENCE_PROVIDER_ARIES, OSGI_PERSISTENCE_PROVIDER);
         // The persistence service tracker in the geronimo spec api bundle examines
@@ -64,6 +65,7 @@ public class PersistenceActivator implements BundleActivator {
     /* (non-Javadoc)
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
+    @Override
     public void stop(BundleContext ctx) throws Exception {
 
         OSGiManagedRuntime.deregisterServiceListener(ctx);
@@ -72,7 +74,7 @@ public class PersistenceActivator implements BundleActivator {
             svcReg.unregister();
             svcReg = null;
         }
-        this.ctx = null;
+        PersistenceActivator.ctx = null;
     }
 
     /* (non-Javadoc)

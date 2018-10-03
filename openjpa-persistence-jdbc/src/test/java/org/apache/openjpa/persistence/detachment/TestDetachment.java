@@ -26,6 +26,7 @@ public class TestDetachment extends SingleEMFTestCase {
 
     private int id;
 
+    @Override
     public void setUp() {
         super.setUp(Record.class);
         id = prepare();

@@ -37,6 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSharedUnqualifiedClassNames
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(org.apache.openjpa.persistence.inheritance.mappedsuperclass
                 .SharedName1.class,

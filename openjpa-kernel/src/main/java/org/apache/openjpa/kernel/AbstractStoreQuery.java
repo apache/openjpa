@@ -38,82 +38,99 @@ import org.apache.openjpa.util.UnsupportedException;
  * @author Abe White
  * @since 0.4.0
  */
-@SuppressWarnings("serial")
-public abstract class AbstractStoreQuery
-    implements StoreQuery {
-
+public abstract class AbstractStoreQuery implements StoreQuery {
+    private static final long serialVersionUID = 1L;
     protected QueryContext ctx = null;
 
+    @Override
     public QueryContext getContext() {
         return ctx;
     }
 
+    @Override
     public void setContext(QueryContext ctx) {
         this.ctx = ctx;
     }
 
+    @Override
     public boolean setQuery(Object query) {
         return false;
     }
 
+    @Override
     public FilterListener getFilterListener(String tag) {
         return null;
     }
 
+    @Override
     public AggregateListener getAggregateListener(String tag) {
         return null;
     }
 
+    @Override
     public Object newCompilationKey() {
         return null;
     }
 
+    @Override
     public Object newCompilation() {
         return null;
     }
 
+    @Override
     public Object getCompilation() {
         return null;
     }
 
+    @Override
     public void populateFromCompilation(Object comp) {
     }
 
+    @Override
     public void invalidateCompilation() {
     }
 
+    @Override
     public boolean supportsDataStoreExecution() {
         return false;
     }
 
+    @Override
     public boolean supportsInMemoryExecution() {
         return false;
     }
 
+    @Override
     public Executor newInMemoryExecutor(ClassMetaData meta, boolean subs) {
         throw new InternalException();
     }
 
+    @Override
     public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
         throw new InternalException();
     }
 
+    @Override
     public boolean supportsAbstractExecutors() {
         return false;
     }
 
+    @Override
     public boolean requiresCandidateType() {
         return true;
     }
 
+    @Override
     public boolean requiresParameterDeclarations() {
         return true;
     }
 
+    @Override
     public boolean supportsParameterDeclarations() {
         return true;
     }
 
+    @Override
     public Object evaluate(Object value, Object ob, Object[] params,
         OpenJPAStateManager sm) {
         throw new UnsupportedException();
@@ -125,6 +142,7 @@ public abstract class AbstractStoreQuery
     public static abstract class AbstractExecutor
         implements Executor {
 
+        @Override
         public Number executeDelete(StoreQuery q, Object[] params) {
             try {
                 return q.getContext().deleteInMemory(q, this, params);
@@ -138,6 +156,7 @@ public abstract class AbstractStoreQuery
             }
         }
 
+        @Override
         public Number executeUpdate(StoreQuery q, Object[] params) {
             try {
                 return q.getContext().updateInMemory(q, this, params);
@@ -151,85 +170,105 @@ public abstract class AbstractStoreQuery
             }
         }
 
+        @Override
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
             Range range) {
             return EMPTY_STRINGS;
         }
 
+        @Override
         public void validate(StoreQuery q) {
         }
 
 
+        @Override
         public QueryExpressions[] getQueryExpressions() {
             return null;
         }
 
+        @Override
         public ResultShape<?> getResultShape(StoreQuery q) {
             return null;
         }
 
+        @Override
         public void getRange(StoreQuery q, Object[] params, Range range) {
         }
 
+        @Override
         public Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int orderIndex) {
             return null;
         }
 
+        @Override
         public boolean[] getAscending(StoreQuery q) {
             return EMPTY_BOOLEANS;
         }
 
+        @Override
         public boolean isPacking(StoreQuery q) {
             return false;
         }
 
+        @Override
         public String getAlias(StoreQuery q) {
             return null;
         }
 
+        @Override
         public String[] getProjectionAliases(StoreQuery q) {
             return EMPTY_STRINGS;
         }
 
+        @Override
         public Class<?>[] getProjectionTypes(StoreQuery q) {
             return EMPTY_CLASSES;
         }
 
+        @Override
         public ClassMetaData[] getAccessPathMetaDatas(StoreQuery q) {
             return EMPTY_METAS;
         }
 
+        @Override
         public int getOperation(StoreQuery q) {
             return OP_SELECT;
         }
 
+        @Override
         public boolean isAggregate(StoreQuery q) {
             return false;
         }
 
+        @Override
         public boolean isDistinct(StoreQuery q) {
             return false;
         }
 
+        @Override
         public boolean hasGrouping(StoreQuery q) {
             return false;
         }
 
+        @Override
         public OrderedMap<Object,Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return EMPTY_ORDERED_PARAMS;
         }
 
+        @Override
         public LinkedMap getParameterTypes(StoreQuery q) {
             LinkedMap result = new LinkedMap();
             result.putAll(getOrderedParameterTypes(q));
             return result;
         }
 
+        @Override
         public Class<?> getResultClass(StoreQuery q) {
             return null;
         }
 
+        @Override
         public Map<FieldMetaData,Value> getUpdates(StoreQuery q) {
             return null;
         }

@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.util.HashSet;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;

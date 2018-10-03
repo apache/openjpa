@@ -18,17 +18,24 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.LinkedList;
 
-import org.apache.openjpa.lib.util.*;
-import org.apache.openjpa.kernel.*;
-import org.apache.openjpa.util.*;
-import org.apache.openjpa.jdbc.meta.*;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.kernel.*;
-import org.apache.openjpa.jdbc.schema.*;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.meta.Embeddable;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.RelationId;
+import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.util.InternalException;
 
 /**
  * <p>Handler for embedded objects as elements of a collection or map.  For
@@ -42,6 +49,9 @@ public class ElementEmbedValueHandler
     extends EmbedValueHandler
     implements RelationId {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (ElementEmbedValueHandler.class);
 
@@ -54,6 +64,8 @@ public class ElementEmbedValueHandler
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
         DBDictionary dict = vm.getMappingRepository().getDBDictionary();
@@ -90,14 +102,17 @@ public class ElementEmbedValueHandler
         return _cols;
     }
 
+    @Override
     public boolean objectValueRequiresLoad(ValueMapping vm) {
         return true;
     }
 
+    @Override
     public Object getResultArgument(ValueMapping vm) {
         return _args;
     }
 
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         OpenJPAStateManager em = store.getContext().getStateManager(val);
@@ -118,6 +133,7 @@ public class ElementEmbedValueHandler
         return super.toDataStoreValue(em, vm, store, _cols, rval, idx);
     }
 
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch)
         throws SQLException {
@@ -148,6 +164,7 @@ public class ElementEmbedValueHandler
     // RelationId implementation
     /////////////////////////////
 
+    @Override
     public Object toRelationDataStoreValue(OpenJPAStateManager sm, Column col) {
         return toRelationDataStoreValue(sm, col, 0);
     }
@@ -178,7 +195,7 @@ public class ElementEmbedValueHandler
         FieldMapping[] fms = _vm.getEmbeddedMapping().getFieldMappings();
         Column[] cols;
         for (int i = idx; i < fms.length; i++) {
-            if (fms[i].getManagement() != FieldMapping.MANAGE_PERSISTENT)
+            if (fms[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
                 continue;
             cols = ((Embeddable) fms[i]).getColumns();
             for (int j = 0; j < cols.length; j++)

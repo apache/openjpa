@@ -50,9 +50,10 @@ import javax.persistence.OneToOne;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 @Entity
 public class PersistentRelation<V1,V2> implements Relation<V1,V2>, Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Relation is a first class object with its own identifier.
      */
@@ -134,6 +135,7 @@ public class PersistentRelation<V1,V2> implements Relation<V1,V2>, Serializable 
     /**
      * Gets the immutable source vertex.
      */
+    @Override
     public V1 getSource() {
         return source;
     }
@@ -141,6 +143,7 @@ public class PersistentRelation<V1,V2> implements Relation<V1,V2>, Serializable 
     /**
      * Gets the immutable target vertex.
      */
+    @Override
     public V2 getTarget() {
         return target;
     }
@@ -148,6 +151,7 @@ public class PersistentRelation<V1,V2> implements Relation<V1,V2>, Serializable 
     /**
      * Affirms if the given attribute is associated with this relation.
      */
+    @Override
     public boolean hasAttribute(String attr) {
         return attrs.containsKey(attr);
     }
@@ -158,10 +162,12 @@ public class PersistentRelation<V1,V2> implements Relation<V1,V2>, Serializable 
      * @return value of the given attribute. A null value does not distinguish whether
      * the attribute was set to a null value or the attribute was absent.
      */
+    @Override
     public Object getAttribute(String attr) {
         return attrs.get(attr);
     }
 
+    @Override
     public Properties getAttributes() {
         return attrs;
     }
@@ -171,6 +177,7 @@ public class PersistentRelation<V1,V2> implements Relation<V1,V2>, Serializable 
      *
      * @return the same relation for fluent method-chaining
      */
+    @Override
     public Relation<V1,V2> addAttribute(String attr, Object v) {
         attrs.put(attr, v);
         return this;
@@ -182,11 +189,13 @@ public class PersistentRelation<V1,V2> implements Relation<V1,V2>, Serializable 
      * @return value of the given attribute that just has been removed. A null value does not
      * distinguish whether the attribute was set to a null value or the attribute was absent.
      */
+    @Override
     public Relation<V1,V2> removeAttribute(String attr) {
         attrs.remove(attr);
         return this;
     }
 
+    @Override
     public String toString() {
         return source + "->" + target;
     }

@@ -29,15 +29,20 @@ import org.apache.openjpa.jdbc.sql.Select;
 class Distinct
     extends UnaryOp {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public Distinct(Val val) {
         super(val, true);
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         // join into related object if present
         return initializeValue(sel, ctx, JOIN_REL);
     }
 
+    @Override
     protected String getOperator() {
         return "DISTINCT";
     }

@@ -47,6 +47,7 @@ public class FieldSub2 extends MappedSuperProperty {
         crtDate = date;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof FieldSub2) {
             FieldSub2 ps = (FieldSub2)obj;

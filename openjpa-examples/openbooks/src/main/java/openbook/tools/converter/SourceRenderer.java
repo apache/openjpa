@@ -24,13 +24,13 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import openbook.tools.CommandProcessor;
-import openbook.tools.parser.JavaLexer;
-import openbook.tools.parser.JavaParser;
-
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.debug.DebugEventListener;
+
+import openbook.tools.CommandProcessor;
+import openbook.tools.parser.JavaLexer;
+import openbook.tools.parser.JavaParser;
 
 /**
  * Renders Java Source Code.

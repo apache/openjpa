@@ -25,11 +25,11 @@ import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -75,6 +75,9 @@ import javax.persistence.OneToOne;
         + "and cousin2 = ?1 and cousin1 <> ?1")
     })
 public class Deity implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     // the Id is the name, which is generally a bad idea, but we are
     // confident that diety names will be unique
     @Id
@@ -130,13 +133,13 @@ public class Deity implements Serializable {
 
         // add the child to this member's children
         if (children == null)
-            children = new HashSet<Deity>();
+            children = new HashSet<>();
         children.add(child);
 
         if (childFather != null) {
             child.father = childFather;
             if (childFather.children == null)
-                childFather.children = new HashSet<Deity>();
+                childFather.children = new HashSet<>();
             childFather.children.add(child);
         }
 

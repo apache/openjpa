@@ -20,10 +20,7 @@ package org.apache.openjpa.persistence.annotations;
 
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
-
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.PropertyAccess1;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="excluded")
@@ -34,6 +31,7 @@ public class TestPropertyAccess extends AnnotationTestCase
 		super(name, "annotationcactusapp");
 	}
 
+    @Override
     public void setUp() {
         deleteAll(PropertyAccess1.class);
     }

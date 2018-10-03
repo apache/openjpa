@@ -50,12 +50,14 @@ public class TestFetchStatistics extends TestCase {
         return new TestSuite(TestFetchStatistics.class);
     }
 
+    @Override
     public void setUp() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("fetchStatisticPU");
         emf.createEntityManager().close();
         FetchStatsCollector.clear();
     }
 
+    @Override
     public void tearDown() {
     }
 
@@ -163,6 +165,7 @@ public class TestFetchStatistics extends TestCase {
 
     // used for manual test of the output interval
     public void _testOutputInterval() throws InterruptedException {
-        Thread.currentThread().sleep(60 * 60 * 1000);
+        Thread.currentThread();
+        Thread.sleep(60 * 60 * 1000);
     }
 }

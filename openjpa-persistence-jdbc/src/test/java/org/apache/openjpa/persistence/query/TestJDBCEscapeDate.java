@@ -25,8 +25,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
@@ -35,11 +33,14 @@ import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
+import junit.framework.Assert;
+
 /**
  * Test JDBC escape syntax for date, time, and timestamp literals
  */
 public class TestJDBCEscapeDate extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(Employee.class, DROP_TABLES);
     }

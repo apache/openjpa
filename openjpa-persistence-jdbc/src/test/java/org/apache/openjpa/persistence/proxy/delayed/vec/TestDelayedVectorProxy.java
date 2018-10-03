@@ -47,12 +47,14 @@ public class TestDelayedVectorProxy extends DelayedProxyCollectionsTestCase {
         Account.class
     };
 
+    @Override
     public void setUp() {
         super.setUp(_pcList);
     }
 
+    @Override
     public void setUp(Object... props){
-        List<Object> parms = new ArrayList<Object>();
+        List<Object> parms = new ArrayList<>();
         // Add package-specific types
         parms.addAll(Arrays.asList(_pcList));
         // Add properties from super
@@ -60,29 +62,35 @@ public class TestDelayedVectorProxy extends DelayedProxyCollectionsTestCase {
         super.setUp(parms.toArray());
     }
 
+    @Override
     public IUserIdentity findUserIdentity(EntityManager em, int id) {
         return em.find(UserIdentity.class, id);
     }
 
+    @Override
     public IDepartment findDepartment(EntityManager em, int id) {
         return em.find(Department.class, id);
     }
 
+    @Override
     public IUserIdentity createUserIdentity() {
         UserIdentity ui = new UserIdentity();
         return ui;
     }
 
+    @Override
     public IAccount createAccount(String name, IUserIdentity ui) {
         IAccount acct = new Account(name, ui);
         return acct;
     }
 
+    @Override
     public IDepartment createDepartment() {
         Department d = new Department();
         return d;
     }
 
+    @Override
     public IMember createMember(String name) {
         Member m = new Member();
         m.setName(name);
@@ -97,32 +105,32 @@ public class TestDelayedVectorProxy extends DelayedProxyCollectionsTestCase {
 
     @Override
     public Collection<IEmployee> createEmployees() {
-        return new Vector<IEmployee>();
+        return new Vector<>();
     }
 
     @Override
     public Collection<Product> createProducts() {
-        return new Vector<Product>();
+        return new Vector<>();
     }
 
     @Override
     public Collection<Award> createAwards() {
-        return new Vector<Award>();
+        return new Vector<>();
     }
 
     @Override
     public Collection<Location> createLocations() {
-        return new Vector<Location>();
+        return new Vector<>();
     }
 
     @Override
     public Collection<Certification> createCertifications() {
-        return new Vector<Certification>();
+        return new Vector<>();
     }
 
     @Override
     public Collection<IAccount> createAccounts() {
-        return new Vector<IAccount>();
+        return new Vector<>();
     }
 
     @Override

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import static org.apache.openjpa.meta.MetaDataModes.MODE_MAPPING;
+
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,9 +32,6 @@ import java.util.Objects;
 import javax.persistence.EnumType;
 import javax.persistence.TemporalType;
 
-import org.apache.openjpa.lib.util.StringUtil;
-import org.apache.openjpa.lib.util.ClassUtil;
-import org.xml.sax.SAXException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
@@ -41,6 +40,7 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
+import org.apache.openjpa.jdbc.meta.QueryResultMapping.PCResult;
 import org.apache.openjpa.jdbc.meta.SequenceMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
@@ -51,14 +51,17 @@ import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.meta.SourceTracker;
+import org.apache.openjpa.lib.util.ClassUtil;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import static org.apache.openjpa.meta.MetaDataModes.MODE_MAPPING;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.PersistenceStrategy;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataSerializer;
+import org.xml.sax.SAXException;
 
 /**
  * Serializes persistence mapping to XML.
@@ -74,7 +77,7 @@ public class XMLPersistenceMappingSerializer
     private static final Map<ColType, String> _names;
 
     static {
-        _names = new EnumMap<ColType, String>(ColType.class);
+        _names = new EnumMap<>(ColType.class);
         _names.put(ColType.COL, "column");
         _names.put(ColType.JOIN, "join-column");
         _names.put(ColType.INVERSE, "inverse-join-column");
@@ -113,7 +116,7 @@ public class XMLPersistenceMappingSerializer
      */
     public void addQueryResultMapping(QueryResultMapping meta) {
         if (_results == null)
-            _results = new ArrayList<QueryResultMapping>();
+            _results = new ArrayList<>();
         _results.add(meta);
     }
 
@@ -451,6 +454,7 @@ public class XMLPersistenceMappingSerializer
     /**
      * Serialize order column.
      */
+    @Override
     protected void serializeOrderColumn(FieldMetaData fmd)
         throws SAXException {
         FieldMapping field = (FieldMapping) fmd;
@@ -622,7 +626,7 @@ public class XMLPersistenceMappingSerializer
                 continue;
 
             if (result == null)
-                result = new ArrayList<QueryResultMapping>(_results.size() - i);
+                result = new ArrayList<>(_results.size() - i);
             result.add(element);
         }
         return (result == null)
@@ -649,14 +653,14 @@ public class XMLPersistenceMappingSerializer
     private void serializeQueryResultMapping(QueryResultMapping meta)
         throws SAXException {
         if (!getSerializeAnnotations()
-            && meta.getSourceType() == meta.SRC_ANNOTATIONS)
+            && meta.getSourceType() == SourceTracker.SRC_ANNOTATIONS)
             return;
 
         addAttribute("name", meta.getName());
         startElement("sql-result-set-mapping");
         for (QueryResultMapping.PCResult pc : meta.getPCResults()) {
             addAttribute("entity-class", pc.getCandidateType().getName());
-            Object discrim = pc.getMapping(pc.DISCRIMINATOR);
+            Object discrim = pc.getMapping(PCResult.DISCRIMINATOR);
             if (discrim != null)
                 addAttribute("discriminator-column", discrim.toString());
 
@@ -681,7 +685,7 @@ public class XMLPersistenceMappingSerializer
     protected void serializeSequence(SequenceMetaData meta)
         throws SAXException {
         if (!getSerializeAnnotations()
-            && meta.getSourceType() == meta.SRC_ANNOTATIONS)
+            && meta.getSourceType() == SourceTracker.SRC_ANNOTATIONS)
             return;
         if (SequenceMapping.IMPL_VALUE_TABLE.equals(meta.getSequencePlugin())) {
             super.serializeSequence(meta);
@@ -735,6 +739,10 @@ public class XMLPersistenceMappingSerializer
     protected class MappingSerializationComparator
         extends SerializationComparator {
 
+        
+        private static final long serialVersionUID = 1L;
+
+        @Override
         protected int compareUnknown(Object o1, Object o2) {
             if (!(o1 instanceof QueryResultMapping))
                 return super.compareUnknown(o1, o2);

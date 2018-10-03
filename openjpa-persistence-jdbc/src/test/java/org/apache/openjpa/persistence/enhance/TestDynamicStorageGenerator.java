@@ -20,10 +20,10 @@ package org.apache.openjpa.persistence.enhance;
 
 import java.util.Date;
 
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.enhance.DynamicStorage;
 import org.apache.openjpa.enhance.DynamicStorageGenerator;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestDynamicStorageGenerator
     extends AbstractTestCase {

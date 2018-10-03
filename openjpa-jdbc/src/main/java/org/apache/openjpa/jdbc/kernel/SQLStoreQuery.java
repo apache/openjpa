@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
@@ -45,6 +44,7 @@ import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.UserException;
 
@@ -56,6 +56,9 @@ import org.apache.openjpa.util.UserException;
  */
 public class SQLStoreQuery
     extends AbstractStoreQuery {
+
+    
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage
         (SQLStoreQuery.class);
@@ -73,23 +76,28 @@ public class SQLStoreQuery
         return _store;
     }
 
+    @Override
     public boolean supportsParameterDeclarations() {
         return false;
     }
 
+    @Override
     public boolean supportsDataStoreExecution() {
         return true;
     }
 
+    @Override
     public Executor newDataStoreExecutor(ClassMetaData meta,
         boolean subclasses) {
         return new SQLExecutor(this, meta);
     }
 
+    @Override
     public boolean requiresCandidateType() {
         return false;
     }
 
+    @Override
     public boolean requiresParameterDeclarations() {
         return false;
     }
@@ -128,6 +136,7 @@ public class SQLStoreQuery
                 && sql.substring(0, 4).equalsIgnoreCase("call");
         }
 
+        @Override
         public int getOperation(StoreQuery q) {
            return _select ? OP_SELECT :
                 (q.getContext().getCandidateType() != null
@@ -137,6 +146,7 @@ public class SQLStoreQuery
                         ? OP_SELECT : OP_UPDATE;
         }
 
+        @Override
         public Number executeUpdate(StoreQuery q, Object[] params) {
             JDBCStore store = ((SQLStoreQuery) q).getStore();
             DBDictionary dict = store.getDBDictionary();
@@ -186,6 +196,7 @@ public class SQLStoreQuery
             }
         }
 
+        @Override
         public ResultObjectProvider executeQuery(StoreQuery q,
             Object[] params, Range range) {
             JDBCStore store = ((SQLStoreQuery) q).getStore();
@@ -242,11 +253,13 @@ public class SQLStoreQuery
             return rop;
         }
 
+        @Override
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
             Range range) {
             return new String[]{ q.getContext().getQueryString() };
         }
 
+        @Override
         public boolean isPacking(StoreQuery q) {
             return q.getContext().getCandidateType() == null;
         }
@@ -328,11 +341,12 @@ public class SQLStoreQuery
          * the same Integers must appear in the tokens.
          *
          */
+        @Override
         public Object[] toParameterArray(StoreQuery q, Map userParams) {
             if (userParams == null || userParams.isEmpty())
                 return StoreQuery.EMPTY_OBJECTS;
             String sql = q.getContext().getQueryString();
-            List<Integer> paramOrder = new ArrayList<Integer>();
+            List<Integer> paramOrder = new ArrayList<>();
             try {
                 sql = substituteParams(sql, paramOrder);
             } catch (IOException ex) {

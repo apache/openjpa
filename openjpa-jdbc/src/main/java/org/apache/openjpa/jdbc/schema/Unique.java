@@ -26,11 +26,10 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier;
  * @author Abe White
  * @author Pinaki Poddar
  */
-@SuppressWarnings("serial")
-public class Unique
-    extends LocalConstraint {
+public class Unique extends LocalConstraint {
+    private static final long serialVersionUID = 1L;
 
-	public Unique() {
+    public Unique() {
 		super();
 	}
 
@@ -41,6 +40,7 @@ public class Unique
      * @param table the table of the constraint
      * @deprecated
      */
+    @Deprecated
     public Unique(String name, Table table) {
         super(name, table);
     }
@@ -49,6 +49,7 @@ public class Unique
         super(name, table);
     }
 
+    @Override
     public boolean isLogical() {
         return false;
     }
@@ -58,10 +59,13 @@ public class Unique
      * constraint already belongs to a table.
      * @deprecated
      */
+    @Deprecated
+    @Override
     public void setName(String name) {
         super.setName(name);
     }
 
+    @Override
     public void setIdentifier(DBIdentifier name) {
         super.setIdentifier(name);
     }

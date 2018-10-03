@@ -43,11 +43,10 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TimeZone;
-import java.util.TreeSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 
-import org.apache.openjpa.util.Proxy;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
@@ -60,6 +59,7 @@ public class TestProxyManager extends TestCase {
 
     private ProxyManagerImpl _mgr;
 
+    @Override
     public void setUp() {
         _mgr = new ProxyManagerImpl();
     }
@@ -827,10 +827,12 @@ public class TestProxyManager extends TestCase {
 
         private final List _delegate = new ArrayList();
 
+        @Override
         public int size() {
             return _delegate.size();
         }
 
+        @Override
         public ListIterator listIterator(int idx) {
             return _delegate.listIterator(idx);
         }
@@ -843,14 +845,17 @@ public class TestProxyManager extends TestCase {
 
         private final Set _delegate = new HashSet();
 
+        @Override
         public int size() {
             return _delegate.size();
         }
 
+        @Override
         public Iterator iterator() {
             return _delegate.iterator();
         }
 
+        @Override
         public boolean add(Object o) {
             return _delegate.add(o);
         }
@@ -860,12 +865,18 @@ public class TestProxyManager extends TestCase {
      * Used to test custom set handling. Copy constructor intentionally ommitted.
      */
     public static class CustomSortedSet extends TreeSet {
+
+        
+        private static final long serialVersionUID = 1L;
     }
 
     /**
      * Used to test custom set handling. Copy constructor intentionally ommitted.
      */
     public static class CustomComparatorSortedSet extends TreeSet {
+
+        
+        private static final long serialVersionUID = 1L;
 
         public CustomComparatorSortedSet() {
         }
@@ -882,10 +893,12 @@ public class TestProxyManager extends TestCase {
 
         private final Map _delegate = new HashMap();
 
+        @Override
         public Object put(Object key, Object value) {
             return _delegate.put(key, value);
         }
 
+        @Override
         public Set entrySet() {
             return _delegate.entrySet();
         }
@@ -895,12 +908,18 @@ public class TestProxyManager extends TestCase {
      * Used to test custom map handling. Copy constructor intentionally ommitted.
      */
     public static class CustomSortedMap extends TreeMap {
+
+        
+        private static final long serialVersionUID = 1L;
     }
 
     /**
      * Used to test custom map handling. Copy constructor intentionally ommitted.
      */
     public static class CustomComparatorSortedMap extends TreeMap {
+
+        
+        private static final long serialVersionUID = 1L;
 
         public CustomComparatorSortedMap() {
         }
@@ -915,6 +934,7 @@ public class TestProxyManager extends TestCase {
      */
     private static class CustomComparator implements Comparator {
 
+        @Override
         public int compare(Object o1, Object o2) {
             return ((Comparable) o1).compareTo(o2);
         }
@@ -924,6 +944,9 @@ public class TestProxyManager extends TestCase {
      * Used to test custom date handling.
      */
     public static class CustomDate extends Timestamp {
+
+        
+        private static final long serialVersionUID = 1L;
 
         public CustomDate(long time) {
             super(time);
@@ -986,5 +1009,8 @@ public class TestProxyManager extends TestCase {
      * Used to test custom calendar handling.
      */
     public static class CustomCalendar extends GregorianCalendar {
+
+        
+        private static final long serialVersionUID = 1L;
     }
 }

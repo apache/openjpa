@@ -31,10 +31,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestXMLExplicitAccess extends SingleEMFTestCase {
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

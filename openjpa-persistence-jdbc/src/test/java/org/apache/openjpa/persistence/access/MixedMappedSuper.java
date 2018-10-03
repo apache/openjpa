@@ -60,6 +60,7 @@ public class MixedMappedSuper {
         return mname;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof MixedMappedSuper) {
             MixedMappedSuper ps = (MixedMappedSuper)obj;

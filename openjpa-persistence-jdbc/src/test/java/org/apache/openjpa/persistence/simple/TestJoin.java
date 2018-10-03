@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestJoin extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(Item.class);
     }

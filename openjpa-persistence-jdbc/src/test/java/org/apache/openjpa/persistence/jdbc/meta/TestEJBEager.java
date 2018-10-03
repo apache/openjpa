@@ -20,7 +20,12 @@ package org.apache.openjpa.persistence.jdbc.meta;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
+import org.apache.openjpa.persistence.jdbc.common.apps.EagerPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.EagerPCSub;
+import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC2;
+import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC3;
+import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC4;
 
 public class TestEJBEager
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
@@ -31,7 +36,8 @@ public class TestEJBEager
 		super(name);
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public void setUp()
 	{
 		deleteAll(EagerPCSub.class);

@@ -28,6 +28,9 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class ObjectExistsException
     extends StoreException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public ObjectExistsException(String msg) {
 		super(msg);
     }
@@ -36,6 +39,7 @@ public class ObjectExistsException
         super(msg);
     }
 
+    @Override
     public int getSubtype() {
         return OBJECT_EXISTS;
     }

@@ -21,9 +21,10 @@ package org.apache.openjpa.persistence.relations;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Perform basic operations on an entity with a many-one relation as its id
@@ -38,6 +39,7 @@ public class TestManyOneAsId
     private long dsid;
     private long cid;
 
+    @Override
     public void setUp() {
         setUp(BasicEntity.class, DataStoreBasicEntity.class,
             ManyOneIdOwner.class, DataStoreManyOneIdOwner.class,

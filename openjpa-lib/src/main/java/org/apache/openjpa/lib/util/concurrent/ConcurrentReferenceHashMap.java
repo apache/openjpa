@@ -197,20 +197,24 @@ public class ConcurrentReferenceHashMap extends AbstractMap
         putAll(t);
     }
 
+    @Override
     public int getMaxSize() {
         return maxSize;
     }
 
+    @Override
     public void setMaxSize(int maxSize) {
         this.maxSize = (maxSize < 0) ? Integer.MAX_VALUE : maxSize;
         if (this.maxSize != Integer.MAX_VALUE)
             removeOverflow(this.maxSize);
     }
 
+    @Override
     public boolean isFull() {
         return maxSize != Integer.MAX_VALUE && size() >= maxSize;
     }
 
+    @Override
     public void overflowRemoved(Object key, Object value) {
     }
 
@@ -220,6 +224,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * that will be removed before next attempted access because they
      * are no longer referenced.
      */
+    @Override
     public int size() {
         return count;
     }
@@ -230,6 +235,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * that will be removed before next attempted access because they
      * are no longer referenced.
      */
+    @Override
     public boolean isEmpty() {
         return count == 0;
     }
@@ -240,6 +246,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      *
      * @param value value whose presence in this Map is to be tested.
      */
+    @Override
     public boolean containsValue(Object value) {
         Entry[] tab = table;
 
@@ -264,6 +271,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      *
      * @param key key whose presence in this Map is to be tested.
      */
+    @Override
     public boolean containsKey(Object key) {
         if (key == null && keyType != ReferenceStrength.HARD)
             return false;
@@ -283,6 +291,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      *
      * @param key key whose associated value is to be returned.
      */
+    @Override
     public Object get(Object key) {
         if (key == null && keyType != ReferenceStrength.HARD)
             return null;
@@ -344,6 +353,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * was no mapping for key. A null return can also indicate that
      * the HashMap previously associated null with the specified key.
      */
+    @Override
     public Object put(Object key, Object value) {
         if ((key == null && keyType != ReferenceStrength.HARD)
             || (value == null && valueType != ReferenceStrength.HARD))
@@ -427,6 +437,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * was no mapping for key. A null return can also indicate that
      * the HashMap previously associated null with the specified key.
      */
+    @Override
     public Object remove(Object key) {
         if (key == null && keyType != ReferenceStrength.HARD)
             return null;
@@ -455,15 +466,18 @@ public class ConcurrentReferenceHashMap extends AbstractMap
         return null;
     }
 
+    @Override
     public void removeExpired() {
         synchronized (this) {
             expungeStaleEntries();
         }
     }
 
+    @Override
     public void keyExpired(Object value) {
     }
 
+    @Override
     public void valueExpired(Object key) {
     }
 
@@ -476,6 +490,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
         return (int) (RANDOMS[randomEntry++] * table.length);
     }
 
+    @Override
     public Map.Entry removeRandom() {
         synchronized (this) {
             expungeStaleEntries();
@@ -513,6 +528,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
         }
     }
 
+    @Override
     public Iterator randomEntryIterator() {
         // pass index so calculated before iterator refs table, in case table
         // gets replace with a larger one
@@ -526,6 +542,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      *
      * @param t Mappings to be stored in this Map.
      */
+    @Override
     public void putAll(Map t) {
         Iterator i = t.entrySet().iterator();
         while (i.hasNext()) {
@@ -537,6 +554,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
     /**
      * Removes all mappings from this HashMap.
      */
+    @Override
     public synchronized void clear() {
         // clear out ref queue. We don't need to expunge entries
         // since table is getting cleared.
@@ -555,6 +573,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Returns a shallow copy of this HashMap. The keys and values
      * themselves are not cloned.
      */
+    @Override
     public synchronized Object clone() {
         try {
             expungeStaleEntries();
@@ -597,25 +616,31 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Set.remove, removeAll retainAll, and clear operations. It does not
      * support the add or addAll operations.
      */
+    @Override
     public Set keySet() {
         if (keySet == null) {
             keySet = new java.util.AbstractSet() {
+                @Override
                 public Iterator iterator() {
                     return new HashIterator(KEYS, table.length - 1);
                 }
 
+                @Override
                 public int size() {
                     return count;
                 }
 
+                @Override
                 public boolean contains(Object o) {
                     return containsKey(o);
                 }
 
+                @Override
                 public boolean remove(Object o) {
                     return ConcurrentReferenceHashMap.this.remove(o) != null;
                 }
 
+                @Override
                 public void clear() {
                     ConcurrentReferenceHashMap.this.clear();
                 }
@@ -633,21 +658,26 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * retainAll and clear operations. It does not support the add or addAll
      * operations.
      */
+    @Override
     public Collection values() {
         if (values == null) {
             values = new java.util.AbstractCollection() {
+                @Override
                 public Iterator iterator() {
                     return new HashIterator(VALUES, table.length - 1);
                 }
 
+                @Override
                 public int size() {
                     return count;
                 }
 
+                @Override
                 public boolean contains(Object o) {
                     return containsValue(o);
                 }
 
+                @Override
                 public void clear() {
                     ConcurrentReferenceHashMap.this.clear();
                 }
@@ -667,13 +697,16 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      *
      * @see Map.Entry
      */
+    @Override
     public Set entrySet() {
         if (entrySet == null) {
             entrySet = new java.util.AbstractSet() {
+                @Override
                 public Iterator iterator() {
                     return new HashIterator(ENTRIES, table.length - 1);
                 }
 
+                @Override
                 public boolean contains(Object o) {
                     if (!(o instanceof Map.Entry))
                         return false;
@@ -689,6 +722,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                     return false;
                 }
 
+                @Override
                 public boolean remove(Object o) {
                     if (!(o instanceof Map.Entry))
                         return false;
@@ -715,10 +749,12 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                     }
                 }
 
+                @Override
                 public int size() {
                     return count;
                 }
 
+                @Override
                 public void clear() {
                     ConcurrentReferenceHashMap.this.clear();
                 }
@@ -761,15 +797,15 @@ public class ConcurrentReferenceHashMap extends AbstractMap
     /**
      * HashMap collision list entry.
      */
-    private static interface Entry extends Map.Entry {
+    private interface Entry extends Map.Entry {
 
-        public int getHash();
+        int getHash();
 
-        public Entry getNext();
+        Entry getNext();
 
-        public void setNext(Entry next);
+        void setNext(Entry next);
 
-        public Object clone(ReferenceQueue queue);
+        Object clone(ReferenceQueue queue);
     }
 
     /**
@@ -789,18 +825,22 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             this.next = next;
         }
 
+        @Override
         public int getHash() {
             return hash;
         }
 
+        @Override
         public Entry getNext() {
             return next;
         }
 
+        @Override
         public void setNext(Entry next) {
             this.next = next;
         }
 
+        @Override
         public Object clone(ReferenceQueue queue) {
             // It is the callers responsibility to set the next field
             // correctly.
@@ -809,20 +849,24 @@ public class ConcurrentReferenceHashMap extends AbstractMap
 
         // Map.Entry Ops
 
+        @Override
         public Object getKey() {
             return key;
         }
 
+        @Override
         public Object getValue() {
             return value;
         }
 
+        @Override
         public Object setValue(Object value) {
             Object oldValue = this.value;
             this.value = value;
             return oldValue;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry)) return false;
             Map.Entry e = (Map.Entry) o;
@@ -835,10 +879,12 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                     : eq(value, e.getValue()));
         }
 
+        @Override
         public int hashCode() {
             return hash ^ (value == null ? 0 : value.hashCode());
         }
 
+        @Override
         public String toString() {
             return key + "=" + value.toString();
         }
@@ -863,18 +909,22 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             this.next = next;
         }
 
+        @Override
         public int getHash() {
             return hash;
         }
 
+        @Override
         public Entry getNext() {
             return next;
         }
 
+        @Override
         public void setNext(Entry next) {
             this.next = next;
         }
 
+        @Override
         public Object clone(ReferenceQueue queue) {
             // It is the callers responsibility to set the next field
             // correctly.
@@ -884,14 +934,17 @@ public class ConcurrentReferenceHashMap extends AbstractMap
 
         // Map.Entry Ops
 
+        @Override
         public Object getKey() {
             return (keyRef) ? super.get() : hard;
         }
 
+        @Override
         public Object getValue() {
             return (keyRef) ? hard : super.get();
         }
 
+        @Override
         public Object setValue(Object value) {
             if (!keyRef)
                 throw new Error("Attempt to reset reference value.");
@@ -901,17 +954,20 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             return oldValue;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry)) return false;
             Map.Entry e = (Map.Entry) o;
             return eq(getKey(), e.getKey()) && eq(getValue(), e.getValue());
         }
 
+        @Override
         public int hashCode() {
             Object val = getValue();
             return hash ^ (val == null ? 0 : val.hashCode());
         }
 
+        @Override
         public String toString() {
             return getKey() + "=" + getValue();
         }
@@ -936,18 +992,22 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             this.next = next;
         }
 
+        @Override
         public int getHash() {
             return hash;
         }
 
+        @Override
         public Entry getNext() {
             return next;
         }
 
+        @Override
         public void setNext(Entry next) {
             this.next = next;
         }
 
+        @Override
         public Object clone(ReferenceQueue queue) {
             // It is the callers responsibility to set the next field
             // correctly.
@@ -957,14 +1017,17 @@ public class ConcurrentReferenceHashMap extends AbstractMap
 
         // Map.Entry Ops
 
+        @Override
         public Object getKey() {
             return (keyRef) ? super.get() : hard;
         }
 
+        @Override
         public Object getValue() {
             return (keyRef) ? hard : super.get();
         }
 
+        @Override
         public Object setValue(Object value) {
             if (!keyRef)
                 throw new Error("Attempt to reset reference value.");
@@ -974,17 +1037,20 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             return oldValue;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry)) return false;
             Map.Entry e = (Map.Entry) o;
             return eq(getKey(), e.getKey()) && eq(getValue(), e.getValue());
         }
 
+        @Override
         public int hashCode() {
             Object val = getValue();
             return hash ^ (val == null ? 0 : val.hashCode());
         }
 
+        @Override
         public String toString() {
             return getKey() + "=" + getValue();
         }
@@ -1014,6 +1080,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             index = startIndex;
         }
 
+        @Override
         public boolean hasNext() {
             if (entry != null) {
                 return true;
@@ -1035,6 +1102,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             return false;
         }
 
+        @Override
         public Object next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -1044,6 +1112,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                 : (type == VALUES ? e.getValue() : e);
         }
 
+        @Override
         public void remove() {
             if (lastReturned == null)
                 throw new IllegalStateException();

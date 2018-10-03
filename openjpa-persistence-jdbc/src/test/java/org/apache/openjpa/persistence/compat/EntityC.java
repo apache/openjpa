@@ -45,10 +45,12 @@ public class EntityC {
         this.name = name;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode() + (int)id;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof EntityC)) return false;
         EntityC c = (EntityC)o;

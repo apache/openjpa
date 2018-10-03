@@ -33,7 +33,7 @@ import openbook.domain.ShoppingCart;
  *
  */
 public interface OpenBookService {
-    public static final String DEFAULT_UNIT_NAME = "OpenBooks";
+    String DEFAULT_UNIT_NAME = "OpenBooks";
 
     /**
      * Starts a session for the given named Customer.
@@ -43,7 +43,7 @@ public interface OpenBookService {
      *
      * @return a Customer
      */
-    public Customer login(String name);
+    Customer login(String name);
 
     /**
      * Selects a list of Books matching the given conditions.
@@ -56,7 +56,7 @@ public interface OpenBookService {
      * @param author name of author
      * @param decorators to modify the executable query such as its range.
      */
-    public List<Book> select(String title,
+    List<Book> select(String title,
             Double min, Double max,
             String author,
             QueryDecorator...decorators);
@@ -71,7 +71,7 @@ public interface OpenBookService {
      * @param author name of author
      * @param decorators to modify the executable query such as its range.
      */
-    public String getQuery(String title,
+    String getQuery(String title,
             Double min, Double max,
             String author);
 
@@ -92,7 +92,7 @@ public interface OpenBookService {
      * @param cart a non-empty cart.
      * @return a PurchaseOrder for the content of the cart.
      */
-    public PurchaseOrder placeOrder(ShoppingCart cart);
+    PurchaseOrder placeOrder(ShoppingCart cart);
 
     /**
      * Delivers the given order. Delivery changes the status of the order, decrements
@@ -102,7 +102,7 @@ public interface OpenBookService {
      * @return the PurchaseOrder after delivery.
      *
      */
-    public PurchaseOrder deliver(PurchaseOrder order);
+    PurchaseOrder deliver(PurchaseOrder order);
 
     /**
      * Add inventory of the given Book by the given quantity.
@@ -112,7 +112,7 @@ public interface OpenBookService {
      *
      * @return the Book after incrementing its inventory.
      */
-    public Book supply(Book b, int quantity);
+    Book supply(Book b, int quantity);
 
     /**
      * Gets the list of orders of given status.
@@ -121,7 +121,7 @@ public interface OpenBookService {
      *
      * @return list of orders sorted by their placement dates.
      */
-    public List<PurchaseOrder> getOrders(PurchaseOrder.Status status, Customer customer);
+    List<PurchaseOrder> getOrders(PurchaseOrder.Status status, Customer customer);
 
 
     /**
@@ -131,7 +131,7 @@ public interface OpenBookService {
      *
      * @return list of Books with inventory lower than the given limit.
      */
-    public List<Inventory> getReorderableBooks(int limit);
+    List<Inventory> getReorderableBooks(int limit);
 
     /**
      * Count the number of instances of the given persistent type.
@@ -139,7 +139,7 @@ public interface OpenBookService {
      * @param cls a persistent type.
      * @return number of persistent entity of the given type.
      */
-    public long count(Class<?> cls);
+    long count(Class<?> cls);
 
     /**
      * Populates the underlying data repository with sample values, only if
@@ -150,31 +150,31 @@ public interface OpenBookService {
      *
      * @return true if the repository is initialized by this invocation.
      */
-    public boolean initialize(Map<String,Object> loadParameters);
+    boolean initialize(Map<String,Object> loadParameters);
 
     /**
      * Cleans everything. Be careful.
      */
-    public void clean();
+    void clean();
 
 
     /**
      * Gets the underlying persistence unit.
      *
      */
-    public EntityManagerFactory getUnit();
+    EntityManagerFactory getUnit();
 
     /**
      * Gets the name of the underlying persistence unit.
      *
      */
-    public String getUnitName();
+    String getUnitName();
 
     /**
      * Affirms if the transaction on this persistence unit is managed by a container.
      *
      */
-    public boolean isManaged();
+    boolean isManaged();
 
 
 }

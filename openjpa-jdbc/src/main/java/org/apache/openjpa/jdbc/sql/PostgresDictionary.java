@@ -74,7 +74,7 @@ public class PostgresDictionary
     private Method dbcpGetDelegate;
     private Method connectionUnwrap;
 
-    protected Set<String> _timestampTypes = new HashSet<String>();
+    protected Set<String> _timestampTypes = new HashSet<>();
 
 
     /**
@@ -337,10 +337,12 @@ public class PostgresDictionary
         return false;
     }
 
+    @Override
     protected String getSequencesSQL(String schemaName, String sequenceName) {
         return getSequencesSQL(DBIdentifier.newSchema(schemaName), DBIdentifier.newSequence(sequenceName));
     }
 
+    @Override
     protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
         if (DBIdentifier.isNull(schemaName) && DBIdentifier.isNull(sequenceName))
             return allSequencesSQL;
@@ -352,16 +354,19 @@ public class PostgresDictionary
             return namedSequenceFromOneSchemaSQL;
     }
 
+    @Override
     public boolean isSystemSequence(String name, String schema,
         boolean targetSchema) {
         return isSystemSequence(DBIdentifier.newTable(name), DBIdentifier.newSchema(schema), targetSchema);
     }
 
+    @Override
     public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
         boolean targetSchema) {
         return isSystemSequence(name, schema, targetSchema, null);
     }
 
+    @Override
     public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
         boolean targetSchema, Connection conn) {
         if (super.isSystemSequence(name, schema, targetSchema))
@@ -538,11 +543,13 @@ public class PostgresDictionary
             && strName.toUpperCase(Locale.ENGLISH).endsWith("_SEQ");
     }
 
+    @Override
     public boolean isSystemTable(String name, String schema,
         boolean targetSchema) {
         return isSystemTable(DBIdentifier.newTable(name), DBIdentifier.newSchema(schema), targetSchema);
     }
 
+    @Override
     public boolean isSystemTable(DBIdentifier name, DBIdentifier schema,
         boolean targetSchema) {
         // names starting with "pg_" are reserved for Postgresql internal use
@@ -551,10 +558,12 @@ public class PostgresDictionary
             || (strName != null && strName.toLowerCase(Locale.ENGLISH).startsWith("pg_"));
     }
 
+    @Override
     public boolean isSystemIndex(String name, Table table) {
         return isSystemIndex(DBIdentifier.newIndex(name), table);
     }
 
+    @Override
     public boolean isSystemIndex(DBIdentifier name, Table table) {
         // names starting with "pg_" are reserved for Postgresql internal use
         String strName = DBIdentifier.isNull(name) ? null : name.getName();
@@ -562,11 +571,13 @@ public class PostgresDictionary
             || (strName != null && strName.toLowerCase(Locale.ENGLISH).startsWith("pg_"));
     }
 
+    @Override
     public Connection decorate(Connection conn)
         throws SQLException {
         return new PostgresConnection(super.decorate(conn), this);
     }
 
+    @Override
     public InputStream getLOBStream(JDBCStore store, ResultSet rs,
         int column) throws SQLException {
         DelegatingConnection conn = (DelegatingConnection)store
@@ -581,6 +592,7 @@ public class PostgresDictionary
         }
     }
 
+    @Override
     public void insertBlobForStreamingLoad(Row row, Column col,
         JDBCStore store, Object ob, Select sel) throws SQLException {
         if (row.getAction() == Row.ACTION_INSERT) {
@@ -673,11 +685,13 @@ public class PostgresDictionary
 
     }
 
+    @Override
     public void updateBlob(Select sel, JDBCStore store, InputStream is)
         throws SQLException {
         //Do nothing
     }
 
+    @Override
     public void deleteStream(JDBCStore store, Select sel) throws SQLException {
         JDBCFetchConfiguration fetch = store.getFetchConfiguration();
         SQLBuffer sql = sel.toSelect(true, fetch);
@@ -712,6 +726,7 @@ public class PostgresDictionary
     /**
      * Determine XML column support and backslash handling.
      */
+    @Override
     public void connectedConfiguration(Connection conn) throws SQLException {
         super.connectedConfiguration(conn);
 
@@ -750,6 +765,7 @@ public class PostgresDictionary
      * by using {@link PreparedStatement#setObject(int, Object, int)}
      * with {@link Types#OTHER} as the third argument.
      */
+    @Override
     public void setClobString(PreparedStatement stmnt, int idx, String val,
         Column col) throws SQLException {
         if (col != null && col.isXML())
@@ -769,6 +785,7 @@ public class PostgresDictionary
      *
      * @exception SQLException
      */
+    @Override
     public Object getObject(ResultSet rs, int column, Map map)
         throws SQLException {
         Object obj = super.getObject(rs, column, map);
@@ -810,6 +827,7 @@ public class PostgresDictionary
      * @param rhsxml
      *            indicates whether the right operand maps to XML
      */
+    @Override
     public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
         FilterValue rhs, boolean lhsxml, boolean rhsxml) {
         super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
@@ -852,6 +870,7 @@ public class PostgresDictionary
     /**
      * Return a SQL string to act as a placeholder for the given column.
      */
+    @Override
     public String getPlaceholderValueString(Column col) {
         if (col.getType() == Types.BIT) {
             return "false";
@@ -955,11 +974,13 @@ public class PostgresDictionary
             _dict = dict;
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
            return new PostgresPreparedStatement(super.prepareStatement(sql, false), PostgresConnection.this, _dict);
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql, int rsType,
             int rsConcur, boolean wrap)
             throws SQLException {
@@ -983,6 +1004,7 @@ public class PostgresDictionary
             _dict = dict;
         }
 
+        @Override
         protected ResultSet executeQuery(boolean wrap)
             throws SQLException {
             try {
@@ -1004,6 +1026,7 @@ public class PostgresDictionary
             }
         }
 
+        @Override
         public void setFetchSize(int i)
             throws SQLException {
             // some postgres drivers do not support the setFetchSize method

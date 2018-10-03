@@ -27,6 +27,9 @@ import org.apache.openjpa.util.InternalException;
  *
  */
 public class OperatorPath extends AbstractDomainObject {
+    
+    private static final long serialVersionUID = 1L;
+
     public OperatorPath(AbstractDomainObject operand, PathOperator operator) {
 		super(operand.getOwner(), operand, operator, null);
 	}
@@ -56,7 +59,8 @@ public class OperatorPath extends AbstractDomainObject {
 		throw new UnsupportedOperationException();
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return getOperator() + "(" + getParent().toString() + ")";
 	}
 

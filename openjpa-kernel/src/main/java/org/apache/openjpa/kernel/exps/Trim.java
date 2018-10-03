@@ -28,6 +28,7 @@ import org.apache.openjpa.kernel.StoreContext;
 class Trim
     extends Val {
 
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private final Val _trimChar;
     private final Boolean _where;
@@ -41,13 +42,16 @@ class Trim
         _where = where;
     }
 
+    @Override
     public Class getType() {
         return String.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object eval = _val.eval(candidate, orig, ctx, params);
@@ -72,6 +76,7 @@ class Trim
         return str;
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

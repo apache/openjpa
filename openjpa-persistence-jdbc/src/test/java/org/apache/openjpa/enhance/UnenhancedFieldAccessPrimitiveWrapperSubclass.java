@@ -26,26 +26,33 @@ public class UnenhancedFieldAccessPrimitiveWrapperSubclass
     extends UnenhancedFieldAccessPrimitiveWrapper
     implements UnenhancedSubtype {
 
+    
+    private static final long serialVersionUID = 1L;
     @OneToOne(cascade = CascadeType.ALL)
     private UnenhancedFieldAccessPrimitiveWrapper related;
     private int intField;
 
+    @Override
     public UnenhancedType getRelated() {
         return related;
     }
 
+    @Override
     public void setRelated(UnenhancedType related) {
         this.related = (UnenhancedFieldAccessPrimitiveWrapper) related;
     }
 
+    @Override
     public void setIntField(int i) {
         intField = i;
     }
 
+    @Override
     public int getIntField() {
         return intField;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         UnenhancedFieldAccessPrimitiveWrapperSubclass un =
             (UnenhancedFieldAccessPrimitiveWrapperSubclass) super.clone();

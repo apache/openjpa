@@ -46,6 +46,7 @@ public abstract class XMLAbstractMappedSuperField {
 
     abstract public void setCreateDate(Date date);
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLAbstractMappedSuperField) {
             XMLAbstractMappedSuperField ps = (XMLAbstractMappedSuperField)obj;

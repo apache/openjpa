@@ -33,6 +33,8 @@ import org.apache.openjpa.meta.FieldMetaData;
 public class PCDataImpl
     extends AbstractPCData {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Object _oid;
     private final Class<?> _type;
     private final String _cache;
@@ -59,18 +61,22 @@ public class PCDataImpl
         _loaded = new BitSet(len);
     }
 
+    @Override
     public Object getId() {
         return _oid;
     }
 
+    @Override
     public Class<?> getType() {
         return _type;
     }
 
+    @Override
     public BitSet getLoaded() {
         return _loaded;
     }
 
+    @Override
     public Object getData(int index) {
         // make sure index is actually loaded to avoid returning an
         // intermediate value
@@ -87,10 +93,12 @@ public class PCDataImpl
         _data[index] = null;
     }
 
+    @Override
     public Object getImplData() {
         return _impl;
     }
 
+    @Override
     public void setImplData(Object val) {
         _impl = val;
     }
@@ -117,6 +125,7 @@ public class PCDataImpl
         _data[index] = val;
     }
 
+    @Override
     public boolean isLoaded(int index) {
         return _loaded.get(index);
     }
@@ -128,14 +137,17 @@ public class PCDataImpl
             _loaded.clear(index);
     }
 
+    @Override
     public Object getVersion() {
         return _version;
     }
 
+    @Override
     public void setVersion(Object version) {
         _version = version;
     }
 
+    @Override
     public void load(OpenJPAStateManager sm, FetchConfiguration fetch,
         Object context) {
         loadVersion(sm);
@@ -154,6 +166,7 @@ public class PCDataImpl
         }
     }
 
+    @Override
     public void load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, Object context) {
         loadVersion(sm);
@@ -237,6 +250,7 @@ public class PCDataImpl
             sm.setIntermediate(index, inter);
     }
 
+    @Override
     public void store(OpenJPAStateManager sm) {
         storeVersion(sm);
         storeImplData(sm);
@@ -251,6 +265,7 @@ public class PCDataImpl
         }
     }
 
+    @Override
     public void store(OpenJPAStateManager sm, BitSet fields) {
         storeVersion(sm);
         storeImplData(sm);
@@ -284,7 +299,7 @@ public class PCDataImpl
      * Store field-level information from the given state manager.
      */
     protected void storeField(OpenJPAStateManager sm, FieldMetaData fmd) {
-        if (fmd.getManagement() != fmd.MANAGE_PERSISTENT)
+        if (fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return;
 
         int index = fmd.getIndex();
@@ -335,10 +350,12 @@ public class PCDataImpl
      * Return a new {@link PCData} implementation of the right type for
      * embedded instances. Returns a {@link PCDataImpl} by default.
      */
+    @Override
     public AbstractPCData newEmbeddedPCData(OpenJPAStateManager sm) {
         return new PCDataImpl(sm.getId (), sm.getMetaData (), _cache);
 	}
 
+    @Override
     public String getCache() {
         return _cache;
     }

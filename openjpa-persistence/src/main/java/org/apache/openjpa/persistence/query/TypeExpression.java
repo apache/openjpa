@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class TypeExpression extends UnaryOperatorExpression {
-	public TypeExpression(Expression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public TypeExpression(Expression op) {
 		super(op, UnaryFunctionalOperator.TYPE);
 	}
 }

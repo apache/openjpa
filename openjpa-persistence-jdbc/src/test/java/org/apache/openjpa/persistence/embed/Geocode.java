@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
 
 /**
  * An embedded entity.

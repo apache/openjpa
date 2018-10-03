@@ -28,6 +28,8 @@ import org.apache.openjpa.util.UnsupportedException;
  */
 class Index extends UnaryMathVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage(Index.class);
 
     /**
@@ -37,10 +39,12 @@ class Index extends UnaryMathVal {
         super(val);
     }
 
+    @Override
     public Class getType(Class c) {
         return int.class;
     }
 
+    @Override
     protected Object operate(Object o, Class c) {
         throw new UnsupportedException(_loc.get("in-mem-index"));
     }

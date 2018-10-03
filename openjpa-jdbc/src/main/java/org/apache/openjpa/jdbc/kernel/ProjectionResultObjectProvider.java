@@ -67,6 +67,7 @@ class ProjectionResultObjectProvider
         _ctx = ctx;
     }
 
+    @Override
     public Object getResultObject()
         throws Exception {
         Result res = getResult();

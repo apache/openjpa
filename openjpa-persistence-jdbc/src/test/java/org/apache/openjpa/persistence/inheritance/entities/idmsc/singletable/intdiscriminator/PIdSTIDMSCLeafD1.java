@@ -31,9 +31,11 @@ public class PIdSTIDMSCLeafD1
 extends PIdSTIDMSCEntityD implements LeafD1 {
     private String leafD1Data;
 
+    @Override
     public String getLeafD1Data() {
         return leafD1Data;
     }
+    @Override
     public void setLeafD1Data(String leafD1Data) {
         this.leafD1Data = leafD1Data;
     }

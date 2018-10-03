@@ -33,6 +33,7 @@ public class DoubleValue extends Value {
         super(prop);
     }
 
+    @Override
     public Class<Double> getValueType() {
         return double.class;
     }
@@ -51,14 +52,17 @@ public class DoubleValue extends Value {
     /**
      * The internal value.
      */
+    @Override
     public Double get() {
         return value;
     }
 
+    @Override
     protected String getInternalString() {
         return String.valueOf(value);
     }
 
+    @Override
     protected void setInternalString(String val) {
         if (StringUtil.isEmpty(val))
             set(0D);
@@ -66,6 +70,7 @@ public class DoubleValue extends Value {
             set(Double.parseDouble(val));
     }
 
+    @Override
     protected void setInternalObject(Object obj) {
         if (obj == null)
             set(0D);

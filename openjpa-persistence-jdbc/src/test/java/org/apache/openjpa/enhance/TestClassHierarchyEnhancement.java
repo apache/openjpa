@@ -19,13 +19,13 @@
 package org.apache.openjpa.enhance;
 
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 
 /**

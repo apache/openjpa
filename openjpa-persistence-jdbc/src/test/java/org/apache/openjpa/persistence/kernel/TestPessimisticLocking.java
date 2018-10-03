@@ -29,20 +29,17 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
-
-
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.jdbc.FetchMode;
+import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import java.util.concurrent.locks.ReentrantLock;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.jdbc.FetchMode;
-import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 
 public class TestPessimisticLocking extends BaseKernelTest {
 
@@ -225,6 +222,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
             this._lock = lock;
         }
 
+        @Override
         public synchronized void run() {
             getLog().trace(
                 Thread.currentThread().getName()

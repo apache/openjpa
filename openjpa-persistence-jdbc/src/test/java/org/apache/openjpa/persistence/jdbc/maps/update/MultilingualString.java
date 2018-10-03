@@ -48,7 +48,7 @@ public class MultilingualString {
     @ElementCollection(fetch=FetchType.EAGER)
     @MapKeyColumn(name = "language_key")
     @CollectionTable(name = "multilingual_string_map", joinColumns = @JoinColumn(name = "string_id"))
-    private Map<String, LocalizedString> map = new HashMap<String, LocalizedString>();
+    private Map<String, LocalizedString> map = new HashMap<>();
 
     public MultilingualString() {}
 

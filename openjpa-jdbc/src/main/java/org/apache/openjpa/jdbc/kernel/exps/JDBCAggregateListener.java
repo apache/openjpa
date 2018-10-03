@@ -40,6 +40,6 @@ public interface JDBCAggregateListener
      * @param mapping the class mapping for the query's candidate class
      * @param store the store that owns the query
      */
-    public void appendTo(SQLBuffer buf, FilterValue[] args,
+    void appendTo(SQLBuffer buf, FilterValue[] args,
         ClassMapping mapping, JDBCStore store);
 }

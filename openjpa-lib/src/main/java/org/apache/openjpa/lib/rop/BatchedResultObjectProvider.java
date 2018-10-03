@@ -39,6 +39,7 @@ public interface BatchedResultObjectProvider extends ResultObjectProvider {
     /**
      * Gets the next result object provider from its batch.
      */
+    @Override
     ResultObjectProvider getResultObject() throws Exception;
 
     /**

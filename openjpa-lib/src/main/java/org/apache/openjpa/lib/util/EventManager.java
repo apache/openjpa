@@ -30,30 +30,30 @@ public interface EventManager {
     /**
      * Add an event listener.
      */
-    public void addListener(Object listener);
+    void addListener(Object listener);
 
     /**
      * Remove an event listener.
      */
-    public boolean removeListener(Object listener);
+    boolean removeListener(Object listener);
 
     /**
      * Return whether the given instance is in the list of listeners.
      */
-    public boolean hasListener(Object listener);
+    boolean hasListener(Object listener);
 
     /**
      * Return true if there are any registered listeners.
      */
-    public boolean hasListeners();
+    boolean hasListeners();
 
     /**
      * Return a read-only list of listeners.
      */
-    public Collection getListeners();
+    Collection getListeners();
 
     /**
      * Fire the given event to all listeners, returning any exceptions.
      */
-    public Exception[] fireEvent(Object event);
+    Exception[] fireEvent(Object event);
 }

@@ -26,7 +26,9 @@ package org.apache.openjpa.persistence.query;
  */
 public class OrderableItem extends AbstractVisitable
     implements OrderByItem, Visitable {
-	private final Boolean _asc;
+	
+    private static final long serialVersionUID = 1L;
+    private final Boolean _asc;
 	private final ExpressionImpl _e;
 
 	OrderableItem(ExpressionImpl path) {
@@ -43,7 +45,8 @@ public class OrderableItem extends AbstractVisitable
 		this._e = path;
 	}
 
-	public String asExpression(AliasContext ctx) {
+	@Override
+    public String asExpression(AliasContext ctx) {
         return (ctx.hasAlias(_e) ? ctx.getAlias(_e) : _e.asExpression(ctx))
 		    + (_asc == null ? "" : (_asc ? " ASC " : " DESC"));
 	}

@@ -18,12 +18,11 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import org.apache.openjpa.persistence.*;
+import javax.persistence.InheritanceType;
 
-import javax.persistence.*;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
 
 
 
@@ -42,6 +41,7 @@ public class TestEnumerated extends AnnotationTestCase
 		super(name, "annotationcactusapp");
 	}
 
+    @Override
     public void setUp() {
         deleteAll(AnnoTest1.class);
     }

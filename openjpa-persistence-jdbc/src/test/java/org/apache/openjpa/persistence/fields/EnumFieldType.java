@@ -18,11 +18,12 @@
  */
 package org.apache.openjpa.persistence.fields;
 
-import java.util.List;
 import java.util.ArrayList;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 
@@ -36,7 +37,7 @@ public class EnumFieldType {
     private SampleEnum enumField;
 
     @PersistentCollection
-    private List<SampleEnum> enumList = new ArrayList<SampleEnum>();
+    private List<SampleEnum> enumList = new ArrayList<>();
 
     // for OpenJPA
     protected EnumFieldType() {

@@ -52,6 +52,7 @@ public class FieldSub extends AbstractMappedSuperProperty {
         crtDate = date;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof FieldSub) {
             FieldSub ps = (FieldSub)obj;

@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class LessThanExpression extends BinaryExpressionPredicate {
-	public LessThanExpression(Expression op1, Expression op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public LessThanExpression(Expression op1, Expression op2) {
 		super(op1, BinaryConditionalOperator.LESS,
 			BinaryConditionalOperator.GREATEREQUAL, op2);
 	}

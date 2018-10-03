@@ -142,12 +142,13 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
     private Configuration _conf = null;
     private ManagedRuntime _runtime = null;
 
+    @Override
     public TransactionManager getTransactionManager()
         throws Exception {
         if (_runtime != null)
             return _runtime.getTransactionManager();
 
-        List<Throwable> errors = new LinkedList<Throwable>();
+        List<Throwable> errors = new LinkedList<>();
         TransactionManager tm = null;
 
         // Try the registry extensions first so that any applicable vendor
@@ -254,16 +255,20 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
             setFatal(true).setNestedThrowables(t);
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _conf = conf;
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
     }
 
+    @Override
     public void setRollbackOnly(Throwable cause)
         throws Exception {
         // check to see if the runtime is cached
@@ -274,6 +279,7 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
             _runtime.setRollbackOnly(cause);
     }
 
+    @Override
     public Throwable getRollbackCause()
         throws Exception {
         // check to see if the runtime is cached
@@ -286,6 +292,7 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
         return null;
     }
 
+    @Override
     public Object getTransactionKey() throws Exception, SystemException {
         if(_runtime == null)
             getTransactionManager();
@@ -300,6 +307,7 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
      * Delegate nonTransactional work to the appropriate managed runtime. If no
      * managed runtime is found then delegate {@link AbstractManagedRuntime}.
      */
+    @Override
     public void doNonTransactionalWork(Runnable runnable)
             throws NotSupportedException {
         // Obtain a transaction manager to initialize the runtime.

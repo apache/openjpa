@@ -54,6 +54,7 @@ public class TestDetach extends SingleEMFTestCase {
     OpenJPAEntityManager em;
     DMCustomer root;
 
+    @Override
     public void setUp() {
         super.setUp(DMCustomer.class, DMCustomerInventory.class, DMItem.class,
             CLEAR_TABLES);
@@ -149,7 +150,7 @@ public class TestDetach extends SingleEMFTestCase {
         }
 
         List<DMCustomerInventory> newInventories =
-            new ArrayList<DMCustomerInventory>();
+            new ArrayList<>();
         newInventories.addAll(inventories);
         DMCustomerInventory newInventory = new DMCustomerInventory();
         newInventory.setCustomer(detached);

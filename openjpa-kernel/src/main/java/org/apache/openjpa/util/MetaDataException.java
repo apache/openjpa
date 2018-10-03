@@ -29,6 +29,9 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class MetaDataException
     extends UserException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public MetaDataException() {
         setFatal(true);
     }
@@ -48,6 +51,7 @@ public class MetaDataException
         setFatal(true);
     }
 
+    @Override
     public int getSubtype() {
         return METADATA;
     }

@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex0;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Compny2 {
@@ -30,7 +32,7 @@ public class Compny2 {
 
     @OneToMany
     Map<Division, VicePresident> orgs =
-        new HashMap<Division, VicePresident>();
+        new HashMap<>();
 
     public int getId() {
         return id;

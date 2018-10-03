@@ -28,6 +28,9 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class GeneralException
     extends OpenJPAException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public GeneralException() {
     }
 
@@ -51,6 +54,7 @@ public class GeneralException
         super(msg, cause);
     }
 
+    @Override
     public int getType() {
         return GENERAL;
     }

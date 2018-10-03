@@ -45,7 +45,7 @@ public interface LRSMapFieldStrategy
     /**
      * The owning field mapping.
      */
-    public FieldMapping getFieldMapping();
+    FieldMapping getFieldMapping();
 
     /**
      * Return all independent mappings to which this strategy must join in
@@ -54,7 +54,7 @@ public interface LRSMapFieldStrategy
      * @see ValueMapping#getIndependentTypeMappings
      * @see ClassMapping#EMPTY_MAPPINGS
      */
-    public ClassMapping[] getIndependentKeyMappings(boolean traverse);
+    ClassMapping[] getIndependentKeyMappings(boolean traverse);
 
     /**
      * Return all independent mappings to which this strategy must join in
@@ -63,67 +63,67 @@ public interface LRSMapFieldStrategy
      * @see ValueMapping#getIndependentTypeMappings
      * @see ClassMapping#EMPTY_MAPPINGS
      */
-    public ClassMapping[] getIndependentValueMappings(boolean traverse);
+    ClassMapping[] getIndependentValueMappings(boolean traverse);
 
     /**
      * Return the foreign key used to join to the owning field for the given
      * mapping from either {@link #getIndependentKeyMappings} or
      * {@link #getIndependentValueMappings} (or null).
      */
-    public ForeignKey getJoinForeignKey(ClassMapping cls);
+    ForeignKey getJoinForeignKey(ClassMapping cls);
 
     /**
      * Return the columns holding data for a map key for the given key mapping
      * from {@link #getIndependentKeyMappings} or
      * {@link #getIndependentValueMappings} (or null).
      */
-    public Column[] getKeyColumns(ClassMapping cls);
+    Column[] getKeyColumns(ClassMapping cls);
 
     /**
      * Return the columns holding data for a map value for the given value
      * mapping from {@link #getIndependentKeyMappings} or
      * {@link #getIndependentValueMappings} (or null).
      */
-    public Column[] getValueColumns(ClassMapping cls);
+    Column[] getValueColumns(ClassMapping cls);
 
     /**
      * Implement this method to select the keys of this field.
      * Elements of the result will be loaded with {@link #loadKey}.
      * This method is only used if the key is not derived from the value.
      */
-    public void selectKey(Select sel, ClassMapping key, OpenJPAStateManager sm,
+    void selectKey(Select sel, ClassMapping key, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, Joins joins);
 
     /**
      * Load a key from the given result.
      * This method is only used if the key is not derived from the value.
      */
-    public Object loadKey(OpenJPAStateManager sm, JDBCStore store,
+    Object loadKey(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException;
 
     /**
      * Some mapping derive keys from map values. Other mappings may return null.
      */
-    public Object deriveKey(JDBCStore store, Object value);
+    Object deriveKey(JDBCStore store, Object value);
 
     /**
      * Some mapping derive values from map keys. Other mappings may return null.
      */
-    public Object deriveValue(JDBCStore store, Object key);
+    Object deriveValue(JDBCStore store, Object key);
 
     /**
      * Implement this method to select the values of this field.
      * Elements of the result will be loaded with {@link #loadValue}.
      */
-    public void selectValue(Select sel, ClassMapping val,
+    void selectValue(Select sel, ClassMapping val,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         Joins joins);
 
     /**
      * Load a value from the given result.
      */
-    public Object loadValue(OpenJPAStateManager sm, JDBCStore store,
+    Object loadValue(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException;
 
@@ -134,7 +134,7 @@ public interface LRSMapFieldStrategy
      * The results will be loaded with the {@link #loadKey} or
      * {@link #deriveKey} and {@link #loadValue} methods.
      */
-    public Result[] getResults(OpenJPAStateManager sm, JDBCStore store,
+    Result[] getResults(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode, Joins[] joins, boolean lrs)
         throws SQLException;
 
@@ -142,11 +142,11 @@ public interface LRSMapFieldStrategy
      * Join this value's table to the table for the given key mapping
      * from {@link #getIndependentKeyMappings} (or null).
      */
-    public Joins joinKeyRelation(Joins joins, ClassMapping key);
+    Joins joinKeyRelation(Joins joins, ClassMapping key);
 
     /**
      * Join this value's table to the table for the given value mapping
      * from {@link #getIndependentValueMappings} (or null).
      */
-    public Joins joinValueRelation(Joins joins, ClassMapping val);
+    Joins joinValueRelation(Joins joins, ClassMapping val);
 }

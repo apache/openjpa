@@ -20,7 +20,13 @@
 package org.apache.openjpa.persistence.util;
 
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import org.apache.openjpa.lib.util.Localizer;
 
@@ -44,8 +50,8 @@ public class SourceCode {
 	/**
 	 * List of Java Keywords and primitive types. Populated statically.
 	 */
-    private static final ArrayList<String> reserved = new ArrayList<String>();
-    private static final ArrayList<String> knownTypes = new ArrayList<String>();
+    private static final ArrayList<String> reserved = new ArrayList<>();
+    private static final ArrayList<String> knownTypes = new ArrayList<>();
 
 	private static int TABSIZE                = 4;
 	private static final String SPACE         = " ";
@@ -63,7 +69,7 @@ public class SourceCode {
 	private List<Comment> comments;
 	private final Package pkg;
 	private final Class   cls;
-    private final Set<Import> imports = new TreeSet<Import>();
+    private final Set<Import> imports = new TreeSet<>();
 
 
 	/**
@@ -140,7 +146,7 @@ public class SourceCode {
 	    if (lines == null)
 	        return this;
 		if (comments == null)
-		    comments = new ArrayList<Comment>();
+		    comments = new ArrayList<>();
 		Comment comment = new Comment();
 		comments.add(comment);
 		comment.makeInline(inline);
@@ -193,7 +199,7 @@ public class SourceCode {
      */
     public static String[] wrap(String longLine, int width) {
         String[] words = longLine.split("\\ ");
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         StringBuilder line = new StringBuilder();
         for (int i = 0; i < words.length; i++) {
             String w = words[i];
@@ -250,7 +256,7 @@ public class SourceCode {
 
 	static LinkedList<String> tokenize(String s, String delim) {
 	    StringTokenizer tokenizer = new StringTokenizer(s, delim, false);
-		LinkedList<String> tokens = new LinkedList<String>();
+		LinkedList<String> tokens = new LinkedList<>();
 		while (tokenizer.hasMoreTokens())
 			tokens.add(tokenizer.nextToken());
 		return tokens;
@@ -283,8 +289,8 @@ public class SourceCode {
 		protected boolean isStatic;
 		protected boolean isFinal;
 		protected Comment comment;
-		protected List<ClassName> params = new ArrayList<ClassName>();
-		protected List<Annotation> annos = new ArrayList<Annotation>();
+		protected List<ClassName> params = new ArrayList<>();
+		protected List<Annotation> annos = new ArrayList<>();
 
         protected Element(String name, ClassName type) {
             this.name = name;
@@ -306,7 +312,8 @@ public class SourceCode {
 		    return this;
 		}
 
-		public int compareTo(Element<T> other) {
+		@Override
+        public int compareTo(Element<T> other) {
 			return name.compareTo(other.name);
 		}
 
@@ -364,10 +371,10 @@ public class SourceCode {
         private boolean isAbstract;
 		private boolean isFinal;
 		private ClassName superCls;
-		private List<ClassName> interfaces = new ArrayList<ClassName>();
-	    private Set<Field> fields   = new TreeSet<Field>();
-	    private Set<Method> methods = new TreeSet<Method>();
-	    private Set<Constructor> constructors = new TreeSet<Constructor>();
+		private List<ClassName> interfaces = new ArrayList<>();
+	    private Set<Field> fields   = new TreeSet<>();
+	    private Set<Method> methods = new TreeSet<>();
+	    private Set<Constructor> constructors = new TreeSet<>();
 
 		public Class(String name) {
 			super(name, getOrCreateImport(name));
@@ -392,6 +399,7 @@ public class SourceCode {
             return this;
         }
 
+        @Override
         public Class makeFinal() {
             if (isAbstract)
                 throw new IllegalArgumentException(_loc.get("src-invalid-modifier").toString());
@@ -456,7 +464,8 @@ public class SourceCode {
 	                    "src-duplicate-constructor", c, this).toString());
 	            return c;
 	    }
-	    public void write(PrintWriter out, int tab) {
+	    @Override
+        public void write(PrintWriter out, int tab) {
 			super.write(out, tab);
 			if (isAbstract)
 			    out.append("abstract ");
@@ -479,7 +488,8 @@ public class SourceCode {
 	        out.println(BLOCK_DELIMITER.end);
 		}
 
-	    public String toString() {
+	    @Override
+        public String toString() {
 	    	return getType().fullName;
 	    }
 	}
@@ -518,7 +528,7 @@ public class SourceCode {
 		public Field addSetter() {
 			owner.addMethod("set"+ capitalize(name), "void")
 			     .makePublic()
-                 .addArgument(new Argument<ClassName,String>(type, name,SPACE))
+                 .addArgument(new Argument<>(type, name,SPACE))
 			     .addCodeLine("this."+ name + " = " + name);
 			return this;
 		}
@@ -531,11 +541,13 @@ public class SourceCode {
             isTransient = true;
         }
 
-		public String toString() {
+		@Override
+        public String toString() {
 			return type + SPACE + name;
 		}
 
-		public void write(PrintWriter out, int tab) {
+		@Override
+        public void write(PrintWriter out, int tab) {
 			super.write(out, tab);
 			if (isVolatile) out.print("volatile ");
 			if (isTransient) out.print("transient ");
@@ -544,7 +556,8 @@ public class SourceCode {
 			out.println(SPACE + name + SEMICOLON);
 		}
 
-		public boolean equals(Object other) {
+		@Override
+        public boolean equals(Object other) {
 			if (other instanceof Field) {
 				Field that = (Field)other;
 				return name.equals(that.name);
@@ -560,8 +573,8 @@ public class SourceCode {
 	 */
 	public class Method extends Element<Method> {
 		private boolean isAbstract;
-		private List<Argument<ClassName,String>> args = new ArrayList<Argument<ClassName,String>>();
-		private List<String> codeLines = new ArrayList<String>();
+		private List<Argument<ClassName,String>> args = new ArrayList<>();
+		private List<String> codeLines = new ArrayList<>();
 		int tabCount = 0;
 		String tab = "";
 
@@ -581,7 +594,7 @@ public class SourceCode {
 
 		public Method addArgument(String className, String argName){
 		    ClassName cn = getOrCreateImport(className);
-		    args.add(new Argument<ClassName, String>(cn, argName," "));
+		    args.add(new Argument<>(cn, argName," "));
 		    return this;
 		}
 
@@ -629,11 +642,13 @@ public class SourceCode {
 		}
 
 
-		public String toString() {
+		@Override
+        public String toString() {
 			return type + SPACE + name;
 		}
 
-		public void write(PrintWriter out, int tab) {
+		@Override
+        public void write(PrintWriter out, int tab) {
 			out.println(BLANK);
 			super.write(out, tab);
 			if (isAbstract) out.append("abstract ");
@@ -652,7 +667,8 @@ public class SourceCode {
 			out.println(BLOCK_DELIMITER.end);
 		}
 
-		public boolean equals(Object other) {
+		@Override
+        public boolean equals(Object other) {
 			if (other instanceof Method) {
 				Method that = (Method)other;
                 return name.equals(that.name) && args.equals(that.args);
@@ -662,8 +678,8 @@ public class SourceCode {
 	}
 
 	public class Constructor extends Element<Constructor> {
-	    private List<Argument<ClassName,String>> args = new ArrayList<Argument<ClassName,String>>();
-        private List<String> codeLines = new ArrayList<String>();
+	    private List<Argument<ClassName,String>> args = new ArrayList<>();
+        private List<String> codeLines = new ArrayList<>();
         int tabCount = 0;
         String tab = "";
 
@@ -679,7 +695,7 @@ public class SourceCode {
 
         public Constructor addArgument(String className, String argName) {
             ClassName cn = getOrCreateImport(className);
-            args.add(new Argument<ClassName, String>(cn, argName, " "));
+            args.add(new Argument<>(cn, argName, " "));
             return this;
         }
 
@@ -741,7 +757,8 @@ public class SourceCode {
 			this.name = name;
 		}
 
-		public int compareTo(Import other) {
+		@Override
+        public int compareTo(Import other) {
 			return name.compareTo(other.name);
 		}
 
@@ -754,7 +771,8 @@ public class SourceCode {
 		    out.println("import "+ name.fullName + SEMICOLON);
 		}
 
-		public boolean equals(Object other) {
+		@Override
+        public boolean equals(Object other) {
 			if (other instanceof Import) {
 				Import that = (Import)other;
 				return name.equals(that.name);
@@ -782,6 +800,7 @@ public class SourceCode {
 			this.connector = connector;
 		}
 
+        @Override
         public String toString() {
 			return key + connector + value;
 		}
@@ -793,14 +812,14 @@ public class SourceCode {
 	 */
 	public class Annotation {
 		private String name;
-        private List<Argument<?,?>> args = new ArrayList<Argument<?,?>>();
+        private List<Argument<?,?>> args = new ArrayList<>();
 
 		Annotation(String n) {
 			name = n;
 		}
 
         public Annotation addArgument(String key, String v, boolean quote) {
-            return addArgument(new Argument<String,String>(key,
+            return addArgument(new Argument<>(key,
                 quote ? quote(v) : v, EQUAL));
         }
 
@@ -849,7 +868,7 @@ public class SourceCode {
 	}
 
 	class Comment {
-		List<String> lines = new ArrayList<String>();
+		List<String> lines = new ArrayList<>();
 		private boolean inline = false;
 
 		public void append(String line) {
@@ -944,14 +963,16 @@ public class SourceCode {
 	    /**
 	     * Gets the full or simple name of this receiver based on useFullName flag.
 	     */
-	    public String toString() {
+	    @Override
+        public String toString() {
 	        return (useFullName ? fullName : simpleName) + arrayMarker;
 	    }
 
 	    /**
 	     * Compares by fully-qualified name.
 	     */
-	    public int compareTo(ClassName other) {
+	    @Override
+        public int compareTo(ClassName other) {
 	        return getFullName().compareTo(other.getFullName());
 	    }
 

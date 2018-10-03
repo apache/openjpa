@@ -27,8 +27,9 @@ import java.util.Map;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class ShoppingCart implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * The owner of this cart.
      */
@@ -47,7 +48,7 @@ public class ShoppingCart implements Serializable {
      */
     ShoppingCart(Customer c) {
         customer = c;
-        items = new HashMap<Book, Integer>();
+        items = new HashMap<>();
     }
 
     /**

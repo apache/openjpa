@@ -37,6 +37,7 @@ public class ImageContentValidator implements ConstraintValidator<ImageContent, 
      * types it should support.
      * @param constraint the constraint definition
      */
+    @Override
     public void initialize(ImageContent constraint) {
         allowedTypes = Arrays.asList(constraint.value());
     }
@@ -44,6 +45,7 @@ public class ImageContentValidator implements ConstraintValidator<ImageContent, 
     /**
      * Validate a specified value.
      */
+    @Override
     public boolean isValid(byte[] value, ConstraintValidatorContext context) {
         if (value == null) {
             return false;

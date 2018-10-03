@@ -39,11 +39,11 @@ import org.apache.openjpa.jdbc.sql.SelectImpl;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.PreparedQuery;
+import org.apache.openjpa.kernel.PreparedQueryCache.Exclusion;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.StoreQuery;
-import org.apache.openjpa.kernel.PreparedQueryCache.Exclusion;
 import org.apache.openjpa.kernel.exps.Parameter;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
@@ -110,10 +110,12 @@ public class PreparedQueryImpl implements PreparedQuery {
         }
     }
 
+    @Override
     public String getIdentifier() {
         return _id;
     }
 
+    @Override
     public String getLanguage() {
         return QueryLanguages.LANG_PREPARED_SQL;
     }
@@ -122,10 +124,12 @@ public class PreparedQueryImpl implements PreparedQuery {
      * Get the original query string which is same as the identifier of this
      * receiver.
      */
+    @Override
     public String getOriginalQuery() {
         return getIdentifier();
     }
 
+    @Override
     public String getTargetQuery() {
         return _sql;
     }
@@ -134,6 +138,7 @@ public class PreparedQueryImpl implements PreparedQuery {
         _sql = sql;
     }
 
+    @Override
     public boolean isInitialized() {
         return _initialized;
     }
@@ -150,6 +155,7 @@ public class PreparedQueryImpl implements PreparedQuery {
      * Pours the post-compilation state held by this receiver to the given
      * query.
      */
+    @Override
     public void setInto(Query q) {
     	q.setQuery(_id);
         q.setCandidateType(_candidate, _subclasses);
@@ -164,6 +170,7 @@ public class PreparedQueryImpl implements PreparedQuery {
      * @return an exclusion if can not be initialized for some reason.
      * null if initialization is successful.
      */
+    @Override
     public Exclusion initialize(Object result) {
         if (isInitialized())
             return null;
@@ -307,6 +314,7 @@ public class PreparedQueryImpl implements PreparedQuery {
      * @return 0-based parameter index mapped to corresponding values.
      *
      */
+    @Override
     public Map<Integer, Object> reparametrize(Map user, Broker broker) {
         if (!isInitialized())
             throw new InternalException("reparameterize() on uninitialized.");
@@ -322,7 +330,7 @@ public class PreparedQueryImpl implements PreparedQuery {
             throw new UserException(_loc.get("uparam-mismatch",
                 _userParamPositions.keySet(), user.keySet(), this));
         }
-        Map<Integer, Object> result = new HashMap<Integer, Object>(_template);
+        Map<Integer, Object> result = new HashMap<>(_template);
 
         Set<Map.Entry<Object,Object>> userSet = user.entrySet();
         for (Map.Entry<Object,Object> userEntry : userSet) {
@@ -416,8 +424,8 @@ public class PreparedQueryImpl implements PreparedQuery {
      * key. A user parameter key may appear more than once.
      */
     void setUserParameterPositions(List list) {
-        _userParamPositions = new HashMap<Object, Integer[]>();
-        List<Integer> positions = new ArrayList<Integer>();
+        _userParamPositions = new HashMap<>();
+        List<Integer> positions = new ArrayList<>();
         for (int i = 1; list != null && i < list.size(); i += 2) {
             Object key = ((Parameter)list.get(i)).getParameterKey();
             positions.clear();
@@ -431,7 +439,7 @@ public class PreparedQueryImpl implements PreparedQuery {
     }
 
     void setParameters(List list) {
-        Map<Integer, Object> tmp = new HashMap<Integer, Object>();
+        Map<Integer, Object> tmp = new HashMap<>();
         for (int i = 0; list != null && i < list.size(); i++) {
             tmp.put(i, list.get(i));
         }
@@ -442,6 +450,7 @@ public class PreparedQueryImpl implements PreparedQuery {
         return select;
     }
 
+    @Override
     public String toString() {
         return "PreparedQuery: [" + getOriginalQuery() + "] --> [" +
                getTargetQuery() + "]";

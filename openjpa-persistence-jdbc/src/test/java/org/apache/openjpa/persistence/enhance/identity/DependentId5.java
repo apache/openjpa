@@ -46,10 +46,12 @@ public class DependentId5 {
         this.emp = emp;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode() + emp.hashCode();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof DependentId5)) return false;
         DependentId5 d = (DependentId5) o;

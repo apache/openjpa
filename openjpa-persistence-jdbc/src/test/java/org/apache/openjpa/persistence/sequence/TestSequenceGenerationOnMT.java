@@ -32,6 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 
 public class TestSequenceGenerationOnMT extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, GeneratedIdObject.class,
           "openjpa.Multithreaded", "true");
@@ -40,7 +41,7 @@ public class TestSequenceGenerationOnMT extends SingleEMFTestCase {
     public void testIdGenerationInMultithreadedEnvironment() {
         int nThreads = 5;
         ExecutorService threads = Executors.newFixedThreadPool(nThreads);
-        List<Callable<Boolean>> tasks = new ArrayList<Callable<Boolean>>();
+        List<Callable<Boolean>> tasks = new ArrayList<>();
         for (int i = 0; i < nThreads; i++) {
             Loader loader = new Loader(emf.createEntityManager());
             tasks.add(loader);
@@ -67,6 +68,7 @@ public class TestSequenceGenerationOnMT extends SingleEMFTestCase {
         Loader(EntityManager em) {
             this.em = em;
         }
+        @Override
         public Boolean call() throws Exception {
             GeneratedIdObject pc = new GeneratedIdObject();
             em.getTransaction().begin();

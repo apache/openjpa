@@ -30,61 +30,61 @@ public interface JDBCListener {
     /**
      * @see JDBCEvent#BEFORE_PREPARE_STATEMENT
      */
-    public void beforePrepareStatement(JDBCEvent event);
+    void beforePrepareStatement(JDBCEvent event);
 
     /**
      * @see JDBCEvent#AFTER_PREPARE_STATEMENT
      */
-    public void afterPrepareStatement(JDBCEvent event);
+    void afterPrepareStatement(JDBCEvent event);
 
     /**
      * @see JDBCEvent#BEFORE_CREATE_STATEMENT
      */
-    public void beforeCreateStatement(JDBCEvent event);
+    void beforeCreateStatement(JDBCEvent event);
 
     /**
      * @see JDBCEvent#AFTER_CREATE_STATEMENT
      */
-    public void afterCreateStatement(JDBCEvent event);
+    void afterCreateStatement(JDBCEvent event);
 
     /**
      * @see JDBCEvent#BEFORE_EXECUTE_STATEMENT
      */
-    public void beforeExecuteStatement(JDBCEvent event);
+    void beforeExecuteStatement(JDBCEvent event);
 
     /**
      * @see JDBCEvent#AFTER_EXECUTE_STATEMENT
      */
-    public void afterExecuteStatement(JDBCEvent event);
+    void afterExecuteStatement(JDBCEvent event);
 
     /**
      * @see JDBCEvent#BEFORE_COMMIT
      */
-    public void beforeCommit(JDBCEvent event);
+    void beforeCommit(JDBCEvent event);
 
     /**
      * @see JDBCEvent#AFTER_COMMIT
      */
-    public void afterCommit(JDBCEvent event);
+    void afterCommit(JDBCEvent event);
 
     /**
      * @see JDBCEvent#BEFORE_ROLLBACK
      */
-    public void beforeRollback(JDBCEvent event);
+    void beforeRollback(JDBCEvent event);
 
     /**
      * @see JDBCEvent#AFTER_ROLLBACK
      */
-    public void afterRollback(JDBCEvent event);
+    void afterRollback(JDBCEvent event);
 
     /**
      * @see JDBCEvent#AFTER_CONNECT
      */
-    public void afterConnect(JDBCEvent event);
+    void afterConnect(JDBCEvent event);
 
     /**
      * @see JDBCEvent#BEFORE_CLOSE
      */
-    public void beforeClose(JDBCEvent event);
+    void beforeClose(JDBCEvent event);
 }
 

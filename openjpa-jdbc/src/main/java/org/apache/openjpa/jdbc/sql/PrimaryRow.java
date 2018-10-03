@@ -19,8 +19,8 @@
 package org.apache.openjpa.jdbc.sql;
 
 import java.sql.SQLException;
-
 import java.util.Objects;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.RelationId;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -72,6 +72,7 @@ public class PrimaryRow
     /**
      * Mark this row as dependent on some other row.
      */
+    @Override
     public boolean isDependent() {
         return (flags & DEPENDENT) > 0;
     }
@@ -100,23 +101,28 @@ public class PrimaryRow
         _idx = idx;
     }
 
+    @Override
     public Object getFailedObject() {
         return _failed;
     }
 
+    @Override
     public void setFailedObject(Object failed) {
         _failed = failed;
     }
 
+    @Override
     public OpenJPAStateManager getPrimaryKey() {
         return _pk;
     }
 
+    @Override
     public void setPrimaryKey(OpenJPAStateManager sm)
         throws SQLException {
         setPrimaryKey(null, sm);
     }
 
+    @Override
     public void setPrimaryKey(ColumnIO io, OpenJPAStateManager sm) {
         _pk = sm;
         flags |= PK_SET;
@@ -126,6 +132,7 @@ public class PrimaryRow
         setValid(true);
     }
 
+    @Override
     public void wherePrimaryKey(OpenJPAStateManager sm)
         throws SQLException {
         _pk = sm;
@@ -159,11 +166,13 @@ public class PrimaryRow
         return (_fkWhere == null) ? null : _fkWhere[fk.getIndex()];
     }
 
+    @Override
     public void setForeignKey(ForeignKey fk, OpenJPAStateManager sm)
         throws SQLException {
         setForeignKey(fk, null, sm);
     }
 
+    @Override
     public void setForeignKey(ForeignKey fk, ColumnIO io,
         OpenJPAStateManager sm)
         throws SQLException {
@@ -173,6 +182,7 @@ public class PrimaryRow
             recordForeignKey(fk, io, sm, true);
     }
 
+    @Override
     public void whereForeignKey(ForeignKey fk, OpenJPAStateManager sm)
         throws SQLException {
         if (!delayForeignKey(fk, sm, false))
@@ -181,6 +191,7 @@ public class PrimaryRow
             recordForeignKey(fk, null, sm, false);
     }
 
+    @Override
     public void clearForeignKey(ForeignKey fk)
         throws SQLException {
         super.clearForeignKey(fk);
@@ -271,6 +282,7 @@ public class PrimaryRow
             : _callbacks[getRelationIdIndex(col)];
     }
 
+    @Override
     public void setRelationId(Column col, OpenJPAStateManager sm,
         RelationId rel)
         throws SQLException {
@@ -289,6 +301,7 @@ public class PrimaryRow
         }
     }
 
+    @Override
     public void clearRelationId(Column col)
         throws SQLException {
         super.clearRelationId(col);
@@ -326,6 +339,7 @@ public class PrimaryRow
         return false;
     }
 
+    @Override
     protected void setObject(Column col, Object val, int metaType,
         boolean overrideDefault)
         throws SQLException {
@@ -388,6 +402,7 @@ public class PrimaryRow
             && ((Number) o1).doubleValue() == ((Number) o2).doubleValue();
     }
 
+    @Override
     protected String generateSQL(DBDictionary dict) {
         try {
             if ((flags & PK_SET) > 0)
@@ -423,10 +438,12 @@ public class PrimaryRow
         return super.generateSQL(dict);
     }
 
+    @Override
     protected RowImpl newInstance(Column[] cols, int action) {
         return new PrimaryRow(cols, action, _pk);
     }
 
+    @Override
     public void copyInto(RowImpl row, boolean whereOnly) {
         super.copyInto(row, whereOnly);
         if (!(row instanceof PrimaryRow))
@@ -466,6 +483,7 @@ public class PrimaryRow
         }
     }
 
+    @Override
     public String toString() {
     	StringBuilder buf = new StringBuilder();
     	buf.append("PrimaryRow[");

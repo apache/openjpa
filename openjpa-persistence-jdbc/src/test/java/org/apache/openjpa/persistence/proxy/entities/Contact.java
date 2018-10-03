@@ -37,11 +37,13 @@ public class Contact extends AnnuityPersistebleObject implements IContact {
 	private String phone;
 	private ContactType contactType;
 
-	@Transient
+	@Override
+    @Transient
 	public IAddress getAddress() {
 		return (IAddress) this.getTheAddress();
 	}
-	public void setAddress(IAddress address) {
+	@Override
+    public void setAddress(IAddress address) {
 		if (address instanceof Address){
 			this.setTheAddress((Address)address);
 		}else if(address == null) {
@@ -61,26 +63,32 @@ public class Contact extends AnnuityPersistebleObject implements IContact {
 		this.theAddress = address;
 	}
 
-	@Column(name="EMAIL")
+	@Override
+    @Column(name="EMAIL")
 	public String getEmail() {
 		return email;
 	}
-	public void setEmail(String email) {
+	@Override
+    public void setEmail(String email) {
 		this.email = email;
 	}
-	@Column(name="PHONE")
+	@Override
+    @Column(name="PHONE")
 	public String getPhone() {
 		return phone;
 	}
-	public void setPhone(String phone) {
+	@Override
+    public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	@Column(name="TYPE")
+	@Override
+    @Column(name="TYPE")
 	@Enumerated(EnumType.STRING)
 	public ContactType getContactType() {
 		return contactType;
 	}
-	public void setContactType(ContactType contactType) {
+	@Override
+    public void setContactType(ContactType contactType) {
 		this.contactType = contactType;
 	}
 

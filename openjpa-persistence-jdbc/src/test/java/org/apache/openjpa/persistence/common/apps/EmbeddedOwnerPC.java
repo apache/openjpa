@@ -113,7 +113,9 @@ public class EmbeddedOwnerPC
 
 	public static class EmbKey implements Serializable
 	{
-		public int					id1;
+		
+        private static final long serialVersionUID = 1L;
+        public int					id1;
 		public int					id2;
 
 		public EmbKey()

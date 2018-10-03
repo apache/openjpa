@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 
 /**
@@ -35,6 +36,8 @@ import org.apache.openjpa.meta.JavaTypes;
 public class ImmutableValueHandler
     extends AbstractValueHandler {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final ImmutableValueHandler _instance =
         new ImmutableValueHandler();
 
@@ -48,6 +51,8 @@ public class ImmutableValueHandler
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
         DBDictionary dict = vm.getMappingRepository().getDBDictionary();
@@ -66,6 +71,7 @@ public class ImmutableValueHandler
         return new Column[]{ col };
     }
 
+    @Override
     public boolean isVersionable(ValueMapping vm) {
         switch (vm.getTypeCode()) {
             case JavaTypes.BOOLEAN:
@@ -90,13 +96,14 @@ public class ImmutableValueHandler
         }
     }
 
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         if (val != null)
             return val;
 
         FieldMapping field = vm.getFieldMapping();
-        if (field.getNullValue() != FieldMapping.NULL_DEFAULT)
+        if (field.getNullValue() != FieldMetaData.NULL_DEFAULT)
             return null;
 
         Column[] cols = vm.getColumns();

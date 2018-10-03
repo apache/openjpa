@@ -18,8 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -115,6 +117,7 @@ import javax.persistence.Transient;
         this.selfOneMany = selfOneMany;
     }
 
+    @Override
     public String toString() {
         return "IntField: "+intField+", StringField: "+stringField+" .";
     }

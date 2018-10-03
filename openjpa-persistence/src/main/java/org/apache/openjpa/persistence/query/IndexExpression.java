@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class IndexExpression extends UnaryOperatorExpression {
-	public IndexExpression(Expression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public IndexExpression(Expression op) {
 		super(op, UnaryFunctionalOperator.INDEX);
 	}
 

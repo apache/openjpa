@@ -21,7 +21,11 @@ package org.apache.openjpa.persistence.embed;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.MapKeyClass;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="CR_EMBED_ITEM")

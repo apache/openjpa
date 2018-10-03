@@ -35,6 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestNewJavaObjectQuery extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, Game.class,
                 DtaSrc.class, DtaSrcField.class,

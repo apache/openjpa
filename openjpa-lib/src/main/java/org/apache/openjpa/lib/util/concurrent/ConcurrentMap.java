@@ -34,11 +34,11 @@ public interface ConcurrentMap extends Map {
      *
      * @return the removed entry, or null if map is empty
      */
-    public Map.Entry removeRandom();
+    Map.Entry removeRandom();
 
     /**
      * Iterate over map entries, beginning at an arbitrary
      * (not strictly random) entry.
      */
-    public Iterator randomEntryIterator();
+    Iterator randomEntryIterator();
 }

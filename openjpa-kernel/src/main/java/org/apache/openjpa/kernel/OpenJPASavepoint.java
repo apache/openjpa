@@ -30,9 +30,8 @@ import java.util.Map;
  * @author Steve Kim
  * @since 0.3.4
  */
-@SuppressWarnings("serial")
 public class OpenJPASavepoint implements Serializable {
-
+    private static final long serialVersionUID = 1L;
     private final Broker _broker;
     private final String _name;
     private final boolean _copy;
@@ -84,7 +83,7 @@ public class OpenJPASavepoint implements Serializable {
         if (_saved != null)
             throw new IllegalStateException();
 
-        _saved = new HashMap<StateManagerImpl, SavepointFieldManager>((int) (states.size() * 1.33 + 1));
+        _saved = new HashMap<>((int) (states.size() * 1.33 + 1));
         for (StateManagerImpl sm : states) {
             _saved.put(sm, new SavepointFieldManager(sm, _copy));
         }
@@ -114,7 +113,7 @@ public class OpenJPASavepoint implements Serializable {
         else {
             // merge all changes into one collection, allowing for later
             // SavepointFieldManagers to replace previous ones.
-            saved = new HashMap<StateManagerImpl, SavepointFieldManager>();
+            saved = new HashMap<>();
             for (OpenJPASavepoint savepoint : previous)
                 saved.putAll(savepoint.getStates());
             saved.putAll(_saved);

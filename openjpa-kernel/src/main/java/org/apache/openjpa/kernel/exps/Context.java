@@ -34,6 +34,8 @@ import org.apache.openjpa.meta.ClassMetaData;
  */
 public class Context implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     public final ParsedJPQL parsed;
     public ClassMetaData meta;
     public String schemaAlias;
@@ -44,9 +46,9 @@ public class Context implements Serializable {
     private List<Context> subsels = null;
     private Object select = null;
     protected int aliasCount = -1;
-    private Map<String,Value> variables = new HashMap<String,Value>();
+    private Map<String,Value> variables = new HashMap<>();
     private Map<String,ClassMetaData> schemas =
-        new HashMap<String,ClassMetaData>();
+        new HashMap<>();
 
     public Context(ParsedJPQL parsed, Subquery subquery, Context parent) {
         this.parsed = parsed;
@@ -121,7 +123,7 @@ public class Context implements Serializable {
         if (sub == null)
             return;
         if (subsels == null)
-            subsels = new ArrayList<Context>();
+            subsels = new ArrayList<>();
         subsels.add(sub);
     }
 

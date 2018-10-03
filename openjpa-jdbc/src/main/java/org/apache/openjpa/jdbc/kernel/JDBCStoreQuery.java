@@ -67,6 +67,8 @@ import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.exps.StringContains;
+import org.apache.openjpa.kernel.exps.WildcardMatch;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
@@ -85,6 +87,9 @@ import org.apache.openjpa.util.UserException;
 public class JDBCStoreQuery
     extends ExpressionStoreQuery {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Table INVALID = new Table();
 
     // add all standard filter and aggregate listeners to these maps
@@ -92,8 +97,8 @@ public class JDBCStoreQuery
 
     static {
         // deprecated extensions
-        _listeners.put(JDBCStringContains.TAG, new JDBCStringContains());
-        _listeners.put(JDBCWildcardMatch.TAG, new JDBCWildcardMatch());
+        _listeners.put(StringContains.TAG, new JDBCStringContains());
+        _listeners.put(WildcardMatch.TAG, new JDBCWildcardMatch());
         _listeners.put(SQLExpression.TAG, new SQLExpression());
         _listeners.put(SQLValue.TAG, new SQLValue());
 
@@ -120,20 +125,24 @@ public class JDBCStoreQuery
         return _store;
     }
 
+    @Override
     public FilterListener getFilterListener(String tag) {
         return (FilterListener) _listeners.get(tag);
     }
 
+    @Override
     public Object newCompilationKey() {
         JDBCFetchConfiguration fetch = (JDBCFetchConfiguration) ctx
             .getFetchConfiguration();
         return fetch.getJoinSyntax();
     }
 
+    @Override
     public boolean supportsDataStoreExecution() {
         return true;
     }
 
+    @Override
     protected ClassMetaData[] getIndependentExpressionCandidates(
         ClassMetaData meta, boolean subclasses) {
         if (!subclasses)
@@ -141,6 +150,7 @@ public class JDBCStoreQuery
         return ((ClassMapping) meta).getIndependentAssignableMappings();
     }
 
+    @Override
     protected ExpressionFactory getExpressionFactory(ClassMetaData meta) {
         JDBCExpressionFactory factory = new JDBCExpressionFactory((ClassMapping) meta);
         if (_store.getDBDictionary() instanceof PostgresDictionary)
@@ -148,6 +158,7 @@ public class JDBCStoreQuery
         return factory;
     }
 
+    @Override
     protected ResultObjectProvider executeQuery(Executor ex,
         ClassMetaData base, ClassMetaData[] metas, boolean subclasses,
         ExpressionFactory[] facts, QueryExpressions[] exps, Object[] params,
@@ -192,7 +203,7 @@ public class JDBCStoreQuery
         boolean unionable = createWhereSelects(sels, mappings, selMappings,
             subclasses, subclassBits, nextBits, facts, exps, states, ctx,
             subclassMode)
-            && subclassMode == JDBCFetchConfiguration.EAGER_JOIN
+            && subclassMode == EagerFetchModes.EAGER_JOIN
             && start == 0
             && end == Long.MAX_VALUE;
 
@@ -262,6 +273,7 @@ public class JDBCStoreQuery
         final BitSet[] paged = (exps[0].projections.length > 0) ? null
             : new BitSet[mappings.length];
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 BitSet bits = populateSelect(sel, mappings[idx], subclasses,
                     (JDBCExpressionFactory) facts[idx], exps[idx], states[idx],
@@ -288,7 +300,7 @@ public class JDBCStoreQuery
             paged = PagingResultObjectProvider.getPagedFields(sel, mapping,
                 _store, ctx.fetch, eager, end - start);
             if (paged != null)
-                eager = JDBCFetchConfiguration.EAGER_JOIN;
+                eager = EagerFetchModes.EAGER_JOIN;
         }
 
         fact.getSelectConstructor().select(sel, ctx, mapping, subclasses, exps,
@@ -425,7 +437,7 @@ public class JDBCStoreQuery
         if (!subclasses || exps.projections.length > 0)
             return new ClassMapping[] { mapping };
 
-        if (subclassMode != JDBCFetchConfiguration.EAGER_PARALLEL
+        if (subclassMode != EagerFetchModes.EAGER_PARALLEL
             || !hasVerticalSubclasses(mapping))
             return new ClassMapping[] { mapping };
 
@@ -484,6 +496,7 @@ public class JDBCStoreQuery
         return EagerFetchModes.EAGER_PARALLEL;
     }
 
+    @Override
     protected Number executeDelete(Executor ex, ClassMetaData base,
         ClassMetaData[] metas, boolean subclasses, ExpressionFactory[] facts,
         QueryExpressions[] exps, Object[] params) {
@@ -491,6 +504,7 @@ public class JDBCStoreQuery
             params, null);
     }
 
+    @Override
     protected Number executeUpdate(Executor ex, ClassMetaData base,
         ClassMetaData[] metas, boolean subclasses, ExpressionFactory[] facts,
         QueryExpressions[] exps, Object[] params) {
@@ -545,7 +559,7 @@ public class JDBCStoreQuery
                 exps[i], state[i]);
             jdbcFactory.getSelectConstructor().select(sel, ctx, mappings[i],
                 subclasses, exps[i], state[i],
-                JDBCFetchConfiguration.EAGER_NONE);
+                EagerFetchModes.EAGER_NONE);
 
             // The bulk operation will return null to indicate that the database
             // does not support the request bulk delete operation; in
@@ -672,6 +686,7 @@ public class JDBCStoreQuery
         return null;
     }
 
+    @Override
     protected String[] getDataStoreActions(ClassMetaData base,
         ClassMetaData[] metas, boolean subclasses, ExpressionFactory[] facts,
         QueryExpressions[] exps, Object[] params, Range range) {
@@ -690,7 +705,7 @@ public class JDBCStoreQuery
             fetch.addFetchInnerJoins(Arrays.asList(exps[0].fetchInnerPaths));
 
         int eager = calculateEagerMode(exps[0], range.start, range.end);
-        eager = Math.min(eager, JDBCFetchConfiguration.EAGER_JOIN);
+        eager = Math.min(eager, EagerFetchModes.EAGER_JOIN);
         int subclassMode = fetch.getSubclassFetchMode((ClassMapping) base);
         DBDictionary dict = _store.getDBDictionary();
         long start = (mappings.length == 1 && dict.supportsSelectStartIndex)
@@ -709,7 +724,7 @@ public class JDBCStoreQuery
         BitSet nextBits = new BitSet();
         boolean unionable = createWhereSelects(sels, mappings, selMappings,
             subclasses, subclassBits, nextBits, facts, exps, states, ctx,
-            subclassMode) && subclassMode == JDBCFetchConfiguration.EAGER_JOIN;
+            subclassMode) && subclassMode == EagerFetchModes.EAGER_JOIN;
         if (sels.size() > 1)
             start = 0L;
 
@@ -759,6 +774,7 @@ public class JDBCStoreQuery
         return sql.prepareStatement(conn);
     }
 
+    @Override
     public Object evaluate(Object value, Object ob, Object[] params,
         OpenJPAStateManager sm) {
         int id = 0;
@@ -1033,6 +1049,7 @@ public class JDBCStoreQuery
     }
 
     private static class ThreadLocalContext extends ThreadLocal<Context[]> {
+        @Override
         public Context[] initialValue() {
           return null;
         }

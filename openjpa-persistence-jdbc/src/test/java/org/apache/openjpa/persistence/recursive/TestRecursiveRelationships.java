@@ -26,6 +26,7 @@ public class TestRecursiveRelationships extends SingleEMFTestCase {
     private int _l1Nodes = 3;
     private int _l2Nodes = 3;
 
+    @Override
     public void setUp() {
         setUp(DROP_TABLES, Node.class);
     }

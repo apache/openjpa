@@ -25,7 +25,9 @@ package org.apache.openjpa.persistence.query;
  *
  */
 class ConstantExpression extends ExpressionImpl {
-	private final Object _value;
+	
+    private static final long serialVersionUID = 1L;
+    private final Object _value;
 
 	public ConstantExpression(Object value) {
 		_value = value;

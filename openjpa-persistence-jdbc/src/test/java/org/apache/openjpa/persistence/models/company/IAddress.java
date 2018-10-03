@@ -20,18 +20,18 @@ package org.apache.openjpa.persistence.models.company;
 
 public interface IAddress {
 
-    public void setStreetAddress(String streetAddress);
-    public String getStreetAddress();
+    void setStreetAddress(String streetAddress);
+    String getStreetAddress();
 
-    public void setCity(String city);
-    public String getCity();
+    void setCity(String city);
+    String getCity();
 
-    public void setState(String state);
-    public String getState();
+    void setState(String state);
+    String getState();
 
-    public void setPostalCode(String postalCode);
-    public String getPostalCode();
+    void setPostalCode(String postalCode);
+    String getPostalCode();
 
-    public void setPhoneNumber(String phoneNumber);
-    public String getPhoneNumber();
+    void setPhoneNumber(String phoneNumber);
+    String getPhoneNumber();
 }

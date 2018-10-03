@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.util.EagerEntity;
 
 public class TestOneToManySubQuery extends SingleEMFTestCase {
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, EagerEntity.class, EagerEmbed.class, EagerEmbedRel.class);
     }

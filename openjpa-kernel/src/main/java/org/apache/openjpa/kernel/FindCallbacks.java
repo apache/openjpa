@@ -32,12 +32,12 @@ public interface FindCallbacks {
      *
      * @return the id to look up, or null to ignore this argument
      */
-    public Object processArgument(Object oid);
+    Object processArgument(Object oid);
 
     /**
      * Process operation return value.
      *
      * @return the object to return
      */
-    public Object processReturn(Object oid, OpenJPAStateManager sm);
+    Object processReturn(Object oid, OpenJPAStateManager sm);
 }

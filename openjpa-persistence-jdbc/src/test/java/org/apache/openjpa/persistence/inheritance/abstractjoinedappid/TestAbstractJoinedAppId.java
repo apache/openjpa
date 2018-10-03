@@ -24,8 +24,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that you traverse an inverse key-baesd relation to an abstract
@@ -34,6 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestAbstractJoinedAppId
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(Superclass.class, Subclass.class, RelationOwner.class,
             DROP_TABLES);

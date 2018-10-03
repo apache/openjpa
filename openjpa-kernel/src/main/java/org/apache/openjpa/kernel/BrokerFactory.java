@@ -37,12 +37,12 @@ public interface BrokerFactory
     /**
      * Return the configuration for this factory.
      */
-    public OpenJPAConfiguration getConfiguration();
+    OpenJPAConfiguration getConfiguration();
 
     /**
      * Return properties describing this runtime.
      */
-    public Map<String,Object> getProperties();
+    Map<String,Object> getProperties();
 
     /**
      * Return all of the supported properties as a set of keys. If a property
@@ -50,29 +50,29 @@ public interface BrokerFactory
      *
      * @since 2.0.0
      */
-    public Set<String>  getSupportedProperties();
+    Set<String>  getSupportedProperties();
 
     /**
      * Put the specified key-value pair into the map of user objects.
      */
-    public Object putUserObject(Object key, Object val);
+    Object putUserObject(Object key, Object val);
 
     /**
      * Get the value for the specified key from the map of user objects.
      */
-    public Object getUserObject(Object key);
+    Object getUserObject(Object key);
 
     /**
      * Return a broker with default settings.
      */
-    public Broker newBroker();
+    Broker newBroker();
 
     /**
      * Return a broker using the given credentials and in the given
      * transaction and connection retain mode, optionally finding
      * existing broker in the global transaction.
      */
-    public Broker newBroker(String user, String pass, boolean managed,
+    Broker newBroker(String user, String pass, boolean managed,
         int connRetainMode, boolean findExisting);
 
     /**
@@ -95,7 +95,7 @@ public interface BrokerFactory
      * @param cf2Name  Non-JTA ConnectionFactory to use.
      * @return A Broker which matches the provided criteria.
      */
-    public Broker newBroker(String user, String pass, boolean managed,
+    Broker newBroker(String user, String pass, boolean managed,
         int connRetainMode, boolean findExisting, String cfName, String cf2Name);
 
     /**
@@ -105,14 +105,14 @@ public interface BrokerFactory
      *
      * @since 0.3.3
      */
-    public void addLifecycleListener(Object listener, Class<?>[] classes);
+    void addLifecycleListener(Object listener, Class<?>[] classes);
 
     /**
      * Remove a listener for lifecycle-related events.
      *
      * @since 0.3.3
      */
-    public void removeLifecycleListener(Object listener);
+    void removeLifecycleListener(Object listener);
 
     /**
      * Register a listener for transaction-related events on the specified
@@ -121,7 +121,7 @@ public interface BrokerFactory
      *
      * @since 1.0.0
      */
-    public void addTransactionListener(Object listener);
+    void addTransactionListener(Object listener);
 
     /**
      * Remove a listener for transaction-related events. It will no longer
@@ -129,36 +129,36 @@ public interface BrokerFactory
      *
      * @since 1.0.0
      */
-    public void removeTransactionListener(Object listener);
+    void removeTransactionListener(Object listener);
 
     /**
      * Close the factory.
      */
-    public void close();
+    @Override void close();
 
     /**
      * Returns true if this broker factory is closed.
      */
-    public boolean isClosed();
+    boolean isClosed();
 
     /**
      * Synchronizes on an internal lock.
      */
-    public void lock();
+    void lock();
 
     /**
      * Release the internal lock.
      */
-    public void unlock ();
+    void unlock ();
 
     /**
      * assert that this broker is open. If the broker has been closed an IllegalStateException will be thrown
      * with information on when the broker was closed.
      */
-    public void assertOpen();
+    void assertOpen();
 
     /**
      * This method is invoked AFTER a BrokerFactory has been instantiated.
      */
-    public void postCreationCallback();
+    void postCreationCallback();
 }

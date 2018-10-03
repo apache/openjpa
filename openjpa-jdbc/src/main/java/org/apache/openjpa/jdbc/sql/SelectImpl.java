@@ -39,7 +39,6 @@ import java.util.Stack;
 import java.util.TreeMap;
 
 import org.apache.commons.collections4.iterators.EmptyIterator;
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -59,6 +58,8 @@ import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.InternalException;
@@ -172,25 +173,31 @@ public class SelectImpl
     private List _joinedTables = null;
     private List _exJoinedTables = null;
 
+    @Override
     public ClassMapping getTablePerClassMeta() {
         return _tpcMeta;
     }
+    @Override
     public void setTablePerClassMeta(ClassMapping meta) {
         _tpcMeta = meta;
     }
 
+    @Override
     public void setJoinedTableClassMeta(List meta) {
         _joinedTables = meta;
     }
 
+    @Override
     public List getJoinedTableClassMeta() {
         return _joinedTables;
     }
 
+    @Override
     public void setExcludedJoinedTableClassMeta(List meta) {
         _exJoinedTables = meta;
     }
 
+    @Override
     public List getExcludedJoinedTableClassMeta() {
         return _exJoinedTables;
     }
@@ -229,6 +236,7 @@ public class SelectImpl
         _selects._dict = _dict;
     }
 
+    @Override
     public void setContext(Context context) {
         if (_ctx == null) {
             _ctx = context;
@@ -236,10 +244,12 @@ public class SelectImpl
         }
     }
 
+    @Override
     public Context ctx() {
         return _ctx;
     }
 
+    @Override
     public void setSchemaAlias(String schemaAlias) {
         _schemaAlias = schemaAlias;
     }
@@ -248,27 +258,33 @@ public class SelectImpl
     // SelectExecutor implementation
     /////////////////////////////////
 
+    @Override
     public JDBCConfiguration getConfiguration() {
         return _conf;
     }
 
+    @Override
     public SQLBuffer toSelect(boolean forUpdate, JDBCFetchConfiguration fetch) {
         _full = _dict.toSelect(this, forUpdate, fetch);
         return _full;
     }
 
+    @Override
     public SQLBuffer getSQL() {
         return _full;
     }
 
+    @Override
     public SQLBuffer toSelectCount() {
         return _dict.toSelectCount(this);
     }
 
+    @Override
     public boolean getAutoDistinct() {
         return (_flags & NONAUTO_DISTINCT) == 0;
     }
 
+    @Override
     public void setAutoDistinct(boolean val) {
         if (val)
             _flags &= ~NONAUTO_DISTINCT;
@@ -276,12 +292,14 @@ public class SelectImpl
             _flags |= NONAUTO_DISTINCT;
     }
 
+    @Override
     public boolean isDistinct() {
         return (_flags & NOT_DISTINCT) == 0 && ((_flags & DISTINCT) != 0
             || ((_flags & NONAUTO_DISTINCT) == 0
             && (_flags & IMPLICIT_DISTINCT) != 0));
     }
 
+    @Override
     public void setDistinct(boolean distinct) {
         // need two flags in case set not_distinct, then a to-many join happens
         // and distinct flag gets set automatically
@@ -294,10 +312,12 @@ public class SelectImpl
         }
     }
 
+    @Override
     public boolean isLRS() {
         return (_flags & LRS) != 0;
     }
 
+    @Override
     public void setLRS(boolean lrs) {
         if (lrs)
             _flags |= LRS;
@@ -305,6 +325,7 @@ public class SelectImpl
             _flags &= ~LRS;
     }
 
+    @Override
     public int getExpectedResultCount() {
         // if the count isn't forced and we have to-many eager joins that could
         // throw the count off, don't pay attention to it
@@ -313,6 +334,7 @@ public class SelectImpl
         return _expectedResultCount;
     }
 
+    @Override
     public void setExpectedResultCount(int expectedResultCount, boolean force) {
         _expectedResultCount = expectedResultCount;
         if (force)
@@ -321,22 +343,27 @@ public class SelectImpl
             _flags &= ~FORCE_COUNT;
     }
 
+    @Override
     public int getJoinSyntax() {
         return _joinSyntax;
     }
 
+    @Override
     public void setJoinSyntax(int joinSyntax) {
         _joinSyntax = joinSyntax;
     }
 
+    @Override
     public boolean supportsRandomAccess(boolean forUpdate) {
         return _dict.supportsRandomAccessResultSet(this, forUpdate);
     }
 
+    @Override
     public boolean supportsLocking() {
         return _dict.supportsLocking(this);
     }
 
+    @Override
     public boolean hasMultipleSelects() {
         if (_eager == null)
             return false;
@@ -349,6 +376,7 @@ public class SelectImpl
         return false;
     }
 
+    @Override
     public int getCount(JDBCStore store)
         throws SQLException {
         Connection conn = null;
@@ -376,6 +404,7 @@ public class SelectImpl
         }
     }
 
+    @Override
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
         throws SQLException {
         if (fetch == null)
@@ -384,6 +413,7 @@ public class SelectImpl
             fetch.getReadLockLevel());
     }
 
+    @Override
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
         throws SQLException {
@@ -544,22 +574,27 @@ public class SelectImpl
     // Select implementation
     /////////////////////////
 
+    @Override
     public int indexOf() {
         return 0;
     }
 
+    @Override
     public List getSubselects() {
         return (_subsels == null) ? Collections.EMPTY_LIST : _subsels;
     }
 
+    @Override
     public Select getParent() {
         return _parent;
     }
 
+    @Override
     public String getSubselectPath() {
         return _subPath;
     }
 
+    @Override
     public void setParent(Select parent, String path) {
         if (path != null)
             _subPath = path;
@@ -589,10 +624,12 @@ public class SelectImpl
         }
     }
 
+    @Override
     public void setHasSubselect(boolean hasSub) {
         _hasSub = hasSub;
     }
 
+    @Override
     public boolean getHasSubselect() {
         return _hasSub;
     }
@@ -613,28 +650,33 @@ public class SelectImpl
         _tables.remove(key);
     }
 
+    @Override
     public Select getFromSelect() {
         return _from;
     }
 
+    @Override
     public void setFromSelect(Select sel) {
         _from = (SelectImpl) sel;
         if (_from != null)
             _from._outer = this;
     }
 
+    @Override
     public boolean hasEagerJoin(boolean toMany) {
         if (toMany)
             return (_flags & EAGER_TO_MANY) != 0;
         return (_flags & EAGER_TO_ONE) != 0;
     }
 
+    @Override
     public boolean hasJoin(boolean toMany) {
         if (toMany)
             return (_flags & TO_MANY) != 0;
         return _tables != null && _tables.size() > 1;
     }
 
+    @Override
     public boolean isSelected(Table table) {
         PathJoins pj = getJoins(null, false);
         if (_from != null)
@@ -642,38 +684,47 @@ public class SelectImpl
         return getTableIndex(table, pj, false) != -1;
     }
 
+    @Override
     public Collection getTableAliases() {
         return (_tables == null) ? Collections.EMPTY_SET : _tables.values();
     }
 
+    @Override
     public List getSelects() {
         return Collections.unmodifiableList(_selects);
     }
 
+    @Override
     public List getSelectAliases() {
         return _selects.getAliases(false, _outer != null);
     }
 
+    @Override
     public List getIdentifierAliases() {
         return _selects.getAliases(true, _outer != null);
     }
 
+    @Override
     public SQLBuffer getOrdering() {
         return _ordering;
     }
 
+    @Override
     public SQLBuffer getGrouping() {
         return _grouping;
     }
 
+    @Override
     public SQLBuffer getWhere() {
         return _where;
     }
 
+    @Override
     public SQLBuffer getHaving() {
         return _having;
     }
 
+    @Override
     public void addJoinClassConditions() {
         if (_joins == null || _joins.joins() == null)
             return;
@@ -691,33 +742,40 @@ public class SelectImpl
         }
     }
 
+    @Override
     public Joins getJoins() {
         return _joins;
     }
 
+    @Override
     public Iterator getJoinIterator() {
         if (_joins == null || _joins.isEmpty())
             return EmptyIterator.INSTANCE;
         return _joins.joins().joinIterator();
     }
 
+    @Override
     public long getStartIndex() {
         return _startIdx;
     }
 
+    @Override
     public long getEndIndex() {
         return _endIdx;
     }
 
+    @Override
     public void setRange(long start, long end) {
         _startIdx = start;
         _endIdx = end;
     }
 
+    @Override
     public String getColumnAlias(Column col) {
         return getColumnAlias(col, (Joins) null);
     }
 
+    @Override
     public String getColumnAlias(Column col, Joins joins) {
         return getColumnAlias(col, getJoins(joins, false));
     }
@@ -729,10 +787,12 @@ public class SelectImpl
         return getColumnAlias(col.getIdentifier().getName(), col.getTable(), pj);
     }
 
+    @Override
     public String getColumnAlias(String col, Table table) {
         return getColumnAlias(col, table, (Joins) null);
     }
 
+    @Override
     public String getColumnAlias(String col, Table table, Joins joins) {
         return getColumnAlias(col, table, getJoins(joins, false));
     }
@@ -740,6 +800,7 @@ public class SelectImpl
     /**
      * Return the alias for the give column
      */
+    @Override
     public String getColumnAlias(Column col, Object path) {
         Table table = col.getTable();
         String tableAlias = null;
@@ -780,10 +841,12 @@ public class SelectImpl
         return buf.append(toAlias(getTableIndex(table, pj, true))).append(".");
     }
 
+    @Override
     public boolean isAggregate() {
         return (_flags & AGGREGATE) != 0;
     }
 
+    @Override
     public void setAggregate(boolean agg) {
         if (agg)
             _flags |= AGGREGATE;
@@ -791,10 +854,12 @@ public class SelectImpl
             _flags &= ~AGGREGATE;
     }
 
+    @Override
     public boolean isLob() {
         return (_flags & LOB) != 0;
     }
 
+    @Override
     public void setLob(boolean lob) {
         if (lob)
             _flags |= LOB;
@@ -802,14 +867,17 @@ public class SelectImpl
             _flags &= ~LOB;
     }
 
+    @Override
     public void clearSelects() {
         _selects.clear();
     }
 
+    @Override
     public boolean select(SQLBuffer sql, Object id) {
         return select(sql, id, null);
     }
 
+    @Override
     public boolean select(SQLBuffer sql, Object id, Joins joins) {
         if (!isGrouping())
             return select((Object) sql, id, joins);
@@ -848,10 +916,12 @@ public class SelectImpl
         return NULL_IDS[_nullIds++];
     }
 
+    @Override
     public boolean select(String sql, Object id) {
         return select(sql, id, null);
     }
 
+    @Override
     public boolean select(String sql, Object id, Joins joins) {
         if (!isGrouping())
             return select((Object) sql, id, joins);
@@ -859,6 +929,7 @@ public class SelectImpl
         return true;
     }
 
+    @Override
     public void selectPlaceholder(String sql) {
         Object holder = (_placeholders >= PLACEHOLDERS.length)
             ? new Placeholder() : PLACEHOLDERS[_placeholders++];
@@ -882,10 +953,12 @@ public class SelectImpl
         _selects.clearPlaceholders();
     }
 
+    @Override
     public boolean select(Column col) {
         return select(col, (Joins) null);
     }
 
+    @Override
     public boolean select(Column col, Joins joins) {
         if (!isGrouping())
             return select(col, getJoins(joins, true), false);
@@ -893,10 +966,12 @@ public class SelectImpl
         return false;
     }
 
+    @Override
     public int select(Column[] cols) {
         return select(cols, null);
     }
 
+    @Override
     public int select(Column[] cols, Joins joins) {
         if (cols == null || cols.length == 0)
             return 0;
@@ -935,11 +1010,13 @@ public class SelectImpl
         return true;
     }
 
+    @Override
     public void select(ClassMapping mapping, int subclasses,
         JDBCStore store, JDBCFetchConfiguration fetch, int eager) {
         select(mapping, subclasses, store, fetch, eager, null);
     }
 
+    @Override
     public void select(ClassMapping mapping, int subclasses,
         JDBCStore store, JDBCFetchConfiguration fetch, int eager,
         Joins joins) {
@@ -989,10 +1066,12 @@ public class SelectImpl
             _flags &= ~OUTER;
     }
 
+    @Override
     public boolean selectIdentifier(Column col) {
         return selectIdentifier(col, (Joins) null);
     }
 
+    @Override
     public boolean selectIdentifier(Column col, Joins joins) {
         if (!isGrouping())
             return select(col, getJoins(joins, true), true);
@@ -1000,10 +1079,12 @@ public class SelectImpl
         return false;
     }
 
+    @Override
     public int selectIdentifier(Column[] cols) {
         return selectIdentifier(cols, null);
     }
 
+    @Override
     public int selectIdentifier(Column[] cols, Joins joins) {
         if (cols == null || cols.length == 0)
             return 0;
@@ -1019,21 +1100,25 @@ public class SelectImpl
         return seld;
     }
 
+    @Override
     public void selectIdentifier(ClassMapping mapping, int subclasses,
         JDBCStore store, JDBCFetchConfiguration fetch, int eager) {
         selectIdentifier(mapping, subclasses, store, fetch, eager, null);
     }
 
+    @Override
     public void selectIdentifier(ClassMapping mapping, int subclasses,
         JDBCStore store, JDBCFetchConfiguration fetch, int eager,
         Joins joins) {
         select(this, mapping, subclasses, store, fetch, eager, joins, true);
     }
 
+    @Override
     public int selectPrimaryKey(ClassMapping mapping) {
         return selectPrimaryKey(mapping, null);
     }
 
+    @Override
     public int selectPrimaryKey(ClassMapping mapping, Joins joins) {
         return primaryKeyOperation(mapping, true, null, joins, false);
     }
@@ -1144,11 +1229,13 @@ public class SelectImpl
             _ordering.append(" DESC");
     }
 
+    @Override
     public int orderByPrimaryKey(ClassMapping mapping, boolean asc,
         boolean sel) {
         return orderByPrimaryKey(mapping, asc, null, sel);
     }
 
+    @Override
     public int orderByPrimaryKey(ClassMapping mapping, boolean asc,
         Joins joins, boolean sel) {
         return orderByPrimaryKey(mapping, asc, joins, sel, false);
@@ -1163,10 +1250,12 @@ public class SelectImpl
             (asc) ? Boolean.TRUE : Boolean.FALSE, joins, aliasOrder);
     }
 
+    @Override
     public boolean orderBy(Column col, boolean asc, boolean sel) {
         return orderBy(col, asc, null, sel);
     }
 
+    @Override
     public boolean orderBy(Column col, boolean asc, Joins joins, boolean sel) {
         return orderBy(col, asc, joins, sel, false);
     }
@@ -1180,10 +1269,12 @@ public class SelectImpl
             getJoins(joins, true), aliasOrder);
     }
 
+    @Override
     public int orderBy(Column[] cols, boolean asc, boolean sel) {
         return orderBy(cols, asc, null, sel);
     }
 
+    @Override
     public int orderBy(Column[] cols, boolean asc, Joins joins, boolean sel) {
         return orderBy(cols, asc, joins, sel, false);
     }
@@ -1202,11 +1293,13 @@ public class SelectImpl
         return seld;
     }
 
+    @Override
     public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel, Value selAs)
     {
         return orderBy(sql, asc, (Joins) null, sel, selAs);
     }
 
+    @Override
     public boolean orderBy(SQLBuffer sql, boolean asc, Joins joins,
         boolean sel, Value selAs) {
         return orderBy(sql, asc, joins, sel, false, selAs);
@@ -1248,10 +1341,12 @@ public class SelectImpl
         return false;
     }
 
+    @Override
     public boolean orderBy(String sql, boolean asc, boolean sel) {
         return orderBy(sql, asc, null, sel);
     }
 
+    @Override
     public boolean orderBy(String sql, boolean asc, Joins joins, boolean sel) {
         return orderBy(sql, asc, joins, sel, false);
     }
@@ -1264,6 +1359,7 @@ public class SelectImpl
         return orderBy((Object) sql, asc, joins, sel, aliasOrder, null);
     }
 
+    @Override
     public void clearOrdering() {
         _ordering = null;
         _orders = 0;
@@ -1294,6 +1390,7 @@ public class SelectImpl
         return idxs;
     }
 
+    @Override
     public void wherePrimaryKey(Object oid, ClassMapping mapping,
         JDBCStore store) {
         wherePrimaryKey(oid, mapping, null, store);
@@ -1323,6 +1420,7 @@ public class SelectImpl
             store);
     }
 
+    @Override
     public void whereForeignKey(ForeignKey fk, Object oid,
         ClassMapping mapping, JDBCStore store) {
         whereForeignKey(fk, oid, mapping, null, store);
@@ -1382,7 +1480,7 @@ public class SelectImpl
         // only bother to pack pk values into array if app id
         Object[] pks = null;
         boolean relationId = RelationStrategies.isRelationId(fromCols);
-        if (!relationId && mapping.getIdentityType() == ClassMapping.ID_APPLICATION)
+        if (!relationId && mapping.getIdentityType() == ClassMetaData.ID_APPLICATION)
             pks = ApplicationIds.toPKValues(oid, mapping);
 
         SQLBuffer buf = new SQLBuffer(_dict);
@@ -1446,15 +1544,18 @@ public class SelectImpl
         return found;
     }
 
+    @Override
     public void where(Joins joins) {
         if (joins != null)
             where((String) null, joins);
     }
 
+    @Override
     public void where(SQLBuffer sql) {
         where(sql, (Joins) null);
     }
 
+    @Override
     public void where(SQLBuffer sql, Joins joins) {
         where(sql, getJoins(joins, true));
     }
@@ -1474,10 +1575,12 @@ public class SelectImpl
         _where.append(sql);
     }
 
+    @Override
     public void where(String sql) {
         where(sql, (Joins) null);
     }
 
+    @Override
     public void where(String sql, Joins joins) {
         where(sql, getJoins(joins, true));
     }
@@ -1497,10 +1600,12 @@ public class SelectImpl
         _where.append(sql);
     }
 
+    @Override
     public void having(SQLBuffer sql) {
         having(sql, (Joins) null);
     }
 
+    @Override
     public void having(SQLBuffer sql, Joins joins) {
         having(sql, getJoins(joins, true));
     }
@@ -1520,10 +1625,12 @@ public class SelectImpl
         _having.append(sql);
     }
 
+    @Override
     public void having(String sql) {
         having(sql, (Joins) null);
     }
 
+    @Override
     public void having(String sql, Joins joins) {
         having(sql, getJoins(joins, true));
     }
@@ -1543,37 +1650,45 @@ public class SelectImpl
         _having.append(sql);
     }
 
+    @Override
     public void groupBy(SQLBuffer sql) {
         groupBy(sql, (Joins) null);
     }
 
+    @Override
     public void groupBy(SQLBuffer sql, Joins joins) {
         getJoins(joins, true);
         groupByAppend(sql.getSQL());
     }
 
+    @Override
     public void groupBy(String sql) {
         groupBy(sql, (Joins) null);
     }
 
+    @Override
     public void groupBy(String sql, Joins joins) {
         getJoins(joins, true);
         groupByAppend(sql);
     }
 
+    @Override
     public void groupBy(Column col) {
         groupBy(col, null);
     }
 
+    @Override
     public void groupBy(Column col, Joins joins) {
         PathJoins pj = getJoins(joins, true);
         groupByAppend(getColumnAlias(col, pj));
     }
 
+    @Override
     public void groupBy(Column[] cols) {
         groupBy(cols, null);
     }
 
+    @Override
     public void groupBy(Column[] cols, Joins joins) {
         PathJoins pj = getJoins(joins, true);
         for (int i = 0; i < cols.length; i++) {
@@ -1594,11 +1709,13 @@ public class SelectImpl
         }
     }
 
+    @Override
     public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store,
         JDBCFetchConfiguration fetch) {
         groupBy(mapping, subclasses, store, fetch, null);
     }
 
+    @Override
     public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store,
         JDBCFetchConfiguration fetch, Joins joins) {
         // we implement this by putting ourselves into grouping mode, where
@@ -1657,6 +1774,7 @@ public class SelectImpl
         return pj;
     }
 
+    @Override
     public SelectExecutor whereClone(int sels) {
         if (sels < 1)
             sels = 1;
@@ -1709,6 +1827,7 @@ public class SelectImpl
         return _conf.getSQLFactoryInstance().newUnion(clones);
     }
 
+    @Override
     public SelectExecutor fullClone(int sels) {
         if (sels < 1)
             sels = 1;
@@ -1741,6 +1860,7 @@ public class SelectImpl
         return _conf.getSQLFactoryInstance().newUnion(clones);
     }
 
+    @Override
     public SelectExecutor eagerClone(FieldMapping key, int eagerType,
         boolean toMany, int sels) {
         if (eagerType == EAGER_OUTER
@@ -1798,6 +1918,7 @@ public class SelectImpl
         return _eager;
     }
 
+    @Override
     public void logEagerRelations() {
         if (_eagerKeys != null) {
             _conf.getLog(JDBCConfiguration.LOG_DIAG).trace(
@@ -1805,6 +1926,7 @@ public class SelectImpl
         }
     }
 
+    @Override
     public SelectExecutor getEager(FieldMapping key) {
         if (_eager == null || !_eagerKeys.contains(key))
             return null;
@@ -1821,6 +1943,7 @@ public class SelectImpl
         return new Key(pj.path().toString(), key);
     }
 
+    @Override
     public Joins newJoins() {
         if (_preJoins != null && !_preJoins.isEmpty()) {
             SelectJoins sj = (SelectJoins) _preJoins.peek();
@@ -1830,10 +1953,12 @@ public class SelectImpl
         return this;
     }
 
+    @Override
     public Joins newOuterJoins() {
         return ((PathJoins) newJoins()).setOuter(true);
     }
 
+    @Override
     public void append(SQLBuffer buf, Joins joins) {
         if (joins == null || joins.isEmpty())
             return;
@@ -1862,10 +1987,12 @@ public class SelectImpl
         }
     }
 
+    @Override
     public Joins and(Joins joins1, Joins joins2) {
         return and((PathJoins) joins1, (PathJoins) joins2, true);
     }
 
+    @Override
     public Select getSelect() {
         return null;
     }
@@ -1910,6 +2037,7 @@ public class SelectImpl
         return sj;
     }
 
+    @Override
     public Joins or(Joins joins1, Joins joins2) {
         PathJoins j1 = (PathJoins) joins1;
         PathJoins j2 = (PathJoins) joins2;
@@ -1958,6 +2086,7 @@ public class SelectImpl
         return sj;
     }
 
+    @Override
     public Joins outer(Joins joins) {
         if (_joinSyntax == JoinSyntaxes.SYNTAX_TRADITIONAL || joins == null)
             return joins;
@@ -2172,6 +2301,7 @@ public class SelectImpl
         return aliases;
     }
 
+    @Override
     public String toString() {
         return toSelect(false, null).getSQL();
     }
@@ -2180,71 +2310,87 @@ public class SelectImpl
     // PathJoins implementation
     ////////////////////////////
 
+    @Override
     public boolean isOuter() {
         return false;
     }
 
+    @Override
     public PathJoins setOuter(boolean outer) {
         return new SelectJoins(this).setOuter(true);
     }
 
+    @Override
     public boolean isDirty() {
         return false;
     }
 
+    @Override
     public StringBuilder path() {
         return null;
     }
 
+    @Override
     public String getPathStr() {
         return null;
     }
 
+    @Override
     public JoinSet joins() {
         return null;
     }
 
+    @Override
     public int joinCount() {
         return 0;
     }
 
+    @Override
     public void nullJoins() {
     }
 
+    @Override
     public boolean isEmpty() {
         return true;
     }
 
+    @Override
     public Joins crossJoin(Table localTable, Table foreignTable) {
         return new SelectJoins(this).crossJoin(localTable, foreignTable);
     }
 
+    @Override
     public Joins join(ForeignKey fk, boolean inverse, boolean toMany) {
         return new SelectJoins(this).join(fk, inverse, toMany);
     }
 
+    @Override
     public Joins outerJoin(ForeignKey fk, boolean inverse, boolean toMany) {
         return new SelectJoins(this).outerJoin(fk, inverse, toMany);
     }
 
+    @Override
     public Joins joinRelation(String name, ForeignKey fk, ClassMapping target,
         int subs, boolean inverse, boolean toMany) {
         return new SelectJoins(this).joinRelation(name, fk, target, subs,
             inverse, toMany);
     }
 
+    @Override
     public Joins outerJoinRelation(String name, ForeignKey fk,
         ClassMapping target, int subs, boolean inverse, boolean toMany) {
         return new SelectJoins(this).outerJoinRelation(name, fk, target, subs,
             inverse, toMany);
     }
 
+    @Override
     public Joins setVariable(String var) {
         if (var == null)
             return this;
         return new SelectJoins(this).setVariable(var);
     }
 
+    @Override
     public Joins setSubselect(String alias) {
         if (alias == null)
             return this;
@@ -2286,10 +2432,12 @@ public class SelectImpl
             _key = key;
         }
 
+        @Override
         public int hashCode() {
             return ((_path == null) ? 0  : _path.hashCode()) ^ ((_key == null) ? 0  : _key.hashCode());
         }
 
+        @Override
         public boolean equals(Object other) {
             if (other == null)
                 return false;
@@ -2303,6 +2451,7 @@ public class SelectImpl
             return k._path.equals(_path) && k._key.equals(_key);
         }
 
+        @Override
         public String toString() {
             return _path + "|" + _key;
         }
@@ -2337,6 +2486,7 @@ public class SelectImpl
         /**
          * Select for this result.
          */
+        @Override
         public SelectImpl getSelect() {
             return _sel;
         }
@@ -2348,6 +2498,7 @@ public class SelectImpl
             _sel = sel;
         }
 
+        @Override
         public Object getEager(FieldMapping key) {
             // don't bother creating key if we know we don't have any
             // eager results
@@ -2356,18 +2507,20 @@ public class SelectImpl
             Map map = SelectResult.this.getEagerMap(true);
             if (map == null)
                 return null;
-            return map.get(_sel.toEagerKey(key, getJoins(null)));
+            return map.get(SelectImpl.toEagerKey(key, getJoins(null)));
         }
 
+        @Override
         public void putEager(FieldMapping key, Object res) {
             Map map = SelectResult.this.getEagerMap(true);
             if (map == null) {
                 map = new HashMap();
                 setEagerMap(map);
             }
-            map.put(_sel.toEagerKey(key, getJoins(null)), res);
+            map.put(SelectImpl.toEagerKey(key, getJoins(null)), res);
         }
 
+        @Override
         public Object load(ClassMapping mapping, JDBCStore store,
             JDBCFetchConfiguration fetch, Joins joins)
             throws SQLException {
@@ -2387,6 +2540,7 @@ public class SelectImpl
             return obj;
         }
 
+        @Override
         public Joins newJoins() {
             PathJoins pre = getPreJoins();
             if (pre == null || pre.path() == null)
@@ -2397,6 +2551,7 @@ public class SelectImpl
             return pj;
         }
 
+        @Override
         protected boolean containsInternal(Object obj, Joins joins) {
             // we key directly on objs and join-less cols, or on the alias
             // for cols with joins
@@ -2405,7 +2560,7 @@ public class SelectImpl
                 Object columnAlias = getColumnAlias((Column) obj, pj);
                 if (joins == null) {
                     if (cachedColumnAlias_ == null) {
-                        cachedColumnAlias_ = new HashMap<CachedColumnAliasKey, Object>();
+                        cachedColumnAlias_ = new HashMap<>();
                     }
                     cachedColumnAlias_.put(new CachedColumnAliasKey((Column) obj, pj), columnAlias);
                 }
@@ -2414,6 +2569,7 @@ public class SelectImpl
             return obj != null && _sel._selects.contains(obj);
         }
 
+        @Override
         protected boolean containsAllInternal(Object[] objs, Joins joins)
             throws SQLException {
             PathJoins pj = getJoins(joins);
@@ -2429,24 +2585,28 @@ public class SelectImpl
             return true;
         }
 
+        @Override
         public void pushBack()
             throws SQLException {
             _pos = 0;
             super.pushBack();
         }
 
+        @Override
         protected boolean absoluteInternal(int row)
             throws SQLException {
             _pos = 0;
             return super.absoluteInternal(row);
         }
 
+        @Override
         protected boolean nextInternal()
             throws SQLException {
             _pos = 0;
             return super.nextInternal();
         }
 
+        @Override
         protected int findObject(Object obj, Joins joins)
             throws SQLException {
             Object orig = obj;
@@ -2542,7 +2702,7 @@ public class SelectImpl
         private String getColumnAlias(Column col, PathJoins pj) {
             String alias;
             if (_sel._from != null) {
-                alias = _sel.toAlias(_sel._from.getTableIndex
+                alias = SelectImpl.toAlias(_sel._from.getTableIndex
                     (col.getTable(), pj, false));
                 if (alias == null)
                     return null;
@@ -2550,7 +2710,7 @@ public class SelectImpl
                     return FROM_SELECT_ALIAS + "." + alias + "_" + col;
                 return alias + "_" + col;
             }
-            alias = _sel.toAlias(_sel.getTableIndex(col.getTable(), pj, false));
+            alias = SelectImpl.toAlias(_sel.getTableIndex(col.getTable(), pj, false));
             return (alias == null) ? null : alias + "." + col;
         }
 
@@ -2558,89 +2718,109 @@ public class SelectImpl
         // PathJoins implementation
         ////////////////////////////
 
+        @Override
         public boolean isOuter() {
             return false;
         }
 
+        @Override
         public PathJoins setOuter(boolean outer) {
             return this;
         }
 
+        @Override
         public boolean isDirty() {
             return false;
         }
 
+        @Override
         public StringBuilder path() {
             return null;
         }
 
+        @Override
         public String getPathStr() {
             return null;
         }
 
+        @Override
         public JoinSet joins() {
             return null;
         }
 
+        @Override
         public int joinCount() {
             return 0;
         }
 
+        @Override
         public void nullJoins() {
         }
 
+        @Override
         public boolean isEmpty() {
             return true;
         }
 
+        @Override
         public Joins crossJoin(Table localTable, Table foreignTable) {
             return this;
         }
 
+        @Override
         public Joins join(ForeignKey fk, boolean inverse, boolean toMany) {
             return this;
         }
 
+        @Override
         public Joins outerJoin(ForeignKey fk, boolean inverse, boolean toMany) {
             return this;
         }
 
+        @Override
         public Joins joinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             return new PathJoinsImpl().joinRelation(name, fk, target, subs,
                 inverse, toMany);
         }
 
+        @Override
         public Joins outerJoinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             return new PathJoinsImpl().outerJoinRelation(name, fk, target, subs,
                 inverse, toMany);
         }
 
+        @Override
         public Joins setVariable(String var) {
             if (var == null)
                 return this;
             return new PathJoinsImpl().setVariable(var);
         }
 
+        @Override
         public Joins setSubselect(String alias) {
             if (alias == null)
                 return this;
             return new PathJoinsImpl().setSubselect(alias);
         }
 
+        @Override
         public Joins setCorrelatedVariable(String var) {
             return this;
         }
 
+        @Override
         public Joins setJoinContext(Context ctx) {
             return this;
         }
 
+        @Override
         public String getCorrelatedVariable() {
             return null;
         }
 
+        @Override
         public void moveJoinsToParent() {
         }
 
@@ -2700,37 +2880,46 @@ public class SelectImpl
         protected Context lastContext = null;
         protected String pathStr = null;
 
+        @Override
         public Select getSelect() {
             return null;
         }
 
+        @Override
         public boolean isOuter() {
             return false;
         }
 
+        @Override
         public PathJoins setOuter(boolean outer) {
             return this;
         }
 
+        @Override
         public boolean isDirty() {
             return var != null || path != null;
         }
 
+        @Override
         public StringBuilder path() {
             return path;
         }
 
+        @Override
         public JoinSet joins() {
             return null;
         }
 
+        @Override
         public int joinCount() {
             return 0;
         }
 
+        @Override
         public void nullJoins() {
         }
 
+        @Override
         public Joins setVariable(String var) {
             this.var = var;
             return this;
@@ -2740,47 +2929,56 @@ public class SelectImpl
             return var;
         }
 
+        @Override
         public Joins setCorrelatedVariable(String var) {
             this.correlatedVar = var;
             return this;
         }
 
+        @Override
         public String getCorrelatedVariable() {
             return correlatedVar;
         }
 
+        @Override
         public Joins setJoinContext(Context context) {
             this.context = context;
             return this;
          }
 
+        @Override
         public Joins setSubselect(String alias) {
             append(alias);
             return this;
         }
 
+        @Override
         public boolean isEmpty() {
             return true;
         }
 
+        @Override
         public Joins crossJoin(Table localTable, Table foreignTable) {
             append(var);
             var = null;
             return this;
         }
 
+        @Override
         public Joins join(ForeignKey fk, boolean inverse, boolean toMany) {
             append(var);
             var = null;
             return this;
         }
 
+        @Override
         public Joins outerJoin(ForeignKey fk, boolean inverse, boolean toMany) {
             append(var);
             var = null;
             return this;
         }
 
+        @Override
         public Joins joinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             append(name);
@@ -2789,6 +2987,7 @@ public class SelectImpl
             return this;
         }
 
+        @Override
         public Joins outerJoinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             append(name);
@@ -2807,6 +3006,7 @@ public class SelectImpl
             }
         }
 
+        @Override
         public String getPathStr() {
             if (pathStr == null) {
                 pathStr = path.toString();
@@ -2814,11 +3014,13 @@ public class SelectImpl
             return pathStr;
         }
 
+        @Override
         public String toString() {
             return "PathJoinsImpl<" + hashCode() + ">: "
                 + String.valueOf(path);
         }
 
+    @Override
     public void moveJoinsToParent() {
     }
 }
@@ -2839,23 +3041,28 @@ public class SelectImpl
             _sel = sel;
         }
 
+        @Override
         public Select getSelect() {
             return _sel;
         }
 
+        @Override
         public boolean isOuter() {
             return _outer;
         }
 
+        @Override
         public PathJoins setOuter(boolean outer) {
             _outer = outer;
             return this;
         }
 
+        @Override
         public boolean isDirty() {
             return super.isDirty() || !isEmpty();
         }
 
+        @Override
         public JoinSet joins() {
             return _joins;
         }
@@ -2866,22 +3073,26 @@ public class SelectImpl
                 && joins.last().getType() == Join.TYPE_OUTER;
         }
 
+        @Override
         public int joinCount() {
             if (_joins == null)
                 return _count;
             return Math.max(_count, _joins.size());
         }
 
+        @Override
         public void nullJoins() {
             if (_joins != null)
                 _count = Math.max(_count, _joins.size());
             _joins = null;
         }
 
+        @Override
         public boolean isEmpty() {
             return _joins == null || _joins.isEmpty();
         }
 
+        @Override
         public Joins crossJoin(Table localTable, Table foreignTable) {
             // cross joins are for unbound variables; unfortunately we have
             // to always go DISTINCT for unbound vars because there are certain
@@ -2943,19 +3154,23 @@ public class SelectImpl
             return this;
         }
 
+        @Override
         public Joins join(ForeignKey fk, boolean inverse, boolean toMany) {
             return join(null, fk, null, -1, inverse, toMany, false);
         }
 
+        @Override
         public Joins outerJoin(ForeignKey fk, boolean inverse, boolean toMany) {
             return join(null, fk, null, -1, inverse, toMany, true);
         }
 
+        @Override
         public Joins joinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             return join(name, fk, target, subs, inverse, toMany, false);
         }
 
+        @Override
         public Joins outerJoinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             return join(name, fk, target, subs, inverse, toMany, true);
@@ -3064,11 +3279,12 @@ public class SelectImpl
             }
         }
 
+        @Override
         public void moveJoinsToParent() {
             if (_joins == null)
                 return;
            Join j = null;
-           List<Join> removed = new ArrayList<Join>(5);
+           List<Join> removed = new ArrayList<>(5);
            for (Iterator itr = _joins.iterator(); itr.hasNext();) {
                j = (Join) itr.next();
                if (j.isNotMyJoin()) {
@@ -3120,6 +3336,7 @@ public class SelectImpl
             return sj;
         }
 
+        @Override
         public String toString() {
             return super.toString() + " (" + _outer + "): " + _joins;
         }
@@ -3129,6 +3346,7 @@ public class SelectImpl
         return new Selects();
     }
 
+    @Override
     public DBDictionary getDictionary() {
         return _dict;
     }
@@ -3245,11 +3463,13 @@ public class SelectImpl
                 return Collections.EMPTY_LIST;
 
             return new AbstractList() {
+                @Override
                 public int size() {
                     return (ident && _idents != null) ? _idents.size()
                         : _ids.size();
                 }
 
+                @Override
                 public Object get(int i) {
                     Object id = (ident && _idents != null) ? _idents.get(i)
                         : _ids.get(i);
@@ -3306,20 +3526,24 @@ public class SelectImpl
             }
         }
 
+        @Override
         public boolean contains(Object id) {
             return _aliases != null && _aliases.containsKey(id);
         }
 
+        @Override
         public Object get(int i) {
             if (_ids == null)
                 throw new ArrayIndexOutOfBoundsException();
             return _ids.get(i);
         }
 
+        @Override
         public int size() {
             return (_ids == null) ? 0 : _ids.size();
         }
 
+        @Override
         public void clear() {
             _ids = null;
             _aliases = null;
@@ -3328,22 +3552,26 @@ public class SelectImpl
         }
     }
 
+    @Override
     public Joins setCorrelatedVariable(String var) {
         if (var == null)
             return this;
         return new SelectJoins(this).setCorrelatedVariable(var);
     }
 
+    @Override
     public Joins setJoinContext(Context ctx) {
         if (ctx == null)
             return this;
         return new SelectJoins(this).setJoinContext(ctx);
     }
 
+    @Override
     public String getCorrelatedVariable() {
         return null;
     }
 
+    @Override
     public void moveJoinsToParent() {
     }
 }
@@ -3358,39 +3586,39 @@ interface PathJoins
     /**
      * Mark this as an outer joins set.
      */
-    public PathJoins setOuter(boolean outer);
+    PathJoins setOuter(boolean outer);
 
     /**
      * Return true if this instance has a path, any joins, or a variable.
      */
-    public boolean isDirty();
+    boolean isDirty();
 
     /**
      * Return the relation path traversed by these joins, or null if none.
      */
-    public StringBuilder path();
+    StringBuilder path();
 
     /**
      * Return the set of {@link Join} elements, or null if none.
      */
-    public JoinSet joins();
+    JoinSet joins();
 
     /**
      * Return the maximum number of joins contained in this instance at any
      * time.
      */
-    public int joinCount();
+    int joinCount();
 
     /**
      * Null the set of {@link Join} elements.
      */
-    public void nullJoins();
+    void nullJoins();
 
     /**
      * The select owner of this join
      */
-    public Select getSelect();
+    Select getSelect();
 
-    public String getPathStr();
+    String getPathStr();
 }
 

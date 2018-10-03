@@ -31,6 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestOrderbyInDataCache extends SingleEMFTestCase {
 	private long pid;
+    @Override
     public void setUp() {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",

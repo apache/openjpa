@@ -52,54 +52,54 @@ public interface Row {
      * Symbolic constant reserved for situations when a row operation
      * is unknown.
      */
-    public static final int ACTION_UNKNOWN = -1;
+    int ACTION_UNKNOWN = -1;
 
     /**
      * Mark the row for update.
      */
-    public static final int ACTION_UPDATE = 0;
+    int ACTION_UPDATE = 0;
 
     /**
      * Mark the row for inserttion.
      */
-    public static final int ACTION_INSERT = 1;
+    int ACTION_INSERT = 1;
 
     /**
      * Mark the row for deletion.
      */
-    public static final int ACTION_DELETE = 2;
+    int ACTION_DELETE = 2;
 
     /**
      * Return the table for this row.
      */
-    public Table getTable();
+    Table getTable();
 
     /**
      * Return the action for this row.
      */
-    public int getAction();
+    int getAction();
 
     /**
      * Return the failed object to include in optimistic lock exceptions.
      */
-    public Object getFailedObject();
+    Object getFailedObject();
 
     /**
      * Set the failed object to include in the optimistic lock exception
      * that will be thrown if this update results in an update count of 0
      * when executed. Leave null to avoid checking the update count.
      */
-    public void setFailedObject(Object failed);
+    void setFailedObject(Object failed);
 
     /**
      * Whether this row has information set on it.
      */
-    public boolean isValid();
+    boolean isValid();
 
     /**
      * Whether this row has information set on it.
      */
-    public void setValid(boolean valid);
+    void setValid(boolean valid);
 
     /**
      * Return the instance that controls this row. The
@@ -107,12 +107,12 @@ public interface Row {
      * to know the owning instance, nor does this row's table have to have
      * an actual primary key.
      */
-    public OpenJPAStateManager getPrimaryKey();
+    OpenJPAStateManager getPrimaryKey();
 
     /**
      * Set the primary key to represent the given object.
      */
-    public void setPrimaryKey(OpenJPAStateManager sm)
+    void setPrimaryKey(OpenJPAStateManager sm)
         throws SQLException;
 
     /**
@@ -120,13 +120,13 @@ public interface Row {
      *
      * @param io information on which columns are settable; may be null
      */
-    public void setPrimaryKey(ColumnIO io, OpenJPAStateManager sm)
+    void setPrimaryKey(ColumnIO io, OpenJPAStateManager sm)
         throws SQLException;
 
     /**
      * Set the primary key equality criteria for this row.
      */
-    public void wherePrimaryKey(OpenJPAStateManager sm)
+    void wherePrimaryKey(OpenJPAStateManager sm)
         throws SQLException;
 
     /**
@@ -134,7 +134,7 @@ public interface Row {
      * If the related type uses table-per-class mappings, the foreign key may
      * be targeted at an independent superclass table.
      */
-    public void setForeignKey(ForeignKey fk, OpenJPAStateManager sm)
+    void setForeignKey(ForeignKey fk, OpenJPAStateManager sm)
         throws SQLException;
 
     /**
@@ -144,7 +144,7 @@ public interface Row {
      *
      * @param io information on which columns are settable; may be null
      */
-    public void setForeignKey(ForeignKey fk, ColumnIO io,
+    void setForeignKey(ForeignKey fk, ColumnIO io,
         OpenJPAStateManager sm)
         throws SQLException;
 
@@ -153,133 +153,133 @@ public interface Row {
      * If the related type uses table-per-class mappings, the foreign key may
      * be targeted at an independent superclass table.
      */
-    public void whereForeignKey(ForeignKey fk, OpenJPAStateManager sm)
+    void whereForeignKey(ForeignKey fk, OpenJPAStateManager sm)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setArray(Column col, Array val)
+    void setArray(Column col, Array val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setAsciiStream(Column col, InputStream val, int length)
+    void setAsciiStream(Column col, InputStream val, int length)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setBigDecimal(Column col, BigDecimal val)
+    void setBigDecimal(Column col, BigDecimal val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setBigInteger(Column col, BigInteger val)
+    void setBigInteger(Column col, BigInteger val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setBinaryStream(Column col, InputStream val, int length)
+    void setBinaryStream(Column col, InputStream val, int length)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setBlob(Column col, Blob val)
+    void setBlob(Column col, Blob val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setBoolean(Column col, boolean val)
+    void setBoolean(Column col, boolean val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setByte(Column col, byte val)
+    void setByte(Column col, byte val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setBytes(Column col, byte[] val)
+    void setBytes(Column col, byte[] val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setCalendar(Column col, Calendar val)
+    void setCalendar(Column col, Calendar val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setChar(Column col, char val)
+    void setChar(Column col, char val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setCharacterStream(Column col, Reader val, int length)
+    void setCharacterStream(Column col, Reader val, int length)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setClob(Column col, Clob val)
+    void setClob(Column col, Clob val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setDate(Column col, Date val)
+    void setDate(Column col, Date val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setDate(Column col, java.sql.Date val, Calendar cal)
+    void setDate(Column col, java.sql.Date val, Calendar cal)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setDouble(Column col, double val)
+    void setDouble(Column col, double val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setFloat(Column col, float val)
+    void setFloat(Column col, float val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setInt(Column col, int val)
+    void setInt(Column col, int val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setLong(Column col, long val)
+    void setLong(Column col, long val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setLocale(Column col, Locale val)
+    void setLocale(Column col, Locale val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setNull(Column col)
+    void setNull(Column col)
         throws SQLException;
 
     /**
@@ -288,13 +288,13 @@ public interface Row {
      * @param overrideDefault whether to set this column to null even if this
      * is an insert and the column has a default
      */
-    public void setNull(Column col, boolean overrideDefault)
+    void setNull(Column col, boolean overrideDefault)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setNumber(Column col, Number val)
+    void setNumber(Column col, Number val)
         throws SQLException;
 
     /**
@@ -303,14 +303,14 @@ public interface Row {
      * @param col the column being set
      * @param val the value for the column
      */
-    public void setObject(Column col, Object val)
+    void setObject(Column col, Object val)
         throws SQLException;
 
     /**
      * Set a DB understood value for the given column.
      * The value will not be parameterized and instead be inserted as raw SQL.
      */
-    public void setRaw(Column col, String value)
+    void setRaw(Column col, String value)
         throws SQLException;
 
     /**
@@ -321,164 +321,164 @@ public interface Row {
      * require an insert if the instance uses auto-increment) before it is
      * serialized.
      */
-    public void setRelationId(Column col, OpenJPAStateManager sm,
+    void setRelationId(Column col, OpenJPAStateManager sm,
         RelationId rel)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setShort(Column col, short val)
+    void setShort(Column col, short val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setString(Column col, String val)
+    void setString(Column col, String val)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setTime(Column col, Time val, Calendar cal)
+    void setTime(Column col, Time val, Calendar cal)
         throws SQLException;
 
     /**
      * Set the value of the given column in this row.
      */
-    public void setTimestamp(Column col, Timestamp val, Calendar cal)
+    void setTimestamp(Column col, Timestamp val, Calendar cal)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereArray(Column col, Array val)
+    void whereArray(Column col, Array val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereAsciiStream(Column col, InputStream val, int length)
+    void whereAsciiStream(Column col, InputStream val, int length)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereBigDecimal(Column col, BigDecimal val)
+    void whereBigDecimal(Column col, BigDecimal val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereBigInteger(Column col, BigInteger val)
+    void whereBigInteger(Column col, BigInteger val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereBinaryStream(Column col, InputStream val, int length)
+    void whereBinaryStream(Column col, InputStream val, int length)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereBlob(Column col, Blob val)
+    void whereBlob(Column col, Blob val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereBoolean(Column col, boolean val)
+    void whereBoolean(Column col, boolean val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereByte(Column col, byte val)
+    void whereByte(Column col, byte val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereBytes(Column col, byte[] val)
+    void whereBytes(Column col, byte[] val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereCalendar(Column col, Calendar val)
+    void whereCalendar(Column col, Calendar val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereChar(Column col, char val)
+    void whereChar(Column col, char val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereCharacterStream(Column col, Reader val, int length)
+    void whereCharacterStream(Column col, Reader val, int length)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereClob(Column col, Clob val)
+    void whereClob(Column col, Clob val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereDate(Column col, Date val)
+    void whereDate(Column col, Date val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereDate(Column col, java.sql.Date val, Calendar cal)
+    void whereDate(Column col, java.sql.Date val, Calendar cal)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereDouble(Column col, double val)
+    void whereDouble(Column col, double val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereFloat(Column col, float val)
+    void whereFloat(Column col, float val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereInt(Column col, int val)
+    void whereInt(Column col, int val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereLong(Column col, long val)
+    void whereLong(Column col, long val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereLocale(Column col, Locale val)
+    void whereLocale(Column col, Locale val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereNull(Column col)
+    void whereNull(Column col)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereNumber(Column col, Number val)
+    void whereNumber(Column col, Number val)
         throws SQLException;
 
     /**
@@ -487,37 +487,37 @@ public interface Row {
      * @param col the column being set
      * @param val the value for the column
      */
-    public void whereObject(Column col, Object val)
+    void whereObject(Column col, Object val)
         throws SQLException;
 
     /**
      * Set a DB understood where condition for the given column.
      * The value will not be parameterized and instead be inserted as raw SQL.
      */
-    public void whereRaw(Column col, String value)
+    void whereRaw(Column col, String value)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereShort(Column col, short val)
+    void whereShort(Column col, short val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereString(Column col, String val)
+    void whereString(Column col, String val)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereTime(Column col, Time val, Calendar cal)
+    void whereTime(Column col, Time val, Calendar cal)
         throws SQLException;
 
     /**
      * Set an equality condition on the value of the given column in this row.
      */
-    public void whereTimestamp(Column col, Timestamp val, Calendar cal)
+    void whereTimestamp(Column col, Timestamp val, Calendar cal)
         throws SQLException;
 }

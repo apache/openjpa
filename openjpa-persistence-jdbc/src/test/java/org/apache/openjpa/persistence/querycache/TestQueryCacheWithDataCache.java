@@ -25,12 +25,11 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAQuery;
-import org.apache.openjpa.persistence.querycache.QCEntityM2O;
-import org.apache.openjpa.persistence.querycache.QCEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestQueryCacheWithDataCache extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(DROP_TABLES, QCEntityM2O.class, QCEntity.class, "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm", "openjpa.QueryCache", "true");

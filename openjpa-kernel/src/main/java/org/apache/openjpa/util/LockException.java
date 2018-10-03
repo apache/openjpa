@@ -30,9 +30,8 @@ import org.apache.openjpa.lib.util.Localizer;
  * @author Marc Prud'hommeaux
  * @since 0.3.1
  */
-@SuppressWarnings("serial")
-public class LockException
-    extends StoreException {
+public class LockException extends StoreException {
+    private static final long serialVersionUID = 1L;
 
     private static final transient Localizer _loc = Localizer.forPackage(LockException.class);
 
@@ -55,6 +54,7 @@ public class LockException
         setLockLevel(lockLevel);
     }
 
+    @Override
     public int getSubtype() {
         return LOCK;
     }
@@ -82,6 +82,7 @@ public class LockException
         return lockLevel;
     }
 
+    @Override
     public String toString() {
         String str = super.toString();
         if (timeout < 0)

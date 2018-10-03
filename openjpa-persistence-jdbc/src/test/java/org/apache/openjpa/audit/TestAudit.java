@@ -26,10 +26,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+
+import junit.framework.TestCase;
 
 /**
  * A test for audit facility.
@@ -44,6 +44,7 @@ public class TestAudit extends TestCase {
 
 	EntityManager em;
 
+    @Override
     public void setUp() {
     	if (emf == null) {
     		emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory("audit"));
@@ -178,9 +179,9 @@ public class TestAudit extends TestCase {
     }
 
 	public boolean ensureGarbageCollection() {
-		ReferenceQueue<Object> detector = new ReferenceQueue<Object>();
+		ReferenceQueue<Object> detector = new ReferenceQueue<>();
 		Object marker = new Object();
-		WeakReference<Object> ref = new WeakReference<Object>(marker, detector);
+		WeakReference<Object> ref = new WeakReference<>(marker, detector);
 		marker = null;
 		System.gc();
 		try {

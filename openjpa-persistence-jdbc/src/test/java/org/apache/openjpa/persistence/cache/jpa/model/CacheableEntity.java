@@ -41,6 +41,7 @@ public class CacheableEntity  implements CacheEntity {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
@@ -53,10 +54,12 @@ public class CacheableEntity  implements CacheEntity {
         this.version = version;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }

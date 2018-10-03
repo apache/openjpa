@@ -20,6 +20,6 @@
 package org.apache.openjpa.persistence.inheritance.entities.testinterfaces;
 
 public interface LeafC {
-    public String getLeafCData();
-    public void setLeafCData(String leafCData);
+    String getLeafCData();
+    void setLeafCData(String leafCData);
 }

@@ -28,6 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestGetReferenceAndImplicitDetachment
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp("openjpa.DetachState", "fetch-groups",
             DetachmentOneManyParent.class, DetachmentOneManyChild.class);

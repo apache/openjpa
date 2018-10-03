@@ -19,11 +19,11 @@
 package org.apache.openjpa.persistence.meta;
 
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.meta.common.apps.SequenceAssigned;
 import org.apache.openjpa.persistence.meta.common.apps.SequenceAssigned2;
 import org.apache.openjpa.persistence.meta.common.apps.SequenceAssigned3;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestSequenceAssigned
     extends AbstractTestCase {
@@ -32,6 +32,7 @@ public class TestSequenceAssigned
         super(testName, "metacactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(SequenceAssigned.class);
         deleteAll(SequenceAssigned3.class);

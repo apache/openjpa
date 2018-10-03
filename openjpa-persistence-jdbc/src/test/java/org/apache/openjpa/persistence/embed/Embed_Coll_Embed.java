@@ -18,15 +18,14 @@
  */
 package org.apache.openjpa.persistence.embed;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
-
 import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class Embed_Coll_Embed {
@@ -41,7 +40,7 @@ public class Embed_Coll_Embed {
         @AttributeOverride(name="intVal2", column=@Column(name="A2")),
         @AttributeOverride(name="intVal3", column=@Column(name="A3"))
     })
-    protected List<Embed> embeds = new ArrayList<Embed>();
+    protected List<Embed> embeds = new ArrayList<>();
 
     public int getIntVal1() {
         return intVal1;

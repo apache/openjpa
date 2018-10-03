@@ -29,11 +29,11 @@ public interface LockScopes {
      * Generic Normal lock scope level. Value of 0.
      *
      */
-    public static final int LOCKSCOPE_NORMAL = 0;
+    int LOCKSCOPE_NORMAL = 0;
 
     /**
      * Generic extended lock scope level. Value of 10.
      */
-    public static final int LOCKSCOPE_EXTENDED = 10;
+    int LOCKSCOPE_EXTENDED = 10;
 
 }

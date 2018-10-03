@@ -38,7 +38,7 @@ public class Division {
     @ElementCollection
     @CollectionTable(name="branch")
     @Column(name="branch", length=20)
-    protected Set<String> branches = new HashSet<String>();
+    protected Set<String> branches = new HashSet<>();
 
     public int getId() {
         return id;
@@ -64,6 +64,7 @@ public class Division {
         branches.add(name);
     }
 
+    @Override
     public boolean equals(Object o) {
         Division d = (Division) o;
         if (d.name.equals(name) &&
@@ -72,6 +73,7 @@ public class Division {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + name.hashCode();

@@ -35,9 +35,7 @@ import javax.persistence.Id;
 @Entity
 public class Entity2 implements Serializable
 {
-	/**
-	 *
-	 */
+	
 	private static final long serialVersionUID = 4723739219953167343L;
 
 	@Id
@@ -90,7 +88,8 @@ public class Entity2 implements Serializable
 		return intField;
 	}
 
-	public String toString()
+	@Override
+    public String toString()
 	{
         return("PK: " + pk + " StringField: " + stringField
                 + " IntField: " + intField);

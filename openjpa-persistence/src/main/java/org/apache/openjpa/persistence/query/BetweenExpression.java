@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class BetweenExpression extends BinaryExpressionPredicate {
-	public BetweenExpression(Expression arg1, RangeExpression arg2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public BetweenExpression(Expression arg1, RangeExpression arg2) {
 		super(arg1, BinaryConditionalOperator.BETWEEN,
 			BinaryConditionalOperator.BETWEEN_NOT, arg2);
 	}

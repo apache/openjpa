@@ -21,7 +21,14 @@ package org.apache.openjpa.persistence.embed.attrOverrides;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="PROPREC_ATTROVER")
@@ -37,7 +44,7 @@ public class PropertyRecord {
     })
     @ElementCollection
     @CollectionTable(name="PROPREC_ATTROVER_parcels")
-    Map<Address, PropertyInfo> parcels = new HashMap<Address, PropertyInfo>();
+    Map<Address, PropertyInfo> parcels = new HashMap<>();
 
     @Column(length = 10)
     String description;

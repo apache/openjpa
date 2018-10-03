@@ -18,9 +18,10 @@
  */
 package org.apache.openjpa.slice;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
 
 public class TestXA extends SliceTestCase {
+    @Override
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, CLEAR_TABLES);
     }
@@ -48,6 +49,7 @@ public class TestXA extends SliceTestCase {
 		assertEquals(before+N, after);
 	}
 
+    @Override
     protected String getPersistenceUnitName() {
         return "XA";
     }

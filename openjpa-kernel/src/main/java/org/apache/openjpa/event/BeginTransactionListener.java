@@ -32,5 +32,5 @@ public interface BeginTransactionListener {
      *
      * @see TransactionEvent#AFTER_BEGIN
      */
-    public void afterBegin(TransactionEvent event);
+    void afterBegin(TransactionEvent event);
 }

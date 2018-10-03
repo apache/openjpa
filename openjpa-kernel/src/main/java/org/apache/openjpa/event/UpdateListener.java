@@ -29,7 +29,7 @@ public interface UpdateListener {
      * updated and new records, whereas this is only invoked for updated
      * records.
      */
-    public void beforeUpdate(LifecycleEvent event);
+    void beforeUpdate(LifecycleEvent event);
 
     /**
      * Receives notifications before an update is performed. Differs from
@@ -38,5 +38,5 @@ public interface UpdateListener {
      * records, and that this is called after the record is actually flushed
      * to the store.
      */
-    public void afterUpdatePerformed(LifecycleEvent event);
+    void afterUpdatePerformed(LifecycleEvent event);
 }

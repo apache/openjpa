@@ -18,12 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria.multiselect;
 
-import java.lang.Boolean;
-import java.lang.Double;
-import java.lang.Integer;
-import java.lang.Long;
-import java.lang.String;
 import java.util.Date;
+
 import javax.persistence.metamodel.SingularAttribute;
 
 @javax.persistence.metamodel.StaticMetamodel

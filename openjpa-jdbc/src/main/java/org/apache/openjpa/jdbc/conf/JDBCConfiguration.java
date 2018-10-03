@@ -51,55 +51,55 @@ public interface JDBCConfiguration
      * Name of the logger for SQL execution messages:
      * <code>openjpa.jdbc.SQL</code>.
      */
-    public static final String LOG_SQL = "openjpa.jdbc.SQL";
+    String LOG_SQL = "openjpa.jdbc.SQL";
 
     /**
      * Name of the logger for additional jdbc messages:
      * <code>openjpa.jdbc.DIAG</code>.
      */
-    public static final String LOG_DIAG = "openjpa.jdbc.SQLDiag";
+    String LOG_DIAG = "openjpa.jdbc.SQLDiag";
 
     /**
      * Name of the logger for JDBC-related messages:
      * <code>openjpa.jdbc.JDBC</code>.
      */
-    public static final String LOG_JDBC = "openjpa.jdbc.JDBC";
+    String LOG_JDBC = "openjpa.jdbc.JDBC";
 
     /**
      * Name of the logger for schema-related messages:
      * <code>openjpa.jdbc.Schema</code>.
      */
-    public static final String LOG_SCHEMA = "openjpa.jdbc.Schema";
+    String LOG_SCHEMA = "openjpa.jdbc.Schema";
 
     /**
      * Default schema for unqualified tables.
      */
-    public String getSchema();
+    String getSchema();
 
     /**
      * Default schema for unqualified tables.
      */
-    public void setSchema(String schema);
+    void setSchema(String schema);
 
     /**
      * Comma-separated list of modifiable schemas for persistent instances.
      */
-    public String getSchemas();
+    String getSchemas();
 
     /**
      * Comma-separated list of modifiable schemas for persistent instances.
      */
-    public void setSchemas(String schemas);
+    void setSchemas(String schemas);
 
     /**
      * Modificable schema components.
      */
-    public String[] getSchemasList();
+    String[] getSchemasList();
 
     /**
      * Modifiable schema components.
      */
-    public void setSchemas(String[] schemas);
+    void setSchemas(String[] schemas);
 
     /**
      * The transaction isolation level to use at the database level.
@@ -118,7 +118,7 @@ public interface JDBCConfiguration
      * {@link java.sql.Connection#TRANSACTION_SERIALIZABLE} level.</li>
      * </ul>
      */
-    public String getTransactionIsolation();
+    String getTransactionIsolation();
 
     /**
      * The transaction isolation level to use at the database level.
@@ -137,19 +137,19 @@ public interface JDBCConfiguration
      * {@link java.sql.Connection#TRANSACTION_SERIALIZABLE} level.</li>
      * </ul>
      */
-    public void setTransactionIsolation(String level);
+    void setTransactionIsolation(String level);
 
     /**
      * Return the proper transaction isolation level constant from
      * {@link java.sql.Connection}, or -1 for the default level.
      */
-    public int getTransactionIsolationConstant();
+    int getTransactionIsolationConstant();
 
     /**
      * Set the proper transaction isolation level constant from
      * {@link java.sql.Connection}, or -1 for the default level.
      */
-    public void setTransactionIsolation(int level);
+    void setTransactionIsolation(int level);
 
     /**
      * The JDBC result set type. Defaults to <code>forward-only</code>.
@@ -162,12 +162,12 @@ public interface JDBCConfiguration
      * {@link java.sql.ResultSet#TYPE_SCROLL_INSENSITIVE} type.</li>
      * </ul>
      */
-    public String getResultSetType();
+    String getResultSetType();
 
     /**
      * Return the result set constant for the result set type.
      */
-    public int getResultSetTypeConstant();
+    int getResultSetTypeConstant();
 
     /**
      * The JDBC result set type. Defaults to <code>forward-only</code>.
@@ -180,12 +180,12 @@ public interface JDBCConfiguration
      * {@link java.sql.ResultSet#TYPE_SCROLL_INSENSITIVE} type.</li>
      * </ul>
      */
-    public void setResultSetType(String type);
+    void setResultSetType(String type);
 
     /**
      * Set the result set constant type.
      */
-    public void setResultSetType(int type);
+    void setResultSetType(int type);
 
     /**
      * The JDBC fetch direction. Defaults to <code>forward</code>.
@@ -198,12 +198,12 @@ public interface JDBCConfiguration
      * {@link java.sql.ResultSet#FETCH_UNKNOWN} direction.</li>
      * </ul>
      */
-    public String getFetchDirection();
+    String getFetchDirection();
 
     /**
      * Return the result set constant for the fetch direction.
      */
-    public int getFetchDirectionConstant();
+    int getFetchDirectionConstant();
 
     /**
      * The JDBC fetch direction. Defaults to <code>forward</code>.
@@ -216,12 +216,12 @@ public interface JDBCConfiguration
      * {@link java.sql.ResultSet#FETCH_UNKNOWN} direction.</li>
      * </ul>
      */
-    public void setFetchDirection(String direction);
+    void setFetchDirection(String direction);
 
     /**
      * Set the result set fetch direction constant.
      */
-    public void setFetchDirection(int direction);
+    void setFetchDirection(int direction);
 
     /**
      * Specifies the default eager fetch mode to use. Defaults to
@@ -239,7 +239,7 @@ public interface JDBCConfiguration
      *
      * @since 0.3.0
      */
-    public String getEagerFetchMode();
+    String getEagerFetchMode();
 
     /**
      * Specifies the default eager fetch mode to use. Defaults to
@@ -254,7 +254,7 @@ public interface JDBCConfiguration
      * selects.</li>
      * </ul>
      */
-    public void setEagerFetchMode(String mode);
+    void setEagerFetchMode(String mode);
 
     /**
      * Return the eager fetch mode as one of the following symbolic constants:
@@ -266,7 +266,7 @@ public interface JDBCConfiguration
      *
      * @since 0.3.0
      */
-    public int getEagerFetchModeConstant();
+    int getEagerFetchModeConstant();
 
     /**
      * Set the eager fetch mode as one of the following symbolic constants:
@@ -278,7 +278,7 @@ public interface JDBCConfiguration
      *
      * @since 0.3.0
      */
-    public void setEagerFetchMode(int eagerFetchMode);
+    void setEagerFetchMode(int eagerFetchMode);
 
     /**
      * Specifies the default subclass fetch mode to use. Defaults to
@@ -293,7 +293,7 @@ public interface JDBCConfiguration
      *
      * @since 0.3.2
      */
-    public String getSubclassFetchMode();
+    String getSubclassFetchMode();
 
     /**
      * Specifies the default subclass fetch mode to use. Defaults to
@@ -308,7 +308,7 @@ public interface JDBCConfiguration
      *
      * @since 0.3.2
      */
-    public void setSubclassFetchMode(String mode);
+    void setSubclassFetchMode(String mode);
 
     /**
      * Return the subclass fetch mode as one of the following symbolic
@@ -321,7 +321,7 @@ public interface JDBCConfiguration
      *
      * @since 0.3.2
      */
-    public int getSubclassFetchModeConstant();
+    int getSubclassFetchModeConstant();
 
     /**
      * Set the subclass fetch mode as one of the following symbolic constants:
@@ -333,7 +333,7 @@ public interface JDBCConfiguration
      *
      * @since 0.3.2
      */
-    public void setSubclassFetchMode(int subclassFetchMode);
+    void setSubclassFetchMode(int subclassFetchMode);
 
     /**
      * How to obtain the size of large result sets. Defaults to
@@ -347,13 +347,13 @@ public interface JDBCConfiguration
      * size of the results.</li>
      * </ul>
      */
-    public String getLRSSize();
+    String getLRSSize();
 
     /**
      * Return the {@link LRSSizes} constant for the large result set size
      * setting.
      */
-    public int getLRSSizeConstant();
+    int getLRSSizeConstant();
 
     /**
      * How to obtain the size of large result sets. Defaults to
@@ -367,220 +367,220 @@ public interface JDBCConfiguration
      * size of the results.</li>
      * </ul>
      */
-    public void setLRSSize(String lrsSize);
+    void setLRSSize(String lrsSize);
 
     /**
      * Set the fetch configuration large result set size constant.
      */
-    public void setLRSSize(int size);
+    void setLRSSize(int size);
 
     /**
      * Whether OpenJPA should try to automatically refresh O/R mapping
      * information and the database schema.
      */
-    public String getSynchronizeMappings();
+    String getSynchronizeMappings();
 
     /**
      * Whether OpenJPA should try to automatically refresh O/R mapping
      * information and the database schema.
      */
-    public void setSynchronizeMappings(String synchronizeMappings);
+    void setSynchronizeMappings(String synchronizeMappings);
 
     /**
      * A comma-separated list of the {@link JDBCListener} plugins for
      * listening to {@link JDBCEvent}s.
      */
-    public String getJDBCListeners();
+    String getJDBCListeners();
 
     /**
      * A comma-separated list of the {@link JDBCListener} plugins for
      * listening to {@link JDBCEvent}s.
      */
-    public void setJDBCListeners(String jdbcListeners);
+    void setJDBCListeners(String jdbcListeners);
 
     /**
      * The {@link JDBCListener}s to use.
      */
-    public JDBCListener[] getJDBCListenerInstances();
+    JDBCListener[] getJDBCListenerInstances();
 
     /**
      * The {@link JDBCListener}s to use.
      */
-    public void setJDBCListeners(JDBCListener[] jdbcListeners);
+    void setJDBCListeners(JDBCListener[] jdbcListeners);
 
     /**
      * A comma-separated list of the {@link ConnectionDecorator} for adding
      * functionality to JDBC connections.
      */
-    public String getConnectionDecorators();
+    String getConnectionDecorators();
 
     /**
      * A comma-separated list of the {@link ConnectionDecorator} for
      * adding functionality to JDBC connections.
      */
-    public void setConnectionDecorators(String decorators);
+    void setConnectionDecorators(String decorators);
 
     /**
      * The {@link ConnectionDecorator}s to use.
      */
-    public ConnectionDecorator[] getConnectionDecoratorInstances();
+    ConnectionDecorator[] getConnectionDecoratorInstances();
 
     /**
      * The {@link ConnectionDecorator}s to use.
      */
-    public void setConnectionDecorators(ConnectionDecorator[] decorators);
+    void setConnectionDecorators(ConnectionDecorator[] decorators);
 
     /**
      * The {@link DBDictionary} to use to define the RDBMS SQL information.
      */
-    public String getDBDictionary();
+    String getDBDictionary();
 
     /**
      * The {@link DBDictionary} to use to define the RDBMS SQL information.
      */
-    public void setDBDictionary(String dbdictionary);
+    void setDBDictionary(String dbdictionary);
 
     /**
      * The {@link DBDictionary} to use.
      */
-    public DBDictionary getDBDictionaryInstance();
+    DBDictionary getDBDictionaryInstance();
 
     /**
      * The {@link DBDictionary} to use.
      */
-    public void setDBDictionary(DBDictionary dbdictionary);
+    void setDBDictionary(DBDictionary dbdictionary);
 
     /**
      * The {@link UpdateManager} to use for managing SQL updates.
      */
-    public String getUpdateManager();
+    String getUpdateManager();
 
     /**
      * The {@link UpdateManager} to use for managing SQL updates.
      */
-    public void setUpdateManager(String updateManager);
+    void setUpdateManager(String updateManager);
 
     /**
      * The {@link UpdateManager} for runtime data store interaction.
      */
-    public UpdateManager getUpdateManagerInstance();
+    UpdateManager getUpdateManagerInstance();
 
     /**
      * The {@link UpdateManager} for runtime data store interaction.
      */
-    public void setUpdateManager(UpdateManager updateManager);
+    void setUpdateManager(UpdateManager updateManager);
 
     /**
      * The {@link DriverDataSource} to use for creating a {@link DataSource}
      * from a JDBC {@link Driver}.
      */
-    public String getDriverDataSource();
+    String getDriverDataSource();
 
     /**
      * The {@link DriverDataSource} to use for creating a {@link DataSource}
      * from a JDBC {@link Driver}.
      */
-    public void setDriverDataSource(String driverDataSource);
+    void setDriverDataSource(String driverDataSource);
 
     /**
      * Create an instance of the {@link DriverDataSource} to use
      * for creating a {@link DataSource} from a JDBC {@link Driver}.
      */
-    public DriverDataSource newDriverDataSourceInstance();
+    DriverDataSource newDriverDataSourceInstance();
 
     /**
      * The plugin string for the {@link SchemaFactory} to use to provide
      * schema information during system initialization.
      */
-    public String getSchemaFactory();
+    String getSchemaFactory();
 
     /**
      * The plugin string for the {@link SchemaFactory} to use to provide
      * schema information during system initialization.
      */
-    public void setSchemaFactory(String schemaFactory);
+    void setSchemaFactory(String schemaFactory);
 
     /**
      * The {@link SchemaFactory} to use for schema information.
      */
-    public SchemaFactory getSchemaFactoryInstance();
+    SchemaFactory getSchemaFactoryInstance();
 
     /**
      * The {@link SchemaFactory} to use for schema information.
      */
-    public void setSchemaFactory(SchemaFactory schemaFactory);
+    void setSchemaFactory(SchemaFactory schemaFactory);
 
     /**
      * The SQL factory to use for SQL constructs.
      */
-    public String getSQLFactory();
+    String getSQLFactory();
 
     /**
      * The SQL factory to use for SQL constructs.
      */
-    public SQLFactory getSQLFactoryInstance();
+    SQLFactory getSQLFactoryInstance();
 
     /**
      * The SQL factory to use for SQL constructs.
      */
-    public void setSQLFactory(String sqlFactory);
+    void setSQLFactory(String sqlFactory);
 
     /**
      * The SQL factory to use for SQL constructs.
      */
-    public void setSQLFactory(SQLFactory sqlFactory);
+    void setSQLFactory(SQLFactory sqlFactory);
 
     /**
      * A plugin string describing the {@link MetaDataFactory} to use for
      * loading and storing object-relational mapping data.
      */
-    public String getMappingFactory();
+    String getMappingFactory();
 
     /**
      * A plugin string describing the {@link MetaDataFactory} to use for
      * loading and storing object-relational mapping data.
      */
-    public void setMappingFactory(String mappingFactory);
+    void setMappingFactory(String mappingFactory);
 
     /**
      * A plugin string describing the {@link MappingDefaults} to use.
      *
      * @since 0.4.0
      */
-    public String getMappingDefaults();
+    String getMappingDefaults();
 
     /**
      * A plugin string describing the {@link MappingDefaults} to use.
      *
      * @since 0.4.0
      */
-    public void setMappingDefaults(String map);
+    void setMappingDefaults(String map);
 
     /**
      * The {@link MappingDefaults} to use with a repository.
      *
      * @since 0.4.0
      */
-    public MappingDefaults getMappingDefaultsInstance();
+    MappingDefaults getMappingDefaultsInstance();
 
     /**
      * The {@link MappingDefaults} to use with a repository.
      *
      * @since 0.4.0
      */
-    public void setMappingDefaults(MappingDefaults map);
+    void setMappingDefaults(MappingDefaults map);
 
     /**
      * Return the mapping repository. Convenience method to cast from
      * the internal metadata repository.
      */
-    public MappingRepository getMappingRepositoryInstance();
+    MappingRepository getMappingRepositoryInstance();
 
     /**
      * Return a new empty mapping repository of the configured type.
      * Convenience method to cast from metadata repository.
      */
-    public MappingRepository newMappingRepositoryInstance();
+    MappingRepository newMappingRepositoryInstance();
 
     /**
      * Return the primary data source to use. The data source will
@@ -594,7 +594,7 @@ public interface JDBCConfiguration
      * {@link OpenJPAConfiguration#getConnectionFactory}, and avoids having to
      * pass in the user name and password to obtain connections.
      */
-    public DataSource getDataSource(StoreContext ctx);
+    DataSource getDataSource(StoreContext ctx);
 
     /**
      * Return the non-enlisted data source to use. If there is a valid
@@ -609,24 +609,24 @@ public interface JDBCConfiguration
      *
      * @see #getDataSource
      */
-    public DataSource getDataSource2(StoreContext ctx);
+    DataSource getDataSource2(StoreContext ctx);
 
     /**
      * Gets the String constant that matches the {@link IdentifierUtil}
      * @return String-based name of the {@link IdentifierUtil}
      */
-    public String getIdentifierUtil();
+    String getIdentifierUtil();
 
     /**
      * Gets the {@link DBIdentifierUtil}
      * @return DBIdentifierUtil
      */
-    public DBIdentifierUtil getIdentifierUtilInstance();
+    DBIdentifierUtil getIdentifierUtilInstance();
 
     /**
      * Sets the {@link DBIdentifierUtil}
      * @param util instance of the identifier utility
      */
-    public void setIdentifierUtil(DBIdentifierUtil util);
+    void setIdentifierUtil(DBIdentifierUtil util);
 
 }

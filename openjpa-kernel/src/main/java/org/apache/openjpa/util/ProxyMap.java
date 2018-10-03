@@ -32,16 +32,16 @@ public interface ProxyMap
     /**
      * The map key type.
      */
-    public Class getKeyType();
+    Class getKeyType();
 
     /**
      * The map value type.
      */
-    public Class getValueType();
+    Class getValueType();
 
     /**
      * Create a new instance of this proxy type.
      */
-    public ProxyMap newInstance(Class keyType, Class valueType,
+    ProxyMap newInstance(Class keyType, Class valueType,
         Comparator compare, boolean trackChanges, boolean autoOff);
 }

@@ -19,10 +19,9 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.CircularFKPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.CircularFKPC2;
 
 
 public class TestCircularFK extends BaseJDBCTest{
@@ -38,6 +37,7 @@ public class TestCircularFK extends BaseJDBCTest{
     public TestCircularFK() {
     }
 
+    @Override
     public void setUp() {
         OpenJPAEntityManager pm = getPM();
 

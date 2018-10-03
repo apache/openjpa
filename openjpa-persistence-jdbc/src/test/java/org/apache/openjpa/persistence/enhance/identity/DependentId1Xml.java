@@ -45,6 +45,7 @@ public class DependentId1Xml {
         return empPK;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof DependentId1Xml)) return false;
@@ -55,6 +56,7 @@ public class DependentId1Xml {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = (int) (ret * 31 + empPK);

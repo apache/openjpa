@@ -65,6 +65,7 @@ public class OpenJpaTestEnhancerMojo extends AbstractOpenJpaEnhancerMojo {
      *
      * @return List of classpath elements for the test phase
      */
+    @Override
     protected List<String> getClasspathElements() {
         return testClasspathElements;
     }
@@ -75,10 +76,12 @@ public class OpenJpaTestEnhancerMojo extends AbstractOpenJpaEnhancerMojo {
      *
      * @return normaly the test entity classes are located in target/test-classes
      */
+    @Override
     protected File getEntityClasses() {
         return testClasses;
     }
 
+    @Override
     protected boolean skipMojo() {
         boolean skip = super.skipMojo();
 

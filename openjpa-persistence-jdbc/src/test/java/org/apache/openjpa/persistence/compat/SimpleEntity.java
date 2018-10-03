@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.compat;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,6 +57,8 @@ import javax.persistence.Table;
 @Table(name = "SIMPLE_ENTITY")
 public class SimpleEntity implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     public static final String NAMED_QUERY_WITH_POSITIONAL_PARAMS = "SelectWithPositionalParameter";
     public static final String NAMED_QUERY_WITH_NAMED_PARAMS = "SelectWithNamedParameter";
 

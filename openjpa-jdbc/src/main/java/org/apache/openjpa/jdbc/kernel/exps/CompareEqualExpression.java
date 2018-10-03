@@ -35,6 +35,9 @@ import org.apache.openjpa.util.UserException;
 abstract class CompareEqualExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (CompareEqualExpression.class);
 
@@ -61,6 +64,7 @@ abstract class CompareEqualExpression
         return _val2;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         boolean direct = isDirectComparison();
         int flags1 = 0;
@@ -91,6 +95,7 @@ abstract class CompareEqualExpression
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -110,6 +115,7 @@ abstract class CompareEqualExpression
             sel.append(buf, state.joins);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -133,6 +139,7 @@ abstract class CompareEqualExpression
         return true;
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val1.acceptVisit(visitor);

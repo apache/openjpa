@@ -37,10 +37,12 @@ class DomainCommand extends AbstractCommand {
         super(ctx);
     }
 
+    @Override
     protected Collection<String> getValidQualifiers() {
         return _validQualifiers;
     }
 
+    @Override
     protected int getMaximumArguments() {
         return 0;
     }
@@ -49,6 +51,7 @@ class DomainCommand extends AbstractCommand {
         return "domain";
     }
 
+    @Override
     public void process() throws ProcessingException, IOException {
         JPAServletContext ctx = getExecutionContext();
         ObjectFormatter<?> formatter = getObjectFormatter();

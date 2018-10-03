@@ -29,14 +29,11 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.util.Iterator;
 
-
-
+import org.apache.openjpa.persistence.Extent;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
-
-import org.apache.openjpa.persistence.Extent;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestExtents2 extends BaseKernelTest {
 
@@ -54,6 +51,7 @@ public class TestExtents2 extends BaseKernelTest {
     public TestExtents2() {
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 

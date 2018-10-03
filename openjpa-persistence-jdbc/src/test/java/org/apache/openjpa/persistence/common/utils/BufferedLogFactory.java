@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.common.utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.apache.openjpa.lib.log.*;
+import org.apache.openjpa.lib.log.LogFactoryImpl;
 
 /**
  * Simple default log implementation to test whether certain messages
@@ -32,9 +36,10 @@ public class BufferedLogFactory
     extends LogFactoryImpl {
 
     private int bufferSize = 10000;
-    private List<String> buffer = new ArrayList<String>();
-    private List<String> disallowedMessages = new LinkedList<String>();
+    private List<String> buffer = new ArrayList<>();
+    private List<String> disallowedMessages = new LinkedList<>();
 
+    @Override
     protected LogImpl newLogImpl() {
         return new BufferedLog();
     }
@@ -82,6 +87,7 @@ public class BufferedLogFactory
     public class BufferedLog
         extends LogFactoryImpl.LogImpl {
 
+        @Override
         protected void log(short level, String message, Throwable t) {
             super.log(level, message, t);
             buffer.add(message);

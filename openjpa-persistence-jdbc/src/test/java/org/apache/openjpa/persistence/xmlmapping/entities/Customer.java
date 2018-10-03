@@ -18,9 +18,19 @@
  */
 package org.apache.openjpa.persistence.xmlmapping.entities;
 
-import javax.persistence.*;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity
 @Table(name="TCUSTOMER")
@@ -38,7 +48,8 @@ public class Customer {
 			this.id=id;
 		}
 
-		public String toString() {
+		@Override
+        public String toString() {
 			return countryCode+"/"+id;
 		}
 		@Override
@@ -75,7 +86,7 @@ public class Customer {
 	long version;
 
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="customer")
-	private Collection<Order> orders = new ArrayList<Order>();
+	private Collection<Order> orders = new ArrayList<>();
 
 	public Customer() {
     }
@@ -109,7 +120,8 @@ public class Customer {
 		this.orders = orders;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return "Customer:" + cid + " name:" + name;
 	}
 

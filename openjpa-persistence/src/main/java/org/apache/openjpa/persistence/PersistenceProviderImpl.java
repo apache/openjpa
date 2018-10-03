@@ -151,10 +151,12 @@ public class PersistenceProviderImpl
             return Bootstrap.getBrokerFactory(cp, loader);
     }
 
+    @Override
     public OpenJPAEntityManagerFactory createEntityManagerFactory(String name, Map m) {
         return createEntityManagerFactory(name, null, m);
     }
 
+    @Override
     public OpenJPAEntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo pui, Map m) {
         PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
@@ -235,7 +237,7 @@ public class PersistenceProviderImpl
         if (conf instanceof OpenJPAConfigurationImpl) {
             Map<String, Object> peMap =((OpenJPAConfigurationImpl)conf).getPersistenceEnvironment();
             if (peMap == null) {
-                peMap = new HashMap<String, Object>();
+                peMap = new HashMap<>();
                 ((OpenJPAConfigurationImpl)conf).setPersistenceEnvironment(peMap);
             }
             peMap.put(AbstractCFMetaDataFactory.PERSISTENCE_UNIT_ROOT_URL, pui.getPersistenceUnitRootUrl());
@@ -248,6 +250,7 @@ public class PersistenceProviderImpl
      * Returns a ProviderUtil for use with entities managed by this
      * persistence provider.
      */
+    @Override
     public ProviderUtil getProviderUtil() {
         return this;
     }
@@ -284,6 +287,7 @@ public class PersistenceProviderImpl
             cp.setInto(conf);
             // use the temporary loader for everything
             conf.setClassResolver(new ClassResolver() {
+                @Override
                 public ClassLoader getClassLoader(Class<?> context, ClassLoader env) {
                     return tmpLoader;
                 }
@@ -296,6 +300,7 @@ public class PersistenceProviderImpl
                 Configurations.parseProperties(props), tmpLoader);
         }
 
+        @Override
         public byte[] transform(ClassLoader cl, String name,
             Class<?> previousVersion, ProtectionDomain pd, byte[] bytes)
             throws IllegalClassFormatException {
@@ -346,6 +351,7 @@ public class PersistenceProviderImpl
      *         LoadState.UNKNOWN - if the entity is not managed by this
      *         provider.
      */
+    @Override
     public LoadState isLoaded(Object obj) {
         return isLoadedWithoutReference(obj, null);
     }
@@ -362,6 +368,7 @@ public class PersistenceProviderImpl
      *         provider or if it does not contain the persistent
      *         attribute.
      */
+    @Override
     public LoadState isLoadedWithReference(Object obj, String attr) {
         // TODO: Are there be any cases where OpenJPA will need to examine
         // the contents of a field to determine load state?  If so, per JPA
@@ -384,6 +391,7 @@ public class PersistenceProviderImpl
      *         provider or if it does not contain the persistent
      *         attribute.
      */
+    @Override
     public LoadState isLoadedWithoutReference(Object obj, String attr) {
         if (obj == null) {
             return LoadState.UNKNOWN;

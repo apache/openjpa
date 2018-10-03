@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,7 +43,7 @@ public class ComplexEmbeddedPC //extends RecursivelyEmbeddedPC
     @OneToOne
     private EmbeddedOwnerPC ownerField;
 
-    private Set<String> stringSet = new HashSet<String>();
+    private Set<String> stringSet = new HashSet<>();
 
     public String getStringField() {
         return this.stringField;

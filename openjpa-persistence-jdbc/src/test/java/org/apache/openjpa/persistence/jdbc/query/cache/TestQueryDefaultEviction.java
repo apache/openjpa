@@ -18,10 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
-import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.AbstractQueryCache.EvictPolicy;
+import org.apache.openjpa.datacache.ConcurrentQueryCache;
 
 public class TestQueryDefaultEviction extends AbstractQueryCacheTest {
+    @Override
     public void setUp() throws Exception {
         super.setUp(
                 "openjpa.DataCache", "true",

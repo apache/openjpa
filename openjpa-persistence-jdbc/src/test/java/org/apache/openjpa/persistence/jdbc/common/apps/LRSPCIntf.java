@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>Common interface for persistent types used in LRS testing.</p>
@@ -28,31 +30,31 @@ import java.util.*;
 public interface LRSPCIntf
     extends Comparable {
 
-    public Set getStringSet();
+    Set getStringSet();
 
-    public void setStringSet(Set stringSet);
+    void setStringSet(Set stringSet);
 
-    public Set getRelSet();
+    Set getRelSet();
 
-    public void setRelSet(Set relSet);
+    void setRelSet(Set relSet);
 
-    public Collection getStringCollection();
+    Collection getStringCollection();
 
-    public void setStringCollection(Collection stringCollection);
+    void setStringCollection(Collection stringCollection);
 
-    public Collection getRelCollection();
+    Collection getRelCollection();
 
-    public void setRelCollection(Collection relCollection);
+    void setRelCollection(Collection relCollection);
 
-    public Map getStringMap();
+    Map getStringMap();
 
-    public void setStringMap(Map stringMap);
+    void setStringMap(Map stringMap);
 
-    public Map getRelMap();
+    Map getRelMap();
 
-    public void setRelMap(Map relMap);
+    void setRelMap(Map relMap);
 
-    public String getStringField();
+    String getStringField();
 
-    public LRSPCIntf newInstance(String stringField);
+    LRSPCIntf newInstance(String stringField);
 }

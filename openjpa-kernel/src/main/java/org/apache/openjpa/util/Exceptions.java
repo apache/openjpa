@@ -44,6 +44,7 @@ public class Exceptions {
     static final String SEP = J2DoPrivHelper.getLineSeparator();
 
     private static final OutputStream DEV_NULL = new OutputStream() {
+        @Override
         public void write(int b) {
         }
     };

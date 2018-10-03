@@ -20,8 +20,8 @@ package org.apache.openjpa.datacache;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -58,9 +58,10 @@ public class DataCacheManagerImpl
     private Set<String> _includedTypes;
     private Set<String> _excludedTypes;
 
+    @Override
     public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache, ObjectValue queryCache) {
         _conf = conf;
-        _cacheable = new ConcurrentHashMap<ClassMetaData, Boolean>();
+        _cacheable = new ConcurrentHashMap<>();
         _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class, conf);
         if (_queryCache != null)
             _queryCache.initialize(this);
@@ -80,10 +81,12 @@ public class DataCacheManagerImpl
 
     }
 
+    @Override
     public DataCache getSystemDataCache() {
         return getDataCache(null, false);
     }
 
+    @Override
     public DataCache getDataCache(String name) {
         return getDataCache(name, false);
     }
@@ -94,6 +97,7 @@ public class DataCacheManagerImpl
      * Otherwise, {@linkplain DataCache#getPartition(String, boolean) delegates} to the main cache
      * to obtain a partition.
      */
+    @Override
     public DataCache getDataCache(String name, boolean create) {
         if (name == null || (_cache != null && name.equals(_cache.getName())))
             return _cache;
@@ -102,18 +106,22 @@ public class DataCacheManagerImpl
         return null;
     }
 
+    @Override
     public QueryCache getSystemQueryCache() {
         return _queryCache;
     }
 
+    @Override
     public DataCachePCDataGenerator getPCDataGenerator() {
         return _pcGenerator;
     }
 
+    @Override
     public ClearableScheduler getClearableScheduler() {
         return _scheduler;
     }
 
+    @Override
     public void close() {
         ImplHelper.close(_cache);
         ImplHelper.close(_queryCache);
@@ -126,6 +134,7 @@ public class DataCacheManagerImpl
      * If type based verification affirms the type to be cached then the instance based policy
      * is called to determine the target cache.
      */
+    @Override
     public DataCache selectCache(OpenJPAStateManager sm) {
         if (sm == null || !isCachable(sm.getMetaData()))
             return null;
@@ -136,6 +145,7 @@ public class DataCacheManagerImpl
     /**
      * Gets the instance-based cache distribution policy, if configured.
      */
+    @Override
     public CacheDistributionPolicy getDistributionPolicy() {
         return _policy;
     }
@@ -203,20 +213,23 @@ public class DataCacheManagerImpl
         return meta.getDataCacheName() != null;
     }
 
+    @Override
     public void startCaching(String cls) {
         MetaDataRepository mdr = _conf.getMetaDataRepositoryInstance();
         ClassMetaData cmd = mdr.getCachedMetaData(cls);
         _cacheable.put(cmd, Boolean.TRUE);
     }
 
+    @Override
     public void stopCaching(String cls) {
         MetaDataRepository mdr = _conf.getMetaDataRepositoryInstance();
         ClassMetaData cmd = mdr.getCachedMetaData(cls);
         _cacheable.put(cmd, Boolean.FALSE);
     }
 
+    @Override
     public Map<String, Boolean> listKnownTypes() {
-        Map<String, Boolean> res = new HashMap<String, Boolean>();
+        Map<String, Boolean> res = new HashMap<>();
         for (Entry<ClassMetaData, Boolean> entry : _cacheable.entrySet()) {
             res.put(entry.getKey().getDescribedTypeString(), entry.getValue());
         }

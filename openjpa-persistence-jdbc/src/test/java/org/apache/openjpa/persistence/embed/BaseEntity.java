@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 /**
  * Mapped Super Class using auto-generated identity.

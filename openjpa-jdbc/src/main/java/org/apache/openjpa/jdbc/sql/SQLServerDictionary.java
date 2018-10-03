@@ -65,6 +65,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         stringLengthFunction = "LEN({0})";
     }
 
+    @Override
     public void connectedConfiguration(Connection conn) throws SQLException {
         super.connectedConfiguration(conn);
         boolean requiresWarnings = true;
@@ -152,6 +153,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
             log.warn(_loc.get("sqlserver-cachedstmnts"));
     }
 
+    @Override
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
         throws SQLException {
@@ -162,6 +164,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
             conn);
     }
 
+    @Override
     public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
         DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
         throws SQLException {
@@ -191,6 +194,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         return cols;
     }
 
+    @Override
     protected void appendLength(SQLBuffer buf, int type) {
         if (type == Types.VARCHAR)
             buf.append("(").append(Integer.toString(characterColumnSize))
@@ -208,6 +212,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
      * @param lhsxml indicates whether the left operand maps to xml
      * @param rhsxml indicates whether the right operand maps to xml
      */
+    @Override
     public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
         FilterValue rhs, boolean lhsxml, boolean rhsxml) {
         super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
@@ -283,6 +288,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
     /**
      * Return DB specific schemaCase
      */
+    @Override
     public String getSchemaCase() {
         return schemaCase;
     }

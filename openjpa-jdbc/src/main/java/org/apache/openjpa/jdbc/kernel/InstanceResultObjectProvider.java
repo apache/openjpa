@@ -50,6 +50,7 @@ public class InstanceResultObjectProvider
         _mapping = mapping;
     }
 
+    @Override
     public Object getResultObject()
         throws SQLException {
         Result res = getResult();

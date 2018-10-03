@@ -28,6 +28,9 @@ import org.apache.openjpa.jdbc.meta.Discriminator;
 public class NoneDiscriminatorStrategy
     extends AbstractDiscriminatorStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final String ALIAS = "none";
 
     private static final NoneDiscriminatorStrategy _instance =
@@ -46,10 +49,12 @@ public class NoneDiscriminatorStrategy
     private NoneDiscriminatorStrategy() {
     }
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     public void setDiscriminator(Discriminator owner) {
         // mark subs loaded immediately since we know there's nothing to do
         // to load them

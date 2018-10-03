@@ -29,6 +29,8 @@ import org.apache.openjpa.kernel.StoreContext;
 abstract class MathVal
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val1;
     private final Val _val2;
 
@@ -40,15 +42,18 @@ abstract class MathVal
         _val2 = val2;
     }
 
+    @Override
     public Class getType() {
         Class c1 = _val1.getType();
         Class c2 = _val2.getType();
         return Filters.promote(c1, c2);
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object o1 = _val1.eval(candidate, orig, ctx, params);
@@ -62,6 +67,7 @@ abstract class MathVal
     protected abstract Object operate(Object o1, Class c1, Object o2,
         Class c2);
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val1.acceptVisit(visitor);

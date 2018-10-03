@@ -20,15 +20,18 @@ package org.apache.openjpa.jdbc.identifier;
 
 import java.io.Serializable;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.identifier.Identifier;
 import org.apache.openjpa.lib.identifier.IdentifierImpl;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Encapsulates a database identifier.  With a few exceptions, this class is
  * intended to treated as immutable.
  */
 public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifier, Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     /**
      * Database identifier types.
@@ -110,6 +113,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Set the name of the identifier.
      */
+    @Override
     public void setName(String name) {
         setName(name, false);
     }
@@ -315,6 +319,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Clones an identifier using deep copy.
      */
+    @Override
     public DBIdentifier clone() {
         DBIdentifier sName = new DBIdentifier();
         sName.setNameInternal(getNameInternal());
@@ -358,6 +363,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * Equality operation for identifiers.  Supports comparison with strings
      * and objects of this type.
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -384,6 +390,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Comparison operator for identifiers.
      */
+    @Override
     public int compareTo(Identifier o) {
         if (o instanceof DBIdentifier) {
             if (this == DBIdentifier.NULL && (o == null || o == DBIdentifier.NULL)) {
@@ -885,6 +892,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * The length of the name, including delimiting characters.
      */
+    @Override
     public int length() {
         if (DBIdentifier.isNull(this)) {
             return 0;

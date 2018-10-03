@@ -15,7 +15,6 @@ package jpa.tools.swing;
 
 import javax.swing.JTable;
 
-
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
@@ -25,8 +24,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class PreparedQueryViewer extends JTable {
+    private static final long serialVersionUID = 1L;
 
     public PreparedQueryViewer(OpenJPAEntityManagerFactory emf) {
         super(new QueryStatisticsModel(((OpenJPAEntityManagerFactorySPI)emf).getConfiguration()

@@ -36,6 +36,7 @@ public class TestTableGeneratorMultithreaded extends SingleEMFTestCase {
     public final int LOOPS = 100000;
     public final int THREADS = 5;
 
+    @Override
     public void setUp() {
         setUp(Dog.class, CLEAR_TABLES
         // , "openjpa.Log", "SQL=trace", "openjpa.ConnectionFactoryProperties","PrintParameters=true"
@@ -48,12 +49,13 @@ public class TestTableGeneratorMultithreaded extends SingleEMFTestCase {
 
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     public void testAllIdsAreUsed() throws Exception {
-        List<WorkerThread> threads = new ArrayList<WorkerThread>();
+        List<WorkerThread> threads = new ArrayList<>();
         for (int i = 0; i < THREADS; i++) {
             threads.add(new WorkerThread(emf));
         }
@@ -81,6 +83,7 @@ public class TestTableGeneratorMultithreaded extends SingleEMFTestCase {
             _repo = emf.getConfiguration().getMetaDataRepositoryInstance();
         }
 
+        @Override
         public void run() {
             ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
             SequenceMetaData meta = _repo.getSequenceMetaData("Dog_Gen", contextLoader, true);

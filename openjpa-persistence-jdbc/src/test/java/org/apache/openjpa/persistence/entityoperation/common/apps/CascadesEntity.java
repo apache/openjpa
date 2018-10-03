@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.entityoperation.common.apps;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

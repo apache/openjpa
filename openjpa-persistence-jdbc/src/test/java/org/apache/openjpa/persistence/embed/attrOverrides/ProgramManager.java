@@ -18,8 +18,13 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="PGM_ATTROVER")
@@ -28,7 +33,7 @@ public class ProgramManager {
     int id;
 
     @OneToMany
-    Collection<Employee> manages = new ArrayList<Employee>();
+    Collection<Employee> manages = new ArrayList<>();
 
     public int getId() {
         return id;

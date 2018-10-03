@@ -43,8 +43,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public abstract class PersistenceService extends Observable implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final OpenJPAEntityManagerFactory emf;
     private final String unitName;
     private final boolean isManaged;

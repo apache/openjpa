@@ -67,6 +67,7 @@ public  class BiOrderEntity implements java.io.Serializable {
         this.bo2mbEntity = ent;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof BiOrderEntity) {
             BiOrderEntity boe = (BiOrderEntity)obj;

@@ -35,6 +35,7 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
     private OpenJPAEntityManager em;
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
+    @Override
     public void setUp() {
         setSupportedDatabases(
             org.apache.openjpa.jdbc.sql.DerbyDictionary.class,

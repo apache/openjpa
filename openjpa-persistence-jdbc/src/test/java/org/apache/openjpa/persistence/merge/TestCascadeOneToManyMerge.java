@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.merge.model.ToyBox;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestCascadeOneToManyMerge extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         setUp(Toy.class, ToyBox.class, CLEAR_TABLES);
     }

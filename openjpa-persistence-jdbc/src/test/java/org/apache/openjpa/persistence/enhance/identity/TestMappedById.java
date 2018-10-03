@@ -38,28 +38,27 @@ public class TestMappedById extends SingleEMFTestCase {
     public int numDependentsPerEmployee = 2;
     public int numPersons = 4;
 
-    public Map<Integer, Employee1> emps1 = new HashMap<Integer, Employee1>();
-    public Map<String, Dependent1> deps1 = new HashMap<String, Dependent1>();
-    public Map<Integer, Employee2> emps2 = new HashMap<Integer, Employee2>();
-    public Map<String, Dependent2> deps2 = new HashMap<String, Dependent2>();
-    public Map<String, Person1> persons1 = new HashMap<String, Person1>();
+    public Map<Integer, Employee1> emps1 = new HashMap<>();
+    public Map<String, Dependent1> deps1 = new HashMap<>();
+    public Map<Integer, Employee2> emps2 = new HashMap<>();
+    public Map<String, Dependent2> deps2 = new HashMap<>();
+    public Map<String, Person1> persons1 = new HashMap<>();
     public Map<String, MedicalHistory1> medicals1 =
-        new HashMap<String, MedicalHistory1>();
-    public Map<String, Person2> persons2 = new HashMap<String, Person2>();
+        new HashMap<>();
+    public Map<String, Person2> persons2 = new HashMap<>();
     public Map<String, MedicalHistory2> medicals2 =
-        new HashMap<String, MedicalHistory2>();
-    public Map<String, Person3> persons3 = new HashMap<String, Person3>();
-    public Map<String, MedicalHistory3> medicals3 = new HashMap<String,
-        MedicalHistory3>();
-    public Map<String, Person4> persons4 = new HashMap<String, Person4>();
+        new HashMap<>();
+    public Map<String, Person3> persons3 = new HashMap<>();
+    public Map<String, MedicalHistory3> medicals3 = new HashMap<>();
+    public Map<String, Person4> persons4 = new HashMap<>();
     public Map<String, MedicalHistory4> medicals4 =
-        new HashMap<String, MedicalHistory4>();
+        new HashMap<>();
 
-    public Map<Integer, Employee3> emps3 = new HashMap<Integer, Employee3>();
+    public Map<Integer, Employee3> emps3 = new HashMap<>();
     public Map<Object, Dependent3> depMap3 =
-    	new HashMap<Object, Dependent3>();
+    	new HashMap<>();
     public List dids3 = new ArrayList();
-    public List<Dependent3> deps3 = new ArrayList<Dependent3>();
+    public List<Dependent3> deps3 = new ArrayList<>();
 
     public int eId1 = 1;
     public int dId1 = 1;
@@ -78,6 +77,7 @@ public class TestMappedById extends SingleEMFTestCase {
     public int pId4 = 1;
     public int mId4 = 1;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Dependent1.class, Employee.class, Employee1.class,
             DependentId1.class, Dependent2.class, Employee2.class,
@@ -862,7 +862,7 @@ public class TestMappedById extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         Beneficiary b = new Beneficiary();
         b.setId("b8");
-        List<BeneContact> contacts = new ArrayList<BeneContact>();
+        List<BeneContact> contacts = new ArrayList<>();
         BeneContact c = new BeneContact();
         c.setEmail("email8");
         BeneContactId id = new BeneContactId();

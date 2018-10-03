@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.enhance;
 
-import javax.persistence.OneToOne;
-import javax.persistence.Entity;
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 import org.apache.openjpa.persistence.Type;
 
@@ -29,27 +29,34 @@ public class UnenhancedPropertyAccessSubclass
     extends UnenhancedPropertyAccess
     implements UnenhancedSubtype {
 
+    
+    private static final long serialVersionUID = 1L;
     private UnenhancedPropertyAccess related;
     private int intField;
 
+    @Override
     @OneToOne(cascade = CascadeType.ALL)
     @Type(UnenhancedPropertyAccess.class)
     public UnenhancedType getRelated() {
         return related;
     }
 
+    @Override
     public void setRelated(UnenhancedType related) {
         this.related = (UnenhancedPropertyAccess) related;
     }
 
+    @Override
     public void setIntField(int i) {
         intField = i;
     }
 
+    @Override
     public int getIntField() {
         return intField;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         UnenhancedPropertyAccessSubclass un =
             (UnenhancedPropertyAccessSubclass) super.clone();

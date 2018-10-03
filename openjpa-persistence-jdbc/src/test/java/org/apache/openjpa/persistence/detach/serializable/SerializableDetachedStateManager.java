@@ -31,9 +31,7 @@ import javax.persistence.Version;
 
 @Entity
 public class SerializableDetachedStateManager implements Serializable {
-    /**
-     *
-     */
+    
     private static final long serialVersionUID = 80701492251635740L;
 
     @Id

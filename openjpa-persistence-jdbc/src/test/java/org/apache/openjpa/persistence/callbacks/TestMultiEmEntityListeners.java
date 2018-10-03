@@ -24,6 +24,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMultiEmEntityListeners extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, ListenerInEntity.class, AddListenerEntity.class
 //                , "openjpa.Compatibility", "SingletonLifecycleEventManager=true"

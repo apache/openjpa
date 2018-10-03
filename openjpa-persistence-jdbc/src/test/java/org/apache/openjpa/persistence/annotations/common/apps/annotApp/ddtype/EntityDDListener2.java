@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.
-        CallbackStorage;
-
 public class EntityDDListener2
 {
 	public void verifyPreUpdate(Object lcd)

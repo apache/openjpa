@@ -54,6 +54,7 @@ public class TargetedIFaceRelationParent
         this.iface = iface;
     }
 
+    @Override
     public String getName() {
         return name;
     }

@@ -18,16 +18,17 @@
  */
 package org.apache.openjpa.jdbc.procedure;
 
+import java.util.Iterator;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.StoredProcedureQuery;
+
 import org.apache.openjpa.jdbc.procedure.derby.Procedures;
 import org.apache.openjpa.jdbc.procedure.entity.EntityWithStoredProcedure;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import java.util.Iterator;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.StoredProcedureQuery;
 
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
 public class TestStoredProcedure extends SingleEMFTestCase {

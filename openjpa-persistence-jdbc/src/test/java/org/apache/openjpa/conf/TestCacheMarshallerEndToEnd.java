@@ -21,15 +21,16 @@ package org.apache.openjpa.conf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.query.NamedQueryEntity;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
-import org.apache.openjpa.lib.log.Log;
 
 public class TestCacheMarshallerEndToEnd
     extends AbstractCachedEMFTestCase  {
@@ -106,64 +107,79 @@ public class TestCacheMarshallerEndToEnd
     }
 
     private class LogImpl implements Log {
-        private List<String> lines = new ArrayList<String>();
+        private List<String> lines = new ArrayList<>();
 
+        @Override
         public boolean isTraceEnabled() {
             return true;
         }
 
+        @Override
         public boolean isInfoEnabled() {
             return true;
         }
 
+        @Override
         public boolean isWarnEnabled() {
             return true;
         }
 
+        @Override
         public boolean isErrorEnabled() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean isFatalEnabled() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void trace(Object o) {
             lines.add(o.toString());
         }
 
+        @Override
         public void trace(Object o, Throwable t) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void info(Object o) {
             lines.add(o.toString());
         }
 
+        @Override
         public void info(Object o, Throwable t) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void warn(Object o) {
             lines.add(o.toString());
         }
 
+        @Override
         public void warn(Object o, Throwable t) {
             lines.add(o.toString());
         }
 
+        @Override
         public void error(Object o) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void error(Object o, Throwable t) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void fatal(Object o) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void fatal(Object o, Throwable t) {
             throw new UnsupportedOperationException();
         }

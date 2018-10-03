@@ -25,6 +25,6 @@ import org.apache.openjpa.persistence.ManagedInterface;
 @ManagedInterface
 @Embeddable
 public interface ManagedInterfaceEmbed {
-    public int getEmbedIntField();
-    public void setEmbedIntField(int i);
+    int getEmbedIntField();
+    void setEmbedIntField(int i);
 }

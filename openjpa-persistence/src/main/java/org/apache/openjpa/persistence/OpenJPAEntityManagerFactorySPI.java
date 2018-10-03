@@ -34,14 +34,14 @@ public interface OpenJPAEntityManagerFactorySPI
      *
      * @since 0.3.3
      */
-    public void addLifecycleListener(Object listener, Class... classes);
+    @Override void addLifecycleListener(Object listener, Class... classes);
 
     /**
      * Remove a listener for lifecycle-related events.
      *
      * @since 0.3.3
      */
-    public void removeLifecycleListener (Object listener);
+    @Override void removeLifecycleListener (Object listener);
 
     /**
      * Register a listener for transaction-related events on the specified
@@ -51,21 +51,21 @@ public interface OpenJPAEntityManagerFactorySPI
      *
      * @since 1.0.0
      */
-    public void addTransactionListener(Object listener);
+    @Override void addTransactionListener(Object listener);
 
     /**
      * Remove a listener for transaction-related events.
      *
      * @since 1.0.0
      */
-    public void removeTransactionListener (Object listener);
+    @Override void removeTransactionListener (Object listener);
 
     /**
      * Return the configuration for this factory.
      */
-    public OpenJPAConfiguration getConfiguration();
+    @Override OpenJPAConfiguration getConfiguration();
 
-    public OpenJPAEntityManagerSPI createEntityManager();
+    @Override OpenJPAEntityManagerSPI createEntityManager();
 
-    public OpenJPAEntityManagerSPI createEntityManager(Map props);
+    @Override OpenJPAEntityManagerSPI createEntityManager(Map props);
 }

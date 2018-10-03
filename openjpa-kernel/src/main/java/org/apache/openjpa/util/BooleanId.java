@@ -26,6 +26,8 @@ package org.apache.openjpa.util;
  */
 public class BooleanId extends OpenJPAId {
 
+    
+    private static final long serialVersionUID = 1L;
     private final boolean key;
 
     public BooleanId(Class cls, Boolean key) {
@@ -55,6 +57,7 @@ public class BooleanId extends OpenJPAId {
         return Boolean.valueOf(key);
     }
 
+    @Override
     public String toString() {
         return Boolean.toString(key);
     }

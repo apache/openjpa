@@ -56,14 +56,14 @@ public interface TokenRenderer {
      * A HTML render using a Cascaded Style Sheet may additionally specify
      * the <HEAD> tag to include the style sheet.
      */
-    public String getPrologue();
+    String getPrologue();
 
     /**
      * Gets a string to be added after token processing ends.
      * For example, a HTML renderer may return the closing HTML and BODY tags.
      *
      */
-    public String getEpilogue();
+    String getEpilogue();
 
     /**
      * Produce a string representation of the given token.
@@ -76,7 +76,7 @@ public interface TokenRenderer {
      *
      * @return a string representation of the given token.
      */
-    public String render(int decision, Token token);
+    String render(int decision, Token token);
 
     /**
      * Produce a string to signal beginning of a line.
@@ -87,7 +87,7 @@ public interface TokenRenderer {
      *
      * @return a String can be a blank
      */
-    public String newLine(int line);
+    String newLine(int line);
 
 
     /**
@@ -99,5 +99,5 @@ public interface TokenRenderer {
      *
      * @return a String can be a blank
      */
-    public String endLine(int line);
+    String endLine(int line);
 }

@@ -28,7 +28,9 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class ArrayExpression extends ExpressionImpl {
-	private final Object[] _values;
+	
+    private static final long serialVersionUID = 1L;
+    private final Object[] _values;
 
 	public ArrayExpression(Object[] values) {
 		_values = values;

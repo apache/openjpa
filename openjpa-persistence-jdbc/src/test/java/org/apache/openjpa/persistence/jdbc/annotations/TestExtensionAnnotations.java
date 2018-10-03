@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.UpdateStrategies;
@@ -38,6 +39,7 @@ public class TestExtensionAnnotations
 
     private ClassMapping _mapping;
 
+    @Override
     public void setUp() {
         setUp(ExtensionsEntity.class);
         _mapping = ((JDBCConfiguration) emf.getConfiguration()).
@@ -46,7 +48,7 @@ public class TestExtensionAnnotations
     }
 
     public void testDataStoreId() {
-        assertEquals(ClassMapping.ID_DATASTORE, _mapping.getIdentityType());
+        assertEquals(ClassMetaData.ID_DATASTORE, _mapping.getIdentityType());
         assertEquals(ValueStrategies.SEQUENCE, _mapping.getIdentityStrategy());
         assertEquals("system", _mapping.getIdentitySequenceName());
     }

@@ -47,7 +47,7 @@ public abstract class Translatable extends BaseEntity {
 
 	public void addTranslation(Translation t) {
 		if (translations == null)
-			translations = new HashSet<Translation>();
+			translations = new HashSet<>();
 		translations.add(t);
 	}
 

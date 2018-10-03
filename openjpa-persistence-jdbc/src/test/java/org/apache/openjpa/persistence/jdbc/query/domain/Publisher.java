@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Simple persistent entity as a target of uni-directional one-to-one

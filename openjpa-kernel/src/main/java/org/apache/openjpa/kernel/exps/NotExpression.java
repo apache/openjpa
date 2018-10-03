@@ -30,6 +30,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class NotExpression
     extends Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Exp _exp;
 
     /**
@@ -39,16 +41,19 @@ class NotExpression
         _exp = exp;
     }
 
+    @Override
     protected boolean eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return !_exp.evaluate(candidate, orig, ctx, params);
     }
 
+    @Override
     protected boolean eval(Collection candidates, StoreContext ctx,
         Object[] params) {
         return !_exp.evaluate(candidates, ctx, params);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _exp.acceptVisit(visitor);

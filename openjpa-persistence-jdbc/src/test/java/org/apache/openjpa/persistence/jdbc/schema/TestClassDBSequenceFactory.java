@@ -28,19 +28,22 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.ClassTableJDBCSeq;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.kernel.Broker;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.jdbc.common.apps.PerClassTestObject3;
+import org.apache.openjpa.persistence.jdbc.common.apps.SeqD;
+import org.apache.openjpa.persistence.jdbc.common.apps.SeqE;
 
 
 public class TestClassDBSequenceFactory
@@ -55,6 +58,7 @@ public class TestClassDBSequenceFactory
         super(test);
     }
 
+    @Override
     public void setUp() {
        deleteAll(SeqE.class);
     }
@@ -217,6 +221,7 @@ public class TestClassDBSequenceFactory
             _broker = broker;
         }
 
+        @Override
         public void run() {
             try {
                 ClassMapping mapping =

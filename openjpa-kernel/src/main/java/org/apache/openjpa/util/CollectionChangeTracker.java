@@ -32,10 +32,10 @@ public interface CollectionChangeTracker
     /**
      * Record that the given element was added.
      */
-    public void added(Object elem);
+    void added(Object elem);
 
     /**
      * Record that the given element was removed.
      */
-    public void removed(Object elem);
+    void removed(Object elem);
 }

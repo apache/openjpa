@@ -32,6 +32,7 @@ public class BooleanValue extends Value {
         setAliasListComprehensive(true);
     }
 
+    @Override
     public Class<Boolean> getValueType() {
         return boolean.class;
     }
@@ -50,18 +51,22 @@ public class BooleanValue extends Value {
     /**
      * The internal value.
      */
+    @Override
     public Boolean get() {
         return value;
     }
 
+    @Override
     protected String getInternalString() {
         return String.valueOf(value);
     }
 
+    @Override
     protected void setInternalString(String val) {
         set(Boolean.valueOf(val).booleanValue());
     }
 
+    @Override
     protected void setInternalObject(Object obj) {
         if (obj == null)
             set(false);

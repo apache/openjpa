@@ -19,8 +19,8 @@
 package org.apache.openjpa.persistence.managedinterface;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 public class MixedInterfaceImpl implements MixedInterface {
@@ -30,18 +30,22 @@ public class MixedInterfaceImpl implements MixedInterface {
 
     private int intField;
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public int getIntField() {
         return intField;
     }
 
+    @Override
     public void setIntField(int i) {
         intField = i;
     }

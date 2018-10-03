@@ -33,7 +33,7 @@ public class EntityI {
     private int id;
     private String name;
     @ManyToMany(mappedBy="entityIs")
-    private Collection<EntityH> entityHs = new HashSet<EntityH>();
+    private Collection<EntityH> entityHs = new HashSet<>();
 
     public EntityI() {}
 

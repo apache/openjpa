@@ -27,6 +27,9 @@ import javax.persistence.Entity;
 @Entity
 public class EntityA_Embed_Single_Coll implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     @EmbeddedId
     protected Embed_Single_Coll embed;
 

@@ -21,12 +21,12 @@ package org.apache.openjpa.persistence.simple;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-import junit.textui.TestRunner;
-
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+
+import junit.framework.TestCase;
+import junit.textui.TestRunner;
 
 // This test case extends TestCase directly instead of SingleEMTestCase with the
 // corresponding setup() method because that scheme goes down a different code
@@ -34,8 +34,9 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 public class TestMissingMetaData extends TestCase {
     private OpenJPAEntityManagerFactory emf;
 
+    @Override
     public void setUp() {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("openjpa.RuntimeUnenhancedClasses", "supported");
         // This test case uses a different persistence xml file because
         // modifying the current persistence.xml file with a bad class would
@@ -57,6 +58,7 @@ public class TestMissingMetaData extends TestCase {
         }
     }
 
+    @Override
     public void tearDown() {
         emf.close();
         emf = null;

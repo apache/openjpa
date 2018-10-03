@@ -20,10 +20,11 @@ package org.apache.openjpa.persistence.detachment;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.AutoDetachType;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Tests detachment for bidirectional one-many relationship
@@ -33,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestDetachmentOneMany
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(DetachmentOneManyParent.class, DetachmentOneManyChild.class);
     }

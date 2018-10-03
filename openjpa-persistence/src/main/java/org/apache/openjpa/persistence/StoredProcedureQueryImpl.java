@@ -18,6 +18,21 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.Parameter;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureQuery;
+import javax.persistence.TemporalType;
+
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.QueryResultCallback;
 import org.apache.openjpa.lib.rop.ResultList;
@@ -26,15 +41,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.persistence.*;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 
 /**
  * Implements Store Procedure based query for JPA facade.
@@ -409,6 +415,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
         return true;
     }
 
+    @Override
     public String toString() {
         return _name;
     }

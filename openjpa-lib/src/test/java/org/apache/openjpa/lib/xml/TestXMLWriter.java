@@ -20,16 +20,18 @@ package org.apache.openjpa.lib.xml;
 
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.openjpa.lib.util.StringUtil;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Tests the {@link XMLWriter} by comparing the results of passing the

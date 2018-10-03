@@ -34,6 +34,9 @@ import org.apache.openjpa.kernel.StoreContext;
 class BindVariableAndExpression
     extends AndExpression {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide expression binding the variable and the
      * expression it is AND'd with.
@@ -42,6 +45,7 @@ class BindVariableAndExpression
         super(var, exp);
     }
 
+    @Override
     protected boolean eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         // execute the tree for every element in the variable's collection;
@@ -69,6 +73,7 @@ class BindVariableAndExpression
         return false;
     }
 
+    @Override
     protected boolean eval(Collection candidates, StoreContext ctx,
         Object[] params) {
         if (candidates == null || candidates.isEmpty())

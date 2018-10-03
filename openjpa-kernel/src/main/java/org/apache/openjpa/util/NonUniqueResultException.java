@@ -30,6 +30,9 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class NonUniqueResultException
     extends InvalidStateException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public NonUniqueResultException(Message msg) {
         super(msg);
     }
@@ -39,6 +42,7 @@ public class NonUniqueResultException
         setFailedObject(failed);
     }
 
+    @Override
     public int getSubtype() {
         return NON_UNIQUE_RESULT;
     }

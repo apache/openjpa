@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.models.company.idclass;
 
-import org.apache.openjpa.persistence.models.company.*;
+import org.apache.openjpa.persistence.models.company.CompanyModelTest;
 
 public class TestIdClassCompanyModel extends CompanyModelTest {
 }

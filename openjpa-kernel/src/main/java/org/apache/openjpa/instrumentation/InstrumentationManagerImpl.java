@@ -41,6 +41,7 @@ public class InstrumentationManagerImpl implements InstrumentationManager {
     /**
      * Initializes all providers defined for the specified configuration.
      */
+    @Override
     public void initialize(OpenJPAConfiguration conf, PluginListValue pluginVal) {
         InstrumentationProvider[] providers =
             (InstrumentationProvider[])pluginVal.instantiate(InstrumentationProvider.class, conf);
@@ -51,6 +52,7 @@ public class InstrumentationManagerImpl implements InstrumentationManager {
      * Make a provider managed.  This will bind its instrumentation to
      * InstrumentationLevel type events (factory create/close, broker create/close).
      */
+    @Override
     public void manageProvider(InstrumentationProvider provider) {
         _providers.add(provider);
     }
@@ -58,6 +60,7 @@ public class InstrumentationManagerImpl implements InstrumentationManager {
     /**
      * Returns all providers as an unmodifiable set
      */
+    @Override
     public Set<InstrumentationProvider> getProviders() {
         return Collections.unmodifiableSet(_providers);
     }
@@ -65,6 +68,7 @@ public class InstrumentationManagerImpl implements InstrumentationManager {
     /**
      *  Starts all providers at a specific level and context
      */
+    @Override
     public void start(InstrumentationLevel level, Object context) {
         if (_providers == null || _providers.size() == 0) {
             return;
@@ -80,6 +84,7 @@ public class InstrumentationManagerImpl implements InstrumentationManager {
     /**
      *  Stops all providers at a specific level and context
      */
+    @Override
     public void stop(InstrumentationLevel level, Object context) {
         if (_providers == null || _providers.size() == 0) {
             return;
@@ -92,6 +97,7 @@ public class InstrumentationManagerImpl implements InstrumentationManager {
     /**
      *  Stops all providers
      */
+    @Override
     public void close() throws Exception {
         if (_closed) {
             return;

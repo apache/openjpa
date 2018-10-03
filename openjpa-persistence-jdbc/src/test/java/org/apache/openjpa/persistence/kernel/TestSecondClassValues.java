@@ -40,13 +40,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.SCOTest;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import junit.framework.AssertionFailedError;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.kernel.common.apps.SCOTest;
+
+import junit.framework.AssertionFailedError;
 
 public class TestSecondClassValues extends BaseKernelTest {
 
@@ -67,6 +65,7 @@ public class TestSecondClassValues extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         pm = getPM(true, false);
     }
@@ -771,6 +770,7 @@ public class TestSecondClassValues extends BaseKernelTest {
 
         }
 
+        @Override
         public int compare(Object o1, Object o2) {
             if (o1 != null && !(o1 instanceof Boolean))
                 return collator.compare(o1, o2);

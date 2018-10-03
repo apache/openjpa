@@ -68,6 +68,7 @@ public class ParttimeEmployee extends Employee {
         this.dept = dept;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other instanceof ParttimeEmployee) {
             ParttimeEmployee c = (ParttimeEmployee) other;

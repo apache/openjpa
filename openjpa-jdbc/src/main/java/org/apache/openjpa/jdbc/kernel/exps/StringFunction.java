@@ -36,6 +36,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 abstract class StringFunction
     extends AbstractVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private ClassMetaData _meta = null;
 
@@ -50,39 +52,48 @@ abstract class StringFunction
         return _val;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
 
+    @Override
     public Class getType() {
         return String.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         return _val.initialize(sel, ctx, flags);
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         _val.selectColumns(sel, ctx, state, true);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
@@ -95,21 +106,25 @@ abstract class StringFunction
         return buf;
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         _val.calculateValue(sel, ctx, state, null, null);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

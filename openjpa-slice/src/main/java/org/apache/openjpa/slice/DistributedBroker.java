@@ -38,5 +38,6 @@ public interface DistributedBroker extends Broker {
     /**
      * Gets the covariant fetch configuration that is aware of targets.
      */
+    @Override
     TargetFetchConfiguration getFetchConfiguration();
 }

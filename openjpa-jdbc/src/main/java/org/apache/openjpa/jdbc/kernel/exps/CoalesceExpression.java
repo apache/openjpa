@@ -39,6 +39,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 public class CoalesceExpression
     extends AbstractVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val[] _vals;
     private ClassMetaData _meta = null;
     private Class _cast = null;
@@ -56,6 +58,7 @@ public class CoalesceExpression
         return _vals;
     }
 
+    @Override
     public Class getType() {
         if (_cast != null)
             return _cast;
@@ -67,6 +70,7 @@ public class CoalesceExpression
         return type;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         ExpState[] states = new ExpState[_vals.length];
         Joins joins = null;
@@ -91,6 +95,7 @@ public class CoalesceExpression
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf, int index) {
         CoalesceExpState cstate = (CoalesceExpState) state;
@@ -106,6 +111,7 @@ public class CoalesceExpression
         buf.append(")");
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         CoalesceExpState cstate = (CoalesceExpState) state;
@@ -114,6 +120,7 @@ public class CoalesceExpression
             _vals[i].selectColumns(sel, ctx, cstate.states[i], pks);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         for (int i = 0; i < _vals.length; i++)
@@ -121,10 +128,12 @@ public class CoalesceExpression
         visitor.exit(this);
     }
 
+    @Override
     public int getId() {
         return Val.COALESCE_VAL;
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         CoalesceExpState cstate = (CoalesceExpState) state;
@@ -132,10 +141,12 @@ public class CoalesceExpression
             _vals[i].calculateValue(sel, ctx, cstate.states[i], other, otherState);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
@@ -147,29 +158,35 @@ public class CoalesceExpression
         return buf;
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state, boolean pks){
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _cast = type;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }

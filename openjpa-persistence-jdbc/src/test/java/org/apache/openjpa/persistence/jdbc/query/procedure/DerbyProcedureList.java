@@ -30,8 +30,9 @@ import java.util.List;
  */
 public class DerbyProcedureList extends AbstractProcedureList {
 
+    @Override
     public List<String> getCreateProcedureList () {
-        ArrayList<String> retList = new ArrayList<String>();
+        ArrayList<String> retList = new ArrayList<>();
 
         retList.add("create procedure ADD_X_TO_CHARLIE () "
             + "PARAMETER STYLE JAVA LANGUAGE JAVA MODIFIES SQL DATA "
@@ -66,8 +67,9 @@ public class DerbyProcedureList extends AbstractProcedureList {
         return retList;
     }
 
+    @Override
     public List<String> getDropProcedureList () {
-        ArrayList<String> retList = new ArrayList<String>();
+        ArrayList<String> retList = new ArrayList<>();
 
         retList.add ("drop procedure ADD_X_TO_CHARLIE");
         retList.add ("drop procedure ADD_SUFFIX_TO_NAME");
@@ -79,6 +81,7 @@ public class DerbyProcedureList extends AbstractProcedureList {
         return retList;
     }
 
+    @Override
     public String callAddXToCharlie () {
         return "{ call ADD_X_TO_CHARLIE () }";
     }
@@ -95,6 +98,7 @@ public class DerbyProcedureList extends AbstractProcedureList {
         conn.close();
     }
 
+    @Override
     public String callAddSuffixToName () {
         return "{ call ADD_SUFFIX_TO_NAME (?, ?) }";
     }
@@ -113,6 +117,7 @@ public class DerbyProcedureList extends AbstractProcedureList {
         conn.close();
     }
 
+    @Override
     public String callGetAllApplicants () {
         return "{ call GET_ALL_APPLICANTS () }";
     }
@@ -127,6 +132,7 @@ public class DerbyProcedureList extends AbstractProcedureList {
         conn.close();
     }
 
+    @Override
     public String callGetTwoApplicants () {
         return "{ call GET_TWO_APPLICANTS (?, ?) }";
     }

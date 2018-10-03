@@ -36,26 +36,26 @@ public interface Proxy {
      * proxy and the name of the field it is assigned to. Set to null to
      * indicate that the proxy is no longer managed.
      */
-    public void setOwner(OpenJPAStateManager sm, int field);
+    void setOwner(OpenJPAStateManager sm, int field);
 
     /**
      * Return the owning object.
      */
-    public OpenJPAStateManager getOwner();
+    OpenJPAStateManager getOwner();
 
     /**
      * Return the owning field index.
      */
-    public int getOwnerField();
+    int getOwnerField();
 
     /**
      * Return the change tracker for this proxy, or null if none.
      */
-    public ChangeTracker getChangeTracker();
+    ChangeTracker getChangeTracker();
 
     /**
      * Return an unproxied copy of the given instance. This method is used
      * by proxy managers to create backup values for use in rollback.
      */
-    public Object copy(Object orig);
+    Object copy(Object orig);
 }

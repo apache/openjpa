@@ -25,20 +25,24 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 public class TestUnenhancedPropertyAccessInstanceBrokerSerialization
     extends AbstractBrokerSerializationTest<UnenhancedPropertyAccess> {
 
+    @Override
     protected Class<UnenhancedPropertyAccess> getManagedType() {
         return UnenhancedPropertyAccess.class;
     }
 
+    @Override
     protected UnenhancedPropertyAccess newManagedInstance() {
         UnenhancedPropertyAccess e = new UnenhancedPropertyAccess();
         e.setStringField("foo");
         return e;
     }
 
+    @Override
     protected void modifyInstance(UnenhancedPropertyAccess e) {
         e.setStringField("modified");
     }
 
+    @Override
     protected Object getModifiedValue(UnenhancedPropertyAccess e) {
         return e.getStringField();
     }

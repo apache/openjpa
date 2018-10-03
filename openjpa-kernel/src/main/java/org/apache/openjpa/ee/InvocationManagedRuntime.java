@@ -19,6 +19,7 @@
 package org.apache.openjpa.ee;
 
 import java.lang.reflect.Method;
+
 import javax.transaction.TransactionManager;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -59,6 +60,7 @@ public class InvocationManagedRuntime extends AbstractManagedRuntime
         _method = null;
     }
 
+    @Override
     public TransactionManager getTransactionManager()
         throws Exception {
         if (_method == null) {
@@ -70,22 +72,27 @@ public class InvocationManagedRuntime extends AbstractManagedRuntime
         return (TransactionManager) _method.invoke(null, null);
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _conf = (OpenJPAConfiguration) conf;
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
 	}
 
+    @Override
     public void setRollbackOnly(Throwable cause)
         throws Exception {
         // there is no generic support for setting the rollback cause
         getTransactionManager().getTransaction().setRollbackOnly();
     }
 
+    @Override
     public Throwable getRollbackCause()
         throws Exception {
         // there is no generic support for setting the rollback cause

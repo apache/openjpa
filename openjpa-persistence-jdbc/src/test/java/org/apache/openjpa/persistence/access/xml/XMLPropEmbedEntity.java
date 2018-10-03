@@ -50,6 +50,7 @@ public class XMLPropEmbedEntity {
         efa = ef;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropEmbedEntity) {
             XMLPropEmbedEntity ps = (XMLPropEmbedEntity)obj;

@@ -20,9 +20,8 @@ package org.apache.openjpa.persistence.kernel;
 
 import javax.persistence.EntityManager;
 
-
-import org.apache.openjpa.persistence.kernel.common.apps.Inner;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.kernel.common.apps.Inner;
 
 public class TestEJBNullValues extends AbstractTestCase {
 
@@ -30,6 +29,7 @@ public class TestEJBNullValues extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(Inner.class);
     }

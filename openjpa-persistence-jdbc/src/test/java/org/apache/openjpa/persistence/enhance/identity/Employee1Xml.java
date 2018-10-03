@@ -26,7 +26,7 @@ public class Employee1Xml {
 
     String name;
 
-    List<Dependent1Xml> dependents = new ArrayList<Dependent1Xml>();
+    List<Dependent1Xml> dependents = new ArrayList<>();
 
     public int getEmpId() {
         return empId;
@@ -56,6 +56,7 @@ public class Employee1Xml {
         dependents.add(d);
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof Employee1Xml)) return false;
@@ -74,6 +75,7 @@ public class Employee1Xml {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + empId;

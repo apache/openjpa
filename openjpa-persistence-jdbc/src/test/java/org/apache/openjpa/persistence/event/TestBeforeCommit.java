@@ -22,13 +22,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.event.TransactionListener;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
@@ -142,6 +142,7 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         em.close();
     }
 
+    @Override
     public void beforeCommit(TransactionEvent event) {
         if(StringUtil.isBlank(ae.getName())) {
             ae.setName("Ava");
@@ -157,27 +158,35 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
     }
 
     // Unused Interface methods
+    @Override
     public void afterBegin(TransactionEvent event) {
     }
 
+    @Override
     public void afterFlush(TransactionEvent event) {
     }
 
+    @Override
     public void beforeFlush(TransactionEvent event) {
     }
 
+    @Override
     public void afterCommit(TransactionEvent event) {
     }
 
+    @Override
     public void afterCommitComplete(TransactionEvent event) {
     }
 
+    @Override
     public void afterRollback(TransactionEvent event) {
     }
 
+    @Override
     public void afterRollbackComplete(TransactionEvent event) {
     }
 
+    @Override
     public void afterStateTransitions(TransactionEvent event) {
     }
 }

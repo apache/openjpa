@@ -55,11 +55,13 @@ public class SimpleDriverDataSource
     protected static Localizer _loc = Localizer.forPackage(SimpleDriverDataSource.class);
     protected static Localizer _eloc = Localizer.forPackage(DelegatingDataSource.class);
 
+    @Override
     public Connection getConnection()
         throws SQLException {
         return getConnection(null);
     }
 
+    @Override
     public Connection getConnection(String username, String password)
         throws SQLException {
         Properties props = new Properties();
@@ -96,39 +98,49 @@ public class SimpleDriverDataSource
         return con;
     }
 
+    @Override
     public int getLoginTimeout() {
         return 0;
     }
 
+    @Override
     public void setLoginTimeout(int seconds) {
     }
 
+    @Override
     public PrintWriter getLogWriter() {
         return DriverManager.getLogWriter();
     }
 
+    @Override
     public void setLogWriter(PrintWriter out) {
     }
 
+    @Override
     public void initDBDictionary(DBDictionary dict) {
     }
 
+    @Override
     public void setConnectionURL(String connectionURL) {
         _connectionURL = connectionURL;
     }
 
+    @Override
     public String getConnectionURL() {
         return _connectionURL;
     }
 
+    @Override
     public void setConnectionUserName(String connectionUserName) {
         _connectionUserName = connectionUserName;
     }
 
+    @Override
     public String getConnectionUserName() {
         return _connectionUserName;
     }
 
+    @Override
     public void setConnectionPassword(String connectionPassword) {
         _connectionPassword = connectionPassword;
     }
@@ -138,38 +150,47 @@ public class SimpleDriverDataSource
         return _connectionPassword;
     }
 
+    @Override
     public void setConnectionProperties(Properties props) {
         _connectionProperties = props;
     }
 
+    @Override
     public Properties getConnectionProperties() {
         return _connectionProperties;
     }
 
+    @Override
     public void setConnectionFactoryProperties(Properties props) {
         _connectionFactoryProperties = props;
     }
 
+    @Override
     public Properties getConnectionFactoryProperties() {
         return _connectionFactoryProperties;
     }
 
+    @Override
     public List<ConnectionDecorator> createConnectionDecorators() {
         return null;
     }
 
+    @Override
     public void setClassLoader(ClassLoader classLoader) {
         _classLoader = classLoader;
     }
 
+    @Override
     public ClassLoader getClassLoader() {
         return _classLoader;
     }
 
+    @Override
     public void setConnectionDriverName(String connectionDriverName) {
         _connectionDriverName = connectionDriverName;
     }
 
+    @Override
     public String getConnectionDriverName() {
         return _connectionDriverName;
     }
@@ -213,10 +234,12 @@ public class SimpleDriverDataSource
 
 
     // java.sql.Wrapper implementation (JDBC 4)
+    @Override
     public boolean isWrapperFor(Class<?> iface) {
         return iface.isAssignableFrom(SimpleDriverDataSource.class);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object unwrap(Class iface) {
         if (isWrapperFor(iface))
@@ -227,6 +250,7 @@ public class SimpleDriverDataSource
 
     // Java 7 methods follow
 
+    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException{
     	throw new SQLFeatureNotSupportedException();
     }

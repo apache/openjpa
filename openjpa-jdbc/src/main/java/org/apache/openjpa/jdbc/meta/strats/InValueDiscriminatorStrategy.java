@@ -48,6 +48,8 @@ import org.apache.openjpa.util.MetaDataException;
 public abstract class InValueDiscriminatorStrategy
     extends AbstractDiscriminatorStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (InValueDiscriminatorStrategy.class);
 
@@ -68,6 +70,7 @@ public abstract class InValueDiscriminatorStrategy
     protected abstract Class getClass(Object val, JDBCStore store)
         throws ClassNotFoundException;
 
+    @Override
     public void map(boolean adapt) {
         ClassMapping cls = disc.getClassMapping();
         if (cls.getJoinablePCSuperclassMapping() != null
@@ -93,6 +96,7 @@ public abstract class InValueDiscriminatorStrategy
         disc.setIndex(idx);
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getRow(disc.getClassMapping().getTable(),
@@ -102,6 +106,7 @@ public abstract class InValueDiscriminatorStrategy
             row.setObject(disc.getColumns()[0], cls);
     }
 
+    @Override
     public boolean select(Select sel, ClassMapping mapping) {
         if (isFinal)
             return false;
@@ -109,6 +114,7 @@ public abstract class InValueDiscriminatorStrategy
         return true;
     }
 
+    @Override
     public Class getClass(JDBCStore store, ClassMapping base, Result res)
         throws SQLException, ClassNotFoundException {
         if (isFinal
@@ -132,6 +138,7 @@ public abstract class InValueDiscriminatorStrategy
         return res.contains(disc.getColumns()[0]);
     }
 
+    @Override
     public boolean hasClassConditions(ClassMapping base, boolean subclasses) {
         // if selecting the first mapped class and all subclasses, no need
         // to limit the query
@@ -147,6 +154,7 @@ public abstract class InValueDiscriminatorStrategy
         return true;
     }
 
+    @Override
     public SQLBuffer getClassConditions(Select sel, Joins joins,
         ClassMapping base, boolean subclasses) {
         Column col = disc.getColumns()[0];

@@ -32,6 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  */
 public class TestMultiColumnVersion extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         setUp(MultiColumnVersionPC.class, MultiColumnSecondaryVersionPC.class,
         		CLEAR_TABLES);

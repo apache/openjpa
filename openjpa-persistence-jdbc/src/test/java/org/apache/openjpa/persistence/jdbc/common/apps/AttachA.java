@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -29,6 +32,8 @@ public class AttachA
     implements Serializable, PreDetachCallback,
     PostDetachCallback, PreAttachCallback, PostAttachCallback {
 
+    
+    private static final long serialVersionUID = 1L;
     // transient method for testing callbacks
     public transient Object detachSource = null;
     public transient Object attachSource = null;
@@ -43,19 +48,23 @@ public class AttachA
     private String [] stringArray = new String [0];
     private AttachE [] attachEArray = new AttachE [0];
 
+    @Override
     public void jdoPreDetach() {
         preDetachCalls++;
     }
 
+    @Override
     public void jdoPostDetach(Object orig) {
         postDetachCalls++;
         detachSource = orig;
     }
 
+    @Override
     public void jdoPreAttach() {
         preAttachCalls++;
     }
 
+    @Override
     public void jdoPostAttach(Object orig) {
         postAttachCalls++;
         attachSource = orig;

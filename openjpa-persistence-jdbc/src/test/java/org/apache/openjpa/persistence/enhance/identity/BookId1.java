@@ -36,6 +36,8 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public final class BookId1 implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     private String name;
     private String library;
 
@@ -47,6 +49,7 @@ public final class BookId1 implements Serializable {
     }
 
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof BookId1)) {
             return false;
@@ -65,6 +68,7 @@ public final class BookId1 implements Serializable {
         return true;
     }
 
+    @Override
     public int hashCode() {
         return safeHash(getName()) * safeHash(getLibrary());
     }

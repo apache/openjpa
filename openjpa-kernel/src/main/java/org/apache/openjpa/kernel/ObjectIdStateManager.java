@@ -27,8 +27,8 @@ import java.security.PrivilegedActionException;
 import java.util.BitSet;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -68,213 +68,262 @@ public class ObjectIdStateManager
         _vmd = ownerVal;
     }
 
+    @Override
     public Object getGenericContext() {
         return (_owner == null) ? null : _owner.getGenericContext();
     }
 
+    @Override
     public Object getPCPrimaryKey(Object oid, int field) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public StateManager replaceStateManager(StateManager sm) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object getVersion() {
         return null;
     }
 
+    @Override
     public void setVersion(Object version) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isDirty() {
         return false;
     }
 
+    @Override
     public boolean isTransactional() {
         return false;
     }
 
+    @Override
     public boolean isPersistent() {
         return false;
     }
 
+    @Override
     public boolean isNew() {
         return false;
     }
 
+    @Override
     public boolean isDeleted() {
         return false;
     }
 
+    @Override
     public boolean isDetached() {
         return true;
     }
 
+    @Override
     public boolean isVersionUpdateRequired() {
         return false;
     }
 
+    @Override
     public boolean isVersionCheckRequired() {
         return false;
     }
 
+    @Override
     public void dirty(String field) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object fetchObjectId() {
         return null;
     }
 
+    @Override
     public void accessingField(int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean serializing() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean writeDetached(ObjectOutput out)
         throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void proxyDetachedDeserialized(int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void settingBooleanField(PersistenceCapable pc, int idx,
         boolean cur, boolean next, int set) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void settingCharField(PersistenceCapable pc, int idx, char cur,
         char next, int set) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void settingByteField(PersistenceCapable pc, int idx, byte cur,
         byte next, int set) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void settingShortField(PersistenceCapable pc, int idx, short cur,
         short next, int set) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void settingIntField(PersistenceCapable pc, int idx, int cur,
         int next, int set) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void settingLongField(PersistenceCapable pc, int idx, long cur,
         long next, int set) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void settingFloatField(PersistenceCapable pc, int idx, float cur,
         float next, int set) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void settingDoubleField(PersistenceCapable pc, int idx, double cur,
         double next, int set) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void settingStringField(PersistenceCapable pc, int idx, String cur,
         String next, int set) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void settingObjectField(PersistenceCapable pc, int idx, Object cur,
         Object next, int set) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void providedBooleanField(PersistenceCapable pc, int idx,
         boolean cur) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void providedCharField(PersistenceCapable pc, int idx, char cur) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void providedByteField(PersistenceCapable pc, int idx, byte cur) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void providedShortField(PersistenceCapable pc, int idx, short cur) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void providedIntField(PersistenceCapable pc, int idx, int cur) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void providedLongField(PersistenceCapable pc, int idx, long cur) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void providedFloatField(PersistenceCapable pc, int idx, float cur) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void providedDoubleField(PersistenceCapable pc, int idx,
         double cur) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void providedStringField(PersistenceCapable pc, int idx,
         String cur) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void providedObjectField(PersistenceCapable pc, int idx,
         Object cur) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean replaceBooleanField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public char replaceCharField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public byte replaceByteField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public short replaceShortField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int replaceIntField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public long replaceLongField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public float replaceFloatField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public double replaceDoubleField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String replaceStringField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object replaceObjectField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
@@ -283,75 +332,93 @@ public class ObjectIdStateManager
     // OpenJPAStateManager implementation
     ///////////////////////////////////
 
+    @Override
     public void initialize(Class forType, PCState state) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void load(FetchConfiguration fetch) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object getManagedInstance() {
         return _oid;
     }
 
+    @Override
     public PersistenceCapable getPersistenceCapable() {
         return ImplHelper.toPersistenceCapable(_oid,
             _vmd.getRepository().getConfiguration());
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _vmd.getEmbeddedMetaData();
     }
 
+    @Override
     public OpenJPAStateManager getOwner() {
         return _owner;
     }
 
+    @Override
     public int getOwnerIndex() {
         return _vmd.getFieldMetaData().getIndex();
     }
 
+    @Override
     public boolean isEmbedded() {
         return true;
     }
 
+    @Override
     public boolean isFlushed() {
         return false;
     }
 
+    @Override
     public boolean isFlushedDirty() {
         return false;
     }
 
+    @Override
     public boolean isProvisional() {
         return false;
     }
 
+    @Override
     public BitSet getLoaded() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public BitSet getDirty() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public BitSet getFlushed() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public BitSet getUnloaded(FetchConfiguration fetch) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object newProxy(int field) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object newFieldProxy(int field) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isDefaultValue(int field) {
         Object val = getValue(field);
         if (val == null)
@@ -377,126 +444,157 @@ public class ObjectIdStateManager
         }
     }
 
+    @Override
     public StoreContext getContext() {
         return (_owner == null) ? null : _owner.getContext();
     }
 
+    @Override
     public PCState getPCState() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object getObjectId() {
         return null;
     }
 
+    @Override
     public void setObjectId(Object oid) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean assignObjectId(boolean flush) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object getId() {
         return null;
     }
 
+    @Override
     public Object getLock() {
         return null;
     }
 
+    @Override
     public void setLock(Object lock) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setNextVersion(Object version) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object getImplData() {
         return null;
     }
 
+    @Override
     public Object setImplData(Object data, boolean cacheable) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isImplDataCacheable() {
         return false;
     }
 
+    @Override
     public Object getImplData(int field) {
         return null;
     }
 
+    @Override
     public Object setImplData(int field, Object data) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isImplDataCacheable(int field) {
         return false;
     }
 
+    @Override
     public Object getIntermediate(int field) {
         return null;
     }
 
+    @Override
     public void setIntermediate(int field, Object data) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void removed(int field, Object removed, boolean key) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean beforeRefresh(boolean all) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void dirty(int field) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void storeBoolean(int field, boolean extVal) {
         setValue(field, (extVal) ? Boolean.TRUE : Boolean.FALSE, true);
     }
 
+    @Override
     public void storeByte(int field, byte extVal) {
         setValue(field, Byte.valueOf(extVal), true);
     }
 
+    @Override
     public void storeChar(int field, char extVal) {
         setValue(field, Character.valueOf(extVal), true);
     }
 
+    @Override
     public void storeInt(int field, int extVal) {
         setValue(field, extVal, true);
     }
 
+    @Override
     public void storeShort(int field, short extVal) {
         setValue(field, Short.valueOf(extVal), true);
     }
 
+    @Override
     public void storeLong(int field, long extVal) {
         setValue(field, extVal, true);
     }
 
+    @Override
     public void storeFloat(int field, float extVal) {
         setValue(field, Float.valueOf(extVal), true);
     }
 
+    @Override
     public void storeDouble(int field, double extVal) {
         setValue(field, Double.valueOf(extVal), true);
     }
 
+    @Override
     public void storeString(int field, String extVal) {
         setValue(field, extVal, extVal != null);
     }
 
+    @Override
     public void storeObject(int field, Object extVal) {
         setValue(field, extVal, extVal != null);
     }
 
+    @Override
     public void store(int field, Object extVal) {
         boolean forceInst = true;
         if (extVal == null) {
@@ -506,90 +604,112 @@ public class ObjectIdStateManager
         setValue(field, extVal, forceInst);
     }
 
+    @Override
     public void storeBooleanField(int field, boolean extVal) {
         storeBoolean(field, extVal);
     }
 
+    @Override
     public void storeByteField(int field, byte extVal) {
         storeByte(field, extVal);
     }
 
+    @Override
     public void storeCharField(int field, char extVal) {
         storeChar(field, extVal);
     }
 
+    @Override
     public void storeIntField(int field, int extVal) {
         storeInt(field, extVal);
     }
 
+    @Override
     public void storeShortField(int field, short extVal) {
         storeShort(field, extVal);
     }
 
+    @Override
     public void storeLongField(int field, long extVal) {
         storeLong(field, extVal);
     }
 
+    @Override
     public void storeFloatField(int field, float extVal) {
         storeFloat(field, extVal);
     }
 
+    @Override
     public void storeDoubleField(int field, double extVal) {
         storeDouble(field, extVal);
     }
 
+    @Override
     public void storeStringField(int field, String extVal) {
         storeString(field, extVal);
     }
 
+    @Override
     public void storeObjectField(int field, Object extVal) {
         storeObject(field, extVal);
     }
 
+    @Override
     public void storeField(int field, Object value) {
         store(field, value);
     }
 
+    @Override
     public boolean fetchBoolean(int field) {
         return ((Boolean) getValue(field)).booleanValue();
     }
 
+    @Override
     public byte fetchByte(int field) {
         return ((Number) getValue(field)).byteValue();
     }
 
+    @Override
     public char fetchChar(int field) {
         return ((Character) getValue(field)).charValue();
     }
 
+    @Override
     public short fetchShort(int field) {
         return ((Number) getValue(field)).shortValue();
     }
 
+    @Override
     public int fetchInt(int field) {
         return ((Number) getValue(field)).intValue();
     }
 
+    @Override
     public long fetchLong(int field) {
         return ((Number) getValue(field)).longValue();
     }
 
+    @Override
     public float fetchFloat(int field) {
         return ((Number) getValue(field)).floatValue();
     }
 
+    @Override
     public double fetchDouble(int field) {
         return ((Number) getValue(field)).doubleValue();
     }
 
+    @Override
     public String fetchString(int field) {
         return (String) getValue(field);
     }
 
+    @Override
     public Object fetchObject(int field) {
         return getValue(field);
     }
 
+    @Override
     public Object fetch(int field) {
         Object ret = getValue(field);
         if (ret == null)
@@ -597,54 +717,67 @@ public class ObjectIdStateManager
         return ret;
     }
 
+    @Override
     public boolean fetchBooleanField(int field) {
         return fetchBoolean(field);
     }
 
+    @Override
     public byte fetchByteField(int field) {
         return fetchByte(field);
     }
 
+    @Override
     public char fetchCharField(int field) {
         return fetchChar(field);
     }
 
+    @Override
     public short fetchShortField(int field) {
         return fetchShort(field);
     }
 
+    @Override
     public int fetchIntField(int field) {
         return fetchInt(field);
     }
 
+    @Override
     public long fetchLongField(int field) {
         return fetchLong(field);
     }
 
+    @Override
     public float fetchFloatField(int field) {
         return fetchFloat(field);
     }
 
+    @Override
     public double fetchDoubleField(int field) {
         return fetchDouble(field);
     }
 
+    @Override
     public String fetchStringField(int field) {
         return fetchString(field);
     }
 
+    @Override
     public Object fetchObjectField(int field) {
         return fetch(field);
     }
 
+    @Override
     public Object fetchField(int field, boolean transitions) {
         return fetch(field);
     }
 
+    @Override
     public Object fetchInitialField(int field) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setRemote(int field, Object value) {
         store(field, value);
     }

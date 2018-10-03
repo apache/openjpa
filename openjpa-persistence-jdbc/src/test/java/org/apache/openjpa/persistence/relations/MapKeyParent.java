@@ -32,6 +32,9 @@ import javax.persistence.OneToMany;
 @Entity
 public class MapKeyParent implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue
     private long id;

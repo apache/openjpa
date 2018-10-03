@@ -27,21 +27,26 @@ package org.apache.openjpa.persistence.jdbc.kernel;
  */
 
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.jdbc.meta.MappingTool;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.meta.MappingTool;
 import org.apache.openjpa.kernel.Extent;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.kernel.Query;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.jdbc.common.apps.ByteArrayPKPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.ByteArrayPKPC2;
+import org.apache.openjpa.persistence.jdbc.common.apps.ByteArrayPKPCId;
 
 
 public class TestByteArrayAppId extends BaseJDBCTest {
@@ -87,6 +92,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         TEST_COUNT++;
     }
 
+    @Override
     public void tearDown()
     throws Exception {
         // closing the pmf every time slows things down too much b/c

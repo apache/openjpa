@@ -18,9 +18,10 @@
  */
 package org.apache.openjpa.persistence.common.utils;
 
-import java.io.*;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
-import junit.framework.*;
+import junit.framework.AssertionFailedError;
 
 /**
  * Extension of an assertion error that indicates to the outside
@@ -32,6 +33,8 @@ import junit.framework.*;
 public class Bug
     extends AssertionFailedError {
 
+    
+    private static final long serialVersionUID = 1L;
     public static final String BUG_TOKEN = "SOLARBUG";
     public static final String BUG_DELIMITER = "|";
 
@@ -52,6 +55,7 @@ public class Bug
         return new Bug(trackingId, t, message);
     }
 
+    @Override
     public void printStackTrace(PrintWriter pw) {
         super.printStackTrace(pw);
         if (error != null) {
@@ -60,6 +64,7 @@ public class Bug
         }
     }
 
+    @Override
     public void printStackTrace(PrintStream ps) {
         super.printStackTrace(ps);
         if (error != null) {
@@ -68,6 +73,7 @@ public class Bug
         }
     }
 
+    @Override
     public String getMessage() {
         return super.getMessage() + " [reported bug #" + trackingId + "]";
     }

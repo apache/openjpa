@@ -18,10 +18,13 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.persistence.detachment.model.*;
-
 import javax.persistence.EntityManager;
+
+import org.apache.openjpa.persistence.detachment.model.SimpleA;
+import org.apache.openjpa.persistence.detachment.model.SimpleB;
+import org.apache.openjpa.persistence.detachment.model.SimpleC;
+import org.apache.openjpa.persistence.detachment.model.SimpleRef;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import junit.textui.TestRunner;
 
@@ -33,6 +36,7 @@ import junit.textui.TestRunner;
 public class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
     private int a_id;
 
+    @Override
     public void setUp() {
         setUp(SimpleA.class, SimpleRef.class, SimpleB.class, SimpleC.class,
                 CLEAR_TABLES);

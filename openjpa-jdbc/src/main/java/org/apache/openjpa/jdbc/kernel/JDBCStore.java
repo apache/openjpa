@@ -39,27 +39,27 @@ public interface JDBCStore {
     /**
      * Current persistence context.
      */
-    public StoreContext getContext();
+    StoreContext getContext();
 
     /**
      * Return the configuration for this runtime.
      */
-    public JDBCConfiguration getConfiguration();
+    JDBCConfiguration getConfiguration();
 
     /**
      * Return the dictionary in use.
      */
-    public DBDictionary getDBDictionary();
+    DBDictionary getDBDictionary();
 
     /**
      * Return the SQL factory for this runtime.
      */
-    public SQLFactory getSQLFactory();
+    SQLFactory getSQLFactory();
 
     /**
      * If the lock manager in use is a {@link JDBCLockManager}, return it.
      */
-    public JDBCLockManager getLockManager();
+    JDBCLockManager getLockManager();
 
     /**
      * Return a SQL connection to the database.
@@ -67,7 +67,7 @@ public interface JDBCStore {
      * to free any resources it is using. When appropriate, the close
      * method is implemented as a no-op.
      */
-    public Connection getConnection();
+    Connection getConnection();
 
     /**
      * Return a new SQL connection to the database.
@@ -77,18 +77,18 @@ public interface JDBCStore {
      * to free any resources it is using. When appropriate, the close
      * method is implemented as a no-op.
      */
-    public Connection getNewConnection();
+    Connection getNewConnection();
 
     /**
      * Return the current default fetch configuration.
      */
-    public JDBCFetchConfiguration getFetchConfiguration();
+    JDBCFetchConfiguration getFetchConfiguration();
 
     /**
      * Create a new datastore identity object from the given id value and
      * mapping.
      */
-    public Id newDataStoreId(long id, ClassMapping mapping, boolean subs);
+    Id newDataStoreId(long id, ClassMapping mapping, boolean subs);
 
     /**
      * Find the object with the given oid. Convenience method on top of
@@ -96,12 +96,12 @@ public interface JDBCStore {
      *
      * @param vm the mapping holding this oid, or null if not applicable
      */
-    public Object find(Object oid, ValueMapping vm,
+    Object find(Object oid, ValueMapping vm,
         JDBCFetchConfiguration fetch);
 
     /**
      * Makes sure all subclasses of the given type are loaded in the JVM.
      * This is usually done automatically.
      */
-    public void loadSubclasses(ClassMapping mapping);
+    void loadSubclasses(ClassMapping mapping);
 }

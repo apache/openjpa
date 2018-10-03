@@ -53,7 +53,7 @@ public class CombinatorialTestHelper {
 
 	public CombinatorialTestHelper() {
 		geneartor = new CombinationGenerator();
-		propertyKeys = new ArrayList<String>();
+		propertyKeys = new ArrayList<>();
 		currentOption = null;
 		runtimeKeys = new BitSet();
 		combos = null;
@@ -131,7 +131,7 @@ public class CombinatorialTestHelper {
 			geneartor = new CombinationGenerator();
 		}
 		if (propertyKeys == null) {
-			propertyKeys = new ArrayList<String>();
+			propertyKeys = new ArrayList<>();
 		}
 		if (!propertyKeys.contains(property)) {
 			geneartor.addDimension(options);

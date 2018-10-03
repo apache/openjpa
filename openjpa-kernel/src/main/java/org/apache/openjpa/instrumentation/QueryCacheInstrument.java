@@ -29,82 +29,82 @@ public interface QueryCacheInstrument {
     /**
      * Returns number of total exec requests since start.
      */
-    public long getTotalExecutionCount();
+    long getTotalExecutionCount();
 
     /**
      * Returns number of total exec requests since start for
      * the specified string-ified query key.
      */
-    public long getTotalExecutionCount(String queryKey);
+    long getTotalExecutionCount(String queryKey);
 
     /**
      * Returns number of total execution requests since last reset
      */
-    public long getExecutionCount();
+    long getExecutionCount();
 
     /**
      * Returns number of total execution requests since last reset for
      * the specified string-ified query key.
      */
-    public long getExecutionCount(String queryKey);
+    long getExecutionCount(String queryKey);
 
     /**
      * Returns number of total read requests that have been found in cache since
      * last reset.
      */
-    public long getHitCount();
+    long getHitCount();
 
     /**
      * Returns number of total read requests that have been found in cache since
      * last reset for the specified string-ified query key.
      */
-    public long getHitCount(String queryKey);
+    long getHitCount(String queryKey);
 
     /**
      * Returns number of total read requests that has been found since start.
      */
-    public long getTotalHitCount();
+    long getTotalHitCount();
 
     /**
      * Returns number of total read requests that has been found since start for
      * the specified string-ified query key.
      */
-    public long getTotalHitCount(String queryKey);
+    long getTotalHitCount(String queryKey);
 
     /**
      * Resets cache statistics
      */
-    public void reset();
+    void reset();
 
     /**
      * Returns date since cache statistics collection were last reset.
      */
-    public Date sinceDate();
+    Date sinceDate();
 
     /**
      * Returns date cache statistics collection started.
      */
-    public Date startDate();
+    Date startDate();
 
     /**
      * Returns all the string-ified keys for query results in the cache.
      */
-    public Set<String> queryKeys();
+    Set<String> queryKeys();
 
     /**
      * Returns number of total evictions since last reset
      */
-    public long getEvictionCount();
+    long getEvictionCount();
 
     /**
      * Returns number of total eviction requests since start.
      */
-    public long getTotalEvictionCount();
+    long getTotalEvictionCount();
 
     /**
      * Returns the number of total entries in the cache.
      * @return entries
      */
-    public long count();
+    long count();
 
 }

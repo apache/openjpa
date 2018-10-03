@@ -30,17 +30,17 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+import junit.framework.Assert;
 
 public class TestSpec10_1_26 extends SQLListenerTestCase {
 
     public int numDepartments = 2;
     public int numEmployeesPerDept = 2;
-    public List<String> namedQueries = new ArrayList<String>();
+    public List<String> namedQueries = new ArrayList<>();
 
     public int deptId = 1;
     public int empId = 1;
@@ -49,6 +49,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     public List<Department2> rsAllDepartment2 = null;
     public List<Department3> rsAllDepartment3 = null;
 
+    @Override
     public void setUp() {
         super.setUp(DROP_TABLES,
             Department1.class,
@@ -201,7 +202,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     public void createDepartment1(EntityManager em, int id) {
         Department1 d = new Department1();
         d.setDeptId(id);
-        Map<Integer,Employee1> empMap = new HashMap<Integer,Employee1>();
+        Map<Integer,Employee1> empMap = new HashMap<>();
         for (int i = 0; i < numEmployeesPerDept; i++) {
             Employee1 e = createEmployee1(em, empId++);
             //d.addEmployee1(e);

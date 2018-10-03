@@ -20,7 +20,7 @@
 package org.apache.openjpa.persistence.inheritance.entities.testinterfaces;
 
 public interface LeafB1 extends EntityB {
-    public String getLeafB1Data();
+    String getLeafB1Data();
 
-    public void setLeafB1Data(String leafB1Data);
+    void setLeafB1Data(String leafB1Data);
 }

@@ -30,6 +30,9 @@ import org.apache.openjpa.kernel.StoreContext;
 public class Exp
     implements Expression {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Evaluate the expression for the given candidate.
      */
@@ -75,6 +78,7 @@ public class Exp
         return true;
 	}
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         visitor.exit(this);

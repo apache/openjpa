@@ -72,6 +72,7 @@ public class Members {
         /**
          *  Returns the managed type which declared this attribute.
          */
+        @Override
         @SuppressWarnings("unchecked")
         public final ManagedType<X> getDeclaringType() {
             return (ManagedType<X>)owner.model.managedType(fmd.getDeclaringType());
@@ -80,6 +81,7 @@ public class Members {
         /**
          *  Returns the java.lang.reflect.Member for this attribute.
          */
+        @Override
         public final java.lang.reflect.Member getJavaMember() {
             return fmd.getBackingMember();
         }
@@ -87,6 +89,7 @@ public class Members {
         /**
          *  Gets the Java type of this attribute.
          */
+        @Override
         @SuppressWarnings("unchecked")
         public final Class<Y> getJavaType() {
             return (Class<Y>)fmd.getDeclaredType();
@@ -95,6 +98,7 @@ public class Members {
         /**
          * Gets the name of this attribute.
          */
+        @Override
         public final String getName() {
             return fmd.getName();
         }
@@ -112,6 +116,7 @@ public class Members {
         /**
          * Affirms if this attribute is an association.
          */
+        @Override
         public final boolean isAssociation() {
             return fmd.isDeclaredTypePC();
         }
@@ -119,6 +124,7 @@ public class Members {
         /**
          * Affirms if this attribute is a collection.
          */
+        @Override
         public final boolean isCollection() {
             int typeCode = fmd.getDeclaredTypeCode();
             return  typeCode == JavaTypes.COLLECTION
@@ -129,6 +135,7 @@ public class Members {
         /**
          *  Returns the persistent category for the attribute.
          */
+        @Override
         public PersistentAttributeType getPersistentAttributeType() {
             if (fmd.isEmbeddedPC())
                 return PersistentAttributeType.EMBEDDED;
@@ -137,10 +144,12 @@ public class Members {
             return PersistentAttributeType.BASIC;
         }
 
+        @Override
         public int compareTo(Member<X, Y> o) {
             return fmd.getName().compareTo(o.fmd.getName());
         }
 
+        @Override
         public String toString() {
         	return fmd.getFullName(true);
         }
@@ -163,6 +172,7 @@ public class Members {
         /**
          *  Affirms if this attribute is an id attribute.
          */
+        @Override
         public boolean isId() {
             return fmd.isPrimaryKey();
         }
@@ -170,6 +180,7 @@ public class Members {
         /**
          *  Affirms if this attribute represents a version attribute.
          */
+        @Override
         public boolean isVersion() {
             return fmd.isVersion();
         }
@@ -177,6 +188,7 @@ public class Members {
         /**
          *  Affirms if this attribute can be null.
          */
+        @Override
         public boolean isOptional() {
             return fmd.getNullValue() != FieldMetaData.NULL_EXCEPTION;
         }
@@ -184,7 +196,8 @@ public class Members {
         /**
          *  Categorizes bindable type represented by this attribute.
          */
-        public final BindableType getBindableType() {
+        @Override
+        public BindableType getBindableType() {
             return fmd.isDeclaredTypePC()
                 ? BindableType.ENTITY_TYPE
                 : BindableType.SINGULAR_ATTRIBUTE;
@@ -197,15 +210,17 @@ public class Members {
          * is returned. If the bindable type is SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type
          * of the represented entity or attribute is returned.
          */
+        @Override
         @SuppressWarnings("unchecked")
-        public final Class<T> getBindableJavaType() {
+        public Class<T> getBindableJavaType() {
             return fmd.getElement().getDeclaredType();
         }
 
         /**
          * Categorizes the attribute.
          */
-        public final PersistentAttributeType getPersistentAttributeType() {
+        @Override
+        public PersistentAttributeType getPersistentAttributeType() {
             if (!fmd.isDeclaredTypePC())
                 return super.getPersistentAttributeType();
             if (fmd.getValue().isEmbedded() && fmd.getAssociationType() == 0) {
@@ -235,6 +250,7 @@ public class Members {
         /**
          * Returns the type representing the element type of the collection.
          */
+        @Override
         public final Type<E> getElementType() {
             return owner.model.getType(getBindableJavaType());
         }
@@ -242,6 +258,7 @@ public class Members {
         /**
          *  Returns the bindable category of this attribute.
          */
+        @Override
         public final BindableType getBindableType() {
             return BindableType.PLURAL_ATTRIBUTE;
         }
@@ -251,12 +268,14 @@ public class Members {
          *
          * For PLURAL_ATTRIBUTE, the Java element type is returned.
          */
+        @Override
         @SuppressWarnings("unchecked")
         public Class<E> getBindableJavaType() {
             return fmd.getElement().getDeclaredType();
         }
 
 
+        @Override
         public PersistentAttributeType getPersistentAttributeType() {
             return PersistentAttributeType.ONE_TO_MANY;
         }
@@ -273,6 +292,7 @@ public class Members {
             super(owner, fmd);
         }
 
+        @Override
         public CollectionType getCollectionType() {
             return CollectionType.COLLECTION;
         }
@@ -289,6 +309,7 @@ public class Members {
             super(owner, fmd);
         }
 
+        @Override
         public CollectionType getCollectionType() {
             return CollectionType.LIST;
         }
@@ -305,6 +326,7 @@ public class Members {
             super(owner, fmd);
         }
 
+        @Override
         public CollectionType getCollectionType() {
             return CollectionType.SET;
         }
@@ -322,6 +344,7 @@ public class Members {
             super(owner, fmd);
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public Class<K> getBindableJavaType() {
             return (Class<K>)fmd.getKey().getDeclaredType();
@@ -339,19 +362,23 @@ public class Members {
             super(owner, fmd);
         }
 
+        @Override
         public CollectionType getCollectionType() {
             return CollectionType.MAP;
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public Class<K> getKeyJavaType() {
             return fmd.getKey().getDeclaredType();
         }
 
+        @Override
         public Type<K> getKeyType() {
             return owner.model.getType(getKeyJavaType());
         }
 
+        @Override
         public PersistentAttributeType getPersistentAttributeType() {
             return PersistentAttributeType.MANY_TO_MANY;
         }

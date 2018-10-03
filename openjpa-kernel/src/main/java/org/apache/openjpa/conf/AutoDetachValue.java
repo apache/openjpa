@@ -59,6 +59,7 @@ class AutoDetachValue
         setAliasListComprehensive(true);
     }
 
+    @Override
     public Class getValueType() {
         return String[].class;
     }
@@ -78,10 +79,11 @@ class AutoDetachValue
         return _flags;
     }
 
+    @Override
     protected List<String> getAliasList() {
         // We do not document the numeric values and they are not
         // helpful to someone trying to understand the error message
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         for (int x = 0; x < ALIASES.length; x += 2)
             list.add(ALIASES[x]);
         return list;

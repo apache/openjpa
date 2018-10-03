@@ -29,21 +29,29 @@ import org.apache.openjpa.jdbc.sql.Select;
 public class Null
     extends Const {
 
+    
+    private static final long serialVersionUID = 1L;
+
+    @Override
     public Class getType() {
         return Object.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public Object getValue(Object[] params) {
         return null;
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         sql.appendValue(null);

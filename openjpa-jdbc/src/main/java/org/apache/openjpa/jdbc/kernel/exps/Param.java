@@ -39,6 +39,8 @@ public class Param
     extends Const
     implements Parameter {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage(Param.class);
     private final Object _key;
     private Class _type = null;
@@ -53,14 +55,17 @@ public class Param
         setImplicitType(type);
     }
 
+    @Override
     public Object getParameterKey() {
         return _key;
     }
 
+    @Override
     public Class getType() {
         return _type;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _type = type;
         _container = (getMetaData() == null || !ImplHelper.isManagedType(
@@ -73,6 +78,7 @@ public class Param
         return _idx;
     }
 
+    @Override
     public void setIndex(int idx) {
         _idx = idx;
     }
@@ -85,20 +91,24 @@ public class Param
         return null;
     }
 
+    @Override
     public Object getValue(Object[] params) {
         return Filters.convert(params[_idx], getType());
     }
 
+    @Override
     public Object getValue(ExpContext ctx, ExpState state) {
         ParamExpState pstate = (ParamExpState) state;
         return (pstate.discValue != null) ? pstate.discValue :
             getValue(ctx.params);
     }
 
+    @Override
     public Object getSQLValue(Select sel, ExpContext ctx, ExpState state) {
         return ((ParamExpState) state).sqlValue;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         return new ParamExpState();
     }
@@ -116,6 +126,7 @@ public class Param
         public Object discValue = null;
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
@@ -142,6 +153,7 @@ public class Param
             pstate.sqlValue = val;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         ParamExpState pstate = (ParamExpState) state;
@@ -156,6 +168,7 @@ public class Param
             sql.appendValue(pstate.sqlValue, pstate.getColumn(index), this);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         ParamExpState pstate = (ParamExpState) state;
         if (getMetaData() == null || pstate.cols == null)

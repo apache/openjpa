@@ -18,20 +18,21 @@
  */
 package org.apache.openjpa.meta;
 
-import java.lang.reflect.Method;
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.enhance.PCEnhancer;
-import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.util.InternalException;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
 import serp.bytecode.BCField;
@@ -52,7 +53,7 @@ class InterfaceImplGenerator {
     private static final String POSTFIX = "openjpaimpl";
 
     private final MetaDataRepository _repos;
-    private final Map<Class<?>,Class<?>> _impls = new WeakHashMap<Class<?>,Class<?>>();
+    private final Map<Class<?>,Class<?>> _impls = new WeakHashMap<>();
     private final Project _project = new Project();
 
     // distinct project / loader for enhanced version of class
@@ -98,7 +99,7 @@ class InterfaceImplGenerator {
         }
 
         FieldMetaData[] fields = meta.getDeclaredFields();
-        Set<Method> methods = new HashSet<Method>();
+        Set<Method> methods = new HashSet<>();
         for (int i = 0; i < fields.length; i++)
             addField(bc, iface, fields[i], methods);
         invalidateNonBeanMethods(bc, iface, methods);

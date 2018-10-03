@@ -33,13 +33,17 @@ import org.apache.openjpa.util.UserException;
  *
  * @deprecated Use <code>matches()</code> instead.
  */
+@Deprecated
 public class JDBCStringContains
     extends StringContains
     implements JDBCFilterListener {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (JDBCStringContains.class);
 
+    @Override
     public void appendTo(SQLBuffer buf, FilterValue target, FilterValue[] args,
         ClassMapping type, JDBCStore store) {
         if (!args[0].isConstant())

@@ -47,7 +47,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
     private final ClassLoader _loader;
     private final List<String> _locs;
     private int _loc = -1;
-    private final List<URL> _urls = new ArrayList<URL>(3);
+    private final List<URL> _urls = new ArrayList<>(3);
     private int _url = -1;
 
     /**
@@ -93,7 +93,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
 
         // collect the set of all possible metadata locations; start with
         // system locations
-        _locs = new ArrayList<String>();
+        _locs = new ArrayList<>();
         _locs.add("META-INF/package" + suffix);
         _locs.add("WEB-INF/package" + suffix);
         _locs.add("package" + suffix);
@@ -146,6 +146,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             Collections.reverse(_locs);
     }
 
+    @Override
     public boolean hasNext() throws IOException {
         Enumeration<URL> e;
         while (_url + 1 >= _urls.size()) {
@@ -167,12 +168,14 @@ public class ClassMetaDataIterator implements MetaDataIterator {
         return true;
     }
 
+    @Override
     public URL next() throws IOException {
         if (!hasNext())
             throw new NoSuchElementException();
         return _urls.get(++_url);
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
@@ -184,6 +187,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
         }
     }
 
+    @Override
     public File getFile() throws IOException {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
@@ -192,6 +196,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             J2DoPrivHelper.existsAction(file))).booleanValue()) ? file:null;
     }
 
+    @Override
     public void close() {
     }
 }

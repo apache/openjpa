@@ -92,6 +92,7 @@ public class LSE1x1LfJTLzy implements Externalizable {
         return version;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + "[id=" + getId()
                 + ", ver=" + getVersion() + ", firstName=" + firstName + "]"
@@ -99,6 +100,7 @@ public class LSE1x1LfJTLzy implements Externalizable {
                 ;
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
         ClassNotFoundException {
         id = in.readInt();
@@ -107,6 +109,7 @@ public class LSE1x1LfJTLzy implements Externalizable {
         uniRightJT = (LSE1x1Rt) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(id);
         out.writeInt(version);

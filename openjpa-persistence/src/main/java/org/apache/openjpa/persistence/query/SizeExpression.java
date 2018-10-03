@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class SizeExpression extends UnaryOperatorExpression  {
-	public SizeExpression(Expression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public SizeExpression(Expression op) {
 		super(op, UnaryFunctionalOperator.SIZE);
 	}
 }

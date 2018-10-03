@@ -86,6 +86,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
         _autoCommit = autoCommit;
     }
 
+    @Override
     public Connection decorate(Connection conn) throws SQLException {
         if (_isolation == Connection.TRANSACTION_NONE || _queryTimeout != -1
             || _autoCommit != null)
@@ -111,6 +112,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         public void setAutoCommit(boolean auto) throws SQLException {
             if (_isolation != TRANSACTION_NONE) {
                 super.setAutoCommit(auto);
@@ -118,6 +120,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         public void commit() throws SQLException {
             if (_isolation != TRANSACTION_NONE)
                 super.commit();
@@ -126,6 +129,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
                 setAutoCommit(_autoCommit.booleanValue());
         }
 
+        @Override
         public void rollback() throws SQLException {
             if (_isolation != TRANSACTION_NONE)
                 super.rollback();
@@ -134,6 +138,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
                 setAutoCommit(_autoCommit.booleanValue());
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
             PreparedStatement stmnt = super.prepareStatement(sql, wrap);
@@ -142,6 +147,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
             return stmnt;
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql, int rsType,
             int rsConcur, boolean wrap) throws SQLException {
             PreparedStatement stmnt = super.prepareStatement(sql, rsType,
@@ -151,6 +157,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
             return stmnt;
         }
 
+        @Override
         protected Statement createStatement(boolean wrap) throws SQLException {
             Statement stmnt = super.createStatement(wrap);
             if (_queryTimeout != -1)
@@ -158,6 +165,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
             return stmnt;
         }
 
+        @Override
         protected Statement createStatement(int rsType, int rsConcur,
             boolean wrap) throws SQLException {
             Statement stmnt = super.createStatement(rsType, rsConcur, wrap);

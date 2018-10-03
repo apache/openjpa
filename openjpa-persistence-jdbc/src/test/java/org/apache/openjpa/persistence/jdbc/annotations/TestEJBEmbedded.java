@@ -53,6 +53,7 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         CLOB = buf.toString();
     }
 
+    @Override
     public void setUp() {
         setUp(EmbedOwner.class, EmbedValue.class, CLEAR_TABLES
 //        ,"openjpa.Log","SQL=trace"
@@ -71,7 +72,7 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         embed.setBlob("foobar".getBytes());
         embed.setOwner(owner);
         owner.setEmbed(embed);
-        Set<EmbedValue> embedVals = new HashSet<EmbedValue>();
+        Set<EmbedValue> embedVals = new HashSet<>();
         embedVals.add(embed);
         owner.setEmbedCollection(embedVals);
         em.persist(owner);

@@ -92,8 +92,8 @@ public class Randomizer {
     public static <T> List<T> selectRandom(List<T> list, int n) {
         if (list == null || list.isEmpty())
             return Collections.emptyList();
-        Set<Integer> indices = new HashSet<Integer>();
-        List<T> selected = new ArrayList<T>();
+        Set<Integer> indices = new HashSet<>();
+        List<T> selected = new ArrayList<>();
         int m = list.size();
         if (n >= m) {
             selected.addAll(list);

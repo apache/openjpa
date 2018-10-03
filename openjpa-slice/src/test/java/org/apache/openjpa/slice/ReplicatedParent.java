@@ -21,7 +21,10 @@ package org.apache.openjpa.slice;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class ReplicatedParent {
@@ -45,7 +48,7 @@ public class ReplicatedParent {
 
     public void addChild(ReplicatedChild child) {
         if (children == null)
-            children = new HashSet<ReplicatedChild>();
+            children = new HashSet<>();
         children.add(child);
         child.setParent(this);
     }

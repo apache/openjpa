@@ -42,6 +42,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 public class TestBasicFieldNullity extends AbstractNullityTestCase {
 
     private DBDictionary dict = null;
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, RETAIN_DATA, NullValues.class);
         dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();

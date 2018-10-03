@@ -26,6 +26,9 @@ package org.apache.openjpa.kernel.exps;
 class LessThanExpression
     extends CompareExpression {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Supply values to compare.
      */
@@ -33,6 +36,7 @@ class LessThanExpression
         super(val1, val2);
     }
 
+    @Override
     protected boolean compare(Object o1, Object o2) {
         if (!(o1 instanceof Comparable))
             return false;

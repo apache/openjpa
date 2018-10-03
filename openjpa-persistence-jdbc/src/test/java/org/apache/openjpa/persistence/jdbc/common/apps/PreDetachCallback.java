@@ -24,10 +24,11 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
  *
  * @deprecated
  */
+@Deprecated
 public interface PreDetachCallback {
 
     /**
      * Invoked on the persistent instance before it is detached.
      */
-    public void jdoPreDetach();
+    void jdoPreDetach();
 }

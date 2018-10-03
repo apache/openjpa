@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -62,7 +63,7 @@ public class ModRuntimeTest1 {
     private ModRuntimeTest1 selfOneOne;
 
     @OneToMany(cascade = { CascadeType.PERSIST })
-    private Set<ModRuntimeTest1> selfOneMany = new HashSet<ModRuntimeTest1>();
+    private Set<ModRuntimeTest1> selfOneMany = new HashSet<>();
 
     public ModRuntimeTest1() {
     }
@@ -108,6 +109,7 @@ public class ModRuntimeTest1 {
         this.selfOneMany = selfOneMany;
     }
 
+    @Override
     public String toString() {
         return "IntField: " + intField + ", StringField: " + stringField + " .";
     }

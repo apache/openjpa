@@ -40,6 +40,9 @@ import org.apache.openjpa.lib.util.EventManager;
 public abstract class AbstractConcurrentEventManager
     implements EventManager, Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Exception[] EMPTY_EXCEPTIONS = new Exception[0];
 
     protected final Collection _listeners;
@@ -69,6 +72,7 @@ public abstract class AbstractConcurrentEventManager
     /**
      * Register an event listener.
      */
+    @Override
     public void addListener(Object listener) {
         if (listener != null)
             _listeners.add(listener);
@@ -77,6 +81,7 @@ public abstract class AbstractConcurrentEventManager
     /**
      * Remove an event listener.
      */
+    @Override
     public boolean removeListener(Object listener) {
         return _listeners.remove(listener);
     }
@@ -84,6 +89,7 @@ public abstract class AbstractConcurrentEventManager
     /**
      * Return whether the given instance is in the list of listeners.
      */
+    @Override
     public boolean hasListener(Object listener) {
         return _listeners.contains(listener);
     }
@@ -91,6 +97,7 @@ public abstract class AbstractConcurrentEventManager
     /**
      * Return true if there are any registered listeners.
      */
+    @Override
     public boolean hasListeners() {
         return !_listeners.isEmpty();
     }
@@ -98,6 +105,7 @@ public abstract class AbstractConcurrentEventManager
     /**
      * Return a read-only list of listeners.
      */
+    @Override
     public Collection getListeners() {
         return Collections.unmodifiableCollection(_listeners);
     }
@@ -105,6 +113,7 @@ public abstract class AbstractConcurrentEventManager
     /**
      * Fire the given event to all listeners.
      */
+    @Override
     public Exception[] fireEvent(Object event) {
         if (_listeners.isEmpty())
             return EMPTY_EXCEPTIONS;

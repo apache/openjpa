@@ -66,6 +66,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return _qc.getStatistics();
     }
 
+    @Override
     public long getExecutionCount() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -73,6 +74,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return NO_STATS;
     }
 
+    @Override
     public long getExecutionCount(String query) {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -80,6 +82,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return NO_STATS;
     }
 
+    @Override
     public long getTotalExecutionCount() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -87,6 +90,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return NO_STATS;
     }
 
+    @Override
     public long getTotalExecutionCount(String query) {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -94,6 +98,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return NO_STATS;
     }
 
+    @Override
     public long getHitCount() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -101,6 +106,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return NO_STATS;
     }
 
+    @Override
     public long getHitCount(String query) {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -108,6 +114,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return NO_STATS;
     }
 
+    @Override
     public long getTotalHitCount() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -115,6 +122,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return NO_STATS;
     }
 
+    @Override
     public long getTotalHitCount(String query) {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -122,12 +130,14 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return NO_STATS;
     }
 
+    @Override
     public void reset() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
             stats.reset();
     }
 
+    @Override
     public Date sinceDate() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -135,6 +145,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return null;
     }
 
+    @Override
     public Date startDate() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -142,6 +153,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return null;
     }
 
+    @Override
     public Set<String> queries() {
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
@@ -149,6 +161,7 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         return null;
     }
 
+    @Override
     public InstrumentationLevel getLevel() {
         return InstrumentationLevel.FACTORY;
     }

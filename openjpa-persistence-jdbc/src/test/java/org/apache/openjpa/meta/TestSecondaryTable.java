@@ -22,6 +22,7 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestSecondaryTable extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         setUp(Parent.class, PChild.class, PChildBi.class
         // Hard code to 2.0 p.xml value. If the p.xml is 1.0, this value will be changed to false, and the test

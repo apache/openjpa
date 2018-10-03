@@ -43,6 +43,9 @@ import org.apache.openjpa.util.MetaDataException;
 public class ValueMapDiscriminatorStrategy
     extends InValueDiscriminatorStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final String ALIAS = "value-map";
 
     private static final Localizer _loc = Localizer.forPackage
@@ -50,10 +53,12 @@ public class ValueMapDiscriminatorStrategy
 
     private Map _vals = null;
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     protected int getJavaType() {
         Object val = disc.getValue();
         if (val != null && val != Discriminator.NULL)
@@ -74,11 +79,13 @@ public class ValueMapDiscriminatorStrategy
         return JavaTypes.STRING;
     }
 
+    @Override
     protected Object getDiscriminatorValue(ClassMapping cls) {
         Object val = cls.getDiscriminator().getValue();
         return (val == Discriminator.NULL) ? null : val;
     }
 
+    @Override
     protected Class getClass(Object val, JDBCStore store)
         throws ClassNotFoundException {
         if (_vals == null) {
@@ -118,6 +125,7 @@ public class ValueMapDiscriminatorStrategy
         map.put(str, cls.getDescribedType());
     }
 
+    @Override
     public void map(boolean adapt) {
         Object val = disc.getMappingInfo().getValue(disc, adapt);
         if (val == null && !Modifier.isAbstract(disc.getClassMapping().

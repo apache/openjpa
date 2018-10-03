@@ -44,10 +44,12 @@ public class CacheObjectC
         this.str = s;
     }
 
+    @Override
     public String getStr() {
         return str;
     }
 
+    @Override
     public void setStr(String s) {
         this.str = s;
     }

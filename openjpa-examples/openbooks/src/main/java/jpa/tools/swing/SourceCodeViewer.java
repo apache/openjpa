@@ -28,6 +28,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 
 /**
@@ -39,12 +40,12 @@ import javax.swing.JScrollPane;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class SourceCodeViewer extends JPanel {
+    private static final long serialVersionUID = 1L;
     private final JEditorPane _editor;
     private final JComboBox   _bookmarks;
-    private IndexedMap<String, URI> _anchors = new IndexedMap<String, URI>();
-    private LinkedList<String> _visited = new LinkedList<String>();
+    private IndexedMap<String, URI> _anchors = new IndexedMap<>();
+    private LinkedList<String> _visited = new LinkedList<>();
 
     /**
      * Create a Source Code Browser.
@@ -62,6 +63,7 @@ public class SourceCodeViewer extends JPanel {
         _bookmarks.setEditable(false);
 
         _bookmarks.addActionListener(new ActionListener(){
+            @Override
             public void actionPerformed(ActionEvent e) {
                 showAnchor((String)_bookmarks.getSelectedItem());
             }
@@ -75,8 +77,8 @@ public class SourceCodeViewer extends JPanel {
 
 
         add(new JScrollPane(_editor,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS),
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS),
                 BorderLayout.CENTER);
         add(topPanel, BorderLayout.NORTH);
     }

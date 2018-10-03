@@ -28,6 +28,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestDataCacheStoreLazyFk extends SQLListenerTestCase {
     Object[] p = new Object[] { CLEAR_TABLES, CachedEntityStatistics.class, "openjpa.DataCache", "true" };
 
+    @Override
     public void setUp() {
         super.setUp(p);
     }
@@ -42,7 +43,7 @@ public class TestDataCacheStoreLazyFk extends SQLListenerTestCase {
             em.getTransaction().begin();
             CachedEntityStatistics e = new CachedEntityStatistics();
             CachedEntityStatistics lazy = new CachedEntityStatistics();
-            Set<CachedEntityStatistics> lazyList = new HashSet<CachedEntityStatistics>();
+            Set<CachedEntityStatistics> lazyList = new HashSet<>();
             lazyList.add(lazy);
             e.setLazyList(lazyList);
             em.persist(e);

@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestDoubleQuotedStringLiteralInJPQL
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
 

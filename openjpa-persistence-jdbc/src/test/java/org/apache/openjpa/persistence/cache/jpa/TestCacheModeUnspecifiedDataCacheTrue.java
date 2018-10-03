@@ -35,7 +35,7 @@ import org.apache.openjpa.persistence.test.FilteringJDBCListener;
  */
 public class TestCacheModeUnspecifiedDataCacheTrue extends AbstractCacheModeTestCase{
     private static Cache cache = null;
-    private static List<String> sql = new ArrayList<String>();
+    private static List<String> sql = new ArrayList<>();
     private static JDBCListener listener;
 
     private static Class<?>[] expectedInCache = persistentTypes;
@@ -43,7 +43,7 @@ public class TestCacheModeUnspecifiedDataCacheTrue extends AbstractCacheModeTest
 
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
-    	Map<String,Object> props = new HashMap<String,Object>();
+    	Map<String,Object> props = new HashMap<>();
     	props.put("openjpa.DataCache", "true");
     	props.put("openjpa.RemoteCommitProvider", "sjvm");
     	if (emf == null) {
@@ -55,6 +55,7 @@ public class TestCacheModeUnspecifiedDataCacheTrue extends AbstractCacheModeTest
         return emf;
     }
 
+    @Override
     public JDBCListener getListener() {
         if (listener == null) {
             listener = new FilteringJDBCListener(getSql());
@@ -62,6 +63,7 @@ public class TestCacheModeUnspecifiedDataCacheTrue extends AbstractCacheModeTest
         return listener;
     }
 
+    @Override
     public List<String> getSql() {
         return sql;
     }

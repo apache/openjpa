@@ -33,6 +33,7 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
     public static String EMPLOYEE2ID = "EMPLOYEE2";
     public static String EMPLOYEE3ID = "EMPLOYEE3";
 
+    @Override
     public void setUp() {
         setUp(
                 M2MBiDepartment.class,

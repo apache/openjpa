@@ -39,8 +39,9 @@ import openbook.server.OpenBookService;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class SupplyPage extends JPanel  {
+    private static final long serialVersionUID = 1L;
+
     private final OpenBookService _service;
 
     private final EntityTableView<Inventory> _lowInventories;
@@ -62,7 +63,7 @@ public class SupplyPage extends JPanel  {
         _supply = new JButton("Supply " + REORDER_QUANTITY + " to each item");
 
         List<Inventory> orders = getInventory(REORDER_LIMIT);
-        _lowInventories = new EntityTableView<Inventory>(Inventory.class,
+        _lowInventories = new EntityTableView<>(Inventory.class,
                 orders,
                 EntityDataModel.BASIC_ATTR | EntityDataModel.ASSOCIATION_ATTR,
                 service.getUnit());
@@ -76,6 +77,7 @@ public class SupplyPage extends JPanel  {
 
 
         _view.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 _lowInventories.getDataModel().updateData(getInventory(REORDER_LIMIT));
             }
@@ -91,7 +93,7 @@ public class SupplyPage extends JPanel  {
                     @Override
                     protected List<Inventory> doInBackground() throws Exception {
                         EntityDataModel<Inventory> invs = _lowInventories.getDataModel();
-                        List<Inventory> updated = new ArrayList<Inventory>();
+                        List<Inventory> updated = new ArrayList<>();
                         for (Inventory inv : invs) {
                             Book supplied = _service.supply(inv.getBook(), REORDER_QUANTITY);
                             updated.add(supplied.getInventory());
@@ -99,6 +101,7 @@ public class SupplyPage extends JPanel  {
                         return updated;
                     }
 
+                    @Override
                     public void done() {
                         try {
                             _lowInventories.getDataModel().updateData(get(1, TimeUnit.SECONDS));

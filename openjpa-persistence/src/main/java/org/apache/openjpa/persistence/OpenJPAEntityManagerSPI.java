@@ -29,12 +29,12 @@ public interface OpenJPAEntityManagerSPI
     /**
      * Return the configuration associated with this entity manager.
      */
-    public OpenJPAConfiguration getConfiguration();
+    @Override OpenJPAConfiguration getConfiguration();
 
     /**
      * Return the managed runtime in use.
      */
-    public ManagedRuntime getManagedRuntime();
+    ManagedRuntime getManagedRuntime();
 
     //////////
     // Events
@@ -43,12 +43,12 @@ public interface OpenJPAEntityManagerSPI
     /**
      * Register a listener for transaction-related events.
      */
-    public void addTransactionListener(Object listener);
+    @Override void addTransactionListener(Object listener);
 
     /**
      * Remove a listener for transaction-related events.
      */
-    public void removeTransactionListener(Object listener);
+    @Override void removeTransactionListener(Object listener);
 
     /**
      * The {@link CallbackMode} flags for handling transaction listener
@@ -56,33 +56,33 @@ public interface OpenJPAEntityManagerSPI
      *
      * @since 1.1.0
      */
-    public EnumSet<CallbackMode> getTransactionListenerCallbackModes();
+    EnumSet<CallbackMode> getTransactionListenerCallbackModes();
 
     /**
      * The {@link CallbackMode} flag for handling transaction listener
      * exceptions. The flags provided here will entirely replace the
      * previous settings.
      */
-    public void setTransactionListenerCallbackMode(CallbackMode mode);
+    void setTransactionListenerCallbackMode(CallbackMode mode);
 
     /**
      * The {@link CallbackMode} flags for handling transaction listener
      * exceptions. The flags provided here will entirely replace the
      * previous settings.
      */
-    public void setTransactionListenerCallbackMode(EnumSet<CallbackMode> modes);
+    void setTransactionListenerCallbackMode(EnumSet<CallbackMode> modes);
 
     /**
      * Register a listener for lifecycle-related events on the specified
      * classes. If the classes are null, all events will be propagated to
      * the listener.
      */
-    public void addLifecycleListener(Object listener, Class... classes);
+    @Override void addLifecycleListener(Object listener, Class... classes);
 
     /**
      * Remove a listener for lifecycle-related events.
      */
-    public void removeLifecycleListener(Object listener);
+    @Override void removeLifecycleListener(Object listener);
 
     /**
      * The {@link CallbackMode} flags for handling lifecycle listener
@@ -90,21 +90,21 @@ public interface OpenJPAEntityManagerSPI
      *
      * @since 1.1.0
      */
-    public EnumSet<CallbackMode> getLifecycleListenerCallbackModes();
+    EnumSet<CallbackMode> getLifecycleListenerCallbackModes();
 
     /**
      * The {@link CallbackMode} flag for handling lifecycle listener
      * exceptions. The flags provided here will entirely replace the
      * previous settings.
      */
-    public void setLifecycleListenerCallbackMode(CallbackMode mode);
+    void setLifecycleListenerCallbackMode(CallbackMode mode);
 
     /**
      * The {@link CallbackMode} flags for handling lifecycle listener
      * exceptions. The flags provided here will entirely replace the
      * previous settings.
      */
-    public void setLifecycleListenerCallbackMode(EnumSet<CallbackMode> modes);
+    void setLifecycleListenerCallbackMode(EnumSet<CallbackMode> modes);
 
 
     /**
@@ -112,7 +112,7 @@ public interface OpenJPAEntityManagerSPI
      *
      * @since 2.0.0
      */
-    public boolean getQuerySQLCache();
+    boolean getQuerySQLCache();
 
     /**
      * Sets whether this receiver will cache database queries during its
@@ -121,6 +121,6 @@ public interface OpenJPAEntityManagerSPI
      *
      * @since 2.0.0
      */
-    public void setQuerySQLCache(boolean flag);
+    void setQuerySQLCache(boolean flag);
 
 }

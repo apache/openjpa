@@ -47,6 +47,9 @@ import org.apache.openjpa.util.MetaDataException;
 public class VerticalClassStrategy
     extends AbstractClassStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final String ALIAS = "vertical";
 
     private static final Localizer _loc = Localizer.forPackage
@@ -54,10 +57,12 @@ public class VerticalClassStrategy
 
     private Boolean _fkOid = null;
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     public void map(boolean adapt) {
         ClassMapping sup = cls.getMappedPCSuperclassMapping();
         if (sup == null)
@@ -108,12 +113,14 @@ public class VerticalClassStrategy
         }
     }
 
+    @Override
     public void initialize() {
         // this requires all fields to be resolved, so delay it until init
         ClassMapping sup = cls.getMappedPCSuperclassMapping();
         _fkOid = sup.isForeignKeyObjectId(cls.getJoinForeignKey());
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getRow(cls.getTable(), Row.ACTION_INSERT, sm, true);
@@ -121,6 +128,7 @@ public class VerticalClassStrategy
         row.setForeignKey(cls.getJoinForeignKey(), cls.getColumnIO(), sm);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getRow(cls.getTable(), Row.ACTION_UPDATE, sm, false);
@@ -130,6 +138,7 @@ public class VerticalClassStrategy
         }
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getRow(cls.getTable(), Row.ACTION_DELETE, sm, true);
@@ -137,16 +146,19 @@ public class VerticalClassStrategy
         row.whereForeignKey(cls.getJoinForeignKey(), sm);
     }
 
+    @Override
     public boolean isPrimaryKeyObjectId(boolean hasAll) {
         return Boolean.TRUE.equals(_fkOid) || (!hasAll && _fkOid == null);
     }
 
+    @Override
     public Joins joinSuperclass(Joins joins, boolean toThis) {
         if (toThis)
             return joins.outerJoin(cls.getJoinForeignKey(), true, false);
         return joins.join(cls.getJoinForeignKey(), false, false);
     }
 
+    @Override
     public boolean supportsEagerSelect(Select sel, OpenJPAStateManager sm,
         JDBCStore store, ClassMapping base, JDBCFetchConfiguration fetch) {
         return store.getDBDictionary().canOuterJoin(sel.getJoinSyntax(),

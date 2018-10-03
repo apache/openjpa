@@ -36,18 +36,22 @@ public class Member implements IMember {
     @OneToMany(fetch=FetchType.LAZY, mappedBy="userIdent", targetEntity=Account.class)
     private Set<IAccount> accounts;
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setAccounts(Collection<IAccount> accounts) {
         this.accounts = (Set<IAccount>)accounts;
     }
 
+    @Override
     public Collection<IAccount> getAccounts() {
         return accounts;
     }

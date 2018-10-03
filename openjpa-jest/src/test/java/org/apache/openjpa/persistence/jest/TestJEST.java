@@ -32,13 +32,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import junit.framework.TestCase;
-
 import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
+
+import junit.framework.TestCase;
 
 /**
  * Tests JEST Servlet using <A href="http://httpunit.sourceforge.net/doc/servletunit-intro.html">ServletUnit</A>.
@@ -66,6 +66,7 @@ public class TestJEST extends TestCase {
     /**
      * Sets up a class-wide Servlet Engine.
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         if (container == null) {

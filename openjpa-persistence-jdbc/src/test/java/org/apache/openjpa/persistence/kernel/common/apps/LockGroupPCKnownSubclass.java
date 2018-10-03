@@ -24,6 +24,8 @@ import javax.persistence.Entity;
 public class LockGroupPCKnownSubclass
     extends LockGroupPC {
 
+    
+    private static final long serialVersionUID = 1L;
     private String knownSubclassStringField;
 
     public void setKnownSubclassStringField(String knownSubclassStringField) {

@@ -104,7 +104,7 @@ public class Actor {
 
     public void addMovie(Movie movie) {
         if (movies == null)
-            movies = new HashSet<Movie>();
+            movies = new HashSet<>();
         movies.add(movie);
     }
 }

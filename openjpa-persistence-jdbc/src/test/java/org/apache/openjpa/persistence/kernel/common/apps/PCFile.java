@@ -23,10 +23,10 @@ package org.apache.openjpa.persistence.kernel.common.apps;
  */
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import javax.persistence.Column;
 
 @Entity
 public class PCFile {
@@ -37,9 +37,7 @@ public class PCFile {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private PCDirectory _dir;
 
-    /**
-     *
-     */
+    
     protected PCFile() {
         super();
     }

@@ -46,6 +46,7 @@ public class Department {
         this.name = name;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Department))
             return false;
@@ -56,6 +57,7 @@ public class Department {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + name.hashCode();

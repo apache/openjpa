@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class NotEqualExpression extends BinaryExpressionPredicate {
-	public NotEqualExpression(Expression op1, Expression op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public NotEqualExpression(Expression op1, Expression op2) {
 		super(op1, BinaryConditionalOperator.EQUAL_NOT,
 			BinaryConditionalOperator.EQUAL, op2);
 	}

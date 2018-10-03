@@ -30,6 +30,9 @@ import java.util.Iterator;
 class Count
     extends AggregateVal {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the value to count.
      */
@@ -37,10 +40,12 @@ class Count
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         return long.class;
     }
 
+    @Override
     protected Object operate(Collection os, Class c) {
         long count = 0;
         for (Iterator itr = os.iterator(); itr.hasNext();)

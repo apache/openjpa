@@ -50,11 +50,11 @@ public class Department {
     private List<Employee> employeeList;
 
     public Department() {
-        this.employeeList = new ArrayList<Employee>();
+        this.employeeList = new ArrayList<>();
     }
 
     public Department(int id, String departmentName) {
-        this.employeeList = new ArrayList<Employee>();
+        this.employeeList = new ArrayList<>();
         this.id = id;
         this.departmentName = departmentName;
     }

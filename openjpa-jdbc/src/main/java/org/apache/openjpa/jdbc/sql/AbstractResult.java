@@ -84,11 +84,13 @@ public abstract class AbstractResult
     private FieldMapping _mappedByFieldMapping = null;
     private Object _mappedByValue = null;
 
+    @Override
     public Object getEager(FieldMapping key) {
         Map map = getEagerMap(true);
         return (map == null) ? null : map.get(key);
     }
 
+    @Override
     public void putEager(FieldMapping key, Object res) {
         Map map = getEagerMap(false);
         if (map == null) {
@@ -119,6 +121,7 @@ public abstract class AbstractResult
     /**
      * Closes all eager results.
      */
+    @Override
     public void close() {
         closeEagerMap(_eager);
         _mappedByFieldMapping = null;
@@ -145,11 +148,13 @@ public abstract class AbstractResult
     /**
      * Returns false by default.
      */
+    @Override
     public boolean supportsRandomAccess()
         throws SQLException {
         return false;
     }
 
+    @Override
     public boolean absolute(int row)
         throws SQLException {
         _gotEager = false;
@@ -164,6 +169,7 @@ public abstract class AbstractResult
         throw new UnsupportedException();
     }
 
+    @Override
     public boolean next()
         throws SQLException {
         _gotEager = false;
@@ -181,6 +187,7 @@ public abstract class AbstractResult
     protected abstract boolean nextInternal()
         throws SQLException;
 
+    @Override
     public void pushBack()
         throws SQLException {
         _ignoreNext = true;
@@ -189,25 +196,30 @@ public abstract class AbstractResult
     /**
      * Returns a no-op joins object by default.
      */
+    @Override
     public Joins newJoins() {
         return JOINS;
     }
 
+    @Override
     public boolean contains(Object obj)
         throws SQLException {
         return containsInternal(obj, null);
     }
 
+    @Override
     public boolean containsAll(Object[] objs)
         throws SQLException {
         return containsAllInternal(objs, null);
     }
 
+    @Override
     public boolean contains(Column col, Joins joins)
         throws SQLException {
         return containsInternal(col, joins);
     }
 
+    @Override
     public boolean containsAll(Column[] cols, Joins joins)
         throws SQLException {
         return containsAllInternal(cols, joins);
@@ -233,32 +245,39 @@ public abstract class AbstractResult
         return true;
     }
 
+    @Override
     public ClassMapping getBaseMapping() {
         // if we've returned an eager result this call might be for that eager
         // result instead of our primary mapping, so return null
         return (_gotEager) ? null : _base;
     }
 
+    @Override
     public void setBaseMapping(ClassMapping base) {
         _base = base;
     }
 
+    @Override
     public FieldMapping getMappedByFieldMapping() {
         return _mappedByFieldMapping;
     }
 
+    @Override
     public void setMappedByFieldMapping(FieldMapping fieldMapping) {
         _mappedByFieldMapping = fieldMapping;
     }
 
+    @Override
     public Object getMappedByValue() {
         return _mappedByValue;
     }
 
+    @Override
     public void setMappedByValue(Object mappedByValue) {
         _mappedByValue = mappedByValue;
     }
 
+    @Override
     public int indexOf() {
         return _index;
     }
@@ -267,23 +286,27 @@ public abstract class AbstractResult
         _index = idx;
     }
 
+    @Override
     public Object load(ClassMapping mapping, JDBCStore store,
         JDBCFetchConfiguration fetch)
         throws SQLException {
         return load(mapping, store, fetch, null);
     }
 
+    @Override
     public Object load(ClassMapping mapping, JDBCStore store,
         JDBCFetchConfiguration fetch, Joins joins)
         throws SQLException {
         return ((JDBCStoreManager) store).load(mapping, fetch, null, this);
     }
 
+    @Override
     public Array getArray(Object obj)
         throws SQLException {
         return getArrayInternal(translate(obj, null), null);
     }
 
+    @Override
     public Array getArray(Column col, Joins joins)
         throws SQLException {
         return getArrayInternal(translate(col, joins), joins);
@@ -295,11 +318,13 @@ public abstract class AbstractResult
             JavaSQLTypes.SQL_ARRAY, null, joins));
     }
 
+    @Override
     public InputStream getAsciiStream(Object obj)
         throws SQLException {
         return getAsciiStreamInternal(translate(obj, null), null);
     }
 
+    @Override
     public InputStream getAsciiStream(Column col, Joins joins)
         throws SQLException {
         return getAsciiStreamInternal(translate(col, joins), joins);
@@ -311,11 +336,13 @@ public abstract class AbstractResult
             JavaSQLTypes.ASCII_STREAM, null, joins));
     }
 
+    @Override
     public BigDecimal getBigDecimal(Object obj)
         throws SQLException {
         return getBigDecimalInternal(translate(obj, null), null);
     }
 
+    @Override
     public BigDecimal getBigDecimal(Column col, Joins joins)
         throws SQLException {
         return getBigDecimalInternal(translate(col, joins), joins);
@@ -332,11 +359,13 @@ public abstract class AbstractResult
         return new BigDecimal(val.toString());
     }
 
+    @Override
     public BigInteger getBigInteger(Object obj)
         throws SQLException {
         return getBigIntegerInternal(translate(obj, null), null);
     }
 
+    @Override
     public BigInteger getBigInteger(Column col, Joins joins)
         throws SQLException {
         return getBigIntegerInternal(translate(col, joins), joins);
@@ -353,16 +382,19 @@ public abstract class AbstractResult
         return new BigInteger(val.toString());
     }
 
+    @Override
     public InputStream getBinaryStream(Object obj)
         throws SQLException {
         return getBinaryStreamInternal(translate(obj, null), null);
     }
 
+    @Override
     public InputStream getBinaryStream(Column col, Joins joins)
         throws SQLException {
         return getBinaryStreamInternal(translate(col, joins), joins);
     }
 
+    @Override
     public InputStream getLOBStream(JDBCStore store, Object obj)
         throws SQLException {
         return getLOBStreamInternal(store, translate(obj, null), null);
@@ -380,11 +412,13 @@ public abstract class AbstractResult
             JavaSQLTypes.BINARY_STREAM, null, joins));
     }
 
+    @Override
     public Blob getBlob(Object obj)
         throws SQLException {
         return getBlobInternal(translate(obj, null), null);
     }
 
+    @Override
     public Blob getBlob(Column col, Joins joins)
         throws SQLException {
         return getBlobInternal(translate(col, joins), joins);
@@ -396,11 +430,13 @@ public abstract class AbstractResult
             null, joins));
     }
 
+    @Override
     public boolean getBoolean(Object obj)
         throws SQLException {
         return getBooleanInternal(translate(obj, null), null);
     }
 
+    @Override
     public boolean getBoolean(Column col, Joins joins)
         throws SQLException {
         return getBooleanInternal(translate(col, joins), joins);
@@ -415,11 +451,13 @@ public abstract class AbstractResult
         return Boolean.valueOf(val.toString()).booleanValue();
     }
 
+    @Override
     public byte getByte(Object obj)
         throws SQLException {
         return getByteInternal(translate(obj, null), null);
     }
 
+    @Override
     public byte getByte(Column col, Joins joins)
         throws SQLException {
         return getByteInternal(translate(col, joins), joins);
@@ -432,11 +470,13 @@ public abstract class AbstractResult
         return (val == null) ? 0 : val.byteValue();
     }
 
+    @Override
     public byte[] getBytes(Object obj)
         throws SQLException {
         return getBytesInternal(translate(obj, null), null);
     }
 
+    @Override
     public byte[] getBytes(Column col, Joins joins)
         throws SQLException {
         return getBytesInternal(translate(col, joins), joins);
@@ -448,11 +488,13 @@ public abstract class AbstractResult
             JavaSQLTypes.BYTES, null, joins));
     }
 
+    @Override
     public Calendar getCalendar(Object obj)
         throws SQLException {
         return getCalendarInternal(translate(obj, null), null);
     }
 
+    @Override
     public Calendar getCalendar(Column col, Joins joins)
         throws SQLException {
         return getCalendarInternal(translate(col, joins), joins);
@@ -472,11 +514,13 @@ public abstract class AbstractResult
         return cal;
     }
 
+    @Override
     public char getChar(Object obj)
         throws SQLException {
         return getCharInternal(translate(obj, null), null);
     }
 
+    @Override
     public char getChar(Column col, Joins joins)
         throws SQLException {
         return getCharInternal(translate(col, joins), joins);
@@ -495,11 +539,13 @@ public abstract class AbstractResult
         return (str.length() == 0) ? 0 : str.charAt(0);
     }
 
+    @Override
     public Reader getCharacterStream(Object obj)
         throws SQLException {
         return getCharacterStreamInternal(translate(obj, null), null);
     }
 
+    @Override
     public Reader getCharacterStream(Column col, Joins joins)
         throws SQLException {
         return getCharacterStreamInternal(translate(col, joins), joins);
@@ -516,11 +562,13 @@ public abstract class AbstractResult
         return new StringReader(val.toString());
     }
 
+    @Override
     public Clob getClob(Object obj)
         throws SQLException {
         return getClobInternal(translate(obj, null), null);
     }
 
+    @Override
     public Clob getClob(Column col, Joins joins)
         throws SQLException {
         return getClobInternal(translate(col, joins), joins);
@@ -532,11 +580,13 @@ public abstract class AbstractResult
             null, joins));
     }
 
+    @Override
     public Date getDate(Object obj)
         throws SQLException {
         return getDateInternal(translate(obj, null), null);
     }
 
+    @Override
     public Date getDate(Column col, Joins joins)
         throws SQLException {
         return getDateInternal(translate(col, joins), joins);
@@ -553,11 +603,13 @@ public abstract class AbstractResult
         return new Date(val.toString());
     }
 
+    @Override
     public java.sql.Date getDate(Object obj, Calendar cal)
         throws SQLException {
         return getDateInternal(translate(obj, null), cal, null);
     }
 
+    @Override
     public java.sql.Date getDate(Column col, Calendar cal, Joins joins)
         throws SQLException {
         return getDateInternal(translate(col, joins), cal, joins);
@@ -570,11 +622,13 @@ public abstract class AbstractResult
             JavaSQLTypes.SQL_DATE, cal, joins));
     }
 
+    @Override
     public double getDouble(Object obj)
         throws SQLException {
         return getDoubleInternal(translate(obj, null), null);
     }
 
+    @Override
     public double getDouble(Column col, Joins joins)
         throws SQLException {
         return getDoubleInternal(translate(col, joins), joins);
@@ -587,11 +641,13 @@ public abstract class AbstractResult
         return (val == null) ? 0 : val.doubleValue();
     }
 
+    @Override
     public float getFloat(Object obj)
         throws SQLException {
         return getFloatInternal(translate(obj, null), null);
     }
 
+    @Override
     public float getFloat(Column col, Joins joins)
         throws SQLException {
         return getFloatInternal(translate(col, joins), joins);
@@ -604,11 +660,13 @@ public abstract class AbstractResult
         return (val == null) ? 0 : val.floatValue();
     }
 
+    @Override
     public int getInt(Object obj)
         throws SQLException {
         return getIntInternal(translate(obj, null), null);
     }
 
+    @Override
     public int getInt(Column col, Joins joins)
         throws SQLException {
         return getIntInternal(translate(col, joins), joins);
@@ -621,11 +679,13 @@ public abstract class AbstractResult
         return (val == null) ? 0 : val.intValue();
     }
 
+    @Override
     public Locale getLocale(Object obj)
         throws SQLException {
         return getLocaleInternal(translate(obj, null), null);
     }
 
+    @Override
     public Locale getLocale(Column col, Joins joins)
         throws SQLException {
         return getLocaleInternal(translate(col, joins), joins);
@@ -647,11 +707,13 @@ public abstract class AbstractResult
         return new Locale(vals[0], vals[1], vals[2]);
     }
 
+    @Override
     public long getLong(Object obj)
         throws SQLException {
         return getLongInternal(translate(obj, null), null);
     }
 
+    @Override
     public long getLong(Column col, Joins joins)
         throws SQLException {
         return getLongInternal(translate(col, joins), joins);
@@ -664,11 +726,13 @@ public abstract class AbstractResult
         return (val == null) ? 0 : val.longValue();
     }
 
+    @Override
     public Number getNumber(Object obj)
         throws SQLException {
         return getNumberInternal(translate(obj, null), null);
     }
 
+    @Override
     public Number getNumber(Column col, Joins joins)
         throws SQLException {
         return getNumberInternal(translate(col, joins), joins);
@@ -685,11 +749,13 @@ public abstract class AbstractResult
         return new BigDecimal(val.toString());
     }
 
+    @Override
     public Object getObject(Object obj, int metaType, Object arg)
         throws SQLException {
         return getObjectInternal(obj, metaType, arg, null);
     }
 
+    @Override
     public Object getObject(Column col, Object arg, Joins joins)
         throws SQLException {
         return getObjectInternal(col, col.getJavaType(),
@@ -706,11 +772,13 @@ public abstract class AbstractResult
     protected abstract Object getStreamInternal(JDBCStore store, Object obj,
             int metaType, Object arg, Joins joins) throws SQLException;
 
+    @Override
     public Object getSQLObject(Object obj, Map map)
         throws SQLException {
         return getSQLObjectInternal(translate(obj, null), map, null);
     }
 
+    @Override
     public Object getSQLObject(Column col, Map map, Joins joins)
         throws SQLException {
         return getSQLObjectInternal(translate(col, joins), map, joins);
@@ -722,11 +790,13 @@ public abstract class AbstractResult
             map, joins));
     }
 
+    @Override
     public Ref getRef(Object obj, Map map)
         throws SQLException {
         return getRefInternal(translate(obj, null), map, null);
     }
 
+    @Override
     public Ref getRef(Column col, Map map, Joins joins)
         throws SQLException {
         return getRefInternal(translate(col, joins), map, joins);
@@ -738,11 +808,13 @@ public abstract class AbstractResult
             map, joins));
     }
 
+    @Override
     public short getShort(Object obj)
         throws SQLException {
         return getShortInternal(translate(obj, null), null);
     }
 
+    @Override
     public short getShort(Column col, Joins joins)
         throws SQLException {
         return getShortInternal(translate(col, joins), joins);
@@ -755,12 +827,14 @@ public abstract class AbstractResult
         return (val == null) ? 0 : val.shortValue();
     }
 
+    @Override
     public String getString(Object obj)
         throws SQLException {
         return getStringInternal(translate(obj, null), null,
             obj instanceof Column && ((Column) obj).getType() == Types.CLOB);
     }
 
+    @Override
     public String getString(Column col, Joins joins)
         throws SQLException {
         return getStringInternal(translate(col, joins), joins,
@@ -774,11 +848,13 @@ public abstract class AbstractResult
         return (val == null) ? null : val.toString();
     }
 
+    @Override
     public Time getTime(Object obj, Calendar cal)
         throws SQLException {
         return getTimeInternal(translate(obj, null), cal, null);
     }
 
+    @Override
     public Time getTime(Column col, Calendar cal, Joins joins)
         throws SQLException {
         return getTimeInternal(translate(col, joins), cal, joins);
@@ -790,11 +866,13 @@ public abstract class AbstractResult
             cal, joins));
     }
 
+    @Override
     public Timestamp getTimestamp(Object obj, Calendar cal)
         throws SQLException {
         return getTimestampInternal(translate(obj, null), cal, null);
     }
 
+    @Override
     public Timestamp getTimestamp(Column col, Calendar cal, Joins joins)
         throws SQLException {
         return getTimestampInternal(translate(col, joins), cal, joins);
@@ -807,6 +885,7 @@ public abstract class AbstractResult
             JavaSQLTypes.TIMESTAMP, cal, joins));
     }
 
+    @Override
     public boolean wasNull()
         throws SQLException {
         return _wasNull;
@@ -817,17 +896,21 @@ public abstract class AbstractResult
         return val;
     }
 
+    @Override
     public void setLocking(boolean locking) {
         _locking = locking;
     }
 
+    @Override
     public boolean isLocking() {
         return _locking;
     }
 
+    @Override
     public void startDataRequest(Object mapping) {
     }
 
+    @Override
     public void endDataRequest() {
     }
 
@@ -848,44 +931,54 @@ public abstract class AbstractResult
     private static class NoOpJoins
         implements Joins {
 
+        @Override
         public boolean isEmpty() {
             return true;
         }
 
+        @Override
         public boolean isOuter() {
             return false;
         }
 
+        @Override
         public Joins crossJoin(Table localTable, Table foreignTable) {
             return this;
         }
 
+        @Override
         public Joins join(ForeignKey fk, boolean inverse, boolean toMany) {
             return this;
         }
 
+        @Override
         public Joins outerJoin(ForeignKey fk, boolean inverse, boolean toMany) {
             return this;
         }
 
+        @Override
         public Joins joinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             return this;
         }
 
+        @Override
         public Joins outerJoinRelation(String name, ForeignKey fk,
             ClassMapping target, int subs, boolean inverse, boolean toMany) {
             return this;
         }
 
+        @Override
         public Joins setVariable(String var) {
             return this;
         }
 
+        @Override
         public Joins setSubselect(String alias) {
             return this;
         }
 
+        @Override
         public Joins setJoinContext(Context context) {
             return this;
         }
@@ -893,14 +986,17 @@ public abstract class AbstractResult
         public void appendTo(SQLBuffer buf) {
         }
 
+        @Override
         public Joins setCorrelatedVariable(String var) {
             return this;
         }
 
+        @Override
         public String getCorrelatedVariable() {
             return null;
         }
 
+        @Override
         public void moveJoinsToParent() {
         }
     }

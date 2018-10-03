@@ -29,6 +29,9 @@ import java.util.Properties;
  */
 public class TypedProperties extends Properties {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Default constructor.
      */
@@ -154,6 +157,7 @@ public class TypedProperties extends Properties {
      *
      * @see Properties#setProperty(String,String)
      */
+    @Override
     public Object setProperty(String key, String val) {
         if (val == null)
             return remove(key);

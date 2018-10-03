@@ -46,7 +46,7 @@ public class PropertyHelper {
      */
     public static Map<String,Object> filter(Map<String,Object> props, String name, boolean prefix,
             boolean includeArrays) {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         for (String key : props.keySet()) {
             if (key == null)
                 continue;
@@ -82,14 +82,14 @@ public class PropertyHelper {
      * @return key-value pairs that match.
      */
     public static Map<String,List<Object>> filterArrayKeys(Map<String,Object> props, String name, boolean prefix) {
-        Map<String, List<Object>> result = new HashMap<String, List<Object>>();
+        Map<String, List<Object>> result = new HashMap<>();
         for (String key : props.keySet()) {
             boolean match = prefix ? key.startsWith(name) : (key.indexOf(name) != -1);
             if (match && isArray(key)) {
                 String realKey = removeArray(key);
                 List<Object> values = result.get(realKey);
                 if (values == null) {
-                    values = new ArrayList<Object>();
+                    values = new ArrayList<>();
                     result.put(realKey, values);
                 }
                 values.add(props.get(key));
@@ -137,7 +137,7 @@ public class PropertyHelper {
     }
 
     public static Map<String, Object> toMap(Properties p) {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         for (Object k : p.keySet()) {
             result.put(k.toString(), p.get(k));
         }
@@ -210,7 +210,7 @@ public class PropertyHelper {
         List<String> pairs = getStringList(props, key);
         if (pairs == null || pairs.isEmpty())
             return def;
-        Map<String,String> result = new LinkedHashMap<String, String>();
+        Map<String,String> result = new LinkedHashMap<>();
         for (String pair : pairs) {
             int index = pair.indexOf("->");
             if (index != -1) {
@@ -250,7 +250,7 @@ public class PropertyHelper {
 
     public static Set<String> getSubsectionKeys(Set<String> keys, String section) {
         String prefix = asPrefix(section);
-        Set<String> subsections = new HashSet<String>();
+        Set<String> subsections = new HashSet<>();
         for (String key : keys) {
             if (key.startsWith(prefix)) {
                 subsections.add(prefix + getPrefix(key.substring(prefix.length())));
@@ -292,7 +292,7 @@ public class PropertyHelper {
      * @return the map with only the keys that starts with the given section.
      */
     public static Map<String,Object> getSection(Map<String,Object> props, String section, boolean retain) {
-        Map<String,Object> result = new HashMap<String, Object>(props);
+        Map<String,Object> result = new HashMap<>(props);
         Set<String> keys = props.keySet();
         String prefix = asPrefix(section);
         for (String key : keys) {

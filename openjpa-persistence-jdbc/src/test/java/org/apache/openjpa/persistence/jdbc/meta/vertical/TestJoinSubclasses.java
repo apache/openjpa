@@ -28,16 +28,18 @@
 package org.apache.openjpa.persistence.jdbc.meta.vertical;
 
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.TreeSet;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.Join;
+import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.persistence.Extent;
-import org.apache.openjpa.util.Id;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.JoinSubclassBase;
+import org.apache.openjpa.persistence.jdbc.common.apps.JoinSubclassBaseSubFlat;
+import org.apache.openjpa.persistence.jdbc.common.apps.JoinSubclassBaseSubVert;
+import org.apache.openjpa.util.Id;
 
 
 public class TestJoinSubclasses
@@ -64,9 +66,10 @@ public class TestJoinSubclasses
         return false;
     }
 
+    @Override
     public void setUpTestCase() {
         if (((JDBCConfiguration) getConfiguration()).getDBDictionaryInstance().
-                joinSyntax == Join.SYNTAX_DATABASE)
+                joinSyntax == JoinSyntaxes.SYNTAX_DATABASE)
             _outer = "(+)";
 
        deleteAll(JoinSubclassBase.class);

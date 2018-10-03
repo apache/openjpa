@@ -32,6 +32,8 @@ import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
 
 /**
  * A dialog to display runtime error.
@@ -39,8 +41,8 @@ import javax.swing.JTextPane;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class ErrorDialog extends JDialog {
+    private static final long serialVersionUID = 1L;
     private static List<String> filters = Arrays.asList(
             "java.awt.",
             "javax.swing.",
@@ -87,7 +89,7 @@ public class ErrorDialog extends JDialog {
         setModal(true);
         if (icon != null && icon instanceof ImageIcon)
             setIconImage(((ImageIcon)icon).getImage());
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         _error = t;
         _message = createErrorMessage(_error);
         _main    = createContent();
@@ -106,6 +108,7 @@ public class ErrorDialog extends JDialog {
     JComponent createContent() {
         final JButton showDetails = new JButton("Show Details >>");
         showDetails.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (_showingDetails) {
                      _main.remove(_details);
@@ -133,6 +136,7 @@ public class ErrorDialog extends JDialog {
         final JCheckBox filter = new JCheckBox("Filter stack traces");
         filter.setSelected(_isFiltering);
         filter.addActionListener(new ActionListener(){
+            @Override
             public void actionPerformed(ActionEvent e) {
                 _isFiltering = filter.isSelected();
                 StringBuilder buffer = new StringBuilder();
@@ -178,8 +182,8 @@ public class ErrorDialog extends JDialog {
         _stacktrace = new JTextPane();
         _stacktrace.setEditable(false);
         JScrollPane pane = new JScrollPane(_stacktrace,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         return pane;
     }

@@ -20,12 +20,15 @@ package org.apache.openjpa.persistence.datacache.common.apps;
 
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.persistence.Entity;
 
 @Entity
 public class AttachC
     extends AttachB {
 
+    
+    private static final long serialVersionUID = 1L;
     private String cstr;
     private int cint;
     private double cdbl;

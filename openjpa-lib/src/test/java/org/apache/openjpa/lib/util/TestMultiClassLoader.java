@@ -40,6 +40,7 @@ public class TestMultiClassLoader extends TestCase {
         super(test);
     }
 
+    @Override
     public void setUp() {
         _loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
         _loader.addClassLoader(SYSTEM_LOADER);
@@ -55,7 +56,7 @@ public class TestMultiClassLoader extends TestCase {
         assertEquals(Thread.currentThread().getContextClassLoader(),
             _loader.getClassLoaders()[1]);
         assertTrue(_loader.getClassLoader(0) == SYSTEM_LOADER);
-        assertTrue(!_loader.addClassLoader(_loader.THREAD_LOADER));
+        assertTrue(!_loader.addClassLoader(MultiClassLoader.THREAD_LOADER));
 
         FooLoader foo = new FooLoader();
         assertTrue(_loader.addClassLoader(foo));
@@ -63,8 +64,8 @@ public class TestMultiClassLoader extends TestCase {
         assertEquals(3, _loader.size());
         assertEquals(foo, _loader.getClassLoaders()[2]);
 
-        assertTrue(_loader.removeClassLoader(_loader.THREAD_LOADER));
-        assertTrue(!_loader.removeClassLoader(_loader.THREAD_LOADER));
+        assertTrue(_loader.removeClassLoader(MultiClassLoader.THREAD_LOADER));
+        assertTrue(!_loader.removeClassLoader(MultiClassLoader.THREAD_LOADER));
         assertEquals(2, _loader.size());
         assertTrue(_loader.getClassLoaders()[0] == SYSTEM_LOADER);
         assertEquals(foo, _loader.getClassLoaders()[1]);
@@ -141,12 +142,14 @@ public class TestMultiClassLoader extends TestCase {
 
     private static final class FooLoader extends ClassLoader {
 
+        @Override
         protected Class findClass(String name) throws ClassNotFoundException {
             if ("foo".equals(name))
                 return Integer.class;
             throw new ClassNotFoundException(name);
         }
 
+        @Override
         protected URL findResource(String name) {
             try {
                 if ("foo".equals(name))

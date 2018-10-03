@@ -30,6 +30,8 @@ import org.apache.openjpa.jdbc.sql.Select;
 public class StringLength
     extends StringFunction {
 
+    
+    private static final long serialVersionUID = 1L;
     private Class _cast = null;
 
     /**
@@ -39,16 +41,19 @@ public class StringLength
         super(val);
     }
 
+    @Override
     public Class getType() {
         if (_cast != null)
             return _cast;
         return int.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _cast = type;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf, int index) {
         DBDictionary dict = ctx.store.getDBDictionary();
@@ -62,6 +67,7 @@ public class StringLength
         buf.append(func.substring(idx + 3));
     }
 
+    @Override
     public int getId() {
         return Val.LENGTH_VAL;
     }

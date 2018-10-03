@@ -34,22 +34,27 @@ import org.apache.openjpa.ee.ManagedRuntime;
 public class JTAManagedRuntime implements ManagedRuntime {
     private SimpleTransactionManager txm = new SimpleTransactionManager();
 
+    @Override
     public void doNonTransactionalWork(Runnable runnable) throws NotSupportedException {
         throw new NotSupportedException();
     }
 
+    @Override
     public Throwable getRollbackCause() throws Exception {
         return txm.getTransaction().getRollbackCause();
     }
 
+    @Override
     public Object getTransactionKey() throws Exception, SystemException {
         return getTransactionManager().getTransaction().hashCode();
     }
 
+    @Override
     public TransactionManager getTransactionManager() throws Exception {
         return txm;
     }
 
+    @Override
     public void setRollbackOnly(Throwable cause) throws Exception {
         txm.getTransaction().setRollbackOnly(cause);
     }

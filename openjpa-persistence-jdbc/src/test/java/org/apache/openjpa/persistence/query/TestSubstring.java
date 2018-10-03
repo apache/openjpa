@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestSubstring extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(SimpleEntity.class, CLEAR_TABLES,
             "openjpa.Compatibility", "JPQL=extended");

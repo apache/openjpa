@@ -33,7 +33,7 @@ interface ResourceBundleProvider {
      * Find a ResourceBundle with the given name, locale, and class loader
      * (which may be null).
      */
-    public ResourceBundle findResource(String name, Locale locale,
+    ResourceBundle findResource(String name, Locale locale,
         ClassLoader loader);
 }
 

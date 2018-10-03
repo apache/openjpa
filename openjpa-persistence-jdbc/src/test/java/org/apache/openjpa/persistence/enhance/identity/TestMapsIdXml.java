@@ -33,11 +33,12 @@ public class TestMapsIdXml extends SingleEMFTestCase {
     public int numDependentsPerEmployee = 2;
     public int numPersons = 4;
 
-    public Map<Integer, Employee1Xml> emps1xml = new HashMap<Integer, Employee1Xml>();
-    public Map<String, Dependent1Xml> deps1xml = new HashMap<String, Dependent1Xml>();
+    public Map<Integer, Employee1Xml> emps1xml = new HashMap<>();
+    public Map<String, Dependent1Xml> deps1xml = new HashMap<>();
     public int eId1 = 1;
     public int dId1 = 1;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES);
     }

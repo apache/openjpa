@@ -18,18 +18,24 @@
  */
 package org.apache.openjpa.conf;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashMap;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
-import junit.framework.*;
+import org.apache.openjpa.persistence.AutoDetachType;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
-import org.apache.openjpa.persistence.*;
+import junit.framework.TestCase;
 
 public class TestAutoDetachProperty extends TestCase {
     private EntityManager em;
     private EntityManagerFactory emf;
 
+    @Override
     public void setUp() throws Exception {
         // Don't modify system props, as we are trying to get as close as
         // possible to testing props in persistence.xml
@@ -41,6 +47,7 @@ public class TestAutoDetachProperty extends TestCase {
         em = emf.createEntityManager();
     }
 
+    @Override
     public void tearDown() throws Exception {
         em.close();
         em = null;

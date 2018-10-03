@@ -25,10 +25,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 // org.apache.openjpa.persistence.TestMixedMappingLocation
 public class TestMixedMappingLocation extends SingleEMFTestCase {
 
+    @Override
     protected String getPersistenceUnitName() {
         return "xml-persistence-unit";
     }
 
+    @Override
     public void setUp() {
         setUp(DROP_TABLES,MixedMappingLocationEmbeddedId.class, MixedMappingLocation.class);
     }

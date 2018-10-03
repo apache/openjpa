@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 /**
  *	<p>Persistent type used in testing.</p>
  *

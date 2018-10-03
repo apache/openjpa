@@ -20,11 +20,10 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.List;
 
-
-import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.query.common.apps.RuntimeTest3;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.query.common.apps.RuntimeTest3;
 
 public class TestJPAQuerySubclassFunc extends BaseQueryTest {
 
@@ -32,6 +31,7 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
 

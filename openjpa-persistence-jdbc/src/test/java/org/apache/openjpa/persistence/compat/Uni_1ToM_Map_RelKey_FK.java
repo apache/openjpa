@@ -21,7 +21,13 @@ package org.apache.openjpa.persistence.compat;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 //non-default mapping
 //Sec 11.1.36, Example 3:
@@ -64,10 +70,12 @@ public class Uni_1ToM_Map_RelKey_FK {
         this.entityCs = entityCs;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Uni_1ToM_Map_RelKey_FK)) return false;
         Uni_1ToM_Map_RelKey_FK b = (Uni_1ToM_Map_RelKey_FK)o;

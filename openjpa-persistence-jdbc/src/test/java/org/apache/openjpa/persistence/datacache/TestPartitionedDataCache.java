@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.UserException;
 
 public class TestPartitionedDataCache extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         super.setUp("openjpa.DataCache", "partitioned(PartitionType=concurrent,partitions="+
                 "'(name=a,cacheSize=100),(name=b,cacheSize=200)')",
@@ -106,16 +107,20 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
 
     public static class TestPolicy implements CacheDistributionPolicy {
 
+        @Override
         public String selectCache(OpenJPAStateManager sm, Object context) {
             return "a";
         }
 
+        @Override
         public void endConfiguration() {
         }
 
+        @Override
         public void setConfiguration(Configuration conf) {
         }
 
+        @Override
         public void startConfiguration() {
         }
 

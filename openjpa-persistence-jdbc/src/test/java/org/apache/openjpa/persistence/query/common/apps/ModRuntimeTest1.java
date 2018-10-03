@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -110,6 +111,7 @@ public class ModRuntimeTest1 implements Serializable {
         this.selfOneMany = selfOneMany;
     }
 
+    @Override
     public String toString() {
         return "IntField: " + intField + ", StringField: " + stringField + " .";
     }

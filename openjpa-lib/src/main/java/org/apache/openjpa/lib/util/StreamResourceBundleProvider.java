@@ -34,6 +34,7 @@ import java.util.ResourceBundle;
  */
 class StreamResourceBundleProvider implements ResourceBundleProvider {
 
+    @Override
     public ResourceBundle findResource(String name, Locale locale,
         ClassLoader loader) {
         String rsrc = name.replace('.', '/') + ".properties";

@@ -51,6 +51,8 @@ public abstract class AppIdSubA
     public static abstract class ID
         extends AppIdSuper.ID {
 
+        
+        private static final long serialVersionUID = 1L;
         public int pka;
 
         public ID() {
@@ -62,19 +64,23 @@ public abstract class AppIdSubA
             fromString(str);
         }
 
+        @Override
         public int hashCode() {
             return (super.hashCode() + pka) % Integer.MAX_VALUE;
         }
 
+        @Override
         public boolean equals(Object other) {
             return super.equals(other)
                 && ((ID) other).pka == pka;
         }
 
+        @Override
         public String toString() {
             return super.toString() + DELIMITER + pka;
         }
 
+        @Override
         StringTokenizer fromString(String idString) {
             StringTokenizer tok = super.fromString(idString);
             pka = new Integer(tok.nextToken()).intValue();

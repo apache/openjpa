@@ -40,6 +40,7 @@ public class MappingRepositoryValue
         super(prop, true);
     }
 
+    @Override
     public Object newInstance(String clsName, Class type,
         Configuration conf, boolean fatal) {
         // since the MappingRepository takes a JDBConfiguration constructor,

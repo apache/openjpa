@@ -25,8 +25,8 @@ import org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.PluginValue;
-import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.ProductDerivation;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 
 /**
  * Value type used to represent the {@link BrokerFactory}. This type is
@@ -42,7 +42,7 @@ public class BrokerFactoryValue
 
     private static final String[] _aliases;
     static {
-        Map<String, String> aliases = new HashMap<String, String>();
+        Map<String, String> aliases = new HashMap<>();
         aliases.put("abstractstore", AbstractStoreBrokerFactory.class.getName());
         ProductDerivation[] ds = ProductDerivations.getProductDerivations();
         for (int i = 0; i < ds.length; i++) {

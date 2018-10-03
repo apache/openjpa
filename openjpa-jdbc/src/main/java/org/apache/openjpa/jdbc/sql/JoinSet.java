@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import java.util.Objects;
 
 /**
@@ -223,6 +222,7 @@ class JoinSet {
             private Node _next = null;
             private int _idx = -1;
 
+            @Override
             public boolean hasNext() {
                 if (_next != null)
                     return true;
@@ -237,6 +237,7 @@ class JoinSet {
                 return false;
             }
 
+            @Override
             public Object next() {
                 if (!hasNext())
                     throw new NoSuchElementException();
@@ -247,6 +248,7 @@ class JoinSet {
                 return j;
             }
 
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }
@@ -332,6 +334,7 @@ class JoinSet {
         return _size;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -340,10 +343,12 @@ class JoinSet {
         return _graph.equals(((JoinSet) other)._graph);
     }
 
+    @Override
     public int hashCode() {
         return _graph.hashCode();
     }
 
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append("[");
@@ -370,6 +375,7 @@ class JoinSet {
             this.forward = forward;
         }
 
+        @Override
         public int hashCode() {
             int rs = 17;
             rs = 37 * rs + join.hashCode();
@@ -378,6 +384,7 @@ class JoinSet {
             return rs;
         }
 
+        @Override
         public boolean equals(Object other) {
             if (!(other instanceof Node))
                 return false;
@@ -386,6 +393,7 @@ class JoinSet {
                 && Objects.equals(next, node.next);
         }
 
+        @Override
         public Object clone() {
             try {
                 Node node = (Node) super.clone();
@@ -398,6 +406,7 @@ class JoinSet {
             }
         }
 
+        @Override
         public String toString() {
             return join + "(" + ((forward) ? "forward" : "backward") + ")"
                 + "; next: " + next;

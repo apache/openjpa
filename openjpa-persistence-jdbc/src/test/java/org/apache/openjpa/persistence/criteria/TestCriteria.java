@@ -59,6 +59,7 @@ public class TestCriteria extends SingleEMFTestCase {
     protected OpenJPAQueryBuilder qb;
     protected StringComparison comparator = new StringComparison();
 
+    @Override
     public void setUp() {
             super.setUp(CLEAR_TABLES,
                     "openjpa.DynamicEnhancementAgent", "false",

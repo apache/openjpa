@@ -25,7 +25,9 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class TrimExpression extends UnaryOperatorExpression {
-	private final Expression _trimChar;
+	
+    private static final long serialVersionUID = 1L;
+    private final Expression _trimChar;
 	private final TrimSpec _trimSpec;
 	private static final String DEFAULT_TRIM_CHAR = "' '";
 	private static final String DEFAULT_TRIM_SPEC = EMPTY;
@@ -42,7 +44,8 @@ public class TrimExpression extends UnaryOperatorExpression {
 		_trimSpec = spec;
 	}
 
-	public String asExpression(AliasContext ctx) {
+	@Override
+    public String asExpression(AliasContext ctx) {
 		String trimChar = _trimChar == null ? DEFAULT_TRIM_CHAR
 			: ((Visitable)_trimChar).asExpression(ctx);
 		String trimSpec = _trimSpec == null ? DEFAULT_TRIM_SPEC :

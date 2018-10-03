@@ -19,9 +19,9 @@
 package org.apache.openjpa.persistence.query;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-
 
 import org.apache.openjpa.persistence.query.common.apps.Entity1;
 
@@ -33,6 +33,7 @@ public class TestSimple extends BaseQueryTest {
         super(test);
     }
 
+    @Override
     public void setUp() {
         deleteAll(Entity1.class);
     }

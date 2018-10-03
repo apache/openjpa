@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestLogFactory extends SingleEMFTestCase {
     String systemPropLog = null;
 
+    @Override
     public void setUp() throws Exception {
         // Maven users may disable logging via a global system prop - which breaks this testcase.
         systemPropLog = System.getProperty("openjpa.Log");
@@ -37,6 +38,7 @@ public class TestLogFactory extends SingleEMFTestCase {
         super.setUp();
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         if(systemPropLog != null) {
@@ -61,6 +63,7 @@ public class TestLogFactory extends SingleEMFTestCase {
         }
     }
 
+    @Override
     public String getPersistenceUnitName() {
         // override puName instead of creating our own EMF.
         // getLog uses the SingleEMFTestCase's emf.

@@ -51,7 +51,7 @@ public class Order {
 
       public Order() {
           orderEntry = new Date( System.currentTimeMillis() );
-          items = new ArrayList<LineItem>();
+          items = new ArrayList<>();
       }
 
       public Order( long id ) {

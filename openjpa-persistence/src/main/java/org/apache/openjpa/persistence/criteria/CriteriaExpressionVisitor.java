@@ -62,11 +62,12 @@ public interface CriteriaExpressionVisitor {
      *
      */
     public static abstract class AbstractVisitor implements CriteriaExpressionVisitor {
-        protected final Set<CriteriaExpression> _visited = new HashSet<CriteriaExpression>();
+        protected final Set<CriteriaExpression> _visited = new HashSet<>();
 
         /**
          * Remembers the node being visited.
          */
+        @Override
         public void exit(CriteriaExpression node) {
             _visited.add(node);
         }
@@ -74,6 +75,7 @@ public interface CriteriaExpressionVisitor {
         /**
          * Affirms if this node has been visited before.
          */
+        @Override
         public boolean isVisited(CriteriaExpression node) {
             return _visited.contains(node);
         }
@@ -81,6 +83,7 @@ public interface CriteriaExpressionVisitor {
         /**
          * Returns PREFIX as the default traversal style.
          */
+        @Override
         public TraversalStyle getTraversalStyle(CriteriaExpression node) {
             return TraversalStyle.PREFIX;
         }
@@ -97,6 +100,7 @@ public interface CriteriaExpressionVisitor {
             query = q;
         }
 
+        @Override
         public void enter(CriteriaExpression expr) {
             if (expr instanceof ParameterExpressionImpl) {
                 query.registerParameter((ParameterExpressionImpl<?>)expr);

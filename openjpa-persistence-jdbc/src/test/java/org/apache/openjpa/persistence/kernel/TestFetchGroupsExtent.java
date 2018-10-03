@@ -29,15 +29,12 @@ package org.apache.openjpa.persistence.kernel;
 import java.util.Collection;
 import java.util.List;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
-import org.apache.openjpa.persistence.kernel.common.apps.
-        FetchGroupTestObjectChild;
-
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
+import org.apache.openjpa.persistence.kernel.common.apps.
+        FetchGroupTestObjectChild;
 
 public class TestFetchGroupsExtent extends TestFetchGroups {
 
@@ -51,6 +48,7 @@ public class TestFetchGroupsExtent extends TestFetchGroups {
         super(s);
     }
 
+    @Override
     protected FetchGroupTestObject getO1(OpenJPAEntityManager pm) {
         Extent e = (Extent) pm.createExtent(FetchGroupTestObject.class,
             true);
@@ -64,6 +62,7 @@ public class TestFetchGroupsExtent extends TestFetchGroups {
             ((Collection) q.getResultList()).iterator().next();
     }
 
+    @Override
     protected FetchGroupTestObject getO2(OpenJPAEntityManager pm) {
         Extent e = (Extent) pm.createExtent(FetchGroupTestObject.class,
             true);
@@ -77,6 +76,7 @@ public class TestFetchGroupsExtent extends TestFetchGroups {
             ((Collection) q.getResultList()).iterator().next();
     }
 
+    @Override
     protected FetchGroupTestObjectChild getC1(OpenJPAEntityManager pm) {
         Extent e = (Extent) pm.createExtent(FetchGroupTestObject.class,
             true);

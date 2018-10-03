@@ -67,7 +67,7 @@ public interface JESTCommand {
      *
      * @return the execution context. never null.
      */
-    public JPAServletContext getExecutionContext();
+    JPAServletContext getExecutionContext();
 
     /**
      * Parse the given request to populate qualifiers and parameters of this command.
@@ -76,14 +76,14 @@ public interface JESTCommand {
      * phase, the parameters and qualifiers are accessed from the parsed command itself rather than
      * from the original HTTP request.
      */
-    public void parse() throws ProcessingException;
+    void parse() throws ProcessingException;
 
     /**
      * Process the given request and write the output on to the given response in the given context.
      * @throws ProcessingException
      *
      */
-    public void process() throws ProcessingException, IOException;
+    void process() throws ProcessingException, IOException;
 
 
     /**
@@ -91,7 +91,7 @@ public interface JESTCommand {
      *
      * @exception IllegalStateException if accessed prior to parsing.
      */
-    public Map<String,String> getArguments();
+    Map<String,String> getArguments();
 
     /**
      * Get the value of this command's argument of the given name.
@@ -100,7 +100,7 @@ public interface JESTCommand {
      *
      * @exception IllegalStateException if accessed prior to parsing.
      */
-    public String getArgument(String key);
+    String getArgument(String key);
 
 
     /**
@@ -108,14 +108,14 @@ public interface JESTCommand {
      *
      * @exception IllegalStateException if accessed prior to parsing.
      */
-    public boolean hasArgument(String key);
+    boolean hasArgument(String key);
 
     /**
      * Get this command's qualifiers.
      *
      * @exception IllegalStateException if accessed prior to parsing.
      */
-    public Map<String,String> getQualifiers();
+    Map<String,String> getQualifiers();
 
     /**
      * Get the value of this command's qualifier of the given name.
@@ -124,13 +124,13 @@ public interface JESTCommand {
      *
      * @exception IllegalStateException if accessed prior to parsing.
      */
-    public String getQualifier(String key);
+    String getQualifier(String key);
 
     /**
      * Affirm this command contains an qualifier of the given name.
      *
      * @exception IllegalStateException if accessed prior to parsing.
      */
-    public boolean hasQualifier(String key);
+    boolean hasQualifier(String key);
 
 }

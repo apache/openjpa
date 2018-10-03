@@ -81,7 +81,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     protected final String DB2Lock          = DB2LockClause + "{1}";
     protected final String NoDB2Lock        = DB2LockClause + "{0}";
 
-    protected List<String> empTableName = new ArrayList<String>();;
+    protected List<String> empTableName = new ArrayList<>();;
 
     protected Map<String, Object> normalProps;
     protected Map<String, Object> extendedProps;
@@ -92,8 +92,8 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     }
 
     protected void commonSetUp(Class<?>... eClasses ) {
-        normalProps = new HashMap<String, Object>();
-        extendedProps = new HashMap<String, Object>();
+        normalProps = new HashMap<>();
+        extendedProps = new HashMap<>();
         extendedProps.put("javax.persistence.lock.scope", PessimisticLockScope.EXTENDED);
 
         for( Class<?> eClazz : eClasses) {
@@ -137,6 +137,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
         return ((JDBCConfiguration) ((OpenJPAEntityManager) em).getConfiguration());
     }
 
+    @Override
     protected Log getLog() {
         return emf.getConfiguration().getLog("Tests");
     }
@@ -327,16 +328,16 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     }
 
     protected interface AssertCallback {
-        public void findNoLockDbSQL(EntityManager em);
+        void findNoLockDbSQL(EntityManager em);
 
-        public void findPessimisticForcIncDbSQL(EntityManager em);
+        void findPessimisticForcIncDbSQL(EntityManager em);
 
-        public void queryPessimisticReadDbSQL(EntityManager em);
+        void queryPessimisticReadDbSQL(EntityManager em);
 
-        public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em);
+        void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em);
 
-        public void namedQueryPessimisticWriteDbSql(EntityManager em);
+        void namedQueryPessimisticWriteDbSql(EntityManager em);
 
-        public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em);
+        void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em);
     }
 }

@@ -44,6 +44,7 @@ public class SingleJVMRemoteCommitProvider
         s_providers.add(this);
     }
 
+    @Override
     public void broadcast(RemoteCommitEvent event) {
         SingleJVMRemoteCommitProvider provider;
         for (Iterator iter = s_providers.iterator(); iter.hasNext();) {
@@ -59,6 +60,7 @@ public class SingleJVMRemoteCommitProvider
         }
     }
 
+    @Override
     public void close() {
         s_providers.remove(this);
     }

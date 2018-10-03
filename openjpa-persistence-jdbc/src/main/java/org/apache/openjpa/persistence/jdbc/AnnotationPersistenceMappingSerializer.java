@@ -18,67 +18,68 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import org.apache.openjpa.lib.util.ClassUtil;
-import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataSerializer;
-import org.apache.openjpa.persistence.PersistenceStrategy;
-import org.apache.openjpa.persistence.AnnotationBuilder;
-import org.apache.openjpa.jdbc.meta.QueryResultMapping;
-import org.apache.openjpa.jdbc.meta.MappingRepository;
-import org.apache.openjpa.jdbc.meta.ClassMapping;
-import org.apache.openjpa.jdbc.meta.FieldMapping;
-import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
-import org.apache.openjpa.jdbc.meta.DiscriminatorMappingInfo;
-import org.apache.openjpa.jdbc.meta.MappingInfo;
-import org.apache.openjpa.jdbc.meta.SequenceMapping;
-import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
-import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
-import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
-import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
-import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.schema.*;
-import org.apache.openjpa.jdbc.schema.Unique;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.meta.MetaDataRepository;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.SequenceMetaData;
-import org.apache.openjpa.meta.MetaDataModes;
-import org.apache.openjpa.lib.util.StringUtil;
-
-import java.util.List;
+import java.lang.annotation.Annotation;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.HashMap;
-import java.sql.Types;
-import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-import javax.persistence.TemporalType;
-import javax.persistence.EnumType;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Inheritance;
-import javax.persistence.DiscriminatorValue;
+import javax.persistence.ColumnResult;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.EntityResult;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FieldResult;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.Temporal;
-import javax.persistence.Enumerated;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.TableGenerator;
-import javax.persistence.JoinColumns;
-import javax.persistence.JoinColumn;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
+import javax.persistence.SecondaryTable;
 import javax.persistence.SqlResultSetMapping;
-import javax.persistence.EntityResult;
-import javax.persistence.FieldResult;
-import javax.persistence.ColumnResult;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
+
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
+import org.apache.openjpa.jdbc.meta.DiscriminatorMappingInfo;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.MappingInfo;
+import org.apache.openjpa.jdbc.meta.MappingRepository;
+import org.apache.openjpa.jdbc.meta.QueryResultMapping;
+import org.apache.openjpa.jdbc.meta.QueryResultMapping.PCResult;
+import org.apache.openjpa.jdbc.meta.SequenceMapping;
+import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
+import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
+import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
+import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
+import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.util.ClassUtil;
+import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataModes;
+import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.persistence.AnnotationBuilder;
+import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataSerializer;
+import org.apache.openjpa.persistence.PersistenceStrategy;
 
 
 /**
@@ -126,7 +127,7 @@ public class AnnotationPersistenceMappingSerializer
      */
     public void addQueryResultMapping(QueryResultMapping meta) {
         if (_results == null)
-            _results = new ArrayList<QueryResultMapping>();
+            _results = new ArrayList<>();
         _results.add(meta);
     }
 
@@ -168,11 +169,10 @@ public class AnnotationPersistenceMappingSerializer
     protected void addAnnotation(AnnotationBuilder ab, QueryResultMapping meta)
     {
         if (_rsmAnnos == null)
-            _rsmAnnos = new HashMap<QueryResultMapping,
-                    List<AnnotationBuilder>>();
+            _rsmAnnos = new HashMap<>();
         List<AnnotationBuilder> list = _rsmAnnos.get(meta);
         if (list == null) {
-            list = new ArrayList<AnnotationBuilder>();
+            list = new ArrayList<>();
             _rsmAnnos.put(meta, list);
         }
         list.add(ab);
@@ -647,7 +647,7 @@ public class AnnotationPersistenceMappingSerializer
                 continue;
 
             if (result == null)
-                result = new ArrayList<QueryResultMapping>(_results.size() - i);
+                result = new ArrayList<>(_results.size() - i);
             result.add(element);
         }
         return (result == null)
@@ -680,7 +680,7 @@ public class AnnotationPersistenceMappingSerializer
                 newAnnotationBuilder(EntityResult.class);
             ab.add("entities", abEntRes);
             abEntRes.add("entityClass", pc.getCandidateType());
-            Object discrim = pc.getMapping(pc.DISCRIMINATOR);
+            Object discrim = pc.getMapping(PCResult.DISCRIMINATOR);
             if (discrim != null)
                 abEntRes.add("discriminatorColumn", discrim.toString());
 
@@ -779,6 +779,10 @@ public class AnnotationPersistenceMappingSerializer
     protected class MappingSerializationComparator
         extends SerializationComparator {
 
+        
+        private static final long serialVersionUID = 1L;
+
+        @Override
         protected int compareUnknown(Object o1, Object o2) {
             if (!(o1 instanceof QueryResultMapping))
                 return super.compareUnknown(o1, o2);

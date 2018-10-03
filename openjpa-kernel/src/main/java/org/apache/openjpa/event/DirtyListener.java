@@ -29,20 +29,20 @@ public interface DirtyListener {
     /**
      * Invoked before the first change is applied.
      */
-    public void beforeDirty(LifecycleEvent event);
+    void beforeDirty(LifecycleEvent event);
 
     /**
      * Invoked after the first change is applied.
      */
-    public void afterDirty(LifecycleEvent event);
+    void afterDirty(LifecycleEvent event);
 
     /**
      * Invoked before the first change is applied to a flushed instance.
      */
-    public void beforeDirtyFlushed(LifecycleEvent event);
+    void beforeDirtyFlushed(LifecycleEvent event);
 
     /**
      * Invoked after the first change is applied to a flushed instance.
      */
-    public void afterDirtyFlushed(LifecycleEvent event);
+    void afterDirtyFlushed(LifecycleEvent event);
 }

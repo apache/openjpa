@@ -43,6 +43,9 @@ import org.apache.openjpa.util.UserException;
 class GetObjectId
     extends AbstractVal {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (GetObjectId.class);
 
@@ -63,21 +66,26 @@ class GetObjectId
         return _path.getClassMapping(state).getPrimaryKeyColumns();
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
 
+    @Override
     public Class getType() {
         return Object.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         ExpState state = _path.initialize(sel, ctx, JOIN_REL);
 
@@ -91,18 +99,19 @@ class GetObjectId
         return state;
     }
 
+    @Override
     public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state,
         Object val) {
         // if datastore identity, try to convert to a long value
         ClassMapping mapping = _path.getClassMapping(state);
-        if (mapping.getIdentityType() == mapping.ID_DATASTORE) {
+        if (mapping.getIdentityType() == ClassMetaData.ID_DATASTORE) {
             if (val instanceof Id)
                 return ((Id) val).getId();
             return Filters.convert(val, long.class);
         }
 
         // if unknown identity, can't do much
-        if (mapping.getIdentityType() == mapping.ID_UNKNOWN)
+        if (mapping.getIdentityType() == ClassMetaData.ID_UNKNOWN)
             return (val instanceof OpenJPAId) ?
                 ((OpenJPAId) val).getIdObject() : val;
 
@@ -128,44 +137,53 @@ class GetObjectId
         return vals;
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         selectColumns(sel, ctx, state, true);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         _path.selectColumns(sel, ctx, state, true);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         _path.groupBy(sel, ctx, state);
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         _path.orderBy(sel, ctx, state, asc);
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return _path.load(ctx, state, res, true);
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         _path.calculateValue(sel, ctx, state, null, null);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return _path.length(sel, ctx, state);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         _path.appendTo(sel, ctx, state, sql, index);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _path.acceptVisit(visitor);

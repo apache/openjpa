@@ -32,6 +32,8 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class OptimisticException
     extends StoreException {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final transient Localizer _loc = Localizer.forPackage
         (OptimisticException.class);
 
@@ -54,6 +56,7 @@ public class OptimisticException
         setNestedThrowables(nested);
     }
 
+    @Override
     public int getSubtype() {
         return OPTIMISTIC;
     }

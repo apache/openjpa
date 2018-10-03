@@ -32,9 +32,12 @@ import org.apache.openjpa.util.MetaDataException;
 public class ObjectIdClassStrategy
     extends AbstractClassStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (ObjectIdClassStrategy.class);
 
+    @Override
     public void map(boolean adapt) {
         ValueMapping vm = cls.getEmbeddingMapping();
         if (vm == null || vm.getType() != cls.getDescribedType()

@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence.embed;
 import java.io.Serializable;
 
 public class FeatureIdXml implements Serializable {
-	private String oid;
+	
+    private static final long serialVersionUID = 1L;
+    private String oid;
 
 	public String getOid() {
 		return oid;
@@ -41,7 +43,8 @@ public class FeatureIdXml implements Serializable {
 		this.index = feanum;
 	}
 
-	public boolean equals(Object other) {
+	@Override
+    public boolean equals(Object other) {
 		if (this == other)
 			return true;
 		if (other instanceof FeatureIdXml) {
@@ -52,11 +55,13 @@ public class FeatureIdXml implements Serializable {
 		return false;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return getIndex() + getOid().hashCode();
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return getOid() + "#" + getIndex();
 	}
 

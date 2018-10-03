@@ -39,10 +39,12 @@ public class ReaderWrapper extends Reader {
         this.reader = new CharArrayReader(s.toCharArray());
     }
 
+    @Override
     public void close() throws IOException {
         reader.close();
     }
 
+    @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
         StackTraceElement[] ste = Thread.currentThread().getStackTrace();
         for (StackTraceElement element : ste) {

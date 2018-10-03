@@ -53,6 +53,7 @@ public class FGDepartment {
         this.name = name;
     }
 
+    @Override
     public String toString() {
         return new String("FGDepartment(id=" + this.id + ")");
     }

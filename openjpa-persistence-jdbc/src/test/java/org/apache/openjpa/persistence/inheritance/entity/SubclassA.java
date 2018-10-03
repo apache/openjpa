@@ -35,6 +35,7 @@ public class SubclassA extends BaseClass {
         return classAName;
     }
 
+    @Override
     public String toString() {
         return super.toString() + ";classAName=" + classAName;
     }

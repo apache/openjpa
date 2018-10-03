@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class DependentId2 {
@@ -48,6 +48,7 @@ public class DependentId2 {
         return empPK;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof DependentId2)) return false;
@@ -58,6 +59,7 @@ public class DependentId2 {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         if (empPK != null)

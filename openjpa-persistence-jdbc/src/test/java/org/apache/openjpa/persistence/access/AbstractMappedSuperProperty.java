@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.access;
 import java.util.Date;
 
 import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.AccessType;
 import javax.persistence.Transient;
 
 @MappedSuperclass
@@ -61,6 +61,7 @@ public abstract class AbstractMappedSuperProperty {
 
     abstract public void setCreateDate(Date date);
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof AbstractMappedSuperProperty) {
             AbstractMappedSuperProperty ps = (AbstractMappedSuperProperty)obj;

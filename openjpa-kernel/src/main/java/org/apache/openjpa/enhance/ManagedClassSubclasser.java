@@ -32,8 +32,8 @@ import java.util.Set;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.BytecodeWriter;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -45,6 +45,7 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
+
 import serp.bytecode.BCClass;
 
 /**
@@ -88,7 +89,7 @@ public class ManagedClassSubclasser {
 
         Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
         if (conf.getRuntimeUnenhancedClassesConstant() != RuntimeUnenhancedClassesModes.SUPPORTED) {
-            Collection<Class<?>> unenhanced = new ArrayList<Class<?>>();
+            Collection<Class<?>> unenhanced = new ArrayList<>();
             for (Class<?> cls : classes)
                 if (!PersistenceCapable.class.isAssignableFrom(cls))
                     unenhanced.add(cls);
@@ -124,15 +125,16 @@ public class ManagedClassSubclasser {
         } else {
             log.warn(_loc.get("enhance-and-subclass-no-redef-start",  classes));
         }
-        final Map<Class<?>, byte[]> map = new HashMap<Class<?>, byte[]>();
-        final List<Class<?>> subs = new ArrayList<Class<?>>(classes.size());
-        final List<Class<?>> ints = new ArrayList<Class<?>>(classes.size());
+        final Map<Class<?>, byte[]> map = new HashMap<>();
+        final List<Class<?>> subs = new ArrayList<>(classes.size());
+        final List<Class<?>> ints = new ArrayList<>(classes.size());
         Set<Class<?>> unspecified = null;
         for (Class<?> cls : classes) {
             final Class<?> c = cls;
             final PCEnhancer enhancer = new PCEnhancer(conf, cls);
 
             enhancer.setBytecodeWriter(new BytecodeWriter() {
+                @Override
                 public void write(BCClass bc) throws IOException {
                     ManagedClassSubclasser.write(bc, enhancer, map, c, subs, ints);
                 }
@@ -216,7 +218,7 @@ public class ManagedClassSubclasser {
             && !ImplHelper.isManagedType(null, cls)
             && !cls.isInterface()) {
             if (unspecified == null)
-                unspecified = new HashSet<Class<?>>();
+                unspecified = new HashSet<>();
             unspecified.add(cls);
         }
         return unspecified;

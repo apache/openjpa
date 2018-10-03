@@ -42,6 +42,8 @@ public class DelegatingQuery
     // JDO and JPA facades!
     ///////////////////////////////////////////////////////////////
 
+    
+    private static final long serialVersionUID = 1L;
     private final Query _query;
     private final DelegatingQuery _del;
     private final transient RuntimeExceptionTranslator _trans;
@@ -79,10 +81,12 @@ public class DelegatingQuery
         return (_del == null) ? _query : _del.getInnermostDelegate();
     }
 
+    @Override
     public int hashCode() {
         return getInnermostDelegate().hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -98,6 +102,7 @@ public class DelegatingQuery
         return (_trans == null) ? re : _trans.translate(re);
     }
 
+    @Override
     public Broker getBroker() {
         try {
             return _query.getBroker();
@@ -106,10 +111,12 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Query getQuery() {
         return this;
     }
 
+    @Override
     public StoreContext getStoreContext() {
         try {
             return _query.getStoreContext();
@@ -118,6 +125,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public int getOperation() {
         try {
             return _query.getOperation();
@@ -126,6 +134,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public String getLanguage() {
         try {
             return _query.getLanguage();
@@ -134,6 +143,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public FetchConfiguration getFetchConfiguration() {
         try {
             return _query.getFetchConfiguration();
@@ -142,6 +152,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public String getQueryString() {
         try {
             return _query.getQueryString();
@@ -150,6 +161,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public boolean getIgnoreChanges() {
         try {
             return _query.getIgnoreChanges();
@@ -158,6 +170,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Object getCompilation() {
         try {
             return _query.getCompilation();
@@ -166,6 +179,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public String getAlias() {
         try {
             return _query.getAlias();
@@ -174,6 +188,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public String[] getProjectionAliases() {
         try {
             return _query.getProjectionAliases();
@@ -182,6 +197,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Class[] getProjectionTypes() {
         try {
             return _query.getProjectionTypes();
@@ -190,6 +206,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public boolean isAggregate() {
         try {
             return _query.isAggregate();
@@ -198,6 +215,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public boolean hasGrouping() {
         try {
             return _query.hasGrouping();
@@ -206,6 +224,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public ClassMetaData[] getAccessPathMetaDatas() {
         try {
             return _query.getAccessPathMetaDatas();
@@ -214,6 +233,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public FilterListener getFilterListener(String tag) {
         try {
             return _query.getFilterListener(tag);
@@ -222,6 +242,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public AggregateListener getAggregateListener(String tag) {
         try {
             return _query.getAggregateListener(tag);
@@ -230,6 +251,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Collection getFilterListeners() {
         try {
             return _query.getFilterListeners();
@@ -238,6 +260,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Collection getAggregateListeners() {
         try {
             return _query.getAggregateListeners();
@@ -246,6 +269,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Collection getCandidateCollection() {
         try {
             return _query.getCandidateCollection();
@@ -254,6 +278,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Class getCandidateType() {
         try {
             return _query.getCandidateType();
@@ -262,6 +287,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public boolean hasSubclasses() {
         try {
             return _query.hasSubclasses();
@@ -270,6 +296,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void setCandidateType(Class cls, boolean subs) {
         try {
             _query.setCandidateType(cls, subs);
@@ -278,6 +305,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public boolean isReadOnly() {
         try {
             return _query.isReadOnly();
@@ -286,6 +314,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void setReadOnly(boolean readOnly) {
         try {
             _query.setReadOnly(readOnly);
@@ -294,6 +323,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Class getResultMappingScope() {
         try {
             return _query.getResultMappingScope();
@@ -302,6 +332,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public String getResultMappingName() {
         try {
             return _query.getResultMappingName();
@@ -310,6 +341,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void setResultMapping(Class scope, String name) {
         try {
             _query.setResultMapping(scope, name);
@@ -318,6 +350,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public boolean isUnique() {
         try {
             return _query.isUnique();
@@ -326,6 +359,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void setUnique(boolean unique) {
         try {
             _query.setUnique(unique);
@@ -334,6 +368,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public boolean isDistinct() {
         try {
             return _query.isDistinct();
@@ -342,6 +377,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Class getResultType() {
         try {
             return _query.getResultType();
@@ -350,6 +386,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void setResultType(Class cls) {
         try {
             _query.setResultType(cls);
@@ -358,6 +395,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public long getStartRange() {
         try {
             return _query.getStartRange();
@@ -366,6 +404,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public long getEndRange() {
         try {
             return _query.getEndRange();
@@ -374,6 +413,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void setRange(long start, long end) {
         try {
             _query.setRange(start, end);
@@ -382,6 +422,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public String getParameterDeclaration() {
         try {
             return _query.getParameterDeclaration();
@@ -390,6 +431,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public OrderedMap<Object,Class<?>> getOrderedParameterTypes() {
         try {
             return _query.getOrderedParameterTypes();
@@ -398,6 +440,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public LinkedMap getParameterTypes() {
         try {
             return _query.getParameterTypes();
@@ -406,6 +449,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Map getUpdates() {
         try {
             return _query.getUpdates();
@@ -414,6 +458,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void declareParameters(String params) {
         try {
             _query.declareParameters(params);
@@ -422,6 +467,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Number deleteInMemory(StoreQuery q, StoreQuery.Executor ex,
         Object[] params) {
         try {
@@ -431,6 +477,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Number updateInMemory(StoreQuery q, StoreQuery.Executor ex,
         Object[] params) {
         try {
@@ -440,6 +487,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Class classForName(String name, String[] imports) {
         try {
             return _query.classForName(name, imports);
@@ -448,6 +496,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void lock() {
         try {
             _query.lock();
@@ -456,6 +505,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void unlock() {
         try {
             _query.unlock();
@@ -464,6 +514,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void addFilterListener(FilterListener listener) {
         try {
             _query.addFilterListener(listener);
@@ -472,6 +523,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void removeFilterListener(FilterListener listener) {
         try {
             _query.removeFilterListener(listener);
@@ -480,6 +532,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void addAggregateListener(AggregateListener listener) {
         try {
             _query.addAggregateListener(listener);
@@ -488,6 +541,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void removeAggregateListener(AggregateListener listener) {
         try {
             _query.removeAggregateListener(listener);
@@ -496,6 +550,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Extent getCandidateExtent() {
         try {
             return _query.getCandidateExtent();
@@ -504,6 +559,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void setCandidateExtent(Extent extent) {
         try {
             _query.setCandidateExtent(extent);
@@ -512,6 +568,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void setCandidateCollection(Collection coll) {
         try {
             _query.setCandidateCollection(coll);
@@ -520,6 +577,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void compile() {
         try {
             _query.compile();
@@ -528,6 +586,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Object execute() {
         try {
             return _query.execute();
@@ -536,6 +595,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Object execute(Map params) {
         try {
             return _query.execute(params);
@@ -544,6 +604,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public Object execute(Object[] params) {
         try {
             return _query.execute(params);
@@ -552,6 +613,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public long deleteAll() {
         try {
             return _query.deleteAll();
@@ -560,6 +622,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public long deleteAll(Object[] parameters) {
         try {
             return _query.deleteAll(parameters);
@@ -568,6 +631,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public long deleteAll(Map parameterMap) {
         try {
             return _query.deleteAll(parameterMap);
@@ -576,6 +640,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public long updateAll() {
         try {
             return _query.updateAll();
@@ -584,6 +649,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public long updateAll(Object[] parameters) {
         try {
             return _query.updateAll(parameters);
@@ -592,6 +658,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public long updateAll(Map parameterMap) {
         try {
             return _query.updateAll(parameterMap);
@@ -600,6 +667,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void closeAll() {
         try {
             _query.closeAll();
@@ -608,6 +676,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void closeResources() {
         try {
             _query.closeResources();
@@ -616,6 +685,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public String[] getDataStoreActions(Map params) {
         try {
             return _query.getDataStoreActions(params);
@@ -624,6 +694,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public boolean setQuery(Object query) {
         try {
             return _query.setQuery(query);
@@ -632,6 +703,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void setIgnoreChanges(boolean ignore) {
         try {
             _query.setIgnoreChanges(ignore);
@@ -640,6 +712,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void assertOpen() {
         try {
             _query.assertOpen();
@@ -648,6 +721,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void assertNotReadOnly() {
         try {
             _query.assertNotReadOnly();
@@ -656,6 +730,7 @@ public class DelegatingQuery
         }
     }
 
+    @Override
     public void assertNotSerialized() {
         try {
             _query.assertNotSerialized();

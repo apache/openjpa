@@ -47,6 +47,7 @@ public class RawSQL {
         return intField;
     }
 
+    @Override
     public String toString() {
         return "stringField: " + stringField + "; intField: " + intField;
     }

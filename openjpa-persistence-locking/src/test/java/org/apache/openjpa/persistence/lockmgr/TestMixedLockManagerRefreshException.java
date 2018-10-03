@@ -26,6 +26,7 @@ import javax.persistence.TransactionRequiredException;
  * lock manager.
  */
 public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
+    @Override
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"

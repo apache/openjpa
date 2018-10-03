@@ -23,29 +23,35 @@ import java.util.Map;
 
 public class StringParameterizable implements Parameterizable<String, String> {
 	private static final long serialVersionUID = -4289064323865338447L;
-	private Map<String, String> params = new HashMap<String, String>();
+	private Map<String, String> params = new HashMap<>();
 
-	public void addParameter(String key, String value) {
+	@Override
+    public void addParameter(String key, String value) {
 		this.params.put(key, value);
 	}
 
-	public Map<String, String> getParameters() {
+	@Override
+    public Map<String, String> getParameters() {
 		return this.params;
 	}
 
-	public void removeParameter(String key) {
+	@Override
+    public void removeParameter(String key) {
 		this.params.remove(key);
 	}
 
-	public void clearAllParameters() {
+	@Override
+    public void clearAllParameters() {
 		this.params.clear();
 	}
 
-	public String getParameterValue(String key) {
+	@Override
+    public String getParameterValue(String key) {
 		return this.params.get(key);
 	}
 
-	public void addAllParams(Map<String, String> newParams) {
+	@Override
+    public void addAllParams(Map<String, String> newParams) {
 		if (newParams != null) {
 			params.putAll(newParams);
 		}

@@ -40,14 +40,17 @@ public class MapChangeTrackerImpl
         this.setAutoOff(autoOff);
     }
 
+    @Override
     public boolean getTrackKeys() {
         return _keys;
     }
 
+    @Override
     public void setTrackKeys(boolean keys) {
         _keys = keys;
     }
 
+    @Override
     public void added(Object key, Object val) {
         if (_keys)
             super.added(key);
@@ -55,6 +58,7 @@ public class MapChangeTrackerImpl
             super.added(val);
     }
 
+    @Override
     public void removed(Object key, Object val) {
         if (_keys)
             super.removed(key);
@@ -62,6 +66,7 @@ public class MapChangeTrackerImpl
             super.removed(val);
     }
 
+    @Override
     public void changed(Object key, Object oldVal, Object newVal) {
         if (_keys)
             super.changed(key);
@@ -71,6 +76,7 @@ public class MapChangeTrackerImpl
         }
     }
 
+    @Override
     protected void add(Object obj) {
         // if the key was previously removed and now added back, mark
         // it as a change; otherwise it's a new addition
@@ -91,6 +97,7 @@ public class MapChangeTrackerImpl
         }
     }
 
+    @Override
     protected void remove(Object obj) {
         // no longer a change, if it was before
         if (change != null)
@@ -111,6 +118,7 @@ public class MapChangeTrackerImpl
         }
     }
 
+    @Override
     protected void change(Object key) {
         // if the key is already changed or the key is newly added, nothing
         // to do

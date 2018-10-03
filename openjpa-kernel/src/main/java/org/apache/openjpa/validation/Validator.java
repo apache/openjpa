@@ -33,7 +33,7 @@ public interface Validator {
      * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
-    public <T> ValidationException validate(T arg0, int event);
+    <T> ValidationException validate(T arg0, int event);
 
     /**
      * Validates a property of a given instance
@@ -45,7 +45,7 @@ public interface Validator {
      * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
-    public <T> ValidationException validateProperty(T arg0,
+    <T> ValidationException validateProperty(T arg0,
             String property, int event);
 
     /**
@@ -59,7 +59,7 @@ public interface Validator {
      * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
-    public <T> ValidationException validateValue(Class<T> arg0,
+    <T> ValidationException validateValue(Class<T> arg0,
         String arg1, Object arg2, int event);
 
     /**
@@ -71,5 +71,5 @@ public interface Validator {
      * @param event event type
      * @return true if validation is active for the specified event
      */
-    public <T> boolean validating(T arg0, int event);
+    <T> boolean validating(T arg0, int event);
 }

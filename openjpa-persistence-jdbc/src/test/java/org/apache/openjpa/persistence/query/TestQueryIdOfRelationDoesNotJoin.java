@@ -19,11 +19,13 @@
 package org.apache.openjpa.persistence.query;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that querying the id of a related many-one (or one-one) does not create
@@ -36,6 +38,7 @@ public class TestQueryIdOfRelationDoesNotJoin
 
     private long e3Id;
 
+    @Override
     public void setUp() {
         setUp(ManyOneEntity.class, ManyOneEntitySub.class);
 

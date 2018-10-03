@@ -62,6 +62,7 @@ public class Inning {
         return hitsAway;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Inning) {
             Inning in = (Inning)obj;

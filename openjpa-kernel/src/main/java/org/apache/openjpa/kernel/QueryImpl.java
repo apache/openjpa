@@ -30,13 +30,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.commons.collections4.map.LinkedMap;
-import java.util.Objects;
-
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.exps.AggregateListener;
@@ -59,6 +57,7 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -78,9 +77,8 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public class QueryImpl
-    implements Query {
+public class QueryImpl implements Query {
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 
@@ -155,35 +153,43 @@ public class QueryImpl
         return _storeQuery;
     }
 
+    @Override
     public Broker getBroker() {
         return _broker;
     }
 
+    @Override
     public Query getQuery() {
         return this;
     }
 
+    @Override
     public StoreContext getStoreContext() {
         return _broker;
     }
 
+    @Override
     public String getLanguage() {
         return _language;
     }
 
+    @Override
     public FetchConfiguration getFetchConfiguration() {
         return _fc;
     }
 
+    @Override
     public String getQueryString() {
         return _query;
     }
 
+    @Override
     public boolean getIgnoreChanges() {
         assertOpen();
         return _ignoreChanges;
     }
 
+    @Override
     public void setIgnoreChanges(boolean flag) {
         lock();
         try {
@@ -195,11 +201,13 @@ public class QueryImpl
         }
     }
 
+    @Override
     public boolean isReadOnly() {
         assertOpen();
         return _readOnly;
     }
 
+    @Override
     public void setReadOnly(boolean flag) {
         lock();
         try {
@@ -210,19 +218,21 @@ public class QueryImpl
         }
     }
 
+    @Override
     public void addFilterListener(FilterListener listener) {
         lock();
         try {
             assertOpen();
             assertNotReadOnly();
             if (_filtListeners == null)
-                _filtListeners = new HashMap<String,FilterListener>(5);
+                _filtListeners = new HashMap<>(5);
             _filtListeners.put(listener.getTag(), listener);
         } finally {
             unlock();
         }
     }
 
+    @Override
     public void removeFilterListener(FilterListener listener) {
         lock();
         try {
@@ -235,6 +245,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public Collection<FilterListener> getFilterListeners() {
         if (_filtListeners == null)
             return Collections.emptyList();
@@ -242,10 +253,11 @@ public class QueryImpl
             return _filtListeners.values();
     }
 
+    @Override
     public FilterListener getFilterListener(String tag) {
         // first check listeners for this query
         if (_filtListeners != null) {
-            FilterListener listen = (FilterListener) _filtListeners.get(tag);
+            FilterListener listen = _filtListeners.get(tag);
             if (listen != null)
                 return listen;
         }
@@ -261,19 +273,21 @@ public class QueryImpl
         return _storeQuery.getFilterListener(tag);
     }
 
+    @Override
     public void addAggregateListener(AggregateListener listener) {
         lock();
         try {
             assertOpen();
             assertNotReadOnly();
             if (_aggListeners == null)
-                _aggListeners = new HashMap<String,AggregateListener>(5);
+                _aggListeners = new HashMap<>(5);
             _aggListeners.put(listener.getTag(), listener);
         } finally {
             unlock();
         }
     }
 
+    @Override
     public void removeAggregateListener(AggregateListener listener) {
         lock();
         try {
@@ -286,6 +300,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public Collection<AggregateListener> getAggregateListeners() {
         if (_aggListeners == null)
             return Collections.emptyList();
@@ -293,10 +308,11 @@ public class QueryImpl
             return _aggListeners.values();
     }
 
+    @Override
     public AggregateListener getAggregateListener(String tag) {
         // first check listeners for this query
         if (_aggListeners != null) {
-            AggregateListener listen = (AggregateListener) _aggListeners.
+            AggregateListener listen = _aggListeners.
                 get(tag);
             if (listen != null)
                 return listen;
@@ -313,6 +329,7 @@ public class QueryImpl
         return _storeQuery.getAggregateListener(tag);
     }
 
+    @Override
     public Extent getCandidateExtent() {
         // if just the class is set, fetch the corresponding extent; if the
         // extent is already set but its ignore cache setting is wrong,
@@ -336,6 +353,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public void setCandidateExtent(Extent candidateExtent) {
         lock();
         try {
@@ -370,11 +388,13 @@ public class QueryImpl
         }
     }
 
+    @Override
     public Collection<?> getCandidateCollection() {
         assertOpen();
         return _collection;
     }
 
+    @Override
     public void setCandidateCollection(Collection<?> candidateCollection) {
         if (!_storeQuery.supportsInMemoryExecution())
             throw new UnsupportedException(_loc.get("query-nosupport",
@@ -393,6 +413,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public Class getCandidateType() {
         lock();
         try {
@@ -409,6 +430,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public void setCandidateType(Class candidateClass, boolean subs) {
         lock();
         try {
@@ -423,20 +445,24 @@ public class QueryImpl
         }
     }
 
+    @Override
     public boolean hasSubclasses() {
         return _subclasses;
     }
 
+    @Override
     public String getResultMappingName() {
         assertOpen();
         return _resultMappingName;
     }
 
+    @Override
     public Class getResultMappingScope() {
         assertOpen();
         return _resultMappingScope;
     }
 
+    @Override
     public void setResultMapping(Class<?> scope, String name) {
         lock();
         try {
@@ -449,6 +475,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public boolean isUnique() {
         lock();
         try {
@@ -482,6 +509,7 @@ public class QueryImpl
         return getQueryString() != null;
     }
 
+    @Override
     public void setUnique(boolean unique) {
         lock();
         try {
@@ -493,6 +521,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public Class getResultType() {
         lock();
         try {
@@ -509,6 +538,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public void setResultType(Class cls) {
         lock();
         try {
@@ -521,16 +551,19 @@ public class QueryImpl
         }
     }
 
+    @Override
     public long getStartRange() {
         assertOpen();
         return _startIdx;
     }
 
+    @Override
     public long getEndRange() {
         assertOpen();
         return _endIdx;
     }
 
+    @Override
     public void setRange(long start, long end) {
         if (start < 0 || end < 0)
             throw new UserException(_loc.get("invalid-range",
@@ -552,6 +585,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public String getParameterDeclaration() {
         lock();
         try {
@@ -568,6 +602,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public void declareParameters(String params) {
         if (!_storeQuery.supportsParameterDeclarations())
             throw new UnsupportedException(_loc.get("query-nosupport",
@@ -584,6 +619,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public void compile() {
         lock();
         try {
@@ -596,6 +632,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public Object getCompilation() {
         lock();
         try {
@@ -791,14 +828,17 @@ public class QueryImpl
         return true;
     }
 
+    @Override
     public Object execute() {
         return execute((Object[]) null);
     }
 
+    @Override
     public Object execute(Object[] params) {
         return execute(OP_SELECT, params);
     }
 
+    @Override
     public Object execute(Map params) {
         return execute(OP_SELECT, params);
     }
@@ -889,26 +929,32 @@ public class QueryImpl
         }
     }
 
+    @Override
     public long deleteAll() {
         return deleteAll((Object[]) null);
     }
 
+    @Override
     public long deleteAll(Object[] params) {
         return ((Number) execute(OP_DELETE, params)).longValue();
     }
 
+    @Override
     public long deleteAll(Map params) {
         return ((Number) execute(OP_DELETE, params)).longValue();
     }
 
+    @Override
     public long updateAll() {
         return updateAll((Object[]) null);
     }
 
+    @Override
     public long updateAll(Object[] params) {
         return ((Number) execute(OP_UPDATE, params)).longValue();
     }
 
+    @Override
     public long updateAll(Map params) {
         return ((Number) execute(OP_UPDATE, params)).longValue();
     }
@@ -1034,6 +1080,7 @@ public class QueryImpl
         return ex.executeDelete(q, params);
     }
 
+    @Override
     public Number deleteInMemory(StoreQuery q, StoreQuery.Executor executor,
         Object[] params) {
         try {
@@ -1065,6 +1112,7 @@ public class QueryImpl
         return ex.executeUpdate(q, params);
     }
 
+    @Override
     public Number updateInMemory(StoreQuery q, StoreQuery.Executor executor,
         Object[] params) {
         try {
@@ -1094,7 +1142,7 @@ public class QueryImpl
             it.hasNext();) {
             Map.Entry e = (Map.Entry) it.next();
             Path path = (Path) e.getKey();
-            FieldMetaData fmd = (FieldMetaData) path.last();
+            FieldMetaData fmd = path.last();
             OpenJPAStateManager sm = _broker.getStateManager(ob);
 
             Object val;
@@ -1188,7 +1236,7 @@ public class QueryImpl
      * Trace log that the query is executing.
      */
     private void logExecution(int op, OrderedMap<Object, Class<?>> types, Object[] params) {
-        OrderedMap<Object, Object> pmap = new OrderedMap<Object, Object>();
+        OrderedMap<Object, Object> pmap = new OrderedMap<>();
         if (params.length > 0) {
             if (types != null && types.size() == params.length) {
                 int i = 0;
@@ -1410,10 +1458,12 @@ public class QueryImpl
         return false;
     }
 
+    @Override
     public void closeAll() {
         closeResults(true);
     }
 
+    @Override
     public void closeResources() {
         closeResults(false);
     }
@@ -1438,6 +1488,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public String[] getDataStoreActions(Map params) {
         if (params == null)
             params = Collections.EMPTY_MAP;
@@ -1463,6 +1514,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public boolean setQuery(Object query) {
         lock();
         try {
@@ -1496,15 +1548,16 @@ public class QueryImpl
             // don't share mutable objects
             _fc.copy(q._fc);
             if (q._filtListeners != null)
-                _filtListeners = new HashMap<String,FilterListener>(q._filtListeners);
+                _filtListeners = new HashMap<>(q._filtListeners);
             if (q._aggListeners != null)
-                _aggListeners = new HashMap<String,AggregateListener>(q._aggListeners);
+                _aggListeners = new HashMap<>(q._aggListeners);
             return true;
         } finally {
             unlock();
         }
     }
 
+    @Override
     public String getAlias() {
         lock();
         try {
@@ -1517,6 +1570,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public String[] getProjectionAliases() {
         lock();
         try {
@@ -1526,6 +1580,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public Class<?>[] getProjectionTypes() {
         lock();
         try {
@@ -1535,6 +1590,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public int getOperation() {
         lock();
         try {
@@ -1544,6 +1600,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public boolean isAggregate() {
         lock();
         try {
@@ -1553,6 +1610,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public boolean isDistinct() {
         lock();
         try {
@@ -1563,6 +1621,7 @@ public class QueryImpl
     }
 
 
+    @Override
     public boolean hasGrouping() {
         lock();
         try {
@@ -1572,6 +1631,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public ClassMetaData[] getAccessPathMetaDatas() {
         lock();
         try {
@@ -1583,6 +1643,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public OrderedMap<Object,Class<?>> getOrderedParameterTypes() {
         lock();
         try {
@@ -1592,6 +1653,7 @@ public class QueryImpl
         }
     }
 
+    @Override
     public LinkedMap getParameterTypes() {
         lock();
         try {
@@ -1604,6 +1666,7 @@ public class QueryImpl
     }
 
 
+    @Override
     public Map getUpdates() {
         lock();
         try {
@@ -1613,11 +1676,13 @@ public class QueryImpl
         }
     }
 
+    @Override
     public void lock() {
         if (_lock != null)
             _lock.lock();
     }
 
+    @Override
     public void unlock() {
         if (_lock != null)
             _lock.unlock();
@@ -1640,6 +1705,7 @@ public class QueryImpl
     // Utils
     /////////
 
+    @Override
     public Class classForName(String name, String[] imports) {
         // full class name or primitive type?
         Class type = toClass(name);
@@ -1707,16 +1773,19 @@ public class QueryImpl
         return null;
     }
 
+    @Override
     public void assertOpen() {
         if (_broker != null)
             _broker.assertOpen();
     }
 
+    @Override
     public void assertNotReadOnly() {
         if (_readOnly)
             throw new InvalidStateException(_loc.get("read-only"));
     }
 
+    @Override
     public void assertNotSerialized() {
         if (_broker == null)
             throw new InvalidStateException(_loc.get("serialized"));
@@ -1794,6 +1863,7 @@ public class QueryImpl
     }
 
 
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder(255);
         buf.append("Query: ").append(super.toString());
@@ -1808,6 +1878,8 @@ public class QueryImpl
     protected static class Compilation
         implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public StoreQuery.Executor memory = null;
         public StoreQuery.Executor datastore = null;
         public Object storeData = null;
@@ -1819,6 +1891,8 @@ public class QueryImpl
     private static class CompilationKey
         implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public Class queryType = null;
         public Class candidateType = null;
         public boolean subclasses = true;
@@ -1826,6 +1900,7 @@ public class QueryImpl
         public String language = null;
         public Object storeKey = null;
 
+        @Override
         public int hashCode() {
             int rs = 17;
             rs = 37 * rs + ((queryType == null) ? 0 : queryType.hashCode());
@@ -1837,6 +1912,7 @@ public class QueryImpl
             return rs;
         }
 
+        @Override
         public boolean equals(Object other) {
             if (other == this)
                 return true;
@@ -1888,10 +1964,12 @@ public class QueryImpl
             _executors = executors;
         }
 
+        @Override
         public QueryExpressions[] getQueryExpressions() {
             return _executors[0].getQueryExpressions();
         }
 
+        @Override
         public ResultObjectProvider executeQuery(StoreQuery q,
             Object[] params, StoreQuery.Range range) {
             if (_executors.length == 1)
@@ -1925,6 +2003,7 @@ public class QueryImpl
             return rop;
         }
 
+        @Override
         public Number executeDelete(StoreQuery q, Object[] params) {
             long num = 0;
             for (int i = 0; i < _executors.length; i++)
@@ -1932,6 +2011,7 @@ public class QueryImpl
             return num;
         }
 
+        @Override
         public Number executeUpdate(StoreQuery q, Object[] params) {
             long num = 0;
             for (int i = 0; i < _executors.length; i++)
@@ -1939,6 +2019,7 @@ public class QueryImpl
             return num;
         }
 
+        @Override
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
             StoreQuery.Range range) {
             if (_executors.length == 1)
@@ -1955,15 +2036,18 @@ public class QueryImpl
             return (String[]) results.toArray(new String[results.size()]);
         }
 
+        @Override
         public void validate(StoreQuery q) {
             _executors[0].validate(q);
         }
 
+        @Override
         public void getRange(StoreQuery q, Object[] params,
             StoreQuery.Range range) {
             _executors[0].getRange(q, params, range);
         }
 
+        @Override
         public Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int idx) {
             // unfortunately, at this point (must be a merged rop containing
@@ -1972,34 +2056,42 @@ public class QueryImpl
             return _executors[0].getOrderingValue(q, params, resultObject, idx);
         }
 
+        @Override
         public boolean[] getAscending(StoreQuery q) {
             return _executors[0].getAscending(q);
         }
 
+        @Override
         public String getAlias(StoreQuery q) {
             return _executors[0].getAlias(q);
         }
 
+        @Override
         public String[] getProjectionAliases(StoreQuery q) {
             return _executors[0].getProjectionAliases(q);
         }
 
+        @Override
         public Class getResultClass(StoreQuery q) {
             return _executors[0].getResultClass(q);
         }
 
+        @Override
         public ResultShape<?> getResultShape(StoreQuery q) {
             return _executors[0].getResultShape(q);
         }
 
+        @Override
         public Class[] getProjectionTypes(StoreQuery q) {
             return _executors[0].getProjectionTypes(q);
         }
 
+        @Override
         public boolean isPacking(StoreQuery q) {
             return _executors[0].isPacking(q);
         }
 
+        @Override
         public ClassMetaData[] getAccessPathMetaDatas(StoreQuery q) {
             if (_executors.length == 1)
                 return _executors[0].getAccessPathMetaDatas(q);
@@ -2015,6 +2107,7 @@ public class QueryImpl
                 (new ClassMetaData[metas.size()]);
         }
 
+        @Override
         public boolean isAggregate(StoreQuery q) {
             if (!_executors[0].isAggregate(q))
                 return false;
@@ -2025,31 +2118,38 @@ public class QueryImpl
                 q.getContext().getQueryString()));
         }
 
+        @Override
         public boolean isDistinct(StoreQuery q) {
             return _executors[0].isDistinct(q);
         }
 
+        @Override
         public int getOperation(StoreQuery q) {
             return _executors[0].getOperation(q);
         }
 
+        @Override
         public boolean hasGrouping(StoreQuery q) {
             return _executors[0].hasGrouping(q);
         }
 
+        @Override
         public OrderedMap<Object,Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return _executors[0].getOrderedParameterTypes(q);
         }
 
+        @Override
         public LinkedMap getParameterTypes(StoreQuery q) {
             return _executors[0].getParameterTypes(q);
         }
 
+        @Override
         public Object[] toParameterArray(StoreQuery q, Map userParams) {
             return _executors[0].toParameterArray(q, userParams);
         }
 
 
+        @Override
         public Map getUpdates(StoreQuery q) {
             return _executors[0].getUpdates(q);
         }
@@ -2072,15 +2172,18 @@ public class QueryImpl
             _len = resultLength;
         }
 
+        @Override
         public boolean supportsRandomAccess() {
             return _delegate.supportsRandomAccess();
         }
 
+        @Override
         public void open()
             throws Exception {
             _delegate.open();
         }
 
+        @Override
         public Object getResultObject()
             throws Exception {
             Object ob = _delegate.getResultObject();
@@ -2093,31 +2196,37 @@ public class QueryImpl
             return _packer.pack((Object[]) ob);
         }
 
+        @Override
         public boolean next()
             throws Exception {
             return _delegate.next();
         }
 
+        @Override
         public boolean absolute(int pos)
             throws Exception {
             return _delegate.absolute(pos);
         }
 
+        @Override
         public int size()
             throws Exception {
             return _delegate.size();
         }
 
+        @Override
         public void reset()
             throws Exception {
             _delegate.reset();
         }
 
+        @Override
         public void close()
             throws Exception {
             _delegate.close();
         }
 
+        @Override
         public void handleCheckedException(Exception e) {
             _delegate.handleCheckedException(e);
         }
@@ -2134,6 +2243,8 @@ public class QueryImpl
     public class RemoveOnCloseResultList
         implements ResultList {
 
+        
+        private static final long serialVersionUID = 1L;
         private final ResultList _res;
 
         public RemoveOnCloseResultList(ResultList res) {
@@ -2144,22 +2255,27 @@ public class QueryImpl
             return _res;
         }
 
+        @Override
         public boolean isProviderOpen() {
             return _res.isProviderOpen();
         }
 
+        @Override
         public Object getUserObject() {
             return _res.getUserObject();
         }
 
+        @Override
         public void setUserObject(Object opaque) {
             _res.setUserObject(opaque);
         }
 
+        @Override
         public boolean isClosed() {
             return _res.isClosed();
         }
 
+        @Override
         public void close() {
             close(true);
         }
@@ -2188,106 +2304,132 @@ public class QueryImpl
             }
         }
 
+        @Override
         public int size() {
             return _res.size();
         }
 
+        @Override
         public boolean isEmpty() {
             return _res.isEmpty();
         }
 
+        @Override
         public boolean contains(Object o) {
             return _res.contains(o);
         }
 
+        @Override
         public Iterator iterator() {
             return _res.iterator();
         }
 
+        @Override
         public Object[] toArray() {
             return _res.toArray();
         }
 
+        @Override
         public Object[] toArray(Object[] a) {
             return _res.toArray(a);
         }
 
+        @Override
         public boolean add(Object o) {
             return _res.add(o);
         }
 
+        @Override
         public boolean remove(Object o) {
             return _res.remove(o);
         }
 
+        @Override
         public boolean containsAll(Collection c) {
             return _res.containsAll(c);
         }
 
+        @Override
         public boolean addAll(Collection c) {
             return _res.addAll(c);
         }
 
+        @Override
         public boolean addAll(int idx, Collection c) {
             return _res.addAll(idx, c);
         }
 
+        @Override
         public boolean removeAll(Collection c) {
             return _res.removeAll(c);
         }
 
+        @Override
         public boolean retainAll(Collection c) {
             return _res.retainAll(c);
         }
 
+        @Override
         public void clear() {
             _res.clear();
         }
 
+        @Override
         public Object get(int idx) {
             return _res.get(idx);
         }
 
+        @Override
         public Object set(int idx, Object o) {
             return _res.set(idx, o);
         }
 
+        @Override
         public void add(int idx, Object o) {
             _res.add(idx, o);
         }
 
+        @Override
         public Object remove(int idx) {
             return _res.remove(idx);
         }
 
+        @Override
         public int indexOf(Object o) {
             return _res.indexOf(o);
         }
 
+        @Override
         public int lastIndexOf(Object o) {
             return _res.lastIndexOf(o);
         }
 
+        @Override
         public ListIterator listIterator() {
             return _res.listIterator();
         }
 
+        @Override
         public ListIterator listIterator(int idx) {
             return _res.listIterator(idx);
         }
 
+        @Override
         public List subList(int start, int end) {
             return _res.subList(start, end);
         }
 
+        @Override
         public boolean equals(Object o) {
             return _res.equals(o);
         }
 
+        @Override
         public int hashCode() {
             return _res.hashCode();
         }
 
+        @Override
         public String toString ()
 		{
 			return _res.toString ();

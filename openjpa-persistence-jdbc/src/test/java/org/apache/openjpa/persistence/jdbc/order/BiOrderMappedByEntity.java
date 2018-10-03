@@ -55,7 +55,7 @@ public class BiOrderMappedByEntity  {
 
     public void addBo2mEntity(BiOrderEntity name) {
         if( bo2mEntities == null) {
-            bo2mEntities = new ArrayList<BiOrderEntity>();
+            bo2mEntities = new ArrayList<>();
         }
         bo2mEntities.add(name);
     }
@@ -70,11 +70,12 @@ public class BiOrderMappedByEntity  {
 
     public void insertBo2mEntity(int location, BiOrderEntity name) {
         if( bo2mEntities == null) {
-            bo2mEntities = new ArrayList<BiOrderEntity>();
+            bo2mEntities = new ArrayList<>();
         }
         bo2mEntities.add(location, name);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof BiOrderMappedByEntity) {
             BiOrderMappedByEntity boe = (BiOrderMappedByEntity)obj;

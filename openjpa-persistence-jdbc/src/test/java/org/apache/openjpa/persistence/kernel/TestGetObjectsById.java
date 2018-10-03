@@ -29,10 +29,9 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest5;
-
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestGetObjectsById extends BaseKernelTest {
 
@@ -45,6 +44,7 @@ public class TestGetObjectsById extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest5.class);
         deleteAll(RuntimeTest4.class);

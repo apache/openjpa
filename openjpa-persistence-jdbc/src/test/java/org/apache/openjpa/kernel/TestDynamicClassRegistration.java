@@ -19,11 +19,12 @@
 package org.apache.openjpa.kernel;
 
 import java.util.Collections;
+
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.enhance.ManagedClassSubclasser;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.UnenhancedFieldAccess;
-import org.apache.openjpa.enhance.ManagedClassSubclasser;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -43,6 +44,7 @@ public class TestDynamicClassRegistration
         emf1 = createNamedEMF("empty-pu");
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         clear(emf1);

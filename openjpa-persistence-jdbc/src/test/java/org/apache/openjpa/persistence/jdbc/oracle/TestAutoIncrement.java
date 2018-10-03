@@ -46,6 +46,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 @DatabasePlatform("oracle.jdbc.driver.OracleDriver")
 public class TestAutoIncrement extends SingleEMFTestCase {
 
+    @Override
     public void setUp() throws Exception {
         // Only run on Oracle
         setSupportedDatabases(

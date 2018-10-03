@@ -20,17 +20,22 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 /**
  *	<p>Persistent type used in testing.</p>
  *
  *	@author		Abe White
  */
-@SuppressWarnings("serial")
 @Entity
 public class HelperPC implements Serializable
 {
-	@Column(length=50, name="strngfld")
+    private static final long serialVersionUID = 1L;
+
+    @Column(length=50, name="strngfld")
 	private String 		stringField;
 
 	private HelperPC 	helper;

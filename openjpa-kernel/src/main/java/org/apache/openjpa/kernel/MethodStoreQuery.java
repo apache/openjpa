@@ -29,12 +29,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.OrderedMap;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
@@ -48,6 +48,9 @@ import org.apache.openjpa.util.UserException;
  */
 public class MethodStoreQuery
     extends AbstractStoreQuery {
+
+    
+    private static final long serialVersionUID = 1L;
 
     public static final String LANGUAGE = QueryLanguages.LANG_METHODQL;
 
@@ -66,27 +69,33 @@ public class MethodStoreQuery
 
     private OrderedMap<Object, Class<?>> _params = null;
 
+    @Override
     public void invalidateCompilation() {
         if (_params != null)
             _params.clear();
     }
 
+    @Override
     public Executor newInMemoryExecutor(ClassMetaData meta, boolean subs) {
         return new MethodExecutor(this, meta, subs, true);
     }
 
+    @Override
     public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
         return new MethodExecutor(this, meta, subs, false);
     }
 
+    @Override
     public boolean supportsInMemoryExecution() {
         return true;
     }
 
+    @Override
     public boolean supportsDataStoreExecution() {
         return true;
     }
 
+    @Override
     public boolean requiresCandidateType() {
         return false;
     }
@@ -105,7 +114,7 @@ public class MethodStoreQuery
 
             List decs = Filters.parseDeclaration(params, ',', "parameters");
             if (_params == null)
-                _params = new OrderedMap<Object, Class<?>>();
+                _params = new OrderedMap<>();
             String name;
             Class cls;
             for (int i = 0; i < decs.size(); i += 2) {
@@ -141,6 +150,7 @@ public class MethodStoreQuery
             _inMem = inMem;
         }
 
+        @Override
         public ResultObjectProvider executeQuery(StoreQuery q,
             Object[] params, Range range) {
             // convert the parameters into a map
@@ -219,6 +229,7 @@ public class MethodStoreQuery
             }
         }
 
+        @Override
         public void validate(StoreQuery q) {
             if (_meth != null)
                 return;
@@ -258,10 +269,12 @@ public class MethodStoreQuery
             _meth = meth;
         }
 
+        @Override
         public OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return ((MethodStoreQuery) q).bindParameterTypes();
 		}
 
+        @Override
         public Object[] toParameterArray(StoreQuery q, Map userParams) {
             if (userParams == null || userParams.isEmpty())
                 return StoreQuery.EMPTY_OBJECTS;

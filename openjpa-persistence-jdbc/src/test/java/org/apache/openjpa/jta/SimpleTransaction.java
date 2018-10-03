@@ -39,19 +39,20 @@ import javax.transaction.xa.XAResource;
  *
  */
 public class SimpleTransaction implements Transaction {
-    private final Set<Synchronization> synchs = new HashSet<Synchronization>();
+    private final Set<Synchronization> synchs = new HashSet<>();
     private Throwable rollbackCause;
     private volatile int status = Status.STATUS_UNKNOWN;
 
     /**
      * Commits this transaction.
      */
+    @Override
     public void commit() throws HeuristicMixedException, HeuristicRollbackException, RollbackException,
             SecurityException, SystemException {
         if (status == Status.STATUS_MARKED_ROLLBACK)
             throw new RuntimeException(this + " can not commit. Marked for rollback");
         status = Status.STATUS_COMMITTING;
-        List<Throwable> errors = new ArrayList<Throwable>();
+        List<Throwable> errors = new ArrayList<>();
         for (Synchronization synch : synchs) {
             try {
                 synch.beforeCompletion();
@@ -75,6 +76,7 @@ public class SimpleTransaction implements Transaction {
      * Not implemented.
      * Raises UnsupportedOperationException.
      */
+    @Override
     public boolean delistResource(XAResource arg0, int arg1) throws IllegalStateException, SystemException {
         throw new UnsupportedOperationException();
     }
@@ -83,6 +85,7 @@ public class SimpleTransaction implements Transaction {
      * Not implemented.
      * Raises UnsupportedOperationException.
      */
+    @Override
     public boolean enlistResource(XAResource arg0) throws IllegalStateException, RollbackException, SystemException {
         return false;
     }
@@ -91,6 +94,7 @@ public class SimpleTransaction implements Transaction {
      * Gets the status of this transaction.
      * Raises UnsupportedOperationException.
      */
+    @Override
     public int getStatus() throws SystemException {
         return status;
     }
@@ -103,6 +107,7 @@ public class SimpleTransaction implements Transaction {
     /**
      * Registers the given synchronization element.
      */
+    @Override
     public void registerSynchronization(Synchronization synch) throws IllegalStateException, RollbackException,
             SystemException {
         synchs.add(synch);
@@ -111,9 +116,10 @@ public class SimpleTransaction implements Transaction {
     /**
      * Rolls back this transaction.
      */
+    @Override
     public void rollback() throws IllegalStateException, SystemException {
         status = Status.STATUS_ROLLING_BACK;
-        List<Throwable> errors = new ArrayList<Throwable>();
+        List<Throwable> errors = new ArrayList<>();
         for (Synchronization synch : synchs) {
             try {
                 synch.beforeCompletion();
@@ -137,6 +143,7 @@ public class SimpleTransaction implements Transaction {
     /**
      * Marks this transaction for rollback only.
      */
+    @Override
     public void setRollbackOnly() throws IllegalStateException, SystemException {
         setRollbackOnly(null);
     }
@@ -153,6 +160,7 @@ public class SimpleTransaction implements Transaction {
         return rollbackCause;
     }
 
+    @Override
     public String toString() {
         return "TXN:"+hashCode() +"["+statusCode()+"]";
     }

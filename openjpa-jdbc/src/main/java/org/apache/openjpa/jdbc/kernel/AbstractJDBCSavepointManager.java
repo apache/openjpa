@@ -46,14 +46,17 @@ public abstract class AbstractJDBCSavepointManager
 
     private boolean _restore = false;
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _restore = ((OpenJPAConfiguration) conf).getRestoreStateConstant()
             != RestoreState.RESTORE_NONE;
     }
 
+    @Override
     public void endConfiguration() {
     }
 
@@ -73,6 +76,7 @@ public abstract class AbstractJDBCSavepointManager
         _restore = restore;
     }
 
+    @Override
     public OpenJPASavepoint newSavepoint(String name, Broker broker) {
         // flush after creating savepoint b/c flush may add/change states
         OpenJPASavepoint save = new ConnectionSavepoint(broker, name, _restore);
@@ -80,6 +84,7 @@ public abstract class AbstractJDBCSavepointManager
         return save;
     }
 
+    @Override
     public boolean supportsIncrementalFlush() {
         return true;
     }
@@ -100,6 +105,8 @@ public abstract class AbstractJDBCSavepointManager
      */
     protected class ConnectionSavepoint extends OpenJPASavepoint {
 
+        
+        private static final long serialVersionUID = 1L;
         private Object _savepoint;
 
         public ConnectionSavepoint(Broker broker, String name, boolean copy) {
@@ -128,11 +135,13 @@ public abstract class AbstractJDBCSavepointManager
                 getInnermostDelegate()).getConnection();
         }
 
+        @Override
         public Collection rollback(Collection previous) {
             AbstractJDBCSavepointManager.this.rollbackDataStore(this);
             return super.rollback(previous);
         }
 
+        @Override
         public void save(Collection states) {
             AbstractJDBCSavepointManager.this.setDataStore(this);
             super.save(states);

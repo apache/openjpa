@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestRefresh extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, Item.class,
              "openjpa.AutoDetach", "commit",
@@ -156,7 +157,7 @@ public class TestRefresh extends SingleEMTestCase {
             System.err.println(properties);
             fail("Expected " + JPAProperties.CACHE_RETRIEVE_MODE + " properties be returned");
         }
-        Map<String, Object> paramProperties = new HashMap<String, Object>();
+        Map<String, Object> paramProperties = new HashMap<>();
         paramProperties.put(JPAProperties.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
         paramProperties.put(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
         Item fItem = em.find(Item.class, id, paramProperties);
@@ -197,7 +198,7 @@ public class TestRefresh extends SingleEMTestCase {
             System.err.println(properties);
             fail("Expected " + JPAProperties.CACHE_RETRIEVE_MODE + " properties be returned");
         }
-        Map<String, Object> paramProperties = new HashMap<String, Object>();
+        Map<String, Object> paramProperties = new HashMap<>();
         paramProperties.put(JPAProperties.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
         paramProperties.put(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
         Item fItem = em.find(Item.class, id, paramProperties);

@@ -30,6 +30,9 @@ import org.apache.openjpa.jdbc.sql.Select;
 class ContainsExpression
     extends EqualExpression {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Supply values to test.
      */
@@ -37,6 +40,7 @@ class ContainsExpression
         super(val1, val2);
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         Val val1 = getValue1();
         if (contains != null && val1 instanceof PCPath) {
@@ -56,6 +60,7 @@ class ContainsExpression
         return super.initialize(sel, ctx, contains);
     }
 
+    @Override
     protected boolean isDirectComparison() {
         return false;
     }

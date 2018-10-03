@@ -18,10 +18,9 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
 
 /**
  * Test for 1-1
@@ -36,6 +35,7 @@ public class TestOneToOne extends AnnotationTestCase
 		super(name, "annotationcactusapp");
 	}
 
+    @Override
     public void setUp() {
         deleteAll(AnnoTest1.class);
         deleteAll(AnnoTest2.class);

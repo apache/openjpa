@@ -18,11 +18,22 @@
  */
 package org.apache.openjpa.persistence.models.company;
 
-import java.beans.*;
-import java.util.*;
+import java.beans.ExceptionListener;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.beans.XMLDecoder;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
-import junit.framework.*;
-import org.apache.openjpa.persistence.test.*;
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Generic test case that will be extended by a concrete company
@@ -40,7 +51,7 @@ public abstract class CompanyModelTest
     public void setUp() {
         // make a map of the implementations based on the class names in
         // the current package of the test subclass
-        impls = new HashMap<Class,Class>();
+        impls = new HashMap<>();
         impls.put(IAddress.class, localClass("Address"));
         impls.put(ICompany.class, localClass("Company"));
         impls.put(ICustomer.class, localClass("Customer"));
@@ -87,7 +98,7 @@ public abstract class CompanyModelTest
                 if (pd.getWriteMethod() == null) // ignore read-only
                     continue;
 
-                Set<String> queries = new TreeSet<String>();
+                Set<String> queries = new TreeSet<>();
                 getBasicQueries(queries, pd, "x.");
 
                 StringBuilder str = new StringBuilder();
@@ -183,10 +194,11 @@ public abstract class CompanyModelTest
             // the classes statically
             factoryClasses = impls;
             try {
-                final List<Exception> exceptions = new LinkedList<Exception>();
+                final List<Exception> exceptions = new LinkedList<>();
                 XMLDecoder decoder = new XMLDecoder(CompanyModelTest.class.
                     getResourceAsStream("companies.xml"));
                 decoder.setExceptionListener(new ExceptionListener() {
+                    @Override
                     public void exceptionThrown(Exception e) {
                         exceptions.add(e);
                     }

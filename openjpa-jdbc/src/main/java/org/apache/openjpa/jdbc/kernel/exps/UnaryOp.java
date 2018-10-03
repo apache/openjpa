@@ -36,6 +36,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 abstract class UnaryOp
     extends AbstractVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private ClassMetaData _meta = null;
     private Class _cast = null;
@@ -57,20 +59,24 @@ abstract class UnaryOp
         return _val;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
 
+    @Override
     public Class getType() {
         if (_cast != null)
             return _cast;
         return getType(_val.getType());
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _cast = type;
     }
@@ -79,6 +85,7 @@ abstract class UnaryOp
         return _noParen;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         return initializeValue(sel, ctx, flags);
     }
@@ -87,6 +94,7 @@ abstract class UnaryOp
         return _val.initialize(sel, ctx, flags);
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
@@ -94,15 +102,18 @@ abstract class UnaryOp
             sel.setAggregate(true);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         _val.selectColumns(sel, ctx, state, true);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
@@ -115,6 +126,7 @@ abstract class UnaryOp
         return buf;
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         Object value = res.getObject(this, JavaSQLTypes.JDBC_DEFAULT, null);
@@ -130,15 +142,18 @@ abstract class UnaryOp
         return Filters.convert(value, type);
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         _val.calculateValue(sel, ctx, state, null, null);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         sql.append(getOperator());
@@ -171,6 +186,7 @@ abstract class UnaryOp
      */
     protected abstract String getOperator();
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

@@ -32,6 +32,7 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
 public class ClassResolverImpl
     implements ClassResolver {
 
+    @Override
     public ClassLoader getClassLoader(Class<?> contextClass,  ClassLoader envLoader) {
         // get the context class' loader; if the class was loaded by the
         // bootstrap loader, use the system classloader in the hopes that

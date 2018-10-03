@@ -63,6 +63,7 @@ public class BaseClass5 {
         return name;
     }
 
+    @Override
     public String toString() {
         return "Id=" + id +
                ";Version=" + version +

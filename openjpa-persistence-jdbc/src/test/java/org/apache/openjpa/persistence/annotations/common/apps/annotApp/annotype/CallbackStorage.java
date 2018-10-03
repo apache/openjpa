@@ -19,8 +19,8 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Singleton class to store callback invocation hits
@@ -31,7 +31,7 @@ public class CallbackStorage
 {
 	private static CallbackStorage store = new CallbackStorage();
 
-	private static List<String> clist = new ArrayList<String>();
+	private static List<String> clist = new ArrayList<>();
 
 	private CallbackStorage()
 	{}
@@ -53,7 +53,7 @@ public class CallbackStorage
 
 	public static void clearStore()
 	{
-		clist = new ArrayList<String>();
+		clist = new ArrayList<>();
 	}
 
 	public static boolean isEmpty()

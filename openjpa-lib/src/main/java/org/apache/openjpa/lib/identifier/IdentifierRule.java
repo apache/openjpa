@@ -32,7 +32,7 @@ import org.apache.openjpa.lib.util.StringUtil;
  */
 public class IdentifierRule {
 
-    public static final Set<String> EMPTY_SET = new HashSet<String>(0);
+    public static final Set<String> EMPTY_SET = new HashSet<>(0);
     public static final String DEFAULT_RULE = "default";
     public static char UNDERSCORE = '_';
 
@@ -128,7 +128,7 @@ public class IdentifierRule {
 
     public Set<String> getReservedWords() {
         if (_reservedWords == null) {
-            _reservedWords = new HashSet<String>();
+            _reservedWords = new HashSet<>();
         }
         return _reservedWords;
     }

@@ -90,11 +90,13 @@ public class LSESecTbl implements Externalizable {
         return version;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + "[id=" + getId()
                 + ", ver=" + getVersion() + "] first=" + getFirstName() + ", last=" + getLastName();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
         ClassNotFoundException {
         id = in.readInt();
@@ -103,6 +105,7 @@ public class LSESecTbl implements Externalizable {
         lastName = (String) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(id);
         out.writeInt(version);

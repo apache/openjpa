@@ -33,6 +33,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
     public int eId = 1;
     public int pId = 1;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Address.class, Customer.class,
             PropertyInfo.class, PropertyOwner.class, PropertyRecord.class,

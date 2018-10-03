@@ -27,15 +27,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
 
 
 public class TestJDBCListener
@@ -73,6 +72,7 @@ public class TestJDBCListener
     public static class Listener
         extends AbstractJDBCListener {
 
+        @Override
         public void beforeCommit(JDBCEvent event) {
             commitOccurred = true;
         }

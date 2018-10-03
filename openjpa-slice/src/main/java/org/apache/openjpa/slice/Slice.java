@@ -29,8 +29,9 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class Slice implements Comparable<Slice>,Serializable {
+    private static final long serialVersionUID = 1L;
+
     public enum Status {
         NOT_INITIALIZED,
         ACTIVE,
@@ -74,10 +75,12 @@ public class Slice implements Comparable<Slice>,Serializable {
         return status == Status.ACTIVE;
     }
 
+    @Override
     public String toString() {
         return name;
     }
 
+    @Override
     public int compareTo(Slice other) {
         return name.compareTo(other.name);
     }

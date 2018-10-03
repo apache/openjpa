@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.compat;
 
 import javax.persistence.Query;
 
+import org.apache.openjpa.conf.OpenJPAVersion;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.callbacks.Message;
 import org.apache.openjpa.persistence.callbacks.MessageListenerImpl;
-import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * <b>TestCompatibile</b> is used to test various backwards compatibility scenarios between JPA 2.0 and JPA 1.2
@@ -42,6 +42,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
  */
 public class TestMessageListener extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(Message.class,
               "openjpa.Compatibility", "default",

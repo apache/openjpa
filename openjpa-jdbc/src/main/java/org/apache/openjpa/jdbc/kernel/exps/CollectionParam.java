@@ -40,6 +40,9 @@ import org.apache.openjpa.util.ImplHelper;
 public class CollectionParam
     extends Const
     implements Parameter {
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage(
         CollectionParam.class);
 
@@ -56,6 +59,7 @@ public class CollectionParam
         setImplicitType(type);
     }
 
+    @Override
     public CollectionParam clone() {
         CollectionParam c = new CollectionParam(this._key, this._type);
         c._idx = this._idx;
@@ -63,14 +67,17 @@ public class CollectionParam
         return c;
     }
 
+    @Override
     public Object getParameterKey() {
         return _key;
     }
 
+    @Override
     public Class getType() {
         return _type;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _type = type;
         _container = (getMetaData() == null || !ImplHelper.isManagedType(
@@ -83,14 +90,17 @@ public class CollectionParam
         return _idx;
     }
 
+    @Override
     public void setIndex(int idx) {
         _idx = idx;
     }
 
+    @Override
     public Object getValue(Object[] params) {
         return Filters.convert(params[_idx], getType());
     }
 
+    @Override
     public Object getValue(ExpContext ctx, ExpState state) {
         ParamExpState pstate = (ParamExpState) state;
         if (pstate.discValue[0] != null)
@@ -99,10 +109,12 @@ public class CollectionParam
             return getValue(ctx.params);
     }
 
+    @Override
     public Object getSQLValue(Select sel, ExpContext ctx, ExpState state) {
         return ((ParamExpState) state).sqlValue;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         return new ParamExpState(ctx.params[_idx]);
     }
@@ -138,6 +150,7 @@ public class CollectionParam
         }
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
@@ -179,6 +192,7 @@ public class CollectionParam
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         ParamExpState pstate = (ParamExpState) state;

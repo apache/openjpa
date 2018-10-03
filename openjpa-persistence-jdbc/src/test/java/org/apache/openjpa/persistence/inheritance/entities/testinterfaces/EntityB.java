@@ -20,6 +20,6 @@
 package org.apache.openjpa.persistence.inheritance.entities.testinterfaces;
 
 public interface EntityB extends RootEntity {
-    public String getEntityBData();
-    public void setEntityBData(String entityBData);
+    String getEntityBData();
+    void setEntityBData(String entityBData);
 }

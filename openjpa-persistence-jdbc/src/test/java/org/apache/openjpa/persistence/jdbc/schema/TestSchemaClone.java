@@ -40,6 +40,7 @@ public class TestSchemaClone extends TestXMLSchemaParser {
         super(test);
     }
 
+    @Override
     protected SchemaGroup getSchemaGroup()
     throws Exception {
         // parse in the schema group, then clone it, and test against clone

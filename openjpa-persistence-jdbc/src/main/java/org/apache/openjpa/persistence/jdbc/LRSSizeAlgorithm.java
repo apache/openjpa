@@ -41,6 +41,7 @@ public enum LRSSizeAlgorithm implements OpenJPAEnum<Enum<?>> {
         _names = aliases;
     }
 
+    @Override
     public int toKernelConstant() {
         return lrsConstant;
     }
@@ -61,10 +62,12 @@ public enum LRSSizeAlgorithm implements OpenJPAEnum<Enum<?>> {
         }
     }
 
+    @Override
     public int convertToKernelConstant(String s) {
         return LRSSizeAlgorithm.toKernelConstantFromString(s);
     }
 
+    @Override
     public int convertToKernelConstant(int i) {
         try {
             if (i == FetchConfiguration.DEFAULT)

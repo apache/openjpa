@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex7;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="S27x7VP")

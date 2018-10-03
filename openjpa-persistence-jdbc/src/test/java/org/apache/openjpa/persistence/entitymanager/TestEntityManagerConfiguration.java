@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.datacache.common.apps.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEntityManagerConfiguration extends SingleEMFTestCase {
+    @Override
     public void setUp() throws Exception {
         super.setUp(PObject.class);
     }

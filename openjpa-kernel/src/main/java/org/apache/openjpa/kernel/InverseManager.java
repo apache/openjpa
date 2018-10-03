@@ -115,12 +115,15 @@ public class InverseManager implements Configurable {
             throw new IllegalArgumentException(action);
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
         _mgr = ((OpenJPAConfiguration)conf).getDataCacheManagerInstance();

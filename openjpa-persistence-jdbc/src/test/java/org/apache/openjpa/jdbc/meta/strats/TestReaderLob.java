@@ -32,6 +32,7 @@ import java.io.Reader;
 
 public class TestReaderLob extends AbstractLobTest {
 
+    @Override
     protected LobEntity newLobEntity(String s, int id) {
         ReaderLobEntity rle = new ReaderLobEntity();
         rle.setId(id);
@@ -43,6 +44,7 @@ public class TestReaderLob extends AbstractLobTest {
         return rle;
     }
 
+    @Override
     protected LobEntity newLobEntityForLoadContent(String s, int id) {
         ReaderLobEntity rle = new ReaderLobEntity();
         rle.setId(id);
@@ -50,14 +52,17 @@ public class TestReaderLob extends AbstractLobTest {
         return rle;
     }
 
+    @Override
     protected Class getLobEntityClass() {
         return ReaderLobEntity.class;
     }
 
+    @Override
     protected String getSelectQuery() {
         return "SELECT o FROM ReaderLobEntity o";
     }
 
+    @Override
     protected String getStreamContentAsString(Object o) throws IOException {
         Reader r = (Reader) o;
         String content = "";
@@ -72,6 +77,7 @@ public class TestReaderLob extends AbstractLobTest {
         } while (true);
     }
 
+    @Override
     protected void changeStream(LobEntity le, String s) {
         le.setStream(new CharArrayReader(s.toCharArray()));
     }

@@ -56,7 +56,7 @@ public class Projekt {
 
 	public void addOsoba(Osoba osoba) {
 		if (osoby ==null)
-			osoby = new ArrayList<Osoba>();
+			osoby = new ArrayList<>();
 		osoby.add(osoba);
 	}
 }

@@ -85,7 +85,7 @@ class CriteriaExpressionBuilder {
     }
 
     protected void evalAccessPaths(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
-        Set<ClassMetaData> metas = new HashSet<ClassMetaData>();
+        Set<ClassMetaData> metas = new HashSet<>();
         MetamodelImpl metamodel = q.getMetamodel();
         for (Root<?> root : q.getRoots()) {
             metas.add(((AbstractManagedType<?>)root.getModel()).meta);
@@ -128,7 +128,7 @@ class CriteriaExpressionBuilder {
         List<Order> orders = q.getOrderList();
         MetamodelImpl model = q.getMetamodel();
         int ordercount = (orders == null) ? 0 : orders.size();
-        Map<ExpressionImpl<?>, Value> exp2Vals = new HashMap<ExpressionImpl<?>, Value>();
+        Map<ExpressionImpl<?>, Value> exp2Vals = new HashMap<>();
         exps.ordering = new Value[ordercount];
         exps.orderingClauses = new String[ordercount];
         exps.orderingAliases = new String[ordercount];
@@ -229,9 +229,9 @@ class CriteriaExpressionBuilder {
             return ;
         }
         exps.projections = new Value[selections.size()];
-        List<Value> projections = new ArrayList<Value>();
-        List<String> aliases = new ArrayList<String>();
-        List<String> clauses = new ArrayList<String>();
+        List<Value> projections = new ArrayList<>();
+        List<String> aliases = new ArrayList<>();
+        List<String> clauses = new ArrayList<>();
         getProjections(exps, selections, projections, aliases, clauses, factory, q, model, exp2Vals);
         exps.projections = projections.toArray(new Value[projections.size()]);
         exps.projectionAliases = aliases.toArray(new String[aliases.size()]);
@@ -259,7 +259,7 @@ class CriteriaExpressionBuilder {
 
         if (selections.size() == 0 && q.getDelegator() != null) { // this is subquery
             Root<?> r = q.getRoot();
-            selections = new ArrayList<Selection<?>>(1);
+            selections = new ArrayList<>(1);
             selections.add(r);
         }
         for (Selection<?> s : selections) {
@@ -279,8 +279,8 @@ class CriteriaExpressionBuilder {
     }
 
     protected void evalFetchJoin(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
-        List<String> iPaths = new ArrayList<String>();
-        List<String> oPaths = new ArrayList<String>();
+        List<String> iPaths = new ArrayList<>();
+        List<String> oPaths = new ArrayList<>();
         Set<Root<?>> roots = q.getRoots();
         for (Root root : roots) {
             Set<Fetch> fetches = root.getFetches();
@@ -358,7 +358,7 @@ class CriteriaExpressionBuilder {
             FillStrategy<?> strategy = new FillStrategy.Assign();
             if (Tuple.class.isAssignableFrom(resultClass)) {
                 TupleFactory factory = new TupleFactory(selections.toArray(new TupleElement[selections.size()]));
-                strategy = new FillStrategy.Factory<Tuple>(factory,  TupleImpl.PUT);
+                strategy = new FillStrategy.Factory<>(factory,  TupleImpl.PUT);
             }
             result = new ResultShape(resultClass, strategy);
             if (q.getSelectionList() == null) {

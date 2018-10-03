@@ -33,9 +33,6 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
-
 import org.apache.openjpa.util.InternalException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -49,6 +46,9 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
+
 /**
  * Test javax.transaction.TransactionManager OSGi service discovery.
  */
@@ -61,41 +61,51 @@ public class TestOSGiManagedRuntime extends TestCase {
      */
     private static final TransactionManager TXN_MANAGER = new TransactionManager() {
 
+        @Override
         public void begin() throws NotSupportedException, SystemException {
         }
 
+        @Override
         public void commit() throws HeuristicMixedException,
                 HeuristicRollbackException, IllegalStateException,
                 RollbackException, SecurityException, SystemException {
         }
 
+        @Override
         public int getStatus() throws SystemException {
             return 0;
         }
 
+        @Override
         public Transaction getTransaction() throws SystemException {
             return null;
         }
 
+        @Override
         public void resume(Transaction tobj) throws IllegalStateException,
                 InvalidTransactionException, SystemException {
         }
 
+        @Override
         public void rollback() throws IllegalStateException, SecurityException,
                 SystemException {
         }
 
+        @Override
         public void setRollbackOnly() throws IllegalStateException,
                 SystemException {
         }
 
+        @Override
         public void setTransactionTimeout(int seconds) throws SystemException {
         }
 
+        @Override
         public Transaction suspend() throws SystemException {
             return null;
         }
 
+        @Override
         public String toString() {
             return TestOSGiManagedRuntime.class.getName()+"::TXN_MANAGER";
         }
@@ -136,6 +146,7 @@ public class TestOSGiManagedRuntime extends TestCase {
             return reference == TXN_SVC_REFERENCE ? 0 : 1;
         }
 
+        @Override
         public String toString() {
             return TestOSGiManagedRuntime.class.getName()+"::TXN_SVC_REFERENCE";
         }
@@ -189,47 +200,56 @@ public class TestOSGiManagedRuntime extends TestCase {
             return this.txnRefCount;
         }
 
+        @Override
         public String getProperty(String key) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Bundle getBundle() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Bundle installBundle(String location, InputStream input)
                 throws BundleException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Bundle installBundle(String location) throws BundleException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Bundle getBundle(long id) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Bundle[] getBundles() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void addServiceListener(ServiceListener listener, String filter)
                 throws InvalidSyntaxException {
 
             assertEquals("(objectClass="+TXN_MANAGER_CLASS_NAME+")",filter);
 
             if (this.serviceListeners == null)
-                this.serviceListeners = new ArrayList<ServiceListener>();
+                this.serviceListeners = new ArrayList<>();
 
             this.serviceListeners.add(listener);
         }
 
+        @Override
         public void addServiceListener(ServiceListener listener) {
 
             throw new AssertionFailedError("service listener must be added using an objectClass filter.");
         }
 
+        @Override
         public void removeServiceListener(ServiceListener listener) {
 
             if (this.serviceListeners == null || ! this.serviceListeners.remove(listener)) {
@@ -239,44 +259,53 @@ public class TestOSGiManagedRuntime extends TestCase {
             assertEquals(0,this.txnRefCount);
         }
 
+        @Override
         public void addBundleListener(BundleListener listener) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void removeBundleListener(BundleListener listener) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void addFrameworkListener(FrameworkListener listener) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void removeFrameworkListener(FrameworkListener listener) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         @SuppressWarnings("rawtypes")
         public ServiceRegistration registerService(String[] clazzes,
                 Object service, Dictionary properties) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         @SuppressWarnings("rawtypes")
         public ServiceRegistration registerService(String clazz,
                 Object service, Dictionary properties) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ServiceReference[] getServiceReferences(String clazz,
                 String filter) throws InvalidSyntaxException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ServiceReference[] getAllServiceReferences(String clazz,
                 String filter) throws InvalidSyntaxException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ServiceReference getServiceReference(String clazz) {
 
             assertEquals(TXN_MANAGER_CLASS_NAME,clazz);
@@ -305,10 +334,12 @@ public class TestOSGiManagedRuntime extends TestCase {
             return true;
         }
 
+        @Override
         public File getDataFile(String filename) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Filter createFilter(String filter) throws InvalidSyntaxException {
             throw new UnsupportedOperationException();
         }

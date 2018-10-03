@@ -38,6 +38,7 @@ public class TestClearableScheduler extends SingleEMFTestCase {
         return buf.toString();
     }
 
+    @Override
     public void setUp() {
         setUp(
             "openjpa.DataCache", "true(EvictionSchedule=+1)"
@@ -73,15 +74,18 @@ public class TestClearableScheduler extends SingleEMFTestCase {
         // Schedule eviction to happen every mintue on cache 1
         scheduler.scheduleEviction(cache1, ("+1"));
 
-        Thread.currentThread().sleep(61000);
+        Thread.currentThread();
+        Thread.sleep(61000);
         assertEquals(1,cache1.getClearCount());
         assertEquals(1,cache2.getClearCount());
 
-        Thread.currentThread().sleep(60000);
+        Thread.currentThread();
+        Thread.sleep(60000);
         assertEquals(2,cache1.getClearCount());
         assertEquals(2,cache2.getClearCount());
 
-        Thread.currentThread().sleep(60000);
+        Thread.currentThread();
+        Thread.sleep(60000);
         assertEquals(3,cache1.getClearCount());
         assertEquals(2,cache2.getClearCount());
     }
@@ -145,11 +149,14 @@ public class TestClearableScheduler extends SingleEMFTestCase {
     // }
     private class DummyCache extends ConcurrentDataCache {
 
+        
+        private static final long serialVersionUID = 1L;
         int clearCount = 0;
 
         public synchronized int getClearCount(){
             return clearCount;
         }
+        @Override
         public synchronized void clear() {
             clearCount++;
         }

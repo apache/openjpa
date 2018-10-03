@@ -84,6 +84,7 @@ public abstract class AbstractSQLServerDictionary
         }));
     }
 
+    @Override
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String colName, Connection conn)
         throws SQLException {
@@ -95,11 +96,13 @@ public abstract class AbstractSQLServerDictionary
         return cols;
     }
 
+    @Override
     public String getFullName(Index idx) {
         return toDBName(getNamingUtil().append(DBIdentifierType.INDEX,
             getFullIdentifier(idx.getTable(), false),idx.getIdentifier()));
     }
 
+    @Override
     public void setNull(PreparedStatement stmnt, int idx, int colType,
         Column col)
         throws SQLException {
@@ -112,6 +115,7 @@ public abstract class AbstractSQLServerDictionary
             super.setNull(stmnt, idx, colType, col);
     }
 
+    @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
         // cannot use a value here, since SQLServer does not support
@@ -119,6 +123,7 @@ public abstract class AbstractSQLServerDictionary
         buf.append(" TOP ").append(Long.toString(end));
     }
 
+    @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
         FilterValue length) {
         if (length != null)

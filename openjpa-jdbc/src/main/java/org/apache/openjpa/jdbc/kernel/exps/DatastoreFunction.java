@@ -28,8 +28,8 @@ import org.apache.openjpa.kernel.exps.Arguments;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class DatastoreFunction extends UnaryOp {
+    private static final long serialVersionUID = 1L;
     private final String _functionName;
 
     public DatastoreFunction(String name, Class<?> resultType, Arguments args) {
@@ -43,6 +43,7 @@ public class DatastoreFunction extends UnaryOp {
         return _functionName;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         Args args = (Args) getValue();

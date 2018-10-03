@@ -33,7 +33,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestSimpleUnenhancedQuery extends SingleEMFTestCase {
-	public void setUp() throws Exception {
+	@Override
+    public void setUp() throws Exception {
 		setUp(CLEAR_TABLES, UnenhancedPObject.class,"openjpa.RuntimeUnenhancedClasses", "supported");
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();

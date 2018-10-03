@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.access;
 
+import static javax.persistence.AccessType.FIELD;
+import static javax.persistence.AccessType.PROPERTY;
+
 import javax.persistence.Access;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,9 +29,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 import javax.persistence.Version;
-
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
 
 @Entity(name="DPMFA")
 @Access(value=PROPERTY)
@@ -76,6 +76,7 @@ public class DefPropMixedFieldAccess {
         return strField;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof DefPropMixedFieldAccess) {
             DefPropMixedFieldAccess dpmfa = (DefPropMixedFieldAccess)obj;

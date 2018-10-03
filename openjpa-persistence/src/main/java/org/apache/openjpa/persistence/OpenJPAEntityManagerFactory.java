@@ -40,35 +40,35 @@ public interface OpenJPAEntityManagerFactory
     /**
      * Return properties describing this runtime.
      */
-    public Map<String, Object> getProperties();
+    @Override Map<String, Object> getProperties();
 
     /**
      * Put the specified key-value pair into the map of user objects.
      */
-    public Object putUserObject(Object key, Object val);
+    Object putUserObject(Object key, Object val);
 
     /**
      * Get the value for the specified key from the map of user objects.
      */
-    public Object getUserObject(Object key);
+    Object getUserObject(Object key);
 
     /**
      * Access the level 2 store cache. This cache acts as a proxy to all
      * named caches.
      */
-    public StoreCache getStoreCache();
+    StoreCache getStoreCache();
 
     /**
      * Access a named level 2 store cache.
      */
-    public StoreCache getStoreCache(String name);
+    StoreCache getStoreCache(String name);
 
     /**
      * Access query result cache.
      */
-    public QueryResultCache getQueryResultCache();
+    QueryResultCache getQueryResultCache();
 
-    public OpenJPAEntityManager createEntityManager();
+    @Override OpenJPAEntityManager createEntityManager();
 
     /**
      * Return an entity manager with the provided additional configuration
@@ -81,69 +81,69 @@ public interface OpenJPAEntityManagerFactory
      * <li>openjpa.TransactionMode</li>
      * </ul>
      */
-    public OpenJPAEntityManager createEntityManager(Map props);
+    @Override OpenJPAEntityManager createEntityManager(Map props);
 
     /**
      * @deprecated use {@link ConnectionRetainMode} enums instead.
      */
-    public static final int CONN_RETAIN_DEMAND = 0;
+    @Deprecated int CONN_RETAIN_DEMAND = 0;
 
     /**
      * @deprecated use {@link ConnectionRetainMode} enums instead.
      */
-    public static final int CONN_RETAIN_TRANS = 1;
+    @Deprecated int CONN_RETAIN_TRANS = 1;
 
     /**
      * @deprecated use {@link ConnectionRetainMode} enums instead.
      */
-    public static final int CONN_RETAIN_ALWAYS = 2;
+    @Deprecated int CONN_RETAIN_ALWAYS = 2;
 
     /**
      * @deprecated cast to {@link OpenJPAEntityManagerFactorySPI} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public org.apache.openjpa.conf.OpenJPAConfiguration getConfiguration();
+    @Deprecated org.apache.openjpa.conf.OpenJPAConfiguration getConfiguration();
 
     /**
      * @deprecated cast to {@link OpenJPAEntityManagerFactorySPI} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public void addLifecycleListener(Object listener, Class... classes);
+    @Deprecated void addLifecycleListener(Object listener, Class... classes);
 
     /**
      * @deprecated cast to {@link OpenJPAEntityManagerFactorySPI} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public void removeLifecycleListener(Object listener);
+    @Deprecated void removeLifecycleListener(Object listener);
 
     /**
      * @deprecated cast to {@link OpenJPAEntityManagerFactorySPI} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public void addTransactionListener(Object listener);
+    @Deprecated void addTransactionListener(Object listener);
 
     /**
      * @deprecated cast to {@link OpenJPAEntityManagerFactorySPI} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public void removeTransactionListener(Object listener);
+    @Deprecated void removeTransactionListener(Object listener);
 
     /**
      * Gets a builder for dynamic queries.
      */
-    public QueryBuilder getDynamicQueryBuilder();
+    QueryBuilder getDynamicQueryBuilder();
 
     /**
      * Gets the QueryBuilder with OpenJPA-extended capabilities.
      *
      * @since 2.0.0
      */
-    public OpenJPACriteriaBuilder getCriteriaBuilder();
+    @Override OpenJPACriteriaBuilder getCriteriaBuilder();
 
     /**
      * Get the properties supported by this runtime.
      *
      * @since 2.0.0
     */
-    public Set<String> getSupportedProperties();
+    Set<String> getSupportedProperties();
 }

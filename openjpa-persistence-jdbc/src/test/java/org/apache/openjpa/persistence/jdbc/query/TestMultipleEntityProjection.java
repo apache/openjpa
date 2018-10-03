@@ -58,7 +58,8 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 
 	};
 
-	public void setUp() {
+	@Override
+    public void setUp() {
 		super.setUp(CLEAR_TABLES, Magazine.class, Publisher.class);
 		createData();
 	}

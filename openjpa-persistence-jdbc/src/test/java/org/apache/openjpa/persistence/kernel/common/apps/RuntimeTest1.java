@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -78,7 +79,7 @@ public class RuntimeTest1 implements Serializable {
 
     @OneToMany(mappedBy = "selfOneOne",
         cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    private Set<RuntimeTest1> selfOneMany = new HashSet<RuntimeTest1>();
+    private Set<RuntimeTest1> selfOneMany = new HashSet<>();
 
     @Version
     private int version;
@@ -136,6 +137,7 @@ public class RuntimeTest1 implements Serializable {
         this.selfOneMany = selfOneMany;
     }
 
+    @Override
     public String toString() {
         return "IntField: " + intField + ", StringField: " + stringField + " .";
     }

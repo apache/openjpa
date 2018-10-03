@@ -32,12 +32,12 @@ public interface UpdateManager {
      * Whether the store context should maintain the order in which instances
      * are dirtied.
      */
-    public boolean orderDirty();
+    boolean orderDirty();
 
     /**
      * Flush the given instances to the data store.
      *
      * @see org.apache.openjpa.kernel.StoreManager#flush
      */
-    public Collection flush(Collection states, JDBCStore store);
+    Collection flush(Collection states, JDBCStore store);
 }

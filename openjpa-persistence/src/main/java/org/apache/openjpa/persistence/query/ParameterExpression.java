@@ -25,7 +25,9 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class ParameterExpression extends ExpressionImpl {
-	private final String _name;
+	
+    private static final long serialVersionUID = 1L;
+    private final String _name;
 	public ParameterExpression(String name) {
 		_name = ":" + name;
 	}

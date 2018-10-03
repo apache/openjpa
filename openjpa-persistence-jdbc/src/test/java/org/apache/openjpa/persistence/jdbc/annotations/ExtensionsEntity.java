@@ -19,13 +19,37 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import java.util.*;
+import java.util.Collection;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
-import org.apache.openjpa.jdbc.meta.strats.*;
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
+import org.apache.openjpa.jdbc.meta.strats.StateComparisonVersionStrategy;
+import org.apache.openjpa.persistence.DataCache;
+import org.apache.openjpa.persistence.DataStoreId;
+import org.apache.openjpa.persistence.Dependent;
+import org.apache.openjpa.persistence.ElementDependent;
+import org.apache.openjpa.persistence.ExternalValues;
+import org.apache.openjpa.persistence.Externalizer;
+import org.apache.openjpa.persistence.Factory;
+import org.apache.openjpa.persistence.FetchAttribute;
+import org.apache.openjpa.persistence.FetchGroup;
+import org.apache.openjpa.persistence.InverseLogical;
+import org.apache.openjpa.persistence.LRS;
+import org.apache.openjpa.persistence.Persistent;
+import org.apache.openjpa.persistence.ReadOnly;
+import org.apache.openjpa.persistence.Type;
+import org.apache.openjpa.persistence.jdbc.EagerFetchMode;
+import org.apache.openjpa.persistence.jdbc.ElementClassCriteria;
+import org.apache.openjpa.persistence.jdbc.FetchMode;
+import org.apache.openjpa.persistence.jdbc.VersionStrategy;
 
 
 @Entity

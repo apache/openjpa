@@ -19,15 +19,9 @@
 package org.apache.openjpa.persistence.meta;
 
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 
-
-import org.apache.openjpa.persistence.meta.common.apps.MetaTest1;
-import org.apache.openjpa.persistence.meta.common.apps.MetaTest2;
-import org.apache.openjpa.persistence.meta.common.apps.MetaTest3;
-import org.apache.openjpa.persistence.meta.common.apps.MetaTest5;
-import org.apache.openjpa.persistence.meta.common.apps.MetaTest6;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -35,6 +29,12 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.meta.common.apps.MetaTest1;
+import org.apache.openjpa.persistence.meta.common.apps.MetaTest2;
+import org.apache.openjpa.persistence.meta.common.apps.MetaTest3;
+import org.apache.openjpa.persistence.meta.common.apps.MetaTest5;
+import org.apache.openjpa.persistence.meta.common.apps.MetaTest6;
 
 /**
  * <p>Tests the {@link ClassMetaData} type, and in so doing tests parts of
@@ -57,6 +57,7 @@ public class TestClassMetaData
         super(test, "metacactusapp");
     }
 
+    @Override
     public void setUp()
         throws Exception {
         _repos = getRepository();

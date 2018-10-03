@@ -20,15 +20,15 @@ package org.apache.openjpa.persistence.proxy.delayed;
 
 public interface IAccount {
 
-    public void setId(int id);
+    void setId(int id);
 
-    public int getId();
+    int getId();
 
-    public void setName(String name);
+    void setName(String name);
 
-    public String getName();
+    String getName();
 
-    public void setUserIdent(IUserIdentity userIdent);
+    void setUserIdent(IUserIdentity userIdent);
 
-    public IUserIdentity getUserIdent();
+    IUserIdentity getUserIdent();
 }

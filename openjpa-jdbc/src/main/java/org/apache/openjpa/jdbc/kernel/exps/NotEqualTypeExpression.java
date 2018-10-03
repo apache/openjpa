@@ -35,6 +35,9 @@ import org.apache.openjpa.meta.ClassMetaData;
 class NotEqualTypeExpression
     extends CompareEqualExpression {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Supply values to compare.
      */
@@ -54,6 +57,7 @@ class NotEqualTypeExpression
         return sub;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
             SQLBuffer buf) {
         Val val1 = getValue1();
@@ -67,6 +71,7 @@ class NotEqualTypeExpression
         super.appendTo(sel, ctx, state, buf);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, BinaryOpExpState bstate,
         SQLBuffer buf, boolean val1Null, boolean val2Null) {
         if (val1Null && val2Null)

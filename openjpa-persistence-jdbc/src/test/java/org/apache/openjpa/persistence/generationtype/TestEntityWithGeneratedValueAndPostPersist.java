@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -33,12 +33,14 @@ public class TestEntityWithGeneratedValueAndPostPersist
 
     private int cache;
 
+    @Override
     public void setUp() {
         setUp(EntityWithGeneratedValueAndPostPersist.class, CLEAR_TABLES);
         cache = 0;
     }
 
     // satisfy the ValueCache interface
+    @Override
     public void setValue(int val) {
         cache = val;
     }

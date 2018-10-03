@@ -23,19 +23,19 @@ import java.util.List;
 
 public interface IOrderedElements {
 
-    public int getId();
+    int getId();
 
-    public void setId(int id);
+    void setId(int id);
 
-    public List<String> getListElements();
+    List<String> getListElements();
 
-    public void setListElements(List<String> elements);
+    void setListElements(List<String> elements);
 
-    public void addListElements(String element);
+    void addListElements(String element);
 
-    public String removeListElements(int location);
+    String removeListElements(int location);
 
-    public void insertListElements(int location, String name);
+    void insertListElements(int location, String name);
 
-    public String toString();
+    @Override String toString();
 }

@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class IsNullExpression extends UnaryExpressionPredicate {
-	public IsNullExpression(Expression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public IsNullExpression(Expression op) {
 		super(op, UnaryConditionalOperator.ISNULL,
 			UnaryConditionalOperator.ISNULL_NOT);
 	}

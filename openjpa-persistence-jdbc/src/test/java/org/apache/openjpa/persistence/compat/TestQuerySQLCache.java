@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.compat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -34,6 +35,8 @@ import org.apache.openjpa.persistence.relations.TblParent;
 import org.apache.openjpa.persistence.simple.Person;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.framework.TestCase;
 
 /**
  * <b>TestQuerySQLCache</b> is used to verify multiple permutations of openjpa.jdbc.QuerySQLCache settings that were
@@ -203,7 +206,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
                     newThreads[i].join();
                 }
                 catch (InterruptedException e) {
-                    this.fail("Caught Interrupted Exception: " + e);
+                    TestCase.fail("Caught Interrupted Exception: " + e);
                 }
             }
 
@@ -256,6 +259,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
             return failures;
         }
 
+        @Override
         public void run() {
             try {
                 EntityManager em = emf.createEntityManager();

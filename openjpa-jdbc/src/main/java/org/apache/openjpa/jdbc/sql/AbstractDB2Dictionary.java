@@ -71,6 +71,7 @@ public abstract class AbstractDB2Dictionary
         requiresConditionForCrossJoin = true;
     }
 
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("LOCATE(CAST((");

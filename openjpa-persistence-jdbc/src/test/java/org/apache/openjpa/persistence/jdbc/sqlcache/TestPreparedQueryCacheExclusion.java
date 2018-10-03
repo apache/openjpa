@@ -21,12 +21,12 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.jdbc.kernel.PreparedQueryCacheImpl;
 import org.apache.openjpa.jdbc.kernel.PreparedQueryImpl;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
+
+import junit.framework.TestCase;
 
 /**
  * Test exclusion patterns of PreparedQueryCache in isolation.
@@ -39,7 +39,8 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 	private String[] keys   = {"jpql1", "jpql2", "jpql3"};
 	private String[] values = {"sql1", "sql2", "sql3"};
 
-	protected void setUp() throws Exception {
+	@Override
+    protected void setUp() throws Exception {
 		super.setUp();
 		cache = new PreparedQueryCacheImpl();
 		for (int i = 0; i < keys.length; i++) {
@@ -48,7 +49,8 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 		}
 	}
 
-	protected void tearDown() throws Exception {
+	@Override
+    protected void tearDown() throws Exception {
 		super.tearDown();
 	}
 

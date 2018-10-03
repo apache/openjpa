@@ -379,7 +379,7 @@ public class Configurations {
                     props).getMessage(), Configurations.class.getName(),
                     props);
         }
-        Map <String, String> result = new HashMap<String, String>();
+        Map <String, String> result = new HashMap<>();
         result.put(CONFIG_RESOURCE_PATH, path);
         result.put(CONFIG_RESOURCE_ANCHOR, anchor);
         return result;
@@ -413,12 +413,12 @@ public class Configurations {
             msg = "invalid-plugin-aliases";
             params = new Object[]{
                 val.getProperty(), alias, e.toString(),
-                new TreeSet<String>(Arrays.asList(keys)), };
+                new TreeSet<>(Arrays.asList(keys)), };
         } else {
             msg = "invalid-plugin-aliases-hint";
             params = new Object[]{
                 val.getProperty(), alias, e.toString(),
-                new TreeSet<String>(Arrays.asList(keys)), closest, };
+                new TreeSet<>(Arrays.asList(keys)), closest, };
         }
         return new ParseException(_loc.get(msg, params), e);
     }
@@ -769,6 +769,6 @@ public class Configurations {
     }
 
     public interface Runnable {
-        public boolean run(Options opts) throws Exception;
+        boolean run(Options opts) throws Exception;
     }
 }

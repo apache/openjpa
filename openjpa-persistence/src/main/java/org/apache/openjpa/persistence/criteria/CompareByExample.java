@@ -48,7 +48,7 @@ class CompareByExample<T> extends PredicateImpl {
             Attribute<?, ?>... excludes) {
         super(extractOperator(style));
         List<Attribute<?, ?>> excludeAttr = excludes == null
-            ? new ArrayList<Attribute<?,?>>() : Arrays.asList(excludes);
+            ? new ArrayList<>() : Arrays.asList(excludes);
 
         Set<SingularAttribute<? super T, ?>> attrs = type.getSingularAttributes();
         for (SingularAttribute<? super T, ?> attr : attrs) {

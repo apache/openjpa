@@ -20,9 +20,11 @@ package org.apache.openjpa.persistence.annotations;
 
 import java.util.List;
 
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.CallbackStorage;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.LifeCycleDDEntity;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.LifeCycleDDEntity2;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="excluded")
 public class TestDDCallbackMethods extends AnnotationTestCase
@@ -33,7 +35,8 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 		super(name, "ddcactusapp");
 	}
 
-	public void setUp()
+	@Override
+    public void setUp()
 	{
 		deleteAll(LifeCycleDDEntity.class);
 		deleteAll(LifeCycleDDEntity2.class);
@@ -73,7 +76,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 		assertNotNull(lcd);
 		CallbackStorage store = CallbackStorage.getInstance();
-		store.clearStore();
+		CallbackStorage.clearStore();
 
 		em.remove(lcd);
 
@@ -163,7 +166,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
         LifeCycleDDEntity2 lc = new LifeCycleDDEntity2("Bill", "Clinton");
 
 		CallbackStorage store = CallbackStorage.getInstance();
-		store.clearStore();
+		CallbackStorage.clearStore();
 
 		em.persist(lc);
 

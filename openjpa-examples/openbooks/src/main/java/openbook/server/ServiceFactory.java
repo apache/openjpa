@@ -28,7 +28,7 @@ import javax.persistence.PersistenceContextType;
  *
  */
 public class ServiceFactory {
-    private static final Map<String, OpenBookService> _services = new HashMap<String, OpenBookService>();
+    private static final Map<String, OpenBookService> _services = new HashMap<>();
 
     public synchronized static OpenBookService getService(String unit) {
         return getService(unit, null);

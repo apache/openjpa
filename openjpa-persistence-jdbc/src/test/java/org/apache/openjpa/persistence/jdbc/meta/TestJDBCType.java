@@ -30,6 +30,7 @@ package org.apache.openjpa.persistence.jdbc.meta;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.RefreshStrategyInstaller;
 import org.apache.openjpa.jdbc.meta.strats.BlobValueHandler;
@@ -40,10 +41,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-
-
-import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
-import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.meta.JavaTypes;
 
 public class TestJDBCType
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
@@ -93,7 +91,7 @@ public class TestJDBCType
                 || cols[i].getName().equalsIgnoreCase("typ"))
                 continue;
             if ("longToInt".equalsIgnoreCase(cols[i].getName()))
-                assertEquals(dict.getPreferredType(JavaSQLTypes.INT),
+                assertEquals(dict.getPreferredType(JavaTypes.INT),
                     cols[i].getType());
             else if ("longToSQL".equalsIgnoreCase(cols[i].getName()))
                 assertEquals("varchar", cols[i].getTypeName());

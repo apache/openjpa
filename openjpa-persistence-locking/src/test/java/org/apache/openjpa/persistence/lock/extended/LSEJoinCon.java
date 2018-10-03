@@ -57,18 +57,21 @@ public class LSEJoinCon extends LSEJoinAbs implements Externalizable {
         this.lastName = lastName;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + '@'
             + Integer.toHexString(System.identityHashCode(this)) + super.toString()
             + ", last=" + getLastName();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
         ClassNotFoundException {
         super.readExternal(in);
         lastName = (String) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
         out.writeObject(lastName);

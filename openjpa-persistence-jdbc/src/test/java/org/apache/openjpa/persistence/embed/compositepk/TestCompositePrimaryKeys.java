@@ -32,9 +32,9 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.framework.Assert;
 
 public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
@@ -50,6 +50,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
     protected EntityManager em;
     private EntityTransaction tx;
 
+    @Override
     public void setUp() {
         super.setUp(DROP_TABLES, Subject.class, SubjectKey.class, SubjectWithIdClass.class, Topic.class);
 
@@ -375,7 +376,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         Subject s2 = new Subject();
         s2.setKey(key);
 
-        List<Subject> subjectList = new ArrayList<Subject>();
+        List<Subject> subjectList = new ArrayList<>();
         subjectList.add(s);
         subjectList.add(s2);
 
@@ -413,7 +414,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         Subject s2 = new Subject();
         s2.setKey(key);
 
-        List<Subject> subjectList = new ArrayList<Subject>();
+        List<Subject> subjectList = new ArrayList<>();
         subjectList.add(s);
         subjectList.add(s2);
 
@@ -543,6 +544,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         Assert.assertEquals(expected.getKey().getSubjectTypeCode(), actual.getKey().getSubjectTypeCode());
     }
 
+    @Override
     public void tearDown() {
         if (tx != null && tx.isActive()) {
             tx.rollback();

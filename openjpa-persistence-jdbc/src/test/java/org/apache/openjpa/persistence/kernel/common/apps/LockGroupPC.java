@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -26,6 +27,8 @@ import javax.persistence.Entity;
 public class LockGroupPC
     implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     @Column(name = "DEF_LockGSF")
     private String defaultLockGroupStringField;
     @Column(name = "EXDEF_LockGIF")

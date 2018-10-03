@@ -25,7 +25,9 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class ElseExpression extends ExpressionImpl {
-	private final CaseExpressionImpl _caseClause;
+	
+    private static final long serialVersionUID = 1L;
+    private final CaseExpressionImpl _caseClause;
 	private final Expression _elseClause;
 
 	public ElseExpression(CaseExpressionImpl owner, Expression op) {

@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import junit.textui.TestRunner;
+
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Tests that a EntityManagerFactory can be used after serialization.
@@ -32,6 +38,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestSerializedFactory extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }

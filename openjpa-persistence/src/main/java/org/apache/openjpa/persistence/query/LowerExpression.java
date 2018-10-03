@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class LowerExpression extends UnaryOperatorExpression {
-	public LowerExpression(Expression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public LowerExpression(Expression op) {
 		super(op, UnaryFunctionalOperator.LOWER);
 	}
 }

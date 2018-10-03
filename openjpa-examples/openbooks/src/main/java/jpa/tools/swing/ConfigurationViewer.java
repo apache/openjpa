@@ -28,14 +28,14 @@ import javax.swing.JTextPane;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class ConfigurationViewer extends JTextPane {
+    private static final long serialVersionUID = 1L;
     private static final char SPACE = ' ';
 
     public ConfigurationViewer(String title, Map<String, Object> config) {
         super();
         setBorder(BorderFactory.createTitledBorder(title));
-        TreeSet<String> sortedKeys = new TreeSet<String>(config.keySet());
+        TreeSet<String> sortedKeys = new TreeSet<>(config.keySet());
         int L = getMaxLength(sortedKeys);
         for (String key : sortedKeys) {
             setCaretPosition(getDocument().getLength());

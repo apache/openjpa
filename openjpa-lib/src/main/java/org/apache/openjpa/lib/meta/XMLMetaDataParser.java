@@ -33,8 +33,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.xml.parsers.SAXParser;
 
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.lib.xml.Commentable;
+import org.apache.openjpa.lib.xml.DocTypeReader;
+import org.apache.openjpa.lib.xml.Location;
+import org.apache.openjpa.lib.xml.XMLFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -42,14 +51,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
-import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.Localizer.Message;
-import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.xml.Commentable;
-import org.apache.openjpa.lib.xml.DocTypeReader;
-import org.apache.openjpa.lib.xml.Location;
-import org.apache.openjpa.lib.xml.XMLFactory;
 
 /**
  * Custom SAX parser used by the system to quickly parse metadata files.
@@ -276,26 +277,31 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     /**
      * Classloader to use for class name resolution.
      */
+    @Override
     public void setClassLoader(ClassLoader loader) {
         _loader = loader;
     }
 
+    @Override
     public List getResults() {
         if (_results == null)
             return Collections.emptyList();
         return _results;
     }
 
+    @Override
     public void parse(String rsrc) throws IOException {
         if (rsrc != null)
             parse(new ResourceMetaDataIterator(rsrc, _loader));
     }
 
+    @Override
     public void parse(URL url) throws IOException {
         if (url != null)
             parse(new URLMetaDataIterator(url));
     }
 
+    @Override
     public void parse(File file) throws IOException {
         if (file == null)
             return;
@@ -309,16 +315,19 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         }
     }
 
+    @Override
     public void parse(Class cls, boolean topDown) throws IOException {
         String suff = (_suffix == null) ? "" : _suffix;
         parse(new ClassMetaDataIterator(cls, suff, topDown), !topDown);
     }
 
+    @Override
     public void parse(Reader xml, String sourceName) throws IOException {
         if (xml != null && (sourceName == null || !parsed(sourceName)))
             parseNewResource(xml, sourceName);
     }
 
+    @Override
     public void parse(MetaDataIterator itr) throws IOException {
         parse(itr, false);
     }
@@ -454,12 +463,12 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         if (!_caching)
             return false;
         if (_parsed == null)
-            _parsed = new HashMap<ClassLoader, Set<String>>();
+            _parsed = new HashMap<>();
 
         ClassLoader loader = currentClassLoader();
         Set<String> set = _parsed.get(loader);
         if (set == null) {
-            set = new HashSet<String>();
+            set = new HashSet<>();
             _parsed.put(loader, set);
         }
         boolean added = set.add(src);
@@ -468,6 +477,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         return !added;
     }
 
+    @Override
     public void clear() {
         if (_log != null && _log.isTraceEnabled())
             _log.trace(_loc.get("clear-parser", this));
@@ -475,18 +485,22 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             _parsed.clear();
     }
 
+    @Override
     public void error(SAXParseException se) throws SAXException {
         throw getException(se.toString());
     }
 
+    @Override
     public void fatalError(SAXParseException se) throws SAXException {
         throw getException(se.toString());
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         _location.setLocator(locator);
     }
 
+    @Override
     public void startElement(String uri, String name, String qName,
         Attributes attrs) throws SAXException {
         _depth++;
@@ -500,6 +514,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         }
     }
 
+    @Override
     public void endElement(String uri, String name, String qName)
         throws SAXException {
         if (_depth < _ignore) {
@@ -520,6 +535,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         _depth--;
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) {
         if (_parseText && _depth <= _ignore) {
             if (_text == null)
@@ -528,42 +544,49 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         }
     }
 
+    @Override
     public void comment(char[] ch, int start, int length) throws SAXException {
         if (_parseComments && _depth <= _ignore) {
             if (_comments == null)
-                _comments = new ArrayList<String>(3);
+                _comments = new ArrayList<>(3);
             _comments.add(String.valueOf(ch, start, length));
         }
         if (_lh != null)
             _lh.comment(ch, start, length);
     }
 
+    @Override
     public void startCDATA() throws SAXException {
         if (_lh != null)
             _lh.startCDATA();
     }
 
+    @Override
     public void endCDATA() throws SAXException {
         if (_lh != null)
             _lh.endCDATA();
     }
 
+    @Override
     public void startDTD(String name, String publicId, String systemId)
         throws SAXException {
         if (_lh != null)
             _lh.startDTD(name, publicId, systemId);
     }
 
+    @Override
     public void endDTD() throws SAXException {
         if (_lh != null)
             _lh.endDTD();
     }
 
+    @Override
     public void startEntity(String name) throws SAXException {
         if (_lh != null)
             _lh.startEntity(name);
     }
 
+    @Override
     public void endEntity(String name) throws SAXException {
         if (_lh != null)
             _lh.endEntity(name);

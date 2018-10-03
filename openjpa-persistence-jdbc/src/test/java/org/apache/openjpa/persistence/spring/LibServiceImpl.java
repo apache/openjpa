@@ -18,9 +18,12 @@
  */
 package org.apache.openjpa.persistence.spring;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.models.library.*;
+import org.apache.openjpa.persistence.models.library.Book;
+import org.apache.openjpa.persistence.models.library.Borrower;
 
 /**
  * This service uses a transactionally scoped entity manager. It grabs the EM at
@@ -53,11 +56,13 @@ public class LibServiceImpl implements LibService {
         }
     }
 
+    @Override
     public void setTransactionalEntityManagerFactory(
             TransactionalEntityManagerFactory txEMF) {
         this.txEMF = txEMF;
     }
 
+    @Override
     public Book findBookByTitle(String title) {
         EntityManager em = null;
 
@@ -85,6 +90,7 @@ public class LibServiceImpl implements LibService {
         }
     }
 
+    @Override
     public Borrower findBorrowerByName(String name) {
         EntityManager em = null;
 
@@ -112,6 +118,7 @@ public class LibServiceImpl implements LibService {
         }
     }
 
+    @Override
     public void borrowBook(Borrower borrower, Book book) {
         EntityManager em = null;
         EntityTransaction tx = null;
@@ -138,6 +145,7 @@ public class LibServiceImpl implements LibService {
         }
     }
 
+    @Override
     public void returnBook(Book book) {
         EntityManager em = null;
         EntityTransaction tx = null;

@@ -36,27 +36,27 @@ public interface MapChangeTracker
      * If you set to values, it is assumed there is a 1-1 correlation
      * between keys and values in this map.
      */
-    public boolean getTrackKeys();
+    boolean getTrackKeys();
 
     /**
      * Whether to track keys or values. Defaults to keys.
      * If you set to values, it is assumed there is a 1-1 correlation
      * between keys and values in this map.
      */
-    public void setTrackKeys(boolean keys);
+    void setTrackKeys(boolean keys);
 
     /**
      * Record that the given entry was added to the map.
      */
-    public void added(Object key, Object val);
+    void added(Object key, Object val);
 
     /**
      * Record that the given entry was removed from the map.
      */
-    public void removed(Object key, Object val);
+    void removed(Object key, Object val);
 
     /**
      * Record that the given entry was altered.
      */
-    public void changed(Object key, Object oldVal, Object newVal);
+    void changed(Object key, Object oldVal, Object newVal);
 }

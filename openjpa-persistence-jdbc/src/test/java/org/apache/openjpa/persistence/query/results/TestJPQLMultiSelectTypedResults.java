@@ -49,6 +49,7 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
 
     DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 
+    @Override
     public void setUp() throws Exception {
         setUp(CLEAR_TABLES, Order.class, Item.class, Shop.class, Producer.class,
               Person.class, Foo.class, Bar.class,
@@ -99,6 +100,7 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
         em.close();
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

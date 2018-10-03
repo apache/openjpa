@@ -70,11 +70,11 @@ public class AuditManager extends InMemorySavepointManager
 
 		setPreFlush(false);
 		_auditor = auditor;
-		_allTypes = new HashSet<Class<?>>();
-		_newTypes = new HashSet<Class<?>>();
-		_updateTypes = new HashSet<Class<?>>();
-		_deleteTypes = new HashSet<Class<?>>();
-		_saved = new ConcurrentHashMap<Broker, AuditCallback>();
+		_allTypes = new HashSet<>();
+		_newTypes = new HashSet<>();
+		_updateTypes = new HashSet<>();
+		_deleteTypes = new HashSet<>();
+		_saved = new ConcurrentHashMap<>();
 		PCRegistry.addRegisterClassListener(this);
 	}
 
@@ -245,7 +245,7 @@ public class AuditManager extends InMemorySavepointManager
 	private class AuditCallback implements LifecycleListener {
 		private final Broker _broker;
 		private final Map<StateManagerImpl,PersistenceCapable> _audits =
-			new ConcurrentHashMap<StateManagerImpl,PersistenceCapable>();
+			new ConcurrentHashMap<>();
 
 		AuditCallback(Broker broker) {
 			_broker = broker;
@@ -253,9 +253,9 @@ public class AuditManager extends InMemorySavepointManager
 
 		void audit() {
 			if (_audits.isEmpty()) return;
-			Collection<Audited> news = new HashSet<Audited>();
-			Collection<Audited> updates = new HashSet<Audited>();
-			Collection<Audited> deletes = new HashSet<Audited>();
+			Collection<Audited> news = new HashSet<>();
+			Collection<Audited> updates = new HashSet<>();
+			Collection<Audited> deletes = new HashSet<>();
 			for (Map.Entry<StateManagerImpl,PersistenceCapable> e : _audits.entrySet()) {
 				StateManagerImpl sm = e.getKey();
 				Audited audited = new Audited(sm, e.getValue());

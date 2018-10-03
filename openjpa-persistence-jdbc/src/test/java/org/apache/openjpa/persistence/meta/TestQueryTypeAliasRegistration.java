@@ -49,8 +49,8 @@ public class TestQueryTypeAliasRegistration extends SingleEMFTestCase {
      */
     public void testMultiThreadGetMetaDataAlias() throws Exception {
         try {
-            List<Worker> workers = new ArrayList<Worker>();
-            Set<Exception> exceptions = new HashSet<Exception>();
+            List<Worker> workers = new ArrayList<>();
+            Set<Exception> exceptions = new HashSet<>();
             for (int i = 0; i < threads; i++) {
                 Worker w = new Worker(emf);
                 workers.add(w);

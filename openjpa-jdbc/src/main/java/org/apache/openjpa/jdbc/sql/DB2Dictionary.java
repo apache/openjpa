@@ -186,12 +186,14 @@ public class DB2Dictionary
         selectWordSet.add("WITH");
     }
 
+    @Override
     public boolean supportsRandomAccessResultSet(Select sel,
         boolean forUpdate) {
         return !forUpdate
             && super.supportsRandomAccessResultSet(sel, forUpdate);
     }
 
+    @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
         // appends the literal range string, since DB2 is unable to handle
@@ -202,6 +204,7 @@ public class DB2Dictionary
                 append(" ROWS ONLY");
     }
 
+    @Override
     protected void appendSelect(SQLBuffer selectSQL, Object alias, Select sel,
         int idx) {
         // if this is a literal value, add a cast...
@@ -256,6 +259,7 @@ public class DB2Dictionary
         return buf.toString();
     }
 
+    @Override
     public Connection decorate(Connection conn)
         throws SQLException {
         // some versions of the DB2 driver seem to default to
@@ -274,6 +278,7 @@ public class DB2Dictionary
         return conn;
     }
 
+    @Override
     public void connectedConfiguration(Connection conn) throws SQLException {
         super.connectedConfiguration(conn);
 
@@ -380,6 +385,7 @@ public class DB2Dictionary
     }
 
 
+    @Override
     public boolean supportsIsolationForUpdate() {
         return true;
     }
@@ -389,6 +395,7 @@ public class DB2Dictionary
      * isolationLevel hints if it is for update.
      * It also handles the UR hint when it is not for update.
      */
+    @Override
     protected String getForUpdateClause(JDBCFetchConfiguration fetch,
         boolean isForUpdate, Select sel) {
         int isolationLevel;
@@ -568,6 +575,7 @@ public class DB2Dictionary
         return "";
     }
 
+    @Override
     public OpenJPAException newStoreException(String msg, SQLException[] causes, Object failed) {
         if (appendExtendedExceptionText == true && causes != null && causes.length > 0) {
             msg = appendExtendedExceptionMsg(msg, causes[0]);
@@ -633,6 +641,7 @@ public class DB2Dictionary
         return db2ServerType;
     }
 
+    @Override
     protected void appendLength(SQLBuffer buf, int type) {
         if (type == Types.VARCHAR)
             buf.append("(").append(Integer.toString(characterColumnSize)).
@@ -650,6 +659,7 @@ public class DB2Dictionary
      * @param lhsxml indicates whether the left operand maps to xml
      * @param rhsxml indicates whether the right operand maps to xml
      */
+    @Override
     public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
         FilterValue rhs, boolean lhsxml, boolean rhsxml) {
         super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
@@ -773,6 +783,7 @@ public class DB2Dictionary
      * @param val type
      * @return updated string (func)
      */
+    @Override
     public String addCastAsType(String func, Val val) {
         String fstring = null;
         String type = getTypeName(getJDBCType(JavaTypes.getTypeCode(val
@@ -787,6 +798,7 @@ public class DB2Dictionary
      * Return the batch limit. If the batchLimit is -1, change it to 100 for
      * best performance
      */
+    @Override
     public int getBatchLimit() {
         int limit = super.getBatchLimit();
         if (limit == UNLIMITED) {
@@ -804,6 +816,7 @@ public class DB2Dictionary
      * @param func original string
      * @return a String with the correct CAST function syntax
      */
+    @Override
     public String getCastFunction(Val val, String func) {
         if (val instanceof Lit || val instanceof Param) {
             if (func.indexOf("VARCHAR") == -1) {
@@ -821,6 +834,7 @@ public class DB2Dictionary
      * @param col database column
      * @return a String with the correct CAST function syntax
      */
+    @Override
     public String getCastFunction(Val val, String func, Column col) {
         boolean doCast = false;
         if (val instanceof Lit || val instanceof Param) {
@@ -838,6 +852,7 @@ public class DB2Dictionary
         return func;
     }
 
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
             FilterValue start) {
         if (find.getValue() != null) { // non constants
@@ -917,12 +932,14 @@ public class DB2Dictionary
     /**
      * Create an index if necessary for some database tables
      */
+    @Override
     public void createIndexIfNecessary(Schema schema, String table,
         Column pkColumn) {
         createIndexIfNecessary(schema, DBIdentifier.newTable(table),
             pkColumn);
     }
 
+    @Override
     public void createIndexIfNecessary(Schema schema, DBIdentifier table,
             Column pkColumn) {
         if (db2ServerType == db2ZOSV8xOrLater) {
@@ -997,6 +1014,7 @@ public class DB2Dictionary
     /**
      * Set the given value as a parameter to the statement.
      */
+    @Override
     public void setBytes(PreparedStatement stmnt, int idx, byte[] val,
         Column col)
         throws SQLException {
@@ -1015,6 +1033,7 @@ public class DB2Dictionary
      * Convert the specified column of the SQL ResultSet to the proper
      * java type.
      */
+    @Override
     public byte[] getBytes(ResultSet rs, int column)
         throws SQLException {
         if (useGetBytesForBlobs) {
@@ -1092,6 +1111,7 @@ public class DB2Dictionary
     /**
      * Set the given date value as a parameter to the statement.
      */
+    @Override
     public void setDate(PreparedStatement stmnt, int idx, Date val, Column col)
         throws SQLException {
         // When column metadata is not available, DB2 on z/OS does not like the value produced
@@ -1113,6 +1133,7 @@ public class DB2Dictionary
         return getMinorVersion();
     }
 
+    @Override
     public String getDefaultSchemaName()  {
         if (defaultSchemaName == null) {
             Connection conn = null;

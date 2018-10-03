@@ -50,6 +50,7 @@ public class XMLDefFieldMixedPropAccess2 {
         return strField;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLDefFieldMixedPropAccess2) {
             XMLDefFieldMixedPropAccess2 fa = (XMLDefFieldMixedPropAccess2)obj;

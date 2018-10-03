@@ -34,6 +34,7 @@ public class TestInsertOrder extends SQLListenerTestCase {
     private String taskTableName;
     private String storyTableName;
 
+    @Override
     public void setUp() {
         setUp(Employee.class, Task.class, Story.class);
         empTableName = getMapping(Employee.class).getTable().getFullName();
@@ -99,10 +100,10 @@ public class TestInsertOrder extends SQLListenerTestCase {
         Story s = new Story();
         s.setId(id);
 
-        Collection<Task> tasks = new ArrayList<Task>();
+        Collection<Task> tasks = new ArrayList<>();
         tasks.add(t);
 
-        Collection<Story> stories = new ArrayList<Story>();
+        Collection<Story> stories = new ArrayList<>();
         stories.add(s);
 
         e.setTasks(tasks);

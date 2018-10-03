@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.models.company;
 
 public interface ILineItem {
 
-    public void setQuantity(int quantity);
-    public int getQuantity();
+    void setQuantity(int quantity);
+    int getQuantity();
 
-    public void setProduct(IProduct product);
-    public IProduct getProduct();
+    void setProduct(IProduct product);
+    IProduct getProduct();
 }

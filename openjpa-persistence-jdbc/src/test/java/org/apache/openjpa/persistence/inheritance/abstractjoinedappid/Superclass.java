@@ -18,7 +18,13 @@
  */
 package org.apache.openjpa.persistence.inheritance.abstractjoinedappid;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 
 @Entity
 @IdClass(SuperID.class)

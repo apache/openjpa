@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
  */
 public class Log4JLogFactory extends LogFactoryAdapter {
 
+    @Override
     protected Log newLogAdapter(String channel) {
         return new LogAdapter((Logger) LogManager.getLogger(channel));
     }
@@ -49,62 +50,77 @@ public class Log4JLogFactory extends LogFactoryAdapter {
             return _log;
         }
 
+        @Override
         public boolean isTraceEnabled() {
             return _log.isEnabledFor(Level.DEBUG);
         }
 
+        @Override
         public boolean isInfoEnabled() {
             return _log.isEnabledFor(Level.INFO);
         }
 
+        @Override
         public boolean isWarnEnabled() {
             return _log.isEnabledFor(Level.WARN);
         }
 
+        @Override
         public boolean isErrorEnabled() {
             return _log.isEnabledFor(Level.ERROR);
         }
 
+        @Override
         public boolean isFatalEnabled() {
             return _log.isEnabledFor(Level.FATAL);
         }
 
+        @Override
         public void trace(Object o) {
             _log.debug(o);
         }
 
+        @Override
         public void trace(Object o, Throwable t) {
             _log.debug(o, t);
         }
 
+        @Override
         public void info(Object o) {
             _log.info(o);
         }
 
+        @Override
         public void info(Object o, Throwable t) {
             _log.info(o, t);
         }
 
+        @Override
         public void warn(Object o) {
             _log.warn(o);
         }
 
+        @Override
         public void warn(Object o, Throwable t) {
             _log.warn(o, t);
         }
 
+        @Override
         public void error(Object o) {
             _log.error(o);
         }
 
+        @Override
         public void error(Object o, Throwable t) {
             _log.error(o, t);
         }
 
+        @Override
         public void fatal(Object o) {
             _log.fatal(o);
         }
 
+        @Override
         public void fatal(Object o, Throwable t) {
             _log.fatal(o, t);
         }

@@ -43,6 +43,7 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
 
     private JDBCConfiguration _conf;
 
+    @Override
     public void setUp() {
         super.setUp(EntityF.class, EntityG.class);
         Map props = new HashMap(System.getProperties());
@@ -58,7 +59,7 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
         EntityF f = new EntityF();
         f.setId(1);
 
-        List<EntityG> listG = new ArrayList<EntityG>();
+        List<EntityG> listG = new ArrayList<>();
         EntityG g1 = new EntityG();
         g1.setId(1);
         listG.add(g1);
@@ -112,7 +113,7 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
         EntityF f = new EntityF();
         f.setId(1);
 
-        List<EntityG> listG = new ArrayList<EntityG>();
+        List<EntityG> listG = new ArrayList<>();
         EntityG g1 = new EntityG();
         g1.setId(1);
         listG.add(g1);
@@ -151,8 +152,8 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
             , tableG.getName(), c);
 
 
-        ArrayList<String> fkListfromDB = new ArrayList<String>();
-        ArrayList<String> fkListfromTable = new ArrayList<String>();
+        ArrayList<String> fkListfromDB = new ArrayList<>();
+        ArrayList<String> fkListfromTable = new ArrayList<>();
 
         for (int i=0; i< fkfromDB.length; i++) {
             fkListfromDB.add(fkfromDB[i].getName());

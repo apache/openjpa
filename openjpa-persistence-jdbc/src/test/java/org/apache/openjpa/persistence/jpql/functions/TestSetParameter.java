@@ -44,6 +44,7 @@ public class TestSetParameter extends SingleEMFTestCase {
     private static String UPDATED_NAME  = "Obama";
     private static int UPDATED_AGE      = 29;
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, CompUser.class, MaleUser.class,
             FemaleUser.class, Address.class);

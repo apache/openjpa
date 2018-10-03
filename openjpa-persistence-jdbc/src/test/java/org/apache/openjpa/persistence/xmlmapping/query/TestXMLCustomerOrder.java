@@ -24,21 +24,21 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.textui.TestRunner;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.xmlmapping.entities.Customer;
+import org.apache.openjpa.persistence.xmlmapping.entities.Customer.CreditRating;
 import org.apache.openjpa.persistence.xmlmapping.entities.EAddress;
 import org.apache.openjpa.persistence.xmlmapping.entities.Order;
-import org.apache.openjpa.persistence.xmlmapping.entities.Customer.CreditRating;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.Address;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.CANAddress;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.ObjectFactory;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.USAAddress;
+
+import junit.textui.TestRunner;
 
 /**
  * Test query with predicates on persistent field mapped to XML column.
@@ -66,6 +66,7 @@ public class TestXMLCustomerOrder
 
     private static boolean firstTestExecuted;
 
+    @Override
     public void setUp() {
         Object clearOrDropTables = (firstTestExecuted) ? CLEAR_TABLES : DROP_TABLES;
         firstTestExecuted = true;

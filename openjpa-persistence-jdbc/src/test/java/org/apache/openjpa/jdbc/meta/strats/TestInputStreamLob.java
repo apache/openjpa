@@ -40,6 +40,7 @@ public class TestInputStreamLob extends AbstractLobTest {
         super.setUp();
     }
 
+    @Override
     protected LobEntity newLobEntity(String s, int id) {
         InputStreamLobEntity isle = new InputStreamLobEntity();
         isle.setId(id);
@@ -51,6 +52,7 @@ public class TestInputStreamLob extends AbstractLobTest {
         return isle;
     }
 
+    @Override
     protected LobEntity newLobEntityForLoadContent(String s, int id) {
         InputStreamLobEntity isle = new InputStreamLobEntity();
         isle.setId(id);
@@ -58,14 +60,17 @@ public class TestInputStreamLob extends AbstractLobTest {
         return isle;
     }
 
+    @Override
     protected Class getLobEntityClass() {
         return InputStreamLobEntity.class;
     }
 
+    @Override
     protected String getSelectQuery() {
         return "SELECT o FROM InputStreamLobEntity o";
     }
 
+    @Override
     protected String getStreamContentAsString(Object o) throws IOException {
         InputStream is = (InputStream) o;
         String content = "";
@@ -80,6 +85,7 @@ public class TestInputStreamLob extends AbstractLobTest {
         } while (true);
     }
 
+    @Override
     protected void changeStream(LobEntity le, String s) {
         le.setStream(new ByteArrayInputStream(s.getBytes()));
     }

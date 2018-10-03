@@ -29,6 +29,7 @@ public class TestXmlDelimitedIdentifiers extends SQLListenerTestCase {
 
     EntityA entityA;
 
+    @Override
     public void setUp() throws Exception {
         setSupportedDatabases(DB2Dictionary.class, DerbyDictionary.class);
         if (isTestsDisabled())

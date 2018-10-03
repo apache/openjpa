@@ -21,14 +21,19 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex2;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="S6Dept")
 public class Department {
 
     int deptId;
-    Map<EmployeePK, Employee> empMap = new HashMap<EmployeePK, Employee>();
+    Map<EmployeePK, Employee> empMap = new HashMap<>();
 
     @Id
     public int getDeptId() {

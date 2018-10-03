@@ -31,22 +31,27 @@ public class PlainTokenRenderer implements TokenRenderer {
     private boolean showLineNumber = true;
     private String lineNumberFormat  = "%04d";
 
+    @Override
     public String endLine(int line) {
         return EMPTY;
     }
 
+    @Override
     public String newLine(int line) {
         return showLineNumber ? String.format(lineNumberFormat, line) : EMPTY;
     }
 
+    @Override
     public String render(int decision, Token token) {
         return token.getText();
     }
 
+    @Override
     public String getEpilogue() {
         return EMPTY;
     }
 
+    @Override
     public String getPrologue() {
         return EMPTY;
     }

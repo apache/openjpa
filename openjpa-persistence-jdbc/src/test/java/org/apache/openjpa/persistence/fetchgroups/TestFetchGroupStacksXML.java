@@ -19,10 +19,12 @@
 package org.apache.openjpa.persistence.fetchgroups;
 
 public class TestFetchGroupStacksXML extends TestFetchGroupStacks {
+    @Override
     public void setUp() {
         super.setUp();
     }
 
+    @Override
     protected String getPersistenceUnitName() {
         return "fetch-groups-xml";
     }

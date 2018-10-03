@@ -252,6 +252,7 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
 
     public class DCMBeanCallable implements Callable<Boolean> {
 
+        @Override
         public Boolean call() {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             assertNotNull(mbs);
@@ -314,6 +315,7 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
             setQueryMethod(queryMethod);
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public Boolean call() {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();

@@ -66,6 +66,7 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
     public DelayedHashSetProxy() {
     }
 
+    @Override
     public void setOwner(OpenJPAStateManager paramOpenJPAStateManager,
             int paramInt) {
         // If clearing the owner of this proxy, store away what is necessary for
@@ -98,14 +99,17 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
         return false;
     }
 
+    @Override
     public OpenJPAStateManager getOwner() {
         return this.sm;
     }
 
+    @Override
     public int getOwnerField() {
         return this.field;
     }
 
+    @Override
     public ChangeTracker getChangeTracker() {
         return this.changeTracker;
     }
@@ -119,6 +123,7 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
         return new HashSet((Collection) paramObject);
     }
 
+    @Override
     public Class getElementType() {
         return this.elementType;
     }
@@ -127,6 +132,7 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
         elementType = elemType;
     }
 
+    @Override
     public ProxyCollection newInstance(Class paramClass,
             Comparator paramComparator, boolean paramBoolean1,
             boolean paramBoolean2) {
@@ -286,6 +292,7 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
         return super.toString();
     }
 
+    @Override
     public boolean equals(Object paramObject) {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -293,6 +300,7 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
         return super.equals(paramObject);
     }
 
+    @Override
     public int hashCode() {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -303,6 +311,7 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
     // //////////////////////////////////////
     // DelayedProxy methods
     // //////////////////////////////////////
+    @Override
     public int getDelayedField() {
         if (field == -1 || _detached) {
             return _delayedField;
@@ -310,6 +319,7 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
         return field;
     }
 
+    @Override
     public OpenJPAStateManager getDelayedOwner() {
         if (sm == null || _detached) {
             return _delayedSm;
@@ -317,10 +327,12 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
         return sm;
     }
 
+    @Override
     public boolean isDirectAccess() {
         return _directAccess;
     }
 
+    @Override
     public void setDirectAccess(boolean direct) {
         _directAccess = direct;
     }

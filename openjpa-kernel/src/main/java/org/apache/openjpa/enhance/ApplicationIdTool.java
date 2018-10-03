@@ -55,9 +55,11 @@ import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataFactory;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.UserException;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
 import serp.bytecode.Project;
@@ -99,8 +101,8 @@ public class ApplicationIdTool {
         _type = type;
 
         MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
-        repos.setValidate(repos.VALIDATE_NONE);
-        repos.setSourceMode(repos.MODE_MAPPING, false);
+        repos.setValidate(MetaDataRepository.VALIDATE_NONE);
+        repos.setSourceMode(MetaDataModes.MODE_MAPPING, false);
         loadObjectIds(repos, true);
         _meta = repos.getMetaData(type, null, false);
         if (_meta != null) {
@@ -1284,6 +1286,7 @@ public class ApplicationIdTool {
         final String[] arguments = opts.setFromCmdLine(args);
         boolean ret = Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts)
                 throws ClassNotFoundException, IOException {
                 OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
@@ -1349,7 +1352,7 @@ public class ApplicationIdTool {
         Flags flags, ClassLoader loader)
         throws IOException, ClassNotFoundException {
         MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
-        repos.setValidate(repos.VALIDATE_NONE, true);
+        repos.setValidate(MetaDataRepository.VALIDATE_NONE, true);
         loadObjectIds(repos, flags.name == null && flags.suffix == null);
 
         Log log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
@@ -1473,12 +1476,12 @@ public class ApplicationIdTool {
      * Interface implemented by metadata factories that can load non-existant
      * object id classes.
      */
-    public static interface ObjectIdLoader
+    public interface ObjectIdLoader
 	{
 		/**
          * Turn on the loading of all identity classes, even if they don't
          * exist.
 	 	 */
-		public void setLoadObjectIds ();
+		void setLoadObjectIds ();
 	}
 }

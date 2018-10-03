@@ -37,7 +37,7 @@ public class Node {
     private int version;
 
     @OneToMany
-    private List<Node> nodes = new ArrayList<Node>();
+    private List<Node> nodes = new ArrayList<>();
 
     public int getId() {
         return id;

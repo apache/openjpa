@@ -44,46 +44,46 @@ public interface FetchPlan {
     /**
      * Fetch group representing all fields.
      */
-    public static final String GROUP_ALL = FetchGroup.NAME_ALL;
+    String GROUP_ALL = FetchGroup.NAME_ALL;
 
     /**
      * The default fetch group.
      */
-    public static final String GROUP_DEFAULT = FetchGroup.NAME_DEFAULT;
+    String GROUP_DEFAULT = FetchGroup.NAME_DEFAULT;
 
     /**
      * Infinite fetch depth.
      */
-    public static final int DEPTH_INFINITE = FetchGroup.DEPTH_INFINITE;
+    int DEPTH_INFINITE = FetchGroup.DEPTH_INFINITE;
 
     /**
      * Constant to revert any setting to its default value.
      */
-    public static final int DEFAULT = FetchConfiguration.DEFAULT;
+    int DEFAULT = FetchConfiguration.DEFAULT;
 
     /**
      * The maximum fetch depth when loading an object.
      */
-    public int getMaxFetchDepth();
+    int getMaxFetchDepth();
 
     /**
      * The maximum fetch depth when loading an object.
      */
-    public FetchPlan setMaxFetchDepth(int depth);
+    FetchPlan setMaxFetchDepth(int depth);
 
     /**
      * Return the fetch batch size for large result set support.
      * Defaults to the	<code>openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
-    public int getFetchBatchSize();
+    int getFetchBatchSize();
 
     /**
      * Set the fetch batch size for large result set support.
      * Defaults to the	<code>openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
-    public FetchPlan setFetchBatchSize(int fetchBatchSize);
+    FetchPlan setFetchBatchSize(int fetchBatchSize);
 
     /**
      * Return whether or not query caching is enabled. If this returns
@@ -94,7 +94,7 @@ public interface FetchPlan {
      *
      * @since 1.0.0
      */
-    public boolean getQueryResultCacheEnabled();
+    boolean getQueryResultCacheEnabled();
 
     /**
      * Control whether or not query caching is enabled. This has no effect
@@ -103,17 +103,17 @@ public interface FetchPlan {
      *
      * @since 1.0.0
      */
-    public FetchPlan setQueryResultCacheEnabled(boolean cache);
+    FetchPlan setQueryResultCacheEnabled(boolean cache);
 
     /**
      * @deprecated use {@link #getQueryResultCacheEnabled()} instead.
      */
-    public boolean getQueryResultCache();
+    @Deprecated boolean getQueryResultCache();
 
     /**
      * @deprecated use {@link #setQueryResultCacheEnabled} instead.
      */
-    public FetchPlan setQueryResultCache(boolean cache);
+    @Deprecated FetchPlan setQueryResultCache(boolean cache);
 
 
     /**
@@ -121,42 +121,42 @@ public interface FetchPlan {
      * when loading objects. Defaults to the
      * <code>openjpa.FetchGroups</code> setting.
      */
-    public Collection<String> getFetchGroups();
+    Collection<String> getFetchGroups();
 
     /**
      * Adds <code>group</code> to the set of fetch group to
      * use when loading objects.
      */
-    public FetchPlan addFetchGroup(String group);
+    FetchPlan addFetchGroup(String group);
 
     /**
      * Adds <code>groups</code> to the set of fetch group names to
      * use when loading objects.
      */
-    public FetchPlan addFetchGroups(String... groups);
+    FetchPlan addFetchGroups(String... groups);
 
     /**
      * Adds <code>groups</code> to the set of fetch group names to
      * use when loading objects.
      */
-    public FetchPlan addFetchGroups(Collection groups);
+    FetchPlan addFetchGroups(Collection groups);
 
     /**
      * Remove the given fetch group.
      */
-    public FetchPlan removeFetchGroup(String group);
+    FetchPlan removeFetchGroup(String group);
 
     /**
      * Removes <code>groups</code> from the set of fetch group names
      * to use when loading objects.
      */
-    public FetchPlan removeFetchGroups(String... groups);
+    FetchPlan removeFetchGroups(String... groups);
 
     /**
      * Removes <code>groups</code> from the set of fetch group names
      * to use when loading objects.
      */
-    public FetchPlan removeFetchGroups(Collection groups);
+    FetchPlan removeFetchGroups(Collection groups);
 
     /**
      * Clears the set of fetch group names to use wen loading
@@ -164,208 +164,208 @@ public interface FetchPlan {
      * the default fetch group (and any requested field) will be
      * loaded when loading an object.
      */
-    public FetchPlan clearFetchGroups();
+    FetchPlan clearFetchGroups();
 
     /**
      * Resets the set of fetch groups to the list in the global configuration.
      */
-    public FetchPlan resetFetchGroups();
+    FetchPlan resetFetchGroups();
 
     /**
      * Returns the fully qualified names of the fields that this component
      * will use when loading objects. Defaults to the empty set.
      */
-    public Collection<String> getFields();
+    Collection<String> getFields();
 
     /**
      * Return true if the given field has been added.
      */
-    public boolean hasField(String field);
+    boolean hasField(String field);
 
     /**
      * Return true if the given field has been added.
      */
-    public boolean hasField(Class cls, String field);
+    boolean hasField(Class cls, String field);
 
     /**
      * Adds <code>field</code> to the set of fully-qualified field names to
      * use when loading objects.
      */
-    public FetchPlan addField(String field);
+    FetchPlan addField(String field);
 
     /**
      * Adds <code>field</code> to the set of field names to
      * use when loading objects.
      */
-    public FetchPlan addField(Class cls, String field);
+    FetchPlan addField(Class cls, String field);
 
     /**
      * Adds <code>fields</code> to the set of fully-qualified field names to
      * use when loading objects.
      */
-    public FetchPlan addFields(String... fields);
+    FetchPlan addFields(String... fields);
 
     /**
      * Adds <code>fields</code> to the set of field names to
      * use when loading objects.
      */
-    public FetchPlan addFields(Class cls, String... fields);
+    FetchPlan addFields(Class cls, String... fields);
 
     /**
      * Adds <code>fields</code> to the set of fully-qualified field names to
      * use when loading objects.
      */
-    public FetchPlan addFields(Collection fields);
+    FetchPlan addFields(Collection fields);
 
     /**
      * Adds <code>fields</code> to the set of field names to
      * use when loading objects.
      */
-    public FetchPlan addFields(Class cls, Collection fields);
+    FetchPlan addFields(Class cls, Collection fields);
 
     /**
      * Remove the given fully-qualified field.
      */
-    public FetchPlan removeField(String field);
+    FetchPlan removeField(String field);
 
     /**
      * Remove the given field.
      */
-    public FetchPlan removeField(Class cls, String field);
+    FetchPlan removeField(Class cls, String field);
 
     /**
      * Removes <code>fields</code> from the set of fully-qualified field names
      * to use when loading objects.
      */
-    public FetchPlan removeFields(String... fields);
+    FetchPlan removeFields(String... fields);
 
     /**
      * Removes <code>fields</code> from the set of field names
      * to use when loading objects.
      */
-    public FetchPlan removeFields(Class cls, String... fields);
+    FetchPlan removeFields(Class cls, String... fields);
 
     /**
      * Removes <code>fields</code> from the set of fully-qualified field names
      * to use when loading objects.
      */
-    public FetchPlan removeFields(Collection fields);
+    FetchPlan removeFields(Collection fields);
 
     /**
      * Removes <code>fields</code> from the set of field names
      * to use when loading objects.
      */
-    public FetchPlan removeFields(Class cls, Collection fields);
+    FetchPlan removeFields(Class cls, Collection fields);
 
     /**
      * Clears the set of field names to use wen loading
      * data. After this operation is invoked, only those fields in
      * the configured fetch groups will be loaded when loading an object.
      */
-    public FetchPlan clearFields();
+    FetchPlan clearFields();
 
     /**
      * The number of milliseconds to wait for an object lock, or -1 for no
      * limit.
      */
-    public int getLockTimeout();
+    int getLockTimeout();
 
     /**
      * The number of milliseconds to wait for an object lock, or -1 for no
      * limit.
      */
-    public FetchPlan setLockTimeout(int timeout);
+    FetchPlan setLockTimeout(int timeout);
 
     /**
      * The lock scope to use for locking loaded objects.
      */
-    public PessimisticLockScope getLockScope();
+    PessimisticLockScope getLockScope();
 
     /**
      * The lock scope to use for locking loaded objects.
      */
-    public FetchPlan setLockScope(PessimisticLockScope scope);
+    FetchPlan setLockScope(PessimisticLockScope scope);
 
     /**
      * The number of milliseconds to wait for a query, or -1 for no
      * limit.
      */
-    public int getQueryTimeout();
+    int getQueryTimeout();
 
     /**
      * The number of milliseconds to wait for a query, or -1 for no
      * limit.
      */
-    public FetchPlan setQueryTimeout(int timeout);
+    FetchPlan setQueryTimeout(int timeout);
 
     /**
      * The lock level to use for locking loaded objects.
      */
-    public LockModeType getReadLockMode();
+    LockModeType getReadLockMode();
 
     /**
      * The lock level to use for locking loaded objects.
      */
-    public FetchPlan setReadLockMode(LockModeType mode);
+    FetchPlan setReadLockMode(LockModeType mode);
 
     /**
      * The lock level to use for locking dirtied objects.
      */
-    public LockModeType getWriteLockMode();
+    LockModeType getWriteLockMode();
 
     /**
      * The lock level to use for locking dirtied objects.
      */
-    public FetchPlan setWriteLockMode(LockModeType mode);
+    FetchPlan setWriteLockMode(LockModeType mode);
 
     /**
      * @deprecated cast to {@link FetchPlanImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    @Reflectable(false)
-    public org.apache.openjpa.kernel.FetchConfiguration getDelegate();
+    @Deprecated
+    @Reflectable(false) org.apache.openjpa.kernel.FetchConfiguration getDelegate();
 
     /**
      * Affirms if extended path lookup feature is active.
      *
      * @since 2.0.0
      */
-    public boolean getExtendedPathLookup();
+    boolean getExtendedPathLookup();
 
     /**
      * Sets extended path lookup feature.
      *
      * @since 2.0.0
      */
-    public FetchPlan setExtendedPathLookup(boolean flag);
+    FetchPlan setExtendedPathLookup(boolean flag);
 
     /**
      * Gets the current storage mode for data cache.
      *
      * @since 2.0.0
      */
-    public DataCacheStoreMode getCacheStoreMode();
+    DataCacheStoreMode getCacheStoreMode();
 
     /**
      * Sets the current storage mode for data cache.
      *
      * @since 2.0.0
      */
-    public FetchPlan setCacheStoreMode(DataCacheStoreMode mode);
+    FetchPlan setCacheStoreMode(DataCacheStoreMode mode);
 
     /**
      * Gets the current retrieve mode for data cache.
      *
      * @since 2.0.0
      */
-    public DataCacheRetrieveMode getCacheRetrieveMode();
+    DataCacheRetrieveMode getCacheRetrieveMode();
 
     /**
      * Sets the current retrieve mode for data cache.
      *
      * @since 2.0.0
      */
-    public FetchPlan setCacheRetrieveMode(DataCacheRetrieveMode mode);
+    FetchPlan setCacheRetrieveMode(DataCacheRetrieveMode mode);
 
     /**
      * Set the hint for the given key to the given value.
@@ -375,7 +375,7 @@ public interface FetchPlan {
      *
      * @since 2.0.0
      */
-    public void setHint(String key, Object value);
+    void setHint(String key, Object value);
 
     /**
      * Get the hints and their values currently set on this receiver.

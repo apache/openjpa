@@ -39,6 +39,8 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
 public class DelegatingBrokerFactory
     implements BrokerFactory {
 
+    
+    private static final long serialVersionUID = 1L;
     private final BrokerFactory _factory;
     private final DelegatingBrokerFactory _del;
     private final RuntimeExceptionTranslator _trans;
@@ -77,10 +79,12 @@ public class DelegatingBrokerFactory
         return (_del == null) ? _factory : _del.getInnermostDelegate();
     }
 
+    @Override
     public int hashCode() {
         return getInnermostDelegate().hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -96,6 +100,7 @@ public class DelegatingBrokerFactory
         return (_trans == null) ? re : _trans.translate(re);
     }
 
+    @Override
     public OpenJPAConfiguration getConfiguration() {
         try {
             return _factory.getConfiguration();
@@ -104,6 +109,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public Map<String,Object> getProperties() {
         try {
             return _factory.getProperties();
@@ -112,6 +118,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public Set<String> getSupportedProperties() {
         try {
             return _factory.getSupportedProperties();
@@ -120,6 +127,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public Object putUserObject(Object key, Object val) {
         try {
             return _factory.putUserObject(key, val);
@@ -128,6 +136,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public Object getUserObject(Object key) {
         try {
             return _factory.getUserObject(key);
@@ -136,6 +145,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public Broker newBroker() {
         try {
             return _factory.newBroker();
@@ -144,10 +154,12 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public Broker newBroker(String user, String pass, boolean managed,
         int connRetainMode, boolean findExisting) {
         return newBroker(user, pass, managed, connRetainMode, findExisting, "", "");
     }
+    @Override
     public Broker newBroker(String user, String pass, boolean managed,
         int connRetainMode, boolean findExisting, String cfName, String cf2Name) {
         try {
@@ -158,6 +170,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public void addLifecycleListener(Object listener, Class[] classes) {
         try {
             _factory.addLifecycleListener(listener, classes);
@@ -166,6 +179,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public void removeLifecycleListener(Object listener) {
         try {
             _factory.removeLifecycleListener(listener);
@@ -174,6 +188,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public void addTransactionListener(Object listener) {
         try {
             _factory.addTransactionListener(listener);
@@ -182,6 +197,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public void removeTransactionListener(Object listener) {
         try {
             _factory.removeTransactionListener(listener);
@@ -190,6 +206,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public void close() {
         try {
             _factory.close();
@@ -198,6 +215,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public boolean isClosed() {
         try {
             return _factory.isClosed();
@@ -206,6 +224,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public void lock() {
         try {
             _factory.lock();
@@ -214,6 +233,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public void unlock() {
         try {
             _factory.unlock();
@@ -222,6 +242,7 @@ public class DelegatingBrokerFactory
 		}
 	}
 
+    @Override
     public void assertOpen() {
         try {
             _factory.assertOpen();
@@ -230,6 +251,7 @@ public class DelegatingBrokerFactory
         }
     }
 
+    @Override
     public void postCreationCallback() {
         try {
             _factory.postCreationCallback();

@@ -42,6 +42,7 @@ public abstract class AbstractLockManager
      */
     protected Log log;
 
+    @Override
     public void setContext(StoreContext ctx) {
         this.ctx = ctx;
         this.log = ctx.getConfiguration().getLog
@@ -55,6 +56,7 @@ public abstract class AbstractLockManager
     /**
      * Delegates to {@link LockManager#lock} with each element of the collection
      */
+    @Override
     public void lockAll(Collection sms, int level, int timeout,
         Object context) {
         for (Iterator<?> itr = sms.iterator(); itr.hasNext();)
@@ -64,18 +66,21 @@ public abstract class AbstractLockManager
     /**
      * Does nothing by default.
      */
+    @Override
     public void beginTransaction() {
     }
 
     /**
      * Does nothing by default.
      */
+    @Override
     public void endTransaction() {
     }
 
     /**
      * Does nothing by default.
      */
+    @Override
     public void close () {
 	}
 

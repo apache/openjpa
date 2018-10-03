@@ -32,6 +32,7 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 
@@ -88,9 +89,10 @@ public class TestEnhancementWithMultiplePUs
 
         // build up a writer that just stores to a list so that we don't
         // mutate the disk.
-        final List<String> written = new ArrayList<String>();
+        final List<String> written = new ArrayList<>();
         BytecodeWriter writer = new BytecodeWriter() {
 
+            @Override
             public void write(BCClass type) throws IOException {
                 assertTrue(Arrays.asList(type.getInterfaceNames()).contains(
                     PersistenceCapable.class.getName()));
@@ -128,9 +130,10 @@ public class TestEnhancementWithMultiplePUs
 
         // build up a writer that just stores to a list so that we don't
         // mutate the disk.
-        final List<String> written = new ArrayList<String>();
+        final List<String> written = new ArrayList<>();
         BytecodeWriter writer = new BytecodeWriter() {
 
+            @Override
             public void write(BCClass type) throws IOException {
                 assertTrue(Arrays.asList(type.getInterfaceNames()).contains(
                     PersistenceCapable.class.getName()));

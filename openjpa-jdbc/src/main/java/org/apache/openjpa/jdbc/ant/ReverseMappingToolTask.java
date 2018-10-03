@@ -25,7 +25,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Properties;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.PropertiesReverseCustomizer;
@@ -37,6 +36,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.tools.ant.types.EnumeratedAttribute;
 
 /**
@@ -255,10 +255,12 @@ public class ReverseMappingToolTask
         return flags.format;
     }
 
+    @Override
     protected ConfigurationImpl newConfiguration() {
         return new JDBCConfigurationImpl();
     }
 
+    @Override
     protected void executeOn(String[] files)
         throws Exception {
         ClassLoader loader = getClassLoader();
@@ -298,6 +300,7 @@ public class ReverseMappingToolTask
     public static class Level
         extends EnumeratedAttribute {
 
+        @Override
         public String[] getValues() {
             return new String[]{
                 "package",
@@ -310,6 +313,7 @@ public class ReverseMappingToolTask
     public static class AccessType
         extends EnumeratedAttribute {
 
+        @Override
         public String[] getValues() {
             return new String[]{
                 "field",

@@ -19,11 +19,12 @@
 
 package org.apache.openjpa.persistence.relations;
 
+import javax.persistence.EntityManager;
+
 import org.apache.openjpa.persistence.relations.entity.IncompleteRelationshipChildEntity;
 import org.apache.openjpa.persistence.relations.entity.IncompleteRelationshipParentEntity;
 import org.apache.openjpa.persistence.relations.entity.IncompleteRelationshipSubclass;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import javax.persistence.EntityManager;
 
 /**
  * A test case that tests for incomplete foreign-key relationships and ensures

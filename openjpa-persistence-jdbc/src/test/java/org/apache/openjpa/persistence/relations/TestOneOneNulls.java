@@ -19,12 +19,14 @@
 package org.apache.openjpa.persistence.relations;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that both sides of a mapped-by relation are null when not set
@@ -38,6 +40,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
     private long cid1;
     private long cid2;
 
+    @Override
     public void setUp() {
         setUp(BidiParent.class, BidiChild.class, CLEAR_TABLES);
 

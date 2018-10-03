@@ -28,8 +28,8 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
-@SuppressWarnings("serial")
 public class StatusBar extends JPanel implements PropertyChangeListener {
+    private static final long serialVersionUID = 1L;
     private JProgressBar progressBar;
     private JProgressBar memoryBar;
     private JLabel messageText;
@@ -76,6 +76,7 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
     /**
      * Invoked when task's progress property changes.
      */
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("progress".equals(evt.getPropertyName())) {
             progressBar.setValue((Integer)evt.getNewValue());
@@ -138,7 +139,7 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
             long usedMemory = totalMemory-jvm.freeMemory();
             int usedPct = (int)((100*usedMemory)/totalMemory);
             bar.setForeground(getColor(usedPct));
-            bar.setValue((int)usedPct);
+            bar.setValue(usedPct);
             bar.setString(usedPct + "% (" + mb(usedMemory) + "/" + mb(totalMemory) + "MB) ");
         }
 

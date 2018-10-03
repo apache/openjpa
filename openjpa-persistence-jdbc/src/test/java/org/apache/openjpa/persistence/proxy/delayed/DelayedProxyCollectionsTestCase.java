@@ -46,8 +46,9 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
     protected static Set<String> _delayMethods;
     protected static Set<Class<?>> _ignoreInterfaces;
 
+    @Override
     public void setUp(Object...props) {
-        List<Object> parms = new ArrayList<Object>();
+        List<Object> parms = new ArrayList<>();
         parms.addAll(Arrays.asList(
                 CLEAR_TABLES,
                 "openjpa.ProxyManager", "delayCollectionLoading=true",
@@ -77,7 +78,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
 
     static {
         // non-indexed delay-capable methods
-        _delayMethods = new HashSet<String>();
+        _delayMethods = new HashSet<>();
         // generic collection
         _delayMethods.add(stringMethodName("add", new Class<?>[] {Object.class}));
         _delayMethods.add(stringMethodName("remove", new Class<?>[] {Object.class}));
@@ -90,7 +91,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         _delayMethods.add(stringMethodName("removeElement", new Class<?>[] {Object.class}));
 
         // non-trigger methods
-        _ignoreMethods = new HashSet<String>();
+        _ignoreMethods = new HashSet<>();
         _ignoreMethods.add(stringMethodName("trimToSize", null));
         _ignoreMethods.add(stringMethodName("ensureCapacity", new Class<?>[] {int.class}));
         _ignoreMethods.add(stringMethodName("comparator", null));
@@ -103,7 +104,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         _ignoreMethods.add(stringMethodName("notify", null));
         _ignoreMethods.add(stringMethodName("notifyAll", null));
 
-        _ignoreInterfaces = new HashSet<Class<?>>();
+        _ignoreInterfaces = new HashSet<>();
         _ignoreInterfaces.add(DelayedProxy.class);
         _ignoreInterfaces.add(Proxy.class);
         _ignoreInterfaces.add(ProxyCollection.class);

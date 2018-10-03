@@ -18,8 +18,10 @@
  */
 package org.apache.openjpa.persistence.models.company.basic;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+
+import org.apache.openjpa.persistence.models.company.IFullTimeEmployee;
 
 @Entity(name="BAS_FullTimeEmployee")
 public class FullTimeEmployee extends Employee
@@ -27,10 +29,12 @@ public class FullTimeEmployee extends Employee
     @Basic
     private float salary;
 
+    @Override
     public void setSalary(float salary) {
         this.salary = salary;
     }
 
+    @Override
     public float getSalary() {
         return this.salary;
     }

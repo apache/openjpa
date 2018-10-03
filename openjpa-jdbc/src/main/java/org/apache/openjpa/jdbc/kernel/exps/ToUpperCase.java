@@ -30,6 +30,9 @@ import org.apache.openjpa.jdbc.sql.Select;
 public class ToUpperCase
     extends StringFunction {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the string to operate on.
      */
@@ -37,6 +40,7 @@ public class ToUpperCase
         super(val);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf, int index) {
 
@@ -55,6 +59,7 @@ public class ToUpperCase
         buf.append(func.substring(idx + 3));
     }
 
+    @Override
     public int getId() {
         return Val.UPPER_VAL;
     }

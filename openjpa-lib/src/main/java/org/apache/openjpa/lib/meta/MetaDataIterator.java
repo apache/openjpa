@@ -34,27 +34,27 @@ public interface MetaDataIterator extends Closeable {
     /**
      * Return whether there is another resource to iterate over.
      */
-    public boolean hasNext() throws IOException;
+    boolean hasNext() throws IOException;
 
     /**
      * Return the next metadata resource.
      */
-    public Object next() throws IOException;
+    Object next() throws IOException;
 
     /**
      * Return the last-iterated metadata resource content as a stream.
      */
-    public InputStream getInputStream() throws IOException;
+    InputStream getInputStream() throws IOException;
 
     /**
      * Return the last-iterated metadata resource content as a file, or null
      * if not an extant file.
      */
-    public File getFile() throws IOException;
+    File getFile() throws IOException;
 
     /**
      * Close the resources used by this iterator.
      */
-    public void close();
+    @Override void close();
 }
 

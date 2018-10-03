@@ -119,7 +119,7 @@ public class TestCriteriaMultiselectAliasing extends SQLListenerTestCase {
     public CriteriaQuery<Tuple> createCriteriaBuilder(){
             EntityManager em = emf.createEntityManager();
 
-            List<Predicate> predicates = new ArrayList<Predicate>();
+            List<Predicate> predicates = new ArrayList<>();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
             Root<DimDay> day = cq.from(DimDay.class);
@@ -134,7 +134,7 @@ public class TestCriteriaMultiselectAliasing extends SQLListenerTestCase {
             Root<FactWorkAssignment> wa1 = subQuery.from(FactWorkAssignment.class);
 
             subQuery.select(wa1.get(FactWorkAssignment_.personObjId));
-            List<Predicate> subQueryPredicates = new ArrayList<Predicate>();
+            List<Predicate> subQueryPredicates = new ArrayList<>();
             subQueryPredicates.add(cb.equal(wa1.get(FactWorkAssignment_.orgOID), "dummy1"));
 
             //Removing this seem to "fix" the issue....I think the fact that we use 'day' from
@@ -154,7 +154,7 @@ public class TestCriteriaMultiselectAliasing extends SQLListenerTestCase {
 
             predicates.add(predicate);
 
-            List<Selection<?>> selections = new ArrayList<Selection<?>>();
+            List<Selection<?>> selections = new ArrayList<>();
 
             Expression<Integer> expHC = wa.get(FactWorkAssignment_.employeeCount);
             selections.add(expHC);

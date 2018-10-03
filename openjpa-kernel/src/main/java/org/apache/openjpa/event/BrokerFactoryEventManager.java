@@ -18,10 +18,11 @@
  */
 package org.apache.openjpa.event;
 
-import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
-import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.util.EventManager;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 
 /**
  * {@link EventManager} responsible for notifying listeners of
@@ -32,6 +33,9 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 public class BrokerFactoryEventManager
     extends AbstractConcurrentEventManager {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage(
         BrokerFactoryEventManager.class);
 
@@ -41,6 +45,7 @@ public class BrokerFactoryEventManager
         _conf = conf;
     }
 
+    @Override
     protected void fireEvent(Object event, Object listener) {
         try {
             BrokerFactoryEvent e = (BrokerFactoryEvent) event;

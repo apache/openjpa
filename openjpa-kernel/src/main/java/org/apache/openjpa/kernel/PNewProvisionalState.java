@@ -26,9 +26,8 @@ package org.apache.openjpa.kernel;
  * @author Steve Kim
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class PNewProvisionalState
-    extends PCState {
+class PNewProvisionalState extends PCState {
+    private static final long serialVersionUID = 1L;
 
     @Override
     void initialize(StateManagerImpl context, PCState previous) {
@@ -37,62 +36,76 @@ class PNewProvisionalState
         context.saveFields(false);
     }
 
+    @Override
     PCState persist(StateManagerImpl context) {
         return PNEW;
     }
 
+    @Override
     PCState nonprovisional(StateManagerImpl context, boolean logical,
         OpCallbacks call) {
         context.preFlush(logical, call);
         return PNEW;
     }
 
+    @Override
     PCState commit(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState commitRetain(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState rollback(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState rollbackRestore(StateManagerImpl context) {
         context.restoreFields();
         return TRANSIENT;
     }
 
+    @Override
     PCState delete(StateManagerImpl context) {
         context.preDelete();
         return TRANSIENT;
     }
 
+    @Override
     PCState release(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     boolean isTransactional() {
         return true;
     }
 
+    @Override
     boolean isPersistent() {
         return true;
     }
 
+    @Override
     boolean isNew() {
         return true;
     }
 
+    @Override
     boolean isDirty() {
         return true;
     }
 
+    @Override
     boolean isProvisional() {
         return true;
     }
 
+    @Override
     public String toString() {
         return "Persistent-New-Provisional";
     }

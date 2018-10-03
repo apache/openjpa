@@ -171,6 +171,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         return e;
     }
 
+    @Override
     protected Log getLog() {
         return emf.getConfiguration().getLog("Tests");
     }
@@ -305,7 +306,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
             }
         }
         int numThreads = actions.length;
-        threads = new ArrayList<TestThread>(numThreads);
+        threads = new ArrayList<>(numThreads);
         TestThread mainThread = new TestThread(0, actions);
         threads.add(mainThread);
         launchCommonSequence(mainThread);
@@ -671,7 +672,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                 case TestException:
                     List<Class<?>> expectedExceptions = null;
                     if (args.length > 2) {
-                        expectedExceptions = new ArrayList<Class<?>>();
+                        expectedExceptions = new ArrayList<>();
                         for (int i = 2; i < args.length; ++i) {
                             if (args[i] instanceof Object[]) {
                                 for (Object o : (Object[]) args[i]) {
@@ -784,7 +785,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                         (endTime-System.currentTimeMillis()) + "ms.");
                     int deadThreads = 0;
                     List<TestThread> proceedThread =
-                        new ArrayList<TestThread>(threads);
+                        new ArrayList<>(threads);
                     while (proceedThread.size() > 0
                         && System.currentTimeMillis() < endTime) {
                         for (TestThread thread : proceedThread) {
@@ -958,7 +959,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
     private Map<String, Object> buildPropsMap(Object[] args, int startIdx) {
         Map<String, Object> props = null;
         if (args.length > startIdx) {
-            props = new HashMap<String, Object>();
+            props = new HashMap<>();
             while (startIdx < (args.length - 1)) {
                 props.put((String) args[startIdx], args[startIdx + 1]);
                 startIdx += 2;
@@ -1003,13 +1004,14 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
             this.threadToRun = threadToRun;
             this.actions = actions;
 
-            this.employees = new HashMap<Integer, LockEmployee>();
+            this.employees = new HashMap<>();
         }
 
         public synchronized void notifyThread() {
             notify();
         }
 
+        @Override
         public synchronized void run() {
         	// sleep and let other threads has a chance to do stuffs,
         	// otherwise this new thread may perform a notify before
@@ -1030,6 +1032,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
             return loopCnt;
         }
 
+        @Override
         public synchronized void run() {
             while (true) {
                 ++loopCnt;

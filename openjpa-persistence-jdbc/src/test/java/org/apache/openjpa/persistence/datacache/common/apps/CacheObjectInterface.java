@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.datacache.common.apps;
 
 public interface CacheObjectInterface {
 
-    public void setStr(String val);
+    void setStr(String val);
 
-    public String getStr();
+    String getStr();
 }

@@ -31,23 +31,30 @@ import org.apache.openjpa.lib.util.SimpleRegex;
  *
  * @deprecated Use <code>matches()</code> instead.
  */
+@Deprecated
 public class WildcardMatch
     implements FilterListener {
 
+    
+    private static final long serialVersionUID = 1L;
     public static final String TAG = "wildcardMatch";
 
+    @Override
     public String getTag() {
         return TAG;
     }
 
+    @Override
     public boolean expectsArguments() {
         return true;
     }
 
+    @Override
     public boolean expectsTarget() {
         return true;
     }
 
+    @Override
     public Object evaluate(Object target, Class targetClass, Object[] args,
         Class[] argClasses, Object candidate, StoreContext ctx) {
         if (target == null || args[0] == null)
@@ -63,6 +70,7 @@ public class WildcardMatch
         return (re.matches(target.toString())) ? Boolean.TRUE : Boolean.FALSE;
     }
 
+    @Override
     public Class getType(Class targetClass, Class[] argClasses) {
         return boolean.class;
     }

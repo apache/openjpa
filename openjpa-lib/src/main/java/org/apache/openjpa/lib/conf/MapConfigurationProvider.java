@@ -51,10 +51,12 @@ public class MapConfigurationProvider implements ConfigurationProvider {
         addProperties(props);
     }
 
+    @Override
     public Map getProperties() {
         return (_props == null) ? Collections.EMPTY_MAP : _props;
     }
 
+    @Override
     public void addProperties(Map props) {
         if (props == null || props.isEmpty())
             return;
@@ -63,12 +65,14 @@ public class MapConfigurationProvider implements ConfigurationProvider {
         _props.putAll(props);
     }
 
+    @Override
     public Object addProperty(String key, Object value) {
         if (_props == null)
             _props = new HashMap();
         return _props.put(key, value);
     }
 
+    @Override
     public void setInto(Configuration conf) {
         setInto(conf, conf.getConfigurationLog());
     }

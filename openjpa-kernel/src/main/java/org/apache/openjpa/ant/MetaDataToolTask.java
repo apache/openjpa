@@ -21,8 +21,6 @@ package org.apache.openjpa.ant;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.ant.AbstractTask;
@@ -30,6 +28,8 @@ import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataTool;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.types.EnumeratedAttribute;
 
 /**
  * Executes the metadata tool on the specified files. This task can
@@ -61,10 +61,12 @@ public class MetaDataToolTask
         this.fileName = fileName;
     }
 
+    @Override
     protected ConfigurationImpl newConfiguration() {
         return new OpenJPAConfigurationImpl();
     }
 
+    @Override
     protected void executeOn(String[] files)
         throws IOException {
         ClassLoader loader = getClassLoader();
@@ -83,6 +85,7 @@ public class MetaDataToolTask
     public static class Action
         extends EnumeratedAttribute {
 
+        @Override
         public String[] getValues() {
             return MetaDataTool.ACTIONS;
         }

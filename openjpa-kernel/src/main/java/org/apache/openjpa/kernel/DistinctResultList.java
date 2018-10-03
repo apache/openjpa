@@ -48,7 +48,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
     private final RuntimeExceptionTranslator _trans;
 
     public DistinctResultList(ResultList<E> list, RuntimeExceptionTranslator trans) {
-        _del = new ArrayList<E>();
+        _del = new ArrayList<>();
         _trans = trans;
         for (E e : list) {
             if (!_del.contains(e))
@@ -56,22 +56,27 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public boolean add(E o) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void add(int index, E element) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean addAll(Collection<? extends E> c) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean addAll(int index, Collection<? extends E> c) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void clear() {
         try {
             _del.clear();
@@ -80,6 +85,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public boolean contains(Object o) {
         try {
             return _del.contains(o);
@@ -88,6 +94,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public boolean containsAll(Collection<?> c) {
         try {
             return _del.containsAll(c);
@@ -96,6 +103,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public E get(int index) {
         try {
             return _del.get(index);
@@ -104,6 +112,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public int indexOf(Object o) {
         try {
             return _del.indexOf(o);
@@ -112,6 +121,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public boolean isEmpty() {
         try {
             return _del.isEmpty();
@@ -120,6 +130,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public Iterator<E> iterator() {
         try {
             return _del.iterator();
@@ -128,6 +139,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public int lastIndexOf(Object o) {
         try {
             return _del.indexOf(o);
@@ -136,6 +148,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public ListIterator<E> listIterator() {
         try {
             return _del.listIterator();
@@ -144,6 +157,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public ListIterator<E> listIterator(int index) {
         try {
             return _del.listIterator(index);
@@ -152,26 +166,32 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public boolean remove(Object o) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public E remove(int index) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean removeAll(Collection<?> c) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean retainAll(Collection<?> c) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public E set(int index, E element) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int size() {
         try {
             return _del.size();
@@ -180,6 +200,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public List<E> subList(int fromIndex, int toIndex) {
         try {
             return _del.subList(fromIndex, toIndex);
@@ -188,6 +209,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public Object[] toArray() {
         try {
             return _del.toArray();
@@ -196,6 +218,7 @@ public class DistinctResultList<E> implements List<E>, Serializable {
         }
     }
 
+    @Override
     public <T> T[] toArray(T[] a) {
         try {
             return _del.toArray(a);

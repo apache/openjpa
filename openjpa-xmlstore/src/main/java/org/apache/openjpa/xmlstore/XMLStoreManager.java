@@ -54,6 +54,7 @@ public class XMLStoreManager
     private Collection _updates;
     private Collection _deletes;
 
+    @Override
     protected Collection getUnsupportedOptions() {
         Collection c = super.getUnsupportedOptions();
 
@@ -68,17 +69,20 @@ public class XMLStoreManager
         return c;
     }
 
+    @Override
     protected OpenJPAConfiguration newConfiguration() {
         // override to use our configuration type
         return new XMLConfiguration();
     }
 
+    @Override
     protected void open() {
         // cache operational state
         _conf = (XMLConfiguration) ctx.getConfiguration();
         _store = _conf.getStore();
     }
 
+    @Override
     public boolean exists(OpenJPAStateManager sm, Object context) {
         // see if the given object exists in the store
         return _store.getData(sm.getMetaData(), sm.getObjectId()) != null;
@@ -94,6 +98,7 @@ public class XMLStoreManager
         sm.setNextVersion(version);
     }
 
+    @Override
     public boolean initialize(OpenJPAStateManager sm, PCState state,
         FetchConfiguration fetch, Object context) {
         // we may already have looked up the backing ObjectData (see our extent
@@ -120,6 +125,7 @@ public class XMLStoreManager
         return true;
     }
 
+    @Override
     public boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object context) {
         // we may already have looked up the backing ObjectData (see our extent
@@ -142,6 +148,7 @@ public class XMLStoreManager
         return true;
     }
 
+    @Override
     public boolean syncVersion(OpenJPAStateManager sm, Object context) {
         if (sm.getVersion() == null)
             return false;
@@ -171,10 +178,12 @@ public class XMLStoreManager
         return false;
     }
 
+    @Override
     public void begin() {
         _store.beginTransaction();
     }
 
+    @Override
     public void commit() {
         try {
             _store.endTransaction(_updates, _deletes);
@@ -184,12 +193,14 @@ public class XMLStoreManager
         }
     }
 
+    @Override
     public void rollback() {
         _updates = null;
         _deletes = null;
         _store.endTransaction(null, null);
     }
 
+    @Override
     protected Collection flush(Collection pNew, Collection pNewUpdated,
         Collection pNewFlushedDeleted, Collection pDirty, Collection pDeleted) {
         // we don't support incremental flushing, so pNewUpdated and
@@ -255,6 +266,7 @@ public class XMLStoreManager
         return exceps;
     }
 
+    @Override
     public ResultObjectProvider executeExtent(ClassMetaData meta,
         boolean subclasses, FetchConfiguration fetch) {
         // ask the store for all ObjectDatas for the given type; this
@@ -283,6 +295,7 @@ public class XMLStoreManager
         }
         return new ListResultObjectProvider(pcs);
     }
+    @Override
     public boolean isCached(List<Object> oids, BitSet edata) {
         // XMLStoreManager does not cache oids.
         return false;

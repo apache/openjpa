@@ -48,7 +48,8 @@ public class BaseTestElement3 {
       return id;
   }
 
-  public boolean equals(Object obj) {
+  @Override
+public boolean equals(Object obj) {
       if (obj instanceof BaseTestElement3) {
           BaseTestElement3 bte = (BaseTestElement3)obj;
           return getId() == bte.getId() &&

@@ -35,6 +35,7 @@ public class TestEmbeddedId
     EmbeddedIdClass _oid;
     EmbeddedIdClass _roid;
 
+    @Override
     public void setUp() {
         setUp(EmbeddedIdEntity.class, EmbeddedIdClass.class, CLEAR_TABLES);
 

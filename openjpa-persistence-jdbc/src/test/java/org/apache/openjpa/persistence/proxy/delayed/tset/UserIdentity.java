@@ -40,18 +40,22 @@ public class UserIdentity implements IUserIdentity {
     @Embedded
     private Member member;
 
+    @Override
     public void setMember(IMember member) {
         this.member = (Member)member;
     }
 
+    @Override
     public IMember getMember() {
         return member;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public int getId() {
         return id;
     }

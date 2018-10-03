@@ -27,13 +27,17 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeSet;
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.jdbc.common.apps.LRSCompoundPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.LRSPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.LRSPCIntf;
 
 
 public class TestLRSProxies
@@ -50,6 +54,7 @@ public class TestLRSProxies
     /** Creates a new instance of TestLRSProxies */
     public TestLRSProxies() {
     }
+    @Override
     public void setUp() {
        deleteAll(LRSPC.class);
        deleteAll(LRSCompoundPC.class);

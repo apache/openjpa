@@ -31,8 +31,6 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
@@ -45,6 +43,8 @@ import org.apache.openjpa.lib.jdbc.ReportingSQLException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
+
+import junit.framework.TestCase;
 
 /**
  * Extends junit.framework.TestCase
@@ -80,7 +80,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
      *            key,value,key,value...
      */
     protected OpenJPAEntityManagerFactorySPI createNamedEMF(Class<?>... types) {
-        Map<Object, Object> map = new HashMap<Object, Object>();
+        Map<Object, Object> map = new HashMap<>();
         map.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true," + "SchemaAction='add')");
         map.put("openjpa.jdbc.QuerySQLCache", "false");
         map.put("openjpa.DynamicEnhancementAgent", "false");
@@ -97,7 +97,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
 
         map.put("openjpa.MetaDataFactory", "jpa(Types=" + buf.toString() + ")");
 
-        Map<Object, Object> config = new HashMap<Object, Object>(System.getProperties());
+        Map<Object, Object> config = new HashMap<>(System.getProperties());
         config.putAll(map);
         return (OpenJPAEntityManagerFactorySPI) Persistence.createEntityManagerFactory("test", config);
     }

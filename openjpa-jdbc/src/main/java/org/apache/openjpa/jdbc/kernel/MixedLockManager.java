@@ -29,6 +29,7 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
@@ -51,6 +52,7 @@ public class MixedLockManager extends PessimisticLockManager {
      * @see org.apache.openjpa.jdbc.kernel.PessimisticLockManager
      *  #selectForUpdate(org.apache.openjpa.jdbc.sql.Select,int)
      */
+    @Override
     public boolean selectForUpdate(Select sel, int lockLevel) {
         return (lockLevel >= MixedLockLevels.LOCK_PESSIMISTIC_READ)
             ? super.selectForUpdate(sel, lockLevel) : false;
@@ -62,6 +64,7 @@ public class MixedLockManager extends PessimisticLockManager {
      *  lockInternal(org.apache.openjpa.kernel.OpenJPAStateManager, int, int,
      *               java.lang.Object)
      */
+    @Override
     protected void lockInternal(OpenJPAStateManager sm, int level, int timeout,
         Object sdata, boolean postLockVersionCheck) {
         if (level >= MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT) {
@@ -72,7 +75,7 @@ public class MixedLockManager extends PessimisticLockManager {
             setVersionCheckOnReadLock(true);
             setVersionUpdateOnWriteLock(false);
             super.lockInternal(sm, level, timeout, sdata, postLockVersionCheck);
-        } else if (level >= MixedLockLevels.LOCK_READ) {
+        } else if (level >= LockLevels.LOCK_READ) {
             setVersionCheckOnReadLock(true);
             setVersionUpdateOnWriteLock(true);
             optimisticLockInternal(sm, level, timeout, sdata,
@@ -80,6 +83,7 @@ public class MixedLockManager extends PessimisticLockManager {
         }
     }
 
+    @Override
     protected List<SQLBuffer> getLockRows(DBDictionary dict, Object id, ClassMapping mapping,
             JDBCFetchConfiguration fetch, SQLFactory factory) {
         List<SQLBuffer> sqls = super.getLockRows(dict, id, mapping, fetch, factory);
@@ -101,6 +105,7 @@ public class MixedLockManager extends PessimisticLockManager {
         return sqls;
     }
 
+    @Override
     protected void optimisticLockInternal(OpenJPAStateManager sm, int level,
         int timeout, Object sdata, boolean postLockVersionCheck) {
         super.optimisticLockInternal(sm, level, timeout, sdata,
@@ -123,6 +128,7 @@ public class MixedLockManager extends PessimisticLockManager {
         }
     }
 
+    @Override
     public boolean skipRelationFieldLock() {
         return true;
     }

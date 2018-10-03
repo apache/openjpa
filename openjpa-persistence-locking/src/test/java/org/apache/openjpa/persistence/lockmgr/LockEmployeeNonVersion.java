@@ -59,6 +59,7 @@ public class LockEmployeeNonVersion implements Externalizable {
         this.lastName = lastName;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + '@'
             + Integer.toHexString(System.identityHashCode(this)) + "[id="
@@ -66,6 +67,7 @@ public class LockEmployeeNonVersion implements Externalizable {
             + ", last=" + getLastName();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
         ClassNotFoundException {
         id = in.readInt();
@@ -73,6 +75,7 @@ public class LockEmployeeNonVersion implements Externalizable {
         lastName = (String) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(id);
         out.writeObject(firstName);

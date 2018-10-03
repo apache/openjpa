@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence.detachment.model;
 
-import static javax.persistence.CascadeType.*;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REFRESH;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;

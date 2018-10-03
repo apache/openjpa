@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.meta;
 
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
@@ -31,6 +32,8 @@ import org.apache.openjpa.util.MetaDataException;
 public class RefreshStrategyInstaller
     extends StrategyInstaller {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (RefreshStrategyInstaller.class);
 
@@ -41,10 +44,12 @@ public class RefreshStrategyInstaller
         super(repos);
     }
 
+    @Override
     public boolean isAdapting() {
         return true;
     }
 
+    @Override
     public void installStrategy(ClassMapping cls) {
         ClassStrategy strat = repos.namedStrategy(cls);
         if (strat == null)
@@ -61,9 +66,10 @@ public class RefreshStrategyInstaller
             cls.clearMapping();
             cls.setStrategy(repos.defaultStrategy(cls, true), Boolean.TRUE);
         }
-        cls.setSourceMode(cls.MODE_MAPPING, true);
+        cls.setSourceMode(MetaDataModes.MODE_MAPPING, true);
     }
 
+    @Override
     public void installStrategy(FieldMapping field) {
         FieldStrategy strategy = repos.namedStrategy(field, true);
         if (strategy == null)
@@ -86,6 +92,7 @@ public class RefreshStrategyInstaller
         }
     }
 
+    @Override
     public void installStrategy(Version version) {
         VersionStrategy strat = repos.namedStrategy(version);
         if (strat == null)
@@ -105,6 +112,7 @@ public class RefreshStrategyInstaller
         }
     }
 
+    @Override
     public void installStrategy(Discriminator discrim) {
         DiscriminatorStrategy strat = repos.namedStrategy(discrim);
         if (strat == null)

@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 class ModExpression extends BinaryOperatorExpression {
-	public ModExpression(ExpressionImpl op, ExpressionImpl op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public ModExpression(ExpressionImpl op, ExpressionImpl op2) {
 		super(op, BinaryFunctionalOperator.MOD, op2);
 	}
 

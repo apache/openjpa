@@ -32,12 +32,14 @@ public class FixedAnnuity extends Annuity implements IFixedAnnuity {
 
 	private Double rate;
 
-	@Column(name="FIXED_RATE")
+	@Override
+    @Column(name="FIXED_RATE")
 	public Double getRate() {
 		return rate;
 	}
 
-	public void setRate(Double rate) {
+	@Override
+    public void setRate(Double rate) {
 		this.rate = rate;
 		if (this.rate != null) {
 			DecimalFormat df = new DecimalFormat("#.##");

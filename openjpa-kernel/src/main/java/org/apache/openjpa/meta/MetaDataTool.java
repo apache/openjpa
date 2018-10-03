@@ -254,6 +254,7 @@ public class MetaDataTool
         boolean ret = (args.length > 0) &&
             Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts) throws Exception {
                 OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
                 try {

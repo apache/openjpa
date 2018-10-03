@@ -47,6 +47,8 @@ public class AppIdClassString {
 
     public static class Idkey implements java.io.Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public int pk;
 
         public Idkey() {
@@ -62,6 +64,7 @@ public class AppIdClassString {
             return pk;
         }
 
+        @Override
         public String toString() {
             return pk + "";
         }

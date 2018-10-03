@@ -28,6 +28,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class Concat
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private final Val _args;
 
@@ -40,13 +42,16 @@ class Concat
         _args = args;
     }
 
+    @Override
     public Class getType() {
         return String.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object str = _val.eval(candidate, orig, ctx, params);
@@ -62,6 +67,7 @@ class Concat
         return cat.toString();
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

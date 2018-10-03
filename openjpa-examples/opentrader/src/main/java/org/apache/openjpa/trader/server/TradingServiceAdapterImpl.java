@@ -55,8 +55,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  *
  * @author Pinaki Poddar
  */
-@SuppressWarnings("serial")
 public class TradingServiceAdapterImpl extends RemoteServiceServlet implements TradingServiceAdapter {
+    private static final long serialVersionUID = 1L;
 
     private TradingService _del;
     private ExceptionAdapter _translator = new ExceptionAdapter();

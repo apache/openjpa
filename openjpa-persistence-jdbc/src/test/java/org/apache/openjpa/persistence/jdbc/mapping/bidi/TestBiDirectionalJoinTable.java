@@ -50,7 +50,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	private static String[] CITIS    = {"Berlin", "Paris", "Rome"};
 	private static int[] ZIPS        = {123456, 234567, 345678};
 
-	public void setUp() {
+	@Override
+    public void setUp() {
 		super.setUp(CLEAR_TABLES, Person.class, Address.class);
 		createData(SSN);
 		sql.clear();

@@ -22,7 +22,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.apache.openjpa.tools.maven.OpenJpaEnhancerMojo;
 
 /**
  * @version $Id: OpenJpaEnhancerMojoTest.java 9348 2009-04-03 22:59:47Z struberg $
@@ -30,6 +29,7 @@ import org.apache.openjpa.tools.maven.OpenJpaEnhancerMojo;
  */
 public class OpenJpaEnhancerMojoTest extends AbstractMojoTestCase {
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -42,7 +42,7 @@ public class OpenJpaEnhancerMojoTest extends AbstractMojoTestCase {
       assertNotNull( mojo );
 
       mojo.classes = new File( getBasedir(), "target/test-classes/" );
-      mojo.compileClasspathElements = new ArrayList<String>();
+      mojo.compileClasspathElements = new ArrayList<>();
       mojo.compileClasspathElements.add( mojo.classes.getAbsolutePath() );
 
       mojo.execute();

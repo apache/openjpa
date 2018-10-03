@@ -28,5 +28,5 @@ public interface LogFactory {
     /**
      * Return a log for the given channel name.
      */
-    public Log getLog(String channel);
+    Log getLog(String channel);
 }

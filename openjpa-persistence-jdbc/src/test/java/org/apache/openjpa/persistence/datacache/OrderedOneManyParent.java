@@ -38,7 +38,7 @@ public class OrderedOneManyParent {
     @OneToMany(mappedBy="parent")
     @OrderBy("name ASC")
     private List<OrderedOneManyChild> children =
-        new ArrayList<OrderedOneManyChild>();
+        new ArrayList<>();
 
     public long getId() {
         return id;

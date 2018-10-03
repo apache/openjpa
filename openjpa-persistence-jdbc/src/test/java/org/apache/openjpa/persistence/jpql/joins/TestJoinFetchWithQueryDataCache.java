@@ -28,11 +28,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
-import junit.framework.Assert;
-
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+import junit.framework.Assert;
 
 /**
  * Tests JQPL and Criteria API equivalent using left join fetch with QueryCache and DataCache enabled.
@@ -40,6 +38,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
     EntityManager em;
 
+    @Override
     public void setUp() {
         super.setUp(DROP_TABLES, Employee.class, Department.class, "openjpa.QueryCompilationCache", "all",
             "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm", "openjpa.QueryCache", "true"

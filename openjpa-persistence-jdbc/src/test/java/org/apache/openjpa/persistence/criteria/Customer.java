@@ -44,7 +44,7 @@ public class Customer {
 	private String name;
 
 	@OneToMany(mappedBy="customer")
-	private Set<Order> orders = new HashSet<Order>();
+	private Set<Order> orders = new HashSet<>();
 
 	private int status;
 	private int balanceOwed;
@@ -57,7 +57,7 @@ public class Customer {
     private long accountNum;
 
 	@OneToMany
-	private List<Account> accounts = new ArrayList<Account>();
+	private List<Account> accounts = new ArrayList<>();
 
     @Enumerated
     @Basic

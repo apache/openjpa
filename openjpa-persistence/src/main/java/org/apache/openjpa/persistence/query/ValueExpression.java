@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class ValueExpression extends OperatorPath {
-	public ValueExpression(AbstractDomainObject expr) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public ValueExpression(AbstractDomainObject expr) {
 		super(expr, PathOperator.VALUE);
 	}
 }

@@ -18,19 +18,19 @@
  */
 package org.apache.openjpa.persistence.models.company;
 
-import java.util.*;
+import java.util.Set;
 
 public interface IProduct {
 
-    public void setName(String name);
-    public String getName();
+    void setName(String name);
+    String getName();
 
-    public void setImage(byte[] image);
-    public byte[] getImage();
+    void setImage(byte[] image);
+    byte[] getImage();
 
-    public void setPrice(float price);
-    public float getPrice();
+    void setPrice(float price);
+    float getPrice();
 
-    public void setDistributors(Set<? extends ICompany> distributors);
-    public Set<? extends ICompany> getDistributors();
+    void setDistributors(Set<? extends ICompany> distributors);
+    Set<? extends ICompany> getDistributors();
 }

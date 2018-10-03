@@ -52,11 +52,11 @@ public class Entity10 {
     }
 
     private void initialize() {
-        intCollection = new ArrayList<Integer>();
+        intCollection = new ArrayList<>();
         intCollection.add(new Integer(1));
         intCollection.add(new Integer(99));
 
-        stringCollection = new HashSet<String>();
+        stringCollection = new HashSet<>();
         stringCollection.add(new String("xxx"));
         stringCollection.add(new String("yyy"));
     }

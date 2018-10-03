@@ -31,6 +31,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name="TBL9A")
 public class EntityA_Embed_ToMany implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     Integer id;
 

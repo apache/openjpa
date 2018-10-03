@@ -79,6 +79,7 @@ public class Finder {
 
     private void scan(File dir, String cls) throws IOException {
         File[] classes = dir.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File path) {
                 return path.getName().endsWith(CLASS_SUFFIX);
             }
@@ -91,6 +92,7 @@ public class Finder {
         }
 
         File[] jars = dir.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File path) {
                 return path.getName().endsWith(JAR_SUFFIX);
             }
@@ -102,6 +104,7 @@ public class Finder {
         }
 
         File[] dirs = dir.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File path) {
                 return path.isDirectory();
             }

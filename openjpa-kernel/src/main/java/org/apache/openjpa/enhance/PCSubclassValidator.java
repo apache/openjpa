@@ -18,24 +18,27 @@
  */
 package org.apache.openjpa.enhance;
 
-import java.lang.reflect.Member;
-import java.lang.reflect.Modifier;
+import java.io.Externalizable;
+import java.io.ObjectInput;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.InternalException;
-import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.Localizer.Message;
-import org.apache.openjpa.lib.log.Log;
-import serp.bytecode.BCField;
+import org.apache.openjpa.util.UserException;
+
 import serp.bytecode.BCClass;
+import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
 
 /**

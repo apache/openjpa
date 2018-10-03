@@ -19,7 +19,11 @@
 
 package org.apache.openjpa.persistence.relations;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -32,6 +36,7 @@ public class GrandChildClass extends ChildChildClass {
         return someUnloadedField;
     }
 
+    @Override
     public String toString() {
         return super.toString() + "SomeUnloadedField: " + someUnloadedField + "\n";
     }

@@ -23,17 +23,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.AttachA;
 import org.apache.openjpa.persistence.datacache.common.apps.AttachB;
 import org.apache.openjpa.persistence.datacache.common.apps.AttachC;
 import org.apache.openjpa.persistence.datacache.common.apps.AttachD;
 import org.apache.openjpa.persistence.datacache.common.apps.AttachE;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * Tests load on the cache. To run:

@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.ExcludeSuperclassListeners;
+import javax.persistence.PrePersist;
 
 @Entity
 @ExcludeSuperclassListeners

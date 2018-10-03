@@ -47,6 +47,7 @@ public class XMLEmbedPropAccess {
         lName = lname;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLEmbedPropAccess) {
             XMLEmbedPropAccess ps = (XMLEmbedPropAccess)obj;

@@ -19,8 +19,8 @@
 package org.apache.openjpa.enhance;
 
 import javax.persistence.Entity;
-import javax.persistence.IdClass;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 
 import org.apache.openjpa.enhance.UnenhancedCompoundPKFieldAccess.PK;
 
@@ -61,11 +61,13 @@ public class UnenhancedCompoundPKFieldAccess {
             id1 = i1;
         }
 
+        @Override
         public String toString() {
             return String.valueOf(id0)
                 + "::" + String.valueOf(id1);
         }
 
+        @Override
         public int hashCode() {
             int rs = 17;
             rs = rs * 37 + (int) (id0 ^ (id1 >>> 32));
@@ -73,6 +75,7 @@ public class UnenhancedCompoundPKFieldAccess {
             return rs;
         }
 
+        @Override
         public boolean equals(Object obj) {
             if(this == obj)
                 return true;

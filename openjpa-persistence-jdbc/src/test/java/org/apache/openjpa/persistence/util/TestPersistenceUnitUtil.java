@@ -34,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestPersistenceUnitUtil extends SingleEMFTestCase{
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, EagerEntity.class, LazyEmbed.class,
             LazyEntity.class, EagerEmbed.class, RelEntity.class,
@@ -272,7 +273,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         mve.setMapEntity(me);
 
         HashMap<MapKeyEmbed, MapValEntity> hm =
-            new HashMap<MapKeyEmbed, MapValEntity>();
+            new HashMap<>();
 
         hm.put(mke, mve);
         me.setMapEntities(hm);
@@ -328,7 +329,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             assertFalse(puu.isLoaded(ote2, "toManyLazy"));
 
             // Load by application
-            List<ToManyLazy> tmes = new ArrayList<ToManyLazy>();
+            List<ToManyLazy> tmes = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
                 tmes.add(new ToManyLazy("ToMany" + i));
             }
@@ -388,7 +389,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             assertTrue(puu.isLoaded(ote2, "toManyEager"));
 
             // Load by application
-            List<ToManyEager> tmes = new ArrayList<ToManyEager>();
+            List<ToManyEager> tmes = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
                 tmes.add(new ToManyEager("ToMany" + i));
             }
@@ -463,7 +464,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         le.setLazyEmbed(emb);
         RelEntity re = new RelEntity();
         re.setName("My ent");
-        ArrayList<RelEntity> rel = new ArrayList<RelEntity>();
+        ArrayList<RelEntity> rel = new ArrayList<>();
         rel.add(new RelEntity());
         return le;
     }

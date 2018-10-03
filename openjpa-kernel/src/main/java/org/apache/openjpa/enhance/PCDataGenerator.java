@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.AbstractPCData;
 import org.apache.openjpa.kernel.FetchConfiguration;
@@ -33,11 +33,12 @@ import org.apache.openjpa.kernel.PCData;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
-import java.util.concurrent.ConcurrentHashMap;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
@@ -64,7 +65,7 @@ public class PCDataGenerator
 
     protected static final String POSTFIX = "$openjpapcdata";
 
-    private final Map<Class<?>, DynamicStorage> _generated = new ConcurrentHashMap<Class<?>, DynamicStorage>();
+    private final Map<Class<?>, DynamicStorage> _generated = new ConcurrentHashMap<>();
     private final OpenJPAConfiguration _conf;
     private final Log _log;
 
@@ -121,6 +122,7 @@ public class PCDataGenerator
     protected void finish(DynamicPCData data, ClassMetaData meta) {
     }
 
+    @Override
     protected int getCreateFieldMethods(int typeCode) {
         if (typeCode >= JavaTypes.OBJECT)
             return POLICY_SILENT;
@@ -128,12 +130,14 @@ public class PCDataGenerator
         return POLICY_EMPTY;
     }
 
+    @Override
     protected void declareClasses(BCClass bc) {
         super.declareClasses(bc);
         bc.declareInterface(DynamicPCData.class);
         bc.setSuperclass(AbstractPCData.class);
     }
 
+    @Override
     protected final String getClassName(Object obj) {
         return getUniqueName(((ClassMetaData) obj).getDescribedType());
     }
@@ -145,6 +149,7 @@ public class PCDataGenerator
         return type.getName() + "$" + System.identityHashCode(type) + POSTFIX;
     }
 
+    @Override
     protected final void decorate(Object obj, BCClass bc, int[] types) {
         super.decorate(obj, bc, types);
         ClassMetaData meta = (ClassMetaData) obj;
@@ -217,7 +222,7 @@ public class PCDataGenerator
         // }
         code.getstatic().setField(type);
 
-        Collection<Instruction> jumps = new LinkedList<Instruction>();
+        Collection<Instruction> jumps = new LinkedList<>();
         jumps.add(code.ifnonnull());
         ExceptionHandler handler = code.addExceptionHandler();
 
@@ -527,7 +532,7 @@ public class PCDataGenerator
         // 		Object context)
         Code code = addLoadMethod(bc, false);
         FieldMetaData[] fmds = meta.getFields();
-        Collection<Instruction> jumps = new LinkedList<Instruction>();
+        Collection<Instruction> jumps = new LinkedList<>();
         Collection<Instruction> jumps2;
 
         int local = code.getNextLocalsIndex();
@@ -540,7 +545,7 @@ public class PCDataGenerator
         int objectCount = 0;
         boolean intermediate;
         for (int i = 0; i < fmds.length; i++) {
-            jumps2 = new LinkedList<Instruction>();
+            jumps2 = new LinkedList<>();
             intermediate = usesIntermediate(fmds[i]);
             setTarget(code.aload().setThis(), jumps);
             // if (loaded.get(i)) or (!loaded.get(i)) depending on inter resp
@@ -582,7 +587,7 @@ public class PCDataGenerator
         // public void load(OpenJPAStateManager sm, BitSet fields,
         // 		FetchConfiguration fetch, Object conn)
         FieldMetaData[] fmds = meta.getFields();
-        Collection<Instruction> jumps = new LinkedList<Instruction>();
+        Collection<Instruction> jumps = new LinkedList<>();
         Collection<Instruction> jumps2;
         int objectCount = 0;
         boolean intermediate;
@@ -594,7 +599,7 @@ public class PCDataGenerator
         code.astore().setLocal(inter);
 
         for (int i = 0; i < fmds.length; i++) {
-            jumps2 = new LinkedList<Instruction>();
+            jumps2 = new LinkedList<>();
             intermediate = usesIntermediate(fmds[i]);
             // if (fields.get(i))
             // {
@@ -793,7 +798,7 @@ public class PCDataGenerator
             new Class[]{ OpenJPAStateManager.class });
 
         FieldMetaData[] fmds = meta.getFields();
-        Collection<Instruction> jumps = new LinkedList<Instruction>();
+        Collection<Instruction> jumps = new LinkedList<>();
         int objectCount = 0;
         for (int i = 0; i < fmds.length; i++) {
             if (fields) {
@@ -1065,12 +1070,12 @@ public class PCDataGenerator
      * Dynamic {@link PCData}s generated will implement this interface
      * to simplify initialization.
      */
-    public static interface DynamicPCData extends PCData {
+    public interface DynamicPCData extends PCData {
 
-        public void setId(Object oid);
+        void setId(Object oid);
 
-        public PCDataGenerator getStorageGenerator();
+        PCDataGenerator getStorageGenerator();
 
-        public void setStorageGenerator (PCDataGenerator generator);
+        void setStorageGenerator (PCDataGenerator generator);
 	}
 }

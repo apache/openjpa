@@ -25,8 +25,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -53,7 +53,7 @@ public class ClearableScheduler implements Runnable {
 
     private static final Localizer _loc = Localizer.forPackage(ClearableScheduler.class);
 
-    private Map<Clearable,Schedule> _clearables = new ConcurrentHashMap<Clearable,Schedule>();
+    private Map<Clearable,Schedule> _clearables = new ConcurrentHashMap<>();
     private boolean _stop = false;
     private int _interval = 1;
     private Log _log;
@@ -119,6 +119,7 @@ public class ClearableScheduler implements Runnable {
             stop();
     }
 
+    @Override
     public void run() {
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("scheduler-interval", _interval + ""));

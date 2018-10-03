@@ -62,7 +62,8 @@ public class Seller {
 	    this.name = name;
 	}
 
-	public String toString(){
+	@Override
+    public String toString(){
 		return "Seller id: " + id + " name: " + name;
 	}
 

@@ -26,7 +26,9 @@ package org.apache.openjpa.persistence.query;
  */
 class UnaryExpressionPredicate extends AbstractVisitable
 	implements Predicate, Visitable {
-	protected final Expression _e;
+	
+    private static final long serialVersionUID = 1L;
+    protected final Expression _e;
 	protected final UnaryConditionalOperator _op;
 	private final UnaryConditionalOperator _nop;
 
@@ -45,21 +47,25 @@ class UnaryExpressionPredicate extends AbstractVisitable
 		return _op;
 	}
 
-	public Predicate and(Predicate predicate) {
+	@Override
+    public Predicate and(Predicate predicate) {
 		return new AndPredicate(this, predicate);
 	}
 
-	public Predicate or(Predicate predicate) {
+	@Override
+    public Predicate or(Predicate predicate) {
 		return new OrPredicate(this, predicate);
 	}
 
-	public Predicate not() {
+	@Override
+    public Predicate not() {
 		if (_nop == null)
             throw new UnsupportedOperationException(this.toString());
 		return new UnaryExpressionPredicate(_e, _nop, _op);
 	}
 
-	public String asExpression(AliasContext ctx) {
+	@Override
+    public String asExpression(AliasContext ctx) {
 		return _op + "(" + ((ExpressionImpl)_e).asExpression(ctx) + ")";
 	}
 }

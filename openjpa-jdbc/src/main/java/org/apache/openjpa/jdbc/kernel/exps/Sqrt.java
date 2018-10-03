@@ -26,6 +26,9 @@ package org.apache.openjpa.jdbc.kernel.exps;
 public class Sqrt
     extends UnaryOp {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the value to operate on.
      */
@@ -33,14 +36,17 @@ public class Sqrt
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         return double.class;
     }
 
+    @Override
     protected String getOperator() {
         return "SQRT";
     }
 
+    @Override
     public int getId() {
         return Val.SQRT_VAL;
     }

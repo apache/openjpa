@@ -39,6 +39,7 @@ public class XMLEmbedFieldAccess {
         lName = lname;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLEmbedFieldAccess) {
             XMLEmbedFieldAccess ps = (XMLEmbedFieldAccess)obj;

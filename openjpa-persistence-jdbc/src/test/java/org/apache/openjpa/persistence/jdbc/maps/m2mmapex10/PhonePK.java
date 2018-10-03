@@ -20,10 +20,12 @@ package org.apache.openjpa.persistence.jdbc.maps.m2mmapex10;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class PhonePK implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     String areaCode;
     String phoneNum;
 
@@ -41,6 +43,7 @@ public class PhonePK implements Serializable {
         return phoneNum;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -53,6 +56,7 @@ public class PhonePK implements Serializable {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int code = 0;
         code = code * 31 + areaCode.hashCode();

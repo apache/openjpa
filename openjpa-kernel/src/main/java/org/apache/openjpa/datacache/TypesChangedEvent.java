@@ -30,6 +30,8 @@ import java.util.EventObject;
 public class TypesChangedEvent
     extends EventObject {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Collection _types;
 
     /**

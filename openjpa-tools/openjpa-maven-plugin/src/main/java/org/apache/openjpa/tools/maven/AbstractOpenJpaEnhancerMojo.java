@@ -19,16 +19,15 @@
 package org.apache.openjpa.tools.maven;
 
 
+import java.io.File;
+import java.util.List;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.FileUtils;
-
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.lib.util.Options;
-
-import java.io.File;
-import java.util.List;
+import org.codehaus.plexus.util.FileUtils;
 
 /**
  * The base class for all enhancement mojos.
@@ -79,6 +78,7 @@ public abstract class AbstractOpenJpaEnhancerMojo extends AbstractOpenJpaMojo {
      *
      * @see org.apache.maven.plugin.Mojo#execute()
      */
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skipMojo()) {
             return;
@@ -98,6 +98,7 @@ public abstract class AbstractOpenJpaEnhancerMojo extends AbstractOpenJpaMojo {
      *
      * @return populated Options
      */
+    @Override
     protected Options getOptions() throws MojoExecutionException {
         // options
         Options opts = createOptions();

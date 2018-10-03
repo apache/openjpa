@@ -31,12 +31,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
-import junit.framework.AssertionFailedError;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
+
+import junit.framework.AssertionFailedError;
 
 public class TestFieldRange2 extends BaseKernelTest {
 
@@ -58,6 +56,7 @@ public class TestFieldRange2 extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp()
         throws Exception {
         super.setUp();

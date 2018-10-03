@@ -41,6 +41,8 @@ public abstract class AppIdSuper {
     public static abstract class ID
         implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         static String DELIMITER = ":";
 
         public ID() {
@@ -50,15 +52,18 @@ public abstract class AppIdSuper {
             fromString(str);
         }
 
+        @Override
         public int hashCode() {
             // no key codes; all classes are equal
             return 1;
         }
 
+        @Override
         public boolean equals(Object other) {
             return other != null && other.getClass() == getClass();
         }
 
+        @Override
         public String toString() {
             return "";
         }

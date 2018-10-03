@@ -28,8 +28,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
 import java.util.Objects;
+
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.CollectionParam;
@@ -56,6 +56,9 @@ import org.apache.openjpa.kernel.exps.Parameter;
  */
 public final class SQLBuffer
     implements Serializable, Cloneable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     private static final String PARAMETER_TOKEN = "?";
 
@@ -88,6 +91,7 @@ public final class SQLBuffer
     /**
      * Perform a shallow clone of this SQL Buffer.
      */
+    @Override
     public Object clone() {
         return new SQLBuffer(this);
     }
@@ -609,6 +613,7 @@ public final class SQLBuffer
         }
     }
 
+    @Override
     public int hashCode() {
         int hash = _sql.hashCode();
         return (_params == null) ? hash : hash ^ _params.hashCode();
@@ -622,6 +627,7 @@ public final class SQLBuffer
         return _sql.toString().equals(sql);
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;

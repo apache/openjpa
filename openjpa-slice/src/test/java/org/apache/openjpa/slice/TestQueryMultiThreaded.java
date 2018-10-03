@@ -53,10 +53,12 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     private ExecutorService group;
     private Future[] futures;
 
+    @Override
     protected String getPersistenceUnitName() {
         return "ordering";
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
                 CLEAR_TABLES, "openjpa.Multithreaded", "true");
@@ -67,6 +69,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         group = new ThreadPoolExecutor(THREADS, THREADS,
                 60, TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(), new ThreadFactory() {
+                    @Override
                     public Thread newThread(Runnable r) {
                         return new Thread(r);
                     }
@@ -75,6 +78,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         futures = new Future[THREADS];
     }
 
+    @Override
     public void tearDown()  throws Exception {
         group.shutdown();
         super.tearDown();
@@ -116,6 +120,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                 "SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
         for (int i = 0; i < THREADS; i++) {
             futures[i] = group.submit(new Callable<Object>() {
+                @Override
                 public Object call() {
                     List result = query.getResultList();
                     Integer old = Integer.MIN_VALUE;
@@ -147,6 +152,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                 "SELECT MIN(p.value),MAX(p.value) FROM PObject p");
         for (int i = 0; i < THREADS; i++) {
             futures[i] = group.submit(new Callable<Object>() {
+                @Override
                 public Object call() {
                     Object count = countQ.getSingleResult();
                     Object max = maxQ.getSingleResult();
@@ -180,6 +186,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                 "SELECT MAX(p.value) FROM PObject p WHERE MOD(p.value,2)=0");
         for (int i = 0; i < THREADS; i++) {
             futures[i] = group.submit(new Callable<Object>() {
+                @Override
                 public Object call() {
                     Object max = maxQ.getSingleResult();
                     assertEquals(VALUE_MAX, ((Number) max).intValue());
@@ -199,6 +206,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                 "SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
         for (int i = 0; i < THREADS; i++) {
             futures[i] = group.submit(new Callable<Object>() {
+                @Override
                 public Object call() {
                     List result = q.setMaxResults(limit).getResultList();
                     int i = 0;
@@ -221,6 +229,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         Thread[] threads = new Thread[800];
         for (int i = 0; i < 800; i++) {
             Runnable r = new Runnable() {
+                @Override
                 public void run() {
                     EntityManager em = emf.createEntityManager();
                     em.getTransaction().begin();
@@ -246,7 +255,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
 
     public void testHint() {
-        final List<String> targets = new ArrayList<String>();
+        final List<String> targets = new ArrayList<>();
         targets.add("Even");
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -254,6 +263,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         for (int i = 0; i < THREADS; i++) {
             futures[i] = group.submit(new Callable<Object>() {
 
+                @Override
                 public Object call() {
                     query.setHint(SlicePersistence.HINT_TARGET, "Even");
                     List result = query.getResultList();
@@ -277,6 +287,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
             em.createQuery("SELECT p FROM PObject p ORDER BY p.value");
         for (int i = 0; i < THREADS; i++) {
             futures[i] = group.submit(new Callable<Object>() {
+                @Override
                 public Object call() {
                     List result = query.getResultList();
                     return null;
@@ -294,6 +305,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
             em.createQuery("SELECT p FROM PObject p WHERE p.value > :v");
         for (int i = 0; i < THREADS; i++) {
             futures[i] = group.submit(new Callable<Object>() {
+                @Override
                 public Object call() {
                     query.setParameter("v", 200);
                     List result = query.getResultList();
@@ -316,6 +328,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                 "SELECT p FROM Person p WHERE p.address = :a", Person.class);
         for (int i = 0; i < THREADS; i++) {
             futures[i] = group.submit(new Callable<Object>() {
+                @Override
                 public Object call() {
                     Address a = addressQ.setParameter("city", "Rome")
                         .getSingleResult();

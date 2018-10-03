@@ -46,7 +46,6 @@ import org.apache.openjpa.util.MetaDataException;
  * @author Abe White
  * @since 0.4.0
  */
-@SuppressWarnings("serial")
 public class ValueMappingImpl
     extends ValueMetaDataImpl
     implements ValueMapping {
@@ -87,42 +86,52 @@ public class ValueMappingImpl
         super();
     }
 
+    @Override
     public ValueMappingInfo getValueInfo() {
         return _info;
     }
 
+    @Override
     public ValueHandler getHandler() {
         return _handler;
     }
 
+    @Override
     public void setHandler(ValueHandler handler) {
         _handler = handler;
     }
 
+    @Override
     public MappingRepository getMappingRepository() {
         return (MappingRepository) getRepository();
     }
 
+    @Override
     public FieldMapping getFieldMapping() {
         return (FieldMapping) getFieldMetaData();
     }
 
+    @Override
     public ClassMapping getTypeMapping() {
         return (ClassMapping) getTypeMetaData();
     }
 
+    @Override
     public ClassMapping getDeclaredTypeMapping() {
         return (ClassMapping) getDeclaredTypeMetaData();
     }
 
+    @Override
     public ClassMapping getEmbeddedMapping() {
         return (ClassMapping) getEmbeddedMetaData();
     }
 
+    @Override
     public FieldMapping getValueMappedByMapping() {
         return (FieldMapping) getValueMappedByMetaData();
     }
 
+    @Override
     public Column[] getColumns() {
         if (_cols.length != 0)
             return _cols;
@@ -133,28 +142,33 @@ public class ValueMappingImpl
         return _cols;
     }
 
+    @Override
     public void setColumns(Column[] cols) {
         if (cols == null)
             cols = Schemas.EMPTY_COLUMNS;
         _cols = cols;
     }
 
+    @Override
     public ColumnIO getColumnIO() {
         if (_cols.length == 0 && _fk == null && getValueMappedBy() != null)
             return getValueMappedByMapping().getColumnIO();
         return (_io == null) ? ColumnIO.UNRESTRICTED : _io;
     }
 
+    @Override
     public void setColumnIO(ColumnIO io) {
         _io = io;
     }
 
+    @Override
     public ForeignKey getForeignKey() {
         if (_fk == null && getValueMappedBy() != null)
             return getValueMappedByMapping().getForeignKey();
         return _fk;
     }
 
+    @Override
     public void setForeignKey(ForeignKey fk) {
         _fk = fk;
         if (fk == null)
@@ -196,7 +210,7 @@ public class ValueMappingImpl
                 if (cachedFK != null)
                     return (ForeignKey) cachedFK;
             } else
-                _targetFKs = new HashMap<ClassMapping, ForeignKey>();
+                _targetFKs = new HashMap<>();
 
             ForeignKey newfk = (_join == JOIN_FORWARD)
                 ? newForwardForeignKey(target) : newInverseForeignKey(target);
@@ -204,6 +218,7 @@ public class ValueMappingImpl
             return newfk;
         }
     }
+    @Override
     public ForeignKey getForeignKey(ClassMapping target) {
         return getForeignKey(target, 0);
     }
@@ -321,16 +336,19 @@ public class ValueMappingImpl
         return mapped.getForeignKey();
     }
 
+    @Override
     public int getJoinDirection() {
         if (_fk == null && getValueMappedBy() != null)
             return getValueMappedByMapping().getJoinDirection();
         return _join;
     }
 
+    @Override
     public void setJoinDirection(int direction) {
         _join = direction;
     }
 
+    @Override
     public void setForeignKey(Row row, OpenJPAStateManager rel, int targetNumber)
         throws SQLException {
         if (rel != null) {
@@ -349,11 +367,13 @@ public class ValueMappingImpl
             }
         }
     }
+    @Override
     public void setForeignKey(Row row, OpenJPAStateManager rel)
         throws SQLException {
         setForeignKey(row, rel, 0);
     }
 
+    @Override
     public void whereForeignKey(Row row, OpenJPAStateManager rel)
         throws SQLException {
         if (rel != null)
@@ -366,6 +386,7 @@ public class ValueMappingImpl
                 row.whereNull(_cols[i]);
     }
 
+    @Override
     public ClassMapping[] getIndependentTypeMappings() {
         ClassMapping rel = getTypeMapping();
         if (rel == null)
@@ -380,6 +401,7 @@ public class ValueMappingImpl
         return rel.getIndependentAssignableMappings();
     }
 
+    @Override
     public int getSelectSubclasses() {
         ClassMapping rel = getTypeMapping();
         if (rel == null || !rel.isMapped())
@@ -401,40 +423,49 @@ public class ValueMappingImpl
         }
     }
 
+    @Override
     public Unique getValueUnique() {
         return _unq;
     }
 
+    @Override
     public void setValueUnique(Unique unq) {
         _unq = unq;
     }
 
+    @Override
     public Index getValueIndex() {
         return _idx;
     }
 
+    @Override
     public void setValueIndex(Index idx) {
         _idx = idx;
     }
 
+    @Override
     public boolean getUseClassCriteria() {
         if (_fk == null && getValueMappedBy() != null)
             return getValueMappedByMapping().getUseClassCriteria();
         return _criteria;
     }
 
+    @Override
     public void setUseClassCriteria(boolean criteria) {
         _criteria = criteria;
     }
 
+    @Override
     public int getPolymorphic() {
         return _poly;
     }
 
+    @Override
     public void setPolymorphic(int poly) {
         _poly = poly;
     }
 
+    @Override
     public void refSchemaComponents() {
         for (int i = 0; i < _cols.length; i++)
             _cols[i].ref();
@@ -451,15 +482,19 @@ public class ValueMappingImpl
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public void mapConstraints(String name, boolean adapt) {
         mapConstraints(DBIdentifier.newConstraint(name), adapt);
     }
 
+    @Override
     public void mapConstraints(DBIdentifier name, boolean adapt) {
         _unq = _info.getUnique(this, name, adapt);
         _idx = _info.getIndex(this, name, adapt);
     }
 
+    @Override
     public void clearMapping() {
         _handler = null;
         _cols = Schemas.EMPTY_COLUMNS;
@@ -471,6 +506,7 @@ public class ValueMappingImpl
         setResolve(MODE_MAPPING | MODE_MAPPING_INIT, false);
     }
 
+    @Override
     public void syncMappingInfo() {
         if (getValueMappedBy() != null)
             _info.clear();
@@ -482,11 +518,13 @@ public class ValueMappingImpl
         }
     }
 
+    @Override
     public void copy(ValueMetaData vmd) {
         super.copy(vmd);
         copyMappingInfo((ValueMapping)vmd);
     }
 
+    @Override
     public void copyMappingInfo(ValueMapping vm) {
         setValueMappedBy(vm.getValueMappedBy());
         setPolymorphic(vm.getPolymorphic());
@@ -502,6 +540,7 @@ public class ValueMappingImpl
         }
     }
 
+    @Override
     public boolean resolve(int mode) {
         int cur = getResolve();
         if (super.resolve(mode))

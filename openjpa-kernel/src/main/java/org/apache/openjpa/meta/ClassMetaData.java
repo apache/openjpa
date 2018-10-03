@@ -37,7 +37,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
@@ -51,6 +50,7 @@ import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.util.BigDecimalId;
 import org.apache.openjpa.util.BigIntegerId;
@@ -83,11 +83,12 @@ import org.apache.openjpa.util.UnsupportedException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class ClassMetaData
     extends Extensions
     implements Comparable<ClassMetaData>, SourceTracker, MetaDataContext,
     MetaDataModes, Commentable, ValueListener {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Unknown identity type.
@@ -158,7 +159,7 @@ public class ClassMetaData
     private Class<?> _type = Object.class;
     private int _hashCode = Object.class.getName().hashCode();
     private String _typeString = Object.class.getName();
-    private final Map<String,FieldMetaData> _fieldMap = new TreeMap<String,FieldMetaData>();
+    private final Map<String,FieldMetaData> _fieldMap = new TreeMap<>();
     private Map<String,FieldMetaData> _supFieldMap = null;
     private boolean _defSupFields = false;
     private Collection<String> _staticFields = null;
@@ -180,7 +181,7 @@ public class ClassMetaData
     private Class<?> _impl = null;
     private List<Class<?>> _interfaces = null;
     private final Map<Class<?>,Map<String,String>> _ifaceMap =
-    	new HashMap<Class<?>,Map<String,String>>();
+    	new HashMap<>();
     private Integer _identity = null;
     private int _idStrategy = ValueStrategies.NONE;
     private int _accessType = AccessCode.UNKNOWN;
@@ -251,6 +252,7 @@ public class ClassMetaData
     /**
      * Return the owning repository.
      */
+    @Override
     public MetaDataRepository getRepository() {
         return _repos;
     }
@@ -378,7 +380,7 @@ public class ClassMetaData
         _repos.processRegisteredClasses(_loader);
         if (_subs == null) {
             Collection<Class<?>> subs = _repos.getPCSubclasses(_type);
-            _subs = (Class[]) subs.toArray(new Class[subs.size()]);
+            _subs = subs.toArray(new Class[subs.size()]);
         }
         return _subs;
     }
@@ -420,11 +422,11 @@ public class ClassMetaData
                 _mapSubMetas = subs;
             else {
                 List<ClassMetaData> mapped =
-                	new ArrayList<ClassMetaData>(subs.length);
+                	new ArrayList<>(subs.length);
                 for (int i = 0; i < subs.length; i++)
                     if (subs[i].isMapped())
                         mapped.add(subs[i]);
-                _mapSubMetas = (ClassMetaData[]) mapped.toArray
+                _mapSubMetas = mapped.toArray
                     (_repos.newClassMetaDataArray(mapped.size()));
             }
         }
@@ -869,7 +871,7 @@ public class ClassMetaData
     public Class<?>[] getDeclaredInterfaces() {
         if (_interfaces == null)
             return MetaDataRepository.EMPTY_CLASSES;
-        return (Class[]) _interfaces.toArray(new Class[_interfaces.size()]);
+        return _interfaces.toArray(new Class[_interfaces.size()]);
     }
 
     /**
@@ -881,7 +883,7 @@ public class ClassMetaData
             throw new MetaDataException(_loc.get("declare-non-interface",
                 this, iface));
         if (_interfaces == null)
-            _interfaces = new ArrayList<Class<?>>();
+            _interfaces = new ArrayList<>();
         _interfaces.add(iface);
     }
 
@@ -903,7 +905,7 @@ public class ClassMetaData
         synchronized (_ifaceMap) {
             Map<String,String> fields = _ifaceMap.get(iface);
             if (fields == null) {
-                fields = new HashMap<String,String>();
+                fields = new HashMap<>();
                 _ifaceMap.put(iface, fields);
             }
             if (fields.containsKey(orig))
@@ -990,9 +992,9 @@ public class ClassMetaData
         if (getDeclaredField(field) != null)
             return true;
         if (_staticFields == null) {
-            Field[] fields = (Field[]) AccessController.doPrivileged(
+            Field[] fields = AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredFieldsAction(_type));
-            Set<String> names = new HashSet<String>();
+            Set<String> names = new HashSet<>();
             for (int i = 0; i < fields.length; i++)
                 if (Modifier.isStatic(fields[i].getModifiers()))
                     names.add(fields[i].getName());
@@ -1021,7 +1023,7 @@ public class ClassMetaData
             if (_allFields == null) {
                 getFields();
             }
-            List<FieldMetaData> res = new ArrayList<FieldMetaData>();
+            List<FieldMetaData> res = new ArrayList<>();
             for (FieldMetaData fmd : _allFields) {
                 switch (fmd.getDeclaredTypeCode()) {
                     case JavaTypes.CALENDAR:
@@ -1047,7 +1049,7 @@ public class ClassMetaData
             if (_allFields == null) {
                 getFields();
             }
-            List<FieldMetaData> res = new ArrayList<FieldMetaData>();
+            List<FieldMetaData> res = new ArrayList<>();
             for (FieldMetaData fmd : _allFields) {
                 if(fmd.isLRS()==true){
                     res.add(fmd);
@@ -1097,7 +1099,7 @@ public class ClassMetaData
         // listing order as well
         FieldMetaData supField;
         for (int i = 0; i < len; i++) {
-            supField = (FieldMetaData) _supFieldMap.get(fields[i].getName());
+            supField = _supFieldMap.get(fields[i].getName());
             if (supField != null) {
                 fields[i] = supField;
                 supField.setIndex(i);
@@ -1124,7 +1126,7 @@ public class ClassMetaData
     public FieldMetaData[] getDeclaredFields() {
         if (_fields == null) {
             List<FieldMetaData> fields =
-            	new ArrayList<FieldMetaData>(_fieldMap.size());
+            	new ArrayList<>(_fieldMap.size());
             ;
             for (FieldMetaData fmd : _fieldMap.values()) {
                 if (fmd.getManagement() != FieldMetaData.MANAGE_NONE) {
@@ -1259,7 +1261,7 @@ public class ClassMetaData
         if (fmd != null)
             return fmd;
         if (_supFieldMap != null && _defSupFields) {
-            fmd = (FieldMetaData) _supFieldMap.get(name);
+            fmd = _supFieldMap.get(name);
             if (fmd != null)
                 return fmd;
         }
@@ -1275,7 +1277,7 @@ public class ClassMetaData
      * @return the field's metadata, or null if not found
      */
     public FieldMetaData getDeclaredField(String name) {
-        FieldMetaData field = (FieldMetaData) _fieldMap.get(name);
+        FieldMetaData field = _fieldMap.get(name);
         if (field == null || field.getManagement() == FieldMetaData.MANAGE_NONE)
             return null;
         return field;
@@ -1287,7 +1289,7 @@ public class ClassMetaData
      */
     public FieldMetaData[] getDeclaredUnmanagedFields() {
         if (_unmgdFields == null) {
-            List<FieldMetaData> unmanaged = new ArrayList<FieldMetaData>(3);
+            List<FieldMetaData> unmanaged = new ArrayList<>(3);
             ;
             for (FieldMetaData field : _fieldMap.values()) {
                 if (field.getManagement() == FieldMetaData.MANAGE_NONE)
@@ -1329,7 +1331,7 @@ public class ClassMetaData
     public FieldMetaData getDefinedSuperclassField(String name) {
         if (_supFieldMap == null)
             return null;
-        return (FieldMetaData) _supFieldMap.get(name);
+        return _supFieldMap.get(name);
     }
 
     /**
@@ -1342,7 +1344,7 @@ public class ClassMetaData
         clearAllFieldCache();
         _defSupFields = false;
         if (_supFieldMap == null)
-            _supFieldMap = new HashMap<String,FieldMetaData>();
+            _supFieldMap = new HashMap<>();
         _supFieldMap.put(name, fmd);
         return fmd;
     }
@@ -1430,13 +1432,13 @@ public class ClassMetaData
         if (_definedFields == null) {
             FieldMetaData[] fields = getFields();
             List<FieldMetaData> defined =
-            	new ArrayList<FieldMetaData>(fields.length);
+            	new ArrayList<>(fields.length);
             for (FieldMetaData fmd : fields) {
                 if (fmd.isMapped()
                     && fmd.getDefiningMetaData() == this)
                     defined.add(fmd);
             }
-            _definedFields = (FieldMetaData[]) defined.toArray
+            _definedFields = defined.toArray
                 (_repos.newFieldMetaDataArray(defined.size()));
         }
         return _definedFields;
@@ -1485,7 +1487,7 @@ public class ClassMetaData
         if (_listingFields == null) {
             FieldMetaData[] fields = getFields();
             List<FieldMetaData> defined =
-            	new ArrayList<FieldMetaData>(fields.length);
+            	new ArrayList<>(fields.length);
             for (FieldMetaData fmd : fields)
                 if (fmd.getDefiningMetaData() == this)
                     defined.add(fmd);
@@ -1493,7 +1495,7 @@ public class ClassMetaData
             FieldMetaData[] listing = _repos.newFieldMetaDataArray
                 (defined.size() + unmgd.length);
             for (int i = 0; i < defined.size(); i++)
-                listing[i] = (FieldMetaData) defined.get(i);
+                listing[i] = defined.get(i);
             System.arraycopy(unmgd, 0, listing, defined.size(), unmgd.length);
             Arrays.sort(listing, ListingOrderComparator.getInstance());
             _listingFields = listing;
@@ -1736,10 +1738,12 @@ public class ClassMetaData
         getPrimaryKeyFields();
     }
 
+    @Override
     public int hashCode() {
         return _hashCode;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -1748,13 +1752,15 @@ public class ClassMetaData
         return _type == ((ClassMetaData) other).getDescribedType();
     }
 
+    @Override
     public int compareTo(ClassMetaData other) {
         if (other == this)
             return 0;
-        return _type.getName().compareTo(((ClassMetaData) other).
+        return _type.getName().compareTo(other.
             getDescribedType().getName());
     }
 
+    @Override
     public String toString() {
         return getDescribedType().getName();
     }
@@ -2321,7 +2327,7 @@ public class ClassMetaData
     public FetchGroup[] getCustomFetchGroups() {
         if (_customFGs == null) {
             // map fetch groups to names, allowing our groups to override super
-            Map<String,FetchGroup> fgs = new HashMap<String,FetchGroup>();
+            Map<String,FetchGroup> fgs = new HashMap<>();
             ClassMetaData sup = getPCSuperclassMetaData();
             if (sup != null) {
                 FetchGroup[] supFGs = sup.getCustomFetchGroups();
@@ -2375,7 +2381,7 @@ public class ClassMetaData
     	if (StringUtil.isEmpty(name))
     		throw new MetaDataException(_loc.get("empty-fg-name", this));
         if (_fgMap == null)
-            _fgMap = new HashMap<String,FetchGroup>();
+            _fgMap = new HashMap<>();
         FetchGroup fg = _fgMap.get(name);
         if (fg == null) {
         	fg = new FetchGroup(this, name);
@@ -2404,14 +2410,17 @@ public class ClassMetaData
     // SourceTracker
     /////////////////
 
+    @Override
     public File getSourceFile() {
         return _srcFile;
     }
 
+    @Override
     public Object getSourceScope() {
         return null;
     }
 
+    @Override
     public int getSourceType() {
         return _srcType;
     }
@@ -2422,10 +2431,12 @@ public class ClassMetaData
         _srcName = srcName;
     }
 
+    @Override
     public String getResourceName() {
         return _type.getName();
     }
 
+    @Override
     public int getLineNumber() {
         return _lineNum;
     }
@@ -2434,6 +2445,7 @@ public class ClassMetaData
         _lineNum = lineNum;
     }
 
+    @Override
     public int getColNumber() {
         return _colNum;
     }
@@ -2489,10 +2501,12 @@ public class ClassMetaData
     // Commentable
     ///////////////
 
+    @Override
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
 
+    @Override
     public void setComments(String[] comments) {
         _comments = comments;
     }
@@ -2584,6 +2598,7 @@ public class ClassMetaData
         embed.copy(dec);
     }
 
+    @Override
     protected void addExtensionKeys(Collection exts) {
         _repos.getMetaDataFactory().addClassExtensionKeys(exts);
     }
@@ -2604,6 +2619,7 @@ public class ClassMetaData
             return _instance;
         }
 
+        @Override
         public int compare(FieldMetaData f1, FieldMetaData f2) {
             if (f1 == f2)
                 return 0;
@@ -2641,6 +2657,7 @@ public class ClassMetaData
     	}
     }
 
+    @Override
     public void valueChanged(Value val) {
     	if (val != null && val.matches("DataCacheTimeout")) {
     		_cacheTimeout = Integer.MIN_VALUE;
@@ -2664,7 +2681,7 @@ public class ClassMetaData
     }
 
     String[] toNames(FieldMetaData[] fields) {
-    	List<String> result = new ArrayList<String>();
+    	List<String> result = new ArrayList<>();
     	for (FieldMetaData fmd : fields) {
     		result.add(fmd.getName());
     	}
@@ -2780,7 +2797,7 @@ public class ClassMetaData
 
     public int[] getPkAndNonPersistentManagedFmdIndexes() {
         if (_pkAndNonPersistentManagedFmdIndexes == null) {
-            List<Integer> ids = new ArrayList<Integer>();
+            List<Integer> ids = new ArrayList<>();
             for (FieldMetaData fmd : getFields()) {
                 if (fmd.isPrimaryKey() || fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT) {
                     ids.add(fmd.getIndex());
@@ -2818,7 +2835,7 @@ public class ClassMetaData
                     String mappedByIdValue = fmd.getMappedByIdValue();
                     if (mappedByIdValue != null) {
                         if (fmdArray == null) {
-                            fmdArray = new ArrayList<FieldMetaData>();
+                            fmdArray = new ArrayList<>();
                         }
                         fmdArray.add(fmd);
                     }

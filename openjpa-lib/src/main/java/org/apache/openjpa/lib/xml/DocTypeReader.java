@@ -71,6 +71,7 @@ public class DocTypeReader extends Reader {
         _xml = bufferHeader(xml);
     }
 
+    @Override
     public int read() throws IOException {
         int ch = readHeader();
         if (ch != -1)
@@ -83,10 +84,12 @@ public class DocTypeReader extends Reader {
         return _xml.read();
     }
 
+    @Override
     public int read(char[] buf) throws IOException {
         return read(buf, 0, buf.length);
     }
 
+    @Override
     public int read(char[] buf, int off, int len) throws IOException {
         int headerRead = readHeader(buf, off, len);
         off += headerRead;
@@ -99,26 +102,32 @@ public class DocTypeReader extends Reader {
         return headerRead + docRead + _xml.read(buf, off, len);
     }
 
+    @Override
     public long skip(long len) throws IOException {
         return _xml.skip(len);
     }
 
+    @Override
     public boolean ready() throws IOException {
         return _xml.ready();
     }
 
+    @Override
     public boolean markSupported() {
         return _xml.markSupported();
     }
 
+    @Override
     public void mark(int readAheadLimit) throws IOException {
         _xml.mark(readAheadLimit);
     }
 
+    @Override
     public void reset() throws IOException {
         _xml.reset();
     }
 
+    @Override
     public void close() throws IOException {
         _xml.close();
         if (_docType != null)

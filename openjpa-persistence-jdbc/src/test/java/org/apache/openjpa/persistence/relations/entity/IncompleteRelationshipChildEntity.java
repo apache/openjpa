@@ -20,6 +20,7 @@
 package org.apache.openjpa.persistence.relations.entity;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;

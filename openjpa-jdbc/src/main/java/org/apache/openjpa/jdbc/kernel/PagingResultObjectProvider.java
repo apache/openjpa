@@ -86,7 +86,7 @@ public class PagingResultObjectProvider
 
         // not configured for eager selects?
         eagerMode = Math.min(eagerMode, fetch.getEagerFetchMode());
-        if (eagerMode != fetch.EAGER_PARALLEL)
+        if (eagerMode != EagerFetchModes.EAGER_PARALLEL)
             return null;
 
         // are there any mappings that require batched selects?
@@ -96,9 +96,9 @@ public class PagingResultObjectProvider
             if (fetch.requiresFetch(fms[i]) != FetchConfiguration.FETCH_LOAD)
                 continue;
 
-            if (fms[i].supportsSelect(sel, sel.EAGER_PARALLEL, null, store,
+            if (fms[i].supportsSelect(sel, Select.EAGER_PARALLEL, null, store,
                 fetch) > 0 && (fms[i].isEagerSelectToMany() || fms[i].
-                supportsSelect(sel, sel.EAGER_OUTER, null, store, fetch) == 0))
+                supportsSelect(sel, Select.EAGER_OUTER, null, store, fetch) == 0))
             {
                 if (paged == null)
                     paged = new BitSet();
@@ -186,12 +186,14 @@ public class PagingResultObjectProvider
         return _page.length;
     }
 
+    @Override
     public void open()
         throws SQLException {
         super.open();
         _pos = -1;
     }
 
+    @Override
     public boolean next()
         throws SQLException {
         _pos++;
@@ -204,6 +206,7 @@ public class PagingResultObjectProvider
         return true;
     }
 
+    @Override
     public boolean absolute(int pos)
         throws SQLException {
         _pos = pos;
@@ -212,6 +215,7 @@ public class PagingResultObjectProvider
         return super.absolute(pos);
     }
 
+    @Override
     public Object getResultObject()
         throws SQLException {
         if (!inPage())
@@ -375,7 +379,7 @@ public class PagingResultObjectProvider
 
             // get result
             fms[i].selectEagerParallel(esel, null, store, fetch,
-                JDBCFetchConfiguration.EAGER_PARALLEL);
+                EagerFetchModes.EAGER_PARALLEL);
             res = esel.execute(store, fetch);
             try {
                 // and load result into paged instances

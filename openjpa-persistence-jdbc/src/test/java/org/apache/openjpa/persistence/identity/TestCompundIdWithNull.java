@@ -47,6 +47,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestCompundIdWithNull extends SingleEMFTestCase {
     private static boolean tablesCreated = false;
 
+    @Override
     public void setUp() throws Exception {
         // Only run on Derby because we use DDL specific to Derby
         setSupportedDatabases(

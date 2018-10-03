@@ -38,6 +38,8 @@ import org.apache.openjpa.meta.JavaTypes;
 class InstanceofExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final PCPath _path;
     private final Class _cls;
 
@@ -49,6 +51,7 @@ class InstanceofExpression
         _cls = cls;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         // note that we tell the path to go ahead and join to its related
         // object (if any) in order to access its class indicator
@@ -133,6 +136,7 @@ class InstanceofExpression
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         // if no class indicator or a final class, just append true or false
@@ -152,6 +156,7 @@ class InstanceofExpression
         sel.append(sql, istate.joins);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         InstanceofExpState istate = (InstanceofExpState) state;
@@ -159,6 +164,7 @@ class InstanceofExpression
             sel.select(istate.discrim.getColumns(), istate.joins);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _path.acceptVisit(visitor);

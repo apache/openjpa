@@ -35,7 +35,7 @@ public interface AggregateListener
     /**
      * Return the tag that this listener listens for.
      */
-    public String getTag();
+    String getTag();
 
     /**
      * Return whether this function expects to act on arguments. Some
@@ -43,7 +43,7 @@ public interface AggregateListener
      * number of objects that match a given filter might be of the form:
      * <code>count()</code>.
      */
-    public boolean expectsArguments();
+    boolean expectsArguments();
 
     /**
      * Return the value of this aggregate.
@@ -59,7 +59,7 @@ public interface AggregateListener
      * @throws org.apache.openjpa.util.UserException if this aggregate does not
      * support in-memory operation
      */
-    public Object evaluate(Collection args, Class[] argClasses,
+    Object evaluate(Collection args, Class[] argClasses,
         Collection candidates, StoreContext ctx);
 
     /**
@@ -68,5 +68,5 @@ public interface AggregateListener
      * @param argClasses the expected classes of the argument, or null if
      * no arguments
      */
-    public Class getType(Class[] argClasses);
+    Class getType(Class[] argClasses);
 }

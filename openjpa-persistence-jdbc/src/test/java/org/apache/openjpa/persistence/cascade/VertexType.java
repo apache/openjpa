@@ -48,7 +48,7 @@ public class VertexType {
     private String name;
 
     protected VertexType() {
-        this.instances = new ArrayList<Vertex>();
+        this.instances = new ArrayList<>();
     }
 
     public VertexType( String name ) {

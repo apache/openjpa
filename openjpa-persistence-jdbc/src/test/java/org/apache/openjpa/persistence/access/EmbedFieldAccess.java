@@ -45,6 +45,7 @@ public class EmbedFieldAccess {
         lName = lname;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof EmbedFieldAccess) {
             EmbedFieldAccess ps = (EmbedFieldAccess)obj;

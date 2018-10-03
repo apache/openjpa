@@ -20,9 +20,8 @@ package org.apache.openjpa.persistence.kernel;
 
 import javax.persistence.EntityManager;
 
-
-import org.apache.openjpa.persistence.kernel.common.apps.Entity1;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.kernel.common.apps.Entity1;
 
 public class Test2EJBConcurrency extends AbstractTestCase {
 
@@ -32,6 +31,7 @@ public class Test2EJBConcurrency extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() throws Exception {
         deleteAll(Entity1.class);
 

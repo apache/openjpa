@@ -38,8 +38,7 @@ import org.apache.openjpa.jdbc.meta.Version;
 import org.apache.openjpa.jdbc.schema.DynamicSchemaFactory;
 import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.schema.Table;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
+import org.apache.openjpa.persistence.jdbc.common.apps.MappingTest1;
 
 
 public class TestDynamicSchemaFactory
@@ -54,6 +53,7 @@ public class TestDynamicSchemaFactory
         super(test);
     }
 
+    @Override
     public void setUp()
         throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();

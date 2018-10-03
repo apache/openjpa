@@ -32,6 +32,9 @@ import org.apache.openjpa.meta.JavaTypes;
 public class NumberVersionStrategy
     extends ColumnVersionStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final String ALIAS = "version-number";
 
     private Number _initial = 1;
@@ -51,10 +54,12 @@ public class NumberVersionStrategy
         return _initial.intValue();
     }
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     protected int getJavaType() {
         if (_javaType == null && vers.getClassMapping().getVersionFieldMapping() != null) {
             _javaType = Integer.valueOf(vers.getClassMapping().getVersionFieldMapping().getTypeCode());
@@ -65,15 +70,17 @@ public class NumberVersionStrategy
         return _javaType;
     }
 
+    @Override
     protected Object nextVersion(Object version) {
         if (version == null)
             return _initial;
         return ((Number) version).intValue() + 1;
     }
 
+    @Override
     public Map<Column,String> getBulkUpdateValues() {
         Column[] cols = vers.getColumns();
-        Map<Column,String> map = new HashMap<Column,String>(cols.length);
+        Map<Column,String> map = new HashMap<>(cols.length);
         for (int i = 0; i < cols.length; i++)
             map.put(cols[i], cols[i].getName() + " + 1");
         return map;

@@ -57,10 +57,12 @@ public class BaseEntity
         _version = version;
     }
 
+    @Override
     public void setStringField(String s) {
         _s = s;
     }
 
+    @Override
     public String getStringField() {
         return _s;
     }

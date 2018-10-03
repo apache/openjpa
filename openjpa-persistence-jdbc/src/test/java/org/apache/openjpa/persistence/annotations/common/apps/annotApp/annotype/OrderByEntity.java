@@ -19,11 +19,17 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OrderBy;
 
-import org.apache.openjpa.persistence.*;
+import org.apache.openjpa.persistence.PersistentCollection;
 
 /**
  * <p>Entity used to test parsing of @OrderBy.</p>

@@ -27,13 +27,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
-import java.util.*;
-import org.apache.openjpa.persistence.OpenJPAQuery;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.common.apps.QueryTest1;
 
 
 public class TestStringFunctions
@@ -47,6 +45,7 @@ public class TestStringFunctions
     	super(name);
     }
 
+    @Override
     public void setUp() {
        deleteAll(QueryTest1.class);
 
@@ -66,6 +65,7 @@ public class TestStringFunctions
         _match = (QueryTest1) _pm.getObjectId(oid);
     }
 
+    @Override
     public void tearDown()
         throws Exception {
         if (_pm != null)

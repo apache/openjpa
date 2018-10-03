@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.discriminator;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -28,6 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestDiscriminatorTypes extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(CharAbstractEntity.class, CharLeafEntity.class,
                 CharRootEntity.class, IntegerAbstractEntity.class,

@@ -30,48 +30,60 @@ public abstract class AbstractInstrument implements Instrument {
     private Object _context;
     private String _options;
 
+    @Override
     public Object getContext() {
         return _context;
     }
 
+    @Override
     public void setContext(Object context) {
         _context = context;
     }
 
+    @Override
     public String getOptions() {
         return _options;
     }
 
+    @Override
     public void setOptions(String options) {
         _options = options;
     }
 
+    @Override
     public boolean isStarted() {
         return _started;
     }
 
+    @Override
     public void setStarted(boolean started) {
         _started = started;
     }
 
+    @Override
     public void restart() {
         stop();
         start();
     }
 
+    @Override
     public void setProvider(InstrumentationProvider provider) {
         _provider = provider;
     }
 
+    @Override
     public InstrumentationProvider getProvider() {
         return _provider;
     }
 
+    @Override
     public InstrumentationLevel getLevel() {
         return InstrumentationLevel.MANUAL;
     }
 
+    @Override
     public abstract String getName();
 
+    @Override
     public abstract void initialize();
 }

@@ -30,6 +30,7 @@ public class MidClass3 extends BaseClass6 {
         return midClass3Name;
     }
 
+    @Override
     public String toString() {
         return super.toString() + ";midClass3Name=" + midClass3Name;
     }

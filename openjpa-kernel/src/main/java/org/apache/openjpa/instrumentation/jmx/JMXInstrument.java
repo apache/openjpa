@@ -30,33 +30,33 @@ public interface JMXInstrument extends Instrument {
     /**
      * Returns the JMX object name for the instrument
      */
-    public ObjectName getObjectName();
+    ObjectName getObjectName();
 
     /**
      * Sets the context reference for the instrument.  Required to register
      * the instrument under a unique id.
      * @param cref the context reference for the instrument
      */
-    public void setContextRef(String cref);
+    void setContextRef(String cref);
 
     /**
      * Gets the context reference for the instrument.  Required to register
      * the instrument under a unique id.
      * @param cref the context reference for the instrument
      */
-    public String getContextRef();
+    String getContextRef();
 
     /**
      * Sets the config id for the instrument.  Required to register
      * the instrument under a unique id.
      * @return the config id of the instrument
      */
-    public String getConfigId();
+    String getConfigId();
 
     /**
      * Gets the config id for the instrument.  Required to register
      * the instrument under a unique id.
      * @param cid the config id of the instrument
      */
-    public void setConfigId(String cid);
+    void setConfigId(String cid);
 }

@@ -30,6 +30,8 @@ public class InterfaceTestImpl3
     extends InterfaceTestImpl2
     implements InterfaceTest2 {
 
+    
+    private static final long serialVersionUID = 1L;
     private int intField;
 
     protected InterfaceTestImpl3() {
@@ -39,10 +41,12 @@ public class InterfaceTestImpl3
         super(str);
     }
 
+    @Override
     public int getIntField() {
         return this.intField;
     }
 
+    @Override
     public void setIntField(int i) {
         this.intField = i;
     }

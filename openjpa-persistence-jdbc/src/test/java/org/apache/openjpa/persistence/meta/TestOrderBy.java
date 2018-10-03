@@ -21,14 +21,13 @@ package org.apache.openjpa.persistence.meta;
 import java.util.Arrays;
 import java.util.List;
 
-
-import org.apache.openjpa.persistence.meta.common.apps.OrderByPC;
-import org.apache.openjpa.persistence.meta.common.apps.OrderByPCRel;
-import org.apache.openjpa.persistence.meta.common.apps.OrderByPCRelSub;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.meta.common.apps.OrderByPC;
+import org.apache.openjpa.persistence.meta.common.apps.OrderByPCRel;
+import org.apache.openjpa.persistence.meta.common.apps.OrderByPCRelSub;
 
 /**
  * <p>Test the <code>order-by</code> field extension.</p>
@@ -42,6 +41,7 @@ public class TestOrderBy
         super(test, "metacactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(OrderByPCRel.class);
         deleteAll(OrderByPC.class);

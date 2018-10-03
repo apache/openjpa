@@ -28,9 +28,8 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import org.apache.openjpa.persistence.kernel.common.apps.AppIdClassString;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.AppIdClassString;
 
 public class TestClassStringConstructor extends BaseKernelTest {
 
@@ -41,6 +40,7 @@ public class TestClassStringConstructor extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(AppIdClassString.class);
     }

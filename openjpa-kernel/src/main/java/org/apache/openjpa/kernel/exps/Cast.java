@@ -33,6 +33,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class Cast
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private final Class _cast;
 
@@ -44,18 +46,22 @@ class Cast
         _cast = cast;
     }
 
+    @Override
     public Class getType() {
         return _cast;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return Filters.convert(_val.eval(candidate, orig, ctx, params), _cast);
     }
 
+    @Override
     protected Collection eval(Collection candidates, Object orig,
         StoreContext ctx, Object[] params) {
         Collection res = _val.eval(candidates, orig, ctx, params);
@@ -68,6 +74,7 @@ class Cast
         return casts;
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

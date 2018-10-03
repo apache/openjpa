@@ -20,9 +20,17 @@ package org.apache.openjpa.jdbc.kernel;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
-import org.apache.openjpa.persistence.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.apache.openjpa.persistence.PersistentMap;
+import org.apache.openjpa.persistence.jdbc.ContainerTable;
+import org.apache.openjpa.persistence.jdbc.ElementColumn;
+import org.apache.openjpa.persistence.jdbc.KeyColumn;
+import org.apache.openjpa.persistence.jdbc.XJoinColumn;
 
 @Entity
 @Table(name = "JPA_A")
@@ -44,7 +52,7 @@ public class A {
          joinColumns = @XJoinColumn(name = "MAP_ID"))
     @KeyColumn(name="MAP_KEY")
     @ElementColumn(name="MAP_VALUE")
-    private Map<String,String> map = new HashMap<String,String>();
+    private Map<String,String> map = new HashMap<>();
 
     public A() {
     }

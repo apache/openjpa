@@ -25,6 +25,8 @@ package org.apache.openjpa.util;
  */
 public final class CharId extends OpenJPAId {
 
+    
+    private static final long serialVersionUID = 1L;
     private final char key;
 
     public CharId(Class cls, Character key) {
@@ -49,18 +51,22 @@ public final class CharId extends OpenJPAId {
         return key;
     }
 
+    @Override
     public Object getIdObject() {
         return Character.valueOf(key);
     }
 
+    @Override
     public String toString() {
         return String.valueOf(key);
     }
 
+    @Override
     protected int idHash() {
         return key;
     }
 
+    @Override
     protected boolean idEquals(OpenJPAId o) {
         return key == ((CharId) o).key;
     }

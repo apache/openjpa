@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.audit;
 
+import java.util.Collection;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.kernel.Audited;
 import org.apache.openjpa.kernel.Broker;
@@ -25,12 +30,9 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import java.util.Collection;
-
 public class TestBeginEventOnTransactionListener extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(X.class, AuditedEntry.class, CLEAR_TABLES);
     }

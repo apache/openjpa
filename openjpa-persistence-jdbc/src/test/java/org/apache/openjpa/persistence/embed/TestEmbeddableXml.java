@@ -62,6 +62,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     public int numCustomers = 1;
     public int numOrdersPerCustomer = 2;
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES);
     }
@@ -96,7 +97,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         AttributeXml a = new AttributeXml();
         a.setName("name1");
         a.setValue("value1");
-        List<AttributeXml> aList = new ArrayList<AttributeXml>();
+        List<AttributeXml> aList = new ArrayList<>();
         aList.add(a);
         f.setAttributes(aList);
         em.persist(f);
@@ -109,7 +110,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         AttributeXml a1 = new AttributeXml();
         a1.setName("name1");
         a1.setValue("value1");
-        List<AttributeXml> aList1 = new ArrayList<AttributeXml>();
+        List<AttributeXml> aList1 = new ArrayList<>();
         aList1.add(a1);
         f1.setAttributes(aList1);
         em.persist(f1);

@@ -30,9 +30,9 @@ import javax.persistence.ManyToOne;
  *
  */
 
-@SuppressWarnings("serial")
 @Entity
 public class Bid extends Tradable {
+    private static final long serialVersionUID = 1L;
     /**
      * The trader who has made the offer.
      * Must never be null.

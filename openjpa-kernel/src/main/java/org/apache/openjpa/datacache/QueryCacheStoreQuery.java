@@ -130,7 +130,7 @@ public class QueryCacheStoreQuery
             AbstractQueryCache qcache = (AbstractQueryCache) _cache;
             if (qcache.getEvictPolicy() == EvictPolicy.TIMESTAMP) {
                 Set<String> classNames = qk.getAcessPathClassNames();
-                List<String> keyList = new ArrayList<String>();
+                List<String> keyList = new ArrayList<>();
                 keyList.addAll(classNames);
 
                 List<Long> timestamps =
@@ -228,82 +228,101 @@ public class QueryCacheStoreQuery
         return _query;
     }
 
+    @Override
     public QueryContext getContext() {
         return _query.getContext();
     }
 
+    @Override
     public void setContext(QueryContext qctx) {
         _query.setContext(qctx);
         _sctx = qctx.getStoreContext();
         _repos = _sctx.getConfiguration().getMetaDataRepositoryInstance();
     }
 
+    @Override
     public boolean setQuery(Object query) {
         return _query.setQuery(query);
     }
 
+    @Override
     public FilterListener getFilterListener(String tag) {
         return _query.getFilterListener(tag);
     }
 
+    @Override
     public AggregateListener getAggregateListener(String tag) {
         return _query.getAggregateListener(tag);
     }
 
+    @Override
     public Object newCompilationKey() {
         return _query.newCompilationKey();
     }
 
+    @Override
     public Object newCompilation() {
         return _query.newCompilation();
     }
 
+    @Override
     public Object getCompilation() {
         return _query.getCompilation();
     }
 
+    @Override
     public void populateFromCompilation(Object comp) {
         _query.populateFromCompilation(comp);
     }
 
+    @Override
     public void invalidateCompilation() {
         _query.invalidateCompilation();
     }
 
+    @Override
     public boolean supportsDataStoreExecution() {
         return _query.supportsDataStoreExecution();
     }
 
+    @Override
     public boolean supportsInMemoryExecution() {
         return _query.supportsInMemoryExecution();
     }
 
+    @Override
     public Executor newInMemoryExecutor(ClassMetaData meta, boolean subs) {
         return _query.newInMemoryExecutor(meta, subs);
     }
 
+    @Override
     public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
         Executor ex = _query.newDataStoreExecutor(meta, subs);
         return new QueryCacheExecutor(ex, meta, subs,
                       getContext().getFetchConfiguration());
     }
 
+    @Override
     public boolean supportsAbstractExecutors() {
         return _query.supportsAbstractExecutors();
     }
 
+    @Override
     public boolean requiresCandidateType() {
         return _query.requiresCandidateType();
     }
 
+    @Override
     public boolean requiresParameterDeclarations() {
         return _query.requiresParameterDeclarations();
     }
 
+    @Override
     public boolean supportsParameterDeclarations() {
         return _query.supportsParameterDeclarations();
     }
 
+    @Override
     public Object evaluate(Object value, Object ob, Object[] params,
         OpenJPAStateManager sm) {
         return _query.evaluate(value, ob, params, sm);
@@ -328,6 +347,7 @@ public class QueryCacheStoreQuery
             _fc = fc;
         }
 
+        @Override
         public ResultObjectProvider executeQuery(StoreQuery q, Object[] params, Range range) {
             QueryCacheStoreQuery cq = (QueryCacheStoreQuery) q;
             Object parsed = cq.getDelegate().getCompilation();
@@ -369,6 +389,7 @@ public class QueryCacheStoreQuery
                 return rop;
         }
 
+        @Override
         public QueryExpressions[] getQueryExpressions() {
             return _ex.getQueryExpressions();
         }
@@ -387,7 +408,7 @@ public class QueryCacheStoreQuery
             if (cmd == null || cmd.length == 0)
                 return;
 
-            List<Class<?>> classes = new ArrayList<Class<?>>(cmd.length);
+            List<Class<?>> classes = new ArrayList<>(cmd.length);
             for (int i = 0; i < cmd.length; i++)
                 classes.add(cmd[i].getDescribedType());
 
@@ -404,6 +425,7 @@ public class QueryCacheStoreQuery
             }
         }
 
+        @Override
         public Number executeDelete(StoreQuery q, Object[] params) {
             try {
                 return _ex.executeDelete(unwrap(q), params);
@@ -412,6 +434,7 @@ public class QueryCacheStoreQuery
             }
         }
 
+        @Override
         public Number executeUpdate(StoreQuery q, Object[] params) {
             try {
                 return _ex.executeUpdate(unwrap(q), params);
@@ -420,85 +443,105 @@ public class QueryCacheStoreQuery
             }
         }
 
+        @Override
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
             Range range) {
             return EMPTY_STRINGS;
         }
 
+        @Override
         public void validate(StoreQuery q) {
             _ex.validate(unwrap(q));
         }
 
+        @Override
         public void getRange(StoreQuery q, Object[] params, Range range) {
             _ex.getRange(q, params, range);
         }
 
+        @Override
         public Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int orderIndex) {
             return _ex.getOrderingValue(unwrap(q), params, resultObject,
                 orderIndex);
         }
 
+        @Override
         public boolean[] getAscending(StoreQuery q) {
             return _ex.getAscending(unwrap(q));
         }
 
+        @Override
         public boolean isPacking(StoreQuery q) {
             return _ex.isPacking(unwrap(q));
         }
 
+        @Override
         public String getAlias(StoreQuery q) {
             return _ex.getAlias(unwrap(q));
         }
 
+        @Override
         public Class<?> getResultClass(StoreQuery q) {
             return _ex.getResultClass(unwrap(q));
         }
 
+        @Override
         public ResultShape<?> getResultShape(StoreQuery q) {
             return _ex.getResultShape(q);
         }
 
+        @Override
         public String[] getProjectionAliases(StoreQuery q) {
             return _ex.getProjectionAliases(unwrap(q));
         }
 
+        @Override
         public Class<?>[] getProjectionTypes(StoreQuery q) {
             return _ex.getProjectionTypes(unwrap(q));
         }
 
+        @Override
         public ClassMetaData[] getAccessPathMetaDatas(StoreQuery q) {
             return _ex.getAccessPathMetaDatas(unwrap(q));
         }
 
+        @Override
         public int getOperation(StoreQuery q) {
             return _ex.getOperation(unwrap(q));
         }
 
+        @Override
         public boolean isAggregate(StoreQuery q) {
             return _ex.isAggregate(unwrap(q));
         }
 
+        @Override
         public boolean isDistinct(StoreQuery q) {
             return _ex.isDistinct(unwrap(q));
         }
 
+        @Override
         public boolean hasGrouping(StoreQuery q) {
             return _ex.hasGrouping(unwrap(q));
         }
 
+        @Override
         public OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return _ex.getOrderedParameterTypes(unwrap(q));
         }
 
+        @Override
         public LinkedMap getParameterTypes(StoreQuery q) {
             return _ex.getParameterTypes(unwrap(q));
         }
 
+        @Override
         public Object[] toParameterArray(StoreQuery q, Map userParams) {
             return _ex.toParameterArray(q, userParams);
         }
 
+        @Override
         public Map getUpdates(StoreQuery q) {
             return _ex.getUpdates(unwrap(q));
         }
@@ -527,6 +570,7 @@ public class QueryCacheStoreQuery
             _fc = fc;
         }
 
+        @Override
         public Object get(int idx) {
             if (!_proj)
                 return fromObjectId(_res.get(idx), _sctx, _fc);
@@ -540,13 +584,14 @@ public class QueryCacheStoreQuery
             return uncached;
         }
 
+        @Override
         public int size() {
             return _res.size();
         }
 
         public Object writeReplace()
             throws ObjectStreamException {
-            return new ArrayList<Object>(this);
+            return new ArrayList<>(this);
         }
     }
 
@@ -562,7 +607,7 @@ public class QueryCacheStoreQuery
         private final ResultObjectProvider _rop;
         private final boolean _proj;
         private final QueryKey _qk;
-        private final TreeMap<Integer,Object> _data = new TreeMap<Integer,Object>();
+        private final TreeMap<Integer,Object> _data = new TreeMap<>();
         private boolean _maintainCache = true;
         private int _pos = -1;
 
@@ -655,15 +700,18 @@ public class QueryCacheStoreQuery
             }
         }
 
+        @Override
         public boolean supportsRandomAccess() {
             return _rop.supportsRandomAccess();
         }
 
+        @Override
         public void open()
             throws Exception {
             _rop.open();
         }
 
+        @Override
         public Object getResultObject()
             throws Exception {
             Object obj = _rop.getResultObject();
@@ -671,6 +719,7 @@ public class QueryCacheStoreQuery
             return obj;
         }
 
+        @Override
         public boolean next()
             throws Exception {
             _pos++;
@@ -683,6 +732,7 @@ public class QueryCacheStoreQuery
             return next;
         }
 
+        @Override
         public boolean absolute(int pos)
             throws Exception {
             _pos = pos;
@@ -695,6 +745,7 @@ public class QueryCacheStoreQuery
             return valid;
         }
 
+        @Override
         public int size()
             throws Exception {
             if (_size != Integer.MAX_VALUE)
@@ -705,22 +756,26 @@ public class QueryCacheStoreQuery
             return size;
         }
 
+        @Override
         public void reset()
             throws Exception {
             _rop.reset();
             _pos = -1;
         }
 
+        @Override
         public void close()
             throws Exception {
             abortCaching();
             _rop.close();
         }
 
+        @Override
         public void handleCheckedException(Exception e) {
             _rop.handleCheckedException(e);
         }
 
+        @Override
         public void onTypesChanged(TypesChangedEvent ev) {
             if (_qk.changeInvalidatesQuery(ev.getTypes()))
                 abortCaching();
@@ -732,6 +787,8 @@ public class QueryCacheStoreQuery
      */
     private static class CachedObjectId implements java.io.Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public final Object oid;
 
         public CachedObjectId (Object oid)

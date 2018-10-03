@@ -53,6 +53,7 @@ public class OrderingMergedResultObjectProvider
         _params = params;
     }
 
+    @Override
     protected Object getOrderingValue(Object val, int idx,
         ResultObjectProvider rop) {
         StoreQuery.Executor exec = (_execs.length == 1) ? _execs[0]
@@ -78,6 +79,7 @@ public class OrderingMergedResultObjectProvider
             _asc = asc;
         }
 
+        @Override
         public int compare(Object o1, Object o2) {
             if (_asc.length == 1)
                 return cmp(o1, o2, _asc[0]);

@@ -46,6 +46,7 @@ public abstract class XMLAbstractMappedSuperProperty {
 
     abstract public void setCreateDate(Date date);
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLAbstractMappedSuperProperty) {
             XMLAbstractMappedSuperProperty ps =

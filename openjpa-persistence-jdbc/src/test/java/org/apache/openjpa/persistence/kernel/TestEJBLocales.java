@@ -21,13 +21,13 @@ package org.apache.openjpa.persistence.kernel;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+
 import javax.persistence.EntityManager;
 
-
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestEJBLocales extends AbstractTestCase {
 
@@ -35,6 +35,7 @@ public class TestEJBLocales extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
     }

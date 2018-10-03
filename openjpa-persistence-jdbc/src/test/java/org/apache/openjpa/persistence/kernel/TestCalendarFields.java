@@ -31,13 +31,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.CalendarFields;
-
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.CalendarFields;
 
 public class TestCalendarFields extends BaseKernelTest {
 
@@ -48,6 +45,7 @@ public class TestCalendarFields extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(CalendarFields.class);
     }

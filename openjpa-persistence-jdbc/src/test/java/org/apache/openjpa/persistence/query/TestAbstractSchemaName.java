@@ -21,9 +21,10 @@ package org.apache.openjpa.persistence.query;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.simple.NamedEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that we can query by an entity's abstract schema name.
@@ -33,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestAbstractSchemaName
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(NamedEntity.class);
 

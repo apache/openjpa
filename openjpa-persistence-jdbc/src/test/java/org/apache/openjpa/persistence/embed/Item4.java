@@ -34,7 +34,7 @@ public class Item4 {
 
     @ElementCollection
     @MapKeyEnumerated(EnumType.STRING)
-    Map<Catagory, FileName4> images = new HashMap<Catagory, FileName4>();
+    Map<Catagory, FileName4> images = new HashMap<>();
 
     public int getId() {
         return id;

@@ -31,6 +31,9 @@ import org.apache.openjpa.kernel.Filters;
 class Avg
     extends AggregateVal {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the value to average.
      */
@@ -38,10 +41,12 @@ class Avg
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         return c;
     }
 
+    @Override
     protected Object operate(Collection os, Class c) {
         if (os.isEmpty())
             return null;

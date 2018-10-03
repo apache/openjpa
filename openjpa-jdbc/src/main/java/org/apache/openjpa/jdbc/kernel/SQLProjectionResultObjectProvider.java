@@ -69,6 +69,7 @@ class SQLProjectionResultObjectProvider
             _packer = null;
     }
 
+    @Override
     public boolean supportsRandomAccess() {
         try {
             return _res.supportsRandomAccess();
@@ -77,9 +78,11 @@ class SQLProjectionResultObjectProvider
         }
     }
 
+    @Override
     public void open() {
     }
 
+    @Override
     public Object getResultObject()
         throws SQLException {
         if (_cols == 1) {
@@ -95,16 +98,19 @@ class SQLProjectionResultObjectProvider
         return (_packer == null) ? vals : _packer.pack(vals);
     }
 
+    @Override
     public boolean next()
         throws SQLException {
         return _res.next();
     }
 
+    @Override
     public boolean absolute(int pos)
         throws SQLException {
         return _res.absolute(pos);
     }
 
+    @Override
     public int size()
         throws SQLException {
         if (_fetch.getLRSSize() == LRSSizes.SIZE_UNKNOWN
@@ -113,14 +119,17 @@ class SQLProjectionResultObjectProvider
         return _res.size();
     }
 
+    @Override
     public void reset() {
         throw new UnsupportedException();
     }
 
+    @Override
     public void close() {
         _res.close();
     }
 
+    @Override
     public void handleCheckedException(Exception e) {
         if (e instanceof SQLException)
             throw SQLExceptions.getStore((SQLException) e,

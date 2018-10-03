@@ -41,6 +41,8 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
 public class DelegatingFetchConfiguration
     implements FetchConfiguration {
 
+    
+    private static final long serialVersionUID = 1L;
     private final FetchConfiguration _fetch;
     private final DelegatingFetchConfiguration _del;
     private final RuntimeExceptionTranslator _trans;
@@ -79,10 +81,12 @@ public class DelegatingFetchConfiguration
         return (_del == null) ? _fetch : _del.getInnermostDelegate();
     }
 
+    @Override
     public int hashCode() {
         return getInnermostDelegate().hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -99,6 +103,7 @@ public class DelegatingFetchConfiguration
         return (_trans == null) ? re : _trans.translate(re);
     }
 
+    @Override
     public StoreContext getContext() {
         try {
             return _fetch.getContext();
@@ -107,6 +112,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public void setContext(StoreContext ctx) {
         try {
             _fetch.setContext(ctx);
@@ -115,6 +121,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public int getFetchBatchSize() {
         try {
             return _fetch.getFetchBatchSize();
@@ -123,6 +130,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setFetchBatchSize(int fetchBatchSize) {
         try {
             _fetch.setFetchBatchSize(fetchBatchSize);
@@ -132,6 +140,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public int getMaxFetchDepth() {
         try {
             return _fetch.getMaxFetchDepth();
@@ -140,6 +149,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setMaxFetchDepth(int depth) {
         try {
             _fetch.setMaxFetchDepth(depth);
@@ -149,6 +159,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public Set getRootInstances() {
         try {
             return _fetch.getRootInstances();
@@ -157,6 +168,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setRootInstances(Collection roots) {
         try {
             _fetch.setRootInstances(roots);
@@ -166,6 +178,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public Set getRootClasses() {
         try {
             return _fetch.getRootClasses();
@@ -174,6 +187,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setRootClasses(Collection roots) {
         try {
             _fetch.setRootClasses(roots);
@@ -183,6 +197,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public boolean getQueryCacheEnabled() {
         try {
             return _fetch.getQueryCacheEnabled();
@@ -191,6 +206,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setQueryCacheEnabled(boolean cache) {
         try {
             _fetch.setQueryCacheEnabled(cache);
@@ -200,6 +216,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public int getFlushBeforeQueries() {
         try {
             return _fetch.getFlushBeforeQueries();
@@ -208,6 +225,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setFlushBeforeQueries(int flush) {
         try {
             _fetch.setFlushBeforeQueries(flush);
@@ -217,6 +235,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public boolean getExtendedPathLookup() {
         try {
             return _fetch.getExtendedPathLookup();
@@ -225,6 +244,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setExtendedPathLookup(boolean flag) {
         try {
             _fetch.setExtendedPathLookup(flag);
@@ -235,6 +255,7 @@ public class DelegatingFetchConfiguration
     }
 
 
+    @Override
     public Set getFetchGroups() {
         try {
             return _fetch.getFetchGroups();
@@ -243,6 +264,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public boolean hasFetchGroup(String group) {
         try {
             return _fetch.hasFetchGroup(group);
@@ -251,6 +273,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration addFetchGroup(String group) {
         try {
             _fetch.addFetchGroup(group);
@@ -260,6 +283,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration addFetchGroups(Collection groups) {
         try {
             _fetch.addFetchGroups(groups);
@@ -269,6 +293,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration removeFetchGroup(String group) {
         try {
             _fetch.removeFetchGroup(group);
@@ -278,6 +303,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration removeFetchGroups(Collection groups) {
         try {
             _fetch.removeFetchGroups(groups);
@@ -287,6 +313,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration clearFetchGroups() {
         try {
             _fetch.clearFetchGroups();
@@ -296,6 +323,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration resetFetchGroups() {
         try {
             _fetch.resetFetchGroups();
@@ -305,6 +333,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public Set getFields() {
         try {
             return _fetch.getFields();
@@ -313,6 +342,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public boolean hasField(String field) {
         try {
             return _fetch.hasField(field);
@@ -321,6 +351,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration addField(String field) {
         try {
             _fetch.addField(field);
@@ -330,6 +361,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration addFields(Collection fields) {
         try {
             _fetch.addFields(fields);
@@ -339,6 +371,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration removeField(String field) {
         try {
             _fetch.removeField(field);
@@ -348,6 +381,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration removeFields(Collection fields) {
         try {
             _fetch.removeFields(fields);
@@ -357,6 +391,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration clearFields() {
         try {
             _fetch.clearFields();
@@ -366,6 +401,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public int getLockTimeout() {
         try {
             return _fetch.getLockTimeout();
@@ -374,6 +410,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setLockTimeout(int timeout) {
         try {
             _fetch.setLockTimeout(timeout);
@@ -383,6 +420,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public int getQueryTimeout() {
         try {
             return _fetch.getQueryTimeout();
@@ -391,6 +429,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setQueryTimeout(int timeout) {
         try {
             _fetch.setQueryTimeout(timeout);
@@ -400,6 +439,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public int getLockScope() {
         try {
             return _fetch.getLockScope();
@@ -408,6 +448,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setLockScope(int scope) {
         try {
             _fetch.setLockScope(scope);
@@ -417,6 +458,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public int getReadLockLevel() {
         try {
             return _fetch.getReadLockLevel();
@@ -425,6 +467,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setReadLockLevel(int level) {
         try {
             _fetch.setReadLockLevel(level);
@@ -434,6 +477,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public int getWriteLockLevel() {
         try {
             return _fetch.getWriteLockLevel();
@@ -442,6 +486,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration setWriteLockLevel(int level) {
         try {
             _fetch.setWriteLockLevel(level);
@@ -451,6 +496,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public ResultList newResultList(ResultObjectProvider rop) {
         try {
             return _fetch.newResultList(rop);
@@ -459,6 +505,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public void copy(FetchConfiguration fetch) {
         try {
             _fetch.copy(fetch);
@@ -467,6 +514,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public Object clone() {
         try {
             return _fetch.clone();
@@ -475,6 +523,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public void setHint(String name, Object value) {
         try {
             _fetch.setHint(name, value);
@@ -483,6 +532,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public void setHint(String name, Object value, Object original) {
         try {
             _fetch.setHint(name, value, original);
@@ -491,6 +541,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public boolean isHintSet(String key) {
         try {
             return _fetch.isHintSet(key);
@@ -499,6 +550,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public boolean isDefaultPUFetchGroupConfigurationOnly() {
         try {
             return _fetch.isDefaultPUFetchGroupConfigurationOnly();
@@ -507,6 +559,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public Object getHint(String name) {
         try {
             return _fetch.getHint(name);
@@ -515,6 +568,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public Map<String, Object> getHints() {
         try {
             return _fetch.getHints();
@@ -523,6 +577,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public int requiresFetch(FieldMetaData fmd) {
         try {
             return _fetch.requiresFetch(fmd);
@@ -531,6 +586,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public boolean requiresLoad() {
         try {
             return _fetch.requiresLoad();
@@ -539,6 +595,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public FetchConfiguration traverse(FieldMetaData fmd) {
         try {
             return _fetch.traverse(fmd);
@@ -547,6 +604,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public void lock() {
         try {
             _fetch.lock();
@@ -555,6 +613,7 @@ public class DelegatingFetchConfiguration
 		}
 	}
 
+    @Override
     public void unlock() {
         try {
             _fetch.unlock();
@@ -563,6 +622,7 @@ public class DelegatingFetchConfiguration
 		}
 	}
 
+    @Override
     public DataCacheRetrieveMode getCacheRetrieveMode() {
         try {
             return _fetch.getCacheRetrieveMode();
@@ -571,6 +631,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public DataCacheStoreMode getCacheStoreMode() {
         try {
             return _fetch.getCacheStoreMode();
@@ -579,6 +640,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public void setCacheRetrieveMode(DataCacheRetrieveMode mode) {
         try {
             _fetch.setCacheRetrieveMode(mode);
@@ -587,6 +649,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public void setCacheStoreMode(DataCacheStoreMode mode) {
         try {
             _fetch.setCacheStoreMode(mode);
@@ -595,6 +658,7 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    @Override
     public boolean isFetchConfigurationSQLCacheAdmissible() {
         try {
             return _fetch.isFetchConfigurationSQLCacheAdmissible();

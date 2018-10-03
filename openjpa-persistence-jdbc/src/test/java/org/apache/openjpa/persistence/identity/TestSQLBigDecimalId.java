@@ -22,10 +22,10 @@ import java.math.BigDecimal;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
-
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * @author <a href="mailto:mnachev@gmail.com">Miroslav Nachev</a>
@@ -33,6 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSQLBigDecimalId
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(SQLBigDecimalIdEntity.class, DROP_TABLES);
     }

@@ -19,7 +19,8 @@
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
 import java.math.BigDecimal;
-import javax.persistence.*;
+
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class PropertyInfo {

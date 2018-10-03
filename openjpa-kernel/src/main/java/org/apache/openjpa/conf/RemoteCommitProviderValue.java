@@ -18,13 +18,13 @@
  */
 package org.apache.openjpa.conf;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Value type used to represent a {@link RemoteCommitProvider}. This
@@ -50,12 +50,14 @@ public class RemoteCommitProviderValue
         setAliases(ALIASES);
     }
 
+    @Override
     public void setProperties(String props) {
         super.setProperties(props);
         _opts = null;
         _transmitPersIds = null;
     }
 
+    @Override
     public void setString(String str) {
         super.setString(str);
         _opts = null;
@@ -118,6 +120,7 @@ public class RemoteCommitProviderValue
     /**
      * Override to keep decorators out of transport configuration.
      */
+    @Override
     public Object instantiate(Class type, Configuration conf, boolean fatal) {
         Object obj = newInstance(getClassName(), type, conf, fatal);
         parseOptions();

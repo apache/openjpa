@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.meta;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMetaDataInheritanceComparator extends SingleEMFTestCase {
 
@@ -27,6 +27,7 @@ public class TestMetaDataInheritanceComparator extends SingleEMFTestCase {
         inheritanceComparatorHelper(true);
     }
 
+    @Override
     public void setUp() {
         setUp(A.class, B.class, C.class, AbstractThing.class);
     }

@@ -25,18 +25,20 @@ import java.util.Set;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.CollectionTable;
-
 @Entity
 @Table(name="TBL2A")
 public class EntityA_Coll_Embed_ToOne implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     // contains a collection of Embed1ToOne
     // Embed1ToOne does not have an element collection or to-Many relationships
     @Id
@@ -59,7 +61,7 @@ public class EntityA_Coll_Embed_ToOne implements Serializable {
         @AttributeOverride(name="name3", column=@Column(name="EMB_NAME3"))
     })
 
-    protected Set<Embed_ToOne> embed1s = new HashSet<Embed_ToOne>();
+    protected Set<Embed_ToOne> embed1s = new HashSet<>();
 
     public int getAge() {
         return age;

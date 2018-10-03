@@ -41,6 +41,7 @@ import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+
 import serp.bytecode.lowlevel.ConstantPoolTable;
 
 /**
@@ -181,7 +182,7 @@ public class ClassArgParser {
      */
     public Map<Object, Class<?>[]> mapTypes(MetaDataIterator itr) {
         Map<Object, String[]> map = mapTypeNames(itr);
-        Map<Object, Class<?>[]> rval = new HashMap<Object, Class<?>[]>();
+        Map<Object, Class<?>[]> rval = new HashMap<>();
         Map.Entry<Object, String[]> entry;
         String[] names;
         Class<?>[] objs;
@@ -236,7 +237,7 @@ public class ClassArgParser {
         if (itr == null)
             return new String[0];
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         Object source = null;
         try {
             while (itr.hasNext()) {
@@ -276,9 +277,9 @@ public class ClassArgParser {
         if (itr == null)
             return Collections.emptyMap();
 
-        Map<Object, String []> map = new HashMap<Object, String[]>();
+        Map<Object, String []> map = new HashMap<>();
         Object source = null;
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         try {
             while (itr.hasNext()) {
                 source = itr.next();
@@ -392,7 +393,7 @@ public class ClassArgParser {
      * Returns the classes named in the given common format metadata stream.
      */
     private Collection<String> getFromMetaData(Reader xml) throws IOException {
-        Collection<String> names = new ArrayList<String>();
+        Collection<String> names = new ArrayList<>();
         BufferedReader in = new BufferedReader(xml);
 
         boolean comment = false;

@@ -47,6 +47,7 @@ public class BaseClass6 {
         return name;
     }
 
+    @Override
     public String toString() {
         return "Id=" + id +
                ";Name=" + name;

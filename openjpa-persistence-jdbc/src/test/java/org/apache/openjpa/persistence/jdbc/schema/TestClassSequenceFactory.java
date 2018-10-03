@@ -63,6 +63,7 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
         super(test);
     }
 
+    @Override
     public void setUp()
     throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
@@ -187,6 +188,7 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
             _conf = conf;
         }
 
+        @Override
         public void run() {
             DataSource ds = _conf.getDataSource2(null);
             try {

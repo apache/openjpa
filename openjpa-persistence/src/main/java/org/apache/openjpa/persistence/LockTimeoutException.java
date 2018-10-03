@@ -34,11 +34,11 @@ import org.apache.openjpa.util.StoreException;
  *
  * @since 2.0.0
  */
-@SuppressWarnings("serial")
 public class LockTimeoutException
     extends javax.persistence.LockTimeoutException
     implements Serializable, ExceptionInfo {
 
+    private static final long serialVersionUID = 1L;
     private transient boolean _fatal = false;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
@@ -49,43 +49,53 @@ public class LockTimeoutException
         _failed = failed;
     }
 
+    @Override
     public int getType() {
         return STORE;
     }
 
+    @Override
     public int getSubtype() {
         return StoreException.LOCK;
     }
 
+    @Override
     public boolean isFatal() {
         return _fatal;
     }
 
+    @Override
     public Throwable getCause() {
         return PersistenceExceptions.getCause(_nested);
     }
 
+    @Override
     public Throwable[] getNestedThrowables() {
         return (_nested == null) ? Exceptions.EMPTY_THROWABLES : _nested;
     }
 
+    @Override
     public Object getFailedObject() {
         return _failed;
     }
 
+    @Override
     public String toString() {
         return Exceptions.toString(this);
     }
 
+    @Override
     public void printStackTrace() {
         printStackTrace(System.err);
     }
 
+    @Override
     public void printStackTrace(PrintStream out) {
         super.printStackTrace(out);
         Exceptions.printNestedThrowables(this, out);
     }
 
+    @Override
     public void printStackTrace(PrintWriter out) {
         super.printStackTrace(out);
         Exceptions.printNestedThrowables(this, out);

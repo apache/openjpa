@@ -25,7 +25,9 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class BinaryOperatorExpression extends ExpressionImpl {
-	protected final Expression _e1;
+	
+    private static final long serialVersionUID = 1L;
+    protected final Expression _e1;
 	protected final Expression _e2;
 	protected final BinaryFunctionalOperator   _op;
 
@@ -48,13 +50,15 @@ public class BinaryOperatorExpression extends ExpressionImpl {
 		return _op;
 	}
 
-	public String asExpression(AliasContext ctx) {
+	@Override
+    public String asExpression(AliasContext ctx) {
 		return ((Visitable)_e1).asExpression(ctx)
 			+ _op
 		    + ((Visitable)_e2).asExpression(ctx);
 	}
 
-	public String asProjection(AliasContext ctx) {
+	@Override
+    public String asProjection(AliasContext ctx) {
 		return ((Visitable)_e1).asProjection(ctx)
 			 + _op
 		     + (((Visitable)_e2).asProjection(ctx))

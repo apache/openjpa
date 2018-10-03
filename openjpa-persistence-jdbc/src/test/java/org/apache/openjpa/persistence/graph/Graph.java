@@ -48,7 +48,7 @@ public interface Graph<E> extends Set<E> {
      *
      * @return a relation
      */
-    public <V1 extends E, V2 extends E> Relation<V1, V2> link(V1 source, V2 target);
+    <V1 extends E, V2 extends E> Relation<V1, V2> link(V1 source, V2 target);
 
     /**
      * Breaks the relation between the given pair of nodes.
@@ -61,7 +61,7 @@ public interface Graph<E> extends Set<E> {
      *
      * @return the existing relation, if any, that had been broken. null otherwise.
      */
-    public <V1 extends E, V2 extends E> Relation<V1, V2> delink(V1 source, V2 target);
+    <V1 extends E, V2 extends E> Relation<V1, V2> delink(V1 source, V2 target);
 
     /**
      * Gets the directed relation between the given pair of nodes, if exists.
@@ -74,14 +74,14 @@ public interface Graph<E> extends Set<E> {
      *
      * @return a relation between the nodes, if exists. null otherwise.
      */
-    public <V1 extends E, V2 extends E> Relation<V1, V2> getRelation(V1 source, V2 target);
+    <V1 extends E, V2 extends E> Relation<V1, V2> getRelation(V1 source, V2 target);
 
     /**
      * Gets the nodes that are directly reachable from the given source node.
      *
      * @return set of target nodes. Empty set if the given source node is not connected to any other nodes.
      */
-    public Set<E> getTargets(E source);
+    Set<E> getTargets(E source);
 
 
     /**
@@ -89,19 +89,19 @@ public interface Graph<E> extends Set<E> {
      *
      * @return set of source nodes. Empty set if the given target node is not connected from any node.
      */
-    public Set<E> getSources(E target);
+    Set<E> getSources(E target);
 
     /**
      * Gets all the relations originating from the given source.
      * @param <V>
      * @param source
      */
-    public <V extends E> Set<Relation<V,E>> getRelationsFrom(V source);
+    <V extends E> Set<Relation<V,E>> getRelationsFrom(V source);
 
     /**
      * Gets all the relations terminating on the given target.
      * @param <V>
      * @param target
      */
-    public <V extends E> Set<Relation<E,V>> getRelationsTo(V target);
+    <V extends E> Set<Relation<E,V>> getRelationsTo(V target);
 }

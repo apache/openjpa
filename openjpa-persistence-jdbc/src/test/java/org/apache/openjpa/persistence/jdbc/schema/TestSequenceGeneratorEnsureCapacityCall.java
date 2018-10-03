@@ -25,11 +25,9 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.SeqA;
+import org.apache.openjpa.persistence.jdbc.common.apps.SeqD;
 
 
 public class TestSequenceGeneratorEnsureCapacityCall

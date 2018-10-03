@@ -29,5 +29,5 @@ package org.apache.openjpa.kernel;
  *
  */
 public interface ObjectFactory<T> {
-    public T newInstance();
+    T newInstance();
 }

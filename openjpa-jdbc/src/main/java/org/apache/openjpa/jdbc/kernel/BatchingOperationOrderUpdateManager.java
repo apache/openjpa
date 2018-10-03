@@ -45,6 +45,7 @@ import org.apache.openjpa.util.OpenJPAException;
 public class BatchingOperationOrderUpdateManager extends
     OperationOrderUpdateManager {
 
+    @Override
     protected PreparedStatementManager newPreparedStatementManager(
         JDBCStore store, Connection conn) {
         int batchLimit = dict.getBatchLimit();
@@ -56,6 +57,7 @@ public class BatchingOperationOrderUpdateManager extends
      * Override this method to flush any remaining batched row in the
      * PreparedStatementManager.
      */
+    @Override
     protected Collection flush(RowManager rowMgr,
         PreparedStatementManager psMgr, Collection exceps) {
         exceps = super.flush(rowMgr, psMgr, exceps);

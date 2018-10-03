@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class PlusExpression extends BinaryOperatorExpression {
-	public PlusExpression(Expression op, Expression op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public PlusExpression(Expression op, Expression op2) {
 		super(op, BinaryFunctionalOperator.PLUS, op2);
 	}
 }

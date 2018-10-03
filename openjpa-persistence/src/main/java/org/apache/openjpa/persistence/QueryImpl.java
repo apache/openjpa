@@ -56,7 +56,7 @@ import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.QueryMetaData;
-import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
+import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
@@ -68,9 +68,8 @@ import org.apache.openjpa.util.UserException;
  * @author Marc Prud'hommeaux
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
-
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 	private transient FetchPlan _fetch;
 
@@ -105,6 +104,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 	 *
 	 * @deprecated
 	 */
+    @Deprecated
     public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret, org.apache.openjpa.kernel.Query query) {
         this(em, ret, query, null);
     }
@@ -114,6 +114,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
      *
      * @deprecated
      */
+    @Deprecated
     public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query) {
         this(em, null, query, null);
     }
@@ -125,19 +126,23 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		return _query.getDelegate();
 	}
 
-	public OpenJPAEntityManager getEntityManager() {
+	@Override
+    public OpenJPAEntityManager getEntityManager() {
 		return _em;
 	}
 
-	public String getLanguage() {
+	@Override
+    public String getLanguage() {
 		return _query.getLanguage();
 	}
 
-	public QueryOperationType getOperation() {
+	@Override
+    public QueryOperationType getOperation() {
         return QueryOperationType.fromKernelConstant(_query.getOperation());
 	}
 
-	public FetchPlan getFetchPlan() {
+	@Override
+    public FetchPlan getFetchPlan() {
 		_em.assertNotCloseInvoked();
 		_query.assertNotSerialized();
 		_query.lock();
@@ -152,63 +157,74 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		}
 	}
 
-	public String getQueryString() {
+	@Override
+    public String getQueryString() {
 		String result = _query.getQueryString();
 		return result != null ? result : _id;
 	}
 
-	public boolean getIgnoreChanges() {
+	@Override
+    public boolean getIgnoreChanges() {
 		return _query.getIgnoreChanges();
 	}
 
-	public OpenJPAQuery<X> setIgnoreChanges(boolean ignore) {
+	@Override
+    public OpenJPAQuery<X> setIgnoreChanges(boolean ignore) {
 		_em.assertNotCloseInvoked();
 		_query.setIgnoreChanges(ignore);
 		return this;
 	}
 
-	public OpenJPAQuery<X> addFilterListener(FilterListener listener) {
+	@Override
+    public OpenJPAQuery<X> addFilterListener(FilterListener listener) {
 		_em.assertNotCloseInvoked();
 		_query.addFilterListener(listener);
 		return this;
 	}
 
-	public OpenJPAQuery<X> removeFilterListener(FilterListener listener) {
+	@Override
+    public OpenJPAQuery<X> removeFilterListener(FilterListener listener) {
 		_em.assertNotCloseInvoked();
 		_query.removeFilterListener(listener);
 		return this;
 	}
 
-	public OpenJPAQuery<X> addAggregateListener(AggregateListener listener) {
+	@Override
+    public OpenJPAQuery<X> addAggregateListener(AggregateListener listener) {
 		_em.assertNotCloseInvoked();
 		_query.addAggregateListener(listener);
 		return this;
 	}
 
+    @Override
     public OpenJPAQuery<X> removeAggregateListener(AggregateListener listener) {
 		_em.assertNotCloseInvoked();
 		_query.removeAggregateListener(listener);
 		return this;
 	}
 
-	public Collection<?> getCandidateCollection() {
+	@Override
+    public Collection<?> getCandidateCollection() {
 		return _query.getCandidateCollection();
 	}
 
-	public OpenJPAQuery<X> setCandidateCollection(Collection coll) {
+	@Override
+    public OpenJPAQuery<X> setCandidateCollection(Collection coll) {
 		_em.assertNotCloseInvoked();
 		_query.setCandidateCollection(coll);
 		return this;
 	}
 
-	public Class getResultClass() {
+	@Override
+    public Class getResultClass() {
 		Class res = _query.getResultType();
 		if (res != null)
 			return res;
 		return _query.getCandidateType();
 	}
 
-	public OpenJPAQuery<X> setResultClass(Class cls) {
+	@Override
+    public OpenJPAQuery<X> setResultClass(Class cls) {
 		_em.assertNotCloseInvoked();
 		if (ImplHelper.isManagedType(_em.getConfiguration(), cls))
 			_query.setCandidateType(cls, true);
@@ -217,22 +233,26 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		return this;
 	}
 
-	public boolean hasSubclasses() {
+	@Override
+    public boolean hasSubclasses() {
 		return _query.hasSubclasses();
 	}
 
-	public OpenJPAQuery<X> setSubclasses(boolean subs) {
+	@Override
+    public OpenJPAQuery<X> setSubclasses(boolean subs) {
 		_em.assertNotCloseInvoked();
 		Class<?> cls = _query.getCandidateType();
         _query.setCandidateExtent(_query.getBroker().newExtent(cls, subs));
 		return this;
 	}
 
-	public int getFirstResult() {
+	@Override
+    public int getFirstResult() {
 		return asInt(_query.getStartRange());
 	}
 
-	public OpenJPAQuery<X> setFirstResult(int startPosition) {
+	@Override
+    public OpenJPAQuery<X> setFirstResult(int startPosition) {
 		_em.assertNotCloseInvoked();
 		long end;
 		if (_query.getEndRange() == Long.MAX_VALUE)
@@ -244,11 +264,13 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		return this;
 	}
 
-	public int getMaxResults() {
+	@Override
+    public int getMaxResults() {
 		return asInt(_query.getEndRange() - _query.getStartRange());
 	}
 
-	public OpenJPAQuery<X> setMaxResults(int max) {
+	@Override
+    public OpenJPAQuery<X> setMaxResults(int max) {
 		_em.assertNotCloseInvoked();
 		long start = _query.getStartRange();
 		if (max == Integer.MAX_VALUE)
@@ -258,7 +280,8 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		return this;
 	}
 
-	public OpenJPAQuery<X> compile() {
+	@Override
+    public OpenJPAQuery<X> compile() {
 		_em.assertNotCloseInvoked();
 		_query.compile();
 		return this;
@@ -283,7 +306,8 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		}
 	}
 
-	public List getResultList() {
+	@Override
+    public List getResultList() {
 		_em.assertNotCloseInvoked();
 		boolean queryFetchPlanUsed = pushQueryFetchPlan();
 		try {
@@ -310,7 +334,8 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 	/**
 	 * Execute a query that returns a single result.
 	 */
-	public X getSingleResult() {
+	@Override
+    public X getSingleResult() {
 		_em.assertNotCloseInvoked();
         setHint(QueryHints.HINT_RESULT_COUNT, 1); // for DB2 optimization
 		boolean queryFetchPlanUsed = pushQueryFetchPlan();
@@ -360,7 +385,8 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		}
 	}
 
-	public int executeUpdate() {
+	@Override
+    public int executeUpdate() {
 		_em.assertNotCloseInvoked();
         Map<?,?> paramValues = getParameterValues();
 		if (_query.getOperation() == QueryOperations.OP_DELETE) {
@@ -383,12 +409,14 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		return (int) l;
 	}
 
-	public FlushModeType getFlushMode() {
+	@Override
+    public FlushModeType getFlushMode() {
 		return EntityManagerImpl.fromFlushBeforeQueries(_query
                 .getFetchConfiguration().getFlushBeforeQueries());
 	}
 
-	public OpenJPAQuery<X> setFlushMode(FlushModeType flushMode) {
+	@Override
+    public OpenJPAQuery<X> setFlushMode(FlushModeType flushMode) {
 		_em.assertNotCloseInvoked();
 		_query.getFetchConfiguration().setFlushBeforeQueries(
                 EntityManagerImpl.toFlushBeforeQueries(flushMode));
@@ -402,22 +430,25 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         String language = getLanguage();
         if (JPQLParser.LANG_JPQL.equals(language)
          || QueryLanguages.LANG_PREPARED_SQL.equals(language)
-         || CriteriaBuilderImpl.LANG_CRITERIA.equals(language)) {
+         || OpenJPACriteriaBuilder.LANG_CRITERIA.equals(language)) {
             return;
         } else {
             throw new IllegalStateException(_loc.get("not-jpql-or-criteria-query").getMessage());
         }
 	}
 
-	public OpenJPAQuery<X> closeAll() {
+	@Override
+    public OpenJPAQuery<X> closeAll() {
 		_query.closeAll();
 		return this;
 	}
 
-	public String[] getDataStoreActions(Map params) {
+	@Override
+    public String[] getDataStoreActions(Map params) {
 		return _query.getDataStoreActions(params);
 	}
 
+    @Override
     public LockModeType getLockMode() {
         assertJPQLOrCriteriaQuery();
         return getFetchPlan().getReadLockMode();
@@ -428,6 +459,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
      * If the target query has been prepared and cached, then ignores the cached version.
      * @see #ignorePreparedQuery()
      */
+    @Override
     public TypedQuery<X> setLockMode(LockModeType lockMode) {
         String language = getLanguage();
         if (QueryLanguages.LANG_PREPARED_SQL.equals(language)) {
@@ -438,11 +470,13 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
        return this;
     }
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
         return (_query == null) ? 0 : _query.hashCode();
 	}
 
-	public boolean equals(Object other) {
+	@Override
+    public boolean equals(Object other) {
 		if (other == this)
 			return true;
         if ((other == null) || (other.getClass() != this.getClass()))
@@ -457,12 +491,14 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 	 *
 	 */
     //TODO: JPA 2.0 Hints that are not set to FetchConfiguration
+    @Override
     public Map<String, Object> getHints() {
         if (_hintHandler == null)
             return Collections.emptyMap();
         return _hintHandler.getHints();
     }
 
+    @Override
     public OpenJPAQuery<X> setHint(String key, Object value) {
         _em.assertNotCloseInvoked();
         if (_hintHandler == null) {
@@ -472,6 +508,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         return this;
     }
 
+    @Override
     public Set<String> getSupportedHints() {
         if (_hintHandler == null) {
             _hintHandler = new HintHandler(this);
@@ -487,6 +524,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
      *
      * @since 2.0.0
      */
+    @Override
     public <T> T unwrap(Class<T> cls) {
         Object[] delegates = new Object[]{_query.getInnermostDelegate(), _query.getDelegate(), _query, this};
         for (Object o : delegates) {
@@ -623,11 +661,13 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
     }
     // ================ End of Prepared Query related methods =====================
 
+    @Override
     protected void lock() {
         if (_lock != null)
             _lock.lock();
     }
 
+    @Override
     protected void unlock() {
         if (_lock != null)
             _lock.unlock();
@@ -643,6 +683,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
         return _query.getOrderedParameterTypes();
     }
 
+    @Override
     public String toString() {
         String result = _query.getQueryString();
         return result != null ? result : _id;

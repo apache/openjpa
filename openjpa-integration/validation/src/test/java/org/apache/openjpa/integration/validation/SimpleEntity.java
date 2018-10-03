@@ -19,6 +19,7 @@
 package org.apache.openjpa.integration.validation;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -54,6 +55,7 @@ import javax.persistence.Table;
 @Entity(name = "simple")
 @Table(name = "SIMPLE_ENTITY")
 public class SimpleEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue

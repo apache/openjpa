@@ -47,14 +47,14 @@ public class FGManager extends FGEmployee {
 
     public FGManager() {
         super();
-        employees = new ArrayList<FGEmployee>();
+        employees = new ArrayList<>();
     }
 
     public FGManager(int id, String firstName, String lastName, String desc,
             FGDepartment dept, FGAddress address, FGManager manager,
             String rating, Collection<FGEmployee> employees, String mData) {
         super(id, firstName, lastName, desc, dept, address, manager, rating);
-        this.employees = new ArrayList<FGEmployee>();
+        this.employees = new ArrayList<>();
         this.employees.addAll(employees);
         this.mData = mData;
     }

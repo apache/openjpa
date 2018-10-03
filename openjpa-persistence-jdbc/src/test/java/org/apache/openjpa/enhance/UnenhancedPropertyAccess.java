@@ -19,15 +19,16 @@
 package org.apache.openjpa.enhance;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.Version;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
+
 import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
-import javax.persistence.FetchType;
+import javax.persistence.Version;
 
 @Entity
 @Table(name="UN_PROP")
@@ -35,11 +36,14 @@ import javax.persistence.FetchType;
 public class UnenhancedPropertyAccess
     implements UnenhancedType, Serializable, Cloneable {
 
+    
+    private static final long serialVersionUID = 1L;
     private int id;
     private int version;
     private String sf = "foo";
     private String lazyField = "lazy";
 
+    @Override
     @Id @GeneratedValue
     public int getId() {
         return id;
@@ -58,15 +62,18 @@ public class UnenhancedPropertyAccess
         version = v;
     }
 
+    @Override
     @Basic
     public String getStringField() {
         return sf;
     }
 
+    @Override
     public void setStringField(String s) {
         sf = s;
     }
 
+    @Override
     @Basic(fetch = FetchType.LAZY)
     public String getLazyField() {
         return lazyField;
@@ -76,6 +83,7 @@ public class UnenhancedPropertyAccess
         lazyField = s;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this)
             return true;
@@ -87,10 +95,12 @@ public class UnenhancedPropertyAccess
         return getId() == ((UnenhancedPropertyAccess) o).getId();
     }
 
+    @Override
     public int hashCode() {
         return getId();
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }

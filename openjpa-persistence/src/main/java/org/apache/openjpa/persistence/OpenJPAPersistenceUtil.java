@@ -186,7 +186,7 @@ public class OpenJPAPersistenceUtil {
     private static HashSet<OpenJPAStateManager> addToLoadSet(
         HashSet<OpenJPAStateManager> pcs, OpenJPAStateManager sm) {
         if (pcs == null) {
-            pcs = new HashSet<OpenJPAStateManager>();
+            pcs = new HashSet<>();
         }
         pcs.add(sm);
         return pcs;

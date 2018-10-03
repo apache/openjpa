@@ -50,7 +50,7 @@ public class VideoStore {
         joinColumns=@JoinColumn(name="STORE"))
     @Column(name="COPIES_IN_STOCK")
     @MapKeyJoinColumn(name="MOVIE", referencedColumnName="ID")
-    private Map<Movie, Integer> videoInventory = new HashMap<Movie, Integer>();
+    private Map<Movie, Integer> videoInventory = new HashMap<>();
 
     public int getId() {
         return id;

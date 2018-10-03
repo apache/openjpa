@@ -57,6 +57,7 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 			FrenchParagraph.class,
 			GermanParagraph.class};
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES,
         		Translation.class, BaseEntity.class,
@@ -144,7 +145,8 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 	/**
      * Count the number of instances in the given class by aggregate JPQL query.
 	 */
-	public int count(Class c) {
+	@Override
+    public int count(Class c) {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		Number n = ((Number) em.createQuery("SELECT COUNT(p) FROM " +
                 c.getSimpleName() + " p").getSingleResult()).intValue();

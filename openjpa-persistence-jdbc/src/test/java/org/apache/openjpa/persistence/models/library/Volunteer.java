@@ -18,7 +18,12 @@
  */
 package org.apache.openjpa.persistence.models.library;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="LIBVOLUNTEER")
@@ -64,10 +69,12 @@ public class Volunteer {
             throw new IllegalArgumentException("hours must be >= 0");
     }
 
+    @Override
     public String toString() {
         return "volunteer [" + oid + "] \"" + borrower.getName() + "\"";
     }
 
+    @Override
     public int hashCode() {
         return oid;
     }
@@ -75,6 +82,7 @@ public class Volunteer {
     /**
      * Uses the object's persistent identity value to determine equivalence.
      */
+    @Override
     public boolean equals(Object other) {
         // standard fare
         if (other == this)

@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class MaxExpression extends UnaryOperatorExpression {
-	public MaxExpression(Expression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public MaxExpression(Expression op) {
 		super(op, UnaryFunctionalOperator.MAX);
 	}
 }

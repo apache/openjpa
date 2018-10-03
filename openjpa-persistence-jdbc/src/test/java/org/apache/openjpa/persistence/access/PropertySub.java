@@ -52,6 +52,7 @@ public class PropertySub extends AbstractMappedSuperField {
         crtDate = date;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof PropertySub) {
             PropertySub ps = (PropertySub)obj;

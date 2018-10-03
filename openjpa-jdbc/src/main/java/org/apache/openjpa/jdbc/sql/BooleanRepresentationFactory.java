@@ -43,7 +43,7 @@ public class BooleanRepresentationFactory {
     static final Map<String, BooleanRepresentation<?>> BUILTIN_BOOLEAN_REPRESENTATIONS;
 
     static {
-        BUILTIN_BOOLEAN_REPRESENTATIONS = new HashMap<String, BooleanRepresentation<?>>();
+        BUILTIN_BOOLEAN_REPRESENTATIONS = new HashMap<>();
 
         /**
          * Booleans are natively supported by this very database.

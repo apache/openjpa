@@ -27,36 +27,36 @@ package org.apache.openjpa.persistence;
  */
 public interface Generator {
 
-    public static final String UUID_HEX = "uuid-hex";
-    public static final String UUID_STRING = "uuid-string";
-    public static final String UUID_TYPE4_STRING = "uuid-type4-string";
-    public static final String UUID_TYPE4_HEX = "uuid-type4-hex";
+    String UUID_HEX = "uuid-hex";
+    String UUID_STRING = "uuid-string";
+    String UUID_TYPE4_STRING = "uuid-type4-string";
+    String UUID_TYPE4_HEX = "uuid-type4-hex";
 
     /**
      * The sequence name.
      */
-    public String getName();
+    String getName();
 
     /**
      * The next sequence value.
      */
-    public Object next();
+    Object next();
 
     /**
      * The current sequence value, or null if the sequence does not
      * support current values.
      */
-    public Object current();
+    Object current();
 
     /**
      * Hint to the sequence to allocate additional values up-front for
      * efficiency.
      */
-    public void allocate(int additional);
+    void allocate(int additional);
 
     /**
      * @deprecated cast to {@link GeneratorImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public org.apache.openjpa.kernel.Seq getDelegate();
+    @Deprecated org.apache.openjpa.kernel.Seq getDelegate();
 }

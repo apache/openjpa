@@ -38,6 +38,7 @@ import org.apache.openjpa.persistence.cache.jpa.model.XmlCacheableEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
 
 public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
+    @Override
     public abstract OpenJPAEntityManagerFactorySPI getEntityManagerFactory();
 
     public abstract List<String> getSql();
@@ -150,7 +151,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
      * the number of SQL statements that result.
      */
     public interface Action {
-        public void run();
+        void run();
     }
 
     // =======================================================================
@@ -169,6 +170,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
      */
     public void testReadModeByass() {
         assertSqlInc(new Action() {
+            @Override
             public void run() {
                 EntityManager em = getEntityManagerFactory().createEntityManager();
                 em.setProperty(RETRIEVE_MODE_PROP, CacheRetrieveMode.BYPASS);
@@ -205,6 +207,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     public void testRetrieveModeUse() {
         if (getCacheEnabled()) {
             assertNoSql(new Action() {
+                @Override
                 public void run() {
                     EntityManager em = getEntityManagerFactory().createEntityManager();
                     em.setProperty(RETRIEVE_MODE_PROP, CacheRetrieveMode.USE);
@@ -216,6 +219,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
                 }
             });
             assertSqlInc(new Action() {
+                @Override
                 public void run() {
                     EntityManager em = getEntityManagerFactory().createEntityManager();
                     em.setProperty(RETRIEVE_MODE_PROP, CacheRetrieveMode.USE);

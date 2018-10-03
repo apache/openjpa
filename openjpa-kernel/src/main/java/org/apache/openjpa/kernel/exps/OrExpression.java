@@ -30,6 +30,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class OrExpression
     extends Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Exp _exp1;
     private final Exp _exp2;
 
@@ -41,18 +43,21 @@ class OrExpression
         _exp2 = exp2;
     }
 
+    @Override
     protected boolean eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return _exp1.evaluate(candidate, orig, ctx, params)
             || _exp2.evaluate(candidate, orig, ctx, params);
     }
 
+    @Override
     protected boolean eval(Collection candidates, StoreContext ctx,
         Object[] params) {
         return _exp1.evaluate(candidates, ctx, params)
             || _exp2.evaluate(candidates, ctx, params);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _exp1.acceptVisit(visitor);

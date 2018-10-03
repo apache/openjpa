@@ -21,13 +21,16 @@ package org.apache.openjpa.persistence.embed;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Department2 {
 
     int deptId;
-    Map<EmployeePK2, Employee2> empMap = new HashMap<EmployeePK2, Employee2>();
+    Map<EmployeePK2, Employee2> empMap = new HashMap<>();
 
     @Id
     public int getDeptId() {

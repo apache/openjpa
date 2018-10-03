@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.relations;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -35,7 +36,7 @@ public class RelationToHandlerMapInstance {
     @PersistentMap(keyCascade = CascadeType.PERSIST)
 
     private Map<AllFieldTypes,String> aftMap =
-        new HashMap<AllFieldTypes,String>();
+        new HashMap<>();
 
     public Map<AllFieldTypes,String> getMap() {
         return aftMap;

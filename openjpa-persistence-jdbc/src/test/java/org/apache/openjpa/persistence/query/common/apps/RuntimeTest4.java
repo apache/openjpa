@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.query.common.apps;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
 import javax.persistence.Entity;
 
 @Entity

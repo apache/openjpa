@@ -36,6 +36,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestHintedQuery extends SQLListenerTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, TimeKeeper.class);
     }

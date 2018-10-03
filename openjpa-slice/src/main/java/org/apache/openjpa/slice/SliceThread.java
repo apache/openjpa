@@ -65,6 +65,7 @@ public class SliceThread extends Thread {
 
     private static class SliceThreadFactory implements ThreadFactory {
         int n = 0;
+        @Override
         public Thread newThread(Runnable r) {
             Thread parent = Thread.currentThread();
             return new SliceThread(parent.getName()+"-slice-"+n++, parent, r);

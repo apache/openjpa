@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.io.Reader;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -40,18 +41,22 @@ public class ReaderLobEntity implements LobEntity {
     @Persistent
     private Reader stream;
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public Object getStream() {
         return stream;
     }
 
+    @Override
     public void setStream(Object o) {
         this.stream = (Reader) o;
     }

@@ -50,6 +50,9 @@ import org.apache.openjpa.util.UserException;
 public class JDBCExpressionFactory
     implements ExpressionFactory, Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Val NULL = new Null();
 
     private static final Localizer _loc = Localizer.forPackage(JDBCExpressionFactory.class);
@@ -78,14 +81,17 @@ public class JDBCExpressionFactory
         return _cons;
     }
 
+    @Override
     public Expression emptyExpression() {
         return new EmptyExpression();
     }
 
+    @Override
     public Expression asExpression(Value v) {
         return equal(v, newLiteral(Boolean.TRUE, Literal.TYPE_BOOLEAN));
     }
 
+    @Override
     public Expression equal(Value v1, Value v2) {
         // if we're comparing an unaccessed bound variable, like in:
         // coll.contains (var) && var == x, then translate into:
@@ -133,6 +139,7 @@ public class JDBCExpressionFactory
         }
     }
 
+    @Override
     public Expression notEqual(Value v1, Value v2) {
         if (v1 instanceof Type || v2 instanceof Type) {
             Value val = v1 instanceof Type ? v1 : v2;
@@ -143,34 +150,41 @@ public class JDBCExpressionFactory
         return new NotEqualExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression lessThan(Value v1, Value v2) {
         return new CompareExpression((Val) v1, (Val) v2,
             CompareExpression.LESS);
     }
 
+    @Override
     public Expression greaterThan(Value v1, Value v2) {
         return new CompareExpression((Val) v1, (Val) v2,
             CompareExpression.GREATER);
     }
 
+    @Override
     public Expression lessThanEqual(Value v1, Value v2) {
         return new CompareExpression((Val) v1, (Val) v2,
             CompareExpression.LESS_EQUAL);
     }
 
+    @Override
     public Expression greaterThanEqual(Value v1, Value v2) {
         return new CompareExpression((Val) v1, (Val) v2,
             CompareExpression.GREATER_EQUAL);
     }
 
+    @Override
     public Expression isEmpty(Value val) {
         return new IsEmptyExpression((Val) val);
     }
 
+    @Override
     public Expression isNotEmpty(Value val) {
         return new IsNotEmptyExpression((Val) val);
     }
 
+    @Override
     public Expression contains(Value map, Value arg) {
         if (map instanceof Const) {
             if (arg instanceof Type) {
@@ -187,24 +201,28 @@ public class JDBCExpressionFactory
         return new ContainsExpression((Val) map, (Val) arg);
     }
 
+    @Override
     public Expression containsKey(Value map, Value arg) {
         if (map instanceof Const)
             return new InKeyExpression((Val) arg, (Const) map);
         return new ContainsKeyExpression((Val) map, (Val) arg);
     }
 
+    @Override
     public Expression containsValue(Value map, Value arg) {
         if (map instanceof Const)
             return new InValueExpression((Val) arg, (Const) map);
         return new ContainsExpression((Val) map, (Val) arg);
     }
 
+    @Override
     public Expression isInstance(Value val, Class c) {
         if (val instanceof Const)
             return new ConstInstanceofExpression((Const) val, c);
         return new InstanceofExpression((PCPath) val, c);
     }
 
+    @Override
     public Expression and(Expression exp1, Expression exp2) {
         if (exp1 instanceof BindVariableExpression)
             return new BindVariableAndExpression((BindVariableExpression) exp1,
@@ -215,10 +233,12 @@ public class JDBCExpressionFactory
         return new AndExpression((Exp) exp1, (Exp) exp2);
     }
 
+    @Override
     public Expression or(Expression exp1, Expression exp2) {
         return new OrExpression((Exp) exp1, (Exp) exp2);
     }
 
+    @Override
     public Expression not(Expression exp) {
         if (!(exp instanceof IsNotEmptyExpression) &&
             !(exp instanceof InSubQExpression) &&
@@ -227,6 +247,7 @@ public class JDBCExpressionFactory
         return new NotExpression((Exp) exp);
     }
 
+    @Override
     public Expression bindVariable(Value var, Value val) {
         // handle the strange case of using a constant path to bind a
         // variable; in these cases the variable acts like an unbound
@@ -240,6 +261,7 @@ public class JDBCExpressionFactory
         return new BindVariableExpression((Variable) var, (PCPath) val, false);
     }
 
+    @Override
     public Expression bindKeyVariable(Value var, Value val) {
         // handle the strange case of using a constant path to bind a
         // variable; in these cases the variable acts like an unbound
@@ -253,23 +275,28 @@ public class JDBCExpressionFactory
         return new BindVariableExpression((Variable) var, (PCPath) val, true);
     }
 
+    @Override
     public Expression bindValueVariable(Value var, Value val) {
         return bindVariable(var, val);
     }
 
+    @Override
     public Expression startsWith(Value v1, Value v2) {
         return new StartsWithExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression endsWith(Value v1, Value v2) {
         return new EndsWithExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression notMatches(Value v1, Value v2,
         String single, String multi, String esc) {
         return not(matches(v1, v2, single, multi, esc));
     }
 
+    @Override
     public Expression matches(Value v1, Value v2,
         String single, String multi, String esc) {
         if (!(v2 instanceof Const))
@@ -282,6 +309,7 @@ public class JDBCExpressionFactory
         return new MatchesExpression((Val) v1, (Const) v2, single, multi, esc);
     }
 
+    @Override
     public Subquery newSubquery(ClassMetaData candidate, boolean subs,
         String alias) {
         DBDictionary dict = _type.getMappingRepository().getDBDictionary();
@@ -289,10 +317,12 @@ public class JDBCExpressionFactory
         return new SubQ((ClassMapping) candidate, subs, alias);
     }
 
+    @Override
     public Path newPath() {
         return new PCPath(_type);
     }
 
+    @Override
     public Path newPath(Value val) {
         if (val instanceof Const)
             return new ConstPath((Const) val);
@@ -301,57 +331,70 @@ public class JDBCExpressionFactory
         return new PCPath(_type, (Variable) val);
     }
 
+    @Override
     public Literal newLiteral(Object val, int ptype) {
         return new Lit(val, ptype);
     }
 
+    @Override
     public Literal newTypeLiteral(Object val, int ptype) {
         return new TypeLit(val, ptype);
     }
 
+    @Override
     public Value getThis() {
         return new PCPath(_type);
     }
 
+    @Override
     public Value getNull() {
         return NULL;
     }
 
+    @Override
     public <T extends Date> Value getCurrentDate(Class<T> dateType) {
         return new CurrentDate(dateType);
     }
 
+    @Override
     public <T extends Date> Value getCurrentTime(Class<T> dateType) {
         return  new CurrentDate(dateType);
     }
 
+    @Override
     public <T extends Date> Value getCurrentTimestamp(Class<T> dateType) {
         return  new CurrentDate(dateType);
     }
 
+    @Override
     public Parameter newParameter(Object name, Class type) {
         return new Param(name, type);
     }
 
+    @Override
     public Parameter newCollectionValuedParameter(Object key, Class type) {
         return new CollectionParam(key, type);
     }
 
+    @Override
     public Value newExtension(FilterListener listener, Value target,
         Value arg) {
         return new Extension((JDBCFilterListener) listener,
             (Val) target, (Val) arg, _type);
     }
 
+    @Override
     public Value newAggregate(AggregateListener listener, Value arg) {
         return new Aggregate((JDBCAggregateListener) listener,
             (Val) arg, _type);
     }
 
+    @Override
     public Arguments newArgumentList(Value v1, Value v2) {
         return new Args((Val) v1, (Val) v2);
     }
 
+    @Override
     public Arguments newArgumentList(Value... vs) {
         if (vs == null)
            return new Args(null);
@@ -363,139 +406,172 @@ public class JDBCExpressionFactory
         return new Args(vals);
     }
 
+    @Override
     public Value newUnboundVariable(String name, Class type) {
         return new Variable(name, type);
     }
 
+    @Override
     public Value newBoundVariable(String name, Class type) {
         return newUnboundVariable(name, type);
     }
 
+    @Override
     public Value cast(Value val, Class cls) {
         val.setImplicitType(cls);
         return val;
     }
 
+    @Override
     public Value add(Value v1, Value v2) {
         return new Math((Val) v1, (Val) v2, Math.ADD);
     }
 
+    @Override
     public Value subtract(Value v1, Value v2) {
         return new Math((Val) v1, (Val) v2, Math.SUBTRACT);
     }
 
+    @Override
     public Value multiply(Value v1, Value v2) {
         return new Math((Val) v1, (Val) v2, Math.MULTIPLY);
     }
 
+    @Override
     public Value divide(Value v1, Value v2) {
         return new Math((Val) v1, (Val) v2, Math.DIVIDE);
     }
 
+    @Override
     public Value mod(Value v1, Value v2) {
         return new Math((Val) v1, (Val) v2, Math.MOD);
     }
 
+    @Override
     public Value abs(Value val) {
         return new Abs((Val) val);
     }
 
+    @Override
     public Value indexOf(Value v1, Value v2) {
         return new IndexOf((Val) v1, (Val) v2);
     }
 
+    @Override
     public Value concat(Value v1, Value v2) {
         return new Concat((Val) v1, (Val) v2);
     }
 
+    @Override
     public Value stringLength(Value str) {
         return new StringLength((Val) str);
     }
 
+    @Override
     public Value trim(Value str, Value trimChar, Boolean where) {
         return new Trim((Val) str, (Val) trimChar, where);
     }
 
+    @Override
     public Value sqrt(Value val) {
         return new Sqrt((Val) val);
     }
 
+    @Override
     public Value substring(Value v1, Value v2) {
         return new Substring((Val) v1, (Val) v2);
     }
 
+    @Override
     public Value toUpperCase(Value val) {
         return new ToUpperCase((Val) val);
     }
 
+    @Override
     public Value toLowerCase(Value val) {
         return new ToLowerCase((Val) val);
     }
 
+    @Override
     public Value avg(Value val) {
         return new Avg((Val) val);
     }
 
+    @Override
     public Value count(Value val) {
         return new Count((Val) val);
     }
 
+    @Override
     public Value distinct(Value val) {
         return new Distinct((Val) val);
     }
 
+    @Override
     public Value max(Value val) {
         return new Max((Val) val);
     }
 
+    @Override
     public Value min(Value val) {
         return new Min((Val) val);
     }
 
+    @Override
     public Value sum(Value val) {
         return new Sum((Val) val);
     }
 
+    @Override
     public Value any(Value val) {
         return new Any((Val) val);
     }
 
+    @Override
     public Value all(Value val) {
         return new All((Val) val);
     }
 
+    @Override
     public Value size(Value val) {
         return new Size((Val) val);
     }
 
+    @Override
     public Value index(Value val) {
         ((PCPath) val).verifyIndexedField();
         return new Index((Val) val);
     }
 
+    @Override
     public Value type(Value val) {
         return new Type((Val) val);
     }
 
+    @Override
     public Value mapEntry(Value key, Value val) {
         return new MapEntry((Val) key, (Val) val);
     }
 
+    @Override
     public Value mapKey(Value key, Value val) {
         return new MapKey((Val) key);
     }
 
+    @Override
     public Value getKey(Value val) {
         ((PCPath) val).getKey();
         return val;
     }
 
+    @Override
     public Value getObjectId(Value val) {
         if (val instanceof Const)
             return new ConstGetObjectId((Const) val);
         return new GetObjectId((PCPath) val);
     }
 
+    @Override
     public Value getMapValue(Value map, Value arg) {
         return new GetMapValue((Val) map, (Val) arg,
             "gmv" + _getMapValueAlias++);
@@ -526,6 +602,7 @@ public class JDBCExpressionFactory
         return val;
     }
 
+    @Override
     public Value simpleCaseExpression(Value caseOperand, Expression[] exp,
             Value val1) {
         Exp[] exps = new Exp[exp.length];
@@ -536,6 +613,7 @@ public class JDBCExpressionFactory
             (Val) val1);
     }
 
+    @Override
     public Value generalCaseExpression(Expression[] exp,
             Value val) {
         Exp[] exps = new Exp[exp.length];
@@ -545,17 +623,20 @@ public class JDBCExpressionFactory
         return new GeneralCaseExpression(exps, (Val) val);
     }
 
+    @Override
     public Expression whenCondition(Expression exp, Value val) {
         val = getLiteralRawString(val);
         return new WhenCondition((Exp) exp, (Val) val);
     }
 
+    @Override
     public Expression whenScalar(Value val1, Value val2) {
         val1 = getLiteralRawString(val1);
         val2 = getLiteralRawString(val2);
         return new WhenScalar((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value coalesceExpression(Value[] vals) {;
         Object[] values = new Val[vals.length];
         for (int i = 0; i < vals.length; i++) {
@@ -564,16 +645,19 @@ public class JDBCExpressionFactory
         return new CoalesceExpression((Val[]) values);
     }
 
+    @Override
     public Value nullIfExpression(Value val1, Value val2) {
         val1 = getLiteralRawString(val1);
         val2 = getLiteralRawString(val2);
         return new NullIfExpression((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value newFunction(String functionName, Class<?> resultType, Value... args) {
         return new DatastoreFunction(functionName, resultType, newArgumentList(args));
     }
 
+    @Override
     public boolean isVerticalType(Value val) {
         if (!(val instanceof Type))
             return false;

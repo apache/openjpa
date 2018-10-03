@@ -27,10 +27,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.StoreCache;
 import org.apache.openjpa.persistence.StoreCacheImpl;
-import org.apache.openjpa.persistence.querycache.common.apps.BidirectionalOne2OneOwned;
-import org.apache.openjpa.persistence.querycache.common.apps.BidirectionalOne2OneOwner;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.PObject;
+import org.apache.openjpa.persistence.querycache.common.apps.BidirectionalOne2OneOwned;
+import org.apache.openjpa.persistence.querycache.common.apps.BidirectionalOne2OneOwner;
 
 /**
  * Tests various application behavior with or without DataCache.
@@ -69,6 +69,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
     /**
      * Sets up two EntityManagerFactory: one with DataCache another without.
      */
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         if (emfWithDataCache == null) {
@@ -102,6 +103,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
         TEST_COUNT++;
     }
 
+    @Override
     public void tearDown() throws Exception {
         // HACK - need to manually close EMFs after all tests have run
         if (TEST_COUNT >= 21) {

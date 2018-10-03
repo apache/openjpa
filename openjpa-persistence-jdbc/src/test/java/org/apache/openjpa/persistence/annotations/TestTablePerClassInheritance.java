@@ -19,9 +19,9 @@
 package org.apache.openjpa.persistence.annotations;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedValue;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.TablePerClass1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.TablePerClass2;
 
 
 /**

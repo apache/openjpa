@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.query;
 
 import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,6 +32,9 @@ import javax.persistence.Version;
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class ManyOneEntity implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue

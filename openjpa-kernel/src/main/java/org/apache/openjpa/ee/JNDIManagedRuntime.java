@@ -52,6 +52,7 @@ public class JNDIManagedRuntime extends AbstractManagedRuntime
     /**
      * Return the cached TransactionManager instance.
      */
+    @Override
     public TransactionManager getTransactionManager() throws Exception {
 
         if (_tm == null) {
@@ -65,12 +66,14 @@ public class JNDIManagedRuntime extends AbstractManagedRuntime
         return _tm;
     }
 
+    @Override
     public void setRollbackOnly(Throwable cause)
         throws Exception {
         // there is no generic support for setting the rollback cause
         getTransactionManager().getTransaction().setRollbackOnly();
     }
 
+    @Override
     public Throwable getRollbackCause()
         throws Exception {
         // there is no generic support for setting the rollback cause

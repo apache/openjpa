@@ -61,7 +61,7 @@ public class LSEEleCol implements Externalizable {
     private String firstName;
 
     @ElementCollection
-    protected Set<String> collection = new HashSet<String>();
+    protected Set<String> collection = new HashSet<>();
 
     public int getId() {
         return id;
@@ -95,12 +95,14 @@ public class LSEEleCol implements Externalizable {
         return version;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + '@'
             + Integer.toHexString(System.identityHashCode(this)) + "[id="
             + getId() + ", ver=" + getVersion() + ", firstName=" + getFirstName() + "] one=" + getCollection();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
         ClassNotFoundException {
         id = in.readInt();
@@ -109,6 +111,7 @@ public class LSEEleCol implements Externalizable {
         collection = (Set<String>) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(id);
         out.writeInt(version);

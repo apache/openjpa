@@ -18,16 +18,16 @@
  */
 package org.apache.openjpa.persistence.models.company;
 
-import java.util.*;
+import java.util.Collection;
 
 public interface ICustomer extends IPerson {
 
-    public void setOrders(Collection<? extends IProductOrder> orders);
-    public Collection<? extends IProductOrder> getOrders();
+    void setOrders(Collection<? extends IProductOrder> orders);
+    Collection<? extends IProductOrder> getOrders();
 
-    public void setShippingAddress(IAddress shippingAddress);
-    public IAddress getShippingAddress();
+    void setShippingAddress(IAddress shippingAddress);
+    IAddress getShippingAddress();
 
-    public void setBillingAddress(IAddress billingAddress);
-    public IAddress getBillingAddress();
+    void setBillingAddress(IAddress billingAddress);
+    IAddress getBillingAddress();
 }

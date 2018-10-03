@@ -32,38 +32,38 @@ public interface SchemaSerializer
     /**
      * Return the set of tables that will be serialized.
      */
-    public Table[] getTables();
+    Table[] getTables();
 
     /**
      * Add the given table to the set of tables that will be serialized.
      */
-    public void addTable(Table table);
+    void addTable(Table table);
 
     /**
      * Remove the given table from the set to be serialized.
      *
      * @return true if table was removed, false if not in set
      */
-    public boolean removeTable(Table table);
+    boolean removeTable(Table table);
 
     /**
      * Add the given schema's objects to the set of objects that will be
      * serialized.
      */
-    public void addAll(Schema schema);
+    void addAll(Schema schema);
 
     /**
      * Add all the objects in the given group to the set of objects that
      * will be serialized.
      */
-    public void addAll(SchemaGroup group);
+    void addAll(SchemaGroup group);
 
     /**
      * Remove the given schema's objects from the set to be serialized.
      *
      * @return true if any objects in schema removed, false if none in set
      */
-    public boolean removeAll(Schema schema);
+    boolean removeAll(Schema schema);
 
     /**
      * Remove all schemas in the given group from the set to be serialized.
@@ -71,10 +71,10 @@ public interface SchemaSerializer
      * @return true if any objects in the group were removed, false if
      * none in set
      */
-    public boolean removeAll(SchemaGroup group);
+    boolean removeAll(SchemaGroup group);
 
     /**
      * Clear the set of objects to be serialized.
      */
-    public void clear();
+    void clear();
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.common.apps;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,12 +29,13 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
-import java.io.Serializable;
-
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
 @Table(name="MPTZZT")
 public class Textile implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)

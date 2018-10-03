@@ -35,10 +35,12 @@ public class QSCInstrument extends AbstractPreparedQueryCacheInstrument {
         setPreparedQueryCache(config.getQuerySQLCacheInstance());
     }
 
+    @Override
     public void start() {
         setStarted(true);
     }
 
+    @Override
     public void stop() {
         setStarted(false);
     }

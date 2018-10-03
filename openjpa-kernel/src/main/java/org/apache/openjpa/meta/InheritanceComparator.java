@@ -29,6 +29,8 @@ import java.util.Comparator;
 public class InheritanceComparator
     implements Comparator, Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private Class _base = Object.class;
 
     /**
@@ -50,6 +52,7 @@ public class InheritanceComparator
         return (Class) elem;
     }
 
+    @Override
     public int compare(Object o1, Object o2) {
         if (o1 == o2)
             return 0;

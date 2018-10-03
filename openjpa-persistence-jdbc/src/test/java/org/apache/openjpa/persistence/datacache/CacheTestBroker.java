@@ -39,11 +39,18 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
  */
 public class CacheTestBroker extends BrokerImpl {
 
+    
+    private static final long serialVersionUID = 1L;
+
+    @Override
     protected QueryImpl newQueryImpl(String language, StoreQuery sq) {
         return new CacheTestQuery(this, language, sq);
     }
 
     public static class CachedQueryResult extends ListResultList {
+
+        
+        private static final long serialVersionUID = 1L;
 
         public CachedQueryResult(List list) {
             super(list);
@@ -52,11 +59,15 @@ public class CacheTestBroker extends BrokerImpl {
 
     private static class CacheTestQuery extends QueryImpl {
 
+        
+        private static final long serialVersionUID = 1L;
+
         public CacheTestQuery(Broker broker, String language,
             StoreQuery query) {
             super(broker, language, query);
         }
 
+        @Override
         protected Object toResult(StoreQuery q, StoreQuery.Executor ex,
             ResultObjectProvider rop, StoreQuery.Range range)
             throws Exception {

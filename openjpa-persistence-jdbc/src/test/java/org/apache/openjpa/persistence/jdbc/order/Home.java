@@ -56,6 +56,7 @@ public class Home {
         return buildYear;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Home) {
             Home home = (Home)obj;

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.openjpa.enhance.FieldManager;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -43,12 +44,13 @@ import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
+import org.apache.openjpa.util.DelayedProxy;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.Proxy;
-import org.apache.openjpa.util.DelayedProxy;
 
 /**
  * Base class for strategies that are stored as a collection, even if
@@ -62,6 +64,9 @@ import org.apache.openjpa.util.DelayedProxy;
  */
 public abstract class StoreCollectionFieldStrategy
     extends ContainerFieldStrategy {
+
+    
+    private static final long serialVersionUID = 1L;
 
     /**
      * Return the foreign key used to join to the owning field for the given
@@ -134,6 +139,7 @@ public abstract class StoreCollectionFieldStrategy
         return (elems.length == 0) ? null : elems[0];
     }
 
+    @Override
     public int supportsSelect(Select sel, int type, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch) {
         if (field.isLRS())
@@ -149,6 +155,7 @@ public abstract class StoreCollectionFieldStrategy
                 (getDefaultElementMapping(false)))) ? 1 : 0;
     }
 
+    @Override
     public void selectEagerParallel(SelectExecutor sel,
         final OpenJPAStateManager sm, final JDBCStore store,
         final JDBCFetchConfiguration fetch, final int eagerMode) {
@@ -159,9 +166,10 @@ public abstract class StoreCollectionFieldStrategy
             final ClassMapping[] elems = getIndependentElementMappings(true);
             Union union = (Union) sel;
             if (fetch.getSubclassFetchMode(field.getElementMapping().
-                getTypeMapping()) != fetch.EAGER_JOIN)
+                getTypeMapping()) != EagerFetchModes.EAGER_JOIN)
                 union.abortUnion();
             union.select(new Union.Selector() {
+                @Override
                 public void select(Select sel, int idx) {
                     selectEager(sel, elems[idx], sm, store, fetch, eagerMode,
                         true, false);
@@ -170,20 +178,22 @@ public abstract class StoreCollectionFieldStrategy
         }
     }
 
+    @Override
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
         // we limit further eager fetches to joins, because after this point
         // the select has been modified such that parallel clones may produce
         // invalid sql
-        boolean outer = field.getNullValue() != FieldMapping.NULL_EXCEPTION;
+        boolean outer = field.getNullValue() != FieldMetaData.NULL_EXCEPTION;
         // force inner join for inner join fetch
         if (fetch.hasFetchInnerJoin(field.getFullName(false)))
             outer = false;
         selectEager(sel, getDefaultElementMapping(true), sm, store, fetch,
-            JDBCFetchConfiguration.EAGER_JOIN, false,
+            EagerFetchModes.EAGER_JOIN, false,
             outer);
     }
 
+    @Override
     public boolean isEagerSelectToMany() {
         return true;
     }
@@ -197,7 +207,7 @@ public abstract class StoreCollectionFieldStrategy
         // force distinct if there was a to-many join to avoid dups, but
         // if this is a parallel select don't make distinct based on the
         // eager joins alone if the original wasn't distinct
-        if (eagerMode == JDBCFetchConfiguration.EAGER_PARALLEL) {
+        if (eagerMode == EagerFetchModes.EAGER_PARALLEL) {
             if (sel.hasJoin(true))
                 sel.setDistinct(true);
             else if (!sel.isDistinct())
@@ -233,6 +243,7 @@ public abstract class StoreCollectionFieldStrategy
         selectElement(sel, elem, store, fetch, eagerMode, joins);
     }
 
+    @Override
     public Object loadEagerParallel(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Object res)
         throws SQLException {
@@ -381,7 +392,7 @@ public abstract class StoreCollectionFieldStrategy
         throws SQLException {
         // if this is a datastore id class we can avoid creating a new oid
         // object for the common case
-        if (oid != null && owner.getIdentityType() == ClassMapping.ID_DATASTORE
+        if (oid != null && owner.getIdentityType() == ClassMetaData.ID_DATASTORE
             && owner.isPrimaryKeyObjectId(true)) {
             long nid = res.getLong(owner.getPrimaryKeyColumns()[0]);
             long id = ((Id) oid).getId();
@@ -394,6 +405,7 @@ public abstract class StoreCollectionFieldStrategy
         return (noid.equals(oid)) ? oid : noid;
     }
 
+    @Override
     public void loadEagerJoin(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
@@ -484,6 +496,7 @@ public abstract class StoreCollectionFieldStrategy
         return refs;
     }
 
+    @Override
     public void load(final OpenJPAStateManager sm, final JDBCStore store,
         final JDBCFetchConfiguration fetch)
         throws SQLException {
@@ -538,10 +551,11 @@ public abstract class StoreCollectionFieldStrategy
         Union union = store.getSQLFactory().newUnion
             (Math.max(1, elems.length));
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 ClassMapping elem = (elems.length == 0) ? null : elems[idx];
                 resJoins[idx] = selectAll(sel, elem, sm, store, fetch,
-                    JDBCFetchConfiguration.EAGER_PARALLEL);
+                    EagerFetchModes.EAGER_PARALLEL);
             }
         });
 
@@ -615,12 +629,14 @@ public abstract class StoreCollectionFieldStrategy
         return joins;
     }
 
+    @Override
     public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
         return loadElement(null, store, fetch, res, joins);
     }
 
+    @Override
     public ForeignKey getJoinForeignKey() {
         return getJoinForeignKey(getDefaultElementMapping(false));
     }

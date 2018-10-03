@@ -35,6 +35,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 public class TestParameterLogging extends AbstractPersistenceTestCase implements LogFactory {
     String _regex = ".*params=.*1,.*]";
     private static final String ID = Integer.toString(Integer.MIN_VALUE);
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         messages.clear();
@@ -151,10 +152,12 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
 
     // Start LogFactory implementation
     // This is static so both the test and the logger share
-    private static List<String> messages = new ArrayList<String>();
+    private static List<String> messages = new ArrayList<>();
+    @Override
     public Log getLog(String channel) {
         return new AbstractLog() {
 
+            @Override
             protected boolean isEnabled(short logLevel) {
                 return true;
             }
@@ -164,6 +167,7 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
                 messages.add(message.toString());
             }
 
+            @Override
             protected void log(short type, String message, Throwable t) {
                 messages.add(message);
             }

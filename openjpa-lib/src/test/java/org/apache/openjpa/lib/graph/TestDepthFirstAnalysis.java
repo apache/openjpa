@@ -34,6 +34,7 @@ public class TestDepthFirstAnalysis
 
     private DepthFirstAnalysis _dfa = null;
 
+    @Override
     public void setUp() {
         setUpGraph1();
     }

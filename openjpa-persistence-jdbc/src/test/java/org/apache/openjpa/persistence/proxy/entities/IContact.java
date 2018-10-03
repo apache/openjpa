@@ -20,20 +20,20 @@ package org.apache.openjpa.persistence.proxy.entities;
 
 public interface IContact extends IAnnuityObject {
 
-	public IAddress getAddress();
+	IAddress getAddress();
 
-	public void setAddress(IAddress address);
+	void setAddress(IAddress address);
 
-	public String getEmail();
+	String getEmail();
 
-	public void setEmail(String email);
+	void setEmail(String email);
 
-	public String getPhone();
+	String getPhone();
 
-	public void setPhone(String phone);
+	void setPhone(String phone);
 
-	public ContactType getContactType();
+	ContactType getContactType();
 
-	public void setContactType(ContactType type);
+	void setContactType(ContactType type);
 
 }

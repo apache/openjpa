@@ -20,22 +20,27 @@ package org.apache.openjpa.enhance;
 public class TestUnenhancedFieldAccessPrimitiveWrapper
     extends AbstractUnenhancedClassTest {
 
+    @Override
     protected Class<? extends UnenhancedType> getUnenhancedClass() {
         return UnenhancedFieldAccessPrimitiveWrapper.class;
     }
 
+    @Override
     protected UnenhancedType newUnenhancedInstance() {
         return new UnenhancedFieldAccessPrimitiveWrapper();
     }
 
+    @Override
     protected Class<? extends UnenhancedSubtype> getUnenhancedSubclass() {
         return UnenhancedFieldAccessPrimitiveWrapperSubclass.class;
     }
 
+    @Override
     protected UnenhancedSubtype newUnenhancedSubclassInstance() {
         return new UnenhancedFieldAccessPrimitiveWrapperSubclass();
     }
 
+    @Override
     protected boolean isFieldAccessTest() {
         return true;
     }

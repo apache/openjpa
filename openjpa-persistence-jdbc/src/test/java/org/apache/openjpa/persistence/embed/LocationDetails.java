@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToOne;
 
 @Embeddable
 public class LocationDetails {

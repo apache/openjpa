@@ -25,10 +25,10 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.meta.common.apps.ExternalValues;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.meta.common.apps.ExternalValues;
 
 /**
  * <p>Tests the {@link ExternalValuesFieldMapping}.</p>
@@ -43,6 +43,7 @@ public class TestExternalValues
         super(test, "metacactusapp");
     }
 
+    @Override
     public void setUp()
         throws Exception {
         deleteAll(ExternalValues.class);

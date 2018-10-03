@@ -27,10 +27,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-
-import org.apache.openjpa.persistence.kernel.common.apps.ProxiesPC;
 import org.apache.commons.collections4.comparators.ComparableComparator;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.ProxiesPC;
 import org.apache.openjpa.util.Proxy;
 
 public class TestProxies2 extends BaseKernelTest {
@@ -44,6 +43,7 @@ public class TestProxies2 extends BaseKernelTest {
         super(casename);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(ProxiesPC.class);
 

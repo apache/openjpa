@@ -30,6 +30,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class UnboundVariable
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private Class _type = null;
     private Object _val = null;
 
@@ -40,14 +42,17 @@ class UnboundVariable
         _type = type;
     }
 
+    @Override
     public boolean isVariable() {
         return true;
     }
 
+    @Override
     public Class getType() {
         return _type;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _type = type;
     }
@@ -61,6 +66,7 @@ class UnboundVariable
         _val = value;
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return _val;

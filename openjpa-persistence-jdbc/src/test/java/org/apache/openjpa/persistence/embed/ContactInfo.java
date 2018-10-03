@@ -18,8 +18,13 @@
  */
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 @Embeddable
 public class ContactInfo {
@@ -31,7 +36,7 @@ public class ContactInfo {
 
     )
     // Bidirectional
-    List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+    List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
     public List<PhoneNumber> getPhoneNumbers() {
         return phoneNumbers;

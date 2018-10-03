@@ -20,11 +20,11 @@ package org.apache.openjpa.util;
 
 import org.apache.openjpa.lib.util.Localizer.Message;
 
-@SuppressWarnings("serial")
 /**
  * Identifiable exception type which wraps an internal runtime exception.
  */
 public class WrappedException extends OpenJPAException {
+    private static final long serialVersionUID = 1L;
 
     /*
      * Methods extending OpenJPAException

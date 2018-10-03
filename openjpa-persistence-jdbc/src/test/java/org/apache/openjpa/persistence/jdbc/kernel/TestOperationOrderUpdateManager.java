@@ -20,13 +20,16 @@ package org.apache.openjpa.persistence.jdbc.kernel;
 
 
 
-import java.util.*;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-import org.apache.openjpa.persistence.common.utils.*;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementOpOrderPCSub;
+import org.apache.openjpa.persistence.jdbc.common.apps.OpOrder;
+import org.apache.openjpa.persistence.jdbc.common.apps.OpOrderPCSub;
 
 
 public class TestOperationOrderUpdateManager

@@ -19,11 +19,6 @@
 package org.apache.openjpa.persistence.event;
 
 
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest2;
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest4;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.LoadListener;
@@ -32,6 +27,11 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest4;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
  * <p>Test the {@link LifecycleEventManager}.</p>
@@ -204,19 +204,23 @@ public class TestLifecycleEventManager
         public int preStore = 0;
         public int store = 0;
 
+        @Override
         public void afterLoad(LifecycleEvent ev) {
             load++;
         }
 
+        @Override
         public void afterRefresh(LifecycleEvent ev) {
             // TODO
         }
 
+        @Override
         public void beforeStore(LifecycleEvent ev) {
             preStore++;
             store++;
         }
 
+        @Override
         public void afterStore(LifecycleEvent ev) {
             store++;
         }

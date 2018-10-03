@@ -27,9 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataDefaults;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
 
 /**
@@ -45,9 +45,10 @@ import org.apache.openjpa.util.InvalidStateException;
  * @author Abe White
  * @since 0.3.3
  */
-@SuppressWarnings("serial")
 public class LifecycleEventManager
     implements CallbackModes, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Exception[] EMPTY_EXCEPTIONS = new Exception[0];
 
@@ -57,9 +58,9 @@ public class LifecycleEventManager
     private Map<Class<?>, ListenerList> _classListeners = null;
     private ListenerList _listeners = null;
     // odd-element: Listener even-element: Class[]
-    private List<Object> _addListeners = new LinkedList<Object>();
-    private List<Object> _remListeners = new LinkedList<Object>();
-    private List<Exception> _exceps = new LinkedList<Exception>();
+    private List<Object> _addListeners = new LinkedList<>();
+    private List<Object> _remListeners = new LinkedList<>();
+    private List<Exception> _exceps = new LinkedList<>();
     private boolean _firing = false;
     private boolean _fail = false;
     private boolean _failFast = false;
@@ -114,10 +115,10 @@ public class LifecycleEventManager
         }
 
         if (_classListeners == null)
-            _classListeners = new HashMap<Class<?>, ListenerList>();
+            _classListeners = new HashMap<>();
         ListenerList listeners;
         for (int i = 0; i < classes.length; i++) {
-            listeners = (ListenerList) _classListeners.get(classes[i]);
+            listeners = _classListeners.get(classes[i]);
             if (listeners == null) {
                 listeners = new ListenerList(3);
                 _classListeners.put(classes[i], listeners);
@@ -141,7 +142,7 @@ public class LifecycleEventManager
             ListenerList listeners;
             for (Iterator<ListenerList> itr = _classListeners.values().iterator();
                 itr.hasNext();) {
-                listeners = (ListenerList) itr.next();
+                listeners = itr.next();
                 listeners.remove(listener);
             }
         }
@@ -258,8 +259,7 @@ public class LifecycleEventManager
         if (_classListeners != null) {
             Class<?> c = source == null ? meta.getDescribedType() : source.getClass();
             do {
-                if (fireEvent(null, source, null, type, (ListenerList)
-                    _classListeners.get(c), true, null) == Boolean.TRUE)
+                if (fireEvent(null, source, null, type, _classListeners.get(c), true, null) == Boolean.TRUE)
                     return true;
                 c = c.getSuperclass();
             } while (c != null && c != Object.class);
@@ -282,7 +282,7 @@ public class LifecycleEventManager
         ClassMetaData meta, int type) {
         boolean reentrant = _firing;
         _firing = true;
-        List<Exception> exceptions = (reentrant) ? new LinkedList<Exception>() : _exceps;
+        List<Exception> exceptions = (reentrant) ? new LinkedList<>() : _exceps;
         MetaDataDefaults def = meta.getRepository().getMetaDataFactory().
             getDefaults();
 
@@ -297,7 +297,7 @@ public class LifecycleEventManager
             Class<?> c = source == null ? meta.getDescribedType() : source.getClass();
             do {
                 ev = (LifecycleEvent) fireEvent(ev, source, related, type,
-                    (ListenerList) _classListeners.get(c), false, exceptions);
+                    _classListeners.get(c), false, exceptions);
                 c = c.getSuperclass();
             } while (c != null && c != Object.class);
         }
@@ -316,7 +316,7 @@ public class LifecycleEventManager
         if (exceptions.isEmpty())
             ret = EMPTY_EXCEPTIONS;
         else
-            ret = (Exception[]) exceptions.toArray
+            ret = exceptions.toArray
                 (new Exception[exceptions.size()]);
 
         // if this wasn't a reentrant call, catch up with calls to add
@@ -549,13 +549,13 @@ public class LifecycleEventManager
      * This is more efficient than registering as a listener for all events
      * but only responding to some.
      */
-    public static interface ListenerAdapter {
+    public interface ListenerAdapter {
 
         /**
          * Return whether this instance responds to the given event type from
          * {@link LifecycleEvent}.
          */
-        public boolean respondsTo(int eventType);
+        boolean respondsTo(int eventType);
     }
 
     /**
@@ -564,6 +564,8 @@ public class LifecycleEventManager
      */
     public static class ListenerList extends ArrayList<Object> {
 
+        
+        private static final long serialVersionUID = 1L;
         private int _types = 0;
 
         public ListenerList(int size) {
@@ -579,6 +581,7 @@ public class LifecycleEventManager
             return (_types & (2 << type)) > 0;
         }
 
+        @Override
         public boolean add(Object listener) {
             if (contains(listener))
                 return false;
@@ -587,6 +590,7 @@ public class LifecycleEventManager
             return true;
         }
 
+        @Override
         public boolean remove(Object listener) {
             if (!super.remove(listener))
                 return false;

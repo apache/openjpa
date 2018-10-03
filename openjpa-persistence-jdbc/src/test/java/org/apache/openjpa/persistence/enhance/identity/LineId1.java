@@ -40,6 +40,9 @@ import javax.persistence.Embedded;
 
 @Embeddable
 public final class LineId1 implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Column(name="LINE_NUM")
     private int lineNum;
 
@@ -62,6 +65,7 @@ public final class LineId1 implements Serializable {
         this.lineNum = lineNum;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof LineId1)) {
             return false;
@@ -80,6 +84,7 @@ public final class LineId1 implements Serializable {
         return true;
     }
 
+    @Override
     public int hashCode() {
         return lineNum * (page != null ? getPage().hashCode() : 31);
     }

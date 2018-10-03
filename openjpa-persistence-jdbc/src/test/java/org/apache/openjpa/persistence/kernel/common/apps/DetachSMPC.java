@@ -23,14 +23,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
 import javax.persistence.Entity;
 
-import org.apache.openjpa.persistence.jdbc.KeyColumn;
 import org.apache.openjpa.persistence.PersistentCollection;
+import org.apache.openjpa.persistence.jdbc.KeyColumn;
 
 @Entity
 public class DetachSMPC
     implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     private int intField;
 

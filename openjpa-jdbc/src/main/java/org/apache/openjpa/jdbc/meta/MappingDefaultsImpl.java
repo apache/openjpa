@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.meta.strats.UntypedPCValueHandler;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
+import org.apache.openjpa.jdbc.meta.strats.UntypedPCValueHandler;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -337,6 +337,7 @@ public class MappingDefaultsImpl
      * mapping's built-in name.
      * @deprecated
      */
+    @Deprecated
     public String getDataStoreIdColumnName() {
         return getDataStoreIdColumnIdentifier().getName();
     }
@@ -350,6 +351,7 @@ public class MappingDefaultsImpl
      * mapping's built-in name.
      * @deprecated
      */
+    @Deprecated
     public void setDataStoreIdColumnName(String dsIdName) {
         setDataStoreIdColumnIdentifier(DBIdentifier.newColumn(dsIdName));
     }
@@ -363,6 +365,7 @@ public class MappingDefaultsImpl
      * built-in name.
      * @deprecated
      */
+    @Deprecated
     public String getVersionColumnName() {
         return getVersionColumnIdentifier().getName();
     }
@@ -376,6 +379,7 @@ public class MappingDefaultsImpl
      * built-in name.
      * @deprecated
      */
+    @Deprecated
     public void setVersionColumnName(String versName) {
         setVersionColumnIdentifier(DBIdentifier.newColumn(versName));
     }
@@ -389,6 +393,7 @@ public class MappingDefaultsImpl
      * built-in name.
      * @deprecated
      */
+    @Deprecated
     public String getDiscriminatorColumnName() {
         return getDiscriminatorColumnIdentifier().getName();
     }
@@ -402,6 +407,7 @@ public class MappingDefaultsImpl
      * built-in name.
      * @deprecated
      */
+    @Deprecated
     public void setDiscriminatorColumnName(String discName) {
         setDiscriminatorColumnIdentifier(DBIdentifier.newColumn(discName));
     }
@@ -415,6 +421,7 @@ public class MappingDefaultsImpl
      * built-in name.
      * @deprecated
      */
+    @Deprecated
     public String getOrderColumnName() {
         return getOrderColumnIdentifier().getName();
     }
@@ -428,6 +435,7 @@ public class MappingDefaultsImpl
      * built-in name.
      * @deprecated
      */
+    @Deprecated
     public void setOrderColumnName(String orderName) {
         setOrderColumnIdentifier(DBIdentifier.newColumn(orderName));
     }
@@ -441,6 +449,7 @@ public class MappingDefaultsImpl
      * built-in name.
      * @deprecated
      */
+    @Deprecated
     public String getNullIndicatorColumnName() {
         return getNullIndicatorColumnIdentifier().getName();
     }
@@ -454,6 +463,7 @@ public class MappingDefaultsImpl
      * built-in name.
      * @deprecated
      */
+    @Deprecated
     public void setNullIndicatorColumnName(String nullIndName) {
         setNullIndicatorColumnIdentifier(DBIdentifier.newColumn(nullIndName));
     }
@@ -462,6 +472,7 @@ public class MappingDefaultsImpl
         _nullIndName = nullIndName;
     }
 
+    @Override
     public boolean defaultMissingInfo() {
         return _defMissing;
     }
@@ -470,6 +481,7 @@ public class MappingDefaultsImpl
         _defMissing = defMissing;
     }
 
+    @Override
     public boolean useClassCriteria() {
         return _classCriteria;
     }
@@ -478,6 +490,7 @@ public class MappingDefaultsImpl
         _classCriteria = classCriteria;
     }
 
+    @Override
     public Object getStrategy(ClassMapping cls, boolean adapt) {
         if (adapt || defaultMissingInfo())
             return (cls.getMappedPCSuperclassMapping() == null)
@@ -485,6 +498,7 @@ public class MappingDefaultsImpl
         return null;
     }
 
+    @Override
     public Object getStrategy(Version vers, boolean adapt) {
         ClassMapping cls = vers.getClassMapping();
         if ((adapt || defaultMissingInfo())
@@ -494,6 +508,7 @@ public class MappingDefaultsImpl
         return null;
     }
 
+    @Override
     public Object getStrategy(Discriminator disc, boolean adapt) {
         ClassMapping cls = disc.getClassMapping();
         if ((adapt || defaultMissingInfo())
@@ -503,6 +518,7 @@ public class MappingDefaultsImpl
         return null;
     }
 
+    @Override
     public Object getStrategy(ValueMapping vm, Class<?> type, boolean adapt) {
         Object ret = _fieldMap.get(type.getName());
         if (ret != null)
@@ -540,6 +556,7 @@ public class MappingDefaultsImpl
      *
      * @return A new object containing the generated Discriminator value.
      */
+    @Override
     public Object getDiscriminatorValue(Discriminator disc, boolean adapt) {
         if (!adapt && !defaultMissingInfo())
             return null;
@@ -560,6 +577,7 @@ public class MappingDefaultsImpl
         }
     }
 
+    @Override
     public String getTableName(ClassMapping cls, Schema schema) {
         String name = ClassUtil.getClassName(cls.getDescribedType()).
             replace(IdentifierUtil.DOLLAR_CHAR, IdentifierUtil.UNDERSCORE_CHAR);
@@ -568,14 +586,17 @@ public class MappingDefaultsImpl
         return name;
     }
 
+    @Override
     public DBIdentifier getTableIdentifier(ClassMapping cls, Schema schema) {
         return DBIdentifier.newTable(getTableName(cls, schema));
     }
 
+    @Override
     public String getTableName(FieldMapping fm, Schema schema) {
         return getTableIdentifier(fm, schema).getName();
     }
 
+    @Override
     public DBIdentifier getTableIdentifier(FieldMapping fm, Schema schema) {
         DBIdentifier sName = DBIdentifier.newTable(fm.getName());
         Table table = fm.getDefiningMapping().getTable();
@@ -588,6 +609,7 @@ public class MappingDefaultsImpl
         return sName;
     }
 
+    @Override
     public void populateDataStoreIdColumns(ClassMapping cls, Table table,
         Column[] cols) {
         for (int i = 0; i < cols.length; i++) {
@@ -618,6 +640,7 @@ public class MappingDefaultsImpl
         return Normalizer.removeHungarianNotation(columnName);
     }
 
+    @Override
     public void populateColumns(Version vers, Table table, Column[] cols) {
         for (int i = 0; i < cols.length; i++) {
             if (!DBIdentifier.isNull(_versName) && cols.length == 1)
@@ -634,6 +657,7 @@ public class MappingDefaultsImpl
         }
     }
 
+    @Override
     public void populateColumns(Discriminator disc, Table table,
         Column[] cols) {
         for (int i = 0; i < cols.length; i++) {
@@ -645,11 +669,13 @@ public class MappingDefaultsImpl
         }
     }
 
+    @Override
     public void populateJoinColumn(ClassMapping cm, Table local, Table foreign,
         Column col, Object target, int pos, int cols) {
         correctName(local, col);
     }
 
+    @Override
     public void populateJoinColumn(FieldMapping fm, Table local, Table foreign,
         Column col, Object target, int pos, int cols) {
         correctName(local, col);
@@ -658,6 +684,8 @@ public class MappingDefaultsImpl
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public void populateForeignKeyColumn(ValueMapping vm, String name,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols) {
@@ -665,6 +693,7 @@ public class MappingDefaultsImpl
             target, inverse, pos, cols);
     }
 
+    @Override
     public void populateForeignKeyColumn(ValueMapping vm, DBIdentifier name,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols) {
@@ -675,17 +704,20 @@ public class MappingDefaultsImpl
         correctName(local, col);
     }
 
+    @Override
     public void populateColumns(ValueMapping vm, String name, Table table,
         Column[] cols) {
         populateColumns(vm, DBIdentifier.newColumn(name), table, cols);
     }
 
+    @Override
     public void populateColumns(ValueMapping vm, DBIdentifier name, Table table,
         Column[] cols) {
         for (int i = 0; i < cols.length; i++)
             correctName(table, cols[i]);
     }
 
+    @Override
     public boolean populateOrderColumns(FieldMapping fm, Table table,
         Column[] cols) {
         for (int i = 0; i < cols.length; i++) {
@@ -702,11 +734,14 @@ public class MappingDefaultsImpl
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public boolean populateNullIndicatorColumns(ValueMapping vm, String name,
         Table table, Column[] cols) {
         return populateNullIndicatorColumns(vm, DBIdentifier.newColumn(name), table, cols);
     }
 
+    @Override
     public boolean populateNullIndicatorColumns(ValueMapping vm, DBIdentifier name,
         Table table, Column[] cols) {
         for (int i = 0; i < cols.length; i++) {
@@ -719,6 +754,7 @@ public class MappingDefaultsImpl
         return _addNullInd;
     }
 
+    @Override
     public ForeignKey getJoinForeignKey(ClassMapping cls, Table local,
         Table foreign) {
         if (_joinFKAction == ForeignKey.ACTION_NONE)
@@ -729,6 +765,7 @@ public class MappingDefaultsImpl
         return fk;
     }
 
+    @Override
     public ForeignKey getJoinForeignKey(FieldMapping fm, Table local,
         Table foreign) {
         if (_joinFKAction == ForeignKey.ACTION_NONE)
@@ -742,11 +779,14 @@ public class MappingDefaultsImpl
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public ForeignKey getForeignKey(ValueMapping vm, String name, Table local,
         Table foreign, boolean inverse) {
         return getForeignKey(vm, DBIdentifier.newForeignKey(name), local, foreign, inverse);
     }
 
+    @Override
     public ForeignKey getForeignKey(ValueMapping vm, DBIdentifier name, Table local,
         Table foreign, boolean inverse) {
         if (_fkAction == ForeignKey.ACTION_NONE)
@@ -757,6 +797,7 @@ public class MappingDefaultsImpl
         return fk;
     }
 
+    @Override
     public Index getJoinIndex(FieldMapping fm, Table table, Column[] cols) {
         if (!_indexFK || fm.getJoinForeignKey() == null
             || !fm.getJoinForeignKey().isLogical())
@@ -783,6 +824,7 @@ public class MappingDefaultsImpl
      * Generate an index name.
      * @deprecated
      */
+    @Deprecated
     protected String getIndexName(String name, Table table, Column[] cols) {
         return getIndexName(DBIdentifier.newIndex(name), table, cols).getName();
     }
@@ -803,11 +845,14 @@ public class MappingDefaultsImpl
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Index getIndex(ValueMapping vm, String name, Table table,
         Column[] cols) {
         return getIndex(vm, DBIdentifier.newIndex(name), table, cols);
     }
 
+    @Override
     public Index getIndex(ValueMapping vm, DBIdentifier name, Table table,
         Column[] cols) {
         if (!_indexFK || vm.getForeignKey() == null
@@ -821,6 +866,7 @@ public class MappingDefaultsImpl
         return idx;
     }
 
+    @Override
     public Index getIndex(Version vers, Table table, Column[] cols) {
         if (!_indexVers)
             return null;
@@ -829,6 +875,7 @@ public class MappingDefaultsImpl
         return idx;
     }
 
+    @Override
     public Index getIndex(Discriminator disc, Table table, Column[] cols) {
         if (!_indexDisc)
             return null;
@@ -837,6 +884,7 @@ public class MappingDefaultsImpl
         return idx;
     }
 
+    @Override
     public Unique getJoinUnique(FieldMapping fm, Table table, Column[] cols) {
         return null;
     }
@@ -844,11 +892,14 @@ public class MappingDefaultsImpl
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Unique getUnique(ValueMapping vm, String name, Table table,
         Column[] cols) {
         return null;
     }
 
+    @Override
     public Unique getUnique(ValueMapping vm, DBIdentifier name, Table table,
         Column[] cols) {
         return null;
@@ -857,14 +908,18 @@ public class MappingDefaultsImpl
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public String getPrimaryKeyName(ClassMapping cm, Table table) {
         return null;
     }
 
+    @Override
     public DBIdentifier getPrimaryKeyIdentifier(ClassMapping cm, Table table) {
         return DBIdentifier.NULL;
     }
 
+    @Override
     public void installPrimaryKey(FieldMapping fm, Table table) {
     }
 
@@ -872,13 +927,16 @@ public class MappingDefaultsImpl
     // Configurable implementation
     ///////////////////////////////
 
+    @Override
     public void setConfiguration(Configuration conf) {
         dict = ((JDBCConfiguration) conf).getDBDictionaryInstance();
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
     }
 }

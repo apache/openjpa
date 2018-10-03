@@ -175,6 +175,7 @@ public class AllFieldsTypeTest {
         this.testBigDecimal = testBigDecimal;
     }
 
+    @Override
     public String toString() {
         return "\n{"
             + "testint=" + testint + ";"
@@ -200,6 +201,7 @@ public class AllFieldsTypeTest {
             + "}";
     }
 
+    @Override
     public int hashCode() {
         return (int) ((
             testint
@@ -220,6 +222,7 @@ public class AllFieldsTypeTest {
             % Integer.MAX_VALUE;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == null && !(other instanceof AllFieldsTypeTest))
             return false;

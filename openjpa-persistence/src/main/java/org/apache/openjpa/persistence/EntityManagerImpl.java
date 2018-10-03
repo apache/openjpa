@@ -88,7 +88,6 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
-import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaQuery;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
@@ -119,7 +118,7 @@ public class EntityManagerImpl
 
     private DelegatingBroker _broker;
     private EntityManagerFactoryImpl _emf;
-    private Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<FetchConfiguration,FetchPlan>(1);
+    private Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<>(1);
     protected RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
     private boolean _convertPositionalParams = false;
     private boolean _isJoinedToTransaction;
@@ -151,14 +150,17 @@ public class EntityManagerImpl
         return _broker.getDelegate();
     }
 
+    @Override
     public OpenJPAEntityManagerFactory getEntityManagerFactory() {
         return _emf;
     }
 
+    @Override
     public OpenJPAConfiguration getConfiguration() {
         return _broker.getConfiguration();
     }
 
+    @Override
     public FetchPlan getFetchPlan() {
         assertNotCloseInvoked();
         _broker.lock();
@@ -175,6 +177,7 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public FetchPlan pushFetchPlan() {
 		return pushFetchPlan(null);
     }
@@ -190,6 +193,7 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public void popFetchPlan() {
         assertNotCloseInvoked();
         _broker.lock();
@@ -201,284 +205,345 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public ConnectionRetainMode getConnectionRetainMode() {
         return ConnectionRetainMode.fromKernelConstant(
             _broker.getConnectionRetainMode());
     }
 
+    @Override
     public boolean isTransactionManaged() {
         return _broker.isManaged();
     }
 
+    @Override
     public boolean isManaged() {
         return _broker.isManaged();
     }
 
+    @Override
     public ManagedRuntime getManagedRuntime() {
         return _broker.getManagedRuntime();
     }
 
+    @Override
     public boolean getSyncWithManagedTransactions() {
         return _broker.getSyncWithManagedTransactions();
     }
 
+    @Override
     public void setSyncWithManagedTransactions(boolean sync) {
         assertNotCloseInvoked();
         _broker.setSyncWithManagedTransactions(sync);
     }
 
+    @Override
     public ClassLoader getClassLoader() {
         return _broker.getClassLoader();
     }
 
+    @Override
     public String getConnectionUserName() {
         return _broker.getConnectionUserName();
     }
 
+    @Override
     public String getConnectionPassword() {
         return _broker.getConnectionPassword();
     }
 
+    @Override
     public boolean getMultithreaded() {
         return _broker.getMultithreaded();
     }
 
+    @Override
     public void setMultithreaded(boolean multithreaded) {
         assertNotCloseInvoked();
         _broker.setMultithreaded(multithreaded);
     }
 
+    @Override
     public boolean getIgnoreChanges() {
         return _broker.getIgnoreChanges();
     }
 
+    @Override
     public void setIgnoreChanges(boolean val) {
         assertNotCloseInvoked();
         _broker.setIgnoreChanges(val);
     }
 
+    @Override
     public boolean getNontransactionalRead() {
         return _broker.getNontransactionalRead();
     }
 
+    @Override
     public void setNontransactionalRead(boolean val) {
         assertNotCloseInvoked();
         _broker.setNontransactionalRead(val);
     }
 
+    @Override
     public boolean getNontransactionalWrite() {
         return _broker.getNontransactionalWrite();
     }
 
+    @Override
     public void setNontransactionalWrite(boolean val) {
         assertNotCloseInvoked();
         _broker.setNontransactionalWrite(val);
     }
 
+    @Override
     public boolean getOptimistic() {
         return _broker.getOptimistic();
     }
 
+    @Override
     public void setOptimistic(boolean val) {
         assertNotCloseInvoked();
         _broker.setOptimistic(val);
     }
 
+    @Override
     public RestoreStateType getRestoreState() {
         return RestoreStateType.fromKernelConstant(_broker.getRestoreState());
     }
 
+    @Override
     public void setRestoreState(RestoreStateType val) {
         assertNotCloseInvoked();
         _broker.setRestoreState(val.toKernelConstant());
     }
 
+    @Override
     public void setRestoreState(int restore) {
         assertNotCloseInvoked();
         _broker.setRestoreState(restore);
     }
 
+    @Override
     public boolean getRetainState() {
         return _broker.getRetainState();
     }
 
+    @Override
     public void setRetainState(boolean val) {
         assertNotCloseInvoked();
         _broker.setRetainState(val);
     }
 
+    @Override
     public AutoClearType getAutoClear() {
         return AutoClearType.fromKernelConstant(_broker.getAutoClear());
     }
 
+    @Override
     public void setAutoClear(AutoClearType val) {
         assertNotCloseInvoked();
         _broker.setAutoClear(val.toKernelConstant());
     }
 
+    @Override
     public void setAutoClear(int autoClear) {
         assertNotCloseInvoked();
         _broker.setAutoClear(autoClear);
     }
 
+    @Override
     public DetachStateType getDetachState() {
         return DetachStateType.fromKernelConstant(_broker.getDetachState());
     }
 
+    @Override
     public void setDetachState(DetachStateType type) {
         assertNotCloseInvoked();
         _broker.setDetachState(type.toKernelConstant());
     }
 
+    @Override
     public void setDetachState(int detach) {
         assertNotCloseInvoked();
         _broker.setDetachState(detach);
     }
 
+    @Override
     public EnumSet<AutoDetachType> getAutoDetach() {
         return AutoDetachType.toEnumSet(_broker.getAutoDetach());
     }
 
+    @Override
     public void setAutoDetach(AutoDetachType flag) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(AutoDetachType.fromEnumSet(EnumSet.of(flag)));
     }
 
+    @Override
     public void setAutoDetach(EnumSet<AutoDetachType> flags) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(AutoDetachType.fromEnumSet(flags));
     }
 
+    @Override
     public void setAutoDetach(int autoDetachFlags) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(autoDetachFlags);
     }
 
+    @Override
     public void setAutoDetach(AutoDetachType value, boolean on) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(AutoDetachType.fromEnumSet(EnumSet.of(value)),on);
     }
 
+    @Override
     public void setAutoDetach(int flag, boolean on) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(flag, on);
     }
 
+    @Override
     public boolean getEvictFromStoreCache() {
         return _broker.getEvictFromDataCache();
     }
 
+    @Override
     public void setEvictFromStoreCache(boolean evict) {
         assertNotCloseInvoked();
         _broker.setEvictFromDataCache(evict);
     }
 
+    @Override
     public boolean getPopulateStoreCache() {
         return _broker.getPopulateDataCache();
     }
 
+    @Override
     public void setPopulateStoreCache(boolean cache) {
         assertNotCloseInvoked();
         _broker.setPopulateDataCache(cache);
     }
 
+    @Override
     public boolean isTrackChangesByType() {
         return _broker.isTrackChangesByType();
     }
 
+    @Override
     public void setTrackChangesByType(boolean trackByType) {
         assertNotCloseInvoked();
         _broker.setTrackChangesByType(trackByType);
     }
 
+    @Override
     public boolean isLargeTransaction() {
         return isTrackChangesByType();
     }
 
+    @Override
     public void setLargeTransaction(boolean value) {
         setTrackChangesByType(value);
     }
 
+    @Override
     public Object getUserObject(Object key) {
         return _broker.getUserObject(key);
     }
 
+    @Override
     public Object putUserObject(Object key, Object val) {
         assertNotCloseInvoked();
         return _broker.putUserObject(key, val);
     }
 
+    @Override
     public void addTransactionListener(Object listener) {
         assertNotCloseInvoked();
         _broker.addTransactionListener(listener);
     }
 
+    @Override
     public void removeTransactionListener(Object listener) {
         assertNotCloseInvoked();
         _broker.removeTransactionListener(listener);
     }
 
+    @Override
     public EnumSet<CallbackMode> getTransactionListenerCallbackModes() {
         return CallbackMode.toEnumSet(
             _broker.getTransactionListenerCallbackMode());
     }
 
+    @Override
     public void setTransactionListenerCallbackMode(CallbackMode mode) {
         assertNotCloseInvoked();
         _broker.setTransactionListenerCallbackMode(
             CallbackMode.fromEnumSet(EnumSet.of(mode)));
     }
 
+    @Override
     public void setTransactionListenerCallbackMode(EnumSet<CallbackMode> modes){
         assertNotCloseInvoked();
         _broker.setTransactionListenerCallbackMode(
             CallbackMode.fromEnumSet(modes));
     }
 
+    @Override
     public int getTransactionListenerCallbackMode() {
         return _broker.getTransactionListenerCallbackMode();
     }
 
+    @Override
     public void setTransactionListenerCallbackMode(int callbackMode) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void addLifecycleListener(Object listener, Class... classes) {
         assertNotCloseInvoked();
         _broker.addLifecycleListener(listener, classes);
     }
 
+    @Override
     public void removeLifecycleListener(Object listener) {
         assertNotCloseInvoked();
         _broker.removeLifecycleListener(listener);
     }
 
+    @Override
     public EnumSet<CallbackMode> getLifecycleListenerCallbackModes() {
         return CallbackMode.toEnumSet(
             _broker.getLifecycleListenerCallbackMode());
     }
 
+    @Override
     public void setLifecycleListenerCallbackMode(CallbackMode mode) {
         assertNotCloseInvoked();
         _broker.setLifecycleListenerCallbackMode(
             CallbackMode.fromEnumSet(EnumSet.of(mode)));
     }
 
+    @Override
     public void setLifecycleListenerCallbackMode(EnumSet<CallbackMode> modes) {
         assertNotCloseInvoked();
         _broker.setLifecycleListenerCallbackMode(
             CallbackMode.fromEnumSet(modes));
     }
 
+    @Override
     public int getLifecycleListenerCallbackMode() {
         return _broker.getLifecycleListenerCallbackMode();
     }
 
+    @Override
     public void setLifecycleListenerCallbackMode(int callbackMode) {
         assertNotCloseInvoked();
         _broker.setLifecycleListenerCallbackMode(callbackMode);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getReference(Class<T> cls, Object oid) {
         assertNotCloseInvoked();
@@ -486,6 +551,7 @@ public class EntityManagerImpl
         return (T) _broker.find(oid, false, this);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid) {
         assertNotCloseInvoked();
@@ -495,15 +561,18 @@ public class EntityManagerImpl
         return (T) _broker.find(oid, true, this);
     }
 
+    @Override
     public <T> T find(Class<T> cls, Object oid, LockModeType mode) {
         return find(cls, oid, mode, null);
     }
 
+    @Override
     public <T> T find(Class<T> cls, Object oid,
         Map<String, Object> properties){
         return find(cls, oid, null, properties);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
@@ -518,6 +587,7 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T[] findAll(Class<T> cls, Object... oids) {
         if (oids.length == 0)
@@ -526,14 +596,17 @@ public class EntityManagerImpl
         return ret.toArray((T[]) Array.newInstance(cls, ret.size()));
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> Collection<T> findAll(final Class<T> cls, Collection oids) {
         assertNotCloseInvoked();
         Object[] objs = _broker.findAll(oids, true, new FindCallbacks() {
+            @Override
             public Object processArgument(Object oid) {
                 return _broker.newObjectId(cls, oid);
             }
 
+            @Override
             public Object processReturn(Object oid, OpenJPAStateManager sm) {
                 return EntityManagerImpl.this.processReturn(oid, sm);
             }
@@ -541,12 +614,14 @@ public class EntityManagerImpl
         return (Collection<T>) Arrays.asList(objs);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T findCached(Class<T> cls, Object oid) {
         assertNotCloseInvoked();
         return (T) _broker.findCached(_broker.newObjectId(cls, oid), this);
     }
 
+    @Override
     public Class getObjectIdClass(Class cls) {
         assertNotCloseInvoked();
         if (cls == null)
@@ -555,6 +630,7 @@ public class EntityManagerImpl
                 (_broker.getObjectIdType(cls));
     }
 
+    @Override
     public OpenJPAEntityTransaction getTransaction() {
         if (_broker.isManaged())
             throw new InvalidStateException(_loc.get("get-managed-trans"),
@@ -562,6 +638,7 @@ public class EntityManagerImpl
         return this;
     }
 
+    @Override
     public void joinTransaction() {
         if (!_broker.syncWithManagedTransaction()) {
             throw new TransactionRequiredException(_loc.get
@@ -581,10 +658,12 @@ public class EntityManagerImpl
         return isActive() && _isJoinedToTransaction;
     }
 
+    @Override
     public void begin() {
         _broker.begin();
     }
 
+    @Override
     public void commit() {
         try {
             _broker.commit();
@@ -615,18 +694,22 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public void rollback() {
         _broker.rollback();
     }
 
+    @Override
     public void commitAndResume() {
         _broker.commitAndResume();
     }
 
+    @Override
     public void rollbackAndResume() {
         _broker.rollbackAndResume();
     }
 
+    @Override
     public Throwable getRollbackCause() {
         if (!isActive())
             throw new IllegalStateException(_loc.get("no-transaction")
@@ -635,6 +718,7 @@ public class EntityManagerImpl
         return _broker.getRollbackCause();
     }
 
+    @Override
     public boolean getRollbackOnly() {
         if (!isActive())
             throw new IllegalStateException(_loc.get("no-transaction")
@@ -643,39 +727,47 @@ public class EntityManagerImpl
         return _broker.getRollbackOnly();
     }
 
+    @Override
     public void setRollbackOnly() {
         _broker.setRollbackOnly();
     }
 
+    @Override
     public void setRollbackOnly(Throwable cause) {
         _broker.setRollbackOnly(cause);
     }
 
+    @Override
     public void setSavepoint(String name) {
         assertNotCloseInvoked();
         _broker.setSavepoint(name);
     }
 
+    @Override
     public void rollbackToSavepoint() {
         assertNotCloseInvoked();
         _broker.rollbackToSavepoint();
     }
 
+    @Override
     public void rollbackToSavepoint(String name) {
         assertNotCloseInvoked();
         _broker.rollbackToSavepoint(name);
     }
 
+    @Override
     public void releaseSavepoint() {
         assertNotCloseInvoked();
         _broker.releaseSavepoint();
     }
 
+    @Override
     public void releaseSavepoint(String name) {
         assertNotCloseInvoked();
         _broker.releaseSavepoint(name);
     }
 
+    @Override
     public void flush() {
         assertNotCloseInvoked();
         _broker.assertOpen();
@@ -683,28 +775,34 @@ public class EntityManagerImpl
         _broker.flush();
     }
 
+    @Override
     public void preFlush() {
         assertNotCloseInvoked();
         _broker.preFlush();
     }
 
+    @Override
     public void validateChanges() {
         assertNotCloseInvoked();
         _broker.validateChanges();
     }
 
+    @Override
     public boolean isActive() {
         return isOpen() && _broker.isActive();
     }
 
+    @Override
     public boolean isStoreActive() {
         return _broker.isStoreActive();
     }
 
+    @Override
     public void beginStore() {
         _broker.beginStore();
     }
 
+    @Override
     public boolean contains(Object entity) {
         assertNotCloseInvoked();
         if (entity == null)
@@ -717,6 +815,7 @@ public class EntityManagerImpl
         return sm != null && !sm.isDeleted();
     }
 
+    @Override
     public boolean containsAll(Object... entities) {
         for (Object entity : entities)
             if (!contains(entity))
@@ -724,6 +823,7 @@ public class EntityManagerImpl
         return true;
     }
 
+    @Override
     public boolean containsAll(Collection entities) {
         for (Object entity : entities)
             if (!contains(entity))
@@ -731,60 +831,73 @@ public class EntityManagerImpl
         return true;
     }
 
+    @Override
     public void persist(Object entity) {
         assertNotCloseInvoked();
         _broker.persist(entity, this);
     }
 
+    @Override
     public void persistAll(Object... entities) {
         persistAll(Arrays.asList(entities));
     }
 
+    @Override
     public void persistAll(Collection entities) {
         assertNotCloseInvoked();
         _broker.persistAll(entities, this);
     }
 
+    @Override
     public void remove(Object entity) {
         assertNotCloseInvoked();
         _broker.delete(entity, this);
     }
 
+    @Override
     public void removeAll(Object... entities) {
         removeAll(Arrays.asList(entities));
     }
 
+    @Override
     public void removeAll(Collection entities) {
         assertNotCloseInvoked();
         _broker.deleteAll(entities, this);
     }
 
+    @Override
     public void release(Object entity) {
         assertNotCloseInvoked();
         _broker.release(entity, this);
     }
 
+    @Override
     public void releaseAll(Collection entities) {
         assertNotCloseInvoked();
         _broker.releaseAll(entities, this);
     }
 
+    @Override
     public void releaseAll(Object... entities) {
         releaseAll(Arrays.asList(entities));
     }
 
+    @Override
     public void refresh(Object entity) {
         refresh(entity, null, null);
     }
 
+    @Override
     public void refresh(Object entity, LockModeType mode) {
         refresh(entity, mode, null);
     }
 
+    @Override
     public void refresh(Object entity, Map<String, Object> properties) {
         refresh(entity, null, properties);
     }
 
+    @Override
     public void refresh(Object entity, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
         assertValidAttchedEntity(REFRESH, entity);
@@ -803,65 +916,78 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public void refreshAll() {
         assertNotCloseInvoked();
         _broker.assertWriteOperation();
         _broker.refreshAll(_broker.getTransactionalObjects(), this);
     }
 
+    @Override
     public void refreshAll(Collection entities) {
         assertNotCloseInvoked();
         _broker.assertWriteOperation();
         _broker.refreshAll(entities, this);
     }
 
+    @Override
     public void refreshAll(Object... entities) {
         refreshAll(Arrays.asList(entities));
     }
 
+    @Override
     public void retrieve(Object entity) {
         assertNotCloseInvoked();
         _broker.retrieve(entity, true, this);
     }
 
+    @Override
     public void retrieveAll(Collection entities) {
         assertNotCloseInvoked();
         _broker.retrieveAll(entities, true, this);
     }
 
+    @Override
     public void retrieveAll(Object... entities) {
         retrieveAll(Arrays.asList(entities));
     }
 
+    @Override
     public void evict(Object entity) {
         assertNotCloseInvoked();
         _broker.evict(entity, this);
     }
 
+    @Override
     public void evictAll(Collection entities) {
         assertNotCloseInvoked();
         _broker.evictAll(entities, this);
     }
 
+    @Override
     public void evictAll(Object... entities) {
         evictAll(Arrays.asList(entities));
     }
 
+    @Override
     public void evictAll() {
         assertNotCloseInvoked();
         _broker.evictAll(this);
     }
 
+    @Override
     public void evictAll(Class cls) {
         assertNotCloseInvoked();
         _broker.evictAll(_broker.newExtent(cls, true), this);
     }
 
+    @Override
     public void evictAll(Extent extent) {
         assertNotCloseInvoked();
         _broker.evictAll(((ExtentImpl) extent).getDelegate(), this);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T detachCopy(T entity) {
         assertNotCloseInvoked();
@@ -882,63 +1008,75 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public Object[] detachAll(Object... entities) {
         assertNotCloseInvoked();
         return _broker.detachAll(Arrays.asList(entities), this);
     }
 
+    @Override
     public Collection detachAll(Collection entities) {
         assertNotCloseInvoked();
         return Arrays.asList(_broker.detachAll(entities, this));
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T merge(T entity) {
         assertNotCloseInvoked();
         return (T) _broker.attach(entity, true, this);
     }
 
+    @Override
     public Object[] mergeAll(Object... entities) {
         if (entities.length == 0)
             return EMPTY_OBJECTS;
         return mergeAll(Arrays.asList(entities)).toArray();
     }
 
+    @Override
     public Collection mergeAll(Collection entities) {
         assertNotCloseInvoked();
         return Arrays.asList(_broker.attachAll(entities, true, this));
     }
 
+    @Override
     public void transactional(Object entity, boolean updateVersion) {
         assertNotCloseInvoked();
         _broker.transactional(entity, updateVersion, this);
     }
 
+    @Override
     public void transactionalAll(Collection objs, boolean updateVersion) {
         assertNotCloseInvoked();
         _broker.transactionalAll(objs, updateVersion, this);
     }
 
+    @Override
     public void transactionalAll(Object[] objs, boolean updateVersion) {
         assertNotCloseInvoked();
         _broker.transactionalAll(Arrays.asList(objs), updateVersion, this);
     }
 
+    @Override
     public void nontransactional(Object entity) {
         assertNotCloseInvoked();
         _broker.nontransactional(entity, this);
     }
 
+    @Override
     public void nontransactionalAll(Collection objs) {
         assertNotCloseInvoked();
         _broker.nontransactionalAll(objs, this);
     }
 
+    @Override
     public void nontransactionalAll(Object[] objs) {
         assertNotCloseInvoked();
         _broker.nontransactionalAll(Arrays.asList(objs), this);
     }
 
+    @Override
     public Generator getNamedGenerator(String name) {
         assertNotCloseInvoked();
         try {
@@ -952,6 +1090,7 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public Generator getIdGenerator(Class forClass) {
         assertNotCloseInvoked();
         try {
@@ -966,6 +1105,7 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public Generator getFieldGenerator(Class forClass, String fieldName) {
         assertNotCloseInvoked();
         try {
@@ -985,11 +1125,13 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public <T> Extent<T> createExtent(Class<T> cls, boolean subclasses) {
         assertNotCloseInvoked();
         return new ExtentImpl<T>(this, _broker.newExtent(cls, subclasses));
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> TypedQuery<T> createQuery(String query, Class<T> resultClass) {
         checkTuple(resultClass);
@@ -1002,10 +1144,12 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public OpenJPAQuery createQuery(String query) {
         return createQuery(JPQLParser.LANG_JPQL, query);
     }
 
+    @Override
     public OpenJPAQuery createQuery(String language, String query) {
         assertNotCloseInvoked();
         try {
@@ -1031,6 +1175,7 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public OpenJPAQuery createQuery(Query query) {
         if (query == null)
             return createQuery((String) null);
@@ -1039,12 +1184,14 @@ public class EntityManagerImpl
         return newQueryImpl(_broker.newQuery(q.getLanguage(), q), null);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
         checkTuple(resultClass);
         return createNamedQuery(name).setResultClass(resultClass);
     }
 
+    @Override
     public OpenJPAQuery createNamedQuery(String name) {
         assertNotCloseInvoked();
         _broker.assertOpen();
@@ -1077,16 +1224,19 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public OpenJPAQuery createNativeQuery(String query) {
         validateSQL(query);
         return createQuery(QueryLanguages.LANG_SQL, query);
     }
 
+    @Override
     public OpenJPAQuery createNativeQuery(String query, Class cls) {
         checkTuple(cls);
         return createNativeQuery(query).setResultClass(cls);
     }
 
+    @Override
     public OpenJPAQuery createNativeQuery(String query, String mappingName) {
         assertNotCloseInvoked();
         validateSQL(query);
@@ -1155,7 +1305,7 @@ public class EntityManagerImpl
     }
 
     protected <T> QueryImpl<T> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery, QueryMetaData qmd) {
-        return new QueryImpl<T>(this, _ret, kernelQuery, qmd);
+        return new QueryImpl<>(this, _ret, kernelQuery, qmd);
     }
 
     /**
@@ -1166,7 +1316,7 @@ public class EntityManagerImpl
      *             query creation
      */
     protected <T> QueryImpl<T> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery) {
-        return new QueryImpl<T>(this, _ret, kernelQuery, null);
+        return new QueryImpl<>(this, _ret, kernelQuery, null);
     }
 
     /**
@@ -1192,6 +1342,7 @@ public class EntityManagerImpl
         return (cache == null) ? null : cache.get(id);
     }
 
+    @Override
     public void setFlushMode(FlushModeType flushMode) {
         assertNotCloseInvoked();
         _broker.assertOpen();
@@ -1199,6 +1350,7 @@ public class EntityManagerImpl
             (toFlushBeforeQueries(flushMode));
     }
 
+    @Override
     public FlushModeType getFlushMode() {
         assertNotCloseInvoked();
         _broker.assertOpen();
@@ -1257,18 +1409,21 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public void clear() {
         assertNotCloseInvoked();
         _broker.detachAll(this, false);
         _plans.clear();
     }
 
+    @Override
     public Object getDelegate() {
         _broker.assertOpen();
         assertNotCloseInvoked();
         return this;
     }
 
+    @Override
     public LockModeType getLockMode(Object entity) {
         assertNotCloseInvoked();
         _broker.assertActiveTransaction();
@@ -1277,16 +1432,19 @@ public class EntityManagerImpl
             _broker.getLockLevel(entity));
     }
 
+    @Override
     public void lock(Object entity, LockModeType mode) {
         lock(entity, mode, -1);
     }
 
+    @Override
     public void lock(Object entity) {
         assertNotCloseInvoked();
         assertValidAttchedEntity(LOCK, entity);
         _broker.lock(entity, this);
     }
 
+    @Override
     public void lock(Object entity, LockModeType mode, int timeout) {
         assertNotCloseInvoked();
         assertValidAttchedEntity(LOCK, entity);
@@ -1299,6 +1457,7 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public void lock(Object entity, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
         assertValidAttchedEntity(LOCK, entity);
@@ -1314,83 +1473,101 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public void lockAll(Collection entities) {
         assertNotCloseInvoked();
         _broker.lockAll(entities, this);
     }
 
+    @Override
     public void lockAll(Collection entities, LockModeType mode, int timeout) {
         assertNotCloseInvoked();
         _broker.lockAll(entities, MixedLockLevelsHelper.toLockLevel(mode),
             timeout, this);
     }
 
+    @Override
     public void lockAll(Object... entities) {
         lockAll(Arrays.asList(entities));
     }
 
+    @Override
     public void lockAll(Object[] entities, LockModeType mode, int timeout) {
         lockAll(Arrays.asList(entities), mode, timeout);
     }
 
+    @Override
     public boolean cancelAll() {
         return _broker.cancelAll();
     }
 
+    @Override
     public Object getConnection() {
         return _broker.getConnection();
     }
 
+    @Override
     public Collection getManagedObjects() {
         return _broker.getManagedObjects();
     }
 
+    @Override
     public Collection getTransactionalObjects() {
         return _broker.getTransactionalObjects();
     }
 
+    @Override
     public Collection getPendingTransactionalObjects() {
         return _broker.getPendingTransactionalObjects();
     }
 
+    @Override
     public Collection getDirtyObjects() {
         return _broker.getDirtyObjects();
     }
 
+    @Override
     public boolean getOrderDirtyObjects() {
         return _broker.getOrderDirtyObjects();
     }
 
+    @Override
     public void setOrderDirtyObjects(boolean order) {
         assertNotCloseInvoked();
         _broker.setOrderDirtyObjects(order);
     }
 
+    @Override
     public void dirtyClass(Class cls) {
         assertNotCloseInvoked();
         _broker.dirtyType(cls);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Collection<Class> getPersistedClasses() {
         return (Collection<Class>) _broker.getPersistedTypes();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Collection<Class> getUpdatedClasses() {
         return (Collection<Class>) _broker.getUpdatedTypes();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Collection<Class> getRemovedClasses() {
         return (Collection<Class>) _broker.getDeletedTypes();
     }
 
+    @Override
     public <T> T createInstance(Class<T> cls) {
         assertNotCloseInvoked();
         return (T) _broker.newInstance(cls);
     }
 
+    @Override
     public void close() {
         assertNotCloseInvoked();
         Log log = _emf.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
@@ -1401,10 +1578,12 @@ public class EntityManagerImpl
         _plans.clear();
     }
 
+    @Override
     public boolean isOpen() {
         return !_broker.isCloseInvoked();
     }
 
+    @Override
     public void dirty(Object o, String field) {
         assertNotCloseInvoked();
         OpenJPAStateManager sm = _broker.getStateManager(o);
@@ -1416,41 +1595,49 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public Object getObjectId(Object o) {
         assertNotCloseInvoked();
         return JPAFacadeHelper.fromOpenJPAObjectId(_broker.getObjectId(o));
     }
 
+    @Override
     public boolean isDirty(Object o) {
         assertNotCloseInvoked();
         return _broker.isDirty(o);
     }
 
+    @Override
     public boolean isTransactional(Object o) {
         assertNotCloseInvoked();
         return _broker.isTransactional(o);
     }
 
+    @Override
     public boolean isPersistent(Object o) {
         assertNotCloseInvoked();
         return _broker.isPersistent(o);
     }
 
+    @Override
     public boolean isNewlyPersistent(Object o) {
         assertNotCloseInvoked();
         return _broker.isNew(o);
     }
 
+    @Override
     public boolean isRemoved(Object o) {
         assertNotCloseInvoked();
         return _broker.isDeleted(o);
     }
 
+    @Override
     public boolean isDetached(Object entity) {
         assertNotCloseInvoked();
         return _broker.isDetached(entity);
     }
 
+    @Override
     public Object getVersion(Object o) {
         assertNotCloseInvoked();
         return _broker.getVersion(o);
@@ -1484,10 +1671,12 @@ public class EntityManagerImpl
     // FindCallbacks implementation
     ////////////////////////////////
 
+    @Override
     public Object processArgument(Object arg) {
         return arg;
     }
 
+    @Override
     public Object processReturn(Object oid, OpenJPAStateManager sm) {
         return (sm == null || sm.isDeleted()) ? null : sm.getManagedInstance();
     }
@@ -1496,6 +1685,7 @@ public class EntityManagerImpl
     // OpCallbacks implementation
     //////////////////////////////
 
+    @Override
     public int processArgument(int op, Object obj, OpenJPAStateManager sm) {
         switch (op) {
             case OP_DELETE:
@@ -1531,10 +1721,12 @@ public class EntityManagerImpl
         return ACT_RUN | ACT_CASCADE;
     }
 
+    @Override
     public int hashCode() {
         return (_broker == null) ? 0 : _broker.hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -1545,6 +1737,7 @@ public class EntityManagerImpl
         return _broker.equals(((EntityManagerImpl) other)._broker);
     }
 
+    @Override
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         try {
@@ -1575,6 +1768,7 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         try {
             // this requires that only AbstractBrokerFactory-sourced
@@ -1628,6 +1822,7 @@ public class EntityManagerImpl
             }
         }
 
+        @Override
         protected Class<?> resolveClass(ObjectStreamClass classDesc)
             throws IOException, ClassNotFoundException {
 
@@ -1686,6 +1881,7 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public void detach(Object entity) {
         if (entity == null)
             throw new IllegalArgumentException(_loc.get("null-detach").getMessage());
@@ -1697,10 +1893,11 @@ public class EntityManagerImpl
      * Create a query from the given CritriaQuery.
      * Compile to register the parameters in this query.
      */
+    @Override
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
         ((OpenJPACriteriaQuery<T>)criteriaQuery).compile();
 
-        org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilderImpl.LANG_CRITERIA, criteriaQuery);
+        org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(OpenJPACriteriaBuilder.LANG_CRITERIA, criteriaQuery);
 
         QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery, null).setId(criteriaQuery.toString());
         Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
@@ -1721,6 +1918,7 @@ public class EntityManagerImpl
         throw new UnsupportedOperationException("JPA 2.1");
     }
 
+    @Override
     public OpenJPAQuery createDynamicQuery(
         org.apache.openjpa.persistence.query.QueryDefinition qdef) {
         String jpql = _emf.getDynamicQueryBuilder().toJPQL(qdef);
@@ -1735,6 +1933,7 @@ public class EntityManagerImpl
      * are converted to the original keys/values that user used to set the properties.
      *
      */
+    @Override
     public Map<String, Object> getProperties() {
         Map<String,Object> props = _broker.getProperties();
         for (String s : _broker.getSupportedProperties()) {
@@ -1761,10 +1960,12 @@ public class EntityManagerImpl
         return props;
     }
 
+    @Override
     public OpenJPACriteriaBuilder getCriteriaBuilder() {
         return _emf.getCriteriaBuilder();
     }
 
+    @Override
     public Set<String> getSupportedProperties() {
         return _broker.getSupportedProperties();
     }
@@ -1775,6 +1976,7 @@ public class EntityManagerImpl
      * @exception if the given class is null, generic <code>Object.class</code> or a class
      * that is not wrapped by this receiver.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T unwrap(Class<T> cls) {
         if (cls != null && cls != Object.class) {
@@ -1803,10 +2005,12 @@ public class EntityManagerImpl
         throw ex;
     }
 
+    @Override
     public void setQuerySQLCache(boolean flag) {
         _broker.setCachePreparedQuery(flag);
     }
 
+    @Override
     public boolean getQuerySQLCache() {
         return _broker.getCachePreparedQuery();
     }
@@ -1873,6 +2077,7 @@ public class EntityManagerImpl
         }
     }
 
+    @Override
     public Metamodel getMetamodel() {
         return _emf.getMetamodel();
     }
@@ -1906,6 +2111,7 @@ public class EntityManagerImpl
      * on either this instance or its fetch plan by reflection,
      * then an warning message (not an exception as per JPA specification) is issued.
      */
+    @Override
     public void setProperty(String prop, Object value) {
         if (!setKernelProperty(this, prop, value)) {
             if (!setKernelProperty(this.getFetchPlan(), prop, value)) {
@@ -1995,7 +2201,7 @@ public class EntityManagerImpl
 
     private Map<String, Object> cloneProperties(Map<String, Object> properties) {
         if (properties != null) {
-            properties = new HashMap<String, Object>(properties);
+            properties = new HashMap<>(properties);
         }
         return properties;
     }

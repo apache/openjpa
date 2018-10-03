@@ -32,10 +32,12 @@ public class TestRangeResultObjectProvider extends ResultListTest {
         super(test);
     }
 
+    @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new WindowResultList(provider, 10);
     }
 
+    @Override
     protected ResultObjectProvider[] getResultObjectProviders(List list) {
         // test 3 ranges:
         // 1. 0 to infinite

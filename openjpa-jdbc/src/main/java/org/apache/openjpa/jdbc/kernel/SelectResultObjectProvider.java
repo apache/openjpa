@@ -72,6 +72,7 @@ public abstract class SelectResultObjectProvider
         return _res;
     }
 
+    @Override
     public boolean supportsRandomAccess() {
         if (_ra == null) {
             boolean ra;
@@ -88,21 +89,25 @@ public abstract class SelectResultObjectProvider
         return _ra.booleanValue();
     }
 
+    @Override
     public void open()
         throws SQLException {
         _res = _sel.execute(_store, _fetch);
     }
 
+    @Override
     public boolean next()
         throws SQLException {
         return _res.next();
     }
 
+    @Override
     public boolean absolute(int pos)
         throws SQLException {
         return _res.absolute(pos);
     }
 
+    @Override
     public int size()
         throws SQLException {
         if (_size == -1) {
@@ -136,12 +141,14 @@ public abstract class SelectResultObjectProvider
             _size = size;
     }
 
+    @Override
     public void reset()
         throws SQLException {
         close();
         open();
     }
 
+    @Override
     public void close() {
         if (_res != null) {
             _res.close();
@@ -149,6 +156,7 @@ public abstract class SelectResultObjectProvider
         }
     }
 
+    @Override
     public void handleCheckedException(Exception e) {
         if (e instanceof SQLException)
             throw SQLExceptions.getStore((SQLException) e, _store.getDBDictionary(), _fetch.getReadLockLevel());

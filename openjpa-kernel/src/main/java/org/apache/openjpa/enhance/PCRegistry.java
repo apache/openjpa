@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.util.UserException;
@@ -47,7 +46,7 @@ public class PCRegistry {
     // register class listeners
     // Weak reference prevents OutOfMemeoryError as described in OPENJPA-2042
     private static final Collection<RegisterClassListener> _listeners =
-        new ConcurrentReferenceHashSet<RegisterClassListener>(
+        new ConcurrentReferenceHashSet<>(
                 ReferenceStrength.WEAK);
 
     /**
@@ -258,9 +257,9 @@ public class PCRegistry {
     /**
      * Listener for persistent class registration events.
      */
-    public static interface RegisterClassListener {
+    public interface RegisterClassListener {
 
-        public void register(Class<?> cls);
+        void register(Class<?> cls);
     }
 
     /**

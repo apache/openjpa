@@ -38,7 +38,7 @@ public class FilteringJDBCListener extends AbstractJDBCListener {
     /**
      * Set of SQL statements which will be filtered out by this listener.
      */
-    private Set<String> _ignoredSQL = new HashSet<String>();
+    private Set<String> _ignoredSQL = new HashSet<>();
 
     private List<String> _sqlStatements;
 
@@ -63,6 +63,6 @@ public class FilteringJDBCListener extends AbstractJDBCListener {
     }
 
     public List<String> getCopy() {
-        return new ArrayList<String>(_sqlStatements);
+        return new ArrayList<>(_sqlStatements);
     }
 }

@@ -19,7 +19,10 @@
 package org.apache.openjpa.persistence.query;
 
 public class IsEmptyExpression extends UnaryExpressionPredicate {
-	public IsEmptyExpression(Expression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public IsEmptyExpression(Expression op) {
 		super(op, UnaryConditionalOperator.ISEMPTY,
 			UnaryConditionalOperator.ISEMPTY_NOT);
 	}

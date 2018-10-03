@@ -118,7 +118,7 @@ public class HintHandler  {
             return Boolean.FALSE;
         if (_supportedHints.contains(hint)) {
             if (_hints == null)
-                _hints = new TreeMap<String, Object>();
+                _hints = new TreeMap<>();
             _hints.put(hint, value);
             return Boolean.TRUE;
         }

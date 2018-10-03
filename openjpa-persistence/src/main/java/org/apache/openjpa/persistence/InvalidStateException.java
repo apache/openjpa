@@ -25,10 +25,10 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.lib.util.Localizer.Message;
 
 /**
  * Extended {@link IllegalStateException}.
@@ -40,6 +40,8 @@ public class InvalidStateException
     extends IllegalStateException
     implements Serializable, ExceptionInfo {
 
+    
+    private static final long serialVersionUID = 1L;
     private transient boolean _fatal = false;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
@@ -57,43 +59,53 @@ public class InvalidStateException
         _fatal = fatal;
     }
 
+    @Override
     public int getType() {
         return USER;
     }
 
+    @Override
     public int getSubtype() {
         return UserException.INVALID_STATE;
     }
 
+    @Override
     public boolean isFatal() {
         return _fatal;
     }
 
+    @Override
     public Throwable getCause() {
         return PersistenceExceptions.getCause(_nested);
     }
 
+    @Override
     public Throwable[] getNestedThrowables() {
         return (_nested == null) ? Exceptions.EMPTY_THROWABLES : _nested;
     }
 
+    @Override
     public Object getFailedObject() {
         return _failed;
     }
 
+    @Override
     public String toString() {
         return Exceptions.toString(this);
     }
 
+    @Override
     public void printStackTrace() {
         printStackTrace(System.err);
     }
 
+    @Override
     public void printStackTrace(PrintStream out) {
         super.printStackTrace(out);
         Exceptions.printNestedThrowables(this, out);
     }
 
+    @Override
     public void printStackTrace(PrintWriter out) {
         super.printStackTrace(out);
         Exceptions.printNestedThrowables(this, out);

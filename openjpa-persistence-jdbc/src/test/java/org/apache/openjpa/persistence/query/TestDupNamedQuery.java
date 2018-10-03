@@ -20,13 +20,16 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.Iterator;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 public class TestDupNamedQuery extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(SimpleEntity.class, SimpleEntity2.class, CLEAR_TABLES);
 

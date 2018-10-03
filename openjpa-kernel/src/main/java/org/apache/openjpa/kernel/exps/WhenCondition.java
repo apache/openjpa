@@ -21,6 +21,8 @@ package org.apache.openjpa.kernel.exps;
 public class WhenCondition
     extends Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Exp _exp;
     private final Val _val;
 
@@ -40,6 +42,7 @@ public class WhenCondition
         return _val;
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _exp.acceptVisit(visitor);

@@ -27,18 +27,19 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.ClassMetaData;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.jdbc.common.apps.PerClassTestObject;
+import org.apache.openjpa.persistence.jdbc.common.apps.PerClassTestObject2;
+import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
 
 
 public class TestPerClassSequenceFactory
@@ -91,21 +92,26 @@ public class TestPerClassSequenceFactory
 
         private long _val = 1;
 
+        @Override
         public void setType(int type) {
         }
 
+        @Override
         public Object next(StoreContext ctx, ClassMetaData meta) {
             _val++;
             return current(ctx, meta);
         }
 
+        @Override
         public Object current(StoreContext ctx, ClassMetaData meta) {
             return new Long(_val);
         }
 
+        @Override
         public void allocate(int num, StoreContext ctx, ClassMetaData meta) {
         }
 
+        @Override
         public void close() {
         }
     }

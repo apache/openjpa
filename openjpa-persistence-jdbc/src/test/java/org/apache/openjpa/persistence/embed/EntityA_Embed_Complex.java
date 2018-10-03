@@ -28,24 +28,26 @@ import java.util.Set;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.CollectionTable;
-import javax.persistence.Table;
-
 @Entity
 @Table(name="TBL3C")
 public class EntityA_Embed_Complex implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     Integer id;
 
@@ -58,24 +60,24 @@ public class EntityA_Embed_Complex implements Serializable {
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(name="NickNames_Tbl")
     @Column(name="nicknames1", length=20)
-    protected Set<String> nickNames = new HashSet<String>();
+    protected Set<String> nickNames = new HashSet<>();
 
     @ElementCollection
     @Enumerated(EnumType.ORDINAL)
-    protected List<CreditRating> cr = new ArrayList<CreditRating>();
+    protected List<CreditRating> cr = new ArrayList<>();
 
     @ElementCollection
     @Temporal(TemporalType.DATE)
-    protected List<Timestamp> ts = new ArrayList<Timestamp>();
+    protected List<Timestamp> ts = new ArrayList<>();
 
     @ElementCollection
     @Lob
-    protected List<String> lobs = new ArrayList<String>();
+    protected List<String> lobs = new ArrayList<>();
 
     protected Embed_Embed embed;
 
     @ElementCollection
-    protected List<Embed_Embed> embeds = new ArrayList<Embed_Embed>();
+    protected List<Embed_Embed> embeds = new ArrayList<>();
 
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(name="EMBED1ToOneS2") // use default join column name
@@ -84,7 +86,7 @@ public class EntityA_Embed_Complex implements Serializable {
         @AttributeOverride(name="name2", column=@Column(name="EMB_NAME2")),
         @AttributeOverride(name="name3", column=@Column(name="EMB_NAME3"))
     })
-    protected Set<Embed_ToOne> embed1s = new HashSet<Embed_ToOne>();
+    protected Set<Embed_ToOne> embed1s = new HashSet<>();
 
     private transient Integer transientJavaValue;
 

@@ -24,11 +24,12 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
  *
  * @deprecated
  */
+@Deprecated
 public interface PreAttachCallback {
 
     /**
      * Invoked on the detached instance immediately before it is
      * to be attached.
      */
-    public void jdoPreAttach();
+    void jdoPreAttach();
 }

@@ -29,11 +29,11 @@ import org.apache.openjpa.lib.meta.SourceTracker;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class Sequence
     extends ReferenceCounter
     implements Comparable<Sequence>, SourceTracker {
 
+    private static final long serialVersionUID = 1L;
     private DBIdentifier _name = DBIdentifier.NULL;
     private Schema _schema = null;
     private DBIdentifier _schemaName = DBIdentifier.NULL;
@@ -61,6 +61,7 @@ public class Sequence
      * @param schema the sequence schema
      * @deprecated
      */
+    @Deprecated
     public Sequence(String name, Schema schema) {
         this(DBIdentifier.newSequence(name), schema);
     }
@@ -103,6 +104,7 @@ public class Sequence
      * whose schema object is not set.
      * @deprecated
      */
+    @Deprecated
     public void setSchemaName(String name) {
         setSchemaIdentifier(DBIdentifier.newSchema(name));
     }
@@ -118,6 +120,7 @@ public class Sequence
      * Return the name of the sequence.
      * @deprecated
      */
+    @Deprecated
     public String getName() {
         return getIdentifier().getName();
     }
@@ -131,6 +134,7 @@ public class Sequence
      * sequences that are not part of a schema.
      * @deprecated
      */
+    @Deprecated
     public void setName(String name) {
         setIdentifier(DBIdentifier.newSequence(name));
     }
@@ -147,6 +151,7 @@ public class Sequence
      * catalog separator.
      * @deprecated
      */
+    @Deprecated
     public String getFullName() {
         return getFullIdentifier().getName();
     }
@@ -204,14 +209,17 @@ public class Sequence
         _cache = cache;
     }
 
+    @Override
     public File getSourceFile() {
         return _source;
     }
 
+    @Override
     public Object getSourceScope() {
         return null;
     }
 
+    @Override
     public int getSourceType() {
         return _srcType;
     }
@@ -221,10 +229,12 @@ public class Sequence
         _srcType = srcType;
     }
 
+    @Override
     public String getResourceName() {
         return getFullIdentifier().getName();
     }
 
+    @Override
     public int compareTo(Sequence other) {
         DBIdentifier name = getIdentifier();
         DBIdentifier otherName = other.getIdentifier();
@@ -238,10 +248,12 @@ public class Sequence
         return name.compareTo(otherName);
     }
 
+    @Override
     public String toString() {
         return getFullIdentifier().getName();
     }
 
+    @Override
     public int getLineNumber() {
         return _lineNum;
     }
@@ -250,6 +262,7 @@ public class Sequence
         _lineNum = lineNum;
     }
 
+    @Override
     public int getColNumber() {
         return _colNum;
     }

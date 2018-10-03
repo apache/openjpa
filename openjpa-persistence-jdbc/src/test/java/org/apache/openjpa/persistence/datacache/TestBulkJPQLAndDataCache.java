@@ -32,6 +32,7 @@ public class TestBulkJPQLAndDataCache
 
     private Object oid;
 
+    @Override
     public void setUp() throws Exception {
         setUp("openjpa.DataCache", "true",
             "openjpa.QueryCache", "true",

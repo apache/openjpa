@@ -35,6 +35,9 @@ import org.apache.openjpa.util.InvalidStateException;
 public class NoneClassStrategy
     extends AbstractClassStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final String ALIAS = "none";
 
     private static final NoneClassStrategy _instance = new NoneClassStrategy();
@@ -55,23 +58,28 @@ public class NoneClassStrategy
     private NoneClassStrategy() {
     }
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     public void setClassMapping(ClassMapping owner) {
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         throwFlushException(sm);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         throwFlushException(sm);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         throwFlushException(sm);

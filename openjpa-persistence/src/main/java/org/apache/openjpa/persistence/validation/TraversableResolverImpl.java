@@ -20,8 +20,8 @@ import java.lang.annotation.ElementType;
 
 import javax.persistence.spi.LoadState;
 import javax.validation.Path;
-import javax.validation.TraversableResolver;
 import javax.validation.Path.Node;
+import javax.validation.TraversableResolver;
 
 import org.apache.openjpa.persistence.OpenJPAPersistenceUtil;
 
@@ -43,6 +43,7 @@ public class TraversableResolverImpl implements TraversableResolver {
      *      javax.validation.Path.Node, java.lang.Class, javax.validation.Path,
      *      java.lang.annotation.ElementType)
      */
+    @Override
     public boolean isReachable(Object traversableObject,
         Node traversableProperty, Class<?> rootBeanType,
         Path pathToTraversableObject, ElementType elementType) {
@@ -67,6 +68,7 @@ public class TraversableResolverImpl implements TraversableResolver {
      *      javax.validation.Path.Node, java.lang.Class, javax.validation.Path,
      *      java.lang.annotation.ElementType)
      */
+    @Override
     public boolean isCascadable(Object traversableObject,
         Node traversableProperty, Class<?> rootBeanType,
         Path pathToTraversableObject, ElementType elementType) {

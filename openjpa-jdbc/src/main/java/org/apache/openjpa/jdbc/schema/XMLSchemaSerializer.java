@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.lib.meta.XMLMetaDataSerializer;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.xml.sax.SAXException;
 
 /**
@@ -49,8 +49,8 @@ public class XMLSchemaSerializer
     private static final Localizer _loc = Localizer.forPackage
         (XMLSchemaSerializer.class);
 
-    private final Collection<Table> _tables = new TreeSet<Table>();
-    private final Collection<Sequence> _seqs = new TreeSet<Sequence>();
+    private final Collection<Table> _tables = new TreeSet<>();
+    private final Collection<Sequence> _seqs = new TreeSet<>();
 
     /**
      * Constructor. Supply configuration.
@@ -59,15 +59,18 @@ public class XMLSchemaSerializer
         setLog(conf.getLog(JDBCConfiguration.LOG_SCHEMA));
     }
 
+    @Override
     public Table[] getTables() {
         return (Table[]) _tables.toArray(new Table[_tables.size()]);
     }
 
+    @Override
     public void addTable(Table table) {
         if (table != null)
             _tables.add(table);
     }
 
+    @Override
     public boolean removeTable(Table table) {
         return _tables.remove(table);
     }
@@ -85,6 +88,7 @@ public class XMLSchemaSerializer
         return _seqs.remove(seq);
     }
 
+    @Override
     public void addAll(Schema schema) {
         if (schema == null)
             return;
@@ -96,6 +100,7 @@ public class XMLSchemaSerializer
             addSequence(seqs[i]);
     }
 
+    @Override
     public void addAll(SchemaGroup group) {
         if (group == null)
             return;
@@ -104,6 +109,7 @@ public class XMLSchemaSerializer
             addAll(schemas[i]);
     }
 
+    @Override
     public boolean removeAll(Schema schema) {
         if (schema == null)
             return false;
@@ -118,6 +124,7 @@ public class XMLSchemaSerializer
         return removed;
     }
 
+    @Override
     public boolean removeAll(SchemaGroup group) {
         if (group == null)
             return false;
@@ -129,22 +136,25 @@ public class XMLSchemaSerializer
         return removed;
     }
 
+    @Override
     public void clear() {
         _tables.clear();
         _seqs.clear();
     }
 
+    @Override
     protected Collection getObjects() {
         if (_seqs.isEmpty())
             return _tables;
         if (_tables.isEmpty())
             return _seqs;
-        List<Object> all = new ArrayList<Object>(_seqs.size() + _tables.size());
+        List<Object> all = new ArrayList<>(_seqs.size() + _tables.size());
         all.addAll(_seqs);
         all.addAll(_tables);
         return all;
     }
 
+    @Override
     protected void serialize(Collection objs)
         throws SAXException {
         // group the objects by schema

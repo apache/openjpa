@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -42,18 +43,18 @@ import jpa.tools.swing.EntityTable.InstanceCellRenderer;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class EntityTableView<T> extends JPanel implements ListSelectionListener {
+    private static final long serialVersionUID = 1L;
     private EntityTable<T> _table;
     private JTextArea _details;
 
     public EntityTableView(Class<T> cls, int styleBits, EntityManagerFactory unit) {
-        this(cls, (List<T>)Collections.EMPTY_LIST, styleBits, unit);
+        this(cls, Collections.emptyList(), styleBits, unit);
     }
 
     public EntityTableView(Class<T> cls, List<T> data, int styleBits, EntityManagerFactory unit) {
         super(true);
-        _table   = new EntityTable<T>(cls, data, styleBits, unit);
+        _table   = new EntityTable<>(cls, data, styleBits, unit);
         _table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         if ((styleBits & EntityDataModel.PLURAL_ATTR) != 0) {
@@ -68,8 +69,8 @@ public class EntityTableView<T> extends JPanel implements ListSelectionListener 
 
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         add(new JScrollPane(_table,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS));
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS));
         if (_details != null)
             add(_details);
     }

@@ -27,7 +27,6 @@ import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.integration.validation.SimpleEntity;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -149,7 +148,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
         getLog().trace("testValidatingLEM3() - CALLBACK");
         // create the Map to test overrides
         //   Just use current class object, as we have no provider to test with
-        Map<String,Object> props = new HashMap<String,Object>();
+        Map<String,Object> props = new HashMap<>();
         props.put("javax.persistence.validation.mode",
             String.valueOf(ValidationMode.CALLBACK));
         // create our EMF w/ props
@@ -198,7 +197,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
         }
         assertNotNull(factory);
         // create the Map to test overrides
-        Map<String,Object> props = new HashMap<String,Object>();
+        Map<String,Object> props = new HashMap<>();
         props.put("javax.persistence.validation.factory", factory);
         // create our EMF w/ props
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)

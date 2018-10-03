@@ -24,17 +24,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.EntityManagerFactory;
 
-import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectAChild1;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import javax.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectAChild1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
  * Test that we marshall and unmarshall result types appropriately.
@@ -48,6 +48,7 @@ public class TestResultShapes extends AbstractTestCase {
 
     private Broker _broker;
 
+    @Override
     public void setUp() {
         deleteAll(CacheObjectAChild1.class);
 
@@ -67,6 +68,7 @@ public class TestResultShapes extends AbstractTestCase {
         _broker = factory.newBroker();
     }
 
+    @Override
     public void tearDown() throws Exception {
         _broker.close();
         _broker = null;
@@ -104,10 +106,10 @@ public class TestResultShapes extends AbstractTestCase {
 
     public void testCollectionOfSingleValuedProjection() {
 
-        Collection<String> ac = new ArrayList<String>();
+        Collection<String> ac = new ArrayList<>();
         ac.add("age");
 
-        Collection<Class> bd = new ArrayList<Class>();
+        Collection<Class> bd = new ArrayList<>();
         bd.add(Long.class);
 
         arrayHelper(false, bd, ac, true);
@@ -116,10 +118,10 @@ public class TestResultShapes extends AbstractTestCase {
     }
 
     public void testUniqueSingleValuedProjection() {
-        Collection<String> ac = new ArrayList<String>();
+        Collection<String> ac = new ArrayList<>();
         ac.add("age");
 
-        Collection<Class> bd = new ArrayList<Class>();
+        Collection<Class> bd = new ArrayList<>();
         bd.add(Long.class);
 
         arrayHelper(true, bd, ac, true);
@@ -128,11 +130,11 @@ public class TestResultShapes extends AbstractTestCase {
     }
 
     public void testCollectionOfMultiValuedProjection() {
-        Collection<String> ac = new ArrayList<String>();
+        Collection<String> ac = new ArrayList<>();
         ac.add("age");
         ac.add("name");
 
-        Collection<Class> bd = new ArrayList<Class>();
+        Collection<Class> bd = new ArrayList<>();
         bd.add(Long.class);
         bd.add(String.class);
 
@@ -148,11 +150,11 @@ public class TestResultShapes extends AbstractTestCase {
     }
 
     public void testUniqueMultiValuedProjection() {
-        Collection<String> ac = new ArrayList<String>();
+        Collection<String> ac = new ArrayList<>();
         ac.add("age");
         ac.add("name");
 
-        Collection<Class> bd = new ArrayList<Class>();
+        Collection<Class> bd = new ArrayList<>();
         bd.add(Long.class);
         bd.add(String.class);
 
@@ -169,11 +171,11 @@ public class TestResultShapes extends AbstractTestCase {
     }
 
     public void testUncachedQueryHasCorrectShape() {
-        Collection<String> ac = new ArrayList<String>();
+        Collection<String> ac = new ArrayList<>();
         ac.add("age");
         ac.add("name");
 
-        Collection<Class> bd = new ArrayList<Class>();
+        Collection<Class> bd = new ArrayList<>();
         bd.add(Long.class);
         bd.add(String.class);
 
@@ -267,7 +269,7 @@ public class TestResultShapes extends AbstractTestCase {
 
     private void rawHelper(boolean unique, Class recordClass, String result,
         boolean inCache) {
-        ArrayList<String> l = new ArrayList<String>();
+        ArrayList<String> l = new ArrayList<>();
         l.add(result);
         Collection res = (result == null) ? null : l;
         Query q = setUpQuery(unique, res);

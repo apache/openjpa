@@ -43,9 +43,8 @@ import javax.swing.JPanel;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class MetamodelView extends JPanel implements Maze {
-
+    private static final long serialVersionUID = 1L;
     private static final int GRID = 8;
     int hgap = 40;
     int vgap = 40;
@@ -63,7 +62,7 @@ public class MetamodelView extends JPanel implements Maze {
         layout.setVgap(80);
 //        getInsets(new Insets(100,100,100,100));
         Set<EntityType<?>> types = model.getEntities();
-        List<EntityType<?>> sorted = new ArrayList<EntityType<?>>(types);
+        List<EntityType<?>> sorted = new ArrayList<>(types);
         Collections.sort(sorted, new MetamodelHelper.EntityComparator());
         for (EntityType type : sorted) {
             EntityTypeView view = new EntityTypeView(type);

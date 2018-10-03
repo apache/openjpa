@@ -18,12 +18,12 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.FetchType;
-import javax.persistence.Entity;
-import javax.persistence.CascadeType;
 
 @Entity
 public class UnidirectionalManyToOne {

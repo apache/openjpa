@@ -21,17 +21,18 @@ package org.apache.openjpa.persistence.datacache;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
 import javax.persistence.EntityManager;
-import javax.persistence.RollbackException;
 import javax.persistence.LockModeType;
+import javax.persistence.RollbackException;
 import javax.sql.DataSource;
 
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.event.RemoteCommitListener;
 import org.apache.openjpa.event.RemoteCommitEvent;
+import org.apache.openjpa.event.RemoteCommitListener;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestDataCacheOptimisticLockRecovery
     extends SingleEMFTestCase {
@@ -40,6 +41,7 @@ public class TestDataCacheOptimisticLockRecovery
     private int remoteCommitEventStaleCount = 0;
     private Object staleOid;
 
+    @Override
     public void setUp() {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
@@ -47,6 +49,7 @@ public class TestDataCacheOptimisticLockRecovery
 
         emf.getConfiguration().getRemoteCommitEventManager().addListener(
             new RemoteCommitListener() {
+                @Override
                 public void afterCommit(RemoteCommitEvent e) {
                     if (e.getPayloadType() ==
                         RemoteCommitEvent.PAYLOAD_LOCAL_STALE_DETECTION) {
@@ -55,6 +58,7 @@ public class TestDataCacheOptimisticLockRecovery
                     }
                 }
 
+                @Override
                 public void close() {
                 }
             }

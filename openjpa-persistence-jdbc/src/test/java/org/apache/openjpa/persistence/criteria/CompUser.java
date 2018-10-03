@@ -18,8 +18,21 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+
+import org.apache.openjpa.persistence.PersistentCollection;
 
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)

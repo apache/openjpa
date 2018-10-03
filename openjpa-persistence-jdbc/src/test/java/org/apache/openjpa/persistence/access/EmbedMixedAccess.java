@@ -58,6 +58,7 @@ public class EmbedMixedAccess {
         mName = mname;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof EmbedMixedAccess) {
             EmbedMixedAccess ps = (EmbedMixedAccess)obj;

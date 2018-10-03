@@ -58,10 +58,12 @@ public class BackingFieldNameMismatchInstance
         _version = v;
     }
 
+    @Override
     public String getStringField() {
         return _s;
     }
 
+    @Override
     public void setStringField(String s) {
         _s = s;
     }

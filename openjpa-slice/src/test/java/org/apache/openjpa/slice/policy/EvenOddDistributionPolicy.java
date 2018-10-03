@@ -20,9 +20,14 @@ package org.apache.openjpa.slice.policy;
 
 import java.util.List;
 
-import org.apache.openjpa.slice.*;
+import org.apache.openjpa.slice.Car;
+import org.apache.openjpa.slice.DistributionPolicy;
+import org.apache.openjpa.slice.Manufacturer;
+import org.apache.openjpa.slice.PObject;
+import org.apache.openjpa.slice.Person;
 
 public class EvenOddDistributionPolicy implements DistributionPolicy {
+    @Override
     public String distribute(Object pc, List<String> slices, Object context) {
         if (pc instanceof PObject) {
             int v = ((PObject)pc).getValue();

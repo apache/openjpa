@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.conf;
 
-import org.apache.openjpa.lib.conf.PluginValue;
-import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.FinalizingBrokerImpl;
+import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.util.InternalException;
 
 /**
@@ -50,6 +50,7 @@ public class BrokerValue
         setString(aliases[0]);
     }
 
+    @Override
     public Object newInstance(String clsName, Class type, Configuration conf,
         boolean fatal) {
         getTemplateBroker(clsName, type, conf, fatal);

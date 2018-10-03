@@ -18,13 +18,13 @@
  */
 package org.apache.openjpa.persistence.distinctjoin;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Version;
-
-import java.io.Serializable;
 
 import org.apache.openjpa.persistence.jdbc.Index;
 
@@ -34,6 +34,9 @@ import org.apache.openjpa.persistence.jdbc.Index;
 @Entity
 public class Lecturer implements Serializable
 {
+
+    
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue

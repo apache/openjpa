@@ -19,8 +19,8 @@
 package org.apache.openjpa.jdbc.sql.identifier;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 
 import junit.framework.TestCase;
 
@@ -35,7 +35,7 @@ public class TestDBIdentifiers extends TestCase {
         // delimiters.
         QualifiedDBIdentifier p1 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("my.schema"));
         DBIdentifier s1 = DBIdentifier.newSchema("my.schema");
-        assertTrue(QualifiedDBIdentifier.equal(p1, s1));
+        assertTrue(DBIdentifier.equal(p1, s1));
         assertEquals("\"my.schema\"", p1.getName());
         assertEquals("\"my.schema\"", s1.getName());
         assertEquals(p1.getType(), DBIdentifierType.SCHEMA);
@@ -44,7 +44,7 @@ public class TestDBIdentifiers extends TestCase {
 
         QualifiedDBIdentifier p2 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("SCHEMA"));
         DBIdentifier s2 = DBIdentifier.newSchema("SCHEMA2");
-        assertFalse(QualifiedDBIdentifier.equal(p2, s2));
+        assertFalse(DBIdentifier.equal(p2, s2));
         assertEquals("SCHEMA", p2.getName());
         assertEquals("SCHEMA2", s2.getName());
         assertEquals(p2.getType(), DBIdentifierType.SCHEMA);
@@ -194,7 +194,7 @@ public class TestDBIdentifiers extends TestCase {
             DBIdentifier.newColumn("mycol"));
         QualifiedDBIdentifier p2 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MYTABLE"),
             DBIdentifier.newColumn("MYCOL"));
-        assertTrue(QualifiedDBIdentifier.equal(p1, p1));
+        assertTrue(DBIdentifier.equal(p1, p1));
 
         // Test equals operator with delimited, case sensitive names
         QualifiedDBIdentifier p3 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("\"MyTable\""),
@@ -203,8 +203,8 @@ public class TestDBIdentifiers extends TestCase {
             DBIdentifier.newColumn("MYCOL"));
         QualifiedDBIdentifier p5 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("\"MyTable\""),
             DBIdentifier.newColumn("\"mycol\""));
-        assertFalse(QualifiedDBIdentifier.equal(p3, p4));
-        assertTrue(QualifiedDBIdentifier.equal(p3, p5));
+        assertFalse(DBIdentifier.equal(p3, p4));
+        assertTrue(DBIdentifier.equal(p3, p5));
 
         // Test setPath method
         QualifiedDBIdentifier p6 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MyTable"),
@@ -266,7 +266,7 @@ public class TestDBIdentifiers extends TestCase {
             idx++;
         } else {
             assertEquals(DBIdentifierType.TABLE, names[idx].getType());
-            String path = QualifiedDBIdentifier.join(DBIdentifier.newSchema(schema),
+            String path = DBIdentifier.join(DBIdentifier.newSchema(schema),
                 DBIdentifier.newTable(table));
             assertEquals(names[idx].getName(), path);
         }

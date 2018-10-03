@@ -22,12 +22,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
 import javax.persistence.Entity;
 
 @Entity
 public class AttachF
     implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private int id1;
     private String id2;
 
@@ -93,14 +96,17 @@ public class AttachF
             id2 = tok.nextToken();
         }
 
+        @Override
         public int hashCode() {
             return id1 + (id2 == null ? 0 : id2.hashCode());
         }
 
+        @Override
         public String toString() {
             return id1 + ":" + id2;
         }
 
+        @Override
         public boolean equals(Object other) {
             return other instanceof ID
                 && ((ID) other).id1 == id1

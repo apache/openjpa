@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import java.awt.*;
+import java.awt.Point;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
@@ -33,6 +33,9 @@ import org.apache.openjpa.meta.JavaTypes;
  */
 public class PointHandler extends AbstractValueHandler {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Create columns with default names and java type values.  Kodo will
      * fill in the rest of the information and merge in any information given
@@ -42,6 +45,7 @@ public class PointHandler extends AbstractValueHandler {
      *
      * @param    name    default base name for columns
      */
+    @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
         Column xcol = new Column();
@@ -64,6 +68,7 @@ public class PointHandler extends AbstractValueHandler {
     /**
      * Convert the object value to its datastore equivalent.
      */
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         if (val == null)
@@ -76,6 +81,7 @@ public class PointHandler extends AbstractValueHandler {
     /**
      *  Convert the datastore value to its object equivalent.
      */
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val) {
         Object[] vals = (Object[]) val;
         if (vals[0] == null || vals[1] == null)

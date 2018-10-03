@@ -61,7 +61,7 @@ public class LSE1xmLf implements Externalizable {
     private String firstName;
 
     @OneToMany // (cascade=CascadeType.ALL) (mappedBy="ownerOne")
-    private Collection<LSE1xmRt> uniRight = new HashSet<LSE1xmRt>();
+    private Collection<LSE1xmRt> uniRight = new HashSet<>();
 
     public int getId() {
         return id;
@@ -95,12 +95,14 @@ public class LSE1xmLf implements Externalizable {
         return version;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + '@'
             + Integer.toHexString(System.identityHashCode(this)) + "[id="
             + getId() + ", ver=" + getVersion() + ", firstName=" + firstName + "] ownedMany=" + getUniRight();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
         ClassNotFoundException {
         id = in.readInt();
@@ -109,6 +111,7 @@ public class LSE1xmLf implements Externalizable {
         uniRight = (Collection<LSE1xmRt>) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(id);
         out.writeInt(version);

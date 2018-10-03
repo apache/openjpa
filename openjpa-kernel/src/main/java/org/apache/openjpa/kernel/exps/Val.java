@@ -34,6 +34,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 public abstract class Val
     implements Value {
 
+    
+    private static final long serialVersionUID = 1L;
     private ClassMetaData _meta = null;
     private String _alias = null;
 
@@ -94,47 +96,58 @@ public abstract class Val
         return ret;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
 	}
 
+    @Override
     public boolean isVariable() {
         return false;
     }
 
+    @Override
     public boolean isAggregate() {
         return false;
     }
 
+    @Override
     public boolean isXPath() {
         return false;
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         visitor.exit(this);
     }
 
+    @Override
     public String getAlias() {
         return _alias;
     }
 
+    @Override
     public void setAlias(String alias) {
         _alias = alias;
     }
 
+    @Override
     public Value getSelectAs() {
         return _alias != null ? this : null;
     }
 
+    @Override
     public Path getPath() {
         return null;
     }
 
+    @Override
     public String getName() {
         return null;
     }

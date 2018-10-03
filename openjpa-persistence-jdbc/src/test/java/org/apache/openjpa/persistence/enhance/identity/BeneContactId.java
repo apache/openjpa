@@ -32,7 +32,8 @@ public class BeneContactId implements Serializable {
 
     String beneficiaryPK;
 
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if(this == obj) return true;
 		if((obj != null) && (obj instanceof BeneContactId)) {
 			BeneContactId other = (BeneContactId) obj;
@@ -42,12 +43,14 @@ public class BeneContactId implements Serializable {
 		return false;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		String hash = beneficiaryPK + Integer.toString(type.ordinal());
 		return hash.hashCode();
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return type.toString() + "-" + beneficiaryPK;
 	}
 

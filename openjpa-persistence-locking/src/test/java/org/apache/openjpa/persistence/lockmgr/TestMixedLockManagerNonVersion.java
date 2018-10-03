@@ -39,6 +39,7 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
         return "locking-test";
     }
 
+    @Override
     public void setUp() {
         setUp(LockEmployeeNonVersion.class
             , "openjpa.LockManager", "mixed"
@@ -228,6 +229,7 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
         return e;
     }
 
+    @Override
     protected Log getLog() {
         return emf.getConfiguration().getLog("Tests");
     }

@@ -53,6 +53,7 @@ public class MappedSuperProperty {
         return name;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof MappedSuperProperty) {
             MappedSuperProperty ps = (MappedSuperProperty)obj;

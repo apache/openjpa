@@ -37,7 +37,7 @@ public class AccountGroup {
     private Set<Account> accountSet;
 
     public AccountGroup() {
-        accountSet = new java.util.HashSet<Account>();
+        accountSet = new java.util.HashSet<>();
     }
 
     public Integer getId() {

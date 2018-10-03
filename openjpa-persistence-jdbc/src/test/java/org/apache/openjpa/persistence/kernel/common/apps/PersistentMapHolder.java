@@ -20,11 +20,12 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 
-import org.apache.openjpa.persistence.jdbc.KeyColumn;
 import org.apache.openjpa.persistence.PersistentMap;
+import org.apache.openjpa.persistence.jdbc.KeyColumn;
 
 @Entity
 public class PersistentMapHolder {
@@ -32,62 +33,62 @@ public class PersistentMapHolder {
     @PersistentMap(keyCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testPCKeyStringValue")
     private Map<MapElementPC, String> testPCKeyStringValue =
-        new HashMap<MapElementPC, String>();
+        new HashMap<>();
 
     @PersistentMap(elementCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testStringKeyPCValue")
     private Map<String, MapElementPC> testStringKeyPCValue =
-        new HashMap<String, MapElementPC>();
+        new HashMap<>();
 
     @PersistentMap(keyCascade = CascadeType.PERSIST,
         elementCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testPCKeyPCValue")
     private Map<MapElementPC, MapElementPC> testPCKeyPCValue =
-        new HashMap<MapElementPC, MapElementPC>();
+        new HashMap<>();
 
     @PersistentMap(keyCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testPCSubKeyStringValue")
     private Map<MapElementPCChild, String> testPCSubKeyStringValue =
-        new HashMap<MapElementPCChild, String>();
+        new HashMap<>();
 
     @PersistentMap(elementCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testStringKeyPCSubValue")
     private Map<String, MapElementPCChild> testStringKeyPCSubValue =
-        new HashMap<String, MapElementPCChild>();
+        new HashMap<>();
 
     @PersistentMap(keyCascade = CascadeType.PERSIST,
         elementCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testPCSubKeyPCValue")
     private Map<MapElementPCChild, MapElementPC> testPCSubKeyPCValue =
-        new HashMap<MapElementPCChild, MapElementPC>();
+        new HashMap<>();
 
     @PersistentMap(keyCascade = CascadeType.PERSIST,
         elementCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testPCSubKeyPCSubValue")
     private Map<MapElementPCChild, MapElementPCChild> testPCSubKeyPCSubValue =
-        new HashMap<MapElementPCChild, MapElementPCChild>();
+        new HashMap<>();
 
     @PersistentMap(keyCascade = CascadeType.PERSIST,
         elementCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testPCKeyPCSubValue")
     private Map<MapElementPC, MapElementPCChild> testPCKeyPCSubValue =
-        new HashMap<MapElementPC, MapElementPCChild>();
+        new HashMap<>();
 
     @PersistentMap(keyCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testPCIntfKeyStringValue")
     private Map<MapElementIntf, String> testPCIntfKeyStringValue =
-        new HashMap<MapElementIntf, String>();
+        new HashMap<>();
 
     @PersistentMap(elementCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testStringKeyPCIntfValue")
     private Map<String, MapElementIntf> testStringKeyPCIntfValue =
-        new HashMap<String, MapElementIntf>();
+        new HashMap<>();
 
     @PersistentMap(keyCascade = CascadeType.PERSIST,
         elementCascade = CascadeType.PERSIST)
     @KeyColumn(name = "testPCIntfKeyPCValue")
     private Map<MapElementIntf, MapElementPC> testPCIntfKeyPCValue =
-        new HashMap<MapElementIntf, MapElementPC>();
+        new HashMap<>();
 
     public Map getNamedMap(String name) {
         if (name.equals("testPCKeyStringValue"))

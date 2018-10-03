@@ -18,13 +18,12 @@
  */
 package org.apache.openjpa.persistence.strategy.value;
 
-import java.security.Principal;
-
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestImplicitValueStrategy extends SQLListenerTestCase {
+    @Override
     public void setUp(){
         setUp(ImplicitValueStrategyEntity.class, DROP_TABLES,
                 "openjpa.jdbc.MappingDefaults",

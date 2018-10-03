@@ -20,8 +20,8 @@ package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -51,7 +51,7 @@ public class BatchingPreparedStatementManagerImpl extends
             .forPackage(BatchingPreparedStatementManagerImpl.class);
 
     private String _batchedSql = null;
-    private List<RowImpl> _batchedRows = new ArrayList<RowImpl>();
+    private List<RowImpl> _batchedRows = new ArrayList<>();
     private int _batchLimit;
     private boolean _disableBatch = false;
 
@@ -69,6 +69,7 @@ public class BatchingPreparedStatementManagerImpl extends
     /**
      * Flush the given row immediately or deferred the flush in batch.
      */
+    @Override
     protected void flushAndUpdate(RowImpl row) throws SQLException {
         if (isBatchDisabled(row)) {
             // if there were some statements batched before, then

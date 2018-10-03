@@ -28,24 +28,31 @@ public class HorizAppMultiD
     private String stringD;
     private int intD;
 
+    @Override
     public void setStringD(String stringD) {
         this.stringD = stringD;
     }
 
+    @Override
     public String getStringD() {
         return this.stringD;
     }
 
+    @Override
     public void setIntD(int intD) {
         this.intD = intD;
     }
 
+    @Override
     public int getIntD() {
         return this.intD;
     }
 
     public static class ID
         extends HorizAppMultiA.ID {
+
+        
+        private static final long serialVersionUID = 1L;
 
         public ID() {
             super();

@@ -29,12 +29,9 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.util.Properties;
 
-
-
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.EmbeddedOwnerPC;
 import org.apache.openjpa.persistence.kernel.common.apps.EmbeddedPC;
-
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestSavepointEmbedded extends BaseKernelTest {
 
@@ -55,12 +52,14 @@ public class TestSavepointEmbedded extends BaseKernelTest {
         return true;
     }
 
+    @Override
     public Properties getProperties(String[] props) {
         Properties properties = super.getProperties(props);
         properties.put("openjpa.SavepointManager", getSavepointPlugin());
         return properties;
     }
 
+    @Override
     public void setUp() {
         deleteAll(EmbeddedOwnerPC.class);
     }

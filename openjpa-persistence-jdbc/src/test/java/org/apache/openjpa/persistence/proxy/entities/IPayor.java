@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.proxy.entities;
 
 public interface IPayor extends IAnnuityObject{
-	public String getName();
-	public void setName(String name);
+	String getName();
+	void setName(String name);
 
 }

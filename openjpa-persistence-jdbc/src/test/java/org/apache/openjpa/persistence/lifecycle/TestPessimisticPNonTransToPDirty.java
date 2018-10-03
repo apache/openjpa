@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestPessimisticPNonTransToPDirty
     extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(UnenhancedPropertyAccess.class, CLEAR_TABLES, "openjpa.RuntimeUnenhancedClasses", "supported");
 

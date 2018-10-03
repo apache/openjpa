@@ -29,6 +29,8 @@ import org.apache.openjpa.kernel.StoreContext;
 public class Coalesce
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val[] _val;
 
     /**
@@ -75,6 +77,7 @@ public class Coalesce
         return _val;
     }
 
+    @Override
     public Class getType() {
         Class c1 = _val[0].getType();
         for (int i = 1; i < _val.length; i++) {
@@ -84,9 +87,11 @@ public class Coalesce
         return c1;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         for (int i = 0; i < _val.length; i++)

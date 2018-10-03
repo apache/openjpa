@@ -28,13 +28,11 @@
 package org.apache.openjpa.persistence.jdbc.meta;
 
 import javax.persistence.EntityTransaction;
+
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.DFGTest;
 
 
 
@@ -48,6 +46,7 @@ public class TestDFG
     	super(name);
     }
 
+    @Override
     public void setUp() {
        deleteAll(DFGTest.class);
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();

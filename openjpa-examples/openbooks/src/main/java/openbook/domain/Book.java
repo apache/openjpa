@@ -44,9 +44,10 @@ import javax.persistence.Version;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 @Entity
 public class Book implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     private String ISBN;
 
@@ -108,7 +109,7 @@ public class Book implements Serializable {
 
     public void addAuthor(Author...authors) {
         if (this.authors == null)
-            this.authors = new ArrayList<Author>();
+            this.authors = new ArrayList<>();
         for (Author a : authors) {
             if (!this.authors.contains(a))
                 this.authors.add(a);

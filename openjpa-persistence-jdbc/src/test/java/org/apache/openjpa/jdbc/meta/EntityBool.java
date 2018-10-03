@@ -17,7 +17,9 @@
  * under the License.
  */
 package org.apache.openjpa.jdbc.meta;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 public class EntityBool {

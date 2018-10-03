@@ -43,5 +43,5 @@ public interface DistributedBrokerFactory extends BrokerFactory {
      *
      * @see DistributedConfiguration#addSlice(String, Map)
      */
-    public Slice addSlice(String name, Map properties);
+    Slice addSlice(String name, Map properties);
 }

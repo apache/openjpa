@@ -22,6 +22,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestOpenjpaIdNotRecognizedMessage extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, Issue428Entity.class);
     }

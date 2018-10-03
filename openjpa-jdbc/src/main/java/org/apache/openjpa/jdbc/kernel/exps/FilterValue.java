@@ -36,90 +36,90 @@ public interface FilterValue {
     /**
      * Return the expected type of this value.
      */
-    public Class getType();
+    Class getType();
 
     /**
      * Return the number of SQL elements in this value. Usually 1.
      */
-    public int length();
+    int length();
 
     /**
      * Append the first SQL element for this value to the given buffer.
      */
-    public void appendTo(SQLBuffer buf);
+    void appendTo(SQLBuffer buf);
 
     /**
      * Append the <code>index</code>th SQL element for this value to the
      * given buffer.
      */
-    public void appendTo(SQLBuffer buf, int index);
+    void appendTo(SQLBuffer buf, int index);
 
     /**
      * Return the alias to use for the given column (this includes the table
      * alias prefix, if any).
      */
-    public String getColumnAlias(Column col);
+    String getColumnAlias(Column col);
 
     /**
      * Return the alias to use for the given column (this includes the table
      * alias prefix, if any).
      */
-    public String getColumnAlias(String col, Table table);
+    String getColumnAlias(String col, Table table);
 
     /**
      * Transform the given value into its datastore equivalent.
      */
-    public Object toDataStoreValue(Object val);
+    Object toDataStoreValue(Object val);
 
     /**
      * Return true if this value represents a literal or parameter.
      */
-    public boolean isConstant();
+    boolean isConstant();
 
     /**
      * If this is a constant, return its value, else return null.
      */
-    public Object getValue();
+    Object getValue();
 
     /**
      * If this is a constant, returns its value as it would be represented
      * in the database in this context, else return null.
      */
-    public Object getSQLValue();
+    Object getSQLValue();
 
     /**
      * Return true if this value represents a persistent field traversal,
      * such as 'this', 'address.street', or 'projectVariable.title'.
      */
-    public boolean isPath();
+    boolean isPath();
 
     /**
      * If this is a path to a persistent object, return its class mapping,
      * else return null.
      */
-    public ClassMapping getClassMapping();
+    ClassMapping getClassMapping();
 
     /**
      * If this is a path to a persistent field, return its mapping, else
      * return null.
      */
-    public FieldMapping getFieldMapping();
+    FieldMapping getFieldMapping();
 
     /**
      * If this is an XPath, return it,
      * else return null;
      */
-    public PCPath getXPath();
+    PCPath getXPath();
 
     /**
      * If this is an XPath, return XML mapping metadata,
      * else return null;
      */
-    public XMLMetaData getXmlMapping();
+    XMLMetaData getXmlMapping();
 
     /**
      * return true if CAST is required for this filter value
      * else return false.
      */
-    public boolean requiresCast();
+    boolean requiresCast();
 }

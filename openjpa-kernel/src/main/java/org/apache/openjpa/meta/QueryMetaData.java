@@ -23,11 +23,11 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.OrderedMap;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.xml.Commentable;
 
 /**
@@ -40,6 +40,8 @@ import org.apache.openjpa.lib.xml.Commentable;
 public class QueryMetaData
     implements MetaDataModes, SourceTracker, Commentable, Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final String[] EMPTY_KEYS = new String[0];
     private static final Object[] EMPTY_VALS = new Object[0];
 
@@ -245,6 +247,7 @@ public class QueryMetaData
         _mode = mode;
     }
 
+    @Override
     public String toString() {
         return _name;
     }
@@ -253,10 +256,12 @@ public class QueryMetaData
     // Commentable
     ///////////////
 
+    @Override
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
 
+    @Override
     public void setComments(String[] comments) {
         _comments = comments;
     }
@@ -265,14 +270,17 @@ public class QueryMetaData
     // SourceTracker implementation
     ////////////////////////////////
 
+    @Override
     public File getSourceFile() {
         return _file;
     }
 
+    @Override
     public Object getSourceScope() {
         return _scope;
     }
 
+    @Override
     public int getSourceType() {
         return _srcType;
     }
@@ -284,10 +292,12 @@ public class QueryMetaData
         _srcName = srcName;
     }
 
+    @Override
     public String getResourceName() {
         return (_class == null) ? _name : _class.getName () + ":" + _name;
 	}
 
+    @Override
     public int getLineNumber() {
         return _lineNum;
     }
@@ -296,6 +306,7 @@ public class QueryMetaData
         _lineNum = lineNum;
     }
 
+    @Override
     public int getColNumber() {
         return _colNum;
     }

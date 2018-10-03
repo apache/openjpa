@@ -47,6 +47,7 @@ public class PreparedResultObjectProvider extends InstanceResultObjectProvider {
         _res = res;
     }
 
+    @Override
     public void open() throws SQLException {
         // do nothing
     }

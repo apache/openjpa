@@ -18,19 +18,39 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
-import org.apache.openjpa.lib.util.*;
-import org.apache.openjpa.meta.*;
-import org.apache.openjpa.kernel.*;
-import org.apache.openjpa.util.*;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.jdbc.meta.*;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.kernel.*;
-import org.apache.openjpa.jdbc.schema.*;
-import org.apache.openjpa.jdbc.sql.*;
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.Joins;
+import org.apache.openjpa.jdbc.sql.Result;
+import org.apache.openjpa.jdbc.sql.Row;
+import org.apache.openjpa.jdbc.sql.RowManager;
+import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.jdbc.sql.Union;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StoreContext;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.util.ChangeTracker;
+import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.Proxies;
+import org.apache.openjpa.util.Proxy;
 
 /**
  * <p>Mapping for a map whose keys and values are both relations to other
@@ -42,32 +62,40 @@ import org.apache.openjpa.jdbc.sql.*;
 public class RelationRelationMapTableFieldStrategy
     extends MapTableFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (RelationRelationMapTableFieldStrategy.class);
 
     private String _keyRelationName = null;
 
+    @Override
     public Column[] getKeyColumns(ClassMapping cls) {
         return field.getKeyMapping().getColumns();
     }
 
+    @Override
     public Column[] getValueColumns(ClassMapping cls) {
         return field.getElementMapping().getColumns();
     }
 
+    @Override
     public void selectKey(Select sel, ClassMapping key, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
         sel.select(key, field.getKeyMapping().getSelectSubclasses(),
-            store, fetch, JDBCFetchConfiguration.EAGER_NONE, joins);
+            store, fetch, EagerFetchModes.EAGER_NONE, joins);
     }
 
+    @Override
     public void selectValue(Select sel, ClassMapping val,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         Joins joins) {
         sel.select(val, field.getElementMapping().getSelectSubclasses(),
-            store, fetch, JDBCFetchConfiguration.EAGER_NONE, joins);
+            store, fetch, EagerFetchModes.EAGER_NONE, joins);
     }
 
+    @Override
     public Result[] getResults(final OpenJPAStateManager sm,
         final JDBCStore store, final JDBCFetchConfiguration fetch,
         final int eagerMode, final Joins[] resJoins, boolean lrs)
@@ -76,10 +104,11 @@ public class RelationRelationMapTableFieldStrategy
         final ClassMapping[] keys = key.getIndependentTypeMappings();
         Union kunion = store.getSQLFactory().newUnion(keys.length);
         if (fetch.getSubclassFetchMode(key.getTypeMapping())
-            != JDBCFetchConfiguration.EAGER_JOIN)
+            != EagerFetchModes.EAGER_JOIN)
             kunion.abortUnion();
         kunion.setLRS(lrs);
         kunion.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 ForeignKey joinFK = null;
                 if (field.isUni1ToMFK()) {
@@ -112,10 +141,11 @@ public class RelationRelationMapTableFieldStrategy
         final ClassMapping[] vals = val.getIndependentTypeMappings();
         Union vunion = store.getSQLFactory().newUnion(vals.length);
         if (fetch.getSubclassFetchMode(val.getTypeMapping())
-            != JDBCFetchConfiguration.EAGER_JOIN)
+            != EagerFetchModes.EAGER_JOIN)
             vunion.abortUnion();
         vunion.setLRS(lrs);
         vunion.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 if (field.isUni1ToMFK()) {
                     sel.orderBy(field.getKeyMapping().getColumns(), true, true);
@@ -158,6 +188,7 @@ public class RelationRelationMapTableFieldStrategy
         }
     }
 
+    @Override
     public Object loadKey(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
@@ -167,6 +198,7 @@ public class RelationRelationMapTableFieldStrategy
         return res.load(key, store, fetch, joins);
     }
 
+    @Override
     public Object loadValue(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
@@ -176,12 +208,14 @@ public class RelationRelationMapTableFieldStrategy
         return res.load(val, store, fetch, joins);
     }
 
+    @Override
     public Joins joinKeyRelation(Joins joins, ClassMapping key) {
         ValueMapping vm = field.getKeyMapping();
         return joins.joinRelation(_keyRelationName, vm.getForeignKey(key), key,
             vm.getSelectSubclasses(), false, false);
     }
 
+    @Override
     public Joins joinValueRelation(Joins joins, ClassMapping val) {
         ValueMapping vm = field.getElementMapping();
         ForeignKey fk = vm.getForeignKey(val);
@@ -191,6 +225,7 @@ public class RelationRelationMapTableFieldStrategy
             vm.getSelectSubclasses(), false, false);
     }
 
+    @Override
     public void map(boolean adapt) {
         super.map(adapt);
 
@@ -230,10 +265,12 @@ public class RelationRelationMapTableFieldStrategy
         vm.mapConstraints(name, adapt);
     }
 
+    @Override
     public void initialize() {
         _keyRelationName = field.getName() + ":key";
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         insert(sm, rm, (Map) sm.fetchObject(field.getIndex()), store);
@@ -286,6 +323,7 @@ public class RelationRelationMapTableFieldStrategy
         }
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if (field.getMappedBy() != null && !field.isBiMTo1JT())
@@ -452,6 +490,7 @@ public class RelationRelationMapTableFieldStrategy
         }
     }
 
+    @Override
     public Joins joinRelation(Joins joins, boolean forceOuter,
         boolean traverse) {
         ValueMapping val = field.getElementMapping();
@@ -473,6 +512,7 @@ public class RelationRelationMapTableFieldStrategy
             false, false);
     }
 
+    @Override
     public Joins joinKeyRelation(Joins joins, boolean forceOuter,
         boolean traverse) {
         ValueMapping key = field.getKeyMapping();
@@ -491,16 +531,19 @@ public class RelationRelationMapTableFieldStrategy
             false, false);
     }
 
+    @Override
     public Object toDataStoreValue(Object val, JDBCStore store) {
         return RelationStrategies.toDataStoreValue(field.getElementMapping(),
             val, store);
     }
 
+    @Override
     public Object toKeyDataStoreValue(Object val, JDBCStore store) {
         return RelationStrategies.toDataStoreValue(field.getKeyMapping(),
             val, store);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if (field.isUni1ToMFK()) {

@@ -19,7 +19,9 @@
 package org.apache.openjpa.persistence.query;
 
 class UnaryOperatorExpression extends ExpressionImpl implements Aggregate {
-	protected final Expression _e;
+	
+    private static final long serialVersionUID = 1L;
+    protected final Expression _e;
 	protected final UnaryFunctionalOperator   _op;
 
     public UnaryOperatorExpression(Expression e, UnaryFunctionalOperator op) {
@@ -35,15 +37,18 @@ class UnaryOperatorExpression extends ExpressionImpl implements Aggregate {
 		return _op;
 	}
 
-	public Expression distinct() {
+	@Override
+    public Expression distinct() {
 		return new DistinctExpression(this);
 	}
 
-	public String asExpression(AliasContext ctx) {
+	@Override
+    public String asExpression(AliasContext ctx) {
 		return _op + "(" + ((Visitable)_e).asExpression(ctx) + ")";
 	}
 
-	public String asProjection(AliasContext ctx) {
+	@Override
+    public String asProjection(AliasContext ctx) {
 		return _op + "(" + ((Visitable)_e).asProjection(ctx) + ")" +
 		    (ctx.hasAlias(this) ? " " + ctx.getAlias(this) : "");
 	}

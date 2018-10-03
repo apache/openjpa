@@ -50,6 +50,9 @@ import org.apache.openjpa.persistence.PersistentCollection;
 @Table(name="K_ATTACHF")
 public class AttachF implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     private int id1;
 
@@ -129,6 +132,7 @@ public class AttachF implements Serializable {
             return id1 + (id2 == null ? 0 : id2.hashCode());
         }
 
+        @Override
         public String toString() {
             return id1 + ":" + id2;
         }

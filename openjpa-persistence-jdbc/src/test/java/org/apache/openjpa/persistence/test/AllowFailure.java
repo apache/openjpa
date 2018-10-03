@@ -18,11 +18,12 @@
  */
 package org.apache.openjpa.persistence.test;
 
-import java.lang.annotation.Target;
-import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.METHOD;
-import java.lang.annotation.Retention;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * Signals to the harness to ignore if the annotated test case/method fail.

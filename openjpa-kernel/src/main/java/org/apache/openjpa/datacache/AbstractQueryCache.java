@@ -41,7 +41,6 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
@@ -60,6 +59,9 @@ import org.apache.openjpa.util.Id;
 public abstract class AbstractQueryCache
     extends AbstractConcurrentEventManager
     implements QueryCache, Configurable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer s_loc =
         Localizer.forPackage(AbstractQueryCache.class);
@@ -95,13 +97,15 @@ public abstract class AbstractQueryCache
         return _statsEnabled;
     }
 
+    @Override
     public QueryStatistics<QueryKey> getStatistics() {
         return _stats;
     }
 
+    @Override
     public void initialize(DataCacheManager manager) {
         if (evictPolicy == EvictPolicy.TIMESTAMP) {
-            entityTimestampMap = new ConcurrentHashMap<String,Long>();
+            entityTimestampMap = new ConcurrentHashMap<>();
 
             // Get all persistence types to pre-load the entityTimestamp Map
             Collection perTypes =
@@ -120,6 +124,7 @@ public abstract class AbstractQueryCache
         }
     }
 
+    @Override
     public void onTypesChanged(TypesChangedEvent ev) {
         if (evictPolicy == EvictPolicy.DEFAULT) {
             writeLock();
@@ -138,7 +143,7 @@ public abstract class AbstractQueryCache
                     qk = (QueryKey) o;
                 if (qk.changeInvalidatesQuery(ev.getTypes())) {
                     if (removes == null)
-                        removes = new ArrayList<QueryKey>();
+                        removes = new ArrayList<>();
                     removes.add(qk);
                 }
             }
@@ -147,7 +152,7 @@ public abstract class AbstractQueryCache
         } else {
             Collection changedTypes = ev.getTypes();
             HashMap<String,Long> changedClasses =
-                new HashMap<String,Long>();
+                new HashMap<>();
             Long tstamp = Long.valueOf(System.currentTimeMillis());
             for (Object o: changedTypes) {
                 String name = ((Class) o).getName();
@@ -160,6 +165,7 @@ public abstract class AbstractQueryCache
         }
     }
 
+    @Override
     public QueryResult get(QueryKey key) {
         if (_statsEnabled) {
             _stats.recordExecution(key);
@@ -184,6 +190,7 @@ public abstract class AbstractQueryCache
         return o;
     }
 
+    @Override
     public QueryResult put(QueryKey qk, QueryResult oids) {
         QueryResult o = putInternal(qk, oids);
         if (log.isTraceEnabled())
@@ -191,6 +198,7 @@ public abstract class AbstractQueryCache
         return (o == null || o.isTimedOut()) ? null : o;
     }
 
+    @Override
     public QueryResult remove(QueryKey key) {
         QueryResult o = removeInternal(key);
         if (_statsEnabled) {
@@ -207,6 +215,7 @@ public abstract class AbstractQueryCache
         return o;
     }
 
+    @Override
     public boolean pin(QueryKey key) {
         boolean bool = pinInternal(key);
         if (log.isTraceEnabled()) {
@@ -218,6 +227,7 @@ public abstract class AbstractQueryCache
         return bool;
     }
 
+    @Override
     public boolean unpin(QueryKey key) {
         boolean bool = unpinInternal(key);
         if (log.isTraceEnabled()) {
@@ -229,6 +239,7 @@ public abstract class AbstractQueryCache
         return bool;
     }
 
+    @Override
     public void clear() {
         clearInternal();
         if (log.isTraceEnabled())
@@ -238,6 +249,7 @@ public abstract class AbstractQueryCache
         }
     }
 
+    @Override
     public void close() {
         close(true);
     }
@@ -254,10 +266,12 @@ public abstract class AbstractQueryCache
         return _closed;
     }
 
+    @Override
     public void addTypesChangedListener(TypesChangedListener listen) {
         addListener(listen);
     }
 
+    @Override
     public boolean removeTypesChangedListener(TypesChangedListener listen) {
         return removeListener(listen);
     }
@@ -366,21 +380,25 @@ public abstract class AbstractQueryCache
 
     // ---------- Configurable implementation ----------
 
+    @Override
     public void setConfiguration(Configuration conf) {
         this.conf = (OpenJPAConfiguration) conf;
         this.log = conf.getLog(OpenJPAConfiguration.LOG_DATACACHE);
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
-        _stats = _statsEnabled ? new Default<QueryKey>() :
-            new QueryStatistics.None<QueryKey>();
+        _stats = _statsEnabled ? new Default<>() :
+            new QueryStatistics.None<>();
     }
 
     // ---------- AbstractEventManager implementation ----------
 
+    @Override
     protected void fireEvent(Object event, Object listener) {
         TypesChangedListener listen = (TypesChangedListener) listener;
         TypesChangedEvent ev = (TypesChangedEvent) event;
@@ -397,6 +415,7 @@ public abstract class AbstractQueryCache
      * listeners. We want such query results to be gc'd once
      * the only reference is held by the list of expiration listeners.
      */
+    @Override
     protected Collection newListenerCollection() {
         return new ConcurrentReferenceHashSet(ReferenceStrength.WEAK);
 	}
@@ -441,7 +460,7 @@ public abstract class AbstractQueryCache
             for (String s: keyList) {
                 if (entityTimestampMap.containsKey(s)) {
                     if(tmval == null)
-                        tmval = new ArrayList<Long>();
+                        tmval = new ArrayList<>();
                     tmval.add(entityTimestampMap.get(s));
                 }
             }
@@ -504,46 +523,57 @@ public abstract class AbstractQueryCache
             astats = aStatsMap;
         }
 
+        @Override
         public Set<T> keys() {
             return stats.keySet();
         }
 
+        @Override
         public long getExecutionCount() {
             return stat[READ];
         }
 
+        @Override
         public long getTotalExecutionCount() {
             return astat[READ];
         }
 
+        @Override
         public long getExecutionCount(T query) {
             return getCount(stats, query, READ);
         }
 
+        @Override
         public long getTotalExecutionCount(T query) {
             return getCount(astats, query, READ);
         }
 
+        @Override
         public long getHitCount() {
             return stat[HIT];
         }
 
+        @Override
         public long getTotalHitCount() {
             return astat[HIT];
         }
 
+        @Override
         public long getHitCount(T query) {
             return getCount(stats, query, HIT);
         }
 
+        @Override
         public long getTotalHitCount(T query) {
             return getCount(astats, query, HIT);
         }
 
+        @Override
         public long getEvictionCount() {
             return stat[EVICT];
         }
 
+        @Override
         public long getTotalEvictionCount() {
             return astat[EVICT];
         }
@@ -553,20 +583,24 @@ public abstract class AbstractQueryCache
             return (row == null) ? 0 : row[i];
         }
 
+        @Override
         public Date since() {
             return since;
         }
 
+        @Override
         public Date start() {
             return start;
         }
 
+        @Override
         public synchronized void reset() {
             stat = new long[ARRAY_SIZE];
             stats.clear();
             since = new Date();
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public synchronized void clear() {
            astat = new long[ARRAY_SIZE];
@@ -592,6 +626,7 @@ public abstract class AbstractQueryCache
             target.put(query, row);
         }
 
+        @Override
         public void recordExecution(T query) {
             if (query == null)
                 return;
@@ -602,12 +637,14 @@ public abstract class AbstractQueryCache
             addSample(query, HIT);
         }
 
+        @Override
         public void recordEviction(T query) {
             if (query == null)
                 return;
             addSample(query, EVICT);
         }
 
+        @Override
         public void dump(PrintStream out) {
             String header = "Query Statistics starting from " + start;
             out.print(header);

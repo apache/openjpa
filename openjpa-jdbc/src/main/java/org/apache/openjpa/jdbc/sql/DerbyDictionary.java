@@ -146,6 +146,7 @@ public class DerbyDictionary
      * @param end number of rows to be fetched. {@code Long.MAX_VALUE} means no limit.
      * @param subselect flags if the buffer represents a SQL Subquery clause
      */
+    @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end, boolean subselect) {
         // do not generate FETCH FIRST clause for subselect
     	if (subselect)
@@ -162,6 +163,7 @@ public class DerbyDictionary
     	}
     }
 
+    @Override
     public void closeDataSource(DataSource dataSource) {
         super.closeDataSource(dataSource);
 
@@ -207,7 +209,8 @@ public class DerbyDictionary
 	 * @return
 	 */
 
-	public int applyRange(Select select, int count) {
+	@Override
+    public int applyRange(Select select, int count) {
 		long start = select.getStartIndex();
 		long end = select.getEndIndex();
 		if (supportsSelectStartIndex) {

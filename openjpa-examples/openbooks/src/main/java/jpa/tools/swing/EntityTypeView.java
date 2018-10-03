@@ -31,8 +31,8 @@ import javax.swing.JPanel;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class EntityTypeView<T> extends JPanel {
+    private static final long serialVersionUID = 1L;
     final EntityType<T> type;
     final int hgap = 4;
     final int vgap = 4;

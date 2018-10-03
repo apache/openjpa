@@ -26,7 +26,7 @@ public class CustomerXml {
 
     protected String name;
 
-    protected Set<OrderXml> orders = new HashSet<OrderXml>();
+    protected Set<OrderXml> orders = new HashSet<>();
 
     public int getId() {
         return id;
@@ -56,6 +56,7 @@ public class CustomerXml {
         orders.add(order);
     }
 
+    @Override
     public boolean equals(Object obj) {
         CustomerXml c0 = (CustomerXml) obj;
         if (c0 == null) return false;

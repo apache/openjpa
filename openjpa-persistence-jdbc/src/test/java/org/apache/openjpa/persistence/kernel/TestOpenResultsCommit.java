@@ -26,16 +26,15 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.EnumSet;
-
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 
 public class TestOpenResultsCommit extends BaseKernelTest {
 
@@ -49,6 +48,7 @@ public class TestOpenResultsCommit extends BaseKernelTest {
         super(testName);
     }
 
+    @Override
     public void setUp()
         throws Exception {
         super.setUp();

@@ -49,6 +49,7 @@ public class TestHSQLSequence extends SQLListenerTestCase {
     JDBCConfiguration conf;
     DBDictionary dict;
 
+    @Override
     public void setUp() throws Exception {
         setSupportedDatabases(org.apache.openjpa.jdbc.sql.HSQLDictionary.class);
         if (isTestsDisabled()) {

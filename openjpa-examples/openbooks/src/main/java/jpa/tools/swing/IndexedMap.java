@@ -39,21 +39,24 @@ import java.util.Set;
  * @param <V>
  */
 public class IndexedMap<K,V> implements Map<K, V> {
-    private final List<K> _keys = new ArrayList<K>();
-    private final List<V> _values = new ArrayList<V>();
-    private final Set<K> _nulls = new HashSet<K>();
+    private final List<K> _keys = new ArrayList<>();
+    private final List<V> _values = new ArrayList<>();
+    private final Set<K> _nulls = new HashSet<>();
 
+    @Override
     public void clear() {
         _keys.clear();
         _values.clear();
     }
 
 
+    @Override
     public boolean containsKey(Object key) {
         return _keys.contains(key) && !_nulls.contains(key);
     }
 
 
+    @Override
     public boolean containsValue(Object value) {
         return _values.contains(value);
     }
@@ -61,26 +64,31 @@ public class IndexedMap<K,V> implements Map<K, V> {
     /**
      * Not supported.
      */
+    @Override
     public Set<java.util.Map.Entry<K, V>> entrySet() {
         throw new UnsupportedOperationException();
     }
 
 
+    @Override
     public V get(Object key) {
         int i = indexOf(key);
         return i == -1 ? null : _values.get(i);
     }
 
+    @Override
     public boolean isEmpty() {
         return (_keys.size() - _nulls.size()) == 0;
     }
 
+    @Override
     public Set<K> keySet() {
-        Set<K> result = new HashSet<K>(_keys);
+        Set<K> result = new HashSet<>(_keys);
         result.removeAll(_nulls);
         return result;
     }
 
+    @Override
     public V put(K key, V value) {
         int i = _keys.indexOf(key);
         if (i == -1) {
@@ -93,12 +101,14 @@ public class IndexedMap<K,V> implements Map<K, V> {
         }
     }
 
+    @Override
     public void putAll(Map<? extends K, ? extends V> m) {
         for (K k : m.keySet()) {
             this.put(k, m.get(k));
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public V remove(Object key) {
         V v = get(key);
@@ -106,12 +116,14 @@ public class IndexedMap<K,V> implements Map<K, V> {
         return v;
     }
 
+    @Override
     public int size() {
         return _keys.size() - _nulls.size();
     }
 
+    @Override
     public Collection<V> values() {
-        Collection<V> result = new ArrayList<V>();
+        Collection<V> result = new ArrayList<>();
         for (int i = 0; i < _values.size(); i++) {
             if (!_nulls.contains(_keys.get(i)))
                 result.add(_values.get(i));

@@ -28,14 +28,11 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.util.Collection;
 
-
-
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
-
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAQuery;
 
 public class TestInheritance extends BaseKernelTest {
 
@@ -49,6 +46,7 @@ public class TestInheritance extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp()
         throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);

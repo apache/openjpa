@@ -29,8 +29,8 @@ import java.util.EventObject;
  * @author Abe White
  * @see JDBCListener
  */
-@SuppressWarnings("serial")
 public class JDBCEvent extends EventObject {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Type code indicating that a {@link Statement} is being prepared.

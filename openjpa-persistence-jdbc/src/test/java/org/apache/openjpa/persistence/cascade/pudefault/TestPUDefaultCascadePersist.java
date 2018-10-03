@@ -23,17 +23,20 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestPUDefaultCascadePersist extends SingleEMFTestCase {
+    @Override
     public void setUp() throws Exception {
         super.setUp(PUDEntityA01.class, PUDEntityA02.class, PUDEntityAE01.class, PUDEntityB.class,
             AnEmbeddable.class, EmbeddableWithRelationships.class,
             CLEAR_TABLES);
     }
 
+    @Override
     protected String getPersistenceUnitName() {
         return "TestPUDefaultCascadePersist";
     }
 
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

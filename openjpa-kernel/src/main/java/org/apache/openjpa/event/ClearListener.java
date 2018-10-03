@@ -29,10 +29,10 @@ public interface ClearListener {
     /**
      * Invoked before state is cleared.
      */
-    public void beforeClear(LifecycleEvent event);
+    void beforeClear(LifecycleEvent event);
 
     /**
      * Invoked after state is cleared.
      */
-    public void afterClear(LifecycleEvent event);
+    void afterClear(LifecycleEvent event);
 }

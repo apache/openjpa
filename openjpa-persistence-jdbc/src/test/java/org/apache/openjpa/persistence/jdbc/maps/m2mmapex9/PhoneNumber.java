@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex9;
 
-import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="MEx9Phone")
@@ -32,7 +37,7 @@ public class PhoneNumber {
     //    @AttributeOverride(name="fName", column=@Column(name="fName_phone")),
     //    @AttributeOverride(name="lName", column=@Column(name="lName_phone"))
     //})
-    Map<FullName, Employee> emps = new HashMap<FullName, Employee>();
+    Map<FullName, Employee> emps = new HashMap<>();
 
     public int getNumber() {
         return number;
@@ -54,6 +59,7 @@ public class PhoneNumber {
         emps.remove(d);
     }
 
+    @Override
     public boolean equals(Object o) {
         PhoneNumber p = (PhoneNumber) o;
         Map<FullName, Employee> map = p.getEmployees();

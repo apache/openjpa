@@ -19,8 +19,8 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 import javax.swing.table.AbstractTableModel;
 
-@SuppressWarnings("serial")
 public class InstanceDataModel<T> extends AbstractTableModel {
+    private static final long serialVersionUID = 1L;
     List<Attribute<? super T, ?>> attributes;
     private T _instance;
 

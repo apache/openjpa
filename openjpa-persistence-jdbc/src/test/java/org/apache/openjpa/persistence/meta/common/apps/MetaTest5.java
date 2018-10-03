@@ -41,15 +41,18 @@ public abstract class MetaTest5 {
             id = Long.parseLong(str);
         }
 
+        @Override
         public String toString() {
             return String.valueOf(id);
         }
 
+        @Override
         public boolean equals(Object other) {
             return other instanceof MetaTest5Id
                 && ((MetaTest5Id) other).id == id;
         }
 
+        @Override
         public int hashCode() {
             return (int) (id % Integer.MAX_VALUE);
         }

@@ -19,18 +19,47 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Table;
 
-import org.apache.openjpa.jdbc.meta.strats.*;
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
+import org.apache.openjpa.jdbc.meta.strats.ClassNameDiscriminatorStrategy;
+import org.apache.openjpa.persistence.Persistent;
+import org.apache.openjpa.persistence.PersistentCollection;
+import org.apache.openjpa.persistence.PersistentMap;
+import org.apache.openjpa.persistence.jdbc.Columns;
+import org.apache.openjpa.persistence.jdbc.ContainerTable;
+import org.apache.openjpa.persistence.jdbc.DataStoreIdColumn;
+import org.apache.openjpa.persistence.jdbc.DiscriminatorStrategy;
+import org.apache.openjpa.persistence.jdbc.ElementColumn;
+import org.apache.openjpa.persistence.jdbc.ElementEmbeddedMapping;
+import org.apache.openjpa.persistence.jdbc.ElementForeignKey;
+import org.apache.openjpa.persistence.jdbc.ElementIndex;
+import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
+import org.apache.openjpa.persistence.jdbc.ElementNonpolymorphic;
+import org.apache.openjpa.persistence.jdbc.EmbeddedMapping;
 import org.apache.openjpa.persistence.jdbc.ForeignKey;
 import org.apache.openjpa.persistence.jdbc.Index;
+import org.apache.openjpa.persistence.jdbc.KeyColumn;
+import org.apache.openjpa.persistence.jdbc.KeyForeignKey;
+import org.apache.openjpa.persistence.jdbc.KeyIndex;
+import org.apache.openjpa.persistence.jdbc.KeyJoinColumn;
+import org.apache.openjpa.persistence.jdbc.KeyNonpolymorphic;
+import org.apache.openjpa.persistence.jdbc.MappingOverride;
+import org.apache.openjpa.persistence.jdbc.NonpolymorphicType;
 import org.apache.openjpa.persistence.jdbc.OrderColumn;
+import org.apache.openjpa.persistence.jdbc.Strategy;
+import org.apache.openjpa.persistence.jdbc.XJoinColumn;
+import org.apache.openjpa.persistence.jdbc.XMappingOverride;
 
 
 @Entity
@@ -71,7 +100,7 @@ public class NonstandardMappingEntity
     @ElementForeignKey
     @ElementNonpolymorphic(NonpolymorphicType.JOINABLE)
     private List<NonstandardMappingEntity> joinCollection =
-        new ArrayList<NonstandardMappingEntity>();
+        new ArrayList<>();
 
     @PersistentMap(keyType = String.class, elementType = String.class)
     @ContainerTable(name = "STRINGS_MAP",
@@ -94,7 +123,7 @@ public class NonstandardMappingEntity
     @ElementForeignKey
     @ElementNonpolymorphic
     private Map<NonstandardMappingEntity, NonstandardMappingEntity> joinMap =
-        new HashMap<NonstandardMappingEntity, NonstandardMappingEntity>();
+        new HashMap<>();
 
     @Embedded
     @EmbeddedMapping(nullIndicatorAttributeName = "uuid", overrides = {
@@ -111,7 +140,7 @@ public class NonstandardMappingEntity
     @ElementEmbeddedMapping(overrides = {
     @XMappingOverride(name = "basic", columns = @Column(name = "EM_BASIC"))
         })
-    private List<EmbedValue2> embedCollection = new ArrayList<EmbedValue2>();
+    private List<EmbedValue2> embedCollection = new ArrayList<>();
 
     public Point getCustom() {
         return this.custom;

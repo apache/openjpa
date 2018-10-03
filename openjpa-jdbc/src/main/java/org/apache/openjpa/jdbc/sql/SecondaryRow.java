@@ -52,11 +52,13 @@ public class SecondaryRow
         super(cols, action);
     }
 
+    @Override
     public void setForeignKey(ForeignKey fk, OpenJPAStateManager sm)
         throws SQLException {
         setForeignKey(fk, null, sm);
     }
 
+    @Override
     public void setForeignKey(ForeignKey fk, ColumnIO io,
         OpenJPAStateManager sm)
         throws SQLException {
@@ -97,6 +99,7 @@ public class SecondaryRow
             && sm != null && sm.isNew() && !sm.isFlushed();
     }
 
+    @Override
     public void setRelationId(Column col, OpenJPAStateManager sm,
         RelationId rel)
         throws SQLException {
@@ -142,6 +145,7 @@ public class SecondaryRow
         return false;
     }
 
+    @Override
     protected String generateSQL(DBDictionary dict) {
         try {
             if (_fks != null) {
@@ -167,10 +171,12 @@ public class SecondaryRow
         return super.generateSQL(dict);
     }
 
+    @Override
     protected RowImpl newInstance(Column[] cols, int action) {
         return new SecondaryRow(cols, action);
     }
 
+    @Override
     public void copyInto(RowImpl row, boolean whereOnly) {
         super.copyInto(row, whereOnly);
         if (_fks == null || whereOnly || row.getAction() == ACTION_DELETE

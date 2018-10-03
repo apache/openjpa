@@ -20,13 +20,13 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
-
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestEJBEntityManager extends AbstractTestCase {
 
@@ -36,6 +36,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
@@ -93,6 +94,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
         em.close();
 
         new Thread() {
+            @Override
             @SuppressWarnings("unchecked")
             public void run() {
                 try {

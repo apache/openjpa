@@ -571,6 +571,7 @@ public final class CodeFormat implements Cloneable {
     /**
      * Return the internal buffer as a string.
      */
+    @Override
     public String toString() {
         return _buf.toString();
     }
@@ -586,6 +587,7 @@ public final class CodeFormat implements Cloneable {
      * Make a copy of this code format object with all the same formatting
      * settings.
      */
+    @Override
     public Object clone() {
         CodeFormat format = new CodeFormat();
         format._tab = _tab;

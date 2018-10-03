@@ -25,10 +25,12 @@ public class DynamicProvider extends AbstractInstrumentationProvider {
 
     public static final String[] DYNAMIC_INSTRUMENT_ALIASES = { };
 
+    @Override
     public void start() {
         setStarted(true);
     }
 
+    @Override
     public void stop() {
         setStarted(false);
         for (Instrument inst : getInstruments()) {
@@ -36,10 +38,12 @@ public class DynamicProvider extends AbstractInstrumentationProvider {
         }
     }
 
+    @Override
     public void startInstrument(Instrument instrument) {
         instrument.start();
     }
 
+    @Override
     public void stopInstrument(Instrument instrument, boolean force) {
         instrument.stop();
     }

@@ -60,8 +60,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class JESTServlet extends HttpServlet  {
+    private static final long serialVersionUID = 1L;
     /**
      * Servlet initialization parameter monikers
      */
@@ -169,6 +169,7 @@ public class JESTServlet extends HttpServlet  {
 //        log("Path Translated = [" + request.getPathTranslated() + "]");
     }
 
+    @Override
     public void log(String s) {
         // START - ALLOW PRINT STATEMENTS
         System.err.println(s);

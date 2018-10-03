@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,10 +40,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.apache.openjpa.persistence.jdbc.KeyColumn;
 import org.apache.commons.collections4.comparators.ComparableComparator;
 import org.apache.openjpa.persistence.PersistentCollection;
 import org.apache.openjpa.persistence.PersistentMap;
+import org.apache.openjpa.persistence.jdbc.KeyColumn;
 
 /**
  * <p>Persistent type used in the {@link TestProxies} tests.</p>
@@ -135,6 +136,7 @@ public class ProxiesPC implements Comparable {
         this.proxyMap = proxyMap;
     }
 
+    @Override
     public int compareTo(Object other) {
         return name.compareTo(((ProxiesPC) other).getName());
     }

@@ -127,6 +127,7 @@ public class HoldingDataBean implements Serializable {
         );
     }
 
+    @Override
     public String toString() {
         return "\n\tHolding Data for holding: " + getHoldingID()
                 + "\n\t\t      quantity:" + getQuantity()

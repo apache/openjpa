@@ -80,6 +80,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
     private EntityManager em;
     private PersistentGraph<Object> graph;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, PersistentGraph.class, RelationGraph.class,
                 PersistentRelation.class, People.class, City.class);
@@ -343,7 +344,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
      * the actual values and relations set in in this method.
      */
     PersistentGraph<Object> createData() {
-        PersistentGraph<Object> graph = new RelationGraph<Object>();
+        PersistentGraph<Object> graph = new RelationGraph<>();
 
         em.getTransaction().begin();
 

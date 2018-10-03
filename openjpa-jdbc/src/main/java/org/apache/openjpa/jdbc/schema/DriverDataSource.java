@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.schema;
 
 import java.util.List;
 import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -37,76 +38,76 @@ public interface DriverDataSource
     /**
      * JDBC URL.
      */
-    public void setConnectionURL(String connectionURL);
+    void setConnectionURL(String connectionURL);
 
     /**
      * JDBC URL.
      */
-    public String getConnectionURL();
+    String getConnectionURL();
 
     /**
      * Driver class name.
      */
-    public void setConnectionDriverName(String connectionDriverName);
+    void setConnectionDriverName(String connectionDriverName);
 
     /**
      * Driver class name.
      */
-    public String getConnectionDriverName();
+    String getConnectionDriverName();
 
     /**
      * JDBC user name.
      */
-    public void setConnectionUserName(String connectionUserName);
+    void setConnectionUserName(String connectionUserName);
 
     /**
      * JDBC user name.
      */
-    public String getConnectionUserName();
+    String getConnectionUserName();
 
     /**
      * JDBC password.
      */
-    public void setConnectionPassword(String connectionPassword);
+    void setConnectionPassword(String connectionPassword);
 
     /**
      * JDBC password.
      */
-    public void setClassLoader(ClassLoader classLoader);
+    void setClassLoader(ClassLoader classLoader);
 
     /**
      * Classloader for loading driver class, etc.
      */
-    public ClassLoader getClassLoader();
+    ClassLoader getClassLoader();
 
     /**
      * Configuration of datasource properties.
      */
-    public void setConnectionFactoryProperties(Properties props);
+    void setConnectionFactoryProperties(Properties props);
 
     /**
      * Configuration of datasource properties.
      */
-    public Properties getConnectionFactoryProperties();
+    Properties getConnectionFactoryProperties();
 
     /**
      * Configuration of connection.
      */
-    public void setConnectionProperties(Properties props);
+    void setConnectionProperties(Properties props);
 
     /**
      * Configuration of connection.
      */
-    public Properties getConnectionProperties();
+    Properties getConnectionProperties();
 
     /**
      * Provide any built-in decorators; may be null.
      */
-    public List<ConnectionDecorator> createConnectionDecorators();
+    List<ConnectionDecorator> createConnectionDecorators();
 
     /**
      * Initialize self and dictionary once available.
      */
-    public void initDBDictionary(DBDictionary dict);
+    void initDBDictionary(DBDictionary dict);
 }
 

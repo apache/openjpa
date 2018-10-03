@@ -34,11 +34,11 @@ import javax.persistence.OneToMany;
  *
  */
 
-@SuppressWarnings("serial")
 @Entity
 public class RelationGraph<E> extends PersistentGraph<E>  {
+    private static final long serialVersionUID = 1L;
     @OneToMany(cascade={CascadeType.PERSIST,CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
-    private Set<PersistentRelation<E,E>> relations = new HashSet<PersistentRelation<E,E>>();
+    private Set<PersistentRelation<E,E>> relations = new HashSet<>();
 
     /*
      * Links the given vertices, unless they are already connected.
@@ -48,6 +48,7 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
      *
      * @see org.apache.openjpa.persistence.graph.Graph#link(V1, V2)
      */
+    @Override
     public <V1 extends E,V2 extends E> Relation<V1,V2> link(V1 source, V2 target) {
         if (source == null)
             throw new NullPointerException("Can not link from a null source vertex");
@@ -56,7 +57,7 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
 
         Relation<V1,V2> r = getRelation(source, target);
         if (r == null) {
-            r = new PersistentRelation<V1, V2>(source, target);
+            r = new PersistentRelation<>(source, target);
             relations.add((PersistentRelation<E, E>) r);
         }
         return r;
@@ -69,6 +70,7 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
      *
      * @see org.apache.openjpa.persistence.graph.Graph#delink(V1, V2)
      */
+    @Override
     public <V1 extends E,V2 extends E> Relation<V1,V2> delink(V1 source, V2 target) {
         Relation<V1,V2> r = getRelation(source, target);
         if (r != null) {
@@ -83,6 +85,7 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
      *
      * @see org.apache.openjpa.persistence.graph2.Graph#getRelation(V1, V2)
      */
+    @Override
     public <V1 extends E,V2 extends E> Relation<V1,V2> getRelation(V1 source, V2 target) {
         for (Relation<?,?> r : relations) {
             if (r.getSource().equals(source) && r.getTarget() != null && r.getTarget().equals(target)) {
@@ -95,16 +98,19 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
     /**
      * Iterator over the nodes of this graph.
      */
+    @Override
     public Iterator<E> iterator() {
         return getNodes().iterator();
     }
 
+    @Override
     public int size() {
         return 0;
     }
 
+    @Override
     public <V extends E> Set<Relation<V, E>> getRelationsFrom(V source) {
-        Set<Relation<V,E>> rs = new HashSet<Relation<V,E>>();
+        Set<Relation<V,E>> rs = new HashSet<>();
         for (Relation<E,E> r : relations) {
             if (r.getSource().equals(source) && r.getTarget() != null)
                 rs.add((Relation<V,E>)r);
@@ -112,8 +118,9 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
         return rs;
     }
 
+    @Override
     public <V extends E> Set<Relation<E, V>> getRelationsTo(V target) {
-        Set<Relation<E, V>> rs = new HashSet<Relation<E, V>>();
+        Set<Relation<E, V>> rs = new HashSet<>();
         for (Relation<?,?> r : relations) {
             if (r.getTarget() != null && r.getTarget().equals(target))
                 rs.add((Relation<E, V>)r);
@@ -121,8 +128,9 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
         return rs;
     }
 
+    @Override
     public Set<E> getSources(Object target) {
-        Set<E> sources = new HashSet<E>();
+        Set<E> sources = new HashSet<>();
         for (Relation<E,E> r : relations) {
             if (r.getTarget() != null && r.getTarget().equals(target))
                 sources.add(r.getSource());
@@ -130,8 +138,9 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
         return sources;
     }
 
+    @Override
     public Set<E> getTargets(Object source) {
-        Set<E> targets = new HashSet<E>();
+        Set<E> targets = new HashSet<>();
         for (Relation<E,E> r : relations) {
             if (r.getSource().equals(source) && r.getTarget() != null)
                 targets.add(r.getTarget());

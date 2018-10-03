@@ -52,10 +52,10 @@ public interface RemoteCommitListener
      * Notification that a transaction associated with a different
      * BrokerFactory has successfully committed.
      */
-    public void afterCommit(RemoteCommitEvent event);
+    void afterCommit(RemoteCommitEvent event);
 
     /**
      * Free the resources used by this listener.
      */
-    public void close();
+    @Override void close();
 }

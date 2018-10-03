@@ -41,12 +41,12 @@ public class OneManyEagerParent {
     @OneToMany(mappedBy="parent", fetch=FetchType.EAGER)
     @OrderBy("name ASC")
     private List<OneManyLazyChild> lazychildren =
-        new ArrayList<OneManyLazyChild>();
+        new ArrayList<>();
 
     @OneToMany(mappedBy="parent", fetch=FetchType.EAGER)
     @OrderBy("name ASC")
     private List<OneManyEagerChild> eagerchildren =
-        new ArrayList<OneManyEagerChild>();
+        new ArrayList<>();
 
     @Version
     private Integer optLock;

@@ -28,7 +28,6 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -38,6 +37,7 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
 
@@ -365,6 +365,7 @@ public class SybaseDictionary
     /**
      * Create a new primary key from the information in the schema metadata.
      */
+    @Override
     protected PrimaryKey newPrimaryKey(ResultSet pkMeta)
         throws SQLException {
         PrimaryKey pk = new PrimaryKey();
@@ -382,6 +383,7 @@ public class SybaseDictionary
     /**
      * Create a new index from the information in the index metadata.
      */
+    @Override
     protected Index newIndex(ResultSet idxMeta)
         throws SQLException {
         Index idx = new Index();
@@ -397,6 +399,7 @@ public class SybaseDictionary
         return idx;
     }
 
+    @Override
     public boolean isFatalException(int subtype, SQLException ex) {
         if (subtype == StoreException.LOCK) {
             SQLException next = ex.getNextException();
@@ -421,6 +424,7 @@ public class SybaseDictionary
             super(conn);
         }
 
+        @Override
         public String getCatalog()
             throws SQLException {
             if (_catalog == null)
@@ -428,6 +432,7 @@ public class SybaseDictionary
             return _catalog;
         }
 
+        @Override
         public void setAutoCommit(boolean autocommit)
             throws SQLException {
             // the sybase jdbc driver demands that the Connection always
@@ -473,6 +478,7 @@ public class SybaseDictionary
         return identityColumnName;
     }
 
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("(CHARINDEX(");

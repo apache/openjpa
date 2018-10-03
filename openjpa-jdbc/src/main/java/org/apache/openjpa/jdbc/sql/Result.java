@@ -60,39 +60,39 @@ public interface Result
     /**
      * The eager result for the given key, or null if none.
      */
-    public Object getEager(FieldMapping key);
+    Object getEager(FieldMapping key);
 
     /**
      * The eager result for the given key, or null if none.
      */
-    public void putEager(FieldMapping key, Object res);
+    void putEager(FieldMapping key, Object res);
 
     /**
      * Return a new joins instance to use for traversing to related data.
      */
-    public Joins newJoins();
+    Joins newJoins();
 
     /**
      * Free the resources used by this result; do <strong>not</strong>
      * close the SQL connection.
      */
-    public void close();
+    @Override void close();
 
     /**
      * Set to true if row locking has been issued for the row.
      */
-    public void setLocking(boolean locking);
+    void setLocking(boolean locking);
 
     /**
      * If true, then any results loaded from this Result
      * will be locked in the database.
      */
-    public boolean isLocking();
+    boolean isLocking();
 
     /**
      * Return true if the result supports random access.
      */
-    public boolean supportsRandomAccess()
+    boolean supportsRandomAccess()
         throws SQLException;
 
     /**
@@ -100,14 +100,14 @@ public interface Result
      * return false if the row does not exist. This method will only be
      * called if the result supports random access.
      */
-    public boolean absolute(int row)
+    boolean absolute(int row)
         throws SQLException;
 
     /**
      * Advance to the next row, or return false if there are no more rows
      * in the result.
      */
-    public boolean next()
+    boolean next()
         throws SQLException;
 
     /**
@@ -116,37 +116,37 @@ public interface Result
      * additional calls before a call to {@link #next} or {@link #absolute}
      * should have no further affect.
      */
-    public void pushBack()
+    void pushBack()
         throws SQLException;
 
     /**
      * Return the number of rows in this result.
      */
-    public int size()
+    int size()
         throws SQLException;
 
     /**
      * Return true if the given id or column is available in the result.
      */
-    public boolean contains(Object obj)
+    boolean contains(Object obj)
         throws SQLException;
 
     /**
      * Return true if all the given ids or columns are available in the result.
      */
-    public boolean containsAll(Object[] objs)
+    boolean containsAll(Object[] objs)
         throws SQLException;
 
     /**
      * Return true if the given column is available in the result.
      */
-    public boolean contains(Column col, Joins joins)
+    boolean contains(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return true if all the given columns are available in the result.
      */
-    public boolean containsAll(Column[] cols, Joins joins)
+    boolean containsAll(Column[] cols, Joins joins)
         throws SQLException;
 
     /**
@@ -155,7 +155,7 @@ public interface Result
      * This information is not available after getting any eager results
      * from the row.
      */
-    public ClassMapping getBaseMapping();
+    ClassMapping getBaseMapping();
 
     /**
      * If this is the result of a UNION used to select a hierarchy of
@@ -163,7 +163,7 @@ public interface Result
      * This information is not available after getting any eager results
      * from the row.
      */
-    public void setBaseMapping(ClassMapping mapping);
+    void setBaseMapping(ClassMapping mapping);
 
     /**
      * If this is the result used to select a toMany relationship,
@@ -171,7 +171,7 @@ public interface Result
      * the inverse relationship. This is to avoid unneeded
      * extra sql to retrieve the eager inverse field.
      */
-    public FieldMapping getMappedByFieldMapping();
+    FieldMapping getMappedByFieldMapping();
 
     /**
      * If this is the result used to select a toMany relationship,
@@ -179,39 +179,39 @@ public interface Result
      * the inverse relationship. This is to avoid unneeded
      * extra sql to retrieve the eager inverse field.
      */
-    public void setMappedByFieldMapping(FieldMapping fieldMapping);
+    void setMappedByFieldMapping(FieldMapping fieldMapping);
 
     /**
      * If this is the result used to select a toMany relationship,
      * the mappedByValue is value of the owner of the toMany relationship.
      * This is to avoid unneeded extra sql to retrieve the eager inverse field.
      */
-    public Object getMappedByValue();
+    Object getMappedByValue();
 
     /**
      * If this is the result used to select a toMany relationship,
      * the mappedByValue is value of the owner of the toMany relationship.
      * This is to avoid unneeded extra sql to retrieve the eager inverse field.
      */
-    public void setMappedByValue(Object mappedByValue);
+    void setMappedByValue(Object mappedByValue);
 
     /**
      * The index of the select within the UNION that the current row
      * corresponds to, or 0.
      */
-    public int indexOf();
+    int indexOf();
 
     /**
      * Load a pc object using the given store manager.
      */
-    public Object load(ClassMapping mapping, JDBCStore store,
+    Object load(ClassMapping mapping, JDBCStore store,
         JDBCFetchConfiguration fetch)
         throws SQLException;
 
     /**
      * Load a pc object using the given store manager.
      */
-    public Object load(ClassMapping mapping, JDBCStore store,
+    Object load(ClassMapping mapping, JDBCStore store,
         JDBCFetchConfiguration fetch, Joins joins)
         throws SQLException;
 
@@ -219,136 +219,136 @@ public interface Result
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Array getArray(Object obj)
+    Array getArray(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public InputStream getAsciiStream(Object obj)
+    InputStream getAsciiStream(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public BigDecimal getBigDecimal(Object obj)
+    BigDecimal getBigDecimal(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public BigInteger getBigInteger(Object obj)
+    BigInteger getBigInteger(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public InputStream getBinaryStream(Object obj)
+    InputStream getBinaryStream(Object obj)
         throws SQLException;
 
-    public InputStream getLOBStream(JDBCStore store, Object obj)
+    InputStream getLOBStream(JDBCStore store, Object obj)
         throws SQLException;
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Blob getBlob(Object obj)
+    Blob getBlob(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public boolean getBoolean(Object obj)
+    boolean getBoolean(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public byte getByte(Object obj)
-        throws SQLException;
-
-    /**
-     * Return the value stored in the given column or id; may not be supported
-     * by results that are not backed by a SQL result set.
-     */
-    public byte[] getBytes(Object obj)
-        throws SQLException;
-
-    /**
-     * Return the value stored in the given column or id.
-     */
-    public Calendar getCalendar(Object obj)
-        throws SQLException;
-
-    /**
-     * Return the value stored in the given column or id.
-     */
-    public char getChar(Object obj)
+    byte getByte(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Reader getCharacterStream(Object obj)
+    byte[] getBytes(Object obj)
+        throws SQLException;
+
+    /**
+     * Return the value stored in the given column or id.
+     */
+    Calendar getCalendar(Object obj)
+        throws SQLException;
+
+    /**
+     * Return the value stored in the given column or id.
+     */
+    char getChar(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Clob getClob(Object obj)
-        throws SQLException;
-
-    /**
-     * Return the value stored in the given column or id.
-     */
-    public Date getDate(Object obj)
+    Reader getCharacterStream(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public java.sql.Date getDate(Object obj, Calendar cal)
+    Clob getClob(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public double getDouble(Object obj)
+    Date getDate(Object obj)
+        throws SQLException;
+
+    /**
+     * Return the value stored in the given column or id; may not be supported
+     * by results that are not backed by a SQL result set.
+     */
+    java.sql.Date getDate(Object obj, Calendar cal)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public float getFloat(Object obj)
+    double getDouble(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public int getInt(Object obj)
+    float getFloat(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public Locale getLocale(Object obj)
+    int getInt(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public long getLong(Object obj)
+    Locale getLocale(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public Number getNumber(Object obj)
+    long getLong(Object obj)
+        throws SQLException;
+
+    /**
+     * Return the value stored in the given column or id.
+     */
+    Number getNumber(Object obj)
         throws SQLException;
 
     /**
@@ -362,181 +362,181 @@ public interface Result
      * @param arg some JDBC data access methods use an argument, such
      * as a {@link Calendar} or {@link Map}
      */
-    public Object getObject(Object obj, int metaType, Object arg)
+    Object getObject(Object obj, int metaType, Object arg)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Object getSQLObject(Object obj, Map map)
+    Object getSQLObject(Object obj, Map map)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Ref getRef(Object obj, Map map)
+    Ref getRef(Object obj, Map map)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public short getShort(Object obj)
+    short getShort(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id.
      */
-    public String getString(Object obj)
+    String getString(Object obj)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Time getTime(Object obj, Calendar cal)
+    Time getTime(Object obj, Calendar cal)
         throws SQLException;
 
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Timestamp getTimestamp(Object obj, Calendar cal)
+    Timestamp getTimestamp(Object obj, Calendar cal)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Array getArray(Column col, Joins joins)
+    Array getArray(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public InputStream getAsciiStream(Column col, Joins joins)
+    InputStream getAsciiStream(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public BigDecimal getBigDecimal(Column col, Joins joins)
+    BigDecimal getBigDecimal(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public BigInteger getBigInteger(Column col, Joins joins)
+    BigInteger getBigInteger(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public InputStream getBinaryStream(Column col, Joins joins)
+    InputStream getBinaryStream(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Blob getBlob(Column col, Joins joins)
+    Blob getBlob(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public boolean getBoolean(Column col, Joins joins)
+    boolean getBoolean(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public byte getByte(Column col, Joins joins)
+    byte getByte(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public byte[] getBytes(Column col, Joins joins)
+    byte[] getBytes(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public Calendar getCalendar(Column col, Joins joins)
+    Calendar getCalendar(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public char getChar(Column col, Joins joins)
+    char getChar(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Reader getCharacterStream(Column col, Joins joins)
+    Reader getCharacterStream(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Clob getClob(Column col, Joins joins)
+    Clob getClob(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public Date getDate(Column col, Joins joins)
+    Date getDate(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public java.sql.Date getDate(Column col, Calendar cal, Joins joins)
+    java.sql.Date getDate(Column col, Calendar cal, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public double getDouble(Column col, Joins joins)
+    double getDouble(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public float getFloat(Column col, Joins joins)
+    float getFloat(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public int getInt(Column col, Joins joins)
+    int getInt(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public Locale getLocale(Column col, Joins joins)
+    Locale getLocale(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public long getLong(Column col, Joins joins)
+    long getLong(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public Number getNumber(Column col, Joins joins)
+    Number getNumber(Column col, Joins joins)
         throws SQLException;
 
     /**
@@ -546,60 +546,60 @@ public interface Result
      * @param arg some JDBC data access methods use an argument, such
      * as a {@link Calendar} or {@link Map}
      */
-    public Object getObject(Column col, Object arg, Joins joins)
+    Object getObject(Column col, Object arg, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Object getSQLObject(Column col, Map map, Joins joins)
+    Object getSQLObject(Column col, Map map, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Ref getRef(Column col, Map map, Joins joins)
+    Ref getRef(Column col, Map map, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public short getShort(Column col, Joins joins)
+    short getShort(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column.
      */
-    public String getString(Column col, Joins joins)
+    String getString(Column col, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Time getTime(Column col, Calendar cal, Joins joins)
+    Time getTime(Column col, Calendar cal, Joins joins)
         throws SQLException;
 
     /**
      * Return the value stored in the given column; may not be supported
      * by results that are not backed by a SQL result set.
      */
-    public Timestamp getTimestamp(Column col, Calendar cal, Joins joins)
+    Timestamp getTimestamp(Column col, Calendar cal, Joins joins)
         throws SQLException;
 
     /**
      * Return true if the last value fetched was null.
      */
-    public boolean wasNull()
+    boolean wasNull()
         throws SQLException;
 
     /**
      * Informs this receiver about the application element for which a
      * subsequent data request will be made.
      */
-    public void startDataRequest(Object mapping);
+    void startDataRequest(Object mapping);
 
     /**
      * Ends a data request. Must be called in conjunction with
@@ -608,5 +608,5 @@ public interface Result
      * getObject("COLUMN_Y"); endDataRequest (); endDataRequest ();
      * </pre>
      */
-    public void endDataRequest();
+    void endDataRequest();
 }

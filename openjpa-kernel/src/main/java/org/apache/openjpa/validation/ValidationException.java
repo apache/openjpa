@@ -20,8 +20,8 @@ package org.apache.openjpa.validation;
 
 import org.apache.openjpa.util.WrappedException;
 
-@SuppressWarnings("serial")
 public class ValidationException extends WrappedException {
+    private static final long serialVersionUID = 1L;
 
     public ValidationException(RuntimeException e) {
         super(e);

@@ -20,9 +20,8 @@ package org.apache.openjpa.persistence.kernel;
 
 import javax.persistence.EntityManager;
 
-
-import org.apache.openjpa.persistence.kernel.common.apps.TransactionalClassPC;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.kernel.common.apps.TransactionalClassPC;
 
 public class TestEJBTransactionalClass extends AbstractTestCase {
 

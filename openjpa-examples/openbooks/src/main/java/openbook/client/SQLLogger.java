@@ -22,12 +22,10 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
-import jpa.tools.swing.GraphicOutputStream;
-
-
-
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
+
+import jpa.tools.swing.GraphicOutputStream;
 
 /**
  * Logs SQL statement to a graphic console.
@@ -59,6 +57,7 @@ public class SQLLogger extends AbstractJDBCListener {
         if (out == null)
             return;
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 out.println(event.getSQL());
             }

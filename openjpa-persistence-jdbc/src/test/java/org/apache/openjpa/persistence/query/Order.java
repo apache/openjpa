@@ -18,11 +18,19 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.*;
-
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity
 @Table(name="TODR")
@@ -38,7 +46,7 @@ public class Order {
 	 Customer customer;
 
 	@OneToMany (fetch=FetchType.EAGER , mappedBy="order")
-	 Collection<OrderItem> lineitems = new ArrayList<OrderItem>();
+	 Collection<OrderItem> lineitems = new ArrayList<>();
 	@Version
 	long version;
 
@@ -75,7 +83,8 @@ public class Order {
 		return oid;
 	}
 
-	public String toString(){
+	@Override
+    public String toString(){
         return "Order:" + oid + " amount:" + amount
             + " delivered:" + delivered
             + " customer:" + ( customer != null ? customer.getCid() : -1 );

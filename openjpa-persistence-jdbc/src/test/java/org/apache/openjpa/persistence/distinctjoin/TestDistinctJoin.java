@@ -18,12 +18,13 @@
  */
 package org.apache.openjpa.persistence.distinctjoin;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.lib.log.Log;
@@ -42,7 +43,7 @@ import org.apache.openjpa.persistence.test.FilteringJDBCListener;
  */
 public class TestDistinctJoin extends AbstractPersistenceTestCase {
 
-    protected List<String> sql = new ArrayList<String>();
+    protected List<String> sql = new ArrayList<>();
 
     private Log log;
 

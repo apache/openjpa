@@ -19,7 +19,7 @@
 
 package org.apache.openjpa.persistence.jest;
 
-import static org.apache.openjpa.persistence.jest.Constants.*;
+import static org.apache.openjpa.persistence.jest.Constants.MIME_TYPE_XML;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -44,6 +44,7 @@ public class PropertiesCommand extends AbstractCommand {
         super(ctx);
     }
 
+    @Override
     protected int getMaximumArguments() {
         return 0;
     }

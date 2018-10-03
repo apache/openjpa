@@ -60,8 +60,8 @@ import java.util.Set;
  * @since 2.0.0
  *
  */
-@SuppressWarnings("serial")
 public class ResultShape<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Class<T> cls;        // the type of value this shape represents or populates
     private final boolean isPrimitive; // flags this shape as primitive
     private boolean isNesting;         // flags this shape as nesting
@@ -83,7 +83,7 @@ public class ResultShape<T> implements Serializable {
      * If the shape is declared as primitive then the given class can not be an array.
      */
     public ResultShape(Class<T> cls, boolean primitive) {
-        this(cls, cls.isArray() ? new FillStrategy.Array<T>(cls) : new FillStrategy.Assign<T>(), primitive);
+        this(cls, cls.isArray() ? new FillStrategy.Array<>(cls) : new FillStrategy.Assign<T>(), primitive);
         if (cls.isArray() && primitive)
             throw new IllegalArgumentException(cls.getSimpleName() + " can not be primitive shape");
     }
@@ -105,7 +105,7 @@ public class ResultShape<T> implements Serializable {
         this.cls = cls;
         this.strategy = strategy;
         isPrimitive = primitive;
-        children = isPrimitive ? null : new ArrayList<ResultShape<?>>();
+        children = isPrimitive ? null : new ArrayList<>();
     }
 
 //    /**
@@ -158,7 +158,7 @@ public class ResultShape<T> implements Serializable {
      * {String, int, Date, Double}
      */
     public List<Class<?>> getCompositeTypes() {
-        List<Class<?>> result = new ArrayList<Class<?>>();
+        List<Class<?>> result = new ArrayList<>();
         if (isPrimitive() || children.isEmpty()) {
             result.add(cls);
         } else {
@@ -174,7 +174,7 @@ public class ResultShape<T> implements Serializable {
      * For example, a shape Foo{String,Bar{int, Date}, Double} will return {String, Bar, Double}
      */
     public List<Class<?>> getTypes() {
-        List<Class<?>> result = new ArrayList<Class<?>>();
+        List<Class<?>> result = new ArrayList<>();
         if (children.isEmpty()) {
             result.add(cls);
         } else {
@@ -222,7 +222,7 @@ public class ResultShape<T> implements Serializable {
      */
     private void addParent(ResultShape<?> p) {
         if (parents == null)
-            parents = new HashSet<ResultShape<?>>();
+            parents = new HashSet<>();
         parents.add(p);
     }
 
@@ -359,7 +359,7 @@ public class ResultShape<T> implements Serializable {
                 i++;
             }
         }
-        return (T)strategy.fill(args, argTypes, argAliases);
+        return strategy.fill(args, argTypes, argAliases);
     }
 
     /**
@@ -374,6 +374,7 @@ public class ResultShape<T> implements Serializable {
      * Gets a human-readable representation of this shape.
      *
      */
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder(cls.getSimpleName());
         if (isPrimitive() || children.isEmpty())

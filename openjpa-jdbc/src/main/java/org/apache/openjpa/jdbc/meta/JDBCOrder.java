@@ -35,7 +35,7 @@ interface JDBCOrder
      * Whether the value is a member of the field's related type, rather than
      * columns of the field itself.
      */
-    public boolean isInRelation();
+    boolean isInRelation();
 
     /**
      * Order by this value.
@@ -43,8 +43,8 @@ interface JDBCOrder
      * @param elem if this value has independent mappings, the mapping
      * we're selecting
      */
-    public void order(Select sel, ClassMapping elem, Joins joins);
+    void order(Select sel, ClassMapping elem, Joins joins);
 
-    public DBIdentifier getIdentifier();
+    DBIdentifier getIdentifier();
 
 }

@@ -69,12 +69,14 @@ public interface HintValueConverter {
             }
         }
 
+        @Override
         public Object convert(Object e) {
             if (e.getClass() == _type)
                 return map[((Enum<?>)e).ordinal()];
             return e;
         }
 
+        @Override
         public boolean canConvert(Class<?> type) {
             return Enum.class.isAssignableFrom(type);
         }
@@ -93,6 +95,7 @@ public interface HintValueConverter {
             _prototype = prototype;
         }
 
+        @Override
         public Object convert(Object e) {
             if (e.getClass() == _prototype.getClass())
                 return ((OpenJPAEnum<Enum<?>>)e).toKernelConstant();
@@ -105,6 +108,7 @@ public interface HintValueConverter {
             return e;
         }
 
+        @Override
         public boolean canConvert(Class<?> type) {
             return OpenJPAEnum.class.isAssignableFrom(type)
                 || type == String.class
@@ -148,6 +152,7 @@ public interface HintValueConverter {
             }
         }
 
+        @Override
         public Object convert(Object s) {
             if (s instanceof String == false)
                 return s;
@@ -167,12 +172,14 @@ public interface HintValueConverter {
                     Arrays.toString(strings));
         }
 
+        @Override
         public boolean canConvert(Class<?> cls) {
             return String.class == cls;
         }
     }
 
     public static class StringToBoolean implements HintValueConverter {
+        @Override
         public Object convert(Object v) {
             if (v instanceof String)
                 return Boolean.valueOf(v.toString());
@@ -181,6 +188,7 @@ public interface HintValueConverter {
             return v;
         }
 
+        @Override
         public boolean canConvert(Class<?> cls) {
             return String.class == cls || Boolean.class == cls || boolean.class == cls;
         }

@@ -20,10 +20,11 @@ package org.apache.openjpa.persistence.jdbc;
 
 import java.sql.ResultSet;
 
-import junit.framework.TestCase;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.LRSSizes;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
+
+import junit.framework.TestCase;
 
 public class TestJDBCEnumToKernelConstantMappings
     extends TestCase {

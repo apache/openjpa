@@ -25,6 +25,7 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
 import serp.bytecode.BCField;

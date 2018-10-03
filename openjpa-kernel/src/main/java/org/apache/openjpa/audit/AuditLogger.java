@@ -65,7 +65,8 @@ public class AuditLogger implements Auditor {
 		return _file;
 	}
 
-	public boolean isRollbackOnError() {
+	@Override
+    public boolean isRollbackOnError() {
 		return false;
 	}
 

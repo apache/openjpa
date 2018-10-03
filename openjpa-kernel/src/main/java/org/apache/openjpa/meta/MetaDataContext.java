@@ -28,5 +28,5 @@ public interface MetaDataContext {
     /**
      * Access metadata repository.
      */
-    public MetaDataRepository getRepository();
+    MetaDataRepository getRepository();
 }

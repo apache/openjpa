@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import java.util.IdentityHashMap;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.CallbackModes;
 import org.apache.openjpa.event.LifecycleEvent;

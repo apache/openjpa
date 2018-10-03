@@ -105,6 +105,7 @@ public class Serialization {
             super(delegate);
             _ctx = ctx;
             AccessController.doPrivileged(new PrivilegedAction() {
+                @Override
                 public Object run() {
                     enableReplaceObject(true);
                     return null;
@@ -112,6 +113,7 @@ public class Serialization {
             });
         }
 
+        @Override
         protected Object replaceObject(Object obj) {
             Object oid = _ctx.getObjectId(obj);
             return (oid == null) ? obj : new ObjectIdMarker(oid);
@@ -126,6 +128,7 @@ public class Serialization {
             super(delegate);
         }
 
+        @Override
         protected Class resolveClass(ObjectStreamClass desc)
             throws IOException, ClassNotFoundException {
             String name = BlacklistClassResolver.DEFAULT.check(desc.getName());
@@ -161,6 +164,7 @@ public class Serialization {
             super(delegate);
             _ctx = ctx;
             AccessController.doPrivileged(new PrivilegedAction() {
+                @Override
                 public Object run() {
                     enableResolveObject(true);
                     return null;
@@ -168,11 +172,13 @@ public class Serialization {
             });
         }
 
+        @Override
         protected void addContextClassLoaders(MultiClassLoader loader) {
             super.addContextClassLoaders(loader);
             loader.addClassLoader(_ctx.getClassLoader());
         }
 
+        @Override
         protected Object resolveObject(Object obj) {
             if (!(obj instanceof ObjectIdMarker))
                 return obj;
@@ -200,6 +206,8 @@ public class Serialization {
     private static class ObjectIdMarker
         implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public Object oid;
 
         public ObjectIdMarker(Object oid) {

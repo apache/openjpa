@@ -21,7 +21,11 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex0;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.MapKeyClass;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="S27x0Itm1")

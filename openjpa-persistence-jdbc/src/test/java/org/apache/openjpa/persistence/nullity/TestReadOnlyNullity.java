@@ -33,6 +33,7 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
 
     private boolean skip = false;
 
+    @Override
     public void setUp() {
         OpenJPAEntityManagerFactorySPI emf = createEMF(new Object[] {});
         if (((JDBCConfiguration) emf.getConfiguration())

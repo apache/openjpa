@@ -21,7 +21,6 @@ package org.apache.openjpa.lib.log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -53,7 +52,7 @@ public class MultiLogFactory implements LogFactory {
      */
     public MultiLogFactory(LogFactory[] delegates) {
         _delegates =
-            new CopyOnWriteArrayList<LogFactory>(Arrays.asList(delegates));
+            new CopyOnWriteArrayList<>(Arrays.asList(delegates));
     }
 
     public void addLogFactory(LogFactory factory) {
@@ -74,8 +73,9 @@ public class MultiLogFactory implements LogFactory {
     /**
      * Returns a Log impl that combines all logs.
      */
+    @Override
     public synchronized Log getLog(String channel) {
-        List<Log> logs = new ArrayList<Log>(_delegates.size());
+        List<Log> logs = new ArrayList<>(_delegates.size());
         for(LogFactory f : _delegates) {
             if (f != null) {
                 Log l = f.getLog(channel);
@@ -104,56 +104,67 @@ public class MultiLogFactory implements LogFactory {
             return _logs;
         }
 
+        @Override
         public void trace(Object msg) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].trace(msg);
         }
 
+        @Override
         public void trace(Object msg, Throwable t) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].trace(msg, t);
         }
 
+        @Override
         public void info(Object msg) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].info(msg);
         }
 
+        @Override
         public void info(Object msg, Throwable t) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].info(msg, t);
         }
 
+        @Override
         public void warn(Object msg) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].warn(msg);
         }
 
+        @Override
         public void warn(Object msg, Throwable t) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].warn(msg, t);
         }
 
+        @Override
         public void error(Object msg) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].error(msg);
         }
 
+        @Override
         public void error(Object msg, Throwable t) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].error(msg, t);
         }
 
+        @Override
         public void fatal(Object msg) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].fatal(msg);
         }
 
+        @Override
         public void fatal(Object msg, Throwable t) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].fatal(msg, t);
         }
 
+        @Override
         public boolean isTraceEnabled() {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isTraceEnabled())
@@ -161,6 +172,7 @@ public class MultiLogFactory implements LogFactory {
             return false;
         }
 
+        @Override
         public boolean isInfoEnabled() {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isInfoEnabled())
@@ -168,6 +180,7 @@ public class MultiLogFactory implements LogFactory {
             return false;
         }
 
+        @Override
         public boolean isWarnEnabled() {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isWarnEnabled())
@@ -175,6 +188,7 @@ public class MultiLogFactory implements LogFactory {
             return false;
         }
 
+        @Override
         public boolean isErrorEnabled() {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isErrorEnabled())
@@ -182,6 +196,7 @@ public class MultiLogFactory implements LogFactory {
             return false;
         }
 
+        @Override
         public boolean isFatalEnabled() {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isFatalEnabled())

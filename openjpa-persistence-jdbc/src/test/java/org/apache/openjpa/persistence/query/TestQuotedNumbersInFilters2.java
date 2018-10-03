@@ -29,12 +29,12 @@ package org.apache.openjpa.persistence.query;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.Query;
 
-
-import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 
 public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
 
@@ -42,6 +42,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
         OpenJPAEntityManager pm = getEM();

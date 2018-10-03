@@ -46,21 +46,26 @@ public class UUIDType4HexSeq
     private UUIDType4HexSeq() {
     }
 
+    @Override
     public void setType(int type) {
     }
 
+    @Override
     public synchronized Object next(StoreContext ctx, ClassMetaData meta) {
         _last = UUIDGenerator.nextHex(UUIDGenerator.TYPE4);
         return _last;
     }
 
+    @Override
     public synchronized Object current(StoreContext ctx, ClassMetaData meta) {
         return _last;
     }
 
+    @Override
     public void allocate(int additional, StoreContext ctx, ClassMetaData meta) {
     }
 
+    @Override
     public void close() {
 	}
 }

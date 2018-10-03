@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.jpql.joins;
 
-import java.lang.Integer;
-import java.lang.String;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 

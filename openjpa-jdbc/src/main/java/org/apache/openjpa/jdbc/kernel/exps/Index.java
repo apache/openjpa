@@ -30,15 +30,20 @@ import org.apache.openjpa.util.InternalException;
 class Index
     extends UnaryOp {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public Index(Val val) {
         super(val);
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         // initialize the value with a null test
         return initializeValue(sel, ctx, NULL_CMP);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         getValue().calculateValue(sel, ctx, state, null, null);
@@ -46,10 +51,12 @@ class Index
         sel.append(sql, state.joins);
     }
 
+    @Override
     protected Class getType(Class c) {
         return long.class;
     }
 
+    @Override
     protected String getOperator() {
         // since we override appendTo(), this method should never be called
         throw new InternalException();

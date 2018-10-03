@@ -19,10 +19,24 @@
 package openbook.tools.parser;
 // $ANTLR 3.2 Sep 23, 2009 12:02:23 Java.g 2010-05-15 01:06:37
 
-import org.antlr.runtime.*;
-import java.util.HashMap;
-import org.antlr.runtime.debug.*;
 import java.io.IOException;
+import java.util.HashMap;
+
+import org.antlr.runtime.BaseRecognizer;
+import org.antlr.runtime.BitSet;
+import org.antlr.runtime.DFA;
+import org.antlr.runtime.EarlyExitException;
+import org.antlr.runtime.FailedPredicateException;
+import org.antlr.runtime.IntStream;
+import org.antlr.runtime.MismatchedSetException;
+import org.antlr.runtime.NoViableAltException;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.RecognizerSharedState;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.TokenStream;
+import org.antlr.runtime.debug.DebugEventListener;
+import org.antlr.runtime.debug.DebugEventSocketProxy;
+import org.antlr.runtime.debug.DebugParser;
 
 /** A Java 1.5 grammar for ANTLR v3 derived from the spec
  *
@@ -422,7 +436,9 @@ public class JavaParser extends DebugParser {
     }
 
 
+    @Override
     public String[] getTokenNames() { return JavaParser.tokenNames; }
+    @Override
     public String getGrammarFileName() { return "Java.g"; }
 
 
@@ -16773,12 +16789,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA8_special;
             this.transition = DFA8_transition;
         }
+        @Override
         public String getDescription() {
             return "177:1: compilationUnit : ( annotations ( packageDeclaration ( importDeclaration )* ( typeDeclaration )* | classOrInterfaceDeclaration ( typeDeclaration )* ) | ( packageDeclaration )? ( importDeclaration )* ( typeDeclaration )* );";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -16901,12 +16920,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA81_special;
             this.transition = DFA81_transition;
         }
+        @Override
         public String getDescription() {
             return "492:13: ( explicitConstructorInvocation )?";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -17174,12 +17196,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA85_special;
             this.transition = DFA85_transition;
         }
+        @Override
         public String getDescription() {
             return "495:1: explicitConstructorInvocation : ( ( nonWildcardTypeArguments )? ( 'this' | 'super' ) arguments ';' | primary '.' ( nonWildcardTypeArguments )? 'super' arguments ';' );";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -17315,12 +17340,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA106_special;
             this.transition = DFA106_transition;
         }
+        @Override
         public String getDescription() {
             return "600:1: blockStatement : ( localVariableDeclarationStatement | classOrInterfaceDeclaration | statement );";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -17461,9 +17489,11 @@ public class JavaParser extends DebugParser {
             this.special = DFA114_special;
             this.transition = DFA114_transition;
         }
+        @Override
         public String getDescription() {
             return "618:1: statement : ( block | ASSERT expression ( ':' expression )? ';' | 'if' parExpression statement ( options {k=1; } : 'else' statement )? | 'for' '(' forControl ')' statement | 'while' parExpression statement | 'do' statement 'while' parExpression ';' | 'try' block ( catches 'finally' block | catches | 'finally' block ) | 'switch' parExpression '{' switchBlockStatementGroups '}' | 'synchronized' parExpression block | 'return' ( expression )? ';' | 'throw' expression ';' | 'break' ( Identifier )? ';' | 'continue' ( Identifier )? ';' | ';' | statementExpression ';' | Identifier ':' statement );";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
@@ -17659,12 +17689,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA123_special;
             this.transition = DFA123_transition;
         }
+        @Override
         public String getDescription() {
             return "671:1: forControl options {k=3; } : ( enhancedForControl | ( forInit )? ';' ( expression )? ';' ( forUpdate )? );";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -18089,12 +18122,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA124_special;
             this.transition = DFA124_transition;
         }
+        @Override
         public String getDescription() {
             return "677:1: forInit : ( localVariableDeclaration | expressionList );";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -18197,12 +18233,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA126_special;
             this.transition = DFA126_transition;
         }
+        @Override
         public String getDescription() {
             return "709:31: ( assignmentOperator expression )?";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -18441,12 +18480,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA127_special;
             this.transition = DFA127_transition;
         }
+        @Override
         public String getDescription() {
             return "712:1: assignmentOperator : ( '=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '%=' | ( '<' '<' '=' )=>t1= '<' t2= '<' t3= '=' {...}? | ( '>' '>' '>' '=' )=>t1= '>' t2= '>' t3= '>' t4= '=' {...}? | ( '>' '>' '=' )=>t1= '>' t2= '>' t3= '=' {...}?);";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -18577,12 +18619,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA139_special;
             this.transition = DFA139_transition;
         }
+        @Override
         public String getDescription() {
             return "792:1: shiftOp : ( ( '<' '<' )=>t1= '<' t2= '<' {...}? | ( '>' '>' '>' )=>t1= '>' t2= '>' t3= '>' {...}? | ( '>' '>' )=>t1= '>' t2= '>' {...}?);";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -18723,12 +18768,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA145_special;
             this.transition = DFA145_transition;
         }
+        @Override
         public String getDescription() {
             return "823:1: unaryExpressionNotPlusMinus : ( '~' unaryExpression | '!' unaryExpression | castExpression | primary ( selector )* ( '++' | '--' )? );";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -18808,12 +18856,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA146_special;
             this.transition = DFA146_transition;
         }
+        @Override
         public String getDescription() {
             return "832:12: ( type | expression )";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -18920,12 +18971,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA149_special;
             this.transition = DFA149_transition;
         }
+        @Override
         public String getDescription() {
             return "837:34: ( identifierSuffix )?";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -19047,12 +19101,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA151_special;
             this.transition = DFA151_transition;
         }
+        @Override
         public String getDescription() {
             return "841:38: ( identifierSuffix )?";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -19151,9 +19208,11 @@ public class JavaParser extends DebugParser {
             this.special = DFA156_special;
             this.transition = DFA156_transition;
         }
+        @Override
         public String getDescription() {
             return "846:1: identifierSuffix : ( ( '[' ']' )+ '.' 'class' | ( '[' expression ']' )+ | arguments | '.' 'class' | '.' explicitGenericInvocation | '.' 'this' | '.' 'super' arguments | '.' 'new' innerCreator );";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
@@ -19237,12 +19296,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA155_special;
             this.transition = DFA155_transition;
         }
+        @Override
         public String getDescription() {
             return "()+ loopback of 848:9: ( '[' expression ']' )+";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
@@ -19349,12 +19411,15 @@ public class JavaParser extends DebugParser {
             this.special = DFA162_special;
             this.transition = DFA162_transition;
         }
+        @Override
         public String getDescription() {
             return "()* loopback of 874:28: ( '[' expression ']' )*";
         }
+        @Override
         public void error(NoViableAltException nvae) {
             dbg.recognitionException(nvae);
         }
+        @Override
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;

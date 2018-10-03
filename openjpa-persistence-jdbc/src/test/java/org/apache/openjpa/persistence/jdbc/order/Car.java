@@ -94,6 +94,7 @@ public class Car {
         return owner;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Car) {
             Car car = (Car)obj;

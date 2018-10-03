@@ -30,7 +30,7 @@ import javax.swing.ImageIcon;
  */
 public class Images {
 
-    private static Map<String, Icon> images = new HashMap<String, Icon>();
+    private static Map<String, Icon> images = new HashMap<>();
 
     public static Icon NEXT    = getIcon("images/arrow_right.jpg", 24, -1);
     public static Icon BACK    = getIcon("images/arrow_left.jpg",  24, -1);

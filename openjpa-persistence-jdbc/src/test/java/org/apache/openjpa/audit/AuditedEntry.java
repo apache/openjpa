@@ -20,6 +20,7 @@ package org.apache.openjpa.audit;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import javax.persistence.TemporalType;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.Audited;
+import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.persistence.Type;
 
 /**

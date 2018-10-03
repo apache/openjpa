@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 public class TestPropertyCacheModeAll extends AbstractCacheModeTestCase {
 
     private static Cache cache = null;
-    private static List<String> sql = new ArrayList<String>();
+    private static List<String> sql = new ArrayList<>();
     private static JDBCListener listener;
 
     private static Class<?>[] expectedInCache = persistentTypes;
@@ -41,7 +41,7 @@ public class TestPropertyCacheModeAll extends AbstractCacheModeTestCase {
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         if (emf == null) {
-            Map<String, Object> propertyMap = new HashMap<String, Object>();
+            Map<String, Object> propertyMap = new HashMap<>();
             propertyMap.put("javax.persistence.sharedCache.mode", "ALL");
             emf = createEntityManagerFactory("cache-mode-empty",propertyMap);
             assertNotNull(emf);
@@ -51,6 +51,7 @@ public class TestPropertyCacheModeAll extends AbstractCacheModeTestCase {
         return emf;
     }
 
+    @Override
     public JDBCListener getListener() {
         if (listener == null) {
             listener = new FilteringJDBCListener(getSql());
@@ -58,6 +59,7 @@ public class TestPropertyCacheModeAll extends AbstractCacheModeTestCase {
         return listener;
     }
 
+    @Override
     public List<String> getSql() {
         return sql;
     }

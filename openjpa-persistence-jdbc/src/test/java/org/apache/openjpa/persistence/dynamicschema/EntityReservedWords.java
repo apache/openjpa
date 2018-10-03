@@ -19,8 +19,8 @@
 package org.apache.openjpa.persistence.dynamicschema;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -40,6 +40,8 @@ import javax.persistence.Id;
 @Entity
 public class EntityReservedWords implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     @Id
     private int id;
     private Integer add;

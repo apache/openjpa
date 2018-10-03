@@ -24,19 +24,19 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.ValidationMode;
-import javax.validation.metadata.BeanDescriptor;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.metadata.BeanDescriptor;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.persistence.JPAProperties;
 import org.apache.openjpa.validation.AbstractValidator;
 import org.apache.openjpa.validation.ValidationException;
@@ -52,10 +52,10 @@ public class ValidatorImpl extends AbstractValidator {
     private transient Log _log = null;
 
     // A map storing the validation groups to use for a particular event type
-    private Map<Integer, Class<?>[]> _validationGroups = new HashMap<Integer,Class<?>[]>();
+    private Map<Integer, Class<?>[]> _validationGroups = new HashMap<>();
 
     // Lookup table for event to group property mapping
-    private static HashMap<String, Integer> _vgMapping = new HashMap<String, Integer> ();
+    private static HashMap<String, Integer> _vgMapping = new HashMap<> ();
 
     static {
         _vgMapping.put(JPAProperties.VALIDATE_PRE_PERSIST, LifecycleEvent.BEFORE_PERSIST);

@@ -42,16 +42,20 @@ public abstract class AbstractRemoteCommitProvider
     protected RemoteCommitEventManager eventManager;
     protected Log log;
 
+    @Override
     public void setConfiguration(Configuration config) {
         this.log = config.getLog(OpenJPAConfiguration.LOG_RUNTIME);
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
     }
 
+    @Override
     public void setRemoteCommitEventManager(RemoteCommitEventManager mgr) {
         eventManager = mgr;
     }

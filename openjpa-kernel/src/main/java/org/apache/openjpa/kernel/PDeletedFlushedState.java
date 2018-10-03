@@ -25,19 +25,21 @@ package org.apache.openjpa.kernel;
  *
  * @author Patrick Linskey
  */
-@SuppressWarnings("serial")
-class PDeletedFlushedState
-    extends PDeletedState {
+class PDeletedFlushedState extends PDeletedState {
+    private static final long serialVersionUID = 1L;
 
+    @Override
     PCState flush(StateManagerImpl context) {
         return this;
     }
 
+    @Override
     PCState persist(StateManagerImpl context) {
         context.eraseFlush();
         return PNEW;
     }
 
+    @Override
     public String toString() {
         return "Persistent-Deleted-Flushed";
     }

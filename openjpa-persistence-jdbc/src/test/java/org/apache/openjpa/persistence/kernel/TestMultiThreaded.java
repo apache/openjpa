@@ -30,12 +30,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 
 public class TestMultiThreaded extends BaseKernelTest {
 
@@ -57,6 +55,7 @@ public class TestMultiThreaded extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
 
@@ -77,6 +76,7 @@ public class TestMultiThreaded extends BaseKernelTest {
         startTx(pm);
     }
 
+    @Override
     public void tearDown()
         throws Exception {
         try {

@@ -35,6 +35,7 @@ public class SubclassE extends MidClass {
         return classEName;
     }
 
+    @Override
     public String toString() {
         return super.toString() + ";classEName=" + classEName;
     }

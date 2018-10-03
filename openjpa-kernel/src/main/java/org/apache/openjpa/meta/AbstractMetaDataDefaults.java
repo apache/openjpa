@@ -75,6 +75,7 @@ public abstract class AbstractMetaDataDefaults
      * The default access type for base classes with ACCESS_UNKNOWN.
      * ACCESS_FIELD by default.
      */
+    @Override
     public int getDefaultAccessType() {
         return _access;
     }
@@ -91,6 +92,7 @@ public abstract class AbstractMetaDataDefaults
      * The default identity type for unmapped classes without primary
      * key fields. ID_UNKNOWN by default.
      */
+    @Override
     public int getDefaultIdentityType() {
         return _identity;
     }
@@ -103,6 +105,7 @@ public abstract class AbstractMetaDataDefaults
         _identity = identity;
     }
 
+    @Override
     public int getCallbackMode() {
         return _callback;
     }
@@ -118,10 +121,12 @@ public abstract class AbstractMetaDataDefaults
             _callback &= ~mode;
     }
 
+    @Override
     public boolean getCallbacksBeforeListeners(int type) {
         return false;
     }
 
+    @Override
     public boolean isDeclaredInterfacePersistent() {
         return _interface;
     }
@@ -130,6 +135,7 @@ public abstract class AbstractMetaDataDefaults
         _interface = pers;
     }
 
+    @Override
     public boolean isDataStoreObjectIdFieldUnwrapped() {
         return _unwrapped;
     }
@@ -142,14 +148,17 @@ public abstract class AbstractMetaDataDefaults
         return _ignore;
     }
 
+    @Override
     public void setIgnoreNonPersistent(boolean ignore) {
         _ignore = ignore;
     }
 
+    @Override
     public void populate(ClassMetaData meta, int access) {
         populate(meta, access, false);
     }
 
+    @Override
     public void populate(ClassMetaData meta, int access, boolean ignoreTransient) {
         if (meta.getDescribedType() == Object.class)
             return;
@@ -322,6 +331,7 @@ public abstract class AbstractMetaDataDefaults
      * may be invoked during parsing phase when declaring metadata may not be
      * available.
      */
+    @Override
     public Member getBackingMember(FieldMetaData fmd) {
         if (fmd == null)
             return null;
@@ -331,6 +341,7 @@ public abstract class AbstractMetaDataDefaults
             fmd.getAccessType(), true);
     }
 
+    @Override
     public Class<?> getUnimplementedExceptionType() {
         return UnsupportedOperationException.class;
     }
@@ -401,7 +412,7 @@ public abstract class AbstractMetaDataDefaults
     }
 
     public static List<String> toNames(List<? extends Member> members) {
-    	List<String> result = new ArrayList<String>();
+    	List<String> result = new ArrayList<>();
     	for (Member m : members)
     		result.add(m.getName());
     	return result;

@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.embed.attrOverrides;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -37,7 +36,7 @@ public abstract class AbstractEmployee {
     @ManyToOne protected Address address;
 
     @ManyToMany protected Collection<Project> projects =
-    	new ArrayList<Project>();
+    	new ArrayList<>();
 
     public Integer getId() {
         return id;

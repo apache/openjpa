@@ -45,48 +45,60 @@ public class RelationCollectionInverseKeyFieldStrategy
     extends RelationToManyInverseKeyFieldStrategy
     implements LRSCollectionFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (RelationCollectionInverseKeyFieldStrategy.class);
 
+    @Override
     public FieldMapping getFieldMapping() {
         return field;
     }
 
+    @Override
     public ClassMapping[] getIndependentElementMappings(boolean traverse) {
         return super.getIndependentElementMappings(traverse);
     }
 
+    @Override
     public Column[] getElementColumns(ClassMapping elem) {
         return elem.getPrimaryKeyColumns();
     }
 
+    @Override
     public ForeignKey getJoinForeignKey(ClassMapping elem) {
         return super.getJoinForeignKey(elem);
     }
 
+    @Override
     public void selectElement(Select sel, ClassMapping elem, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode, Joins joins) {
         super.selectElement(sel, elem, store, fetch, eagerMode, joins);
     }
 
+    @Override
     public Object loadElement(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         return super.loadElement(sm, store, fetch, res, joins);
     }
 
+    @Override
     public Joins join(Joins joins, ClassMapping elem) {
         return super.join(joins, elem);
     }
 
+    @Override
     public Joins joinElementRelation(Joins joins, ClassMapping elem) {
         return super.joinElementRelation(joins, elem);
     }
 
+    @Override
     protected Proxy newLRSProxy() {
         return new LRSProxyCollection(this);
     }
 
+    @Override
     public void map(boolean adapt) {
         if (field.getTypeCode() != JavaTypes.COLLECTION
             && field.getTypeCode() != JavaTypes.ARRAY)

@@ -54,6 +54,7 @@ public class RegistryManagedRuntime
     /**
      * Return the cached TransactionManager instance.
      */
+    @Override
     public TransactionManager getTransactionManager() throws Exception {
         if (_tm == null) {
             Context ctx = new InitialContext();
@@ -68,12 +69,14 @@ public class RegistryManagedRuntime
         return _tm;
     }
 
+    @Override
     public void setRollbackOnly(Throwable cause)
         throws Exception {
         // there is no generic support for setting the rollback cause
         getTransactionManager().getTransaction().setRollbackOnly();
     }
 
+    @Override
     public Throwable getRollbackCause()
         throws Exception {
         // there is no generic support for setting the rollback cause
@@ -88,6 +91,7 @@ public class RegistryManagedRuntime
         return _registryName;
     }
 
+    @Override
     public Object getTransactionKey() throws Exception, SystemException {
         return _tm.getTransactionKey();
     }
@@ -111,24 +115,28 @@ public class RegistryManagedRuntime
         }
 
 
+        @Override
         public Transaction getTransaction()
             throws SystemException {
             return TransactionManagerRegistryFacade.this;
         }
 
 
+        @Override
         public void registerSynchronization(Synchronization sync)
             throws RollbackException, IllegalStateException, SystemException {
             _registry.registerInterposedSynchronization(sync);
         }
 
 
+        @Override
         public void setRollbackOnly()
             throws IllegalStateException, SystemException {
             _registry.setRollbackOnly();
         }
 
 
+        @Override
         public int getStatus()
             throws SystemException {
             return _registry.getTransactionStatus();
@@ -142,12 +150,14 @@ public class RegistryManagedRuntime
         // Unsupported methods follow
         //////////////////////////////
 
+        @Override
         public void begin()
             throws NotSupportedException, SystemException {
             throw new NotSupportedException();
         }
 
 
+        @Override
         public void commit()
             throws RollbackException, HeuristicMixedException, SystemException,
                 HeuristicRollbackException, SecurityException,
@@ -156,6 +166,7 @@ public class RegistryManagedRuntime
         }
 
 
+        @Override
         public void resume(Transaction tobj)
             throws InvalidTransactionException, IllegalStateException,
                 SystemException {
@@ -163,30 +174,35 @@ public class RegistryManagedRuntime
         }
 
 
+        @Override
         public void rollback()
             throws IllegalStateException, SecurityException, SystemException {
             throw new SystemException();
         }
 
 
+        @Override
         public void setTransactionTimeout(int seconds)
             throws SystemException {
             throw new SystemException();
         }
 
 
+        @Override
         public Transaction suspend()
             throws SystemException {
             throw new SystemException();
         }
 
 
+        @Override
         public boolean delistResource(XAResource xaRes, int flag)
             throws IllegalStateException, SystemException {
             throw new SystemException();
         }
 
 
+        @Override
         public boolean enlistResource(XAResource xaRes)
             throws RollbackException, IllegalStateException, SystemException {
             throw new SystemException();
@@ -198,6 +214,7 @@ public class RegistryManagedRuntime
      * RegistryManagedRuntime cannot suspend transactions.
      * </P>
      */
+    @Override
     public void doNonTransactionalWork(Runnable runnable)
         throws NotSupportedException {
         throw new NotSupportedException(_loc.get("tsr-cannot-suspend")

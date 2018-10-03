@@ -44,15 +44,20 @@ import org.apache.openjpa.util.MetaDataException;
 public class MaxEmbeddedByteArrayFieldStrategy
     extends MaxEmbeddedLobFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (MaxEmbeddedByteArrayFieldStrategy.class);
 
     private int _maxSize = 0;
 
+    @Override
     protected int getExpectedJavaType() {
         return JavaSQLTypes.BYTES;
     }
 
+    @Override
     protected void update(OpenJPAStateManager sm, Row row)
         throws SQLException {
         byte[] b = (byte[]) getValue(sm);
@@ -62,12 +67,14 @@ public class MaxEmbeddedByteArrayFieldStrategy
             row.setBytes(field.getColumns()[0], b);
     }
 
+    @Override
     protected Boolean isCustom(OpenJPAStateManager sm, JDBCStore store) {
         Object val = sm.fetchObject(field.getIndex());
         return (val != null && Array.getLength(val) > _maxSize) ? null
             : Boolean.FALSE;
     }
 
+    @Override
     protected void putData(OpenJPAStateManager sm, ResultSet rs,
         DBDictionary dict)
         throws SQLException {
@@ -76,23 +83,27 @@ public class MaxEmbeddedByteArrayFieldStrategy
             (field.getIndex())));
     }
 
+    @Override
     protected Object load(Column col, Result res, Joins joins)
         throws SQLException {
         return PrimitiveWrapperArrays.toObjectValue(field,
             res.getBytes(col, joins));
     }
 
+    @Override
     public void map(boolean adapt) {
         if (field.getType() != byte[].class && field.getType() != Byte[].class)
             throw new MetaDataException(_loc.get("not-bytes", field));
         super.map(adapt);
     }
 
+    @Override
     public void initialize() {
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         _maxSize = dict.maxEmbeddedBlobSize;
     }
 
+    @Override
     protected Object getValue(OpenJPAStateManager sm) {
         byte[] b = PrimitiveWrapperArrays.toByteArray(sm.fetchObject
                 (field.getIndex()));

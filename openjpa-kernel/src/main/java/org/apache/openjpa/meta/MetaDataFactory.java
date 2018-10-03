@@ -36,31 +36,31 @@ import org.apache.openjpa.lib.meta.ClassArgParser;
 public interface MetaDataFactory
     extends MetaDataModes {
 
-    public static final int STORE_DEFAULT = 0;
-    public static final int STORE_PER_CLASS = 1;
-    public static final int STORE_VERBOSE = 2;
+    int STORE_DEFAULT = 0;
+    int STORE_PER_CLASS = 1;
+    int STORE_VERBOSE = 2;
 
     /**
      * Set the repository to load metadata into.
      * This method will be called before use.
      */
-    public void setRepository(MetaDataRepository repos);
+    void setRepository(MetaDataRepository repos);
 
     /**
      * Base directory for storing metadata. May not be called.
      */
-    public void setStoreDirectory(File dir);
+    void setStoreDirectory(File dir);
 
     /**
      * Storage mode. May not be called.
      */
-    public void setStoreMode(int store);
+    void setStoreMode(int store);
 
     /**
      * If true, I/O's must exactly obey the mode directives given, and may
      * not load additional information.
      */
-    public void setStrict(boolean strict);
+    void setStrict(boolean strict);
 
     /**
      * Load metadata for the given class in the given mode(s). If loading
@@ -75,7 +75,7 @@ public interface MetaDataFactory
      * {@link MetaDataModes#MODE_META MODE_META}, so long as
      * the <code>strict</code> property hasn't been set
      */
-    public void load(Class<?> cls, int mode, ClassLoader envLoader);
+    void load(Class<?> cls, int mode, ClassLoader envLoader);
 
     /**
      * Store the given metadata.
@@ -87,7 +87,7 @@ public interface MetaDataFactory
      * destination in string form
      * @return false if this factory is unable to store metadata
      */
-    public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
+    boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
         SequenceMetaData[] seqs, int mode, Map<File, String> output);
 
     /**
@@ -95,12 +95,12 @@ public interface MetaDataFactory
      *
      * @return false if any metadata could not be dropped
      */
-    public boolean drop(Class<?>[] cls, int mode, ClassLoader envLoader);
+    boolean drop(Class<?>[] cls, int mode, ClassLoader envLoader);
 
     /**
      * Return the metadata defaults for this factory.
      */
-    public MetaDataDefaults getDefaults();
+    MetaDataDefaults getDefaults();
 
     /**
      * Return all persistent class names, using the metadata locations supplied
@@ -112,46 +112,46 @@ public interface MetaDataFactory
      * @see MetaDataRepository#getPersistentTypeNames
      * @see MetaDataRepository#loadPersistentTypes
      */
-    public Set<String> getPersistentTypeNames(boolean devpath,
+    Set<String> getPersistentTypeNames(boolean devpath,
     		ClassLoader envLoader);
 
     /**
      * Return the type defining the given query name, if any.
      */
-    public Class<?> getQueryScope(String queryName, ClassLoader loader);
+    Class<?> getQueryScope(String queryName, ClassLoader loader);
 
     /**
      * Return the type defining the given result set mapping name, if any.
      */
-    public Class<?> getResultSetMappingScope(String resultSetMappingName,
+    Class<?> getResultSetMappingScope(String resultSetMappingName,
         ClassLoader loader);
 
     /**
      * Return a properly-configured class arg parser for our expected
      * metadata format.
      */
-    public ClassArgParser newClassArgParser();
+    ClassArgParser newClassArgParser();
 
     /**
      * Clear any internal caches.
      */
-    public void clear();
+    void clear();
 
     /**
      * Add any extension keys used by this instance to the given set.
      */
-    public void addClassExtensionKeys(Collection<?> exts);
+    void addClassExtensionKeys(Collection<?> exts);
 
     /**
      * Add any extension keys used by this instance to the given set.
      */
-    public void addFieldExtensionKeys (Collection<?> exts);
+    void addFieldExtensionKeys (Collection<?> exts);
 
     /**
      * Load XMLClassMetadata for the given class. Loaded
      * metadata should be added directly to the repository.
      */
-    public void loadXMLMetaData(Class<?> cls);
+    void loadXMLMetaData(Class<?> cls);
 
     /**
      * Gets the name of the meta-model class for the given fully-qualified
@@ -159,7 +159,7 @@ public interface MetaDataFactory
      *
      * @since 2.0.0
      */
-    public String getMetaModelClassName(String managedClassName);
+    String getMetaModelClassName(String managedClassName);
 
     /**
      * Gets the name of the managed class for the given fully-qualified
@@ -167,14 +167,14 @@ public interface MetaDataFactory
      *
      * @since 2.0.0
      */
-    public String getManagedClassName(String metamodelClassName);
+    String getManagedClassName(String metamodelClassName);
 
     /**
      * Affirms if the given class is a meta-class.
      *
      * @since 2.0.0
      */
-    public boolean isMetaClass(Class<?> c);
+    boolean isMetaClass(Class<?> c);
 
     /**
      * Gets the managed class corresponding to the given meta-class.
@@ -183,6 +183,6 @@ public interface MetaDataFactory
      *
      * @since 2.0.0
      */
-    public Class<?> getManagedClass(Class<?> c);
+    Class<?> getManagedClass(Class<?> c);
 
 }

@@ -52,6 +52,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.apache.openjpa.conf.OpenJPAVersion;
+import org.apache.openjpa.lib.jdbc.JDBCListener;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+
 import jpa.tools.swing.AttributeLegendView;
 import jpa.tools.swing.ConfigurationViewer;
 import jpa.tools.swing.ErrorDialog;
@@ -67,18 +71,14 @@ import openbook.server.OpenBookService;
 import openbook.server.ServiceFactory;
 import openbook.util.PropertyHelper;
 
-import org.apache.openjpa.conf.OpenJPAVersion;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-
 /**
  * A graphical user interface based client of OpenBooks for demonstration.
  *
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class Demo extends JFrame {
+    private static final long serialVersionUID = 1L;
     private static Dimension TAB_VIEW = new Dimension(800,600);
     private static Dimension OUT_VIEW = new Dimension(800,200);
     private static Dimension NAV_VIEW = new Dimension(400,800);
@@ -124,6 +124,7 @@ public class Demo extends JFrame {
         SwingHelper.setLookAndFeel(14);
         adjustWidgetSize();
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 Demo demo = Demo.getInstance();
                 demo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -207,7 +208,7 @@ public class Demo extends JFrame {
             SwingWorker<OpenBookService, Void> getService = new SwingWorker<OpenBookService, Void> () {
                 @Override
                 protected OpenBookService doInBackground() throws Exception {
-                    Map<String, Object> runtimeConfig = new HashMap<String, Object>();
+                    Map<String, Object> runtimeConfig = new HashMap<>();
                     runtimeConfig.put("openjpa.jdbc.JDBCListeners", new JDBCListener[]{_sqlListener});
                     OpenBookService service = ServiceFactory.getService(unitName, runtimeConfig);
                     service.initialize(null);
@@ -302,6 +303,9 @@ public class Demo extends JFrame {
      *
      */
     public abstract class OpenBookAction extends AbstractAction {
+        
+        private static final long serialVersionUID = 1L;
+
         public OpenBookAction(String name, Icon icon, String tooltip) {
             putValue(Action.NAME, name);
             putValue(Action.SHORT_DESCRIPTION, tooltip);
@@ -310,11 +314,14 @@ public class Demo extends JFrame {
     }
 
     public class BuyBookAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
         BuyBookPage         _buyBookPage;
         public BuyBookAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (_buyBookPage == null) {
                 _buyBookPage = new BuyBookPage(getService(), getCustomer());
@@ -325,10 +332,13 @@ public class Demo extends JFrame {
 
     }
     public class DeliveryAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
         DeliveryPage        _deliveryPage;
         public DeliveryAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (_deliveryPage == null) {
                 _deliveryPage = new DeliveryPage(getService());
@@ -340,10 +350,13 @@ public class Demo extends JFrame {
     }
 
     public class SupplyAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
         SupplyPage          _supplyPage;
         public SupplyAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (_supplyPage == null) {
                 _supplyPage = new SupplyPage(getService());
@@ -355,10 +368,13 @@ public class Demo extends JFrame {
     }
 
     public class ViewConfigAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
         ConfigurationViewer _configView;
         public ViewConfigAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (_configView == null) {
                 _configView = new ConfigurationViewer("Unit Configuration", getService().getUnit().getProperties());
@@ -371,11 +387,14 @@ public class Demo extends JFrame {
     }
 
     public class ViewDomainAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
         MetamodelView       _domainView;
         AttributeLegendView _legends;
         public ViewDomainAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (_domainView == null) {
                 _domainView = new MetamodelView(getService().getUnit().getMetamodel());
@@ -388,9 +407,12 @@ public class Demo extends JFrame {
     }
 
     public class ViewDataAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
         public ViewDataAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
+        @Override
         public void actionPerformed(ActionEvent e) {
             showTab(_tabbedPane, "Buy Books", null);
         }
@@ -398,10 +420,13 @@ public class Demo extends JFrame {
     }
 
     public class ViewQueryCacheAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
         PreparedQueryViewer _queryView;
         public ViewQueryCacheAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (_queryView == null) {
                 _queryView = new PreparedQueryViewer(OpenJPAPersistence.cast(getService().getUnit()));
@@ -413,10 +438,14 @@ public class Demo extends JFrame {
     }
 
     public class ViewSourceAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
+
         public ViewSourceAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             getSourceCodeBrowser();
         }
@@ -427,6 +456,8 @@ public class Demo extends JFrame {
      *
      */
     public class ShowCodeAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
         private String _key;
         private String _page;
 
@@ -439,6 +470,7 @@ public class Demo extends JFrame {
             _page = page;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
            getSourceCodeBrowser().showPage(_key, _page);
         }
@@ -451,6 +483,8 @@ public class Demo extends JFrame {
      *
      */
     public class WelcomeAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
         PowerPointViewer    _powerpoint;
         JLabel              _logoLabel = new JLabel(Images.LOGO_OPENBOOKS);
         boolean _showPresentation = true;
@@ -459,6 +493,7 @@ public class Demo extends JFrame {
             super(name, icon, tooltip);
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (_powerpoint == null && _showPresentation) {
                 String dir = getConfiguration("openbook.slides.dir", "slides/");
@@ -493,12 +528,15 @@ public class Demo extends JFrame {
     }
 
     public class AboutAction extends OpenBookAction {
+        
+        private static final long serialVersionUID = 1L;
         AboutDialog _dialog;
 
         public AboutAction(String name, Icon icon, String tooltip) {
             super(name, icon, tooltip);
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (_dialog == null) {
                 _dialog = new AboutDialog(Images.LOGO_OPENBOOKS);
@@ -605,6 +643,7 @@ public class Demo extends JFrame {
         tree.setShowsRootHandles(true);
 
         tree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
             public void valueChanged(TreeSelectionEvent e) {
                 Object treeNode = _navigator.getLastSelectedPathComponent();
                 if (treeNode instanceof ActionTreeNode) {
@@ -628,11 +667,14 @@ public class Demo extends JFrame {
      *
      */
     public static class ActionTreeNode extends DefaultMutableTreeNode {
+        
+        private static final long serialVersionUID = 1L;
         private final Action _action;
         public ActionTreeNode(Action action) {
             _action = action;
         }
 
+        @Override
         public String toString() {
             return _action.getValue(Action.SHORT_DESCRIPTION).toString();
         }
@@ -640,6 +682,9 @@ public class Demo extends JFrame {
     }
 
     public class TypedTreeCellRenderer extends DefaultTreeCellRenderer {
+        
+        private static final long serialVersionUID = 1L;
+
         @Override
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
@@ -648,6 +693,9 @@ public class Demo extends JFrame {
     }
 
     public static class AboutDialog extends JDialog {
+        
+        private static final long serialVersionUID = 1L;
+
         public AboutDialog(Icon logo) {
             setModal(true);
             setLayout(new BorderLayout());

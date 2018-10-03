@@ -23,10 +23,10 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.jdbc.query.domain.IndoorGame;
-import org.apache.openjpa.persistence.jdbc.query.domain.Scrabble;
 import org.apache.openjpa.persistence.jdbc.query.domain.Chess;
 import org.apache.openjpa.persistence.jdbc.query.domain.Game;
+import org.apache.openjpa.persistence.jdbc.query.domain.IndoorGame;
+import org.apache.openjpa.persistence.jdbc.query.domain.Scrabble;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -39,6 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestOrderByQuery extends SingleEMFTestCase {
+    @Override
     public void setUp() {
     	super.setUp(DROP_TABLES, Game.class, IndoorGame.class,
     			Scrabble.class, Chess.class);

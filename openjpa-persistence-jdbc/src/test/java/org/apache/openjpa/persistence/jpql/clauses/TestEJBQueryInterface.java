@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jpql.clauses;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NamedQuery;
 
@@ -34,6 +35,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
         super(name, "jpqlclausescactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(Entity1.class);
 

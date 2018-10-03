@@ -33,42 +33,52 @@ public class AbstractJDBCListener implements JDBCListener {
     protected void eventOccurred(JDBCEvent event) {
     }
 
+    @Override
     public void beforePrepareStatement(JDBCEvent event) {
         eventOccurred(event);
     }
 
+    @Override
     public void afterPrepareStatement(JDBCEvent event) {
         eventOccurred(event);
     }
 
+    @Override
     public void beforeCreateStatement(JDBCEvent event) {
         eventOccurred(event);
     }
 
+    @Override
     public void afterCreateStatement(JDBCEvent event) {
         eventOccurred(event);
     }
 
+    @Override
     public void beforeExecuteStatement(JDBCEvent event) {
         eventOccurred(event);
     }
 
+    @Override
     public void afterExecuteStatement(JDBCEvent event) {
         eventOccurred(event);
     }
 
+    @Override
     public void beforeCommit(JDBCEvent event) {
         eventOccurred(event);
     }
 
+    @Override
     public void afterCommit(JDBCEvent event) {
         eventOccurred(event);
     }
 
+    @Override
     public void beforeRollback(JDBCEvent event) {
         eventOccurred(event);
     }
 
+    @Override
     public void afterRollback(JDBCEvent event) {
         eventOccurred(event);
     }
@@ -81,10 +91,12 @@ public class AbstractJDBCListener implements JDBCListener {
         eventOccurred(event);
     }
 
+    @Override
     public void afterConnect(JDBCEvent event) {
         eventOccurred(event);
     }
 
+    @Override
     public void beforeClose(JDBCEvent event) {
         eventOccurred(event);
     }

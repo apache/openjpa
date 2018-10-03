@@ -35,15 +35,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.MapElementPC;
-import org.apache.openjpa.persistence.kernel.common.apps.MapElementPCChild;
-import org.apache.openjpa.persistence.kernel.common.apps.PersistentMapHolder;
-
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.kernel.common.apps.MapElementPC;
+import org.apache.openjpa.persistence.kernel.common.apps.MapElementPCChild;
+import org.apache.openjpa.persistence.kernel.common.apps.PersistentMapHolder;
 
 public class TestPersistentMaps extends BaseKernelTest {
 
@@ -59,6 +56,7 @@ public class TestPersistentMaps extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         deleteAll(PersistentMapHolder.class);
         OpenJPAEntityManager pm = getPM();

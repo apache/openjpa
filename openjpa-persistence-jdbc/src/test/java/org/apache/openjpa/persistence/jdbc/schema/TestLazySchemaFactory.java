@@ -31,7 +31,6 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.schema.LazySchemaFactory;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
-
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 
@@ -49,6 +48,7 @@ public class TestLazySchemaFactory
         super(test);
     }
 
+    @Override
     public void setUp()
         throws Exception {
         // see if the dict supports foreign keys; mysql can support them, but

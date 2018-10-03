@@ -20,8 +20,9 @@ package org.apache.openjpa.persistence.relations;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test ordering a one-many field on the primary key of the related entity.
@@ -33,6 +34,7 @@ public class TestIdOrderedOneMany
 
     private long id;
 
+    @Override
     public void setUp() {
         setUp(IdOrderedOneManyParent.class, IdOrderedOneManyChild.class);
 

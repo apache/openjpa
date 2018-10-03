@@ -40,6 +40,7 @@ public class Dependent1Xml {
         this.id = id;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof Dependent1Xml)) return false;
@@ -52,6 +53,7 @@ public class Dependent1Xml {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + id.hashCode();

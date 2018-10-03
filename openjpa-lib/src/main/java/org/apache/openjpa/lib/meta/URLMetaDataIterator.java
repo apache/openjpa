@@ -45,10 +45,12 @@ public class URLMetaDataIterator implements MetaDataIterator {
         _url = url;
     }
 
+    @Override
     public boolean hasNext() {
         return _url != null && !_iterated;
     }
 
+    @Override
     public URL next() throws IOException {
         if (!hasNext())
             throw new IllegalStateException();
@@ -57,6 +59,7 @@ public class URLMetaDataIterator implements MetaDataIterator {
         return _url;
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         if (!_iterated)
             throw new IllegalStateException();
@@ -70,6 +73,7 @@ public class URLMetaDataIterator implements MetaDataIterator {
         }
     }
 
+    @Override
     public File getFile() {
         if (!_iterated)
             throw new IllegalStateException();
@@ -80,6 +84,7 @@ public class URLMetaDataIterator implements MetaDataIterator {
             J2DoPrivHelper.existsAction(file))).booleanValue()) ? file:null;
     }
 
+    @Override
     public void close() {
     }
 }

@@ -43,6 +43,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 class GetMapValue
     extends AbstractVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _map;
     private final Val _key;
     private final String _alias;
@@ -58,28 +60,34 @@ class GetMapValue
         _alias = alias;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
 
+    @Override
     public boolean isVariable() {
         return false;
     }
 
+    @Override
     public Class getType() {
         if (_cast != null)
             return _cast;
         return _map.getType();
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _cast = type;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         ExpState mapState = _map.initialize(sel, ctx, 0);
         ExpState keyState = _key.initialize(sel, ctx, 0);
@@ -104,6 +112,7 @@ class GetMapValue
         }
     }
 
+    @Override
     public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state,
         Object val) {
         GetMapValueExpState gstate = (GetMapValueExpState) state;
@@ -111,12 +120,14 @@ class GetMapValue
     }
 
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state).append(" AS ").append(_alias),
             this);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         GetMapValueExpState gstate = (GetMapValueExpState) state;
@@ -124,10 +135,12 @@ class GetMapValue
         _key.selectColumns(sel, ctx, gstate.keyState, true);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(_alias, asc, false);
@@ -140,12 +153,14 @@ class GetMapValue
         return buf;
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         GetMapValueExpState gstate = (GetMapValueExpState) state;
@@ -153,10 +168,12 @@ class GetMapValue
         _key.calculateValue(sel, ctx, gstate.keyState, null, null);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         if (!(_map instanceof PCPath))

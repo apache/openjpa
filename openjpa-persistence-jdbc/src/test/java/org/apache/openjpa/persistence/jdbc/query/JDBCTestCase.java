@@ -32,9 +32,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest2;
 
 
 public abstract class JDBCTestCase extends AbstractTestCase {

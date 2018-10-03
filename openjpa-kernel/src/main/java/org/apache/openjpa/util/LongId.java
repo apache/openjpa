@@ -26,6 +26,8 @@ package org.apache.openjpa.util;
  */
 public final class LongId extends OpenJPAId {
 
+    
+    private static final long serialVersionUID = 1L;
     private final long key;
 
     public LongId(Class cls, Long key) {
@@ -50,18 +52,22 @@ public final class LongId extends OpenJPAId {
         return key;
     }
 
+    @Override
     public Object getIdObject() {
         return key;
     }
 
+    @Override
     public String toString() {
         return String.valueOf(key);
     }
 
+    @Override
     protected int idHash() {
         return (int) (key ^ (key >>> 32));
     }
 
+    @Override
     protected boolean idEquals(OpenJPAId o) {
         return key == ((LongId) o).key;
     }

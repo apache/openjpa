@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.slice.jdbc.DistributedJDBCConfiguration;
 
 public abstract class SliceTestCase extends SingleEMFTestCase {
+    @Override
     protected void setUp(Object... props) {
         super.setUp(props);
         assertTrue(emf.getClass() + " is not a slice configuration. Check" +

@@ -48,6 +48,7 @@ public class TestQualifiedPath extends SQLListenerTestCase {
 
     OpenJPAEntityManager em;
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Division.class, Employee.class, Phone.class, PersonalInfo.class);
@@ -111,7 +112,7 @@ public class TestQualifiedPath extends SQLListenerTestCase {
     private void createDivision(int id) {
         Division division = new Division();
         division.setId(id);
-        Map<Employee, String> employees = new HashMap<Employee, String>();
+        Map<Employee, String> employees = new HashMap<>();
         for (int i = 0; i < numEmployeesPerDivision; i++) {
             Employee employee = createEmployee(employeeId++);
             employees.put(employee, employee.getPersonalInfo().getLastName());

@@ -59,8 +59,8 @@ import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -88,7 +88,7 @@ public class JPQLExpressionBuilder
     private static final Localizer _loc = Localizer.forPackage
         (JPQLExpressionBuilder.class);
 
-    private final Stack<Context> contexts = new Stack<Context>();
+    private final Stack<Context> contexts = new Stack<>();
     private OrderedMap<Object, Class<?>> parameterTypes;
     private int aliasCount = 0;
     private boolean inAssignSubselectProjection = false;
@@ -116,10 +116,12 @@ public class JPQLExpressionBuilder
             throw new InternalException(parsedQuery + "");
     }
 
+    @Override
     protected Localizer getLocalizer() {
         return _loc;
     }
 
+    @Override
     protected ClassLoader getClassLoader() {
         // we don't resolve in the context of anything but ourselves
         return getClass().getClassLoader();
@@ -279,6 +281,7 @@ public class JPQLExpressionBuilder
         return null;
     }
 
+    @Override
     protected String currentQuery() {
         return ctx().parsed == null || root().parser == null ? null
             : root().parser.jpql;
@@ -395,7 +398,7 @@ public class JPQLExpressionBuilder
         if (count > 1) {
             // muti-selection
             resultClass = Object[].class;
-            resultShape = new ResultShape(resultClass, new FillStrategy.Array<Object[]>(Object[].class));
+            resultShape = new ResultShape(resultClass, new FillStrategy.Array<>(Object[].class));
         }
 
         for (int i = 0; i < count; i++) {
@@ -432,9 +435,9 @@ public class JPQLExpressionBuilder
                     throw parseException(EX_USER, "no-constructor",
                             new Object[]{ resultClassName }, null);
 
-                List<Value> terms = new ArrayList<Value>();
-                List<String> aliases = new ArrayList<String>();
-                List<String> clauses = new ArrayList<String>();
+                List<Value> terms = new ArrayList<>();
+                List<String> aliases = new ArrayList<>();
+                List<String> clauses = new ArrayList<>();
                 // now assign the arguments to the select clause as the projections
                 assignProjections(right(node), exps, terms, aliases, clauses);
                 FillStrategy fill = new FillStrategy.NewInstance(constructor);
@@ -613,9 +616,9 @@ public class JPQLExpressionBuilder
         // JPQL does not filter relational joins for projections
         exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
         exps.projections = new Value[selectCount];
-        List<Value> projections = new ArrayList<Value>();
-        List<String> aliases = new ArrayList<String>();
-        List<String> clauses = new ArrayList<String>();
+        List<Value> projections = new ArrayList<>();
+        List<String> aliases = new ArrayList<>();
+        List<String> clauses = new ArrayList<>();
         evalProjectionsResultShape(expNode, exps, projections, aliases, clauses);
         exps.projections = projections.toArray(new Value[projections.size()]);
         exps.projectionAliases = aliases.toArray(new String[aliases.size()]);
@@ -642,24 +645,24 @@ public class JPQLExpressionBuilder
 
         JPQLNode[] outers = root().findChildrenByID(JJTOUTERFETCHJOIN);
         for (int i = 0; outers != null && i < outers.length; i++)
-            (joins == null ? joins = new TreeSet<String>() : joins).
+            (joins == null ? joins = new TreeSet<>() : joins).
                 add(getPath(onlyChild(outers[i])).last().getFullName(false));
 
         JPQLNode[] inners = root().findChildrenByID(JJTINNERFETCHJOIN);
         for (int i = 0; inners != null && i < inners.length; i++) {
             String path = getPath(onlyChild(inners[i])).last()
                 .getFullName(false);
-            (joins == null ? joins = new TreeSet<String>() : joins).add(path);
+            (joins == null ? joins = new TreeSet<>() : joins).add(path);
             (innerJoins == null
-                    ? innerJoins = new TreeSet<String>()
+                    ? innerJoins = new TreeSet<>()
                     : innerJoins).add(path);
         }
 
         if (joins != null)
-            exps.fetchPaths = (String[]) joins.
+            exps.fetchPaths = joins.
                 toArray(new String[joins.size()]);
         if (innerJoins != null)
-            exps.fetchInnerPaths = (String[]) innerJoins.
+            exps.fetchInnerPaths = innerJoins.
                 toArray(new String[innerJoins.size()]);
 
         return filter;
@@ -767,7 +770,7 @@ public class JPQLExpressionBuilder
         JPQLNode firstChild = firstChild(node);
         Path path = null;
         if (firstChild.id == JJTQUALIFIEDPATH)
-            path = (Path) getQualifiedPath(firstChild);
+            path = getQualifiedPath(firstChild);
         else
             path = getPath(firstChild, false, inner);
 
@@ -857,6 +860,7 @@ public class JPQLExpressionBuilder
         return exp;
     }
 
+    @Override
     protected boolean isDeclaredVariable(String name) {
         // JPQL doesn't support declaring variables
         return false;
@@ -913,6 +917,7 @@ public class JPQLExpressionBuilder
      * Identification variables in JPQL are case insensitive, so lower-case
      * all variables we are going to bind.
      */
+    @Override
     protected Value getVariable(String id, boolean bind) {
         if (id == null)
             return null;
@@ -927,6 +932,7 @@ public class JPQLExpressionBuilder
         return ctx().getVariable(id);
     }
 
+    @Override
     protected boolean isSeenVariable(String var) {
         Context c = ctx().findContext(var);
         if (c != null)
@@ -1532,6 +1538,7 @@ public class JPQLExpressionBuilder
         }
     }
 
+    @Override
     public void setImplicitTypes(Value val1, Value val2,
         Class<?> expected) {
         String currQuery = currentQuery();
@@ -1637,7 +1644,7 @@ public class JPQLExpressionBuilder
     private Parameter getParameter(String id, boolean positional,
         boolean isCollectionValued) {
         if (parameterTypes == null)
-            parameterTypes = new OrderedMap<Object, Class<?>>();
+            parameterTypes = new OrderedMap<>();
         Object paramKey = positional ? Integer.parseInt(id) : id;
         if (!parameterTypes.containsKey(paramKey))
             parameterTypes.put(paramKey, TYPE_OBJECT);
@@ -1745,7 +1752,7 @@ public class JPQLExpressionBuilder
             thiz.setMetaData(cmd);
             return thiz;
         } else if (val instanceof Path) {
-            return (Path) val;
+            return val;
         } else if (val instanceof Value) {
             if (val.isVariable()) {
                 // can be an entity type literal
@@ -1763,7 +1770,7 @@ public class JPQLExpressionBuilder
                     return lit;
                 }
             }
-            return (Value) val;
+            return val;
         }
 
         throw parseException(EX_USER, "unknown-identifier",
@@ -2009,6 +2016,7 @@ public class JPQLExpressionBuilder
         return path;
     }
 
+    @Override
     protected Class<?> getDeclaredVariableType(String name) {
         ClassMetaData cmd = getMetaDataForAlias(name);
         if (cmd != null)
@@ -2058,7 +2066,7 @@ public class JPQLExpressionBuilder
         Object val = eval(lastChild(node));
         Object exp[] = new Expression[nChild - 1];
         for (int i = 0; i < nChild - 1; i++)
-            exp[i] = (Expression) eval(node.children[i]);
+            exp[i] = eval(node.children[i]);
 
         return factory.generalCaseExpression((Expression[]) exp, (Value) val);
     }
@@ -2145,14 +2153,17 @@ public class JPQLExpressionBuilder
         return null;
     }
 
+    @Override
     protected void addSchemaToContext(String id, ClassMetaData meta) {
         ctx().addSchema(id.toLowerCase(), meta);
     }
 
+    @Override
     protected void addVariableToContext(String id, Value var) {
         ctx().addVariable(id, var);
     }
 
+    @Override
     protected Value getVariable(String var) {
         Context c = ctx();
         Value v = c.getVariable(var);
@@ -2239,10 +2250,10 @@ public class JPQLExpressionBuilder
      * @see Node
      * @see SimpleNode
      */
-    @SuppressWarnings("serial")
     protected abstract static class JPQLNode
         implements Node, Serializable {
 
+        private static final long serialVersionUID = 1L;
         final int id;
         final JPQL parser;
         JPQLNode parent;
@@ -2264,7 +2275,7 @@ public class JPQLExpressionBuilder
         }
 
         JPQLNode[] findChildrenByID(int id) {
-            Collection<JPQLNode> set = new LinkedHashSet<JPQLNode>();
+            Collection<JPQLNode> set = new LinkedHashSet<>();
             findChildrenByID(id, set);
             return set.toArray(new JPQLNode[set.size()]);
         }
@@ -2348,6 +2359,7 @@ public class JPQLExpressionBuilder
             setText(t.image);
         }
 
+        @Override
         public String toString() {
             return JPQLTreeConstants.jjtNodeName[this.id];
         }
@@ -2384,7 +2396,7 @@ public class JPQLExpressionBuilder
                 + (text && this.text != null ? " [" + this.text + "]" : ""));
             if (children != null) {
                 for (int i = 0; i < children.length; ++i) {
-                    JPQLNode n = (JPQLNode) children[i];
+                    JPQLNode n = children[i];
                     if (n != null) {
                         n.dump(out, prefix + " ", text);
                     }
@@ -2396,9 +2408,8 @@ public class JPQLExpressionBuilder
     /**
      * Public for unit testing purposes.
          */
-    @SuppressWarnings("serial")
-    public static class ParsedJPQL
-        implements Serializable {
+    public static class ParsedJPQL implements Serializable {
+        private static final long serialVersionUID = 1L;
 
         // This is only ever used during parse; when ParsedJPQL instances
         // are serialized, they will have already been parsed.
@@ -2454,6 +2465,7 @@ public class JPQLExpressionBuilder
             return _candidateType;
         }
 
+        @Override
         public String toString ()
 		{
 			return this.query;

@@ -25,7 +25,7 @@ package org.apache.openjpa.enhance;
  * @since 1.0.0
  */
 public interface RuntimeUnenhancedClassesModes {
-    public final static int SUPPORTED = 0;
-    public final static int UNSUPPORTED = 1;
-    public final static int WARN = 2;
+    int SUPPORTED = 0;
+    int UNSUPPORTED = 1;
+    int WARN = 2;
 }

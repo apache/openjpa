@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence.compat;
 import java.io.Serializable;
 
 public class DepartmentId implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     private String name;
 
     public DepartmentId() {
@@ -31,10 +33,12 @@ public class DepartmentId implements Serializable {
         this.name = name;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode();
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

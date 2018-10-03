@@ -31,20 +31,20 @@ public interface SizedMap extends Map {
     /**
      * The maximum number of entries, or Integer.MAX_VALUE for no limit.
      */
-    public int getMaxSize();
+    int getMaxSize();
 
     /**
      * The maximum number of entries, or Integer.MAX_VALUE for no limit.
      */
-    public void setMaxSize(int max);
+    void setMaxSize(int max);
 
     /**
      * Whether the map is full.
      */
-    public boolean isFull();
+    boolean isFull();
 
     /**
      * Overridable callback for when an overflow entry is automatically removed.
      */
-    public void overflowRemoved(Object key, Object value);
+    void overflowRemoved(Object key, Object value);
 }

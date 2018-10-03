@@ -27,7 +27,9 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class VarArgsExpression extends ExpressionImpl {
-	private final Expression[] _values;
+	
+    private static final long serialVersionUID = 1L;
+    private final Expression[] _values;
 
 	public VarArgsExpression(Expression[] values) {
 		_values = values;

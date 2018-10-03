@@ -60,7 +60,7 @@ public class StringComparison {
 	}
 
 	public List<String> tokenize(String s) throws IOException {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		StreamTokenizer tok = new StreamTokenizer(new StringReader(s));
 		tok.resetSyntax();
 		tok.wordChars('a', 'z');

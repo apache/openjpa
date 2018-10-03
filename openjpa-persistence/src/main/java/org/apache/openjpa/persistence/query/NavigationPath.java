@@ -26,6 +26,9 @@ import static org.apache.openjpa.persistence.query.PathOperator.NAVIGATION;
  *
  */
 class NavigationPath extends AbstractDomainObject implements PathExpression {
+    
+    private static final long serialVersionUID = 1L;
+
     protected NavigationPath(QueryDefinitionImpl owner, AbstractPath parent,
 		String attr) {
 		super(owner, parent, NAVIGATION, attr);
@@ -64,7 +67,8 @@ class NavigationPath extends AbstractDomainObject implements PathExpression {
 		return asProjection(ctx) + SPACE + ctx.getAlias(this);
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return getParent().toString()+ NAVIGATION +getLastSegment();
 	}
 

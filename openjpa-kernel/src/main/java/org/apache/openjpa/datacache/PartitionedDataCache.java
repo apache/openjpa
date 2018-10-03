@@ -61,12 +61,12 @@ import org.apache.openjpa.util.UserException;
  *
  * @since 2.0.0
  */
-@SuppressWarnings("serial")
 public class PartitionedDataCache extends ConcurrentDataCache {
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage(PartitionedDataCache.class);
     private Class<? extends DataCache> _type = ConcurrentDataCache.class;
-    private final List<String> _partProperties = new ArrayList<String>();
-    private final Map<String, DataCache> _partitions = new HashMap<String, DataCache>();
+    private final List<String> _partProperties = new ArrayList<>();
+    private final Map<String, DataCache> _partitions = new HashMap<>();
 
     @Override
     public void initialize(DataCacheManager mgr) {
@@ -125,6 +125,7 @@ public class PartitionedDataCache extends ConcurrentDataCache {
         return _partProperties;
     }
 
+    @Override
     public DataCache getPartition(String name, boolean create) {
         return _partitions.get(name);
     }
@@ -132,6 +133,7 @@ public class PartitionedDataCache extends ConcurrentDataCache {
     /**
      * Gets the name of the configured partitions.
      */
+    @Override
     public Set<String> getPartitionNames() {
         return _partitions.keySet();
     }
@@ -139,10 +141,12 @@ public class PartitionedDataCache extends ConcurrentDataCache {
     /**
      * Always returns true.
      */
+    @Override
     public final boolean isPartitioned() {
         return !_partitions.isEmpty();
     }
 
+    @Override
     public void endConfiguration() {
         if (!isPartitioned())
             conf.getConfigurationLog().warn(_loc.get("partition-cache-no-config"));

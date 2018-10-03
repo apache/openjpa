@@ -23,6 +23,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class EntityListenerPostLoadTest extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES);
     }

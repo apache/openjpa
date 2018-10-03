@@ -50,7 +50,7 @@ public class Person {
                     referencedColumnName="SSN"),
             inverseJoinColumns = @JoinColumn(name="ADDRESS_PHONE",
                     referencedColumnName="PHONE"))
-    private Set<Address> addresses = new HashSet<Address>();
+    private Set<Address> addresses = new HashSet<>();
 
 	public long getSsn() {
 		return ssn;
@@ -65,7 +65,7 @@ public class Person {
 	 */
 	public void addAddress(Address address) {
 		if (addresses == null)
-			addresses = new HashSet<Address>();
+			addresses = new HashSet<>();
 		addresses.add(address);
 		address.setPerson(this);
 	}

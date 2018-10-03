@@ -61,6 +61,7 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
      * Gets the name of this parameter.
      * The name can be null.
      */
+    @Override
     public final String getName() {
         return _name;
     }
@@ -69,6 +70,7 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
      * Raises an internal exception because parameters of CriteriaQuery
      * are not positional.
      */
+    @Override
     public final Integer getPosition() {
         throw new InternalException(this + " must not be asked for its position");
     }
@@ -77,6 +79,7 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         _index = index;
     }
 
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder("ParameterExpression");
         buf.append("<" + getJavaType().getSimpleName() + ">");
@@ -114,6 +117,7 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         return Expressions.asValue(q, ":", _name == null ? "param" : _name);
     }
 
+    @Override
     public Class<T> getParameterType() {
         return getJavaType();
     }

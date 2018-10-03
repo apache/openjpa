@@ -49,6 +49,7 @@ public class InMemorySavepointManager
         _preFlush = preFlush;
     }
 
+    @Override
     public OpenJPASavepoint newSavepoint(String name, Broker broker) {
         // pre-flush after creating savepoint b/c pre-flush may add/change
         // states
@@ -58,6 +59,7 @@ public class InMemorySavepointManager
         return save;
     }
 
+    @Override
     public boolean supportsIncrementalFlush() {
         // cannot incrementally flush as saved fields may become out of synch.
         return false;

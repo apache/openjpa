@@ -43,7 +43,7 @@ class Caches {
             try {
                 cls = Class.forName(className, true, loader);
                 if (classes == null)
-                    classes = new HashSet<Class<?>>();
+                    classes = new HashSet<>();
                 classes.add(cls);
             } catch (Throwable t) {
                 conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(null, t);

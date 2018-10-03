@@ -23,8 +23,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-
-
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
@@ -34,6 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestQueryResultClassAPI extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(QueryTest1.class, QueryTest2.class, QueryTest4.class,
             "openjpa.jdbc.QuerySQLCache", "true",

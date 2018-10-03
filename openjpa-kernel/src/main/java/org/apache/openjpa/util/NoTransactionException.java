@@ -30,10 +30,14 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class NoTransactionException
     extends InvalidStateException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public NoTransactionException(Message msg) {
         super(msg);
     }
 
+    @Override
     public int getSubtype() {
         return NO_TRANSACTION;
     }

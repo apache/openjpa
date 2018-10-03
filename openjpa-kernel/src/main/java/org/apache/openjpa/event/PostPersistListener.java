@@ -29,5 +29,5 @@ public interface PostPersistListener {
      * the latter is called at the end of the persist() operation itself, not
      * after the flush.
      */
-    public void afterPersistPerformed(LifecycleEvent event);
+    void afterPersistPerformed(LifecycleEvent event);
 }

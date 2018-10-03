@@ -47,6 +47,7 @@ public abstract class Person {
         return id;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Player) {
             Player player = (Player)obj;

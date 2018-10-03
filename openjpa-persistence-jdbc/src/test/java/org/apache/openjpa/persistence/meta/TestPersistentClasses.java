@@ -22,13 +22,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.openjpa.persistence.meta.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.meta.common.apps.RuntimeTest2;
-import org.apache.openjpa.persistence.meta.common.apps.RuntimeTest3;
-import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.meta.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.meta.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.meta.common.apps.RuntimeTest3;
 
 public class TestPersistentClasses
     extends AbstractTestCase {

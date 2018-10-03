@@ -35,10 +35,12 @@ public class UnspecifiedEntity implements CacheEntity {
 
     private String name;
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -47,6 +49,7 @@ public class UnspecifiedEntity implements CacheEntity {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

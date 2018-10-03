@@ -30,15 +30,15 @@ import java.util.Set;
  * @author Pinaki Poddar
  * @since 2.0.0
  */
-@SuppressWarnings("serial")
 public class OrderedMap<K, V> implements Map<K, V>, Serializable {
+    private static final long serialVersionUID = 1L;
     private final LinkedHashMap<K, V> _del;
 
     /**
      * Construct with predictable insertion order.
      */
     public OrderedMap() {
-        _del = new LinkedHashMap<K, V>(6,0.1f,false);
+        _del = new LinkedHashMap<>(6,0.1f,false);
     }
 
     /**
@@ -46,7 +46,7 @@ public class OrderedMap<K, V> implements Map<K, V>, Serializable {
      * @param lru if true the iterator order is based on last access, false for order of insertion.
      */
     public OrderedMap(boolean lru) {
-        _del = new LinkedHashMap<K, V>(6,0.1f,lru);
+        _del = new LinkedHashMap<>(6,0.1f,lru);
     }
 
     public int indexOf(Object key) {
@@ -59,60 +59,72 @@ public class OrderedMap<K, V> implements Map<K, V>, Serializable {
         return -1;
     }
 
+    @Override
     public void clear() {
     }
 
 
+    @Override
     public boolean containsKey(Object key) {
         return _del.containsKey(key);
     }
 
 
+    @Override
     public boolean containsValue(Object value) {
         return _del.containsValue(value);
     }
 
 
+    @Override
     public Set<java.util.Map.Entry<K, V>> entrySet() {
         return _del.entrySet();
     }
 
 
+    @Override
     public V get(Object key) {
         return _del.get(key);
     }
 
 
+    @Override
     public boolean isEmpty() {
         return _del.isEmpty();
     }
 
 
+    @Override
     public Set<K> keySet() {
         return _del.keySet();
     }
 
 
+    @Override
     public V put(K key, V value) {
         return _del.put(key, value);
     }
 
 
+    @Override
     public void putAll(Map<? extends K, ? extends V> m) {
         _del.putAll(m);
     }
 
 
+    @Override
     public V remove(Object key) {
         return _del.remove(key);
     }
 
 
+    @Override
     public int size() {
         return _del.size();
     }
 
 
+    @Override
     public Collection<V> values() {
         return _del.values();
     }

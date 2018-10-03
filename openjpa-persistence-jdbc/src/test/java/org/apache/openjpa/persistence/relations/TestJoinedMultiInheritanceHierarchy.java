@@ -28,6 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestJoinedMultiInheritanceHierarchy
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         super.setUp( CLEAR_TABLES, ChildChildClass.class, ChildClass.class,
                      GrandChildClass.class, ParentClass.class,

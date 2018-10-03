@@ -22,13 +22,13 @@ package org.apache.openjpa.conf;
  * @author Roberto Cortez
  */
 public interface SchemaGenerationSource {
-    public static final int NONE = 0;
+    int NONE = 0;
 
-    public static final int METADATA = 1;
+    int METADATA = 1;
 
-    public static final int SCRIPT = 2;
+    int SCRIPT = 2;
 
-    public static final int METADATA_THEN_SCRIPT = 3;
+    int METADATA_THEN_SCRIPT = 3;
 
-    public static final int SCRIPT_THEN_METADATA = 4;
+    int SCRIPT_THEN_METADATA = 4;
 }

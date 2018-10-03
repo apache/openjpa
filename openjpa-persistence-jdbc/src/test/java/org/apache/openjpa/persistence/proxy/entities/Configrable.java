@@ -21,6 +21,6 @@ package org.apache.openjpa.persistence.proxy.entities;
 import java.io.Serializable;
 
 public interface Configrable<K, V> extends Serializable{
-	public Parameterizable<K, V> getConfiguration();
-	public void setConfiguration(Parameterizable<K, V> config);
+	Parameterizable<K, V> getConfiguration();
+	void setConfiguration(Parameterizable<K, V> config);
 }

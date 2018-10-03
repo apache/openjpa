@@ -42,6 +42,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
 	private static boolean USE_TXN = true;
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES,
         	  UnidirectionalOneToOneOwned.class,

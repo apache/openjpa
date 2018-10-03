@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.identity;
 
 import java.sql.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 

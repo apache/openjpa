@@ -38,7 +38,7 @@ import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 public class TestPropertyCacheModeEnableSelective extends AbstractCacheModeTestCase {
 
     private static Cache cache = null;
-    private static List<String> sql = new ArrayList<String>();
+    private static List<String> sql = new ArrayList<>();
     private static JDBCListener listener;
 
     private static Class<?>[] expectedInCache =
@@ -49,7 +49,7 @@ public class TestPropertyCacheModeEnableSelective extends AbstractCacheModeTestC
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         if (emf == null) {
-            Map<String, Object> propertyMap = new HashMap<String, Object>();
+            Map<String, Object> propertyMap = new HashMap<>();
             propertyMap.put("javax.persistence.sharedCache.mode", "ENABLE_SELECTIVE");
             emf = createEntityManagerFactory("cache-mode-empty", propertyMap);
             assertNotNull(emf);
@@ -59,6 +59,7 @@ public class TestPropertyCacheModeEnableSelective extends AbstractCacheModeTestC
         return emf;
     }
 
+    @Override
     public JDBCListener getListener() {
         if (listener == null) {
             listener = new FilteringJDBCListener(getSql());
@@ -66,6 +67,7 @@ public class TestPropertyCacheModeEnableSelective extends AbstractCacheModeTestC
         return listener;
     }
 
+    @Override
     public List<String> getSql() {
         return sql;
     }

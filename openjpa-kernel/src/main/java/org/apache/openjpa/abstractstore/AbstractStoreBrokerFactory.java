@@ -52,6 +52,9 @@ import org.apache.openjpa.util.UserException;
 public class AbstractStoreBrokerFactory
     extends AbstractBrokerFactory {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * The property name under which to name the concrete store manager
      * class for this runtime.
@@ -79,7 +82,7 @@ public class AbstractStoreBrokerFactory
             return factory;
 
         factory = newInstance(cp);
-        factory.pool(key, factory);
+        AbstractBrokerFactory.pool(key, factory);
         return factory;
     }
 
@@ -120,12 +123,14 @@ public class AbstractStoreBrokerFactory
         _platform = platform;
     }
 
+    @Override
     public Map<String,Object> getProperties() {
         Map<String,Object> props = super.getProperties();
         props.put("Platform", _platform);
         return props;
     }
 
+    @Override
     protected StoreManager newStoreManager() {
         return createStoreManager(_storeCls, _storeProps);
     }

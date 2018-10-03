@@ -65,9 +65,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-import java.util.Map.Entry;
 
 import javax.management.IntrospectionException;
 import javax.persistence.EntityManager;
@@ -98,7 +98,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
 
     private String persistenceXmlResource;
     private Map<Map,OpenJPAEntityManagerFactory> emfs =
-        new HashMap<Map,OpenJPAEntityManagerFactory>();
+        new HashMap<>();
     private OpenJPAEntityManager currentEntityManager;
     private Object[] props;
 
@@ -143,6 +143,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      * Closes any EMFs created by getEmf()
      *
      */
+    @Override
     public void tearDown() throws Exception {
         try {
             super.tearDown();
@@ -776,6 +777,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
 
             mttest("reflection invocation: (" + method + ")",
                 serialCount, threads, iterations, new VolatileRunnable() {
+                @Override
                 public void run() throws Exception {
                     meth.invoke(thiz, args);
                 }
@@ -823,6 +825,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
 
             runners[i - 1] =
                 new Thread(title + " [" + i + " of " + threads + "]") {
+                    @Override
                     public void run() {
                         // do our best to have all threads start at the exact
                         // same time. This is imperfect, but the closer we
@@ -896,9 +899,9 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
     /**
      * A Runnable that can throw an Exception: used to test cases.
      */
-    public static interface VolatileRunnable {
+    public interface VolatileRunnable {
 
-        public void run() throws Exception;
+        void run() throws Exception;
     }
 
     /**
@@ -906,6 +909,8 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      */
     public class ThreadingException extends RuntimeException {
 
+        
+        private static final long serialVersionUID = 1L;
         private final Throwable[] _nested;
 
         public ThreadingException(String msg, Throwable nested) {
@@ -924,14 +929,17 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
                 _nested = nested;
         }
 
+        @Override
         public void printStackTrace() {
             printStackTrace(System.out);
         }
 
+        @Override
         public void printStackTrace(PrintStream out) {
             printStackTrace(new PrintWriter(out));
         }
 
+        @Override
         public void printStackTrace(PrintWriter out) {
             super.printStackTrace(out);
             for (int i = 0; i < _nested.length; i++) {
@@ -999,7 +1007,8 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      */
     public void sleepRandom(int max) {
         try {
-            Thread.currentThread().sleep((long) (Math.random() * max));
+            Thread.currentThread();
+            Thread.sleep((long) (Math.random() * max));
         } catch (InterruptedException ex) {
         }
     }
@@ -1050,6 +1059,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
             // spawn thread
             TimeOutThread tot = new TimeOutThread("TimeOutThread ["
                 + methodName + "] (" + millis + "ms)") {
+                @Override
                 public void run() {
                     try {
                         method.invoke(thz, (Object[]) null);
@@ -1074,14 +1084,16 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
                     tot.interrupt();
                 } catch (Throwable e) {
                 }
-                Thread.currentThread().sleep(500);
+                Thread.currentThread();
+                Thread.sleep(500);
 
                 // try to kill the thread
                 try {
                     tot.stop();
                 } catch (Throwable e) {
                 }
-                Thread.currentThread().sleep(500);
+                Thread.currentThread();
+                Thread.sleep(500);
 
                 throw new OperationTimedOutException("Execution of \""
                     + methodName + "\" timed out after "
@@ -1115,6 +1127,8 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      */
     public static class OperationTimedOutException extends RuntimeException {
 
+        
+        private static final long serialVersionUID = 1L;
         private final Throwable _err;
 
         public OperationTimedOutException(String msg, Throwable throwable) {
@@ -1122,14 +1136,17 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
             _err = throwable;
         }
 
+        @Override
         public void printStackTrace() {
             printStackTrace(System.out);
         }
 
+        @Override
         public void printStackTrace(PrintStream out) {
             printStackTrace(new PrintWriter(out));
         }
 
+        @Override
         public void printStackTrace(PrintWriter out) {
             super.printStackTrace(out);
             if (_err != null) {

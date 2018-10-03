@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -58,6 +59,7 @@ public class LRSProxyCollection
         _strat = strat;
     }
 
+    @Override
     protected int count() {
         final ClassMapping[] elems = _strat.getIndependentElementMappings
             (false);
@@ -66,6 +68,7 @@ public class LRSProxyCollection
         Union union = store.getSQLFactory().newUnion
             (Math.max(1, elems.length));
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 ClassMapping elem = (elems.length == 0) ? null : elems[idx];
                 sel.whereForeignKey(_strat.getJoinForeignKey(elem),
@@ -81,6 +84,7 @@ public class LRSProxyCollection
         }
     }
 
+    @Override
     protected boolean has(final Object obj) {
         final ClassMapping[] elems = _strat.getIndependentElementMappings
             (false);
@@ -89,6 +93,7 @@ public class LRSProxyCollection
         Union union = store.getSQLFactory().newUnion
             (Math.max(1, elems.length));
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 ClassMapping elem = (elems.length == 0) ? null : elems[idx];
                 sel.whereForeignKey(_strat.getJoinForeignKey(elem),
@@ -122,6 +127,7 @@ public class LRSProxyCollection
         }
     }
 
+    @Override
     protected Iterator itr() {
         final ClassMapping[] elems = _strat.getIndependentElementMappings(true);
         final OpenJPAStateManager sm = assertOwner();
@@ -133,10 +139,11 @@ public class LRSProxyCollection
         Union union = store.getSQLFactory().newUnion
             (Math.max(1, elems.length));
         if (fetch.getSubclassFetchMode(fm.getElementMapping().
-            getTypeMapping()) != fetch.EAGER_JOIN)
+            getTypeMapping()) != EagerFetchModes.EAGER_JOIN)
             union.abortUnion();
         union.setLRS(true);
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 ClassMapping elem = (elems.length == 0) ? null : elems[idx];
                 sel.whereForeignKey(_strat.getJoinForeignKey(elem),
@@ -148,7 +155,7 @@ public class LRSProxyCollection
                 resJoins[idx] = _strat.joinElementRelation(sel.newJoins(),
                     elem);
                 fm.orderRelation(sel, elem, resJoins[idx]);
-                _strat.selectElement(sel, elem, store, fetch, fetch.EAGER_JOIN,
+                _strat.selectElement(sel, elem, store, fetch, EagerFetchModes.EAGER_JOIN,
                     resJoins[idx]);
             }
         });
@@ -196,6 +203,7 @@ public class LRSProxyCollection
             _joins = joins;
         }
 
+        @Override
         public boolean hasNext() {
             if (_next == null) {
                 try {
@@ -207,6 +215,7 @@ public class LRSProxyCollection
             return _next.booleanValue();
         }
 
+        @Override
         public Object next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -219,10 +228,12 @@ public class LRSProxyCollection
             }
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void close() {
             _next = Boolean.FALSE;
             _res.close();

@@ -49,6 +49,7 @@ class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         _entity = type;
     }
 
+    @Override
     public  EntityType<X> getModel() {
         return _entity;
     }
@@ -101,6 +102,7 @@ class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         return factory.bindVariable(var, path);
     }
 
+    @Override
     public StringBuilder asValue(AliasContext q) {
         Value v = q.getRegisteredRootVariable(this);
         if (v != null)
@@ -113,6 +115,7 @@ class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         return new StringBuilder().append(Character.toLowerCase(_entity.getName().charAt(0)));
     }
 
+    @Override
     public StringBuilder asVariable(AliasContext q) {
         return new StringBuilder(_entity.getName()).append(" ").append(asValue(q));
     }

@@ -25,6 +25,8 @@ import java.io.Serializable;
  */
 public class IdentifierImpl implements Identifier, Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private String _name = null;
 
     protected IdentifierImpl() {}
@@ -33,18 +35,22 @@ public class IdentifierImpl implements Identifier, Serializable {
         setName(name);
     }
 
+    @Override
     public void setName(String name) {
         _name = name;
     }
 
+    @Override
     public String getName() {
         return _name;
     }
 
+    @Override
     public String toString() {
         return getName();
     }
 
+    @Override
     public int hashCode() {
         if (_name == null) {
             return super.hashCode();
@@ -52,6 +58,7 @@ public class IdentifierImpl implements Identifier, Serializable {
         return _name.toUpperCase().hashCode();
     }
 
+    @Override
     public int length() {
         if (getName() == null) {
             return 0;
@@ -59,6 +66,7 @@ public class IdentifierImpl implements Identifier, Serializable {
         return getName().length();
     }
 
+    @Override
     public int compareTo(Identifier o) {
         if (_name == null && (o == null || o.getName() == null)) {
             return 0;

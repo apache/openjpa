@@ -43,6 +43,9 @@ import org.apache.openjpa.lib.util.StringUtil;
 public abstract class Extensions
     implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final String OPENJPA = "openjpa";
 
     private static final Localizer _loc = Localizer.forPackage
@@ -314,7 +317,7 @@ public abstract class Extensions
             return;
 
         OpenJPAConfiguration conf = getRepository().getConfiguration();
-        Log log = conf.getLog(conf.LOG_METADATA);
+        Log log = conf.getLog(OpenJPAConfiguration.LOG_METADATA);
         if (!log.isWarnEnabled())
             return;
 
@@ -421,6 +424,8 @@ public abstract class Extensions
     private static class HashKey
         implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public final String vendor;
         public final String key;
 
@@ -429,6 +434,7 @@ public abstract class Extensions
             this.key = key;
         }
 
+        @Override
         public int hashCode() {
             int i = 0;
             if (vendor != null)
@@ -438,6 +444,7 @@ public abstract class Extensions
             return i;
         }
 
+        @Override
         public boolean equals(Object other) {
             if (other == this)
                 return true;
@@ -453,12 +460,15 @@ public abstract class Extensions
     private static class EmbeddedExtensions
         extends Extensions {
 
+        
+        private static final long serialVersionUID = 1L;
         private final Extensions _parent;
 
         public EmbeddedExtensions(Extensions parent) {
             _parent = parent;
         }
 
+        @Override
         public MetaDataRepository getRepository ()
 		{
 			return _parent.getRepository ();

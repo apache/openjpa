@@ -21,8 +21,8 @@ package org.apache.openjpa.kernel.exps;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
-
 import java.util.Objects;
+
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -41,6 +41,8 @@ public class CandidatePath
     extends Val
     implements Path {
 
+    
+    private static final long serialVersionUID = 1L;
     protected LinkedList _actions = null;
     protected String _correlationVar = null;
 
@@ -48,12 +50,14 @@ public class CandidatePath
      * Traverse into the given field of the current object, and update
      * the current object to that field value.
      */
+    @Override
     public void get(FieldMetaData field, boolean nullTraversal) {
         if (_actions == null)
             _actions = new LinkedList();
         _actions.add(new Traversal(field, nullTraversal));
     }
 
+    @Override
     public Class getType() {
         if (_actions == null)
             return getCandidateType();
@@ -72,9 +76,11 @@ public class CandidatePath
         return meta.getDescribedType();
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public FieldMetaData last() {
         if (_actions == null)
             return null;
@@ -98,6 +104,7 @@ public class CandidatePath
         _actions.add(type);
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         if (_actions == null)
@@ -152,10 +159,12 @@ public class CandidatePath
         return candidate;
     }
 
+    @Override
     public int hashCode() {
         return (_actions == null) ? 0 : _actions.hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -177,10 +186,12 @@ public class CandidatePath
             this.nullTraversal = nullTraversal;
         }
 
+        @Override
         public int hashCode() {
             return field.hashCode();
         }
 
+        @Override
         public boolean equals(Object other) {
             if (other == this)
                 return true;
@@ -188,26 +199,33 @@ public class CandidatePath
         }
 	}
 
+    @Override
     public void get(FieldMetaData fmd, XMLMetaData meta) {
     }
 
+    @Override
     public void get(XMLMetaData meta, String name) {
     }
 
+    @Override
     public XMLMetaData getXmlMapping() {
         return null;
     }
 
+    @Override
     public void setSchemaAlias(String schemaAlias) {
     }
 
+    @Override
     public String getSchemaAlias() {
         return null;
     }
 
+    @Override
     public void setSubqueryContext(Context conext, String correlationVar) {
     }
 
+    @Override
     public String getCorrelationVar() {
         return _correlationVar;
     }

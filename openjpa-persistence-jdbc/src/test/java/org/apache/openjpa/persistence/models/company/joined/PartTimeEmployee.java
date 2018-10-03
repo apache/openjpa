@@ -18,8 +18,12 @@
  */
 package org.apache.openjpa.persistence.models.company.joined;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+
+import org.apache.openjpa.persistence.models.company.IPartTimeEmployee;
 
 @Entity(name="JI_PartTimeEmployee")
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -31,19 +35,23 @@ public class PartTimeEmployee extends Employee
     @Basic
     private int weeklyHours;
 
+    @Override
     public void setWage(float wage) {
         this.wage = wage;
     }
 
+    @Override
     public float getWage() {
         return this.wage;
     }
 
 
+    @Override
     public void setWeeklyHours(int weeklyHours) {
         this.weeklyHours = weeklyHours;
     }
 
+    @Override
     public int getWeeklyHours() {
         return this.weeklyHours;
     }

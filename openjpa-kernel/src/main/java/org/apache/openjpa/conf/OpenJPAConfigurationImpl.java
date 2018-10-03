@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.audit.AuditLogger;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
@@ -68,6 +67,7 @@ import org.apache.openjpa.lib.encryption.EncryptionProvider;
 import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 import org.apache.openjpa.lib.instrumentation.InstrumentationProvider;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
@@ -195,7 +195,7 @@ public class OpenJPAConfigurationImpl
     public RemoteCommitProviderValue remoteProviderPlugin;
     public AutoDetachValue autoDetach;
 
-    private Collection<String> supportedOptions = new HashSet<String>(33);
+    private Collection<String> supportedOptions = new HashSet<>(33);
     private final StoreFacadeTypeRegistry _storeFacadeRegistry = new StoreFacadeTypeRegistry();
     private BrokerFactoryEventManager _brokerFactoryEventManager = new BrokerFactoryEventManager(this);
     private Map<String, Object> _peMap; //contains persistence environment-specific info
@@ -697,6 +697,7 @@ public class OpenJPAConfigurationImpl
             loadGlobals();
     }
 
+    @Override
     public Collection<String> supportedOptions() {
         return supportedOptions;
     }
@@ -706,11 +707,13 @@ public class OpenJPAConfigurationImpl
      * information) or an empty String if not set.
      *
      */
+    @Override
     public String getSpecification() {
         Specification spec = getSpecificationInstance();
         return spec == null ? "" : spec.getName();
     }
 
+    @Override
     public Specification getSpecificationInstance() {
         return (Specification)specification.get();
     }
@@ -721,48 +724,59 @@ public class OpenJPAConfigurationImpl
      * @param spec should be encoded in the format specified in {@link
      * Specification}.
      */
+    @Override
     public void setSpecification(String spec) {
         specification.setString(spec);
     }
 
+    @Override
     public void setSpecification(Specification newSpec) {
         specification.set(newSpec);
     }
 
+    @Override
     public void setClassResolver(String classResolver) {
         classResolverPlugin.setString(classResolver);
     }
 
+    @Override
     public String getClassResolver() {
         return classResolverPlugin.getString();
     }
 
+    @Override
     public void setClassResolver(ClassResolver classResolver) {
         classResolverPlugin.set(classResolver);
     }
 
+    @Override
     public ClassResolver getClassResolverInstance() {
         if (classResolverPlugin.get() == null)
             classResolverPlugin.instantiate(ClassResolver.class, this);
         return (ClassResolver) classResolverPlugin.get();
     }
 
+    @Override
     public void setBrokerFactory(String factory) {
         brokerFactoryPlugin.setString(factory);
     }
 
+    @Override
     public String getBrokerFactory() {
         return brokerFactoryPlugin.getString();
     }
 
+    @Override
     public void setBrokerImpl(String broker) {
         brokerPlugin.setString(broker);
     }
 
+    @Override
     public String getBrokerImpl() {
         return brokerPlugin.getString();
     }
 
+    @Override
     public BrokerImpl newBrokerInstance(String user, String pass) {
         BrokerImpl broker = (BrokerImpl) brokerPlugin.instantiate(BrokerImpl.class, this);
         if (broker != null)
@@ -770,20 +784,24 @@ public class OpenJPAConfigurationImpl
         return broker;
     }
 
+    @Override
     public void setDataCacheManager(String mgr) {
         dataCacheManagerPlugin.setString(mgr);
     }
 
+    @Override
     public String getDataCacheManager() {
         return dataCacheManagerPlugin.getString();
     }
 
+    @Override
     public void setDataCacheManager(DataCacheManager dcm) {
         if (dcm != null)
             dcm.initialize(this, dataCachePlugin, queryCachePlugin);
         dataCacheManagerPlugin.set(dcm);
     }
 
+    @Override
     public DataCacheManager getDataCacheManagerInstance() {
         DataCacheManager dcm = (DataCacheManager) dataCacheManagerPlugin.get();
         if (dcm == null) {
@@ -795,69 +813,85 @@ public class OpenJPAConfigurationImpl
         return dcm;
     }
 
+    @Override
     public void setDataCache(String dataCache) {
         dataCachePlugin.setString(dataCache);
     }
 
+    @Override
     public String getDataCache() {
         return dataCachePlugin.getString();
     }
 
+    @Override
     public void setDataCacheTimeout(int dataCacheTimeout) {
         this.dataCacheTimeout.set(dataCacheTimeout);
     }
 
+    @Override
     public void setDataCacheTimeout(Integer dataCacheTimeout) {
         if (dataCacheTimeout != null)
             setDataCacheTimeout(dataCacheTimeout.intValue());
     }
 
+    @Override
     public int getDataCacheTimeout() {
         return dataCacheTimeout.get();
     }
 
+    @Override
     public void setQueryCache(String queryCache) {
         queryCachePlugin.setString(queryCache);
     }
 
+    @Override
     public String getQueryCache() {
         return queryCachePlugin.getString();
     }
 
+    @Override
     public boolean getRefreshFromDataCache() {
     	return refreshFromDataCache.get();
     }
 
+    @Override
     public void setRefreshFromDataCache(boolean flag) {
     	refreshFromDataCache.set(flag);
     }
 
+    @Override
     public void setRefreshFromDataCache(Boolean flag) {
     	if (flag != null) {
     		refreshFromDataCache.set(flag.booleanValue());
     	}
     }
 
+    @Override
     public boolean getDynamicDataStructs() {
         return dynamicDataStructs.get();
     }
 
+    @Override
     public void setDynamicDataStructs(boolean dynamic) {
         dynamicDataStructs.set(dynamic);
     }
 
+    @Override
     public void setDynamicDataStructs(Boolean dynamic) {
         setDynamicDataStructs(dynamic.booleanValue());
     }
 
+    @Override
     public void setLockManager(String lockManager) {
         lockManagerPlugin.setString(lockManager);
     }
 
+    @Override
     public String getLockManager() {
         return lockManagerPlugin.getString();
     }
 
+    @Override
     public LockManager newLockManagerInstance() {
         // don't validate plugin properties on instantiation because it
         // is likely that back ends will override defaults with their
@@ -866,68 +900,83 @@ public class OpenJPAConfigurationImpl
             this, false);
     }
 
+    @Override
     public void setInverseManager(String inverseManager) {
         inverseManagerPlugin.setString(inverseManager);
     }
 
+    @Override
     public String getInverseManager() {
         return inverseManagerPlugin.getString();
     }
 
+    @Override
     public InverseManager newInverseManagerInstance() {
         return (InverseManager) inverseManagerPlugin.instantiate(InverseManager.class, this);
     }
 
+    @Override
     public void setSavepointManager(String savepointManager) {
         savepointManagerPlugin.setString(savepointManager);
     }
 
+    @Override
     public String getSavepointManager() {
         return savepointManagerPlugin.getString();
     }
 
+    @Override
     public SavepointManager getSavepointManagerInstance() {
         if (savepointManagerPlugin.get() == null)
             savepointManagerPlugin.instantiate(SavepointManager.class, this);
         return (SavepointManager) savepointManagerPlugin.get();
     }
 
+    @Override
     public void setOrphanedKeyAction(String action) {
         orphanedKeyPlugin.setString(action);
     }
 
+    @Override
     public String getOrphanedKeyAction() {
         return orphanedKeyPlugin.getString();
     }
 
+    @Override
     public OrphanedKeyAction getOrphanedKeyActionInstance() {
         if (orphanedKeyPlugin.get() == null)
             orphanedKeyPlugin.instantiate(OrphanedKeyAction.class, this);
         return (OrphanedKeyAction) orphanedKeyPlugin.get();
     }
 
+    @Override
     public void setOrphanedKeyAction(OrphanedKeyAction action) {
         orphanedKeyPlugin.set(action);
     }
 
+    @Override
     public void setRemoteCommitProvider(String remoteCommitProvider) {
         remoteProviderPlugin.setString(remoteCommitProvider);
     }
 
+    @Override
     public String getRemoteCommitProvider() {
         return remoteProviderPlugin.getString();
     }
 
+    @Override
     public RemoteCommitProvider newRemoteCommitProviderInstance() {
         return remoteProviderPlugin.instantiateProvider(this);
     }
 
+    @Override
     public void setRemoteCommitEventManager(
         RemoteCommitEventManager remoteEventManager) {
         this.remoteEventManager = remoteEventManager;
         remoteProviderPlugin.configureEventManager(remoteEventManager);
     }
 
+    @Override
     public RemoteCommitEventManager getRemoteCommitEventManager() {
         if (remoteEventManager == null) {
             remoteEventManager = new RemoteCommitEventManager(this);
@@ -936,118 +985,145 @@ public class OpenJPAConfigurationImpl
         return remoteEventManager;
     }
 
+    @Override
     public void setTransactionMode(String transactionMode) {
         this.transactionMode.setString(transactionMode);
     }
 
+    @Override
     public String getTransactionMode() {
         return transactionMode.getString();
     }
 
+    @Override
     public void setTransactionModeManaged(boolean managed) {
         transactionMode.set(managed);
     }
 
+    @Override
     public boolean isTransactionModeManaged() {
         return transactionMode.get();
     }
 
+    @Override
     public void setManagedRuntime(String managedRuntime) {
         managedRuntimePlugin.setString(managedRuntime);
     }
 
+    @Override
     public String getManagedRuntime() {
         return managedRuntimePlugin.getString();
     }
 
+    @Override
     public void setManagedRuntime(ManagedRuntime managedRuntime) {
         managedRuntimePlugin.set(managedRuntime);
     }
 
+    @Override
     public ManagedRuntime getManagedRuntimeInstance() {
         if (managedRuntimePlugin.get() == null)
             managedRuntimePlugin.instantiate(ManagedRuntime.class, this);
         return (ManagedRuntime) managedRuntimePlugin.get();
     }
 
+    @Override
     public void setProxyManager(String proxyManager) {
         proxyManagerPlugin.setString(proxyManager);
     }
 
+    @Override
     public String getProxyManager() {
         return proxyManagerPlugin.getString();
     }
 
+    @Override
     public void setProxyManager(ProxyManager proxyManager) {
         proxyManagerPlugin.set(proxyManager);
     }
 
+    @Override
     public ProxyManager getProxyManagerInstance() {
         if (proxyManagerPlugin.get() == null)
             proxyManagerPlugin.instantiate(ProxyManager.class, this);
         return (ProxyManager) proxyManagerPlugin.get();
     }
 
+    @Override
     public void setMapping(String mapping) {
         this.mapping.setString(mapping);
     }
 
+    @Override
     public String getMapping() {
         return mapping.getString();
     }
 
+    @Override
     public void setMetaDataFactory(String meta) {
         this.metaFactoryPlugin.setString(meta);
     }
 
+    @Override
     public String getMetaDataFactory() {
         return metaFactoryPlugin.getString();
     }
 
+    @Override
     public MetaDataFactory newMetaDataFactoryInstance() {
         return (MetaDataFactory) metaFactoryPlugin.instantiate(
             MetaDataFactory.class, this);
     }
 
+    @Override
     public void setMetaDataRepository(String meta) {
         this.metaRepositoryPlugin.setString(meta);
     }
 
+    @Override
     public String getMetaDataRepository() {
         return metaRepositoryPlugin.getString();
     }
 
+    @Override
     public void setMetaDataRepository(MetaDataRepository meta) {
         metaRepository = meta;
     }
 
+    @Override
     public MetaDataRepository getMetaDataRepositoryInstance() {
         if (metaRepository == null)
             metaRepository = newMetaDataRepositoryInstance();
         return metaRepository;
     }
 
+    @Override
     public boolean metaDataRepositoryAvailable(){
         return metaRepository != null;
     }
 
+    @Override
     public MetaDataRepository newMetaDataRepositoryInstance() {
         return (MetaDataRepository) metaRepositoryPlugin.instantiate(
             MetaDataRepository.class, this);
     }
 
+    @Override
     public void setConnectionUserName(String connectionUserName) {
         this.connectionUserName.setString(connectionUserName);
     }
 
+    @Override
     public String getConnectionUserName() {
         return connectionUserName.getString();
     }
 
+    @Override
     public void setConnectionPassword(String connectionPassword) {
         this.connectionPassword.setString(connectionPassword);
     }
 
+    @Override
     public String getConnectionPassword() {
     	EncryptionProvider p = getEncryptionProvider();
     	if(p != null) {
@@ -1056,67 +1132,83 @@ public class OpenJPAConfigurationImpl
         return connectionPassword.getString();
     }
 
+    @Override
     public void setConnectionURL(String connectionURL) {
         this.connectionURL.setString(connectionURL);
     }
 
+    @Override
     public String getConnectionURL() {
         return connectionURL.getString();
     }
 
+    @Override
     public void setConnectionDriverName(String driverName) {
         this.connectionDriverName.setString(driverName);
     }
 
+    @Override
     public String getConnectionDriverName() {
         return connectionDriverName.getString();
     }
 
+    @Override
     public void setConnectionProperties(String connectionProperties) {
         this.connectionProperties.setString(connectionProperties);
     }
 
+    @Override
     public String getConnectionProperties() {
         return connectionProperties.getString();
     }
 
+    @Override
     public void setConnectionFactoryProperties(
         String connectionFactoryProperties) {
         this.connectionFactoryProperties.setString(connectionFactoryProperties);
     }
 
+    @Override
     public String getConnectionFactoryProperties() {
         return connectionFactoryProperties.getString();
     }
 
+    @Override
     public String getConnectionFactoryMode() {
         return connectionFactoryMode.getString();
     }
 
+    @Override
     public void setConnectionFactoryMode(String mode) {
         connectionFactoryMode.setString(mode);
     }
 
+    @Override
     public boolean isConnectionFactoryModeManaged() {
         return connectionFactoryMode.get();
     }
 
+    @Override
     public void setConnectionFactoryModeManaged(boolean managed) {
         connectionFactoryMode.set(managed);
     }
 
+    @Override
     public void setConnectionFactoryName(String connectionFactoryName) {
         this.connectionFactoryName.setString(connectionFactoryName);
     }
 
+    @Override
     public String getConnectionFactoryName() {
         return connectionFactoryName.getString();
     }
 
+    @Override
     public void setConnectionFactory(Object factory) {
         connectionFactory.set(factory);
     }
 
+    @Override
     public Object getConnectionFactory() {
         if (connectionFactory.get() == null)
             connectionFactory.set(
@@ -1140,18 +1232,22 @@ public class OpenJPAConfigurationImpl
         }
     }
 
+    @Override
     public void setConnection2UserName(String connection2UserName) {
         this.connection2UserName.setString(connection2UserName);
     }
 
+    @Override
     public String getConnection2UserName() {
         return connection2UserName.getString();
     }
 
+    @Override
     public void setConnection2Password(String connection2Password) {
         this.connection2Password.setString(connection2Password);
     }
 
+    @Override
     public String getConnection2Password() {
     	EncryptionProvider p = getEncryptionProvider();
     	if(p != null){
@@ -1160,52 +1256,64 @@ public class OpenJPAConfigurationImpl
         return connection2Password.getString();
     }
 
+    @Override
     public void setConnection2URL(String connection2URL) {
         this.connection2URL.setString(connection2URL);
     }
 
+    @Override
     public String getConnection2URL() {
         return connection2URL.getString();
     }
 
+    @Override
     public void setConnection2DriverName(String driverName) {
         this.connection2DriverName.setString(driverName);
     }
 
+    @Override
     public String getConnection2DriverName() {
         return connection2DriverName.getString();
     }
 
+    @Override
     public void setConnection2Properties(String connection2Properties) {
         this.connection2Properties.setString(connection2Properties);
     }
 
+    @Override
     public String getConnection2Properties() {
         return connection2Properties.getString();
     }
 
+    @Override
     public void setConnectionFactory2Properties(
         String connectionFactory2Properties) {
         this.connectionFactory2Properties
             .setString(connectionFactory2Properties);
     }
 
+    @Override
     public String getConnectionFactory2Properties() {
         return connectionFactory2Properties.getString();
     }
 
+    @Override
     public void setConnectionFactory2Name(String connectionFactory2Name) {
         this.connectionFactory2Name.setString(connectionFactory2Name);
     }
 
+    @Override
     public String getConnectionFactory2Name() {
         return connectionFactory2Name.getString();
     }
 
+    @Override
     public void setConnectionFactory2(Object factory) {
         connectionFactory2.set(factory);
     }
 
+    @Override
     public Object getConnectionFactory2() {
         if (connectionFactory2.get() == null)
             connectionFactory2.set(
@@ -1214,80 +1322,99 @@ public class OpenJPAConfigurationImpl
         return connectionFactory2.get();
     }
 
+    @Override
     public void setOptimistic(boolean optimistic) {
         this.optimistic.set(optimistic);
     }
 
+    @Override
     public void setOptimistic(Boolean optimistic) {
         if (optimistic != null)
             setOptimistic(optimistic.booleanValue());
     }
 
+    @Override
     public boolean getOptimistic() {
         return optimistic.get();
     }
 
+    @Override
     public void setAutoClear(String clear) {
         autoClear.setString(clear);
     }
 
+    @Override
     public String getAutoClear() {
         return autoClear.getString();
     }
 
+    @Override
     public void setAutoClear(int clear) {
         autoClear.set(clear);
     }
 
+    @Override
     public int getAutoClearConstant() {
         return autoClear.get();
     }
 
+    @Override
     public void setRetainState(boolean retainState) {
         this.retainState.set(retainState);
     }
 
+    @Override
     public void setRetainState(Boolean retainState) {
         if (retainState != null)
             setRetainState(retainState.booleanValue());
     }
 
+    @Override
     public boolean getRetainState() {
         return retainState.get();
     }
 
+    @Override
     public void setRestoreState(String restoreState) {
         this.restoreState.setString(restoreState);
     }
 
+    @Override
     public String getRestoreState() {
         return restoreState.getString();
     }
 
+    @Override
     public void setRestoreState(int restoreState) {
         this.restoreState.set(restoreState);
     }
 
+    @Override
     public int getRestoreStateConstant() {
         return restoreState.get();
     }
 
+    @Override
     public void setAutoDetach(String autoDetach) {
         this.autoDetach.setString(autoDetach);
     }
 
+    @Override
     public String getAutoDetach() {
         return autoDetach.getString();
     }
 
+    @Override
     public void setAutoDetach(int autoDetachFlags) {
         autoDetach.setConstant(autoDetachFlags);
     }
 
+    @Override
     public int getAutoDetachConstant() {
         return autoDetach.getConstant();
     }
 
+    @Override
     public void setDetachState(String detachState) {
         detachStatePlugin.setString(detachState);
     }
@@ -1296,266 +1423,328 @@ public class OpenJPAConfigurationImpl
         return detachStatePlugin.getString();
     }
 
+    @Override
     public void setDetachState(DetachOptions detachState) {
         detachStatePlugin.set(detachState);
     }
 
+    @Override
     public DetachOptions getDetachStateInstance() {
         if (detachStatePlugin.get() == null)
             detachStatePlugin.instantiate(DetachOptions.class, this);
         return (DetachOptions) detachStatePlugin.get();
     }
 
+    @Override
     public void setIgnoreChanges(boolean ignoreChanges) {
         this.ignoreChanges.set(ignoreChanges);
     }
 
+    @Override
     public void setIgnoreChanges(Boolean ignoreChanges) {
         if (ignoreChanges != null)
             setIgnoreChanges(ignoreChanges.booleanValue());
     }
 
+    @Override
     public boolean getIgnoreChanges() {
         return ignoreChanges.get();
     }
 
+    @Override
     public void setNontransactionalRead(boolean nontransactionalRead) {
         this.nontransactionalRead.set(nontransactionalRead);
     }
 
+    @Override
     public void setNontransactionalRead(Boolean nontransactionalRead) {
         if (nontransactionalRead != null)
             setNontransactionalRead(nontransactionalRead.booleanValue());
     }
 
+    @Override
     public boolean getNontransactionalRead() {
         return nontransactionalRead.get();
     }
 
+    @Override
     public void setNontransactionalWrite(boolean nontransactionalWrite) {
         this.nontransactionalWrite.set(nontransactionalWrite);
     }
 
+    @Override
     public void setNontransactionalWrite(Boolean nontransactionalWrite) {
         if (nontransactionalWrite != null)
             setNontransactionalWrite(nontransactionalWrite.booleanValue());
     }
 
+    @Override
     public boolean getNontransactionalWrite() {
         return nontransactionalWrite.get();
     }
 
+    @Override
     public void setMultithreaded(boolean multithreaded) {
         this.multithreaded.set(multithreaded);
     }
 
+    @Override
     public void setMultithreaded(Boolean multithreaded) {
         if (multithreaded != null)
             setMultithreaded(multithreaded.booleanValue());
     }
 
+    @Override
     public boolean getMultithreaded() {
         return multithreaded.get();
     }
 
+    @Override
     public void setFetchBatchSize(int fetchBatchSize) {
         this.fetchBatchSize.set(fetchBatchSize);
     }
 
+    @Override
     public void setFetchBatchSize(Integer fetchBatchSize) {
         if (fetchBatchSize != null)
             setFetchBatchSize(fetchBatchSize.intValue());
     }
 
+    @Override
     public int getFetchBatchSize() {
         return fetchBatchSize.get();
     }
 
+    @Override
     public void setMaxFetchDepth(int maxFetchDepth) {
         this.maxFetchDepth.set(maxFetchDepth);
     }
 
+    @Override
     public void setMaxFetchDepth(Integer maxFetchDepth) {
         if (maxFetchDepth != null)
             setMaxFetchDepth(maxFetchDepth.intValue());
     }
 
+    @Override
     public int getMaxFetchDepth() {
         return maxFetchDepth.get();
     }
 
+    @Override
     public void setFetchGroups(String fetchGroups) {
         this.fetchGroups.setString(fetchGroups);
     }
 
+    @Override
     public String getFetchGroups() {
         return fetchGroups.getString();
     }
 
+    @Override
     public String[] getFetchGroupsList() {
         return fetchGroups.get();
     }
 
+    @Override
     public void setFetchGroups(String[] fetchGroups) {
         this.fetchGroups.set(fetchGroups);
     }
 
+    @Override
     public void setFlushBeforeQueries(String flush) {
         flushBeforeQueries.setString(flush);
     }
 
+    @Override
     public String getFlushBeforeQueries() {
         return flushBeforeQueries.getString();
     }
 
+    @Override
     public void setFlushBeforeQueries(int flush) {
         flushBeforeQueries.set(flush);
     }
 
+    @Override
     public int getFlushBeforeQueriesConstant() {
         return flushBeforeQueries.get();
     }
 
+    @Override
     public void setLockTimeout(int timeout) {
         lockTimeout.set(timeout);
     }
 
+    @Override
     public void setLockTimeout(Integer timeout) {
         if (timeout != null)
             setLockTimeout(timeout.intValue());
     }
 
+    @Override
     public int getLockTimeout() {
         return lockTimeout.get();
     }
 
+    @Override
     public int getQueryTimeout() {
         return queryTimeout.get();
     }
 
+    @Override
     public void setQueryTimeout(int timeout) {
          queryTimeout.set(timeout);
     }
 
+    @Override
     public void setReadLockLevel(String level) {
         readLockLevel.setString(level);
     }
 
+    @Override
     public String getReadLockLevel() {
         return readLockLevel.getString();
     }
 
+    @Override
     public void setReadLockLevel(int level) {
         readLockLevel.set(level);
     }
 
+    @Override
     public int getReadLockLevelConstant() {
         return readLockLevel.get();
     }
 
+    @Override
     public void setWriteLockLevel(String level) {
         writeLockLevel.setString(level);
     }
 
+    @Override
     public String getWriteLockLevel() {
         return writeLockLevel.getString();
     }
 
+    @Override
     public void setWriteLockLevel(int level) {
         writeLockLevel.set(level);
     }
 
+    @Override
     public int getWriteLockLevelConstant() {
         return writeLockLevel.get();
     }
 
+    @Override
     public void setSequence(String sequence) {
         seqPlugin.setString(sequence);
     }
 
+    @Override
     public String getSequence() {
         return seqPlugin.getString();
     }
 
+    @Override
     public void setSequence(Seq seq) {
         seqPlugin.set(seq);
     }
 
+    @Override
     public Seq getSequenceInstance() {
         if (seqPlugin.get() == null)
             seqPlugin.instantiate(Seq.class, this);
         return (Seq) seqPlugin.get();
     }
 
+    @Override
     public void setConnectionRetainMode(String connectionRetainMode) {
         this.connectionRetainMode.setString(connectionRetainMode);
     }
 
+    @Override
     public String getConnectionRetainMode() {
         return connectionRetainMode.getString();
     }
 
+    @Override
     public void setConnectionRetainMode(int connectionRetainMode) {
         this.connectionRetainMode.set(connectionRetainMode);
     }
 
+    @Override
     public int getConnectionRetainModeConstant() {
         return connectionRetainMode.get();
     }
 
+    @Override
     public void setFilterListeners(String filterListeners) {
         filterListenerPlugins.setString(filterListeners);
     }
 
+    @Override
     public String getFilterListeners() {
         return filterListenerPlugins.getString();
     }
 
+    @Override
     public void setFilterListeners(FilterListener[] listeners) {
         filterListenerPlugins.set(listeners);
     }
 
+    @Override
     public FilterListener[] getFilterListenerInstances() {
         if (filterListenerPlugins.get() == null)
             filterListenerPlugins.instantiate(FilterListener.class, this);
         return (FilterListener[]) filterListenerPlugins.get();
     }
 
+    @Override
     public void setAggregateListeners(String aggregateListeners) {
         aggregateListenerPlugins.setString(aggregateListeners);
     }
 
+    @Override
     public String getAggregateListeners() {
         return aggregateListenerPlugins.getString();
     }
 
+    @Override
     public void setAggregateListeners(AggregateListener[] listeners) {
         aggregateListenerPlugins.set(listeners);
     }
 
+    @Override
     public AggregateListener[] getAggregateListenerInstances() {
         if (aggregateListenerPlugins.get() == null)
             aggregateListenerPlugins.instantiate(AggregateListener.class, this);
         return (AggregateListener[]) aggregateListenerPlugins.get();
     }
 
+    @Override
     public void setRetryClassRegistration(boolean retry) {
         retryClassRegistration.set(retry);
     }
 
+    @Override
     public void setRetryClassRegistration(Boolean retry) {
         if (retry != null)
             setRetryClassRegistration(retry.booleanValue());
     }
 
+    @Override
     public boolean getRetryClassRegistration() {
         return retryClassRegistration.get();
     }
 
+    @Override
     public String getCompatibility() {
         return compatibilityPlugin.getString();
     }
 
+    @Override
     public void setCompatibility(String compatibility) {
         compatibilityPlugin.setString(compatibility);
     }
@@ -1566,6 +1755,7 @@ public class OpenJPAConfigurationImpl
      * new one so that the compatibility flags set in compliance with the
      * Specification can be preserved.
      */
+    @Override
     public Compatibility getCompatibilityInstance() {
         if (compatibilityPlugin.get() == null) {
             Specification spec = getSpecificationInstance();
@@ -1578,82 +1768,101 @@ public class OpenJPAConfigurationImpl
         return (Compatibility) compatibilityPlugin.get();
     }
 
+    @Override
     public String getCallbackOptions() {
         return callbackPlugin.getString();
     }
 
+    @Override
     public void setCallbackOptions(String options) {
         callbackPlugin.setString(options);
     }
 
+    @Override
     public CallbackOptions getCallbackOptionsInstance() {
         if (callbackPlugin.get() == null)
             callbackPlugin.instantiate(CallbackOptions.class, this);
         return (CallbackOptions) callbackPlugin.get();
     }
 
+    @Override
     public String getQueryCompilationCache() {
         return queryCompilationCachePlugin.getString();
     }
 
+    @Override
     public void setQueryCompilationCache(String queryCompilationCache) {
         queryCompilationCachePlugin.setString(queryCompilationCache);
     }
 
+    @Override
     public Map getQueryCompilationCacheInstance() {
         if (queryCompilationCachePlugin.get() == null)
             queryCompilationCachePlugin.instantiate(Map.class, this);
         return (Map) queryCompilationCachePlugin.get();
     }
 
+    @Override
     public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry() {
         return _storeFacadeRegistry;
     }
 
+    @Override
     public BrokerFactoryEventManager getBrokerFactoryEventManager() {
         return _brokerFactoryEventManager;
     }
 
+    @Override
     public String getRuntimeUnenhancedClasses() {
         return runtimeUnenhancedClasses.getString();
     }
 
+    @Override
     public int getRuntimeUnenhancedClassesConstant() {
         return runtimeUnenhancedClasses.get();
     }
 
+    @Override
     public void setRuntimeUnenhancedClasses(int mode) {
         runtimeUnenhancedClasses.set(mode);
     }
 
+    @Override
     public void setRuntimeUnenhancedClasses(String mode) {
         runtimeUnenhancedClasses.setString(mode);
     }
 
+    @Override
     public String getCacheMarshallers() {
         return cacheMarshallerPlugins.getString();
     }
 
+    @Override
     public void setCacheMarshallers(String marshallers) {
         cacheMarshallerPlugins.setString(marshallers);
     }
 
+    @Override
     public Map getCacheMarshallerInstances() {
         return cacheMarshallerPlugins.getInstancesAsMap();
     }
 
+    @Override
     public boolean isInitializeEagerly() {
     	return eagerInitialization.get();
     }
 
+    @Override
     public void setInitializeEagerly(boolean retry) {
     	eagerInitialization.set(retry);
     }
 
+    @Override
     public void setValidationMode(String mode) {
         validationMode.setString(mode);
     }
 
+    @Override
     public String getValidationMode() {
         String mode = validationMode.getString();
         if (mode == null)
@@ -1661,10 +1870,12 @@ public class OpenJPAConfigurationImpl
         return mode;
     }
 
+    @Override
     public void setValidationGroupPrePersist(String vgPrePersist) {
         validationGroupPrePersist.setString(vgPrePersist);
     }
 
+    @Override
     public String getValidationGroupPrePersist() {
         String vgPrePersist = validationGroupPrePersist.getString();
         if (vgPrePersist == null)
@@ -1672,10 +1883,12 @@ public class OpenJPAConfigurationImpl
         return vgPrePersist;
     }
 
+    @Override
     public void setValidationGroupPreUpdate(String vgPreUpdate) {
         validationGroupPreUpdate.setString(vgPreUpdate);
     }
 
+    @Override
     public String getValidationGroupPreUpdate() {
         String vgPreUpdate = validationGroupPreUpdate.getString();
         if (vgPreUpdate == null)
@@ -1683,10 +1896,12 @@ public class OpenJPAConfigurationImpl
         return vgPreUpdate;
     }
 
+    @Override
     public void setValidationGroupPreRemove(String vgPreRemove) {
         validationGroupPreRemove.setString(vgPreRemove);
     }
 
+    @Override
     public String getValidationGroupPreRemove() {
         String vgPreRemove = validationGroupPreRemove.getString();
         if (vgPreRemove == null)
@@ -1694,10 +1909,12 @@ public class OpenJPAConfigurationImpl
         return vgPreRemove;
     }
 
+    @Override
     public String getInstrumentation() {
         return instrumentationProviders.getString();
     }
 
+    @Override
     public void setInstrumentation(String providers) {
         instrumentationProviders.setString(providers);
     }
@@ -1722,6 +1939,7 @@ public class OpenJPAConfigurationImpl
         instrumentationManager.set(im);
     }
 
+    @Override
     public InstrumentationManager getInstrumentationManagerInstance() {
         InstrumentationManager im = (InstrumentationManager) instrumentationManager.get();
         if (im == null) {
@@ -1734,6 +1952,7 @@ public class OpenJPAConfigurationImpl
         return im;
     }
 
+    @Override
     public void instantiateAll() {
         super.instantiateAll();
         getMetaDataRepositoryInstance();
@@ -1746,6 +1965,7 @@ public class OpenJPAConfigurationImpl
         }
     }
 
+    @Override
     protected void preClose() {
         ImplHelper.close(metaRepository);
         ImplHelper.close(remoteEventManager);
@@ -1753,22 +1973,27 @@ public class OpenJPAConfigurationImpl
         super.preClose();
     }
 
+    @Override
     public Log getConfigurationLog() {
         return getLog(LOG_RUNTIME);
     }
 
+    @Override
     public void setQuerySQLCache(String querySQLCache) {
         preparedQueryCachePlugin.setString(querySQLCache);
     }
 
+    @Override
     public void setQuerySQLCache(PreparedQueryCache querySQLCache) {
         preparedQueryCachePlugin.set(querySQLCache);
     }
 
+    @Override
     public String getQuerySQLCache() {
         return preparedQueryCachePlugin.getString();
     }
 
+    @Override
     public PreparedQueryCache getQuerySQLCacheInstance() {
         if (preparedQueryCachePlugin == null)
             return null;
@@ -1780,14 +2005,17 @@ public class OpenJPAConfigurationImpl
         return (PreparedQueryCache)preparedQueryCachePlugin.get();
     }
 
+    @Override
     public void setFinderCache(String finderCache) {
         finderCachePlugin.setString(finderCache);
     }
 
+    @Override
     public String getFinderCache() {
         return finderCachePlugin.getString();
     }
 
+    @Override
     public FinderCache getFinderCacheInstance() {
         if (finderCachePlugin.get() == null) {
             finderCachePlugin.instantiate(FinderCache.class, this);
@@ -1795,26 +2023,32 @@ public class OpenJPAConfigurationImpl
         return (FinderCache)finderCachePlugin.get();
     }
 
+    @Override
     public Object getValidationFactoryInstance() {
         return validationFactory.get();
     }
 
+    @Override
     public void setValidationFactory(Object factory) {
         validationFactory.set(factory);
     }
 
+    @Override
     public Object getValidatorInstance() {
         return validator.get();
     }
 
+    @Override
     public void setValidatorInstance(Object val) {
         validator.set(val);
     }
 
+    @Override
     public String getLifecycleEventManager() {
         return lifecycleEventManager.getString();
     }
 
+    @Override
     public LifecycleEventManager getLifecycleEventManagerInstance() {
         LifecycleEventManager lem = null;
         if (!getCompatibilityInstance().isSingletonLifecycleEventManager() ||
@@ -1825,6 +2059,7 @@ public class OpenJPAConfigurationImpl
         return lem;
     }
 
+    @Override
     public void setLifecycleEventManager(String lem) {
         if (_allowSetLifeCycleEventManager) {
             _allowSetLifeCycleEventManager = false;
@@ -1839,37 +2074,45 @@ public class OpenJPAConfigurationImpl
         }
     }
 
+    @Override
     public boolean getDynamicEnhancementAgent() {
         return dynamicEnhancementAgent.get();
     }
 
+    @Override
     public void setDynamicEnhancementAgent(boolean dynamic) {
         dynamicEnhancementAgent.set(dynamic);
     }
 
+    @Override
     public void setEncryptionProvider(String p) {
         encryptionProvider.setString(p);
     }
 
+    @Override
     public EncryptionProvider getEncryptionProvider() {
         if (encryptionProvider.get() == null)
             encryptionProvider.instantiate(EncryptionProvider.class, this);
         return (EncryptionProvider) encryptionProvider.get();
     }
 
+    @Override
     public void setDataCacheMode(String mode) {
         this.dataCacheMode.setString(mode);
     }
 
+    @Override
     public String getDataCacheMode() {
         return dataCacheMode.getString();
     }
 
 
+    @Override
     public String getCacheDistributionPolicy() {
         return cacheDistributionPolicyPlugin.getString();
     }
 
+    @Override
     public CacheDistributionPolicy getCacheDistributionPolicyInstance() {
         CacheDistributionPolicy policy = (CacheDistributionPolicy) cacheDistributionPolicyPlugin.get();
         if (policy == null) {
@@ -1879,10 +2122,12 @@ public class OpenJPAConfigurationImpl
         return policy;
     }
 
+    @Override
     public void setCacheDistributionPolicy(String policyPlugin) {
         cacheDistributionPolicyPlugin.setString(policyPlugin);
     }
 
+    @Override
     public void setCacheDistributionPolicyInstance(CacheDistributionPolicy policy) {
         cacheDistributionPolicyPlugin.set(policy);
     }
@@ -1895,6 +2140,7 @@ public class OpenJPAConfigurationImpl
         return _peMap;
     }
 
+    @Override
     public Auditor getAuditorInstance() {
     	Auditor auditor = (Auditor) auditorPlugin.get();
         if (auditor == null) {
@@ -1903,93 +2149,115 @@ public class OpenJPAConfigurationImpl
        return auditor;
     }
 
+    @Override
     public void setAuditorInstance(Auditor auditor) {
     	auditorPlugin.set(auditor);
     }
 
+    @Override
     public String getAuditor() {
     	return auditorPlugin.getString();
     }
 
+    @Override
     public void setAuditor(String auditor) {
     	auditorPlugin.setString(auditor);
     }
 
+    @Override
     public boolean getPostLoadOnMerge() {
         return postLoadOnMerge.get();
     }
 
+    @Override
     public void setPostLoadOnMerge(boolean postLoadOnMerge) {
         this.postLoadOnMerge.set(postLoadOnMerge);
     }
 
+    @Override
     public void setPostLoadOnMerge(Boolean postLoadOnMerge) {
         if (postLoadOnMerge != null)
             setPostLoadOnMerge(postLoadOnMerge.booleanValue());
     }
 
+    @Override
     public boolean getOptimizeIdCopy() {
         return optimizeIdCopy.get();
     }
 
+    @Override
     public void setOptimizeIdCopy(boolean optimizeId) {
         optimizeIdCopy.set(optimizeId);
     }
 
+    @Override
     public void setOptimizeIdCopy(Boolean optimizeId) {
         if (optimizeId != null) {
             setOptimizeIdCopy(optimizeId.booleanValue());
         }
     }
 
+    @Override
     public String getDatabaseAction() {
         return databaseAction.getString();
     }
 
+    @Override
     public int getDatabaseActionConstant() {
         return databaseAction.get();
     }
 
+    @Override
     public String getScriptsAction() {
         return scriptsAction.getString();
     }
 
+    @Override
     public int getScriptsActionConstant() {
         return scriptsAction.get();
     }
 
+    @Override
     public String getCreateSource() {
         return createSource.getString();
     }
 
+    @Override
     public int getCreateSourceConstant() {
         return createSource.get();
     }
 
+    @Override
     public String getDropSource() {
         return dropSource.getString();
     }
 
+    @Override
     public int getDropSourceConstant() {
         return dropSource.get();
     }
 
+    @Override
     public String getCreateScriptSource() {
         return createScriptSource.getString();
     }
 
+    @Override
     public String getDropScriptSource() {
         return dropScriptSource.getString();
     }
 
+    @Override
     public String getCreateScriptTarget() {
         return createScriptTarget.getString();
     }
 
+    @Override
     public String getDropScriptTarget() {
         return dropScriptTarget.getString();
     }
 
+    @Override
     public String getLoadScriptSource() {
         return loadScriptSource.getString();
     }

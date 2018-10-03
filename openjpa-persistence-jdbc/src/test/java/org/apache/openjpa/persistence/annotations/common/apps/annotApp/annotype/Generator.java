@@ -19,9 +19,15 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
-import java.util.*;
+import java.util.StringTokenizer;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.TableGenerator;
 
 @Entity
 // non-psql/ora dbs cause issues with SequenceGenerator in auto-mapping
@@ -85,6 +91,7 @@ public class Generator {
             pk3 = Long.valueOf(tok.nextToken());
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o == null || !(o instanceof Oid))
                 return false;
@@ -98,11 +105,13 @@ public class Generator {
             return pk2.equals(other.pk2);
         }
 
+        @Override
         public int hashCode() {
             return pk + (pk2 == null ? 0 : pk2.hashCode())
                 + (int) (pk3 % Integer.MAX_VALUE);
         }
 
+        @Override
         public String toString() {
             return pk + "," + pk2 + "," + pk3;
         }

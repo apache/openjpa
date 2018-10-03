@@ -22,33 +22,33 @@ import java.util.Set;
 
 public interface ManagedInterface extends ManagedInterfaceSup {
 
-    public int getIntField();
+    int getIntField();
 
-    public void setIntField(int i);
+    void setIntField(int i);
 
-    public ManagedInterfaceEmbed getEmbed();
+    ManagedInterfaceEmbed getEmbed();
 
-    public void setEmbed(ManagedInterfaceEmbed embed);
+    void setEmbed(ManagedInterfaceEmbed embed);
 
-    public ManagedInterface getSelf();
+    ManagedInterface getSelf();
 
-    public void setSelf(ManagedInterface iface);
+    void setSelf(ManagedInterface iface);
 
-    public Set getSetInteger();
+    Set getSetInteger();
 
-    public void setSetInteger(Set collection);
+    void setSetInteger(Set collection);
 
-    public Set getSetPC();
+    Set getSetPC();
 
-    public void setSetPC(Set collection);
+    void setSetPC(Set collection);
 
-    public Set getSetI();
+    Set getSetI();
 
-    public void setSetI(Set collection);
+    void setSetI(Set collection);
 
-    public RuntimeTest1 getPC();
+    RuntimeTest1 getPC();
 
-    public void setPC(RuntimeTest1 pc);
+    void setPC(RuntimeTest1 pc);
 
-    public void unimplemented();
+    void unimplemented();
 }

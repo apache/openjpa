@@ -60,6 +60,7 @@ public class Player extends Person {
         return trainers;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Player) {
             Player player = (Player)obj;

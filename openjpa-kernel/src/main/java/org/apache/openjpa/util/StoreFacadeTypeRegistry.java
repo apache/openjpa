@@ -19,9 +19,9 @@
 package org.apache.openjpa.util;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.kernel.StoreManager;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Repository of store-specific facade classes. This is used by facade
@@ -101,10 +101,12 @@ public class StoreFacadeTypeRegistry {
             _storeType = storeType;
         }
 
+        @Override
         public int hashCode() {
             return _facadeType.hashCode() ^ _storeType.hashCode();
         }
 
+        @Override
         public boolean equals(Object other) {
             if (other == this)
                 return true;

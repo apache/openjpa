@@ -37,5 +37,5 @@ public interface JDBCSeq
      * Add any tables, etc needed by this factory for the given mapping
      * to the given schema group, if they do not exist already.
      */
-    public void addSchema(ClassMapping mapping, SchemaGroup group);
+    void addSchema(ClassMapping mapping, SchemaGroup group);
 }

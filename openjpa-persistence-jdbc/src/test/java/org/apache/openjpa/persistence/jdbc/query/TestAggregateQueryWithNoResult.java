@@ -37,7 +37,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
     EntityManager em;
-	public void setUp() {
+	@Override
+    public void setUp() {
         super.setUp(CLEAR_TABLES,
                 "openjpa.Compatibility", "ReturnNullOnAggregateResult=false",  //OPENJPA-1794
                 Game.class, IndoorGame.class, Scrabble.class,

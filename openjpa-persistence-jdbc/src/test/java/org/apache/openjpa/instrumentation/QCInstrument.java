@@ -29,15 +29,18 @@ public class QCInstrument extends AbstractQueryCacheInstrument {
         return NAME;
     }
 
+    @Override
     public void initialize() {
         OpenJPAConfiguration config = (OpenJPAConfiguration)getProvider().getConfiguration();
         setQueryCache(config.getDataCacheManagerInstance().getSystemQueryCache());
     }
 
+    @Override
     public void start() {
         setStarted(true);
     }
 
+    @Override
     public void stop() {
         setStarted(false);
     }

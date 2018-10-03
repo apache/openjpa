@@ -31,110 +31,110 @@ public interface DynamicStorage {
     /**
      * Return the number of fields, regardless of type
      */
-    public int getFieldCount();
+    int getFieldCount();
 
     /**
      * Return the number of object fields
      */
-    public int getObjectCount();
+    int getObjectCount();
 
     /**
      * Factory method for getting new instances of the same definition.
      */
-    public DynamicStorage newInstance();
+    DynamicStorage newInstance();
 
     /**
      * Get the boolean at the given index.
      */
-    public boolean getBoolean(int field);
+    boolean getBoolean(int field);
 
     /**
      * Set the boolean at the given index.
      */
-    public void setBoolean(int field, boolean val);
+    void setBoolean(int field, boolean val);
 
     /**
      * Get the byte at the given index.
      */
-    public byte getByte(int field);
+    byte getByte(int field);
 
     /**
      * Set the byte at the given index.
      */
-    public void setByte(int field, byte val);
+    void setByte(int field, byte val);
 
     /**
      * Get the char at the given index.
      */
-    public char getChar(int field);
+    char getChar(int field);
 
     /**
      * Set the char at the given index.
      */
-    public void setChar(int field, char val);
+    void setChar(int field, char val);
 
     /**
      * Get the double at the given index.
      */
-    public double getDouble(int field);
+    double getDouble(int field);
 
     /**
      * Set the double at the given index.
      */
-    public void setDouble(int field, double val);
+    void setDouble(int field, double val);
 
     /**
      * Get the float at the given index.
      */
-    public float getFloat(int field);
+    float getFloat(int field);
 
     /**
      * Set the float at the given index.
      */
-    public void setFloat(int field, float val);
+    void setFloat(int field, float val);
 
     /**
      * Get the int at the given index.
      */
-    public int getInt(int field);
+    int getInt(int field);
 
     /**
      * Set the int at the given index.
      */
-    public void setInt(int field, int val);
+    void setInt(int field, int val);
 
     /**
      * Get the long at the given index.
      */
-    public long getLong(int field);
+    long getLong(int field);
 
     /**
      * Set the long at the given index.
      */
-    public void setLong(int field, long val);
+    void setLong(int field, long val);
 
     /**
      * Get the short at the given index.
      */
-    public short getShort(int field);
+    short getShort(int field);
 
     /**
      * Set the short at the given index.
      */
-    public void setShort(int field, short val);
+    void setShort(int field, short val);
 
     /**
      * Get the object at the given index.
      */
-    public Object getObject(int field);
+    Object getObject(int field);
 
     /**
      * Set the object at the given index.
      */
-    public void setObject(int field, Object val);
+    void setObject(int field, Object val);
 
     /**
      * Ensure object capacity
      */
-    public void initialize ();
+    void initialize ();
 }

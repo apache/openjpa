@@ -21,6 +21,6 @@ package org.apache.openjpa.persistence.proxy.entities;
 import java.io.Serializable;
 
 public interface Identifiable extends Configrable<String, String>, Serializable{
-	public String getId();
-	public void setId(String id);
+	String getId();
+	void setId(String id);
 }

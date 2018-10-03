@@ -31,9 +31,11 @@ public class PIdSTCDMSCEntityB
 extends PIdSTCDMSCRootEntity implements EntityB {
     private String entityBData;
 
+    @Override
     public String getEntityBData() {
         return entityBData;
     }
+    @Override
     public void setEntityBData(String entityBData) {
         this.entityBData = entityBData;
     }

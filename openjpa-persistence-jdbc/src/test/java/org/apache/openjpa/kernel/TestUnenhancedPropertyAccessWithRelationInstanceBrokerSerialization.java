@@ -27,14 +27,17 @@ public class TestUnenhancedPropertyAccessWithRelationInstanceBrokerSerialization
     extends AbstractUnenhancedRelationBrokerSerializationTest
         <UnenhancedPropertyAccessSubclass> {
 
+    @Override
     protected Class getSecondaryType() {
         return UnenhancedPropertyAccess.class;
     }
 
+    @Override
     protected Class<UnenhancedPropertyAccessSubclass> getManagedType() {
         return UnenhancedPropertyAccessSubclass.class;
     }
 
+    @Override
     protected UnenhancedPropertyAccessSubclass newManagedInstance() {
         UnenhancedPropertyAccessSubclass e =
             new UnenhancedPropertyAccessSubclass();
@@ -45,10 +48,12 @@ public class TestUnenhancedPropertyAccessWithRelationInstanceBrokerSerialization
         return e;
     }
 
+    @Override
     protected void modifyInstance(UnenhancedPropertyAccessSubclass e) {
         e.getRelated().setStringField("modified");
     }
 
+    @Override
     protected Object getModifiedValue(UnenhancedPropertyAccessSubclass e) {
         return e.getRelated().getStringField();
     }

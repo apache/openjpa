@@ -60,6 +60,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
         { 0, 0, 0, 0, 0 }  // s5
     };
 
+    @Override
     public void setUp() {
         super.setUp(DROP_TABLES, State.class, Transition.class);
 

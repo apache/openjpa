@@ -20,21 +20,23 @@ package org.apache.openjpa.slice;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
-import junit.framework.TestResult;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+
+import junit.framework.TestCase;
+import junit.framework.TestResult;
 
 /**
  * Base test class providing persistence utilities.
@@ -85,7 +87,7 @@ public abstract class PersistenceTestCase
     protected OpenJPAEntityManagerFactorySPI createNamedEMF(String pu,
         Object... props) {
         Map map = new HashMap(System.getProperties());
-        List<Class> types = new ArrayList<Class>();
+        List<Class> types = new ArrayList<>();
         boolean prop = false;
         for (int i = 0; i < props.length; i++) {
             if (prop) {
@@ -177,7 +179,7 @@ public abstract class PersistenceTestCase
         if (emf == null || types.length == 0)
             return;
 
-        List<ClassMetaData> metas = new ArrayList<ClassMetaData>(types.length);
+        List<ClassMetaData> metas = new ArrayList<>(types.length);
         for (Class c : types) {
             ClassMetaData meta = JPAFacadeHelper.getMetaData(emf, c);
             if (meta != null)

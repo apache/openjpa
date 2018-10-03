@@ -18,7 +18,12 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Uni_MTo1_JT {
@@ -59,10 +64,12 @@ public class Uni_MTo1_JT {
         this.entityC = entityC;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode() + (int)id;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Uni_MTo1_JT)) return false;
         Uni_MTo1_JT c = (Uni_MTo1_JT)o;

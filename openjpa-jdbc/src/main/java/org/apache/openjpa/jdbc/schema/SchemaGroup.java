@@ -31,10 +31,11 @@ import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class SchemaGroup
     extends NameSet
     implements Cloneable {
+
+    private static final long serialVersionUID = 1L;
 
     private Map<DBIdentifier, Schema> _schemaMap = null;
 
@@ -55,6 +56,7 @@ public class SchemaGroup
      * Return the schema with the given name, or null if none.
      * @deprecated
      */
+    @Deprecated
     public Schema getSchema(String name) {
         if (_schemaMap == null)
             return null;
@@ -65,7 +67,7 @@ public class SchemaGroup
         if (_schemaMap == null)
             return null;
         DBIdentifier sName = DBIdentifier.toUpper(name);
-        Schema schema = (Schema) _schemaMap.get(sName);
+        Schema schema = _schemaMap.get(sName);
         return schema;
     }
 
@@ -84,7 +86,7 @@ public class SchemaGroup
         Schema schema = newSchema(name);
         DBIdentifier sName = DBIdentifier.toUpper(name);
         if (_schemaMap == null)
-            _schemaMap = new HashMap<DBIdentifier, Schema>();
+            _schemaMap = new HashMap<>();
         _schemaMap.put(sName, schema);
         _schemas = null;
         return schema;
@@ -94,6 +96,7 @@ public class SchemaGroup
      * @deprecated
      * @param name
      */
+    @Deprecated
     public Schema addSchema(String name) {
         return addSchema(DBIdentifier.newSchema(name));
     }
@@ -108,7 +111,7 @@ public class SchemaGroup
             return false;
 
         DBIdentifier name = DBIdentifier.toUpper(schema.getIdentifier());
-        Schema rem = (Schema) _schemaMap.get(name);
+        Schema rem = _schemaMap.get(name);
         if (schema.equals(rem)) {
             _schemaMap.remove(name);
             removeName(schema.getIdentifier());
@@ -164,6 +167,7 @@ public class SchemaGroup
      * added to this group or is known to exist in the database.
      * @deprecated
      */
+    @Deprecated
     public boolean isKnownTable(String name) {
         return findTable(name) != null;
     }
@@ -185,6 +189,7 @@ public class SchemaGroup
      * catalog separator. Returns null if no table found.
      * @deprecated
      */
+    @Deprecated
     public Table findTable(String name) {
         if (name == null)
             return null;
@@ -218,6 +223,7 @@ public class SchemaGroup
      * separator. Returns null if no table found.
      * @deprecated
      */
+    @Deprecated
     public Table findTable(Schema inSchema, String name) {
         if (name == null)
             return null;
@@ -288,6 +294,7 @@ public class SchemaGroup
      * added to this group or is known to exist in the database.
      * @deprecated
      */
+    @Deprecated
     public boolean isKnownSequence(String name) {
         return findSequence(name) != null;
     }
@@ -313,6 +320,7 @@ public class SchemaGroup
      * catalog separator. Returns null if no sequence found.
      * @deprecated
      */
+    @Deprecated
     public Sequence findSequence(String name) {
         if (name == null)
             return null;
@@ -350,6 +358,7 @@ public class SchemaGroup
      * catalog separator. Returns null if no sequence found.
      * @deprecated
      */
+    @Deprecated
     public Sequence findSequence(Schema inSchema, String name) {
         if (name == null)
             return null;
@@ -389,7 +398,7 @@ public class SchemaGroup
         Schema[] schemas = getSchemas();
         Table[] tabs;
         ForeignKey[] fks;
-        Collection<ForeignKey> exports = new LinkedList<ForeignKey>();
+        Collection<ForeignKey> exports = new LinkedList<>();
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
@@ -402,7 +411,7 @@ public class SchemaGroup
                 }
             }
         }
-        return (ForeignKey[]) exports.toArray(new ForeignKey[exports.size()]);
+        return exports.toArray(new ForeignKey[exports.size()]);
     }
 
     /**
@@ -447,6 +456,7 @@ public class SchemaGroup
         }
     }
 
+    @Override
     public Object clone() {
         SchemaGroup clone = newInstance();
         clone.copy(this);
@@ -486,6 +496,7 @@ public class SchemaGroup
      * Return a new schema with the given name.
      * @deprecated
      */
+    @Deprecated
     protected Schema newSchema(String name) {
         return new Schema(name, this);
     }
@@ -498,6 +509,7 @@ public class SchemaGroup
      * Return a new sequence with the given name and owner schema.
      * @deprecated
      */
+    @Deprecated
     protected Sequence newSequence(String name, Schema schema) {
         return new Sequence(name, schema);
     }
@@ -510,6 +522,7 @@ public class SchemaGroup
      * Return a new table with the given name and owner schema.
      * @deprecated
      */
+    @Deprecated
     protected Table newTable(String name, Schema schema) {
         return new Table(name, schema);
     }
@@ -522,6 +535,7 @@ public class SchemaGroup
      * Return a new column with the given name and owner table.
      * @deprecated
      */
+    @Deprecated
     protected Column newColumn(String name, Table table) {
         return new Column(name, table);
     }
@@ -534,6 +548,7 @@ public class SchemaGroup
      * Return a new primary key with the given name and owner table.
      * @deprecated
      */
+    @Deprecated
     protected PrimaryKey newPrimaryKey(String name, Table table) {
         return new PrimaryKey(name, table);
     }
@@ -546,6 +561,7 @@ public class SchemaGroup
      * Return a new index with the given name and owner table.
      * @deprecated
      */
+    @Deprecated
     protected Index newIndex(String name, Table table) {
         return new Index(name, table);
     }
@@ -558,6 +574,7 @@ public class SchemaGroup
      * Return a new unique constraint with the given name and owner table.
      * @deprecated
      */
+    @Deprecated
     protected Unique newUnique(String name, Table table) {
         return new Unique(name, table);
     }
@@ -570,6 +587,7 @@ public class SchemaGroup
      * Return a new foreign key with the given name and owner table.
      * @deprecated
      */
+    @Deprecated
     protected ForeignKey newForeignKey(String name, Table table) {
         return new ForeignKey(name, table);
     }

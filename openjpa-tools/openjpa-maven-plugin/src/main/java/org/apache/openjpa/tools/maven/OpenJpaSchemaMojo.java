@@ -73,6 +73,7 @@ public class OpenJpaSchemaMojo extends AbstractOpenJpaMappingToolMojo {
     /**
      * @return Options filled with all necessary plugin parameters
      */
+    @Override
     protected Options getOptions() throws MojoExecutionException {
         // options
         Options opts = createOptions();

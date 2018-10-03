@@ -19,10 +19,9 @@
 package org.apache.openjpa.persistence.event;
 
 
+import org.apache.openjpa.event.TCPRemoteCommitProvider;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
-
-import org.apache.openjpa.event.TCPRemoteCommitProvider;
 
 @AllowFailure(message="surefire excluded")
 public class TestTCPRemoteEvents
@@ -32,6 +31,7 @@ public class TestTCPRemoteEvents
         super(s);
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }

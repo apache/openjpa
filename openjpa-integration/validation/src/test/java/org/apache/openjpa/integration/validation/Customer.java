@@ -37,19 +37,23 @@ public class Customer extends Person implements ICustomer, Serializable {
     private Address billingAddress;
 
 
+    @Override
     public void setShippingAddress(IAddress shippingAddress) {
         this.shippingAddress = (Address) shippingAddress;
     }
 
+    @Override
     public IAddress getShippingAddress() {
         return this.shippingAddress;
     }
 
 
+    @Override
     public void setBillingAddress(IAddress billingAddress) {
         this.billingAddress = (Address) billingAddress;
     }
 
+    @Override
     public IAddress getBillingAddress() {
         return this.billingAddress;
     }

@@ -32,6 +32,8 @@ import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 class IsNotEmptyExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
 
     /**
@@ -41,10 +43,12 @@ class IsNotEmptyExpression
         _val = val;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         return _val.initialize(sel, ctx, Val.NULL_CMP);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         _val.calculateValue(sel, ctx, state, null, null);
@@ -52,11 +56,13 @@ class IsNotEmptyExpression
         sel.append(buf, state.joins);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         _val.selectColumns(sel, ctx, state, true);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

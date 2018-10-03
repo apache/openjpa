@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import java.io.*;
+import java.io.Serializable;
 
 /**
  * Application identity class for:
@@ -28,7 +28,10 @@ import java.io.*;
  * org.apache.openjpa.enhance.ApplicationIdTool
  */
 public class ManyOneCompoundIdOwnerId implements Serializable {
-	static {
+	
+    private static final long serialVersionUID = 1L;
+
+    static {
 		// register persistent class in JVM
         try {
             Class.forName(
@@ -46,19 +49,22 @@ public class ManyOneCompoundIdOwnerId implements Serializable {
 		fromString(str);
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return String.valueOf(entityId)
 			+ "::" + String.valueOf(longId);
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		int rs = 17;
 		rs = rs * 37 + (int) (entityId ^ (entityId >>> 32));
 		rs = rs * 37 + (int) (longId ^ (longId >>> 32));
 		return rs;
 	}
 
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if(this == obj)
 			return true;
 		if(obj == null || obj.getClass() != getClass())

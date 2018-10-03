@@ -32,6 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestJointableOneToMany extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(UMLType.class, UMLPrimitiveType.class, UMLClass.class,
             UMLPackage.class, UMLNamed.class, CLEAR_TABLES);

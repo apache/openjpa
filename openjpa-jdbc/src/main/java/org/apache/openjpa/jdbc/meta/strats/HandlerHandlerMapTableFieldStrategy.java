@@ -18,17 +18,32 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.kernel.*;
-import org.apache.openjpa.jdbc.meta.*;
-import org.apache.openjpa.jdbc.schema.*;
-import org.apache.openjpa.jdbc.sql.*;
-import org.apache.openjpa.kernel.*;
-import org.apache.openjpa.lib.util.*;
-import org.apache.openjpa.util.*;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.ValueHandler;
+import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.Joins;
+import org.apache.openjpa.jdbc.sql.Result;
+import org.apache.openjpa.jdbc.sql.Row;
+import org.apache.openjpa.jdbc.sql.RowManager;
+import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.ChangeTracker;
+import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.Proxies;
+import org.apache.openjpa.util.Proxy;
 
 /**
  * Mapping for a map of keys and values both controlled by
@@ -40,6 +55,9 @@ import org.apache.openjpa.util.*;
 public class HandlerHandlerMapTableFieldStrategy
     extends MapTableFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (HandlerHandlerMapTableFieldStrategy.class);
 
@@ -50,25 +68,30 @@ public class HandlerHandlerMapTableFieldStrategy
     private ColumnIO _vio = null;
     private boolean _vload = false;
 
+    @Override
     public Column[] getKeyColumns(ClassMapping cls) {
         return _kcols;
     }
 
+    @Override
     public Column[] getValueColumns(ClassMapping cls) {
         return _vcols;
     }
 
+    @Override
     public void selectKey(Select sel, ClassMapping cls, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
         sel.select(_kcols, joins);
     }
 
+    @Override
     public void selectValue(Select sel, ClassMapping cls,
         OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
         sel.select(_vcols, joins);
     }
 
+    @Override
     public Result[] getResults(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode, Joins[] joins, boolean lrs)
         throws SQLException {
@@ -82,6 +105,7 @@ public class HandlerHandlerMapTableFieldStrategy
         return new Result[]{ res, res };
     }
 
+    @Override
     public Object loadKey(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
@@ -89,6 +113,7 @@ public class HandlerHandlerMapTableFieldStrategy
             sm, store, fetch, res, joins, _kcols, _kload);
     }
 
+    @Override
     public Object loadValue(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
@@ -96,6 +121,7 @@ public class HandlerHandlerMapTableFieldStrategy
             sm, store, fetch, res, joins, _vcols, _vload);
     }
 
+    @Override
     public void map(boolean adapt) {
         super.map(adapt);
 
@@ -119,6 +145,7 @@ public class HandlerHandlerMapTableFieldStrategy
         field.mapPrimaryKey(adapt);
     }
 
+    @Override
     public void initialize() {
         _kload = field.getKeyMapping().getHandler().
             objectValueRequiresLoad(field.getKeyMapping());
@@ -126,6 +153,7 @@ public class HandlerHandlerMapTableFieldStrategy
             objectValueRequiresLoad(field.getElementMapping());
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         insert(sm, store, rm, (Map) sm.fetchObject(field.getIndex()));
@@ -154,6 +182,7 @@ public class HandlerHandlerMapTableFieldStrategy
         }
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Map map = (Map) sm.fetchObject(field.getIndex());
@@ -222,16 +251,19 @@ public class HandlerHandlerMapTableFieldStrategy
         }
     }
 
+    @Override
     public Object toDataStoreValue(Object val, JDBCStore store) {
         return HandlerStrategies.toDataStoreValue(field.getElementMapping(),
             val, _vcols, store);
     }
 
+    @Override
     public Object toKeyDataStoreValue(Object val, JDBCStore store) {
         return HandlerStrategies.toDataStoreValue(field.getKeyMapping(), val,
             _kcols, store);
     }
 
+    @Override
     public Joins joinRelation(Joins joins, boolean forceOuter,
         boolean traverse) {
         if (traverse)
@@ -239,6 +271,7 @@ public class HandlerHandlerMapTableFieldStrategy
         return joins;
     }
 
+    @Override
     public Joins joinKeyRelation(Joins joins, boolean forceOuter,
         boolean traverse) {
         if (traverse)

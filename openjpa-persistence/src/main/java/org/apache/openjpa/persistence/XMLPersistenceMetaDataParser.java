@@ -18,6 +18,66 @@
  */
 package org.apache.openjpa.persistence;
 
+import static javax.persistence.CascadeType.DETACH;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REFRESH;
+import static javax.persistence.CascadeType.REMOVE;
+import static org.apache.openjpa.meta.MetaDataModes.MODE_MAPPING;
+import static org.apache.openjpa.meta.MetaDataModes.MODE_META;
+import static org.apache.openjpa.meta.MetaDataModes.MODE_NONE;
+import static org.apache.openjpa.meta.MetaDataModes.MODE_QUERY;
+import static org.apache.openjpa.persistence.MetaDataTag.DATASTORE_ID;
+import static org.apache.openjpa.persistence.MetaDataTag.DATA_CACHE;
+import static org.apache.openjpa.persistence.MetaDataTag.EMBEDDED_ID;
+import static org.apache.openjpa.persistence.MetaDataTag.ENTITY_LISTENERS;
+import static org.apache.openjpa.persistence.MetaDataTag.EXCLUDE_DEFAULT_LISTENERS;
+import static org.apache.openjpa.persistence.MetaDataTag.EXCLUDE_SUPERCLASS_LISTENERS;
+import static org.apache.openjpa.persistence.MetaDataTag.EXTERNALIZER;
+import static org.apache.openjpa.persistence.MetaDataTag.EXTERNAL_VAL;
+import static org.apache.openjpa.persistence.MetaDataTag.EXTERNAL_VALS;
+import static org.apache.openjpa.persistence.MetaDataTag.FACTORY;
+import static org.apache.openjpa.persistence.MetaDataTag.FETCH_ATTRIBUTE;
+import static org.apache.openjpa.persistence.MetaDataTag.FETCH_GROUP;
+import static org.apache.openjpa.persistence.MetaDataTag.FETCH_GROUPS;
+import static org.apache.openjpa.persistence.MetaDataTag.FLUSH_MODE;
+import static org.apache.openjpa.persistence.MetaDataTag.GENERATED_VALUE;
+import static org.apache.openjpa.persistence.MetaDataTag.ID;
+import static org.apache.openjpa.persistence.MetaDataTag.ID_CLASS;
+import static org.apache.openjpa.persistence.MetaDataTag.LOB;
+import static org.apache.openjpa.persistence.MetaDataTag.MAPPED_BY_ID;
+import static org.apache.openjpa.persistence.MetaDataTag.MAP_KEY;
+import static org.apache.openjpa.persistence.MetaDataTag.MAP_KEY_CLASS;
+import static org.apache.openjpa.persistence.MetaDataTag.NATIVE_QUERY;
+import static org.apache.openjpa.persistence.MetaDataTag.OPENJPA_VERSION;
+import static org.apache.openjpa.persistence.MetaDataTag.ORDER_BY;
+import static org.apache.openjpa.persistence.MetaDataTag.ORDER_COLUMN;
+import static org.apache.openjpa.persistence.MetaDataTag.POST_LOAD;
+import static org.apache.openjpa.persistence.MetaDataTag.POST_PERSIST;
+import static org.apache.openjpa.persistence.MetaDataTag.POST_REMOVE;
+import static org.apache.openjpa.persistence.MetaDataTag.POST_UPDATE;
+import static org.apache.openjpa.persistence.MetaDataTag.PRE_PERSIST;
+import static org.apache.openjpa.persistence.MetaDataTag.PRE_REMOVE;
+import static org.apache.openjpa.persistence.MetaDataTag.PRE_UPDATE;
+import static org.apache.openjpa.persistence.MetaDataTag.QUERY;
+import static org.apache.openjpa.persistence.MetaDataTag.QUERY_HINT;
+import static org.apache.openjpa.persistence.MetaDataTag.QUERY_STRING;
+import static org.apache.openjpa.persistence.MetaDataTag.READ_ONLY;
+import static org.apache.openjpa.persistence.MetaDataTag.REFERENCED_FETCH_GROUP;
+import static org.apache.openjpa.persistence.MetaDataTag.SEQ_GENERATOR;
+import static org.apache.openjpa.persistence.MetaDataTag.VERSION;
+import static org.apache.openjpa.persistence.PersistenceStrategy.BASIC;
+import static org.apache.openjpa.persistence.PersistenceStrategy.ELEM_COLL;
+import static org.apache.openjpa.persistence.PersistenceStrategy.EMBEDDED;
+import static org.apache.openjpa.persistence.PersistenceStrategy.MANY_MANY;
+import static org.apache.openjpa.persistence.PersistenceStrategy.MANY_ONE;
+import static org.apache.openjpa.persistence.PersistenceStrategy.ONE_MANY;
+import static org.apache.openjpa.persistence.PersistenceStrategy.ONE_ONE;
+import static org.apache.openjpa.persistence.PersistenceStrategy.PERS;
+import static org.apache.openjpa.persistence.PersistenceStrategy.PERS_COLL;
+import static org.apache.openjpa.persistence.PersistenceStrategy.PERS_MAP;
+import static org.apache.openjpa.persistence.PersistenceStrategy.TRANSIENT;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,9 +100,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.GenerationType;
 import javax.persistence.LockModeType;
 
-import static javax.persistence.CascadeType.*;
-
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.BeanLifecycleCallbacks;
@@ -57,6 +114,7 @@ import org.apache.openjpa.lib.meta.CFMetaDataParser;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
@@ -66,19 +124,14 @@ import org.apache.openjpa.meta.LifecycleMetaData;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.meta.MetaDataDefaults;
 import org.apache.openjpa.meta.MetaDataFactory;
-import org.apache.openjpa.meta.UpdateStrategies;
-
-import static org.apache.openjpa.meta.MetaDataModes.*;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.Order;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.meta.UpdateStrategies;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataParser.FetchAttributeImpl;
 import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataParser.FetchGroupImpl;
-
-import static org.apache.openjpa.persistence.MetaDataTag.*;
-import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -124,14 +177,14 @@ public class XMLPersistenceMetaDataParser
     }
 
     private static final Map<String, Object> _elems =
-        new HashMap<String, Object>();
+        new HashMap<>();
 
     // Map for storing deferred metadata which needs to be populated
     // after embeddables are loaded.
     private static final Map<Class<?>, ArrayList<MetaDataContext>>
-        _embeddables = new HashMap<Class<?>, ArrayList<MetaDataContext>>();
+        _embeddables = new HashMap<>();
     private static final Map<Class<?>, Integer>
-        _embeddableAccess = new HashMap<Class<?>, Integer>();
+        _embeddableAccess = new HashMap<>();
 
     // Hold fetch group info
     private FetchGroupImpl[] _fgs = null;
@@ -227,14 +280,14 @@ public class XMLPersistenceMetaDataParser
     private int _mode = MODE_NONE;
     private boolean _override = false;
 
-    private final Stack<Object> _elements = new Stack<Object>();
-    private final Stack<Object> _parents = new Stack<Object>();
+    private final Stack<Object> _elements = new Stack<>();
+    private final Stack<Object> _parents = new Stack<>();
 
     private StringBuffer _externalValues = null;
 
     protected Class<?> _cls = null;
     // List of classes currently being parsed
-    private ArrayList<Class<?>> _parseList = new ArrayList<Class<?>>();
+    private ArrayList<Class<?>> _parseList = new ArrayList<>();
     private int _fieldPos = 0;
     private int _clsPos = 0;
     private int _access = AccessCode.UNKNOWN;
@@ -293,6 +346,7 @@ public class XMLPersistenceMetaDataParser
      * Returns the repository for this parser. If none has been set, creates
      * a new repository and sets it.
      */
+    @Override
     public MetaDataRepository getRepository() {
         if (_repos == null) {
             MetaDataRepository repos = _conf.newMetaDataRepositoryInstance();
@@ -385,12 +439,14 @@ public class XMLPersistenceMetaDataParser
     /**
      * The parse mode according to the expected document type.
      */
+    @Override
     public void setMode(int mode) {
         _mode = mode;
         if (_parser != null)
             _parser.setMode(mode);
     }
 
+    @Override
     public void parse(URL url) throws IOException {
         // peek at the doc to determine the version
         XMLVersionParser vp = new XMLVersionParser("entity-mappings");
@@ -407,6 +463,7 @@ public class XMLPersistenceMetaDataParser
         super.parse(url);
     }
 
+    @Override
     public void parse(File file) throws IOException {
         // peek at the doc to determine the version
         XMLVersionParser vp = new XMLVersionParser("entity-mappings");
@@ -527,7 +584,7 @@ public class XMLPersistenceMetaDataParser
         }
         InputStream ormxsdIS = XMLPersistenceMetaDataParser.class.getResourceAsStream(ormxsd);
 
-        ArrayList<InputStream> schema = new ArrayList<InputStream>();
+        ArrayList<InputStream> schema = new ArrayList<>();
         schema.add(ormxsdIS);
 
         if (useExtendedSchema) {
@@ -2049,7 +2106,7 @@ public class XMLPersistenceMetaDataParser
         _listener = classForName(attrs.getValue("class"));
         if (!_conf.getCallbackOptionsInstance().getAllowsDuplicateListener()) {
             if (_listeners == null)
-                _listeners = new ArrayList<Class<?>>();
+                _listeners = new ArrayList<>();
             if (_listeners.contains(_listener))
                 return true;
             _listeners.add(_listener);
@@ -2142,7 +2199,7 @@ public class XMLPersistenceMetaDataParser
 
             }
             if (_callbacks[event] == null)
-                _callbacks[event] = new ArrayList<LifecycleCallbacks>(3);
+                _callbacks[event] = new ArrayList<>(3);
             _callbacks[event].add(adapter);
             if (!system && _listener != null)
                 _highs[event]++;
@@ -2287,7 +2344,7 @@ public class XMLPersistenceMetaDataParser
     protected void deferEmbeddable(Class<?> embedType, MetaDataContext fmd) {
         ArrayList<MetaDataContext> fmds = _embeddables.get(embedType);
         if (fmds == null) {
-            fmds = new ArrayList<MetaDataContext>();
+            fmds = new ArrayList<>();
             _embeddables.put(embedType, fmds);
         }
         fmds.add(fmd);
@@ -2845,7 +2902,7 @@ public class XMLPersistenceMetaDataParser
     private boolean startFetchGroups(Attributes attrs)
         throws SAXException {
         if (_fgList == null) {
-            _fgList = new ArrayList<FetchGroupImpl>();
+            _fgList = new ArrayList<>();
         }
         return true;
     }
@@ -2854,7 +2911,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
 
         if (_fgList == null) {
-            _fgList = new ArrayList<FetchGroupImpl>();
+            _fgList = new ArrayList<>();
         }
         _currentFg = new AnnotationPersistenceMetaDataParser.FetchGroupImpl(attrs.getValue("name"),
             Boolean.parseBoolean(attrs.getValue("post-load")));
@@ -2886,7 +2943,7 @@ public class XMLPersistenceMetaDataParser
     private boolean startFetchAttribute(Attributes attrs)
         throws SAXException {
         if (_fetchAttrList == null) {
-            _fetchAttrList = new ArrayList<FetchAttributeImpl>();
+            _fetchAttrList = new ArrayList<>();
         }
 
         FetchAttributeImpl fetchAttribute = new FetchAttributeImpl(attrs.getValue("name"),
@@ -2901,7 +2958,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
 
         if (_referencedFgList == null) {
-            _referencedFgList = new ArrayList<String>();
+            _referencedFgList = new ArrayList<>();
         }
 
         return true;

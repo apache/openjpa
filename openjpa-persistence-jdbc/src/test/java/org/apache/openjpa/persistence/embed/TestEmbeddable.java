@@ -79,9 +79,10 @@ public class TestEmbeddable extends SQLListenerTestCase {
     public int phoneId = 1;
     public int pmId = 1;
     public int parkingSpotId = 1;
-    public Map<Integer, PhoneNumber> phones = new HashMap<Integer, PhoneNumber>();
-    public Map<Integer, Employee> employees = new HashMap<Integer, Employee>();
+    public Map<Integer, PhoneNumber> phones = new HashMap<>();
+    public Map<Integer, Employee> employees = new HashMap<>();
 
+    @Override
     public void setUp() {
         setUp(Embed.class, Embed_Coll_Embed.class, Embed_Coll_Integer.class,
             Embed_Embed.class, Embed_Embed_ToMany.class, Embed_ToMany.class,
@@ -3111,7 +3112,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         Set embeds = new HashSet();
         embeds.add(embed);
         a.setEmbeds(embeds);
-        Collection<Date> dates = new ArrayList<Date>();
+        Collection<Date> dates = new ArrayList<>();
         dates.add(new Date());
         a.setCollectionDate(dates);
         em.persist(a);

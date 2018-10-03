@@ -19,11 +19,13 @@
 package org.apache.openjpa.persistence.relations;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that querying and retrieving entities with multiple same-typed embedded
@@ -34,6 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestMultipleSameTypedEmbeddedWithEagerRelations
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(EmbeddableWithRelation.class, MultipleSameTypedEmbedded.class);
 

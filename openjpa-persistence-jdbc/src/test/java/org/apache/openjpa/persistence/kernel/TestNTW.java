@@ -31,12 +31,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 
 public class TestNTW extends BaseKernelTest {
 
@@ -52,6 +51,7 @@ public class TestNTW extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         deleteAll(RuntimeTest1.class);
 

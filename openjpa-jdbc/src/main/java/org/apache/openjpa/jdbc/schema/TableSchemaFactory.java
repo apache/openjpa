@@ -89,6 +89,7 @@ public class TableSchemaFactory
      * @deprecated Use {@link #setTable}. Retained for
      * backwards-compatible auto-configuration.
      */
+    @Deprecated
     public void setTableName(String name) {
         setTable(name);
     }
@@ -129,18 +130,22 @@ public class TableSchemaFactory
         return _conf;
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _conf = (JDBCConfiguration) conf;
         _log = _conf.getLog(JDBCConfiguration.LOG_SCHEMA);
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
         buildTable();
     }
 
+    @Override
     public synchronized SchemaGroup readSchema() {
         String schema = null;
         try {
@@ -162,6 +167,7 @@ public class TableSchemaFactory
         return parser.getSchemaGroup();
     }
 
+    @Override
     public void storeSchema(SchemaGroup schema) {
         XMLSchemaSerializer ser = new XMLSchemaSerializer(_conf);
         ser.addAll(schema);
@@ -459,6 +465,7 @@ public class TableSchemaFactory
         final String[] arguments = opts.setFromCmdLine(args);
         boolean ret = Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts) throws Exception {
                 JDBCConfiguration conf = new JDBCConfigurationImpl();
                 try {

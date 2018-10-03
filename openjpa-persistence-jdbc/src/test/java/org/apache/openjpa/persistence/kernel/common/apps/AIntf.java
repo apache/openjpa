@@ -26,8 +26,8 @@ package org.apache.openjpa.persistence.kernel.common.apps;
  */
 public interface AIntf {
 
-    public String getName();
+    String getName();
 
-    public void setName(String name);
+    void setName(String name);
 }
 

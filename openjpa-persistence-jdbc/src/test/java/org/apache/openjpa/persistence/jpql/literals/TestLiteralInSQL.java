@@ -28,6 +28,7 @@ import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestLiteralInSQL extends SQLListenerTestCase {
+    @Override
     public void setUp() {
         setUp(AllFieldTypes.class, "openjpa.jdbc.QuerySQLCache", "false");
     }

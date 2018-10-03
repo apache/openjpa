@@ -39,18 +39,22 @@ public class InputStreamWrapper extends InputStream {
         this.is = new ByteArrayInputStream(s.getBytes());
     }
 
+    @Override
     public int read() throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int available() throws IOException {
         return is.available();
     }
 
+    @Override
     public void close() throws IOException {
         is.close();
     }
 
+    @Override
     public int read(byte[] b, int off, int len) throws IOException {
         StackTraceElement[] ste = Thread.currentThread().getStackTrace();
         for (StackTraceElement element : ste) {
@@ -61,6 +65,7 @@ public class InputStreamWrapper extends InputStream {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int read(byte[] b) throws IOException {
         throw new UnsupportedOperationException();
     }

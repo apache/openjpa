@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.annotations;
 
 import java.util.List;
 
-import org.apache.openjpa.persistence.test.AllowFailure;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.CallbackStorage;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.ContractEmployee;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Employee;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="excluded")
 public class TestEntityListenerAnnot extends AnnotationTestCase
@@ -35,7 +35,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		super(name, "annotationcactusapp");
 	}
 
-	public void setUp()
+	@Override
+    public void setUp()
 	{
 		deleteAll(Employee.class);
 		deleteAll(ContractEmployee.class);

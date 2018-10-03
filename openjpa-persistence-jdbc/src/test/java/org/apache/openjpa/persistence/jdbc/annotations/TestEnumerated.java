@@ -22,6 +22,7 @@ import javax.persistence.InheritanceType;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -34,6 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestEnumerated
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class, CLEAR_TABLES);
     }
@@ -44,19 +46,19 @@ public class TestEnumerated
             null, true);
         FieldMapping fm = cls.getDeclaredFieldMapping("enumeration");
         assertNotNull(fm);
-        assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
+        assertEquals(FieldMetaData.MANAGE_PERSISTENT, fm.getManagement());
         assertEquals(JavaTypes.ENUM, fm.getTypeCode());
         assertEquals(JavaTypes.SHORT, fm.getColumns()[0].getJavaType());
 
         fm = cls.getDeclaredFieldMapping("ordinalEnumeration");
         assertNotNull(fm);
-        assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
+        assertEquals(FieldMetaData.MANAGE_PERSISTENT, fm.getManagement());
         assertEquals(JavaTypes.ENUM, fm.getTypeCode());
         assertEquals(JavaTypes.SHORT, fm.getColumns()[0].getJavaType());
 
         fm = cls.getDeclaredFieldMapping("stringEnumeration");
         assertNotNull(fm);
-        assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
+        assertEquals(FieldMetaData.MANAGE_PERSISTENT, fm.getManagement());
         assertEquals(JavaTypes.ENUM, fm.getTypeCode());
         assertEquals(JavaTypes.STRING, fm.getColumns()[0].getJavaType());
     }

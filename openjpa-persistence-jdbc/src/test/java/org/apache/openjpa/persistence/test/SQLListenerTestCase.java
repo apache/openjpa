@@ -34,7 +34,7 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 public abstract class SQLListenerTestCase
     extends SingleEMFTestCase {
     private static String _nl = System.getProperty("line.separator");
-    protected List<String> sql = new ArrayList<String>();
+    protected List<String> sql = new ArrayList<>();
 
     @Override
     public void setUp(Object... props) {

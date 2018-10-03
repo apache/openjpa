@@ -26,22 +26,27 @@ public class CustomSeq implements Seq {
 
     private int i = 1;
 
+    @Override
     public void setType(int type) {
         if (type == Seq.TYPE_TRANSACTIONAL)
             throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object next(StoreContext ctx, ClassMetaData cls) {
         return i++;
     }
 
+    @Override
     public Object current(StoreContext ctx, ClassMetaData cls) {
         return i;
     }
 
+    @Override
     public void allocate(int additional, StoreContext ctx, ClassMetaData cls) {
     }
 
+    @Override
     public void close() {
     }
 }

@@ -56,7 +56,8 @@ public class AnEntity {
 		return name;
 	}
 
-	public String toString(){
+	@Override
+    public String toString(){
 		return "id = " + id + ", name = " + name;
 	}
 }

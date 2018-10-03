@@ -32,5 +32,5 @@ public interface Expression
     /**
      * Accept a visit from a tree visitor.
      */
-    public void acceptVisit(ExpressionVisitor visitor);
+    void acceptVisit(ExpressionVisitor visitor);
 }

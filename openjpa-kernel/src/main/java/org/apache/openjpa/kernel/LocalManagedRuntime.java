@@ -60,16 +60,19 @@ class LocalManagedRuntime extends AbstractManagedRuntime
         _broker = broker;
     }
 
+    @Override
     public TransactionManager getTransactionManager() {
         return this;
     }
 
+    @Override
     public synchronized void begin() {
         if (_active)
             throw new InvalidStateException(_loc.get("active"));
         _active = true;
     }
 
+    @Override
     public synchronized void commit() {
         if (!_active)
             throw new InvalidStateException(_loc.get("not-active"));
@@ -114,6 +117,7 @@ class LocalManagedRuntime extends AbstractManagedRuntime
             throw err;
     }
 
+    @Override
     public synchronized void rollback() {
         if (!_active)
             throw new InvalidStateException(_loc.get("not-active"));
@@ -155,18 +159,22 @@ class LocalManagedRuntime extends AbstractManagedRuntime
         }
     }
 
+    @Override
     public synchronized void setRollbackOnly() {
         setRollbackOnly(new UserException());
     }
 
+    @Override
     public void setRollbackOnly(Throwable cause) {
         _rollbackOnly = cause;
     }
 
+    @Override
     public Throwable getRollbackCause() {
         return _rollbackOnly;
     }
 
+    @Override
     public synchronized int getStatus() {
         if (_rollbackOnly != null)
             return Status.STATUS_MARKED_ROLLBACK;
@@ -175,35 +183,42 @@ class LocalManagedRuntime extends AbstractManagedRuntime
         return Status.STATUS_NO_TRANSACTION;
     }
 
+    @Override
     public Transaction getTransaction() {
         return this;
     }
 
+    @Override
     public void resume(Transaction tobj)
         throws SystemException {
         throw new SystemException(NotSupportedException.class.getName());
     }
 
+    @Override
     public void setTransactionTimeout(int sec)
         throws SystemException {
         throw new SystemException(NotSupportedException.class.getName());
     }
 
+    @Override
     public Transaction suspend()
         throws SystemException {
         throw new SystemException(NotSupportedException.class.getName());
     }
 
+    @Override
     public boolean delistResource(XAResource xaRes, int flag)
         throws SystemException {
         throw new SystemException(NotSupportedException.class.getName());
     }
 
+    @Override
     public boolean enlistResource(XAResource xaRes)
         throws SystemException {
         throw new SystemException(NotSupportedException.class.getName());
     }
 
+    @Override
     public synchronized void registerSynchronization(Synchronization sync) {
         if (sync == _broker)
             return;

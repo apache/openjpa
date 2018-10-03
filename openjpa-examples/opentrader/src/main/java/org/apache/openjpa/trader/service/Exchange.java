@@ -40,8 +40,8 @@ import org.apache.openjpa.trader.domain.Tradable;
 import org.apache.openjpa.trader.domain.Trade;
 import org.apache.openjpa.trader.domain.Trader;
 
-@SuppressWarnings("serial")
 public class Exchange extends PersistenceService implements TradingService {
+    private static final long serialVersionUID = 1L;
     private BufferedLog log;
 
     public Exchange(String unit) {

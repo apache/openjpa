@@ -32,11 +32,11 @@ public interface ProxyCollection
     /**
      * The collection element type.
      */
-    public Class getElementType();
+    Class getElementType();
 
     /**
      * Create a new instance of this proxy type.
      */
-    public ProxyCollection newInstance(Class elementType, Comparator comp,
+    ProxyCollection newInstance(Class elementType, Comparator comp,
         boolean trackChanges, boolean autoOff);
 }

@@ -70,6 +70,7 @@ public class Widget {
         return owners;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Widget) {
             Widget widget = (Widget)obj;

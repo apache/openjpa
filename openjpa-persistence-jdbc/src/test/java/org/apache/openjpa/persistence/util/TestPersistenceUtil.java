@@ -34,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestPersistenceUtil extends SingleEMFTestCase{
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, EagerEntity.class, LazyEmbed.class,
             LazyEntity.class, EagerEmbed.class, EagerEmbedRel.class,
@@ -210,7 +211,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
         le.setLazyEmbed(emb);
         RelEntity re = new RelEntity();
         re.setName("My ent");
-        ArrayList<RelEntity> rel = new ArrayList<RelEntity>();
+        ArrayList<RelEntity> rel = new ArrayList<>();
         rel.add(new RelEntity());
         le.setRelEntities(rel);
         return le;

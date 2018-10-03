@@ -29,10 +29,10 @@ public interface DeleteListener {
     /**
      * Invoked before the instance transferred to a deleted state.
      */
-    public void beforeDelete(LifecycleEvent event);
+    void beforeDelete(LifecycleEvent event);
 
     /**
      * Invoked after the instance transferred to a deleted state.
      */
-    public void afterDelete(LifecycleEvent event);
+    void afterDelete(LifecycleEvent event);
 }

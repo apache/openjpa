@@ -30,9 +30,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.apache.openjpa.persistence.relations.VCS.VCSId;
-
 import org.apache.openjpa.persistence.jdbc.ForeignKey;
+import org.apache.openjpa.persistence.relations.VCS.VCSId;
 
 @Entity
 @Table(name="VC4_REL")
@@ -54,7 +53,7 @@ public class VC {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,
             mappedBy = "vc")
-	private Set<D> ds = new HashSet<D>();
+	private Set<D> ds = new HashSet<>();
 
 	public VC() {
 	}

@@ -47,7 +47,7 @@ public class JSONObject implements JSON {
         _type = type;
         _id   = id.toString();
         _ref  = ref;
-        _values = new LinkedHashMap<String, Object>();
+        _values = new LinkedHashMap<>();
     }
 
     public void set(String key, Object value) {
@@ -57,10 +57,12 @@ public class JSONObject implements JSON {
     public void write(PrintWriter writer) {
         writer.println(toString());
     }
+    @Override
     public String toString() {
         return asString(0).toString();
     }
 
+    @Override
     public StringBuilder asString(int indent) {
         StringBuilder buf = new StringBuilder().append(OBJECT_START);
         buf.append(encodeField(_ref ? REF_MARKER : ID_MARKER, ior(), 0));
@@ -133,16 +135,18 @@ public class JSONObject implements JSON {
      *
      */
     public static class Array implements JSON {
-        private List<Object> _members = new ArrayList<Object>();
+        private List<Object> _members = new ArrayList<>();
 
         public void add(Object o) {
             _members.add(o);
         }
 
+        @Override
         public String toString() {
             return asString(0).toString();
         }
 
+        @Override
         public StringBuilder asString(int indent) {
             StringBuilder buf = new StringBuilder().append(ARRAY_START);
             StringBuilder tab = JSONObject.newIndent(indent+1);
@@ -170,16 +174,18 @@ public class JSONObject implements JSON {
      *
      */
     public static class KVMap implements JSON {
-        private Map<Object,Object> _entries = new LinkedHashMap<Object,Object>();
+        private Map<Object,Object> _entries = new LinkedHashMap<>();
 
         public void put(Object k, Object v) {
             _entries.put(k,v);
         }
 
+        @Override
         public String toString() {
             return asString(0).toString();
         }
 
+        @Override
         public StringBuilder asString(int indent) {
             StringBuilder buf = new StringBuilder().append(ARRAY_START);
             StringBuilder tab = JSONObject.newIndent(indent+1);

@@ -112,57 +112,69 @@ public interface ComparisonStyle {
         private boolean disjunction = false;
         private StringComparisonMode stringMode = StringComparisonMode.EXACT;
 
+        @Override
         public boolean excludeDefault() {
             return excludeDefault;
         }
 
+        @Override
         public boolean excludeNull() {
             return excludeNull;
         }
 
+        @Override
         public StringComparisonMode getStringComparsionMode() {
             return stringMode;
         }
 
+        @Override
         public boolean isDisjunction() {
             return disjunction;
         }
 
+        @Override
         public ComparisonStyle setExcludeDefault(boolean flag) {
             excludeDefault = flag;
             return this;
         }
 
+        @Override
         public ComparisonStyle setExcludeNull(boolean flag) {
             excludeNull = flag;
             return this;
         }
 
+        @Override
         public ComparisonStyle setStringComparisonMode(StringComparisonMode mode) {
             stringMode = mode;
             return this;
         }
 
+        @Override
         public ComparisonStyle setDisjunction(boolean flag) {
             disjunction = flag;
             return this;
         }
 
+        @Override
         public boolean excludeIdentity() {
             return excludeIdentity;
 
         }
 
+        @Override
         public ComparisonStyle setExcludeIdentity(boolean flag) {
             excludeIdentity = flag;
             return this;
         }
 
+        @Override
         public boolean excludeVersion() {
             return excludeVersion;
 
         }
 
+        @Override
         public ComparisonStyle setExcludeVersion(boolean flag) {
             excludeVersion = flag;
             return this;

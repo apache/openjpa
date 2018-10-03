@@ -172,6 +172,7 @@ public class TestDictionaryFactory extends TestCase {
 
     private static Method getProtocol;
 
+    @Override
     public void setUp() {
         try {
             getProtocol = DBDictionaryFactory.class.getDeclaredMethod(

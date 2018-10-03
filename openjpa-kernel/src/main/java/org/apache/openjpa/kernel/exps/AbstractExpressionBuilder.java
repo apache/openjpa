@@ -27,8 +27,8 @@ import java.util.Set;
 
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -72,7 +72,7 @@ public abstract class AbstractExpressionBuilder {
     protected final Resolver resolver;
     protected ExpressionFactory factory;
 
-    private final Set<ClassMetaData> _accessPath = new HashSet<ClassMetaData>();
+    private final Set<ClassMetaData> _accessPath = new HashSet<>();
     private Map<String,Value> _seenVars = null;
     private Set<Value> _boundVars = null;
 
@@ -147,7 +147,7 @@ public abstract class AbstractExpressionBuilder {
      */
     protected void bind(Value var) {
         if (_boundVars == null)
-            _boundVars = new HashSet<Value>();
+            _boundVars = new HashSet<>();
         _boundVars.add(var);
     }
 
@@ -185,7 +185,7 @@ public abstract class AbstractExpressionBuilder {
         var.setMetaData(meta);
 
         if (_seenVars == null)
-            _seenVars = new HashMap<String,Value>();
+            _seenVars = new HashMap<>();
         _seenVars.put(id, var);
 
         addVariableToContext(id, var);

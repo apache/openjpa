@@ -48,6 +48,7 @@ public class Person4 {
         this.medical = medical;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof Person4)) return false;
@@ -62,6 +63,7 @@ public class Person4 {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + id.hashCode();

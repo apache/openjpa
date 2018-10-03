@@ -52,7 +52,7 @@ public class TestQueryProperties extends SingleEMFTestCase {
         // setup using a simple entity
         super.setUp(QTimeout.class, CLEAR_TABLES);
         // create the Map to test overrides
-        props = new HashMap<String,String>();
+        props = new HashMap<>();
         props.put("javax.persistence.lock.timeout", "12000");
         props.put("javax.persistence.query.timeout", "7000");
     }

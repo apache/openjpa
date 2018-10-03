@@ -32,7 +32,7 @@ public class TestCacheModeEnableSelectedDataCacheTrue  extends TestCacheModeEnab
 
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
-    	Map<String,Object> props = new HashMap<String,Object>();
+    	Map<String,Object> props = new HashMap<>();
     	//exclude types will be ignored since shared cache mode take precedence
    	 	props.put("openjpa.DataCache", "true(ExcludedTypes=" +
    	 			"org.apache.openjpa.persistence.cache.jpa.model.CacheableEntity)");

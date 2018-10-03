@@ -30,6 +30,8 @@ import java.util.ListIterator;
  */
 public class ListResultList extends AbstractResultList {
 
+    
+    private static final long serialVersionUID = 1L;
     private final List _list;
     private boolean _closed = false;
 
@@ -47,70 +49,85 @@ public class ListResultList extends AbstractResultList {
         return _list;
     }
 
+    @Override
     public boolean isProviderOpen() {
         return false;
     }
 
+    @Override
     public boolean isClosed() {
         return _closed;
     }
 
+    @Override
     public void close() {
         _closed = true;
     }
 
+    @Override
     public boolean contains(Object o) {
         assertOpen();
         return _list.contains(o);
     }
 
+    @Override
     public boolean containsAll(Collection c) {
         assertOpen();
         return _list.containsAll(c);
     }
 
+    @Override
     public Object get(int index) {
         assertOpen();
         return _list.get(index);
     }
 
+    @Override
     public int indexOf(Object o) {
         assertOpen();
         return _list.indexOf(o);
     }
 
+    @Override
     public int lastIndexOf(Object o) {
         assertOpen();
         return _list.lastIndexOf(o);
     }
 
+    @Override
     public int size() {
         assertOpen();
         return _list.size();
     }
 
+    @Override
     public boolean isEmpty() {
         assertOpen();
         return _list.isEmpty();
     }
 
+    @Override
     public Iterator iterator() {
         return listIterator();
     }
 
+    @Override
     public ListIterator listIterator() {
         return new ResultListIterator(_list.listIterator(), this);
     }
 
+    @Override
     public ListIterator listIterator(int index) {
         return new ResultListIterator(_list.listIterator(index), this);
     }
 
+    @Override
     public Object[] toArray() {
         assertOpen();
         return _list.toArray();
     }
 
+    @Override
     public Object[] toArray(Object[] a) {
         assertOpen();
         return _list.toArray(a);
@@ -120,10 +137,12 @@ public class ListResultList extends AbstractResultList {
         return _list;
     }
 
+    @Override
     public String toString() {
     	return _list.toString();
     }
 
+    @Override
     public List subList(int fromIndex, int toIndex) {
         assertOpen();
         return _list.subList(fromIndex, toIndex);

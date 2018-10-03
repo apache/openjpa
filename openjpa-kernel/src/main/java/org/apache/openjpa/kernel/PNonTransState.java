@@ -30,10 +30,8 @@ import org.apache.openjpa.lib.util.Localizer;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class PNonTransState
-    extends PCState {
-
+class PNonTransState extends PCState {
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (PNonTransState.class);
 
@@ -50,6 +48,7 @@ class PNonTransState
         context.clearSavedFields();
     }
 
+    @Override
     PCState delete(StateManagerImpl context) {
         context.preDelete();
         if (!context.getBroker().isActive())
@@ -57,6 +56,7 @@ class PNonTransState
         return PDELETED;
     }
 
+    @Override
     PCState transactional(StateManagerImpl context) {
         // state is discarded when entering the transaction
         if (!context.getBroker().getOptimistic()
@@ -65,24 +65,29 @@ class PNonTransState
         return PCLEAN;
     }
 
+    @Override
     PCState release(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState evict(StateManagerImpl context) {
         return HOLLOW;
     }
 
+    @Override
     PCState beforeRead(StateManagerImpl context, int field) {
         // state is discarded when entering the transaction
         context.clearFields();
         return PCLEAN;
     }
 
+    @Override
     PCState beforeWrite(StateManagerImpl context, int field, boolean mutate) {
         return beforeWrite(context, field, mutate, false);
     }
 
+    @Override
     PCState beforeOptimisticWrite(StateManagerImpl context, int field,
         boolean mutate) {
         if (context.getBroker().getAutoClear() == AutoClear.CLEAR_ALL)
@@ -111,20 +116,23 @@ class PNonTransState
             if (context.getDirty().length() > 0)
                 context.saveFields(true);
             context.clearFields();
-            context.load(null, context.LOAD_FGS, null, null, true);
+            context.load(null, StateManagerImpl.LOAD_FGS, null, null, true);
         }
         return PDIRTY;
     }
 
+    @Override
     PCState beforeNontransactionalWrite(StateManagerImpl context, int field,
         boolean mutate) {
         return PNONTRANSDIRTY;
     }
 
+    @Override
     boolean isPersistent() {
         return true;
     }
 
+    @Override
     public String toString() {
         return "Persistent-Notransactional";
     }

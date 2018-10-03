@@ -35,7 +35,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
 
-    protected List<String> _sql = new ArrayList<String>();
+    protected List<String> _sql = new ArrayList<>();
 
     /**
      * Test association overrides defined within an embedded of an element
@@ -44,7 +44,7 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
     public void testElementCollectionAssocOverrides() {
 
         _sql.clear();
-        HashMap<String, Object> props = new HashMap<String, Object>();
+        HashMap<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.JDBCListeners",
             new JDBCListener[] { new SQLListener() });
         OpenJPAEntityManagerFactorySPI emf1 =
@@ -61,16 +61,16 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
         XMLAssocOverEmbed emb = new XMLAssocOverEmbed();
         eb.setName("XMLAssocOverEntityB");
         meb.setName("XMLAssocOverEntityBM21");
-        List<XMLAssocOverEntityA> eaList1 = new ArrayList<XMLAssocOverEntityA>();
+        List<XMLAssocOverEntityA> eaList1 = new ArrayList<>();
         eaList1.add(ea);
-        List<XMLAssocOverEntityA> eaList2 = new ArrayList<XMLAssocOverEntityA>();
+        List<XMLAssocOverEntityA> eaList2 = new ArrayList<>();
         eaList2.add(ea);
         eb.setEaList(eaList1);
         meb.setEaList(eaList2);
         emb.setName("XMLAssocOverEmbed");
         emb.setEb(eb);
         emb.setMeb(meb);
-        List<XMLAssocOverEmbed> embList = new ArrayList<XMLAssocOverEmbed>();
+        List<XMLAssocOverEmbed> embList = new ArrayList<>();
         embList.add(emb);
         ea.setEmbA(embList);
 

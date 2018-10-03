@@ -18,16 +18,26 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import javax.persistence.*;
-
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.Version;
 @Entity
 public class Customer {
 
     @Embeddable
     public static class CustomerKey implements Serializable {
+        
+        private static final long serialVersionUID = 1L;
         public String countryCode;
         public int id;
 
@@ -38,6 +48,7 @@ public class Customer {
             this.id=id;
         }
 
+        @Override
         public String toString() {
             return countryCode+"/"+id;
         }
@@ -73,7 +84,7 @@ public class Customer {
     long version;
 
     @OneToMany(fetch=FetchType.LAZY, mappedBy="customer", orphanRemoval=true)
-    private Collection<Order> orders = new ArrayList<Order>();
+    private Collection<Order> orders = new ArrayList<>();
 
     public Customer() {}
 
@@ -107,6 +118,7 @@ public class Customer {
         this.orders = orders;
     }
 
+    @Override
     public String toString() {
         return "Customer:"+cid+" name:"+name;
     }

@@ -45,7 +45,7 @@ public class DMCustomer {
             fetch=FetchType.EAGER,
             cascade=CascadeType.ALL)
             private List<DMCustomerInventory> customerInventories =
-                new ArrayList<DMCustomerInventory>();
+                new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)
     Calendar cal;

@@ -42,6 +42,7 @@ public class TestQueryHints extends SingleEMFTestCase {
     EntityManager em;
     OpenJPAQuery<?> query;
 
+    @Override
     public void setUp() {
        super.setUp((Object[])null);
        em = emf.createEntityManager();

@@ -20,8 +20,8 @@ package org.apache.openjpa.lib.xml;
 
 import java.text.MessageFormat;
 
-import org.xml.sax.Locator;
 import org.apache.openjpa.lib.util.Localizer;
+import org.xml.sax.Locator;
 
 /**
  * @author Stephen Kim

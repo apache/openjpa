@@ -51,6 +51,7 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
 
     private boolean enabled = true;
 
+    @Override
     public void setUp()
         throws Exception {
         setUp(NativeSequenceEntity.class,

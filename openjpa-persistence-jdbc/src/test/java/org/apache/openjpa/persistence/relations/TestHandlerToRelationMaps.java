@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestHandlerToRelationMaps
     extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(HandlerToRelationMapInstance.class, AllFieldTypes.class,
             CLEAR_TABLES);

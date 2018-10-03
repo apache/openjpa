@@ -27,8 +27,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -89,7 +89,7 @@ public class SourceAnnotationHandler
     protected GetterFilter getterFilter = new GetterFilter();
     protected SetterFilter setterFilter = new SetterFilter();
 
-    protected static List<Class<? extends Annotation>> mappingAnnos = new ArrayList<Class<? extends Annotation>>();
+    protected static List<Class<? extends Annotation>> mappingAnnos = new ArrayList<>();
     static {
         mappingAnnos.add(OneToOne.class);
         mappingAnnos.add(OneToMany.class);
@@ -110,7 +110,8 @@ public class SourceAnnotationHandler
 		this.logger = logger;
 	}
 
-	public int determineTypeAccess(TypeElement type) {
+	@Override
+    public int determineTypeAccess(TypeElement type) {
         AccessType access = getExplicitAccessType(type);
         boolean isExplicit = access != null;
         return isExplicit ? access == AccessType.FIELD
@@ -119,15 +120,18 @@ public class SourceAnnotationHandler
                 : getImplicitAccessType(type);
 	}
 
-	public int determineMemberAccess(Element m) {
+	@Override
+    public int determineMemberAccess(Element m) {
 		return 0;
 	}
 
-	public List<Exception> validateAccess(TypeElement t) {
+	@Override
+    public List<Exception> validateAccess(TypeElement t) {
 		return null;
 	}
 
-	public boolean isMixedAccess(TypeElement t) {
+	@Override
+    public boolean isMixedAccess(TypeElement t) {
 		return false;
 	}
     /**
@@ -137,6 +141,7 @@ public class SourceAnnotationHandler
      * specification to determine the candidate set of field/methods.
      */
 
+    @Override
     public Set<Element> getPersistentMembers(TypeElement type) {
         int access = determineTypeAccess(type);
         if (AccessCode.isExplicit(access)) {
@@ -183,7 +188,7 @@ public class SourceAnnotationHandler
 
     private Set<Element> getDefaultAccessPersistentMembers(TypeElement type,
         int access) {
-        Set<Element> result = new HashSet<Element>();
+        Set<Element> result = new HashSet<>();
         List<? extends Element> allMembers = type.getEnclosedElements();
         if (AccessCode.isField(access)) {
             Set<VariableElement> allFields = (Set<VariableElement>)
@@ -230,7 +235,7 @@ public class SourceAnnotationHandler
     }
 
     Set<Element> merge(Set<? extends Element> a, Set<? extends Element> b) {
-    	Set<Element> result = new HashSet<Element>();
+    	Set<Element> result = new HashSet<>();
     	result.addAll(a);
     	for (Element e1 : b) {
     		boolean hide = false;
@@ -254,7 +259,7 @@ public class SourceAnnotationHandler
      */
     private Set<ExecutableElement> matchGetterAndSetter(
         Set<ExecutableElement> getters,  Set<ExecutableElement> setters) {
-        Collection<ExecutableElement> unmatched =  new ArrayList<ExecutableElement>();
+        Collection<ExecutableElement> unmatched =  new ArrayList<>();
 
         for (ExecutableElement getter : getters) {
             String getterName = getter.getSimpleName().toString();
@@ -289,7 +294,7 @@ public class SourceAnnotationHandler
      * Inclusive element filtering predicate.
      *
      */
-    private static interface InclusiveFilter<T extends Element> {
+    private interface InclusiveFilter<T extends Element> {
         /**
          * Return true to include the given element.
          */
@@ -302,7 +307,7 @@ public class SourceAnnotationHandler
      */
     <T extends Element> Set<T> filter(Collection<T> coll,
         InclusiveFilter... filters) {
-        Set<T> result = new HashSet<T>();
+        Set<T> result = new HashSet<>();
         for (T e : coll) {
             boolean include = true;
             for (InclusiveFilter f : filters) {
@@ -324,6 +329,7 @@ public class SourceAnnotationHandler
      *
      */
     static class GetterFilter implements InclusiveFilter<ExecutableElement> {
+        @Override
         public boolean includes(ExecutableElement method) {
             return isGetter(method);
         }
@@ -335,6 +341,7 @@ public class SourceAnnotationHandler
      *
      */
     static class SetterFilter implements InclusiveFilter<ExecutableElement> {
+        @Override
         public boolean includes(ExecutableElement method) {
             return isSetter(method);
         }
@@ -352,6 +359,7 @@ public class SourceAnnotationHandler
             this.target = target;
         }
 
+        @Override
         public boolean includes(Element obj) {
             Object value = getAnnotationValue(obj, Access.class);
             return equalsByValue(target, value);
@@ -369,6 +377,7 @@ public class SourceAnnotationHandler
             this.target = target;
         }
 
+        @Override
         public boolean includes(Element obj) {
             return obj.getKind() == target;
         }
@@ -378,6 +387,7 @@ public class SourceAnnotationHandler
      * Selects all non-transient element.
      */
     static class TransientFilter implements InclusiveFilter<Element> {
+        @Override
         public boolean includes(Element obj) {
             Set<Modifier> modifiers = obj.getModifiers();
             boolean isTransient = isAnnotatedWith(obj, Transient.class)
@@ -390,6 +400,7 @@ public class SourceAnnotationHandler
      * Selects all annotated element.
      */
     static class AnnotatedFilter implements InclusiveFilter<Element> {
+        @Override
         public boolean includes(Element obj) {
             return isAnnotated(obj);
         }
@@ -650,6 +661,7 @@ public class SourceAnnotationHandler
         return param;
     }
 
+    @Override
     public TypeElement getPersistentSupertype(TypeElement cls) {
     	if (cls == null) return null;
         TypeMirror sup = cls.getSuperclass();

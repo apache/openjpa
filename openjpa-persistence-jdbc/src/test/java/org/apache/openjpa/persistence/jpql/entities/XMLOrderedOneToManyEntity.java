@@ -23,34 +23,43 @@ import java.util.List;
 
 public class XMLOrderedOneToManyEntity implements IOrderedEntity, java.io.Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private int id;
 
     private List<INameEntity> entities;
 
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public List<INameEntity> getEntities() {
         return entities;
     }
 
+    @Override
     public void setEntities(List<INameEntity> entities) {
         this.entities = entities;
     }
 
+    @Override
     public void addEntity(INameEntity entity) {
         if( entities == null) {
-            entities = new ArrayList<INameEntity>();
+            entities = new ArrayList<>();
         }
         entities.add(entity);
     }
 
+    @Override
     public INameEntity removeEntity(int location) {
         INameEntity rtnVal = null;
         if( entities != null) {
@@ -59,13 +68,15 @@ public class XMLOrderedOneToManyEntity implements IOrderedEntity, java.io.Serial
         return rtnVal;
     }
 
+    @Override
     public void insertEntity(int location, INameEntity entity) {
         if( entities == null) {
-            entities = new ArrayList<INameEntity>();
+            entities = new ArrayList<>();
         }
         entities.add(location, entity);
     }
 
+    @Override
     public String toString() {
         return "XMLOrderedOneToManyEntity[" + id + "]=" + entities;
     }

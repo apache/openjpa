@@ -28,9 +28,10 @@ import javax.persistence.Version;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 @Entity
 public class Inventory implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @OneToOne(fetch=FetchType.EAGER, optional=false)
     private Book book;

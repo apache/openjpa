@@ -43,7 +43,8 @@ public class TestUniqueConstraintWithXMLDescriptor extends SQLListenerTestCase {
 		super.setUp(DROP_TABLES, UniqueA.class, UniqueB.class);
 	}
 
-	protected String getPersistenceUnitName() {
+	@Override
+    protected String getPersistenceUnitName() {
 		return "test-unique-constraint";
 	}
 

@@ -21,13 +21,8 @@ package org.apache.openjpa.persistence.event;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
-
-
-import org.apache.openjpa.persistence.event.common.apps.Duration;
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
@@ -35,6 +30,10 @@ import org.apache.openjpa.event.TCPRemoteCommitProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.event.common.apps.Duration;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="surefire excluded")
 public class TestTCPRemoteEventsDuration
@@ -44,6 +43,7 @@ public class TestTCPRemoteEventsDuration
         super(s, "eventcactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }
@@ -139,9 +139,11 @@ public class TestTCPRemoteEventsDuration
                 "(s).\n Clustered pmfs (" + NUM_CONCURRENT
                 + " threads - " + benchmarkCluster + "(s).\n");
 
-        Thread.currentThread().yield();
+        Thread.currentThread();
+        Thread.yield();
         try {
-            Thread.currentThread().sleep((int) 500);
+            Thread.currentThread();
+            Thread.sleep((int) 500);
         } catch (InterruptedException e) {
             fail("unexecpted exception during pause");
         }
@@ -174,6 +176,7 @@ public class TestTCPRemoteEventsDuration
             _pm = pm;
         }
 
+        @Override
         public void run() {
             doTransactions(_pm, NUM_OBJECTS);
             endEm(_pm);
@@ -264,6 +267,7 @@ public class TestTCPRemoteEventsDuration
         int totalUpdated;
         int totalDeleted;
 
+        @Override
         public synchronized void afterCommit(RemoteCommitEvent event) {
             this.addClasses = event.getPersistedTypeNames();
             this.updated = event.getUpdatedObjectIds();
@@ -274,6 +278,7 @@ public class TestTCPRemoteEventsDuration
             totalDeleted += deleted.size();
         }
 
+        @Override
         public void close() {
         }
     }

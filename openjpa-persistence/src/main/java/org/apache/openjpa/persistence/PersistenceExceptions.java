@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.MixedLockLevels;
+import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.LockException;
 import org.apache.openjpa.util.NoTransactionException;
@@ -45,6 +46,10 @@ public class PersistenceExceptions
 
     public static final RuntimeExceptionTranslator TRANSLATOR =
         new RuntimeExceptionTranslator() {
+            
+            private static final long serialVersionUID = 1L;
+
+            @Override
             public RuntimeException translate(RuntimeException re) {
                 return PersistenceExceptions.toPersistenceException(re);
             }
@@ -60,8 +65,11 @@ public class PersistenceExceptions
     public static RuntimeExceptionTranslator getRollbackTranslator(
         final OpenJPAEntityManager em) {
         return new RuntimeExceptionTranslator() {
+            
+            private static final long serialVersionUID = 1L;
             private boolean throwing = false;
 
+            @Override
             public RuntimeException translate(RuntimeException re) {
                 RuntimeException ex = toPersistenceException(re);
                 if (!(ex instanceof NonUniqueResultException)
@@ -120,7 +128,7 @@ public class PersistenceExceptions
             return ke.getCause();
 
         // RuntimeExceptions thrown from callbacks should be thrown directly
-        if (ke.getType() == OpenJPAException.USER
+        if (ke.getType() == ExceptionInfo.USER
             && ke.getSubtype() == UserException.CALLBACK
             && ke.getNestedThrowables().length == 1) {
             Throwable e = ke.getCause();
@@ -133,11 +141,11 @@ public class PersistenceExceptions
 
         // perform intelligent translation of openjpa exceptions
         switch (ke.getType()) {
-            case OpenJPAException.STORE:
+            case ExceptionInfo.STORE:
                 return translateStoreException(ke);
-            case OpenJPAException.USER:
+            case ExceptionInfo.USER:
                 return translateUserException(ke);
-            case OpenJPAException.WRAPPED:
+            case ExceptionInfo.WRAPPED:
                 return translateWrappedException(ke);
             default:
                 return translateGeneralException(ke);

@@ -28,7 +28,6 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.PreparedQuery;
@@ -40,6 +39,7 @@ import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.CacheMap;
 
 /**
@@ -68,13 +68,14 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	public PreparedQueryCacheImpl() {
 		_delegate = new CacheMap();
 		_uncachables = new CacheMap();
-		_exclusionPatterns = new ArrayList<Exclusion>();
+		_exclusionPatterns = new ArrayList<>();
 
 		ReentrantReadWriteLock _rwl = new ReentrantReadWriteLock();
         _writeLock = _rwl.writeLock();
         _readLock = _rwl.readLock();
 	}
 
+    @Override
     public Boolean register(String id, Query query, FetchConfiguration hints) {
         if (id == null
             || query == null
@@ -93,10 +94,11 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         return cache(newEntry);
 	}
 
-	public Map<String,String> getMapView() {
+	@Override
+    public Map<String,String> getMapView() {
 		lock(false);
 		try {
-            Map<String, String> view = new TreeMap<String, String>();
+            Map<String, String> view = new TreeMap<>();
             for (Map.Entry<String, PreparedQuery> entry : _delegate.entrySet())
                 view.put(entry.getKey(), entry.getValue().getTargetQuery());
 			return view;
@@ -111,7 +113,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	 * non-cachable. Also register the identifier as not cachable against the
 	 * matched exclusion pattern.
 	 */
-	public boolean cache(PreparedQuery q) {
+	@Override
+    public boolean cache(PreparedQuery q) {
 		lock(false);
 		try {
 			String id = q.getIdentifier();
@@ -141,6 +144,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 	}
 
+    @Override
     public PreparedQuery initialize(String key, Object result) {
         PreparedQuery pq = get(key);
         if (pq == null)
@@ -154,7 +158,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         return pq;
     }
 
-	public boolean invalidate(String id) {
+	@Override
+    public boolean invalidate(String id) {
 		lock(false);
 		try {
 			if (_log != null && _log.isTraceEnabled())
@@ -169,6 +174,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 	}
 
+    @Override
     public PreparedQuery get(String id) {
         lock(true);
         try {
@@ -178,7 +184,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         }
     }
 
-	public Boolean isCachable(String id) {
+	@Override
+    public Boolean isCachable(String id) {
 		lock(true);
 		try {
 			if (_uncachables.containsKey(id))
@@ -191,7 +198,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 	}
 
-	public PreparedQuery markUncachable(String id, Exclusion exclusion) {
+	@Override
+    public PreparedQuery markUncachable(String id, Exclusion exclusion) {
 		lock(false);
 		try {
 			if (_uncachables.put(id, exclusion) == null) {
@@ -208,11 +216,13 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 	}
 
-	public Exclusion isExcluded(String id) {
+	@Override
+    public Exclusion isExcluded(String id) {
 		return getMatchedExclusionPattern(id);
 	}
 
-	public void setExcludes(String excludes) {
+	@Override
+    public void setExcludes(String excludes) {
 		lock(false);
 		try {
 			if (StringUtil.isEmpty(excludes))
@@ -225,7 +235,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 	}
 
-	public List<Exclusion> getExcludes() {
+	@Override
+    public List<Exclusion> getExcludes() {
 		return Collections.unmodifiableList(_exclusionPatterns);
 	}
 
@@ -233,7 +244,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
      * Adds a pattern for exclusion. Any query cached currently whose identifier
      * matches the given pattern will be marked invalidated as a side-effect.
 	 */
-	public void addExclusionPattern(String pattern) {
+	@Override
+    public void addExclusionPattern(String pattern) {
 		lock(false);
 		try {
 		    String reason = _loc.get("prepared-query-excluded-by-user", pattern).getMessage();
@@ -254,7 +266,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
      * cachable due to the given pattern will now be removed from the list of
 	 * uncachables as a side-effect.
 	 */
-	public void removeExclusionPattern(String pattern) {
+	@Override
+    public void removeExclusionPattern(String pattern) {
 		lock(false);
 		try {
             Exclusion exclusion = new WeakExclusion(pattern, null);
@@ -270,7 +283,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 	}
 
-	public QueryStatistics<String> getStatistics() {
+	@Override
+    public QueryStatistics<String> getStatistics() {
 		return _stats;
 	}
 
@@ -288,7 +302,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	 * Gets the keys of the given map whose values match the given pattern.
 	 */
 	private Collection<String> getMatchedKeys(String pattern, Map<String,Exclusion> map) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 		for (Map.Entry<String, Exclusion> entry : map.entrySet()) {
 		    Exclusion exclusion = entry.getValue();
 			if (!exclusion.isStrong() && exclusion.matches(pattern)) {
@@ -302,7 +316,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	 * Gets the elements of the given list which match the given pattern.
 	 */
 	private Collection<String> getMatchedKeys(String pattern, Collection<String> coll) {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		for (String key : coll) {
 			if (matches(pattern, key)) {
 				result.add(key);
@@ -350,15 +364,18 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         return result != null && "true".equalsIgnoreCase(result.toString());
     }
 
+    @Override
     public void clear() {
         _delegate.clear();
         _stats.clear();
     }
 
+    @Override
     public void setEnableStatistics(boolean enable){
         _statsEnabled = enable;
     }
 
+    @Override
     public boolean getEnableStatistics(){
         return _statsEnabled;
     }
@@ -374,16 +391,19 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	//-------------------------------------------------------
 	// Configurable contract
 	//-------------------------------------------------------
+    @Override
     public void setConfiguration(Configuration conf) {
     	_log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
-        _stats = _statsEnabled ? new QueryStatistics.Default<String>() :
-                                 new QueryStatistics.None<String>();
+        _stats = _statsEnabled ? new QueryStatistics.Default<>() :
+                                 new QueryStatistics.None<>();
     }
 
     /**
@@ -406,18 +426,22 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
             this._reason = reason;
         }
 
+        @Override
         public String getPattern() {
             return _pattern;
         }
 
+        @Override
         public String getReason() {
             return _reason;
         }
 
+        @Override
         public boolean isStrong() {
             return _strong;
         }
 
+        @Override
         public boolean matches(String id) {
             return _pattern != null && (_pattern.equals(id) || _pattern.matches(id));
         }
@@ -442,6 +466,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
                  + (_pattern == null ? 0 : _pattern.hashCode());
         }
 
+        @Override
         public String toString() {
             StringBuilder buf = new StringBuilder();
             buf.append(" ").append(_strong ? STRONG : WEAK).append(". ");

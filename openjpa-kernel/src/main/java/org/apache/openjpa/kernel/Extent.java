@@ -33,17 +33,17 @@ public interface Extent<T> {
     /**
      * Return the (mutable) fetch configuration for this extent.
      */
-    public FetchConfiguration getFetchConfiguration();
+    FetchConfiguration getFetchConfiguration();
 
     /**
      * Whether this extent will ignore changes made in the current transaction.
      */
-    public boolean getIgnoreChanges();
+    boolean getIgnoreChanges();
 
     /**
      * Whether this extent will ignore changes made in the current transaction.
      */
-    public void setIgnoreChanges(boolean ignoreChanges);
+    void setIgnoreChanges(boolean ignoreChanges);
 
     /**
      * Returns a list of all objects represented by this extent. This method
@@ -52,40 +52,40 @@ public interface Extent<T> {
      * work correctly, but if the extent represents a large data set, this
      * method may be quite slow and may consume quite a bit of memory.
      */
-    public List<T> list();
+    List<T> list();
 
     /**
      * Return an iterator over the extent members.
      */
-    public Iterator<T> iterator();
+    Iterator<T> iterator();
 
     /**
      * The broker that generated the extent.
      */
-    public Broker getBroker();
+    Broker getBroker();
 
     /**
      * The class of extent elements.
      */
-    public Class<T> getElementType();
+    Class<T> getElementType();
 
     /**
      * Whether the extent includes subclasses.
      */
-    public boolean hasSubclasses();
+    boolean hasSubclasses();
 
     /**
      * Close all open iterators.
      */
-    public void closeAll();
+    void closeAll();
 
     /**
      * Synchronizes on an internal lock.
      */
-    public void lock();
+    void lock();
 
     /**
      * Release the internal lock.
      */
-	public void unlock ();
+	void unlock ();
 }

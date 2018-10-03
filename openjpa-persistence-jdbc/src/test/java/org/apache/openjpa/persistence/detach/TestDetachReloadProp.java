@@ -29,6 +29,7 @@ public class TestDetachReloadProp extends SQLListenerTestCase {
     int id;
     Compatibility compat;
 
+    @Override
     public void setUp() {
         setUp(org.apache.openjpa.persistence.detach.IntVersionEntity.class,
             org.apache.openjpa.persistence.detach.TimestampVersionEntity.class,

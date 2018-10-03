@@ -21,6 +21,8 @@ package org.apache.openjpa.kernel.exps;
 public class WhenScalar
     extends Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val1;
     private final Val _val2;
 
@@ -40,6 +42,7 @@ public class WhenScalar
         return _val2;
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val1.acceptVisit(visitor);

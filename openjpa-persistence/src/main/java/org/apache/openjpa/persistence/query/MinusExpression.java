@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class MinusExpression extends BinaryOperatorExpression {
-	public MinusExpression(Expression op, Expression op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public MinusExpression(Expression op, Expression op2) {
 		super(op, BinaryFunctionalOperator.MINUS, op2);
 	}
 }

@@ -32,6 +32,7 @@ public class XMLFieldSub3 extends XMLSuperPropertyEntity {
         crtDate = date;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLFieldSub3) {
             XMLFieldSub3 ps = (XMLFieldSub3)obj;

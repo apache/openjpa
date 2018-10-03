@@ -28,6 +28,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class ToLowerCase
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
 
     /**
@@ -37,18 +39,22 @@ class ToLowerCase
         _val = val;
     }
 
+    @Override
     public Class getType() {
         return String.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return _val.eval(candidate, orig, ctx, params).toString().toLowerCase();
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

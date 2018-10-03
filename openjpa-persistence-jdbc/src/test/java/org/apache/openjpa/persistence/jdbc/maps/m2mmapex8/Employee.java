@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex8;
 
-import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="MEx8Emp")
@@ -29,7 +34,7 @@ public class Employee {
     int empId;
 
     @ManyToMany // Bidirectional
-    Map<FullName, PhoneNumber> phones = new HashMap<FullName, PhoneNumber>();
+    Map<FullName, PhoneNumber> phones = new HashMap<>();
 
     public Map<FullName, PhoneNumber> getPhoneNumbers() {
         return phones;
@@ -51,6 +56,7 @@ public class Employee {
         this.empId = empId;
     }
 
+    @Override
     public boolean equals(Object o) {
         Employee e = (Employee) o;
         Map<FullName, PhoneNumber> map = e.getPhoneNumbers();

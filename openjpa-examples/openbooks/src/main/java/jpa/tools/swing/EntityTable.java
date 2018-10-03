@@ -23,9 +23,9 @@ import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.metamodel.Attribute;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -48,8 +48,8 @@ import org.apache.openjpa.enhance.StateManager;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class EntityTable<T> extends JTable {
+    private static final long serialVersionUID = 1L;
     private InstanceCellRenderer instanceCellRenderer;
     private CollectionCellRenderer collectionCellRenderer;
 
@@ -59,7 +59,7 @@ public class EntityTable<T> extends JTable {
         collectionCellRenderer = new CollectionCellRenderer();
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        setModel(new EntityDataModel<T>(cls, data,  unit.getMetamodel(), styleBits));
+        setModel(new EntityDataModel<>(cls, data,  unit.getMetamodel(), styleBits));
         getModel().addTableModelListener(this);
         initColumnSizes();
         setFillsViewportHeight(true);
@@ -74,6 +74,7 @@ public class EntityTable<T> extends JTable {
      * Gets the special renderer for single- and multi-valued association.
      * Otherwise uses the super classes' renderer defined by the field type.
      */
+    @Override
     public TableCellRenderer getCellRenderer(int row, int column) {
         Attribute<?,?> attr = ((EntityDataModel)getModel()).getAttribute(column);
         TableCellRenderer renderer = null;
@@ -87,12 +88,13 @@ public class EntityTable<T> extends JTable {
             renderer = super.getCellRenderer(row, column);
         }
         if (renderer instanceof DefaultTableCellRenderer) {
-            ((DefaultTableCellRenderer)renderer).setHorizontalAlignment(JLabel.CENTER);
+            ((DefaultTableCellRenderer)renderer).setHorizontalAlignment(SwingConstants.CENTER);
         }
 
         return renderer;
     }
 
+    @Override
     public TableCellEditor getCellEditor(int row, int column) {
         Attribute<?,?> attr = ((EntityDataModel)getModel()).getAttribute(column);
         if (attr == null)
@@ -145,6 +147,8 @@ public class EntityTable<T> extends JTable {
      *
      */
     public class InstanceCellRenderer extends DefaultTableCellRenderer {
+        
+        private static final long serialVersionUID = 1L;
         private final PersistenceUnitUtil util;
 
         public InstanceCellRenderer(PersistenceUnitUtil util) {
@@ -171,6 +175,7 @@ public class EntityTable<T> extends JTable {
             return id == null ? "null" : id.toString();
         }
 
+        @Override
         public void setValue(Object instance) {
             setForeground(Color.BLUE);
             setText(renderAsString(instance));
@@ -186,6 +191,8 @@ public class EntityTable<T> extends JTable {
      *
      */
     public class CollectionCellRenderer extends DefaultTableCellRenderer {
+        
+        private static final long serialVersionUID = 1L;
         public CollectionCellRenderer() {
             setPreferredSize(new Dimension(10,20));
         }

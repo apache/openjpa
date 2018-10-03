@@ -34,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestGenerators extends SingleEMFTestCase {
     Log _log;
+    @Override
     public void setUp()
         throws Exception {
         setUp(Generator.class, CLEAR_TABLES);

@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 public interface SingleId {
 
-    public String getPkString();
+    String getPkString();
 
-    public void setString(String s);
+    void setString(String s);
 
-    public String getString();
+    String getString();
 
-    public boolean correctIdClass(Class oid);
+    boolean correctIdClass(Class oid);
 }

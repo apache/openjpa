@@ -40,6 +40,8 @@ public class Args
     extends AbstractVal
     implements Arguments {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val[] _args;
     private ClassMetaData _meta = null;
 
@@ -51,7 +53,7 @@ public class Args
     }
 
     public Args (Val... values) {
-        List<Val> list = new ArrayList<Val>();
+        List<Val> list = new ArrayList<>();
         if (values != null) {
             for (Val v : values) {
                 if (v instanceof Args) {
@@ -77,6 +79,7 @@ public class Args
         return filts;
     }
 
+    @Override
     public Value[] getValues() {
         return _args;
     }
@@ -85,18 +88,22 @@ public class Args
         return _args;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
 
+    @Override
     public boolean isVariable() {
         return false;
     }
 
+    @Override
     public Class getType() {
         return Object[].class;
     }
@@ -108,9 +115,11 @@ public class Args
         return c;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         ExpState[] states = new ExpState[_args.length];
         Joins joins = null;
@@ -138,10 +147,12 @@ public class Args
         }
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         ArgsExpState astate = (ArgsExpState) state;
@@ -149,17 +160,21 @@ public class Args
             _args[i].selectColumns(sel, ctx, astate.states[i], pks);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res) {
         return null;
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         ArgsExpState astate = (ArgsExpState) state;
@@ -167,10 +182,12 @@ public class Args
             _args[i].calculateValue(sel, ctx, astate.states[i], null, null);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 0;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
         appendTo(sel, ctx, state, sql, index, null);
     }
@@ -187,26 +204,32 @@ public class Args
         }
     }
 
+    @Override
     public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
     }
 
+    @Override
     public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql){
     }
 
+    @Override
     public void appendSize(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
     }
 
+    @Override
     public void appendIsNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
     }
 
+    @Override
     public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         for (int i = 0; i < _args.length; i++)
@@ -214,6 +237,7 @@ public class Args
         visitor.exit(this);
     }
 
+    @Override
     public int getId() {
         return Val.ARGS_VAL;
     }

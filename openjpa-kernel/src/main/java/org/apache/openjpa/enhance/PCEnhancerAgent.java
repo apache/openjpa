@@ -173,7 +173,8 @@ public class PCEnhancerAgent {
     		    .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())
     		    ));
     		conf.setClassResolver(new ClassResolver() {
-    		    public ClassLoader getClassLoader(Class context,
+    		    @Override
+                public ClassLoader getClassLoader(Class context,
                     ClassLoader env) {
     		        return tmpLoader;
     		    }

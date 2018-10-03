@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.jdbc.procedure.derby;
 
+import static junit.framework.Assert.fail;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-
-import static junit.framework.Assert.fail;
 
 public final class Procedures {
     public static boolean simpleCalled;

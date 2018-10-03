@@ -22,11 +22,11 @@ import java.util.Collection;
 
 public interface IMember {
 
-    public void setName(String name);
+    void setName(String name);
 
-    public String getName();
+    String getName();
 
-    public void setAccounts(Collection<IAccount> accounts);
+    void setAccounts(Collection<IAccount> accounts);
 
-    public Collection<IAccount> getAccounts();
+    Collection<IAccount> getAccounts();
 }

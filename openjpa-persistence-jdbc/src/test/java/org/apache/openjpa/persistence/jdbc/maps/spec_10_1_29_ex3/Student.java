@@ -21,7 +21,13 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_29_ex3;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="T29x3Stud")
@@ -37,7 +43,7 @@ public class Student {
             inverseJoinColumns=@JoinColumn(name="SEMESTER"))
             @MapKeyJoinColumn(name="COURSE")
             Map<Course, Semester> enrollment =
-                new HashMap<Course, Semester>();
+                new HashMap<>();
 
     public int getId() {
         return id;

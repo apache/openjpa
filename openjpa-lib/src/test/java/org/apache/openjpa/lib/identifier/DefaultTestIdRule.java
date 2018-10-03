@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.lib.identifier;
 
-import org.apache.openjpa.lib.identifier.IdentifierRule;
-
 public class DefaultTestIdRule extends IdentifierRule {
 
 }

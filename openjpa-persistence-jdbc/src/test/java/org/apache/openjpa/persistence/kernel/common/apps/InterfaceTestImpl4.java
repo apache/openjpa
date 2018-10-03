@@ -40,18 +40,22 @@ public class InterfaceTestImpl4
         this.stringField = str;
     }
 
+    @Override
     public String getStringField() {
         return this.stringField;
     }
 
+    @Override
     public void setStringField(String str) {
         this.stringField = str;
     }
 
+    @Override
     public int getIntField() {
         return this.intField;
     }
 
+    @Override
     public void setIntField(int i) {
         this.intField = i;
     }

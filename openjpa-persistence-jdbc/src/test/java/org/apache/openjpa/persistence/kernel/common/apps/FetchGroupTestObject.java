@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.math.BigInteger;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

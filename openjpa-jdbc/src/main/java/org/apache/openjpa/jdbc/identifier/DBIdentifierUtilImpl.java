@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.jdbc.identifier;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -33,6 +32,7 @@ import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
 import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.identifier.IdentifierUtilImpl;
+import org.apache.openjpa.lib.util.StringUtil;
 
 public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdentifierUtil,
     Configurable {
@@ -46,6 +46,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         super(config);
     }
 
+    @Override
     public DBIdentifier getValidColumnIdentifier(DBIdentifier name, Table table,
         int maxLen, boolean checkForUniqueness) {
         if (DBIdentifier.isNull(name)) {
@@ -58,6 +59,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         return makeIdentifierValid(sName, table, maxLen, checkForUniqueness);
     }
 
+    @Override
     public DBIdentifier getValidForeignKeyIdentifier(DBIdentifier name, Table table, Table toTable, int maxLen) {
         if (DBIdentifier.isNull(name)) {
             return name;
@@ -71,6 +73,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
     }
 
 
+    @Override
     public DBIdentifier getValidUniqueIdentifier(DBIdentifier name, Table table, int maxLen) {
         if (DBIdentifier.isNull(name)) {
             return name;
@@ -83,6 +86,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
             maxLen, true);
     }
 
+    @Override
     public DBIdentifier getValidIndexIdentifier(DBIdentifier name, Table table, int maxLen) {
         if (DBIdentifier.isNull(name)) {
             return name;
@@ -95,6 +99,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
             maxLen, true);
     }
 
+    @Override
     public DBIdentifier getValidSequenceIdentifier(DBIdentifier name, Schema schema, int maxLen) {
         if (DBIdentifier.isNull(name)) {
             return name;
@@ -106,6 +111,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         return makeIdentifierValid(sName, schema.getSchemaGroup(), maxLen, true);
     }
 
+    @Override
     public DBIdentifier getValidTableIdentifier(DBIdentifier name, Schema schema, int maxLen) {
         if (DBIdentifier.isNull(name)) {
             return name;
@@ -119,6 +125,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
             maxLen, true);
     }
 
+    @Override
     public DBIdentifier makeNameValid(String name, NameSet set, int maxLen,
         int nameType, boolean checkForUniqueness) {
         DBIdentifierType id = DBIdentifierType.DEFAULT;
@@ -136,6 +143,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         return makeIdentifierValid(DBIdentifier.newIdentifier(name, id), set, maxLen, checkForUniqueness);
     }
 
+    @Override
     public DBIdentifier makeIdentifierValid(DBIdentifier sname, NameSet set, int maxLen,
         boolean checkForUniqueness) {
         DBIdentifier validName = sname;
@@ -206,6 +214,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
      *  the appropriate delimiters and separators.
      *  @parm name a DBIdentifier
      */
+    @Override
     public String toDBName(DBIdentifier name) {
         return toDBName(name, true);
     }
@@ -217,6 +226,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
      *  @param delimit If true, allows the name to be delimited, if necessary.
      *  Otherwise, the identifier is not delimited.
      */
+    @Override
     public String toDBName(DBIdentifier name, boolean delimit) {
         if (DBIdentifier.isNull(name)) {
             return null;
@@ -237,6 +247,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
      * Converts the identifier to a format appropriate for the configuration.
      * Delimits if necessary
      */
+    @Override
     public String toDBName(String name) {
         return toDBName(name, true);
     }
@@ -246,6 +257,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
      * the default naming rule.
      * @param delimit If false, do not delimit.  Otherwise, delimit if necessary.
      */
+    @Override
     public String toDBName(String name, boolean delimit) {
         return toDBName(getIdentifierConfiguration().getDefaultIdentifierRule().getName(), name, delimit);
     }
@@ -270,6 +282,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
      * Creates a new identifier of a given type based upon the name returned
      * from the database.
      */
+    @Override
     public DBIdentifier fromDBName(String name, DBIdentifierType id) {
         if (name == null) {
             return DBIdentifier.NULL;
@@ -311,6 +324,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
             !delimCase.equals(CASE_PRESERVE));
     }
 
+    @Override
     public DBIdentifier append(DBIdentifierType resultId, DBIdentifier...names) {
         if (names == null || names.length == 0) {
             return DBIdentifier.NULL;
@@ -322,6 +336,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         return sName;
     }
 
+    @Override
     public String appendColumns(Column[] columns) {
         if (columns == null || columns.length == 0) {
             return "";
@@ -369,6 +384,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         return DBDictionary.shorten(name, targetLength);
     }
 
+    @Override
     public DBIdentifier getGeneratedKeySequenceName(Column col, int maxLen) {
         DBIdentifier tname = col.getTableIdentifier();
         DBIdentifier cname = col.getIdentifier();
@@ -387,6 +403,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
      * Convert the specified schema name to a name that the database will
      * be able to understand in metadata operations.
      */
+    @Override
     public DBIdentifier convertSchemaCase(DBIdentifier name) {
         if (DBIdentifier.isNull(name))
             return DBIdentifier.NULL;
@@ -419,6 +436,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
     /**
      * Converts a column alias to use the appropriate delimiters
      */
+    @Override
     public String convertAlias(String alias) {
         if (!needsConversion(getIdentifierConfiguration())) {
             return alias;

@@ -27,19 +27,23 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.RelationMapInverseKeyFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.RelationMapTableFieldStrategy;
-import org.apache.openjpa.util.AbstractLRSProxyMap;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.InverseKeyMapPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.JoinTableMapPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.MappedByMapPC;
+import org.apache.openjpa.util.AbstractLRSProxyMap;
 
 
 public class TestMappedByKeyMaps

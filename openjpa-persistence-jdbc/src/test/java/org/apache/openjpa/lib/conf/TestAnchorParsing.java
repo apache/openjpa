@@ -18,16 +18,17 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.MissingResourceException;
-import java.io.File;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+
+import org.apache.openjpa.lib.util.Options;
 
 import junit.framework.TestCase;
-import org.apache.openjpa.lib.util.Options;
 
 public class TestAnchorParsing extends TestCase {
 

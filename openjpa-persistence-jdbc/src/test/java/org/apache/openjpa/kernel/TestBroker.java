@@ -23,6 +23,7 @@ import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestBroker extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         super.setUp(A.class, CLEAR_TABLES);
     }

@@ -30,6 +30,9 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class InvalidStateException
     extends UserException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public InvalidStateException(Message msg) {
         super(msg);
     }
@@ -39,6 +42,7 @@ public class InvalidStateException
         setFailedObject(failed);
     }
 
+    @Override
     public int getSubtype() {
         return INVALID_STATE;
     }

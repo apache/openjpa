@@ -31,7 +31,8 @@ public class TestEJBOuterJoinValues
 		super(name);
 	}
 
-	public void setUp()
+	@Override
+    public void setUp()
 	{
 		deleteAll(OuterJoinValuePC.class);
 

@@ -39,6 +39,7 @@ public class TestNamedUniqueConstraintWithXMLDescriptor extends SQLListenerTestC
         super.setUp(DROP_TABLES, NamedUniqueA.class, NamedUniqueB.class);
     }
 
+    @Override
     protected String getPersistenceUnitName() {
         return "NamedUniqueConstraintTest";
     }

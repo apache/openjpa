@@ -19,7 +19,9 @@
 package org.apache.openjpa.persistence.dynamicschema;
 
 import java.util.Random;
+
 import javax.persistence.EntityManager;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -32,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestResWordEntity extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
     }
 

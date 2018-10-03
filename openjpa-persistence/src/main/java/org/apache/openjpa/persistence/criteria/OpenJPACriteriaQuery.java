@@ -35,13 +35,13 @@ public interface OpenJPACriteriaQuery<T> extends CriteriaQuery<T> {
      *
      * @return a JPQL-like string.
      */
-    public String toCQL();
+    String toCQL();
 
     /**
      * Compile the query.
      *
      * @return the same instance compiled.
      */
-    public OpenJPACriteriaQuery<T> compile();
+    OpenJPACriteriaQuery<T> compile();
 }
 

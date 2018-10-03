@@ -54,9 +54,10 @@ import javax.persistence.TemporalType;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 @Entity
 public class PurchaseOrder implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Enumerates the status of a Purchase Order.
      *
@@ -195,7 +196,7 @@ public class PurchaseOrder implements Serializable {
             throw new IllegalArgumentException("Can not add Line Item to Purchase Order for negative (=" +
                     quantity + ") number of Book " + book);
         if (items == null)
-            items = new ArrayList<LineItem>();
+            items = new ArrayList<>();
         items.add(new LineItem(this, items.size()+1, book, quantity));
         total += (book.getPrice() * quantity);
     }

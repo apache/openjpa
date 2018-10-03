@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.ee;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.lib.util.ClassUtil;
+
+import junit.framework.TestCase;
 
 /**
  * Test class for build transformation performed by WASManagedRuntime.

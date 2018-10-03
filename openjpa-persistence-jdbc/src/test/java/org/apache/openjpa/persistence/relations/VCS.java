@@ -50,7 +50,7 @@ public class VCS {
 	private String name;
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "vcs")
-	private Set<VC> vcs = new HashSet<VC>();
+	private Set<VC> vcs = new HashSet<>();
 
 	public VCS() {
 	}

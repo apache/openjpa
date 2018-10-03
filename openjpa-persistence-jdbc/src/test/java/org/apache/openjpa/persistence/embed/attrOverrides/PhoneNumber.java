@@ -18,8 +18,13 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="PHONE_ATTROVER")
@@ -29,7 +34,7 @@ public class PhoneNumber {
 
 
     @ManyToMany(mappedBy="contactInfo.phoneNumbers")
-    Collection<Employee> employees = new ArrayList<Employee>();
+    Collection<Employee> employees = new ArrayList<>();
 
     public int getPhNumber() {
         return phNumber;

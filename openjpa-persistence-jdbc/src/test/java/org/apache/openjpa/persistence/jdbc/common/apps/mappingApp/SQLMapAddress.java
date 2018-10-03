@@ -20,7 +20,16 @@ package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.Entity;
+import javax.persistence.EntityResult;
+import javax.persistence.FieldResult;
+import javax.persistence.Id;
+import javax.persistence.PostLoad;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
+import javax.persistence.Table;
 
 /** This domain class uses a all possible nature of annotations. Nature of
  * annotation from the point of view of nature of result they produce are
@@ -114,7 +123,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "SQLMAP_ADDRESS")
 public class SQLMapAddress implements Serializable {
-	private int    id;
+	
+    private static final long serialVersionUID = 1L;
+    private int    id;
 	private String street;
 	private String state;
 	private int    zip;

@@ -18,14 +18,14 @@
  */
 package org.apache.openjpa.persistence;
 
-import org.apache.openjpa.lib.util.ClassUtil;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.EnumSet;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
+
+import org.apache.openjpa.lib.util.ClassUtil;
 
 /**
  * Helper class to stringify annotation declarations.
@@ -37,7 +37,7 @@ public class AnnotationBuilder {
 
     private Class<? extends Annotation> type;
     private List<AnnotationEntry> components =
-        new ArrayList<AnnotationEntry>();
+        new ArrayList<>();
 
     protected AnnotationBuilder(Class<? extends Annotation> type) {
         this.type = type;
@@ -83,7 +83,7 @@ public class AnnotationBuilder {
             if (ae.value instanceof List) {
                 list = (List<AnnotationBuilder>) ae.value;
             } else if (ae.value instanceof AnnotationBuilder) {
-                list = new ArrayList<AnnotationBuilder> ();
+                list = new ArrayList<> ();
                 list.add((AnnotationBuilder) ae.value);
                 ae.value = list;
             } else {
@@ -148,6 +148,7 @@ public class AnnotationBuilder {
         sb.append(")");
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         toString(sb);

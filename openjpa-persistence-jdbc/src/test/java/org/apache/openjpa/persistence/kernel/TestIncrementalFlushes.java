@@ -28,15 +28,14 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import org.apache.openjpa.persistence.kernel.common.apps.
-        ModInstanceCallbackTests;
-import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
-
 import org.apache.openjpa.event.AbstractTransactionListener;
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.kernel.common.apps.
+        ModInstanceCallbackTests;
+import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
 
 public class TestIncrementalFlushes extends BaseKernelTest {
 
@@ -50,6 +49,7 @@ public class TestIncrementalFlushes extends BaseKernelTest {
     public TestIncrementalFlushes() {
     }
 
+    @Override
     public void setUp() {
         deleteAll(ModRuntimeTest1.class);
 //        deleteAll(ModInstanceCallbackTests.class);
@@ -439,10 +439,11 @@ public class TestIncrementalFlushes extends BaseKernelTest {
         public int flushes = 0;
         public int commits = 0;
 
+        @Override
         protected void eventOccurred(TransactionEvent event) {
-            if (event.getType() == event.BEFORE_FLUSH)
+            if (event.getType() == TransactionEvent.BEFORE_FLUSH)
                 flushes++;
-            else if (event.getType() == event.BEFORE_COMMIT)
+            else if (event.getType() == TransactionEvent.BEFORE_COMMIT)
                 commits++;
         }
     }

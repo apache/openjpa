@@ -40,6 +40,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestUpdateWithSubSelect extends SQLListenerTestCase {
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, Person.class, Address.class);
         DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();

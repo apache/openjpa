@@ -62,7 +62,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
         _qmd = qmd;
         _em = em;
 
-        _boundParams = new HashMap<Parameter<?>, Object>();
+        _boundParams = new HashMap<>();
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      *         is indistinguishable from the value being bound to null.
      */
     Map<Object, Object> getParameterValues() {
-        Map<Object, Object> result = new HashMap<Object, Object>();
+        Map<Object, Object> result = new HashMap<>();
         if (_boundParams == null)
             return result;
         for (Map.Entry<Object, Parameter<?>> entry : getDeclaredParameters().entrySet()) {
@@ -123,6 +123,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      *             if position does not correspond to a positional parameter of the query or if the argument is of
      *             incorrect type
      */
+    @Override
     public OpenJPAQuery<X> setParameter(int pos, Object value) {
         if (_convertPositionalParams == true) {
             return setParameter("_" + String.valueOf(pos), value);
@@ -137,7 +138,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
             }
             Parameter<?> param;
             if (isNative() || isProcedure()) {
-                param = new ParameterImpl<Object>(pos, Object.class);
+                param = new ParameterImpl<>(pos, Object.class);
                 declareParameter(pos, param);
             } else {
                 param = getParameter(pos);
@@ -153,6 +154,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Sets the value of the given positional parameter after conversion of the given value to the given Temporal Type.
      */
+    @Override
     public OpenJPAQuery<X> setParameter(int position, Calendar value, TemporalType t) {
         return setParameter(position, convertTemporalType(value, t));
     }
@@ -160,6 +162,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Sets the value of the given named parameter after conversion of the given value to the given Temporal Type.
      */
+    @Override
     public OpenJPAQuery<X> setParameter(int position, Date value, TemporalType type) {
         return setParameter(position, convertTemporalType(value, type));
     }
@@ -187,6 +190,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Affirms if declared parameters use position identifier.
      */
+    @Override
     public boolean hasPositionalParameters() {
         return !getDeclaredParameterKeys(Integer.class).isEmpty();
     }
@@ -197,6 +201,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * from the value being actually null. If the parameter indexing is not contiguous then the unspecified parameters
      * are considered as null.
      */
+    @Override
     public Object[] getPositionalParameters() {
         lock();
         try {
@@ -228,6 +233,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * Binds the given values as positional parameters. The n-th array element value is set to a Parameter with (n+1)-th
      * positional identifier.
      */
+    @Override
     public OpenJPAQuery<X> setParameters(Object... params) {
         assertOpen();
         _em.assertNotCloseInvoked();
@@ -254,10 +260,11 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * If a parameter has been declared but not bound to a value then the value is null and hence is indistinguishable
      * from the value being actually null.
      */
+    @Override
     public Map<String, Object> getNamedParameters() {
         lock();
         try {
-            Map<String, Object> result = new HashMap<String, Object>();
+            Map<String, Object> result = new HashMap<>();
             Set<String> namedKeys = getDeclaredParameterKeys(String.class);
             for (String name : namedKeys) {
                 Parameter<?> param = getParameter(name);
@@ -273,6 +280,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * Sets the values of the parameters from the given Map. The keys of the given map designate the name of the
      * declared parameter.
      */
+    @Override
     public OpenJPAQuery<X> setParameters(Map params) {
         assertOpen();
         _em.assertNotCloseInvoked();
@@ -296,6 +304,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * @throws IllegalStateException
      *             if invoked on a native query
      */
+    @Override
     public <T> Parameter<T> getParameter(String name, Class<T> type) {
         Parameter<?> param = getParameter(name);
         if (param.getParameterType().isAssignableFrom(type))
@@ -311,6 +320,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * @throws IllegalStateException
      *             if invoked on a native query unless the same parameter position is bound already.
      */
+    @Override
     public <T> Parameter<T> getParameter(int pos, Class<T> type) {
         if (_convertPositionalParams == true) {
             return getParameter("_" + String.valueOf(pos), type);
@@ -332,6 +342,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * @throws IllegalArgumentException
      *             if the parameter does not belong to this query
      */
+    @Override
     public <T> T getParameterValue(Parameter<T> p) {
         if (!isBound(p)) {
             throw new IllegalArgumentException(_loc.get("param-missing", p, getQueryString(), getBoundParameterKeys())
@@ -343,12 +354,14 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Gets the parameters declared in this query.
      */
+    @Override
     public Set<Parameter<?>> getParameters() {
-        Set<Parameter<?>> result = new HashSet<Parameter<?>>();
+        Set<Parameter<?>> result = new HashSet<>();
         result.addAll(getDeclaredParameters().values());
         return result;
     }
 
+    @Override
     public <T> OpenJPAQuery<X> setParameter(Parameter<T> p, T arg1) {
         bindValue(p, arg1);
         if (BindableParameter.class.isInstance(p)) {
@@ -357,10 +370,12 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
         return this;
     }
 
+    @Override
     public OpenJPAQuery<X> setParameter(Parameter<Date> p, Date date, TemporalType type) {
         return setParameter(p, (Date) convertTemporalType(date, type));
     }
 
+    @Override
     public TypedQuery<X> setParameter(Parameter<Calendar> p, Calendar cal, TemporalType type) {
         return setParameter(p, (Calendar) convertTemporalType(cal, type));
     }
@@ -374,6 +389,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * @throws IllegalStateException
      *             if invoked on a native query
      */
+    @Override
     public Parameter<?> getParameter(String name) {
         if (isNative()) {
             throw new IllegalStateException(_loc.get("param-named-non-native", name).getMessage());
@@ -401,6 +417,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * @throws IllegalArgumentException
      *             if the parameter with the given position does not exist
      */
+    @Override
     public Parameter<?> getParameter(int pos) {
         if (_convertPositionalParams == true) {
             return getParameter("_" + String.valueOf(pos));
@@ -422,6 +439,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * @throws IllegalStateException
      *             if this parameter has not been bound
      */
+    @Override
     public Object getParameterValue(String name) {
         return _boundParams.get(getParameter(name));
     }
@@ -436,6 +454,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      * @throws IllegalStateException
      *             if this parameter has not been bound
      */
+    @Override
     public Object getParameterValue(int pos) {
         Parameter<?> param = getParameter(pos);
         assertBound(param);
@@ -450,7 +469,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
         if (_boundParams == null)
             return Collections.EMPTY_SET;
         getDeclaredParameters();
-        Set<Object> result = new HashSet<Object>();
+        Set<Object> result = new HashSet<>();
         for (Map.Entry<Object, Parameter<?>> entry : _declaredParams.entrySet()) {
             if (isBound(entry.getValue())) {
                 result.add(entry.getKey());
@@ -470,7 +489,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     }
 
     public <T> Set<T> getDeclaredParameterKeys(Class<T> keyType) {
-        Set<T> result = new HashSet<T>();
+        Set<T> result = new HashSet<>();
         for (Object key : getDeclaredParameterKeys()) {
             if (keyType.isInstance(key))
                 result.add((T) key);
@@ -494,7 +513,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     public Map<Object, Parameter<?>> getDeclaredParameters() {
         if (_declaredParams == null) {
-            _declaredParams = new HashMap<Object, Parameter<?>>();
+            _declaredParams = new HashMap<>();
 
             OrderedMap<Object, Class<?>> paramTypes = null;
             // Check to see if we have a cached version of the paramTypes in QueryMetaData.
@@ -540,7 +559,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     public void declareParameter(Object key, Parameter<?> param) {
         if (_declaredParams == null) {
-            _declaredParams = new HashMap<Object, Parameter<?>>();
+            _declaredParams = new HashMap<>();
         }
         _declaredParams.put(key, param);
     }
@@ -548,6 +567,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Affirms if the given parameter is bound to a value for this query.
      */
+    @Override
     public boolean isBound(Parameter<?> param) {
         return _boundParams != null && _boundParams.containsKey(param);
     }
@@ -567,10 +587,12 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
         _boundParams.put(param, bindVal);
     }
 
+    @Override
     public OpenJPAQuery<X> setParameter(String name, Calendar value, TemporalType type) {
         return setParameter(name, convertTemporalType(value, type));
     }
 
+    @Override
     public OpenJPAQuery<X> setParameter(String name, Date value, TemporalType type) {
         return setParameter(name, convertTemporalType(value, type));
     }
@@ -578,6 +600,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     /**
      * Sets the parameter of the given name to the given value.
      */
+    @Override
     public OpenJPAQuery<X> setParameter(String name, Object value) {
         assertOpen();
         _em.assertNotCloseInvoked();
@@ -637,6 +660,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
         return _relaxBindParameterTypeChecking;
     }
 
+    @Override
     public void setRelaxBindParameterTypeChecking(Object value) {
         if (value != null) {
             if (value instanceof String) {

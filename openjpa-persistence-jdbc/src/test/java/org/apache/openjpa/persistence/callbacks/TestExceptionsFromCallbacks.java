@@ -18,16 +18,17 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.callbacks.ExceptionsFromCallbacksEntity.
         CallbackTestException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.enhance.PersistenceCapable;
 
 /**
  * Tests against JPA section 3.5's description of callback exception handling.

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex4;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class Address {
@@ -41,7 +41,8 @@ public class Address {
 		this.zip=zip;
 	}
 
-	public String toString(){
+	@Override
+    public String toString(){
 		return street+" "+" "+city+","+state+" "+zip;
 	}
 

@@ -30,10 +30,12 @@ public class SingleIdWrapper implements SingleId {
     private Integer pk;
     private String str;
 
+    @Override
     public boolean correctIdClass(Class c) {
         return IntId.class.equals(c);
     }
 
+    @Override
     public String getPkString() {
         return pk == null ? "null" : pk.toString();
     }
@@ -46,10 +48,12 @@ public class SingleIdWrapper implements SingleId {
         pk = new Integer(i);
     }
 
+    @Override
     public String getString() {
         return str;
     }
 
+    @Override
     public void setString(String s) {
         str = s;
     }

@@ -147,7 +147,7 @@ public class SQLExceptions {
         if (se == null)
             return EMPTY_EXCEPS;
 
-        List<SQLException> errs = new LinkedList<SQLException>();
+        List<SQLException> errs = new LinkedList<>();
         while (se != null && !errs.contains(se)) {
             errs.add(se);
             se = se.getNextException();

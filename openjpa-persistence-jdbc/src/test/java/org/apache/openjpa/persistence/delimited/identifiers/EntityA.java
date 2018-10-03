@@ -58,22 +58,22 @@ public class EntityA {
     @ElementCollection
     // CollectionTable with default name generation
     @CollectionTable
-    private Set<String> collectionSet = new HashSet<String>();
+    private Set<String> collectionSet = new HashSet<>();
 
     @ElementCollection
     @OrderColumn(name="order col")
     @CollectionTable(name="delim set", schema="delim id2")
-    private Set<String> collectionDelimSet = new HashSet<String>();
+    private Set<String> collectionDelimSet = new HashSet<>();
 
     @ElementCollection
     // MapKeyColumn with default name generation
     @MapKeyColumn
-    private Map<String, String> collectionMap = new HashMap<String, String>();
+    private Map<String, String> collectionMap = new HashMap<>();
 
     @ElementCollection
     @MapKeyColumn(name="map key", columnDefinition="varchar(20)", table="m ktbl")
     private Map<String, String> delimCollectionMap =
-        new HashMap<String, String>();
+        new HashMap<>();
 
     public EntityA(){
     }

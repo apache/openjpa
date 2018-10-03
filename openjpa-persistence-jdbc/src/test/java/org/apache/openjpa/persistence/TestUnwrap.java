@@ -106,7 +106,7 @@ public class TestUnwrap extends SingleEMFTestCase {
             assertNotNull(c);
             assertTrue(DelegatingConnection.class.isAssignableFrom(c.getClass()));
 
-            List<Class> acceptedConnectionClassTypes = new ArrayList<Class>();
+            List<Class> acceptedConnectionClassTypes = new ArrayList<>();
             if (DerbyDictionary.class.getName().equals(dbDict)) {
                 // Connection type can be network or embedded
                 String[] connectionTypes = {

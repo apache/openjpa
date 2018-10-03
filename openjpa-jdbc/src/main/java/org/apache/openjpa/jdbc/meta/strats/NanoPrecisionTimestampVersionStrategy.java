@@ -29,12 +29,16 @@ import org.apache.openjpa.lib.util.TimestampHelper;
 public class NanoPrecisionTimestampVersionStrategy
     extends TimestampVersionStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     public static final String ALIAS = "nano-timestamp";
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     protected Object nextVersion(Object version) {
         return TimestampHelper.getNanoPrecisionTimestamp();
     }

@@ -42,6 +42,7 @@ public class SubclassH extends MidClass2 {
         return classHName;
     }
 
+    @Override
     public String toString() {
         return super.toString() + ";classHName=" + classHName +
             ";intFieldSup=" + intFieldSup;

@@ -19,8 +19,8 @@
 package org.apache.openjpa.enhance;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -55,7 +55,7 @@ public class TestGetDeclaredMethod extends TestCase {
     }
 
     public void testGenerics() throws NoSuchMethodException {
-        List<Method> meths = new ArrayList<Method>();
+        List<Method> meths = new ArrayList<>();
         for (Method meth : GenericsImpl.class.getDeclaredMethods()) {
             if ("getObject".equals(meth.getName()))
                 meths.add(meth);
@@ -70,6 +70,7 @@ public class TestGetDeclaredMethod extends TestCase {
     }
 
     static class Impl implements Iface {
+        @Override
         public String getObject() {
             return "string";
         }
@@ -82,10 +83,11 @@ public class TestGetDeclaredMethod extends TestCase {
     }
 
     interface GenericsIface<T> {
-        public T getObject();
+        T getObject();
     }
 
     static class GenericsImpl implements GenericsIface {
+        @Override
         public String getObject() {
             return null;
         }

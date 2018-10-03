@@ -21,7 +21,12 @@ package org.apache.openjpa.persistence.embed;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="EmpEmbedTest")
@@ -40,7 +45,7 @@ public class Employee {
 
     @ElementCollection // use default table (PERSON_NICKNAMES)
     @Column(name="name", length=50)
-    protected Set<String> nickNames = new HashSet<String>();
+    protected Set<String> nickNames = new HashSet<>();
 
     public int getEmpId() {
         return empId;

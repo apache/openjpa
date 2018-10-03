@@ -31,10 +31,12 @@ public class TestEnhancedInstanceBrokerSerialization
         super.setUp();
     }
 
+    @Override
     protected Class<SimpleEntity> getManagedType() {
         return SimpleEntity.class;
     }
 
+    @Override
     protected SimpleEntity newManagedInstance() {
         SimpleEntity e = new SimpleEntity();
         e.setName("foo");
@@ -42,10 +44,12 @@ public class TestEnhancedInstanceBrokerSerialization
         return e;
     }
 
+    @Override
     protected void modifyInstance(SimpleEntity e) {
         e.setValue("modified");
     }
 
+    @Override
     protected Object getModifiedValue(SimpleEntity e) {
         return e.getValue();
     }

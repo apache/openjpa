@@ -53,6 +53,7 @@ public class EmbedPropAccess {
         lName = lname;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof EmbedPropAccess) {
             EmbedPropAccess ps = (EmbedPropAccess)obj;

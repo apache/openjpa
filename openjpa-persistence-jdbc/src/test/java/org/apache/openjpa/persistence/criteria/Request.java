@@ -20,7 +20,10 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.sql.Date;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Request {

@@ -29,6 +29,7 @@ public class TestSoftRandomAccessResultList extends ResultListTest {
         super(test);
     }
 
+    @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new SoftRandomAccessResultList(provider);
     }

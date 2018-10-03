@@ -44,7 +44,7 @@ public class User {
     // Collection of embeddables
     @ElementCollection
     @CollectionTable(name = "user_addresses")
-    private Set<Address> addresses = new HashSet<Address>();
+    private Set<Address> addresses = new HashSet<>();
     @Basic
     private String user_name;
 
@@ -65,6 +65,7 @@ public class User {
         addresses.add(a);
     }
 
+    @Override
     public String toString() {
         String res = user_name + " " + user + " " + contactInfo;
 

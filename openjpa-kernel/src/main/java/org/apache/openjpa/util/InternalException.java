@@ -29,6 +29,9 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class InternalException
     extends OpenJPAException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public InternalException() {
         setFatal(true);
     }
@@ -58,6 +61,7 @@ public class InternalException
         setFatal(true);
     }
 
+    @Override
     public int getType() {
         return INTERNAL;
     }

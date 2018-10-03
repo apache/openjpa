@@ -20,10 +20,10 @@ package org.apache.openjpa.lib.meta;
 
 import java.security.AccessController;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -92,6 +92,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         return 2;
     }
 
+    @Override
     protected boolean startElement(String name, Attributes attrs)
         throws SAXException {
         // skip root element
@@ -133,6 +134,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         }
     }
 
+    @Override
     protected void endElement(String name) throws SAXException {
         // skip root element
         int depth = currentDepth();
@@ -288,6 +290,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
      * a new document. Subclasses should call
      * <code>super.reset()</code> to clear superclass state.
      */
+    @Override
     protected void reset() {
         super.reset();
         _package = null;

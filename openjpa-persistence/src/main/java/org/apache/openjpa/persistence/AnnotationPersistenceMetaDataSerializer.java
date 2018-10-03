@@ -38,10 +38,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Basic;
@@ -174,6 +174,7 @@ public class AnnotationPersistenceMetaDataSerializer
      * The serialization mode according to the expected document type. The
      * mode constants act as bit flags, and therefore can be combined.
      */
+    @Override
     public void setMode(int mode) {
         _mode = mode;
     }
@@ -234,18 +235,20 @@ public class AnnotationPersistenceMetaDataSerializer
     /**
      * Add a class meta data to the set to be serialized.
      */
+    @Override
     public void addMetaData(ClassMetaData meta) {
         if (meta == null)
             return;
 
         if (_metas == null)
-            _metas = new HashMap<String, ClassMetaData>();
+            _metas = new HashMap<>();
         _metas.put(meta.getDescribedType().getName(), meta);
     }
 
     /**
      * Add a sequence meta data to the set to be serialized.
      */
+    @Override
     public void addSequenceMetaData(SequenceMetaData meta) {
         if (meta == null)
             return;
@@ -255,7 +258,7 @@ public class AnnotationPersistenceMetaDataSerializer
         if (meta.getSourceScope() instanceof Class)
             defName = ((Class) meta.getSourceScope()).getName();
         if (_seqs == null)
-            _seqs = new HashMap<String, List>();
+            _seqs = new HashMap<>();
         else
             seqs = _seqs.get(defName);
 
@@ -270,6 +273,7 @@ public class AnnotationPersistenceMetaDataSerializer
     /**
      * Add a query meta data to the set to be serialized.
      */
+    @Override
     public void addQueryMetaData(QueryMetaData meta) {
         if (meta == null)
             return;
@@ -279,7 +283,7 @@ public class AnnotationPersistenceMetaDataSerializer
         if (meta.getSourceScope() instanceof Class)
             defName = ((Class) meta.getSourceScope()).getName();
         if (_queries == null)
-            _queries = new HashMap<String, List>();
+            _queries = new HashMap<>();
         else
             queries = _queries.get(defName);
 
@@ -294,6 +298,7 @@ public class AnnotationPersistenceMetaDataSerializer
     /**
      * Add all components in the given repository to the set to be serialized.
      */
+    @Override
     public void addAll(MetaDataRepository repos) {
         if (repos == null)
             return;
@@ -311,6 +316,7 @@ public class AnnotationPersistenceMetaDataSerializer
      *
      * @return true if removed, false if not in set
      */
+    @Override
     public boolean removeMetaData(ClassMetaData meta) {
         return _metas != null && meta != null
             && _metas.remove(meta.getDescribedType().getName()) != null;
@@ -476,10 +482,10 @@ public class AnnotationPersistenceMetaDataSerializer
      */
     protected void addAnnotation(AnnotationBuilder ab, ClassMetaData meta) {
         if (_clsAnnos == null)
-            _clsAnnos = new HashMap<ClassMetaData, List<AnnotationBuilder>>();
+            _clsAnnos = new HashMap<>();
         List<AnnotationBuilder> list = _clsAnnos.get(meta);
         if (list == null) {
-            list = new ArrayList<AnnotationBuilder>();
+            list = new ArrayList<>();
             _clsAnnos.put(meta, list);
         }
         list.add(ab);
@@ -491,10 +497,10 @@ public class AnnotationPersistenceMetaDataSerializer
      */
     protected void addAnnotation(AnnotationBuilder ab, FieldMetaData meta) {
         if (_fldAnnos == null)
-            _fldAnnos = new HashMap<FieldMetaData, List<AnnotationBuilder>>();
+            _fldAnnos = new HashMap<>();
         List<AnnotationBuilder> list = _fldAnnos.get(meta);
         if (list == null) {
-            list = new ArrayList<AnnotationBuilder>();
+            list = new ArrayList<>();
             _fldAnnos.put(meta, list);
         }
         list.add(ab);
@@ -506,11 +512,10 @@ public class AnnotationPersistenceMetaDataSerializer
      */
     protected void addAnnotation(AnnotationBuilder ab, SequenceMetaData meta) {
         if (_seqAnnos == null)
-            _seqAnnos = new HashMap<SequenceMetaData,
-                    List<AnnotationBuilder>>();
+            _seqAnnos = new HashMap<>();
         List<AnnotationBuilder> list = _seqAnnos.get(meta);
         if (list == null) {
-            list = new ArrayList<AnnotationBuilder>();
+            list = new ArrayList<>();
             _seqAnnos.put(meta, list);
         }
         list.add(ab);
@@ -522,10 +527,10 @@ public class AnnotationPersistenceMetaDataSerializer
      */
     protected void addAnnotation(AnnotationBuilder ab, QueryMetaData meta) {
         if (_qryAnnos == null)
-            _qryAnnos = new HashMap<QueryMetaData, List<AnnotationBuilder>>();
+            _qryAnnos = new HashMap<>();
         List<AnnotationBuilder> list = _qryAnnos.get(meta);
         if (list == null) {
-            list = new ArrayList<AnnotationBuilder>();
+            list = new ArrayList<>();
             _qryAnnos.put(meta, list);
         }
         list.add(ab);
@@ -1051,7 +1056,7 @@ public class AnnotationPersistenceMetaDataSerializer
      * Return the serialized strategy name.
      */
     protected PersistenceStrategy getStrategy(FieldMetaData fmd) {
-        if (fmd.getManagement() == fmd.MANAGE_NONE)
+        if (fmd.getManagement() == FieldMetaData.MANAGE_NONE)
             return PersistenceStrategy.TRANSIENT;
 
         if (fmd.isSerialized()
@@ -1200,12 +1205,13 @@ public class AnnotationPersistenceMetaDataSerializer
 
     protected void writeAnnotations(Object meta,
         List<AnnotationBuilder> builders, Map output) {
-        List<String> annos = new ArrayList<String>();
+        List<String> annos = new ArrayList<>();
         for(AnnotationBuilder ab: builders)
             annos.add(ab.toString());
         output.put(meta, annos);
     }
 
+    @Override
     public void serialize(Map output, int flags) throws IOException {
         Collection all = getObjects();
         serialize(all);
@@ -1224,6 +1230,7 @@ public class AnnotationPersistenceMetaDataSerializer
                 writeAnnotations(meta, _qryAnnos.get(meta), output);
     }
 
+    @Override
     public void serialize(File file, int flags) throws IOException {
         try {
             FileWriter out = new FileWriter(AccessController
@@ -1236,6 +1243,7 @@ public class AnnotationPersistenceMetaDataSerializer
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void serialize(Writer out, int flags) throws IOException {
         Map output = new HashMap();
@@ -1256,6 +1264,7 @@ public class AnnotationPersistenceMetaDataSerializer
         }
     }
 
+    @Override
     public void serialize(int flags) throws IOException {
         throw new UnsupportedOperationException();
     }
@@ -1290,34 +1299,42 @@ public class AnnotationPersistenceMetaDataSerializer
         /**
          * Compare sequence metadata on name.
          */
+        @Override
         public int compare(SequenceMetaData o1, SequenceMetaData o2) {
             return o1.getName().compareTo(o2.getName());
         }
 
+        @Override
         public File getSourceFile() {
             return _seqs[0].getSourceFile();
         }
 
+        @Override
         public Object getSourceScope() {
             return _seqs[0].getSourceScope();
         }
 
+        @Override
         public int getSourceType() {
             return _seqs[0].getSourceType();
         }
 
+        @Override
         public String getResourceName() {
             return _seqs[0].getResourceName();
         }
 
+        @Override
         public int getLineNumber() {
             return _seqs[0].getLineNumber();
         }
 
+        @Override
         public int getColNumber() {
             return _seqs[0].getColNumber();
         }
 
+        @Override
         public int compareTo(ClassSeqs other) {
             if (other == this)
                 return 0;
@@ -1360,6 +1377,7 @@ public class AnnotationPersistenceMetaDataSerializer
          * If the given queries use same language, then their names are
          * compared.
          */
+        @Override
         public int compare(QueryMetaData o1, QueryMetaData o2) {
             // normal queries before native
             if (!Objects.equals(o1.getLanguage(), o2.getLanguage())) {
@@ -1371,30 +1389,37 @@ public class AnnotationPersistenceMetaDataSerializer
             return o1.getName().compareTo(o2.getName());
         }
 
+        @Override
         public File getSourceFile() {
             return _queries[0].getSourceFile();
         }
 
+        @Override
         public Object getSourceScope() {
             return _queries[0].getSourceScope();
         }
 
+        @Override
         public int getSourceType() {
             return _queries[0].getSourceType();
         }
 
+        @Override
         public String getResourceName() {
             return _queries[0].getResourceName();
         }
 
+        @Override
         public int getLineNumber() {
             return _queries[0].getLineNumber();
         }
 
+        @Override
         public int getColNumber() {
             return _queries[0].getColNumber();
         }
 
+        @Override
         public int compareTo(ClassQueries other) {
             if (other == this)
                 return 0;
@@ -1418,6 +1443,10 @@ public class AnnotationPersistenceMetaDataSerializer
     protected class SerializationComparator
         extends MetaDataInheritanceComparator {
 
+        
+        private static final long serialVersionUID = 1L;
+
+        @Override
         public int compare(Object o1, Object o2) {
             if (o1 == o2)
                 return 0;
@@ -1510,6 +1539,7 @@ public class AnnotationPersistenceMetaDataSerializer
     private class FieldComparator
         implements Comparator {
 
+        @Override
         public int compare(Object o1, Object o2) {
             FieldMetaData fmd1 = (FieldMetaData) o1;
             FieldMetaData fmd2 = (FieldMetaData) o2;

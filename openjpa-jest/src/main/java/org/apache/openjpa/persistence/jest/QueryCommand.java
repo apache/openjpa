@@ -19,19 +19,20 @@
 
 package org.apache.openjpa.persistence.jest;
 
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static org.apache.openjpa.persistence.jest.Constants.QUALIFIER_FORMAT;
+import static org.apache.openjpa.persistence.jest.Constants.QUALIFIER_PLAN;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import static org.apache.openjpa.persistence.jest.Constants.*;
 
 import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.ArgumentException;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;;
 
 /**
  * Executes query.
@@ -64,6 +65,7 @@ class QueryCommand extends AbstractCommand {
         return 0;
     }
 
+    @Override
     protected Collection<String> getValidQualifiers() {
         return _validQualifiers;
     }

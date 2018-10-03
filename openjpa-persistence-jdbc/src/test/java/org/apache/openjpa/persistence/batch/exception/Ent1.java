@@ -38,6 +38,7 @@ public class Ent1 {
     public Ent1() {}
     public Ent1(int pk, String str) {this.pk = pk;name=str;}
 
+    @Override
     public String toString(){
         return "Ent1 [pk = " + pk + ", " + name +"]";
     }

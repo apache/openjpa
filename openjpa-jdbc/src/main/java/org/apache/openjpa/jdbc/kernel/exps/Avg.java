@@ -23,9 +23,8 @@ package org.apache.openjpa.jdbc.kernel.exps;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class Avg
-    extends NullableAggregateUnaryOp { // OPENJPA-1794
+class Avg extends NullableAggregateUnaryOp { // OPENJPA-1794
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructor. Provide the value to operate on.
@@ -34,10 +33,12 @@ class Avg
         super(val);
     }
 
+    @Override
     protected String getOperator() {
         return "AVG";
     }
 
+    @Override
     public boolean isAggregate() {
         return true;
     }

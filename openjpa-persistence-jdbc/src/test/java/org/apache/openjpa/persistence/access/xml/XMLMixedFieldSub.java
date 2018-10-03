@@ -34,6 +34,7 @@ public class XMLMixedFieldSub extends XMLMixedMappedSuper {
         crtDate = date;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLMixedFieldSub) {
             XMLMixedFieldSub ps = (XMLMixedFieldSub)obj;

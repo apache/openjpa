@@ -18,8 +18,11 @@
  */
 package org.apache.openjpa.persistence.models.company.fetchlazy;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+
+import org.apache.openjpa.persistence.models.company.IPartTimeEmployee;
 
 @Entity(name="LAZ_PartTimeEmployee")
 public class PartTimeEmployee extends Employee
@@ -30,19 +33,23 @@ public class PartTimeEmployee extends Employee
     @Basic(fetch=FetchType.LAZY)
     private int weeklyHours;
 
+    @Override
     public void setWage(float wage) {
         this.wage = wage;
     }
 
+    @Override
     public float getWage() {
         return this.wage;
     }
 
 
+    @Override
     public void setWeeklyHours(int weeklyHours) {
         this.weeklyHours = weeklyHours;
     }
 
+    @Override
     public int getWeeklyHours() {
         return this.weeklyHours;
     }

@@ -18,19 +18,19 @@
  */
 package org.apache.openjpa.persistence.models.company;
 
-import java.util.*;
+import java.util.Date;
 
 public interface IEmployee extends IPerson {
 
-    public void setManager(IFullTimeEmployee manager);
-    public IFullTimeEmployee getManager();
+    void setManager(IFullTimeEmployee manager);
+    IFullTimeEmployee getManager();
 
-    public void setCompany(ICompany company);
-    public ICompany getCompany();
+    void setCompany(ICompany company);
+    ICompany getCompany();
 
-    public void setTitle(String title);
-    public String getTitle();
+    void setTitle(String title);
+    String getTitle();
 
-    public void setHireDate(Date hireDate);
-    public Date getHireDate();
+    void setHireDate(Date hireDate);
+    Date getHireDate();
 }

@@ -323,7 +323,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
     public void testMultipleValidationGroups() {
 
         // Configure persistence properties via map
-        Map<String, Object> propMap = new HashMap<String, Object>();
+        Map<String, Object> propMap = new HashMap<>();
         propMap.put("javax.persistence.validation.group.pre-persist",
             "org.apache.openjpa.integration.validation.ValGroup1," +
             "org.apache.openjpa.integration.validation.ValGroup2");
@@ -441,7 +441,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
     public void testNoValidationGroups() {
 
         // Configure persistence properties via map
-        Map<String, Object> propMap = new HashMap<String, Object>();
+        Map<String, Object> propMap = new HashMap<>();
         propMap.put("javax.persistence.validation.group.pre-persist","");
 
         propMap.put("javax.persistence.validation.group.pre-update","");

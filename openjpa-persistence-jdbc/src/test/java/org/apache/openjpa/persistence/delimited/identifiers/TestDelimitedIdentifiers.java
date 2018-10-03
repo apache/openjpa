@@ -28,6 +28,7 @@ public class TestDelimitedIdentifiers extends SQLListenerTestCase {
 
     EntityA entityA;
 
+    @Override
     public void setUp() throws Exception {
         setSupportedDatabases(
             org.apache.openjpa.jdbc.sql.DerbyDictionary.class,

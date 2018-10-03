@@ -18,16 +18,16 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Version;
-import javax.persistence.OneToOne;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Version;
+
+import org.apache.openjpa.persistence.jdbc.ForeignKey;
 
 @Entity
 public class EntityD {

@@ -20,8 +20,9 @@ package org.apache.openjpa.persistence.relations;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Perform basic operations on an entity with interface relations that use
@@ -32,6 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestTargetedIFaceRelations
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(TargetedIFaceRelationParent.class);
     }

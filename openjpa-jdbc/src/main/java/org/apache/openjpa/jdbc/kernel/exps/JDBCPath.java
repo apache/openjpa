@@ -28,5 +28,5 @@ import org.apache.openjpa.kernel.exps.Path;
 interface JDBCPath
     extends Path, Val {
 
-    public void getKey();
+    void getKey();
 }

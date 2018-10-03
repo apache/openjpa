@@ -20,10 +20,10 @@ package org.apache.openjpa.event;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Collections;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.Broker;
@@ -46,6 +46,9 @@ import org.apache.openjpa.util.UserException;
 public class RemoteCommitEventManager
     extends AbstractConcurrentEventManager
     implements EndTransactionListener, Closeable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage
         (RemoteCommitEventManager.class);
@@ -117,6 +120,7 @@ public class RemoteCommitEventManager
     /**
      * Close this manager and all registered listeners.
      */
+    @Override
     public void close() {
         if (_provider != null) {
             _provider.close();
@@ -126,6 +130,7 @@ public class RemoteCommitEventManager
         }
     }
 
+    @Override
     protected void fireEvent(Object event, Object listener) {
         RemoteCommitListener listen = (RemoteCommitListener) listener;
         RemoteCommitEvent ev = (RemoteCommitEvent) event;
@@ -149,6 +154,7 @@ public class RemoteCommitEventManager
     // TransactionListener implementation
     //////////////////////////////////////
 
+    @Override
     public void afterCommit(TransactionEvent event) {
         if (_provider != null) {
             RemoteCommitEvent rce = createRemoteCommitEvent(event);
@@ -235,18 +241,23 @@ public class RemoteCommitEventManager
         return names;
     }
 
+    @Override
     public void beforeCommit(TransactionEvent event) {
     }
 
+    @Override
     public void afterRollback(TransactionEvent event) {
     }
 
+    @Override
     public void afterCommitComplete(TransactionEvent event) {
     }
 
+    @Override
     public void afterRollbackComplete(TransactionEvent event) {
     }
 
+    @Override
     public void afterStateTransitions(TransactionEvent event)
 	{
 	}

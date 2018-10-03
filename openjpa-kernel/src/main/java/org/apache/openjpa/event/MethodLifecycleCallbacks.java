@@ -77,10 +77,12 @@ public class MethodLifecycleCallbacks
         return _arg;
     }
 
+    @Override
     public boolean hasCallback(Object obj, int eventType) {
         return true;
     }
 
+    @Override
     public void makeCallback(Object obj, Object arg, int eventType)
         throws Exception {
         if (!_callback.isAccessible())
@@ -93,6 +95,7 @@ public class MethodLifecycleCallbacks
             _callback.invoke(obj, (Object[]) null);
     }
 
+    @Override
     public String toString() {
         return getClass().getName() + ":" + _callback;
     }
@@ -141,6 +144,7 @@ public class MethodLifecycleCallbacks
         return true;
     }
 
+    @Override
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         Class cls = (Class) in.readObject();
@@ -151,6 +155,7 @@ public class MethodLifecycleCallbacks
         _callback = getMethod(cls, methName, args);
     }
 
+    @Override
     public void writeExternal(ObjectOutput out)
         throws IOException {
         out.writeObject(_callback.getClass());

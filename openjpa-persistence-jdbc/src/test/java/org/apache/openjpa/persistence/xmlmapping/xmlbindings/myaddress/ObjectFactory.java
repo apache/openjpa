@@ -94,7 +94,7 @@ public class ObjectFactory {
             substitutionHeadNamespace = "",
             substitutionHeadName = "MailAddress")
     public JAXBElement<USAAddress> createAddrUSA(USAAddress value) {
-        return new JAXBElement<USAAddress>(_AddrUSA_QNAME, USAAddress.class,
+        return new JAXBElement<>(_AddrUSA_QNAME, USAAddress.class,
                 null, value);
     }
 
@@ -107,7 +107,7 @@ public class ObjectFactory {
             substitutionHeadNamespace = "",
             substitutionHeadName = "MailAddress")
     public JAXBElement<CANAddress> createAddrCAN(CANAddress value) {
-        return new JAXBElement<CANAddress>(_AddrCAN_QNAME, CANAddress.class,
+        return new JAXBElement<>(_AddrCAN_QNAME, CANAddress.class,
                 null, value);
     }
 
@@ -117,7 +117,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "", name = "MailAddress")
     public JAXBElement<Address> createMailAddress(Address value) {
-        return new JAXBElement<Address>(_MailAddress_QNAME, Address.class, null,
+        return new JAXBElement<>(_MailAddress_QNAME, Address.class, null,
                 value);
     }
 
@@ -129,7 +129,7 @@ public class ObjectFactory {
             substitutionHeadNamespace = "",
             substitutionHeadName = "MailAddress")
     public JAXBElement<GBRAddress> createAddrGBR(GBRAddress value) {
-        return new JAXBElement<GBRAddress>(_AddrGBR_QNAME, GBRAddress.class,
+        return new JAXBElement<>(_AddrGBR_QNAME, GBRAddress.class,
                 null, value);
     }
 

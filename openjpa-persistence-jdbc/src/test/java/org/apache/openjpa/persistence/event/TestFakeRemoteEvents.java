@@ -25,17 +25,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-
 import org.apache.openjpa.event.AbstractRemoteCommitProvider;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.util.Id;
 
 @AllowFailure(message="surefire excluded")
@@ -53,6 +51,7 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
         super(s, "eventcactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }
@@ -189,12 +188,14 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
 
         transient Collection deleted;
 
+        @Override
         public void afterCommit(RemoteCommitEvent event) {
             this.added = event.getPersistedObjectIds();
             this.updated = event.getUpdatedObjectIds();
             this.deleted = event.getDeletedObjectIds();
         }
 
+        @Override
         public void close() {
         }
     }
@@ -216,12 +217,14 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
 
         // ---------- RemoteCommitProvider implementation ----------
 
+        @Override
         public void broadcast(RemoteCommitEvent event) {
             this.added = event.getPersistedObjectIds();
             this.updated = event.getUpdatedObjectIds();
             this.deleted = event.getDeletedObjectIds();
         }
 
+        @Override
         public void close() {
         }
     }

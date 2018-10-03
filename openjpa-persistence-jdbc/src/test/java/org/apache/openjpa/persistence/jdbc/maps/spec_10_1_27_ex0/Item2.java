@@ -21,7 +21,10 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex0;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="S27x0Itm2")
@@ -30,7 +33,7 @@ public class Item2 {
     int id;
 
     @ElementCollection
-    Map<String, String> images = new HashMap<String, String>();
+    Map<String, String> images = new HashMap<>();
 
     public int getId() {
         return id;

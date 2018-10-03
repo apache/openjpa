@@ -18,12 +18,10 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import javax.persistence.*;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Generator;
 
 /**
  * Test for generators
@@ -38,6 +36,7 @@ public class TestGenerators extends AnnotationTestCase
 		super(name, "annotationcactusapp");
 	}
 
+    @Override
     public void setUp()
         throws Exception {
         deleteAll(Generator.class);

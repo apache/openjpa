@@ -28,11 +28,12 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-import org.apache.openjpa.conf.*;
-import org.apache.openjpa.jdbc.conf.*;
-import org.apache.openjpa.jdbc.meta.*;
-import org.apache.openjpa.jdbc.meta.strats.*;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
+import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest2;
 
 
 

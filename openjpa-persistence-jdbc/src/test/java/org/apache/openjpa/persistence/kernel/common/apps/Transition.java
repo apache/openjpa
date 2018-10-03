@@ -38,9 +38,10 @@ import org.apache.openjpa.persistence.kernel.TestIndirectRecursion;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 @Entity
 public class Transition implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

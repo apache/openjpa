@@ -33,18 +33,22 @@ public class HorizInterFlatC
     private String stringC;
     private int intC;
 
+    @Override
     public void setStringC(String stringC) {
         this.stringC = stringC;
     }
 
+    @Override
     public String getStringC() {
         return this.stringC;
     }
 
+    @Override
     public void setIntC(int intC) {
         this.intC = intC;
     }
 
+    @Override
     public int getIntC() {
         return this.intC;
     }

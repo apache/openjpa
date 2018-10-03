@@ -22,11 +22,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import openbook.tools.converter.Java2HTMLConverter;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.taskdefs.MatchingTask;
+
+import openbook.tools.converter.Java2HTMLConverter;
 
 /**
  * An ant task to run {@linkplain Java2HTMLConverter Java2HTML Converter}.
@@ -46,7 +46,7 @@ public class Java2HTMLConverterTask extends MatchingTask {
     private String lineNumberFormat  = "%04d";
     private boolean verbose          = false;
 
-    private List<Arg> _args = new ArrayList<Arg>();
+    private List<Arg> _args = new ArrayList<>();
 
     public String getSourcepath() {
         return sourcepath;
@@ -59,7 +59,7 @@ public class Java2HTMLConverterTask extends MatchingTask {
     @Override
     public void execute() throws BuildException {
         List<String> files = getFiles();
-        List<String> args  = new ArrayList<String>();
+        List<String> args  = new ArrayList<>();
         args.add("-sourcepath");       args.add(sourcepath);
         args.add("-d");                args.add(destDir);
         args.add("-extension");        args.add(extension);
@@ -87,7 +87,7 @@ public class Java2HTMLConverterTask extends MatchingTask {
     }
 
     List<String> getFiles() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         DirectoryScanner scanner = getDirectoryScanner(new File(getSourcepath()));
         String[] files = scanner.getIncludedFiles();
         for (String file : files) {

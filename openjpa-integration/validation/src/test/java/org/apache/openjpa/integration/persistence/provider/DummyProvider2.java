@@ -27,6 +27,7 @@ import javax.persistence.spi.ProviderUtil;
 
 public class DummyProvider2 implements PersistenceProvider {
 
+    @Override
     public EntityManagerFactory createContainerEntityManagerFactory(
         PersistenceUnitInfo persistenceunitinfo, Map map) {
         return null;
@@ -42,10 +43,12 @@ public class DummyProvider2 implements PersistenceProvider {
         return false;
     }
 
+    @Override
     public EntityManagerFactory createEntityManagerFactory(String s, Map map) {
         return null;
     }
 
+    @Override
     public ProviderUtil getProviderUtil() {
         return null;
     }

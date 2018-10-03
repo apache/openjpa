@@ -20,10 +20,10 @@ package org.apache.openjpa.jdbc.identifier;
 
 import java.util.Objects;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
 import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Static utility class used for operating on string based identifiers.

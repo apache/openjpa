@@ -19,9 +19,17 @@
 
 package org.apache.openjpa.persistence.detachment.model;
 
-import javax.persistence.*;
-import java.util.Set;
 import java.util.LinkedHashSet;
+import java.util.Set;
+
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class SimpleB {
@@ -39,7 +47,7 @@ public class SimpleB {
     protected SimpleA parent;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="parent")
-    protected Set<SimpleC> c_set  = new LinkedHashSet<SimpleC>();
+    protected Set<SimpleC> c_set  = new LinkedHashSet<>();
 
     public int getId() {
         return b_id;

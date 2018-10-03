@@ -54,6 +54,7 @@ public class PrincipalValueStrategyHandler extends AbstractValueHandler {
         return new Column[]{col};
     }
 
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store) {
 
         if (val instanceof Principal) {
@@ -63,6 +64,7 @@ public class PrincipalValueStrategyHandler extends AbstractValueHandler {
         return null;
     }
 
+    @Override
     public Object toObjectValue(ValueMapping vm, final Object val) {
         if (val == null || !(val instanceof String)) {
             return null;
@@ -73,6 +75,8 @@ public class PrincipalValueStrategyHandler extends AbstractValueHandler {
 
 
     public static class TestPrincipal implements Principal, Serializable {
+        
+        private static final long serialVersionUID = 1L;
         private final String name;
 
         public TestPrincipal(String name) {

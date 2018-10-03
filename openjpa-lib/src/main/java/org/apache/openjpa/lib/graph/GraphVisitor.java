@@ -32,15 +32,15 @@ public interface GraphVisitor {
      * on the traversal being used.  See each appropriate graph
      * walker for details.
      */
-    public void nodeSeen(Object node);
+    void nodeSeen(Object node);
 
     /**
      * will only be called once per node
      */
-    public void nodeVisited(Object node);
+    void nodeVisited(Object node);
 
     /**
      * may visit the node twice (both sides)
      */
-    public void edgeVisited(Edge edge);
+    void edgeVisited(Edge edge);
 }

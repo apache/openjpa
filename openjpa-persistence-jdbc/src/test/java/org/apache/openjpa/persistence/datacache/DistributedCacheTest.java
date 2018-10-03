@@ -50,10 +50,12 @@ public class DistributedCacheTest
         super(test);
     }
 
+    @Override
     protected String[] getConfs() {
         return getConfs(true);
     }
 
+    @Override
     protected String[] getConfs2() {
         return getConfs(false);
     }

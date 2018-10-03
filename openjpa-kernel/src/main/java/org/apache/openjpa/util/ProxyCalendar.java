@@ -30,5 +30,5 @@ public interface ProxyCalendar
     /**
      * Return a new instance of this calendar type.
      */
-    public ProxyCalendar newInstance();
+    ProxyCalendar newInstance();
 }

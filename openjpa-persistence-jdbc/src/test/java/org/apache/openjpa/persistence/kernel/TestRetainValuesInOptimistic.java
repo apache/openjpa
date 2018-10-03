@@ -31,12 +31,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 
 public class TestRetainValuesInOptimistic extends BaseKernelTest {
 
@@ -52,6 +49,7 @@ public class TestRetainValuesInOptimistic extends BaseKernelTest {
         super(test);
     }
 
+    @Override
     public void setUp()
         throws Exception {
         super.setUp();

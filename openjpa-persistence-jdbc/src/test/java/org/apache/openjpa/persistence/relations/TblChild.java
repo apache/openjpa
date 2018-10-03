@@ -48,7 +48,7 @@ public class TblChild {
 	@OneToMany(mappedBy="tblChild",fetch = FetchType.EAGER,
 			cascade = {CascadeType.PERSIST,CascadeType.MERGE})
 	private Collection<TblGrandChild> tblGrandChildren =
-        new ArrayList<TblGrandChild>();
+        new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY,
 			cascade = {CascadeType.PERSIST,CascadeType.MERGE })

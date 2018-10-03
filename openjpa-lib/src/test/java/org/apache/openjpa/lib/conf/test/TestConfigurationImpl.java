@@ -24,7 +24,12 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 
-import org.apache.openjpa.lib.conf.*;
+import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.ConfigurationImpl;
+import org.apache.openjpa.lib.conf.ObjectValue;
+import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.conf.StringValue;
+import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.test.AbstractTestCase;
 
 /**
@@ -48,10 +53,12 @@ public class TestConfigurationImpl extends AbstractTestCase {
         super(test);
     }
 
+    @Override
     public void setUp() {
         System.setProperty("openjpatest.properties", "test.properties");
     }
 
+    @Override
     public void tearDown() throws Exception {
         System.setProperty("openjpatest.properties", "");
     	super.tearDown();
@@ -317,6 +324,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
             _objectKey.set(val, true);
         }
 
+        @Override
         protected boolean isInvalidProperty(String s) {
             if ("openjpatest.properties".equals(s))
                 return false;

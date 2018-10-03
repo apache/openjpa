@@ -18,7 +18,12 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Bi_1To1_JT {
@@ -60,10 +65,12 @@ public class Bi_1To1_JT {
         this.entityC = entityC;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode() + (int)id;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Bi_1To1_JT)) return false;
         Bi_1To1_JT b = (Bi_1To1_JT)o;

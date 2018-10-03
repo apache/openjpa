@@ -36,8 +36,8 @@ import java.util.Set;
  *
  */
 public class CommandProcessor {
-    private final Map<Option, String> registeredOptions = new HashMap<Option,String>();
-    private final Set<Option> unregisteredOptions = new HashSet<Option>();
+    private final Map<Option, String> registeredOptions = new HashMap<>();
+    private final Set<Option> unregisteredOptions = new HashSet<>();
     private boolean allowsUnregisteredOption = true;
 
     /**
@@ -348,6 +348,7 @@ public class CommandProcessor {
             return defValue;
         }
 
+        @Override
         public String toString() {
             return getName();
         }

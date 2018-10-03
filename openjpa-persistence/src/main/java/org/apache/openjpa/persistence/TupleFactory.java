@@ -57,7 +57,7 @@ public class TupleFactory implements ObjectFactory<Tuple> {
     }
 
     public TupleFactory(Selection<?>... elems) {
-        List<TupleElement<?>> list = new ArrayList<TupleElement<?>>();
+        List<TupleElement<?>> list = new ArrayList<>();
         for (Selection<?> s : elems)
             list.add(s);
         elements = Collections.unmodifiableList(list);
@@ -67,6 +67,7 @@ public class TupleFactory implements ObjectFactory<Tuple> {
         return elements;
     }
 
+    @Override
     public TupleImpl newInstance() {
         TupleImpl impl = new TupleImpl(this);
         return impl;

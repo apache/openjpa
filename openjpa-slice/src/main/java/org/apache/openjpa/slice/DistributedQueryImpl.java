@@ -32,8 +32,8 @@ import org.apache.openjpa.slice.jdbc.TargetFetchConfiguration;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class DistributedQueryImpl extends QueryImpl {
+    private static final long serialVersionUID = 1L;
     private final ReentrantSliceLock _lock;
     private DistributedConfiguration _conf;
 

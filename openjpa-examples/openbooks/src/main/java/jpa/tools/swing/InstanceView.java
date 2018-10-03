@@ -16,10 +16,11 @@ package jpa.tools.swing;
 import javax.persistence.metamodel.EntityType;
 import javax.swing.JTable;
 
-@SuppressWarnings("serial")
 public class InstanceView<T> extends JTable {
+    private static final long serialVersionUID = 1L;
+
     public InstanceView(EntityType<T> type, T instance) {
-        super(new InstanceDataModel<T>(type, instance));
+        super(new InstanceDataModel<>(type, instance));
         setShowHorizontalLines(false);
         setShowVerticalLines(false);
     }

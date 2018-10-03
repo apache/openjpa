@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /*
  * Separate testcase from TestEntityListeners to avoid the declaration of
@@ -29,6 +29,7 @@ public class TestMSCEntityListeners extends SingleEMFTestCase {
 
     private static final int MSC_LISTENER_ENTITY = 4;
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES);
         ListenerImpl.prePersistCount = 0;

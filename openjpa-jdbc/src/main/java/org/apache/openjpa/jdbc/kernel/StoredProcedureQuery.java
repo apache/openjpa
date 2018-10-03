@@ -18,6 +18,15 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static java.util.Arrays.asList;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -33,23 +42,15 @@ import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.util.InternalException;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
-
 /**
  * Executes a stored procedure.
  *
  * @author ppoddar
  *
  */
-@SuppressWarnings("serial")
 public class StoredProcedureQuery extends AbstractStoreQuery {
+    private static final long serialVersionUID = 1L;
+
     private static final Object[] NO_PARAM = new Object[0];
 
     JDBCStore _store;
@@ -82,14 +83,15 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
         }
     }
 
+    @Override
     public Executor newDataStoreExecutor(ClassMetaData meta,  boolean subclasses) {
         List<QueryResultMapping> mappings = null;
         List<Class<?>> classes = null;
         if (_meta != null) {
             List<QueryMetaData> parts = _meta.getComponents();
             if (parts != null && !parts.isEmpty()) {
-                mappings = new ArrayList<QueryResultMapping>();
-                classes = new ArrayList<Class<?>>();
+                mappings = new ArrayList<>();
+                classes = new ArrayList<>();
                 MappingRepository repos = _store.getConfiguration().getMappingRepositoryInstance();
                 for (QueryMetaData part : parts) {
                     QueryResultMapping mapping = repos.getQueryResultMapping(ctx.getResultMappingScope(),
@@ -107,18 +109,22 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
         return new StoredProcedureQueryExecutor(this, mappings, classes);
     }
 
+    @Override
     public boolean supportsParameterDeclarations() {
         return false;
     }
 
+    @Override
     public boolean supportsDataStoreExecution() {
         return true;
     }
 
+    @Override
     public boolean requiresCandidateType() {
         return false;
     }
 
+    @Override
     public boolean requiresParameterDeclarations() {
         return false;
     }

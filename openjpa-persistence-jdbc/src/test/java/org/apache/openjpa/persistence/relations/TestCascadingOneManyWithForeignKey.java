@@ -19,12 +19,14 @@
 package org.apache.openjpa.persistence.relations;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Tests a cascading one-many backed by a foreign key.
@@ -34,6 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestCascadingOneManyWithForeignKey
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(CascadingOneManyParent.class, CascadingOneManyChild.class);
     }

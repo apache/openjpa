@@ -18,6 +18,43 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ASSOC_OVERRIDE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ATTR_OVERRIDE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.COLLECTION_TABLE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.COLUMN_NAME;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.COLUMN_RESULT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.DATASTORE_ID_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.DELIMITED_IDS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.DISCRIM_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.DISCRIM_VAL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ENTITY_RESULT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ENUMERATED;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.FIELD_RESULT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.FK;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.FK_COL_NAME;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.FK_COL_NAMES;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.INDEX;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.INHERITANCE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_TABLE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_ENUMERATED;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_JOIN_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_TEMPORAL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.NAME;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ORDER_COLUMN;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.PK_JOIN_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.SECONDARY_TABLE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.SQL_RESULT_SET_MAPPING;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.TABLE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.TABLE_GEN;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.TEMPORAL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.UNIQUE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.VERSION_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.VERSION_COLS;
+
 import java.lang.reflect.Modifier;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -33,7 +70,6 @@ import javax.persistence.EnumType;
 import javax.persistence.InheritanceType;
 import javax.persistence.TemporalType;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
@@ -46,8 +82,8 @@ import org.apache.openjpa.jdbc.meta.FieldMappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
-import org.apache.openjpa.jdbc.meta.SequenceMapping;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping.PCResult;
+import org.apache.openjpa.jdbc.meta.SequenceMapping;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
@@ -59,6 +95,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -69,8 +106,6 @@ import org.apache.openjpa.util.UserException;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-
-import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
 /**
  * Custom SAX parser used by the system to parse persistence mapping files.
  *
@@ -80,7 +115,7 @@ public class XMLPersistenceMappingParser
     extends XMLPersistenceMetaDataParser {
 
     private static final Map<String, MappingTag> _elems =
-        new HashMap<String, MappingTag>();
+        new HashMap<>();
 
     static {
         _elems.put("association-override", ASSOC_OVERRIDE);
@@ -148,8 +183,7 @@ public class XMLPersistenceMappingParser
     private List<Column> _versionColumnsList = null;
 
     private final Map<Class<?>, ArrayList<DeferredEmbeddableOverrides>>
-        _deferredMappings = new HashMap<Class<?>,
-             ArrayList<DeferredEmbeddableOverrides>>();
+        _deferredMappings = new HashMap<>();
 
     /**
      * Constructor; supply configuration.
@@ -692,7 +726,7 @@ public class XMLPersistenceMappingParser
                 fm.getDeclaredTypeCode();
             Class<?> type = fm.isElementCollection() ? fm.getElement().getDeclaredType() : fm.getDeclaredType();
             if (_cols == null) {
-                _cols = new ArrayList<Column>(1);
+                _cols = new ArrayList<>(1);
                 _cols.add(new Column());
             }
             for (Column col : _cols) {
@@ -938,17 +972,17 @@ public class XMLPersistenceMappingParser
         // pk join columns on fields act as field cols
         if (currentElement() instanceof FieldMapping) {
             if (_cols == null)
-                _cols = new ArrayList<Column>(3);
+                _cols = new ArrayList<>(3);
             _cols.add(col);
         } else if (currentParent() == SECONDARY_TABLE) {
             // pk join columns in secondary table acts as join cols
             if (_joinCols == null)
-                _joinCols = new ArrayList<Column>(3);
+                _joinCols = new ArrayList<>(3);
             _joinCols.add(col);
         } else {
             // must be pk join cols from this class to superclass
             if (_supJoinCols == null)
-                _supJoinCols = new ArrayList<Column>(3);
+                _supJoinCols = new ArrayList<>(3);
             _supJoinCols.add(col);
         }
         return true;
@@ -967,7 +1001,7 @@ public class XMLPersistenceMappingParser
             Column col = parseColumn(attrs);
             List<Column> colList = fm.getMappingInfo().getColumns();
             if (colList.isEmpty()) {
-                colList = new ArrayList<Column>();
+                colList = new ArrayList<>();
                 fm.getMappingInfo().setColumns(colList);
             }
             colList.add(col);
@@ -979,7 +1013,7 @@ public class XMLPersistenceMappingParser
             return startColumn(attrs);
 
         if (_joinCols == null)
-            _joinCols = new ArrayList<Column>(3);
+            _joinCols = new ArrayList<>(3);
         _joinCols.add(parseColumn(attrs));
         return true;
     }
@@ -999,7 +1033,7 @@ public class XMLPersistenceMappingParser
                 !fm.getElementMapping().isEmbedded()) {
                 List<Column> list = fm.getElementMapping().getValueInfo().getColumns();
                 if (list.size() == 0) {
-                    list = new ArrayList<Column>();
+                    list = new ArrayList<>();
                     fm.getElementMapping().getValueInfo().setColumns(list);
                 }
                 list.add(col);
@@ -1007,7 +1041,7 @@ public class XMLPersistenceMappingParser
             }
         }
         if (_cols == null)
-            _cols = new ArrayList<Column>(3);
+            _cols = new ArrayList<>(3);
         _cols.add(col);
         return true;
     }
@@ -1020,7 +1054,7 @@ public class XMLPersistenceMappingParser
         FieldMapping fm = (FieldMapping) peekElement();
         Column col = parseColumn(attrs);
         MappingInfo info = fm.getKeyMapping().getValueInfo();
-        List<Column> cols = new ArrayList<Column>();
+        List<Column> cols = new ArrayList<>();
         cols.add(col);
         info.setColumns(cols);
         return true;
@@ -1322,6 +1356,7 @@ public class XMLPersistenceMappingParser
     /**
      * Process OrderColumn.
      */
+    @Override
     protected boolean startOrderColumn(Attributes attrs)
         throws SAXException {
         Column col = parseOrderColumn(attrs);
@@ -1416,7 +1451,7 @@ public class XMLPersistenceMappingParser
         ArrayList<DeferredEmbeddableOverrides> defMappings =
             _deferredMappings.get(cls);
         if (defMappings == null) {
-            defMappings = new ArrayList<DeferredEmbeddableOverrides>();
+            defMappings = new ArrayList<>();
             _deferredMappings.put(cls, defMappings);
         }
         defMappings.add(defMap);
@@ -1443,7 +1478,7 @@ public class XMLPersistenceMappingParser
             _deferredMappings.get(cls);
 
         if (defMappings == null && create) {
-            defMappings = new ArrayList<DeferredEmbeddableOverrides>();
+            defMappings = new ArrayList<>();
             _deferredMappings.put(cls, defMappings);
         }
         DeferredEmbeddableOverrides dfm =
@@ -1477,6 +1512,7 @@ public class XMLPersistenceMappingParser
     /**
      * Process all deferred embeddables using an unknown access type.
      */
+    @Override
     protected void addDeferredEmbeddableMetaData() {
         super.addDeferredEmbeddableMetaData();
         if (_deferredMappings.size() > 0) {
@@ -1706,7 +1742,7 @@ public class XMLPersistenceMappingParser
 
     private boolean startFKColumnNames(Attributes attrs)
         throws SAXException {
-        _columnNamesList = new ArrayList<String>();
+        _columnNamesList = new ArrayList<>();
         return true;
     }
 
@@ -1724,7 +1760,7 @@ public class XMLPersistenceMappingParser
     private boolean startVersionColumns(Attributes attrs)
         throws SAXException {
 
-        _versionColumnsList = new ArrayList<Column>();
+        _versionColumnsList = new ArrayList<>();
 
         return true;
     }

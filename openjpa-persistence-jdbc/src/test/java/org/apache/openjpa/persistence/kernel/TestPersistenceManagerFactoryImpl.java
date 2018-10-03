@@ -28,8 +28,6 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.util.Map;
 
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.event.LifecycleEvent;
@@ -43,6 +41,8 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
 
 public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
 
@@ -58,6 +58,7 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
         super(test);
     }
 
+    @Override
     public void setUp() {
         _conf = new OpenJPAConfigurationImpl();
         _conf.setConnection2UserName("user");
@@ -144,9 +145,11 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
 
         //FIXME jthomas
         LoadListener listener = new LoadListener() {
+            @Override
             public void afterLoad(LifecycleEvent ev) {
             }
 
+            @Override
             public void afterRefresh(LifecycleEvent ev) {
             }
         };
@@ -200,12 +203,16 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
         assertNotNull(pmf.getProperties().get("Platform"));
     }
 
+    @Override
     protected OpenJPAEntityManagerFactory getEmf(Map props) {
         props.put("openjpa.BrokerFactory", BrokerFactoryTest.class.getName());
         return (OpenJPAEntityManagerFactory) super.getEmf(props);
     }
 
     public static class BrokerFactoryTest extends AbstractBrokerFactory {
+
+        
+        private static final long serialVersionUID = 1L;
 
         // standard brokerfactory getter implemented by subclasses
         public static synchronized BrokerFactoryTest getInstance(
@@ -232,6 +239,7 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
             super(conf);
         }
 
+        @Override
         protected StoreManager newStoreManager() {
             return null;
         }

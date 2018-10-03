@@ -28,7 +28,6 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
 import javax.validation.TraversableResolver;
 
-import junit.framework.TestCase;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -38,6 +37,8 @@ import org.apache.openjpa.persistence.validation.TraversableResolverImpl;
 // The following 2 are dynamically loaded by loadPathImpl() from setUp()
 // import org.hibernate.validator.engine.PathImpl;
 // import com.agimatec.validation.jsr303.util.PathImpl;
+
+import junit.framework.TestCase;
 
 /**
  * Test the TraversableResolver methods
@@ -71,7 +72,7 @@ public class TestTraversableResolver extends TestCase {
     }
 
     private void createEMF(String pu, String schemaAction) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,"
             + schemaAction);
         emf = (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.createEntityManagerFactory(

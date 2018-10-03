@@ -29,6 +29,8 @@ import java.io.Serializable;
 class ReferenceCounter
     implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private int _count = 0;
 
     public int getRefCount() {

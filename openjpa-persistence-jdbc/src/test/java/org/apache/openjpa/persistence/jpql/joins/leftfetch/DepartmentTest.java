@@ -34,7 +34,7 @@ public class DepartmentTest{
 
     @OrderBy("name")
     @OneToMany(mappedBy = "departmentTest")
-	private Set<PersonTest> persons = new HashSet<PersonTest>();
+	private Set<PersonTest> persons = new HashSet<>();
 
 	private String name;
 

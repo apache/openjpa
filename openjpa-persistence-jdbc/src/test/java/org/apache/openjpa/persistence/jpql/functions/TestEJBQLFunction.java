@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jpql.functions;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -46,6 +47,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         super(name, "jpqlclausescactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(CompUser.class);
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();

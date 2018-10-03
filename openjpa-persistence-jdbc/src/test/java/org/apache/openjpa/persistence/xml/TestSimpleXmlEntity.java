@@ -24,12 +24,14 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestSimpleXmlEntity
     extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(
         org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed.class,
         CLEAR_TABLES);
     }
 
+    @Override
     protected String getPersistenceUnitName() {
         return "xml-persistence-unit";
     }

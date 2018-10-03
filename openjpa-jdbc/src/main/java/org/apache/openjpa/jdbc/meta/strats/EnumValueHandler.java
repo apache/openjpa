@@ -35,10 +35,8 @@ import org.apache.openjpa.util.MetaDataException;
  * Value handler for JDK1.5 enum field types.
  *
  */
-@SuppressWarnings("serial")
-public class EnumValueHandler
-    extends AbstractValueHandler {
-
+public class EnumValueHandler extends AbstractValueHandler {
+    private static final long serialVersionUID = 1L;
     private Enum<?>[] _vals = null;
     private boolean _ordinal = false;
     private static final Localizer _loc = Localizer.forPackage(EnumValueHandler.class);
@@ -60,6 +58,8 @@ public class EnumValueHandler
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
         DBDictionary dict = vm.getMappingRepository().getDBDictionary();
@@ -101,6 +101,7 @@ public class EnumValueHandler
         return true;
     }
 
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store) {
         if (val == null)
             return null;
@@ -109,6 +110,7 @@ public class EnumValueHandler
         return ((Enum) val).name();
     }
 
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val) {
         if (val == null)
             return null;

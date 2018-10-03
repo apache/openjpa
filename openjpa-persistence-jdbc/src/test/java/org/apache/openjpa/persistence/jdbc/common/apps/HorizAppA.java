@@ -20,19 +20,19 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 public interface HorizAppA {
 
-    public void setPk1(String pk1);
+    void setPk1(String pk1);
 
-    public String getPk1();
+    String getPk1();
 
-    public void setPk2(int pk2);
+    void setPk2(int pk2);
 
-    public int getPk2();
+    int getPk2();
 
-    public void setStringA(String stringA);
+    void setStringA(String stringA);
 
-    public String getStringA();
+    String getStringA();
 
-    public void setIntA(int intA);
+    void setIntA(int intA);
 
-    public int getIntA();
+    int getIntA();
 }

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.jdbc.procedure.entity;
 
+import static javax.persistence.ParameterMode.INOUT;
+import static javax.persistence.ParameterMode.OUT;
+
 import javax.persistence.Entity;
 import javax.persistence.EntityResult;
 import javax.persistence.Id;
@@ -26,9 +29,6 @@ import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
 import javax.persistence.StoredProcedureParameter;
-
-import static javax.persistence.ParameterMode.INOUT;
-import static javax.persistence.ParameterMode.OUT;
 
 @Entity
 @NamedStoredProcedureQueries({

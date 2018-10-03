@@ -34,13 +34,13 @@ public interface SelectExecutor {
     /**
      * Return the select configuration.
      */
-    public JDBCConfiguration getConfiguration();
+    JDBCConfiguration getConfiguration();
 
     /**
      * Return this select as a SQL statement formatted for the current
      * dictionary.
      */
-    public SQLBuffer toSelect(boolean forUpdate, JDBCFetchConfiguration fetch);
+    SQLBuffer toSelect(boolean forUpdate, JDBCFetchConfiguration fetch);
 
     /**
      * Get the buffer if it has been computed by a previous call to
@@ -48,52 +48,52 @@ public interface SelectExecutor {
      *
      * @since 2.0.0
      */
-    public SQLBuffer getSQL();
+    SQLBuffer getSQL();
 
     /**
      * Return this select as a COUNT SQL statement formatted for the current
      * dictionary.
      */
-    public SQLBuffer toSelectCount();
+    SQLBuffer toSelectCount();
 
     /**
      * Whether to automatically make results distinct when relational joins
      * would otherwise introduce duplicates.
      */
-    public boolean getAutoDistinct();
+    boolean getAutoDistinct();
 
     /**
      * Whether to automatically make results distinct when relational joins
      * would otherwise introduce duplicates.
      */
-    public void setAutoDistinct(boolean distinct);
+    void setAutoDistinct(boolean distinct);
 
     /**
      * Whether this is a SELECT DISTINCT / UNION ALL.
      */
-    public boolean isDistinct();
+    boolean isDistinct();
 
     /**
      * Whether this is a SELECT DISTINCT / UNION ALL.
      */
-    public void setDistinct(boolean distinct);
+    void setDistinct(boolean distinct);
 
     /**
      * Whether the result of this select should be treated as a large
      * result set.
      */
-    public boolean isLRS();
+    boolean isLRS();
 
     /**
      * Whether the result of this select should be treated as a large
      * result set.
      */
-    public void setLRS(boolean lrs);
+    void setLRS(boolean lrs);
 
     /**
      * The expected result count for the query.
      */
-    public int getExpectedResultCount();
+    int getExpectedResultCount();
 
     /**
      * The expected result count for the query.
@@ -101,46 +101,46 @@ public interface SelectExecutor {
      * @param force if false, the count will be discarded if this select has
      * any to-many eager joins that would throw off the result count
      */
-    public void setExpectedResultCount(int expectedResultCount, boolean force);
+    void setExpectedResultCount(int expectedResultCount, boolean force);
 
     /**
      * The join syntax for this select, as one of the syntax constants from
      * {@link JoinSyntaxes}.
      */
-    public int getJoinSyntax();
+    int getJoinSyntax();
 
     /**
      * The join syntax for this select, as one of the syntax constants from
      * {@link JoinSyntaxes}.
      */
-    public void setJoinSyntax(int joinSyntax);
+    void setJoinSyntax(int joinSyntax);
 
     /**
      * Return whether this select can support a random access result set type.
      */
-    public boolean supportsRandomAccess(boolean forUpdate);
+    boolean supportsRandomAccess(boolean forUpdate);
 
     /**
      * Whether this select can be executed for update.
      */
-    public boolean supportsLocking();
+    boolean supportsLocking();
 
     /**
      * Return the number of instances matching this select.
      */
-    public int getCount(JDBCStore store)
+    int getCount(JDBCStore store)
         throws SQLException;
 
     /**
      * Execute this select in the context of the given store manager.
      */
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
+    Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
         throws SQLException;
 
     /**
      * Execute this select in the context of the given store manager.
      */
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
+    Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
         throws SQLException;
 
@@ -150,5 +150,5 @@ public interface SelectExecutor {
      *
      * @since 2.0.0
      */
-    public boolean hasMultipleSelects();
+    boolean hasMultipleSelects();
 }

@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 public class TestResultShape extends TestCase {
 
     public void testPrimitiveShapeIsImmutable() {
-        ResultShape<Object> shape = new ResultShape<Object>(Object.class, true);
+        ResultShape<Object> shape = new ResultShape<>(Object.class, true);
         assertCategory(shape, true, false, false);
         assertEquals(FillStrategy.Assign.class, shape.getStrategy().getClass());
 
@@ -50,18 +50,18 @@ public class TestResultShape extends TestCase {
     }
 
     public void testArrayIsMutable() {
-        ResultShape<Object[]> shape = new ResultShape<Object[]>(Object[].class);
+        ResultShape<Object[]> shape = new ResultShape<>(Object[].class);
         assertCategory(shape, false, true, false);
         assertEquals(FillStrategy.Array.class, shape.getStrategy().getClass());
 
         shape.add(int.class, double.class); // will add primitive shapes
         assertCategory(shape, false, true, false);
 
-        ResultShape<Object> primitiveShape = new ResultShape<Object>(Object.class, true);
+        ResultShape<Object> primitiveShape = new ResultShape<>(Object.class, true);
         shape.nest(primitiveShape);
         assertCategory(shape, false, true, false);
 
-        ResultShape<Object[]> nonPrimitiveShape = new ResultShape<Object[]>(Object[].class);
+        ResultShape<Object[]> nonPrimitiveShape = new ResultShape<>(Object[].class);
         nonPrimitiveShape.add(int.class, double.class);
         assertCategory(nonPrimitiveShape, false, true, false);
         shape.nest(nonPrimitiveShape);
@@ -69,26 +69,26 @@ public class TestResultShape extends TestCase {
     }
 
     public void testMethodImpliesMapStrategy() {
-        FillStrategy<Map> strategy = new FillStrategy.Map<Map>(method(Map.class, "put", Object.class, Object.class));
-        ResultShape<Map> mapShape = new ResultShape<Map>(Map.class, strategy, true);
+        FillStrategy<Map> strategy = new FillStrategy.Map<>(method(Map.class, "put", Object.class, Object.class));
+        ResultShape<Map> mapShape = new ResultShape<>(Map.class, strategy, true);
         assertCategory(mapShape, true, false, false);
         assertEquals(FillStrategy.Map.class, mapShape.getStrategy().getClass());
     }
 
     public void testShapeWithConstrcutorStrategy() {
-        FillStrategy<List> strategy = new FillStrategy.NewInstance<List>(constructor(ArrayList.class, int.class));
-        ResultShape<List> listShape = new ResultShape<List>(List.class, strategy);
+        FillStrategy<List> strategy = new FillStrategy.NewInstance<>(constructor(ArrayList.class, int.class));
+        ResultShape<List> listShape = new ResultShape<>(List.class, strategy);
         assertCategory(listShape, false, true, false);
         assertEquals(FillStrategy.NewInstance.class, listShape.getStrategy().getClass());
     }
 
     public void testGetCompositeTypes() {
-        ResultShape<Object[]> root  = new ResultShape<Object[]>(Object[].class);
-        FillStrategy<Bar> strategy1 = new FillStrategy.NewInstance<Bar>(Bar.class);
-        ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, strategy1, false);
+        ResultShape<Object[]> root  = new ResultShape<>(Object[].class);
+        FillStrategy<Bar> strategy1 = new FillStrategy.NewInstance<>(Bar.class);
+        ResultShape<Bar> bar1 = new ResultShape<>(Bar.class, strategy1, false);
         bar1.add(int.class);
-        FillStrategy<Foo> strategy2 = new FillStrategy.NewInstance<Foo>(constructor(Foo.class, short.class, Bar.class));
-        ResultShape<Foo> fooBarConstructor = new ResultShape<Foo>(Foo.class, strategy2);
+        FillStrategy<Foo> strategy2 = new FillStrategy.NewInstance<>(constructor(Foo.class, short.class, Bar.class));
+        ResultShape<Foo> fooBarConstructor = new ResultShape<>(Foo.class, strategy2);
         fooBarConstructor.add(short.class);
         fooBarConstructor.nest(bar1);
         root.add(Foo.class, Object.class);
@@ -104,7 +104,7 @@ public class TestResultShape extends TestCase {
     }
 
     public void testRecursiveNestingIsNotAllowed() {
-        ResultShape<Object[]> root = new ResultShape<Object[]>(Object[].class);
+        ResultShape<Object[]> root = new ResultShape<>(Object[].class);
         ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
         bar1.add(int.class);
         ResultShape<Foo> fooBarConstructor = new ResultShape<Foo>(Foo.class,
@@ -145,13 +145,13 @@ public class TestResultShape extends TestCase {
     }
     public void testFill2() {
         //Fill this shape: Object[]{Foo, Object, Foo{short, Bar{String, Double}}, Bar{double}};
-        ResultShape<Object[]> root = new ResultShape<Object[]>(Object[].class);
-        ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance<Bar>(Bar.class));
+        ResultShape<Object[]> root = new ResultShape<>(Object[].class);
+        ResultShape<Bar> bar1 = new ResultShape<>(Bar.class, new FillStrategy.NewInstance<>(Bar.class));
         bar1.add(String.class, Double.class);
-        ResultShape<Foo> fooBarConstr = new ResultShape<Foo>(Foo.class, new FillStrategy.NewInstance<Foo>(Foo.class));
+        ResultShape<Foo> fooBarConstr = new ResultShape<>(Foo.class, new FillStrategy.NewInstance<>(Foo.class));
         fooBarConstr.add(short.class);
         fooBarConstr.nest(bar1);
-        ResultShape<Bar> bar2 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance<Bar>(Bar.class));
+        ResultShape<Bar> bar2 = new ResultShape<>(Bar.class, new FillStrategy.NewInstance<>(Bar.class));
         bar2.add(double.class);
         root.add(Foo.class, Object.class);
         root.nest(fooBarConstr);
@@ -220,6 +220,7 @@ public class TestResultShape extends TestCase {
         public Foo() {}
         public Foo(String s, int i) {this.string = s; this.i = i;}
         public Foo(short s, Bar b){this.shrt = s; this.b = b;}
+        @Override
         public String toString() {
             return "Foo(string='"+string+"' i="+i+" short="+shrt+" bar="+b+"";}
     }
@@ -231,6 +232,7 @@ public class TestResultShape extends TestCase {
         public Bar() {}
         public Bar(double d) {this.dbl = d;}
         public Bar(String s, Double i) {this.string = s; this.Dbl = i;}
+        @Override
         public String toString() {return "Bar(string='"+string+"' Dbl="+Dbl+" dbl="+dbl+"";}
     }
 }

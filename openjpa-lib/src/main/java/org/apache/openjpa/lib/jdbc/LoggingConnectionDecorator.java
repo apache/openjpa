@@ -181,6 +181,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         return _logs;
     }
 
+    @Override
     public Connection decorate(Connection conn) throws SQLException {
         return newLoggingConnection(conn);
     }
@@ -226,9 +227,9 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
      * Interface that allows customization of what to do when
      * {@link SQLWarning}s occur.
      */
-    public static interface SQLWarningHandler {
+    public interface SQLWarningHandler {
 
-        public void handleWarning(SQLWarning warning) throws SQLException;
+        void handleWarning(SQLWarning warning) throws SQLException;
     }
 
     /**
@@ -240,6 +241,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             super(conn);
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
             SQLException err = null;
@@ -254,6 +256,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql, int rsType,
             int rsConcur, boolean wrap) throws SQLException {
             SQLException err = null;
@@ -269,6 +272,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         protected Statement createStatement(boolean wrap) throws SQLException {
             SQLException err = null;
             try {
@@ -282,6 +286,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         protected Statement createStatement(int type, int concurrency,
             boolean wrap) throws SQLException {
             SQLException err = null;
@@ -297,6 +302,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         protected CallableStatement prepareCall(String sql, boolean wrap)
             throws SQLException {
             SQLException err = null;
@@ -333,6 +339,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
 
 
+        @Override
         public void commit() throws SQLException {
             long start = System.currentTimeMillis();
             SQLException err = null;
@@ -348,6 +355,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         public void rollback() throws SQLException {
             long start = System.currentTimeMillis();
             SQLException err = null;
@@ -363,6 +371,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         public void close() throws SQLException {
             long start = System.currentTimeMillis();
             try {
@@ -373,6 +382,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         public Savepoint setSavepoint() throws SQLException {
             long start = System.currentTimeMillis();
             SQLException err = null;
@@ -388,6 +398,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         public Savepoint setSavepoint(String name) throws SQLException {
             long start = System.currentTimeMillis();
             SQLException err = null;
@@ -403,6 +414,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         public void rollback(Savepoint savepoint) throws SQLException {
             long start = System.currentTimeMillis();
             SQLException err = null;
@@ -425,6 +437,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         public void releaseSavepoint(Savepoint savepoint) throws SQLException {
             long start = System.currentTimeMillis();
             SQLException err = null;
@@ -447,6 +460,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         protected Statement createStatement(int resultSetType,
             int resultSetConcurrency, int resultSetHoldability, boolean wrap)
             throws SQLException {
@@ -463,6 +477,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql,
             int resultSetType, int resultSetConcurrency,
             int resultSetHoldability, boolean wrap) throws SQLException {
@@ -480,6 +495,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql,
             int autoGeneratedKeys, boolean wrap) throws SQLException {
             SQLException err = null;
@@ -495,6 +511,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql,
             int[] columnIndexes, boolean wrap) throws SQLException {
             SQLException err = null;
@@ -510,6 +527,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql,
             String[] columnNames, boolean wrap) throws SQLException {
             SQLException err = null;
@@ -525,6 +543,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        @Override
         protected DatabaseMetaData getMetaData(boolean wrap)
             throws SQLException {
             return newLoggingDatabaseMetaData(super.getMetaData(false));
@@ -676,6 +695,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super(meta, LoggingConnection.this);
             }
 
+            @Override
             public ResultSet getBestRowIdentifier(String catalog,
                 String schema, String table, int scope, boolean nullable)
                 throws SQLException {
@@ -687,12 +707,14 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     table, scope, nullable);
             }
 
+            @Override
             public ResultSet getCatalogs() throws SQLException {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("getCatalogs", LoggingConnection.this);
                 return super.getCatalogs();
             }
 
+            @Override
             public ResultSet getColumnPrivileges(String catalog, String schema,
                 String table, String columnNamePattern) throws SQLException {
                 if (_logs.isJDBCEnabled())
@@ -703,6 +725,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     table, columnNamePattern);
             }
 
+            @Override
             public ResultSet getColumns(String catalog, String schemaPattern,
                 String tableNamePattern, String columnNamePattern)
                 throws SQLException {
@@ -715,6 +738,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     tableNamePattern, columnNamePattern);
             }
 
+            @Override
             public ResultSet getCrossReference(String primaryCatalog,
                 String primarySchema, String primaryTable,
                 String foreignCatalog, String foreignSchema,
@@ -729,6 +753,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     primaryTable, foreignCatalog, foreignSchema, foreignTable);
             }
 
+            @Override
             public ResultSet getExportedKeys(String catalog, String schema,
                 String table) throws SQLException {
                 if (_logs.isJDBCEnabled())
@@ -738,6 +763,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 return super.getExportedKeys(catalog, schema, table);
             }
 
+            @Override
             public ResultSet getImportedKeys(String catalog, String schema,
                 String table) throws SQLException {
                 if (_logs.isJDBCEnabled())
@@ -747,6 +773,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 return super.getImportedKeys(catalog, schema, table);
             }
 
+            @Override
             public ResultSet getIndexInfo(String catalog, String schema,
                 String table, boolean unique, boolean approximate)
                 throws SQLException {
@@ -758,6 +785,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     approximate);
             }
 
+            @Override
             public ResultSet getPrimaryKeys(String catalog, String schema,
                 String table) throws SQLException {
                 if (_logs.isJDBCEnabled())
@@ -767,6 +795,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 return super.getPrimaryKeys(catalog, schema, table);
             }
 
+            @Override
             public ResultSet getProcedureColumns(String catalog,
                 String schemaPattern, String procedureNamePattern,
                 String columnNamePattern) throws SQLException {
@@ -779,6 +808,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     procedureNamePattern, columnNamePattern);
             }
 
+            @Override
             public ResultSet getProcedures(String catalog,
                 String schemaPattern, String procedureNamePattern)
                 throws SQLException {
@@ -790,12 +820,14 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     procedureNamePattern);
             }
 
+            @Override
             public ResultSet getSchemas() throws SQLException {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("getSchemas", LoggingConnection.this);
                 return super.getSchemas();
             }
 
+            @Override
             public ResultSet getTablePrivileges(String catalog,
                 String schemaPattern, String tableNamePattern)
                 throws SQLException {
@@ -805,6 +837,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     tableNamePattern);
             }
 
+            @Override
             public ResultSet getTables(String catalog, String schemaPattern,
                 String tableNamePattern, String[] types) throws SQLException {
                 if (_logs.isJDBCEnabled())
@@ -815,18 +848,21 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     tableNamePattern, types);
             }
 
+            @Override
             public ResultSet getTableTypes() throws SQLException {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("getTableTypes", LoggingConnection.this);
                 return super.getTableTypes();
             }
 
+            @Override
             public ResultSet getTypeInfo() throws SQLException {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("getTypeInfo", LoggingConnection.this);
                 return super.getTypeInfo();
             }
 
+            @Override
             public ResultSet getUDTs(String catalog, String schemaPattern,
                 String typeNamePattern, int[] types) throws SQLException {
                 if (_logs.isJDBCEnabled())
@@ -835,6 +871,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     typeNamePattern, types);
             }
 
+            @Override
             public ResultSet getVersionColumns(String catalog,
                 String schema, String table) throws SQLException {
                 if (_logs.isJDBCEnabled())
@@ -861,6 +898,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 return new LoggingResultSet(rs, stmnt);
             }
 
+            @Override
             public void appendInfo(StringBuffer buf) {
                 if (_sql != null) {
                     buf.append(" ");
@@ -873,18 +911,21 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             protected ResultSet wrapResult(ResultSet rs, boolean wrap) {
                 if (!wrap || rs == null)
                     return super.wrapResult(rs, wrap);
                 return newLoggingResultSet(rs, this);
             }
 
+            @Override
             public void cancel() throws SQLException {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("cancel " + this, LoggingConnection.this);
                 super.cancel();
             }
 
+            @Override
             protected ResultSet executeQuery(String sql, boolean wrap)
                 throws SQLException {
                 _sql = sql;
@@ -902,6 +943,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String sql) throws SQLException {
                 _sql = sql;
                 logSQL(this);
@@ -918,6 +960,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String sql) throws SQLException {
                 _sql = sql;
                 logSQL(this);
@@ -934,6 +977,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String sql, int i) throws SQLException {
                 _sql = sql;
                 logSQL(this);
@@ -950,6 +994,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String sql, int[] ia) throws SQLException {
                 _sql = sql;
                 logSQL(this);
@@ -966,6 +1011,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String sql, String[] sa) throws SQLException {
                 _sql = sql;
                 logSQL(this);
@@ -982,6 +1028,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String sql, int i) throws SQLException {
                 _sql = sql;
                 logSQL(this);
@@ -998,6 +1045,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String sql, int[] ia) throws SQLException {
                 _sql = sql;
                 logSQL(this);
@@ -1014,6 +1062,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String sql, String[] sa) throws SQLException {
                 _sql = sql;
                 logSQL(this);
@@ -1052,12 +1101,14 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 return new LoggingResultSet(rs, stmnt);
             }
 
+            @Override
             protected ResultSet wrapResult(ResultSet rs, boolean wrap) {
                 if (!wrap || rs == null)
                     return super.wrapResult(rs, wrap);
                 return newLoggingResultSet(rs, this);
             }
 
+            @Override
             protected ResultSet executeQuery(String sql, boolean wrap)
                 throws SQLException {
                 logSQL(this);
@@ -1075,6 +1126,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String sql) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1091,6 +1143,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String sql) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1107,6 +1160,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             protected ResultSet executeQuery(boolean wrap) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1123,6 +1177,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate() throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1139,6 +1194,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int[] executeBatch() throws SQLException {
                 int indexOfFirstFailedObject = -1;
 
@@ -1219,6 +1275,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute() throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1235,6 +1292,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String s, int i) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1251,6 +1309,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String s, int[] ia) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1267,6 +1326,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String s, String[] sa) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1283,6 +1343,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String s, int i) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1299,6 +1360,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String s, int[] ia) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1315,6 +1377,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String s, String[] sa) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1331,6 +1394,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public void cancel() throws SQLException {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("cancel " + this + ": " + _sql,
@@ -1339,83 +1403,99 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super.cancel();
             }
 
+            @Override
             public void setNull(int i1, int i2) throws SQLException {
                 setLogParameter(i1, "null", null);
                 super.setNull(i1, i2);
             }
 
+            @Override
             public void setBoolean(int i, boolean b) throws SQLException {
                 setLogParameter(i, b);
                 super.setBoolean(i, b);
             }
 
+            @Override
             public void setByte(int i, byte b) throws SQLException {
                 setLogParameter(i, b);
                 super.setByte(i, b);
             }
 
+            @Override
             public void setShort(int i, short s) throws SQLException {
                 setLogParameter(i, s);
                 super.setShort(i, s);
             }
 
+            @Override
             public void setInt(int i1, int i2) throws SQLException {
                 setLogParameter(i1, i2);
                 super.setInt(i1, i2);
             }
 
+            @Override
             public void setLong(int i, long l) throws SQLException {
                 setLogParameter(i, l);
                 super.setLong(i, l);
             }
 
+            @Override
             public void setFloat(int i, float f) throws SQLException {
                 setLogParameter(i, f);
                 super.setFloat(i, f);
             }
 
+            @Override
             public void setDouble(int i, double d) throws SQLException {
                 setLogParameter(i, d);
                 super.setDouble(i, d);
             }
 
+            @Override
             public void setBigDecimal(int i, BigDecimal bd)
                 throws SQLException {
                 setLogParameter(i, "BigDecimal", bd);
                 super.setBigDecimal(i, bd);
             }
 
+            @Override
             public void setString(int i, String s) throws SQLException {
                 setLogParameter(i, "String", s);
                 super.setString(i, s);
             }
 
+            @Override
             public void setBytes(int i, byte[] b) throws SQLException {
                 setLogParameter(i, "byte[]", b);
                 super.setBytes(i, b);
             }
 
+            @Override
             public void setDate(int i, Date d) throws SQLException {
                 setLogParameter(i, "Date", d);
                 super.setDate(i, d);
             }
 
+            @Override
             public void setTime(int i, Time t) throws SQLException {
                 setLogParameter(i, "Time", t);
                 super.setTime(i, t);
             }
 
+            @Override
             public void setTimestamp(int i, Timestamp t) throws SQLException {
                 setLogParameter(i, "Timestamp", t);
                 super.setTimestamp(i, t);
             }
 
+            @Override
             public void setAsciiStream(int i1, InputStream is, int i2)
                 throws SQLException {
                 setLogParameter(i1, "InputStream", is);
                 super.setAsciiStream(i1, is, i2);
             }
 
+            @Override
             @Deprecated
             public void setUnicodeStream(int i1, InputStream is, int i2)
                 throws SQLException {
@@ -1423,40 +1503,47 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super.setUnicodeStream(i2, is, i2);
             }
 
+            @Override
             public void setBinaryStream(int i1, InputStream is, int i2)
                 throws SQLException {
                 setLogParameter(i1, "InputStream", is);
                 super.setBinaryStream(i1, is, i2);
             }
 
+            @Override
             public void setBinaryStream(int i1, InputStream is)
             throws SQLException {
             	setLogParameter(i1, "InputStream", is);
             	super.setBinaryStream(i1, is);
             }
 
+            @Override
             public void clearParameters() throws SQLException {
                 clearLogParameters(false);
                 super.clearParameters();
             }
 
+            @Override
             public void setObject(int i1, Object o, int i2, int i3)
                 throws SQLException {
                 setLogParameter(i1, "Object", o);
                 super.setObject(i1, o, i2, i3);
             }
 
+            @Override
             public void setObject(int i1, Object o, int i2)
                 throws SQLException {
                 setLogParameter(i1, "Object", o);
                 super.setObject(i1, o, i2);
             }
 
+            @Override
             public void setObject(int i, Object o) throws SQLException {
                 setLogParameter(i, "Object", o);
                 super.setObject(i, o);
             }
 
+            @Override
             public void addBatch() throws SQLException {
                 if (_logs.isSQLEnabled())
                     _logs.logSQL("batching " + this, LoggingConnection.this);
@@ -1466,11 +1553,11 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     if (shouldTrackParameters()) {
                         // make sure our list is initialized
                         if (_paramBatch == null)
-                            _paramBatch = new ArrayList<List<String>>();
+                            _paramBatch = new ArrayList<>();
                         // copy parameters since they will be re-used
                         if (_params != null) {
                             List<String> copyParms =
-                                    new ArrayList<String>(_params);
+                                    new ArrayList<>(_params);
                             _paramBatch.add(copyParms);
                         }
                         else
@@ -1482,62 +1569,74 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public void setCharacterStream(int i1, Reader r, int i2)
                 throws SQLException {
                 setLogParameter(i1, "Reader", r);
                 super.setCharacterStream(i1, r, i2);
             }
 
+            @Override
             public void setRef(int i, Ref r) throws SQLException {
                 setLogParameter(i, "Ref", r);
                 super.setRef(i, r);
             }
 
+            @Override
             public void setBlob(int i, Blob b) throws SQLException {
                 setLogParameter(i, "Blob", b);
                 super.setBlob(i, b);
             }
 
+            @Override
             public void setClob(int i, Clob c) throws SQLException {
                 setLogParameter(i, "Clob", c);
                 super.setClob(i, c);
             }
 
+            @Override
             public void setArray(int i, Array a) throws SQLException {
                 setLogParameter(i, "Array", a);
                 super.setArray(i, a);
             }
 
+            @Override
             public ResultSetMetaData getMetaData() throws SQLException {
                 return super.getMetaData();
             }
 
+            @Override
             public void setDate(int i, Date d, Calendar c) throws SQLException {
                 setLogParameter(i, "Date", d);
                 super.setDate(i, d, c);
             }
 
+            @Override
             public void setTime(int i, Time t, Calendar c) throws SQLException {
                 setLogParameter(i, "Time", t);
                 super.setTime(i, t, c);
             }
 
+            @Override
             public void setTimestamp(int i, Timestamp t, Calendar c)
                 throws SQLException {
                 setLogParameter(i, "Timestamp", t);
                 super.setTimestamp(i, t, c);
             }
 
+            @Override
             public void setNull(int i1, int i2, String s) throws SQLException {
                 setLogParameter(i1, "null", null);
                 super.setNull(i1, i2, s);
             }
 
+            @Override
             public void setURL(int i, URL u) throws SQLException {
                 setLogParameter(i, "URL", u);
                 super.setURL(i, u);
             }
 
+            @Override
             protected void appendInfo(StringBuffer buf) {
                 buf.append(" ");
                 if (_formatter != null) {
@@ -1630,7 +1729,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             private void setLogParameter(int index, String val) {
                 if (_params == null)
-                    _params = new ArrayList<String>();
+                    _params = new ArrayList<>();
                 while (_params.size() < index)
                     _params.add(null);
                 if (val.length() > 80)
@@ -1648,6 +1747,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super(rs, stmnt);
             }
 
+            @Override
             public boolean next() throws SQLException {
                 SQLException err = null;
                 try {
@@ -1660,6 +1760,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public void close() throws SQLException {
                 SQLException err = null;
                 try {
@@ -1672,6 +1773,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public void beforeFirst() throws SQLException {
                 SQLException err = null;
                 try {
@@ -1684,6 +1786,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public void afterLast() throws SQLException {
                 SQLException err = null;
                 try {
@@ -1696,6 +1799,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean first() throws SQLException {
                 SQLException err = null;
                 try {
@@ -1708,6 +1812,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean last() throws SQLException {
                 SQLException err = null;
                 try {
@@ -1720,6 +1825,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean absolute(int a) throws SQLException {
                 SQLException err = null;
                 try {
@@ -1732,6 +1838,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean relative(int a) throws SQLException {
                 SQLException err = null;
                 try {
@@ -1744,6 +1851,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean previous() throws SQLException {
                 SQLException err = null;
                 try {
@@ -1788,6 +1896,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 return newLoggingResultSet(rs, this);
             }
 
+            @Override
             protected ResultSet executeQuery(String sql, boolean wrap)
                 throws SQLException {
                 logSQL(this);
@@ -1805,6 +1914,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String sql) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1821,6 +1931,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String sql) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1837,6 +1948,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             protected ResultSet executeQuery(boolean wrap) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1853,6 +1965,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate() throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1869,6 +1982,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int[] executeBatch() throws SQLException {
                 int indexOfFirstFailedObject = -1;
 
@@ -1950,6 +2064,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute() throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1966,6 +2081,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String s, int i) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1982,6 +2098,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String s, int[] ia) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -1998,6 +2115,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public int executeUpdate(String s, String[] sa) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -2014,6 +2132,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String s, int i) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -2030,6 +2149,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String s, int[] ia) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -2046,6 +2166,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public boolean execute(String s, String[] sa) throws SQLException {
                 logSQL(this);
                 long start = System.currentTimeMillis();
@@ -2062,6 +2183,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public void cancel() throws SQLException {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("cancel " + this + ": " + _sql,
@@ -2070,83 +2192,99 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super.cancel();
             }
 
+            @Override
             public void setNull(int i1, int i2) throws SQLException {
                 setLogParameter(i1, "null", null);
                 super.setNull(i1, i2);
             }
 
+            @Override
             public void setBoolean(int i, boolean b) throws SQLException {
                 setLogParameter(i, b);
                 super.setBoolean(i, b);
             }
 
+            @Override
             public void setByte(int i, byte b) throws SQLException {
                 setLogParameter(i, b);
                 super.setByte(i, b);
             }
 
+            @Override
             public void setShort(int i, short s) throws SQLException {
                 setLogParameter(i, s);
                 super.setShort(i, s);
             }
 
+            @Override
             public void setInt(int i1, int i2) throws SQLException {
                 setLogParameter(i1, i2);
                 super.setInt(i1, i2);
             }
 
+            @Override
             public void setLong(int i, long l) throws SQLException {
                 setLogParameter(i, l);
                 super.setLong(i, l);
             }
 
+            @Override
             public void setFloat(int i, float f) throws SQLException {
                 setLogParameter(i, f);
                 super.setFloat(i, f);
             }
 
+            @Override
             public void setDouble(int i, double d) throws SQLException {
                 setLogParameter(i, d);
                 super.setDouble(i, d);
             }
 
+            @Override
             public void setBigDecimal(int i, BigDecimal bd)
                 throws SQLException {
                 setLogParameter(i, "BigDecimal", bd);
                 super.setBigDecimal(i, bd);
             }
 
+            @Override
             public void setString(int i, String s) throws SQLException {
                 setLogParameter(i, "String", s);
                 super.setString(i, s);
             }
 
+            @Override
             public void setBytes(int i, byte[] b) throws SQLException {
                 setLogParameter(i, "byte[]", b);
                 super.setBytes(i, b);
             }
 
+            @Override
             public void setDate(int i, Date d) throws SQLException {
                 setLogParameter(i, "Date", d);
                 super.setDate(i, d);
             }
 
+            @Override
             public void setTime(int i, Time t) throws SQLException {
                 setLogParameter(i, "Time", t);
                 super.setTime(i, t);
             }
 
+            @Override
             public void setTimestamp(int i, Timestamp t) throws SQLException {
                 setLogParameter(i, "Timestamp", t);
                 super.setTimestamp(i, t);
             }
 
+            @Override
             public void setAsciiStream(int i1, InputStream is, int i2)
                 throws SQLException {
                 setLogParameter(i1, "InputStream", is);
                 super.setAsciiStream(i1, is, i2);
             }
 
+            @Override
             @Deprecated
             public void setUnicodeStream(int i1, InputStream is, int i2)
                 throws SQLException {
@@ -2154,34 +2292,40 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super.setUnicodeStream(i2, is, i2);
             }
 
+            @Override
             public void setBinaryStream(int i1, InputStream is, int i2)
                 throws SQLException {
                 setLogParameter(i1, "InputStream", is);
                 super.setBinaryStream(i1, is, i2);
             }
 
+            @Override
             public void clearParameters() throws SQLException {
                 clearLogParameters(false);
                 super.clearParameters();
             }
 
+            @Override
             public void setObject(int i1, Object o, int i2, int i3)
                 throws SQLException {
                 setLogParameter(i1, "Object", o);
                 super.setObject(i1, o, i2, i3);
             }
 
+            @Override
             public void setObject(int i1, Object o, int i2)
                 throws SQLException {
                 setLogParameter(i1, "Object", o);
                 super.setObject(i1, o, i2);
             }
 
+            @Override
             public void setObject(int i, Object o) throws SQLException {
                 setLogParameter(i, "Object", o);
                 super.setObject(i, o);
             }
 
+            @Override
             public void addBatch() throws SQLException {
                 if (_logs.isSQLEnabled())
                     _logs.logSQL("batching " + this, LoggingConnection.this);
@@ -2191,11 +2335,11 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     if (shouldTrackParameters()) {
                         // make sure our list is initialized
                         if (_paramBatch == null)
-                            _paramBatch = new ArrayList<List<String>>();
+                            _paramBatch = new ArrayList<>();
                         // copy parameters since they will be re-used
                         if (_params != null) {
                             List<String> copyParams =
-                                new ArrayList<String>(_params);
+                                new ArrayList<>(_params);
                             _paramBatch.add(copyParams);
                         }
                         else
@@ -2207,62 +2351,74 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
+            @Override
             public void setCharacterStream(int i1, Reader r, int i2)
                 throws SQLException {
                 setLogParameter(i1, "Reader", r);
                 super.setCharacterStream(i1, r, i2);
             }
 
+            @Override
             public void setRef(int i, Ref r) throws SQLException {
                 setLogParameter(i, "Ref", r);
                 super.setRef(i, r);
             }
 
+            @Override
             public void setBlob(int i, Blob b) throws SQLException {
                 setLogParameter(i, "Blob", b);
                 super.setBlob(i, b);
             }
 
+            @Override
             public void setClob(int i, Clob c) throws SQLException {
                 setLogParameter(i, "Clob", c);
                 super.setClob(i, c);
             }
 
+            @Override
             public void setArray(int i, Array a) throws SQLException {
                 setLogParameter(i, "Array", a);
                 super.setArray(i, a);
             }
 
+            @Override
             public ResultSetMetaData getMetaData() throws SQLException {
                 return super.getMetaData();
             }
 
+            @Override
             public void setDate(int i, Date d, Calendar c) throws SQLException {
                 setLogParameter(i, "Date", d);
                 super.setDate(i, d, c);
             }
 
+            @Override
             public void setTime(int i, Time t, Calendar c) throws SQLException {
                 setLogParameter(i, "Time", t);
                 super.setTime(i, t, c);
             }
 
+            @Override
             public void setTimestamp(int i, Timestamp t, Calendar c)
                 throws SQLException {
                 setLogParameter(i, "Timestamp", t);
                 super.setTimestamp(i, t, c);
             }
 
+            @Override
             public void setNull(int i1, int i2, String s) throws SQLException {
                 setLogParameter(i1, "null", null);
                 super.setNull(i1, i2, s);
             }
 
+            @Override
             public void setURL(int i, URL u) throws SQLException {
                 setLogParameter(i, "URL", u);
                 super.setURL(i, u);
             }
 
+            @Override
             protected void appendInfo(StringBuffer buf) {
                 buf.append(" ");
                 if (_formatter != null) {
@@ -2346,7 +2502,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             private void setLogParameter(int index, String val) {
                 if (_params == null)
-                    _params = new ArrayList<String>();
+                    _params = new ArrayList<>();
                 while (_params.size() < index)
                     _params.add(null);
                 if (val.length() > 80)

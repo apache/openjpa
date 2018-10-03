@@ -24,12 +24,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -45,6 +44,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.util.MetaDataException;
@@ -55,10 +55,8 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public abstract class MappingInfo
-    implements Serializable {
-
+public abstract class MappingInfo implements Serializable {
+    private static final long serialVersionUID = 1L;
     public static final int JOIN_NONE = 0;
     public static final int JOIN_FORWARD = 1;
     public static final int JOIN_INVERSE = 2;
@@ -108,6 +106,7 @@ public abstract class MappingInfo
      * Gets the columns whose table name matches the given table name.
      * @deprecated
      */
+    @Deprecated
     public List<Column> getColumns(String tableName) {
         return getColumns(DBIdentifier.newTable(tableName));
     }
@@ -118,7 +117,7 @@ public abstract class MappingInfo
     public List<Column> getColumns(DBIdentifier tableName) {
         if (_cols == null)
         	return Collections.emptyList();
-        List<Column> result = new ArrayList<Column>();
+        List<Column> result = new ArrayList<>();
         for (Column col : _cols) {
         	if (DBIdentifier.equal(col.getTableIdentifier(),
         			tableName))
@@ -342,11 +341,11 @@ public abstract class MappingInfo
         if (!icols.isEmpty() && (cols.isEmpty()
             || cols.size() == icols.size())) {
             if (cols.isEmpty())
-                cols = new ArrayList<Column>(icols.size());
+                cols = new ArrayList<>(icols.size());
             for (int i = 0; i < icols.size(); i++) {
                 if (cols.size() == i)
                     cols.add(new Column());
-                ((Column) cols.get(i)).copy((Column) icols.get(i));
+                cols.get(i).copy(icols.get(i));
             }
             setColumns(cols);
         }
@@ -463,7 +462,7 @@ public abstract class MappingInfo
         if (_cols != null) {
             Column col;
             for (int i = 0; !join && i < _cols.size(); i++) {
-                col = (Column) _cols.get(i);
+                col = _cols.get(i);
                 if (!DBIdentifier.isNull(col.getTargetIdentifier()))
                     join = true;
             }
@@ -487,6 +486,7 @@ public abstract class MappingInfo
      * @param adapt whether we can alter the schema or mappings
      * @deprecated
      */
+    @Deprecated
     public Table createTable(MetaDataContext context, TableDefaults def,
         String schemaName, String given, boolean adapt) {
         return createTable(context, def, DBIdentifier.newSchema(schemaName),
@@ -1262,7 +1262,7 @@ public abstract class MappingInfo
                 idx = fk.getColumns().length + constIdx++;
             else
                 continue;
-            setIOFromColumnFlags((Column) cols.get(i), idx);
+            setIOFromColumnFlags(cols.get(i), idx);
         }
     }
 
@@ -1329,7 +1329,7 @@ public abstract class MappingInfo
         joins = new Object[given.size()][3];
         Column col;
         for (int i = 0; i < joins.length; i++) {
-            col = (Column) given.get(i);
+            col = given.get(i);
             mergeJoinColumn(context, prefix, col, joins, i, table, cls, rel,
                 def, inversable && !col.getFlag(Column.FLAG_PK_JOIN), adapt,
                 fill);
@@ -1626,7 +1626,7 @@ public abstract class MappingInfo
         if (cols == null || cols.length == 0)
             _cols = null;
         else {
-            _cols = new ArrayList<Column>(cols.length);
+            _cols = new ArrayList<>(cols.length);
             Column col;
             for (int i = 0; i < cols.length; i++) {
                 col = syncColumn(context, cols[i], cols.length,
@@ -1716,7 +1716,7 @@ public abstract class MappingInfo
         Object[] cpks = fk.getPrimaryKeyConstants();
 
         int size = cols.length + ccols.length + cpkCols.length;
-        _cols = new ArrayList<Column>(size);
+        _cols = new ArrayList<>(size);
         Column col;
         for (int i = 0; i < cols.length; i++) {
             col = syncColumn(context, cols[i], size, false, local,
@@ -1891,20 +1891,20 @@ public abstract class MappingInfo
     /**
      * Supplies default table information.
      */
-    public static interface TableDefaults {
+    public interface TableDefaults {
 
         /**
          * Return the default table name.
          * @deprecated
          */
-        public String get(Schema schema);
-        public DBIdentifier getIdentifier(Schema schema);
+        @Deprecated String get(Schema schema);
+        DBIdentifier getIdentifier(Schema schema);
     }
 
     /**
      * Supplies default foreign key information.
      */
-    public static interface ForeignKeyDefaults {
+    public interface ForeignKeyDefaults {
 
         /**
          * Return a default foreign key for the given tables, or null to
@@ -1912,7 +1912,7 @@ public abstract class MappingInfo
          * the foreign key, only attributes like its name, delete action, etc.
          * Do not add the foreign key to the table.
          */
-        public ForeignKey get(Table local, Table foreign, boolean inverse);
+        ForeignKey get(Table local, Table foreign, boolean inverse);
 
         /**
          * Populate the given foreign key column with defaults.
@@ -1921,7 +1921,7 @@ public abstract class MappingInfo
          * @param pos the index of this column in the foreign key
          * @param cols the number of columns in the foreign key
          */
-        public void populate(Table local, Table foreign, Column col,
+        void populate(Table local, Table foreign, Column col,
             Object target, boolean inverse, int pos, int cols);
 	}
 }

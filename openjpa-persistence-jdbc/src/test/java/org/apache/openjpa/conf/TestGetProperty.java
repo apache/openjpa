@@ -18,22 +18,27 @@
  */
 package org.apache.openjpa.conf;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
-import junit.framework.*;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 
-import org.apache.openjpa.persistence.*;
+import junit.framework.TestCase;
 
 public class TestGetProperty extends TestCase {
     private EntityManagerFactory emf;
 
+    @Override
     public void setUp() throws Exception {
         emf = (OpenJPAEntityManagerFactory) Persistence
                 .createEntityManagerFactory("test");
     }
 
+    @Override
     public void tearDown() throws Exception {
         emf.close();
         emf = null;
@@ -41,7 +46,7 @@ public class TestGetProperty extends TestCase {
 
     public void testGetProperty() {
         try {
-            Collection<Thread> tests = new ArrayList<Thread>();
+            Collection<Thread> tests = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
                 Test test = new Test();
                 test.start();

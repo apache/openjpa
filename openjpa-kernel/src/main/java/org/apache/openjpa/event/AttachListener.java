@@ -28,10 +28,10 @@ public interface AttachListener {
     /**
      * Invoked before the instance is attached.
      */
-    public void beforeAttach(LifecycleEvent event);
+    void beforeAttach(LifecycleEvent event);
 
     /**
      * Invoked after the instance has been attached.
      */
-    public void afterAttach(LifecycleEvent event);
+    void afterAttach(LifecycleEvent event);
 }

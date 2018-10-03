@@ -81,7 +81,7 @@ public class TestEntitiesAsKeys extends AbstractPersistenceTestCase {
     }
 
     private Map<MapEmbeddable, MapEmbeddable> getEmbeddableMap(Integer... integers) {
-        Map<MapEmbeddable, MapEmbeddable> rval = new HashMap<MapEmbeddable, MapEmbeddable>();
+        Map<MapEmbeddable, MapEmbeddable> rval = new HashMap<>();
         assertEquals(0, integers.length % 2);
 
         for (int i = 0; i < integers.length; i += 2) {

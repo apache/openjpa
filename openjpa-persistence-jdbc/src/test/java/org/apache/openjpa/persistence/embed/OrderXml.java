@@ -50,6 +50,7 @@ public class OrderXml {
         this.description = desc;
     }
 
+    @Override
     public boolean equals(Object obj) {
         OrderXml o0 = (OrderXml) obj;
         if (o0 == null) return false;

@@ -37,6 +37,8 @@ import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.openjpa.lib.jdbc.SQLFormatter;
+
 import jpa.tools.swing.EntityDataModel;
 import jpa.tools.swing.EntityTable;
 import jpa.tools.swing.EntityTableView;
@@ -49,8 +51,6 @@ import openbook.domain.PurchaseOrder;
 import openbook.domain.ShoppingCart;
 import openbook.server.OpenBookService;
 import openbook.server.QueryDecorator;
-
-import org.apache.openjpa.lib.jdbc.SQLFormatter;
 
 /**
  * A visual page coordinates the following functions of {@link OpenBookService} :
@@ -71,8 +71,8 @@ import org.apache.openjpa.lib.jdbc.SQLFormatter;
  *
  * @author Pinaki Poddar
  */
-@SuppressWarnings("serial")
 public final class BuyBookPage extends JPanel {
+    private static final long serialVersionUID = 1L;
     private final OpenBookService   _service;
     private final Customer          _customer;
     private final SearchPanel       _searchPanel;
@@ -124,6 +124,8 @@ public final class BuyBookPage extends JPanel {
      *
      */
     class SearchPanel extends JPanel implements ActionListener {
+        
+        private static final long serialVersionUID = 1L;
         private final JTextField _title       = new JTextField("", 20);
         private final JTextField _author      = new JTextField("", 20);
         private final JTextField _maxPrice    = new JTextField("", 6);
@@ -208,6 +210,7 @@ public final class BuyBookPage extends JPanel {
          *
          * The query is executed in a background, non-AWT thread.
          */
+        @Override
         public void actionPerformed(ActionEvent e) {
             new SwingWorker<List<Book>, Void>() {
                 private String queryString;
@@ -260,6 +263,8 @@ public final class BuyBookPage extends JPanel {
      *
      */
     class SelectBookPanel extends JPanel {
+        
+        private static final long serialVersionUID = 1L;
         private final JLabel _bookCount;
         private final EntityTableView<Book> _selectedBooks;
 
@@ -267,7 +272,7 @@ public final class BuyBookPage extends JPanel {
             setLayout(new BorderLayout());
             setBorder(BorderFactory.createTitledBorder(title));
 
-            _selectedBooks = new EntityTableView<Book>(Book.class,
+            _selectedBooks = new EntityTableView<>(Book.class,
                     EntityDataModel.BASIC_ATTR | EntityDataModel.ROW_COUNT,
                     _service.getUnit());
             _bookCount = new JLabel();
@@ -290,6 +295,8 @@ public final class BuyBookPage extends JPanel {
      *
      */
     class BuyPanel extends JPanel implements ListSelectionListener {
+        
+        private static final long serialVersionUID = 1L;
         JLabel _bookTitle;
         JLabel _bookAuthors;
         JLabel _bookPrice;
@@ -385,6 +392,8 @@ public final class BuyBookPage extends JPanel {
      *
      */
     class ShoppingCartPanel extends JPanel implements ActionListener {
+        
+        private static final long serialVersionUID = 1L;
         private static final int MAX_ITEMS = 10;
         private final ShoppingCart _cart;
         private final JButton _placeOrder;

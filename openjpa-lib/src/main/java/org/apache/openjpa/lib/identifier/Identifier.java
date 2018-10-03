@@ -23,7 +23,7 @@ package org.apache.openjpa.lib.identifier;
  */
 public interface Identifier extends Comparable<Identifier>, Cloneable {
 
-    public String getName();
-    public void setName(String name);
-    public int length();
+    String getName();
+    void setName(String name);
+    int length();
 }

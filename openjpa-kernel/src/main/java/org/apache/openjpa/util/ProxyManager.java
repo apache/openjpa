@@ -48,54 +48,54 @@ public interface ProxyManager {
      * and containing the same elements. Works for both primitive and
      * object array types.
      */
-    public Object copyArray(Object orig);
+    Object copyArray(Object orig);
 
     /**
      * Return a copy of the given date with the same information.
      */
-    public Date copyDate(Date orig);
+    Date copyDate(Date orig);
 
     /**
      * Return a new date proxy.
      */
-    public Proxy newDateProxy(Class type);
+    Proxy newDateProxy(Class type);
 
     /**
      * Return a copy of the given calendar with the same information.
      */
-    public Calendar copyCalendar(Calendar orig);
+    Calendar copyCalendar(Calendar orig);
 
     /**
      * Return a new calendar proxy.
      */
-    public Proxy newCalendarProxy(Class type, TimeZone timeZone);
+    Proxy newCalendarProxy(Class type, TimeZone timeZone);
 
     /**
      * Return a new collection of the same type as the given one
      * with a copy of all contained elements.
      */
-    public Collection copyCollection(Collection orig);
+    Collection copyCollection(Collection orig);
 
     /**
      * Return a proxy for the given collection type. The returned collection
      * will allow only addition of elements assignable from the given
      * element type and will use the given comparator, if it is not null.
      */
-    public Proxy newCollectionProxy(Class type, Class elementType,
+    Proxy newCollectionProxy(Class type, Class elementType,
         Comparator compare, boolean autoOff);
 
     /**
      * Return a new map of the same type as the given one
      * with a copy of all contained key/value pairs.
      */
-    public Map copyMap(Map orig);
+    Map copyMap(Map orig);
 
     /**
      * Return a proxy for the given map type. The returned map will
      * allow only addition of keys/values assignable from the given
      * keyType/valueType, and will use the given comparator, if it is not null.
      */
-    public Proxy newMapProxy(Class type, Class keyType, Class valueType,
+    Proxy newMapProxy(Class type, Class keyType, Class valueType,
         Comparator compare, boolean autoOff);
 
     /**
@@ -104,7 +104,7 @@ public interface ProxyManager {
      *
      * @since 0.2.5
      */
-    public Object copyCustom(Object orig);
+    Object copyCustom(Object orig);
 
     /**
      * Return a proxy for the given object, or null if this manager cannot
@@ -112,7 +112,7 @@ public interface ProxyManager {
      *
      * @since 0.2.5
      */
-    public Proxy newCustomProxy (Object obj, boolean autoOff);
+    Proxy newCustomProxy (Object obj, boolean autoOff);
 
     /**
      * Returns whether this proxy manager is enabled for delayed collection
@@ -123,5 +123,5 @@ public interface ProxyManager {
      *
      * @since 2.2.1
      */
-    public boolean getDelayCollectionLoading();
+    boolean getDelayCollectionLoading();
 }

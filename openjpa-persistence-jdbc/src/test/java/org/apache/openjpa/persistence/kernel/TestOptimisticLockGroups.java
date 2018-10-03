@@ -28,11 +28,10 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.LockGroupPC;
 import org.apache.openjpa.persistence.kernel.common.apps.LockGroupPC2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestOptimisticLockGroups extends BaseKernelTest {
 
@@ -48,6 +47,7 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         deleteAll(LockGroupPC.class);
 

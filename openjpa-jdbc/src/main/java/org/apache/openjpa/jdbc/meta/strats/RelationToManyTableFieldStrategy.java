@@ -41,6 +41,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.Proxies;
@@ -54,19 +55,24 @@ import org.apache.openjpa.util.Proxy;
 public abstract class RelationToManyTableFieldStrategy
     extends StoreCollectionFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (RelationToManyTableFieldStrategy.class);
 
+    @Override
     protected ClassMapping[] getIndependentElementMappings(boolean traverse) {
         return (traverse)
             ? field.getElementMapping().getIndependentTypeMappings()
             : ClassMapping.EMPTY_MAPPINGS;
     }
 
+    @Override
     protected ForeignKey getJoinForeignKey(ClassMapping elem) {
         return field.getJoinForeignKey();
     }
 
+    @Override
     protected void selectElement(Select sel, ClassMapping elem,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode,
         Joins joins) {
@@ -74,6 +80,7 @@ public abstract class RelationToManyTableFieldStrategy
             store, fetch, eagerMode, joins);
     }
 
+    @Override
     protected Object loadElement(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
@@ -83,16 +90,19 @@ public abstract class RelationToManyTableFieldStrategy
         return res.load(elem, store, fetch, joins);
     }
 
+    @Override
     protected Joins join(Joins joins, ClassMapping elem) {
         return join(joins, false);
     }
 
+    @Override
     protected Joins joinElementRelation(Joins joins, ClassMapping elem) {
         ValueMapping vm = field.getElementMapping();
         return joins.joinRelation(field.getName(), vm.getForeignKey(elem),
             elem, vm.getSelectSubclasses(), false, false);
     }
 
+    @Override
     public void map(boolean adapt) {
         field.getValueInfo().assertNoSchemaComponents(field, !adapt);
         field.getKeyMapping().getValueInfo().assertNoSchemaComponents
@@ -121,7 +131,7 @@ public abstract class RelationToManyTableFieldStrategy
                 field.getMappingInfo().assertNoSchemaComponents(field, !adapt);
                 vinfo.assertNoSchemaComponents(elem, !adapt);
 
-                mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
+                mapped.resolve(MetaDataModes.MODE_META | MetaDataModes.MODE_MAPPING);
                 if (!mapped.isMapped() || mapped.isSerialized())
                     throw new MetaDataException(_loc.get("mapped-by-unmapped",
                             field, mapped));
@@ -155,6 +165,7 @@ public abstract class RelationToManyTableFieldStrategy
         }
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if (field.getMappedBy() == null || field.isBiMTo1JT())
@@ -186,6 +197,7 @@ public abstract class RelationToManyTableFieldStrategy
         }
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if (field.getMappedBy() != null && !field.isBiMTo1JT())
@@ -251,6 +263,7 @@ public abstract class RelationToManyTableFieldStrategy
         }
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getAllRows(field.getTable(), Row.ACTION_DELETE);
@@ -258,15 +271,18 @@ public abstract class RelationToManyTableFieldStrategy
         rm.flushAllRows(row);
     }
 
+    @Override
     public Object toDataStoreValue(Object val, JDBCStore store) {
         return RelationStrategies.toDataStoreValue(field.getElementMapping(),
             val, store);
     }
 
+    @Override
     public Joins join(Joins joins, boolean forceOuter) {
         return field.join(joins, forceOuter, true);
     }
 
+    @Override
     public Joins joinRelation(Joins joins, boolean forceOuter,
         boolean traverse) {
         ValueMapping elem = field.getElementMapping();

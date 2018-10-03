@@ -33,6 +33,9 @@ import org.apache.openjpa.util.UserException;
 abstract class AggregateVal
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (AggregateVal.class);
 
@@ -45,17 +48,21 @@ abstract class AggregateVal
         _val = val;
     }
 
+    @Override
     public boolean isAggregate() {
         return true;
     }
 
+    @Override
     public Class getType() {
         return getType(_val.getType());
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         if (candidate == null)
@@ -69,6 +76,7 @@ abstract class AggregateVal
         throw new UserException(_loc.get("agg-in-filter"));
     }
 
+    @Override
     protected Collection eval(Collection candidates, Object orig,
         StoreContext ctx, Object[] params) {
         Collection args = _val.eval(candidates, orig, ctx, params);
@@ -85,6 +93,7 @@ abstract class AggregateVal
      */
     protected abstract Object operate(Collection os, Class c);
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

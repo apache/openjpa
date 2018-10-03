@@ -29,9 +29,30 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 
-
+import org.apache.openjpa.datacache.ConcurrentDataCache;
+import org.apache.openjpa.datacache.DataCache;
+import org.apache.openjpa.datacache.DataCacheManager;
+import org.apache.openjpa.datacache.DelegatingDataCache;
+import org.apache.openjpa.datacache.QueryCache;
+import org.apache.openjpa.datacache.TypesChangedEvent;
+import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.PCData;
+import org.apache.openjpa.kernel.jpql.JPQLParser;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.Extent;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.AppIdCacheObject;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectAChild1;
@@ -48,33 +69,13 @@ import org.apache.openjpa.persistence.datacache.common.apps.
         CacheObjectInterface;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectJ;
 import org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import junit.framework.AssertionFailedError;
-import org.apache.openjpa.datacache.ConcurrentDataCache;
-import org.apache.openjpa.datacache.DataCache;
-import org.apache.openjpa.datacache.DelegatingDataCache;
-import org.apache.openjpa.datacache.QueryCache;
-import org.apache.openjpa.datacache.TypesChangedEvent;
-import org.apache.openjpa.datacache.DataCacheManager;
-import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.kernel.PCData;
-import org.apache.openjpa.kernel.jpql.JPQLParser;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.MetaDataRepository;
-import org.apache.openjpa.persistence.Extent;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.util.CacheMap;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ProxyDate;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * ### should add 1..1 relation test ### app id compound key test
@@ -164,6 +165,7 @@ public abstract class CacheTest extends AbstractTestCase {
         return false;
     }
 
+    @Override
     public void setUp() throws Exception {
 
         /*
@@ -291,6 +293,7 @@ public abstract class CacheTest extends AbstractTestCase {
         }
     }
 
+    @Override
     public void tearDown() throws Exception {
         endEm(em);
         em = null;
@@ -1061,7 +1064,8 @@ public abstract class CacheTest extends AbstractTestCase {
                 getLog().warn("CacheTest.timeoutsHelper() skipping sleep for checkCache(h=500) because sleep="+sleep);
             } else if (sleep > 10) {
                 getLog().info("CacheTest.timeoutsHelper() testing h to be dropped by waiting sleep="+sleep);
-                Thread.currentThread().sleep(700);
+                Thread.currentThread();
+                Thread.sleep(700);
                 Thread.yield();
             } else {
                 sleep = 0;
@@ -1098,7 +1102,8 @@ public abstract class CacheTest extends AbstractTestCase {
                 getLog().warn("CacheTest.timeoutsHelper() skipping sleep for checkCache(f=000) because sleep="+sleep);
             } else if (sleep > 10) {
                 getLog().info("CacheTest.timeoutsHelper() testing f to be dropped by waiting sleep="+sleep);
-                Thread.currentThread().sleep(sleep);
+                Thread.currentThread();
+                Thread.sleep(sleep);
                 Thread.yield();
             } else {
                 sleep = 0;
@@ -1130,7 +1135,8 @@ public abstract class CacheTest extends AbstractTestCase {
             sleep = 6000 - diff;
             if (sleep > 0) {
                 getLog().info("CacheTest.timeoutsHelper() testing g to be dropped by waiting sleep="+sleep);
-                Thread.currentThread().sleep(sleep);
+                Thread.currentThread();
+                Thread.sleep(sleep);
                 Thread.yield();
             }
             // all of them should be dropped now, since diff > 5000
@@ -1192,7 +1198,8 @@ public abstract class CacheTest extends AbstractTestCase {
             long sleep = 2000 - diff;
             if (sleep > 0) {
                 getLog().trace("CacheTest.queryTimeoutsHelper() testing f to be dropped by waiting sleep="+sleep);
-                Thread.currentThread().sleep(sleep);
+                Thread.currentThread();
+                Thread.sleep(sleep);
                 Thread.yield();
             }
 

@@ -94,6 +94,7 @@ public class RowImpl
         _types = new int[len];
     }
 
+    @Override
     public Table getTable() {
         return _cols[0].getTable();
     }
@@ -102,14 +103,17 @@ public class RowImpl
         return _cols;
     }
 
+    @Override
     public int getAction() {
         return _action;
     }
 
+    @Override
     public boolean isValid() {
         return (flags & VALID) != 0;
     }
 
+    @Override
     public void setValid(boolean valid) {
         if (valid)
             flags |= VALID;
@@ -120,6 +124,7 @@ public class RowImpl
     /**
      * This implementation does not track primary keys.
      */
+    @Override
     public OpenJPAStateManager getPrimaryKey() {
         return null;
     }
@@ -127,6 +132,7 @@ public class RowImpl
     /**
      * This implementation does not track failed objects.
      */
+    @Override
     public Object getFailedObject() {
         return null;
     }
@@ -134,6 +140,7 @@ public class RowImpl
     /**
      * This implementation does not track failed objects.
      */
+    @Override
     public void setFailedObject(Object failed) {
         throw new InternalException();
     }
@@ -159,16 +166,19 @@ public class RowImpl
         return _vals[getWhereIndex(col)];
     }
 
+    @Override
     public void setPrimaryKey(OpenJPAStateManager sm)
         throws SQLException {
         setPrimaryKey(null, sm);
     }
 
+    @Override
     public void setPrimaryKey(ColumnIO io, OpenJPAStateManager sm)
         throws SQLException {
         flushPrimaryKey(sm, io, true);
     }
 
+    @Override
     public void wherePrimaryKey(OpenJPAStateManager sm)
         throws SQLException {
         flushPrimaryKey(sm, null, false);
@@ -188,17 +198,20 @@ public class RowImpl
         flushJoinValues(sm, oid, cols, cols, io, set);
     }
 
+    @Override
     public void setForeignKey(ForeignKey fk, OpenJPAStateManager sm)
         throws SQLException {
         setForeignKey(fk, null, sm);
     }
 
+    @Override
     public void setForeignKey(ForeignKey fk, ColumnIO io,
         OpenJPAStateManager sm)
         throws SQLException {
         flushForeignKey(fk, io, sm, true);
     }
 
+    @Override
     public void whereForeignKey(ForeignKey fk, OpenJPAStateManager sm)
         throws SQLException {
         flushForeignKey(fk, null, sm, false);
@@ -361,6 +374,7 @@ public class RowImpl
         return true;
     }
 
+    @Override
     public void setRelationId(Column col, OpenJPAStateManager sm,
         RelationId rel)
         throws SQLException {
@@ -377,80 +391,95 @@ public class RowImpl
         _vals[getSetIndex(col)] = null;
     }
 
+    @Override
     public void setArray(Column col, Array val)
         throws SQLException {
-        setObject(col, val, JavaSQLTypes.ARRAY, false);
+        setObject(col, val, JavaTypes.ARRAY, false);
     }
 
+    @Override
     public void setAsciiStream(Column col, InputStream val, int length)
         throws SQLException {
         setObject(col, (val == null) ? null : new Sized(val, length),
             JavaSQLTypes.ASCII_STREAM, false);
     }
 
+    @Override
     public void setBigDecimal(Column col, BigDecimal val)
         throws SQLException {
         setObject(col, val, JavaTypes.BIGDECIMAL, false);
     }
 
+    @Override
     public void setBigInteger(Column col, BigInteger val)
         throws SQLException {
         setObject(col, val, JavaTypes.BIGINTEGER, false);
     }
 
+    @Override
     public void setBinaryStream(Column col, InputStream val, int length)
         throws SQLException {
         setObject(col, (val == null) ? null : new Sized(val, length),
             JavaSQLTypes.BINARY_STREAM, false);
     }
 
+    @Override
     public void setBlob(Column col, Blob val)
         throws SQLException {
         setObject(col, val, JavaSQLTypes.BLOB, false);
     }
 
+    @Override
     public void setBoolean(Column col, boolean val)
         throws SQLException {
         setObject(col, ((val) ? Boolean.TRUE : Boolean.FALSE),
             JavaTypes.BOOLEAN, false);
     }
 
+    @Override
     public void setByte(Column col, byte val)
         throws SQLException {
         setObject(col, new Byte(val), JavaTypes.BYTE, false);
     }
 
+    @Override
     public void setBytes(Column col, byte[] val)
         throws SQLException {
         setObject(col, val, JavaSQLTypes.BYTES, false);
     }
 
+    @Override
     public void setCalendar(Column col, Calendar val)
         throws SQLException {
         setObject(col, val, JavaTypes.CALENDAR, false);
     }
 
+    @Override
     public void setChar(Column col, char val)
         throws SQLException {
         setObject(col, new Character(val), JavaTypes.CHAR, false);
     }
 
+    @Override
     public void setCharacterStream(Column col, Reader val, int length)
         throws SQLException {
         setObject(col, (val == null) ? null : new Sized(val, length),
             JavaSQLTypes.CHAR_STREAM, false);
     }
 
+    @Override
     public void setClob(Column col, Clob val)
         throws SQLException {
         setObject(col, val, JavaSQLTypes.CLOB, false);
     }
 
+    @Override
     public void setDate(Column col, Date val)
         throws SQLException {
         setObject(col, val, JavaTypes.DATE, false);
     }
 
+    @Override
     public void setDate(Column col, java.sql.Date val, Calendar cal)
         throws SQLException {
         Object obj;
@@ -461,61 +490,73 @@ public class RowImpl
         setObject(col, obj, JavaSQLTypes.SQL_DATE, false);
     }
 
+    @Override
     public void setDouble(Column col, double val)
         throws SQLException {
         setObject(col, new Double(val), JavaTypes.DOUBLE, false);
     }
 
+    @Override
     public void setFloat(Column col, float val)
         throws SQLException {
         setObject(col, new Float(val), JavaTypes.FLOAT, false);
     }
 
+    @Override
     public void setInt(Column col, int val)
         throws SQLException {
         setObject(col, val, JavaTypes.INT, false);
     }
 
+    @Override
     public void setLong(Column col, long val)
         throws SQLException {
         setObject(col, val, JavaTypes.LONG, false);
     }
 
+    @Override
     public void setLocale(Column col, Locale val)
         throws SQLException {
         setObject(col, val, JavaTypes.LOCALE, false);
     }
 
+    @Override
     public void setNull(Column col)
         throws SQLException {
         setNull(col, false);
     }
 
+    @Override
     public void setNull(Column col, boolean overrideDefault)
         throws SQLException {
         setObject(col, null, col.getJavaType(), overrideDefault);
     }
 
+    @Override
     public void setNumber(Column col, Number val)
         throws SQLException {
         setObject(col, val, JavaTypes.NUMBER, false);
     }
 
+    @Override
     public void setRaw(Column col, String val)
         throws SQLException {
         setObject(col, val, RAW, false);
     }
 
+    @Override
     public void setShort(Column col, short val)
         throws SQLException {
         setObject(col, new Short(val), JavaTypes.SHORT, false);
     }
 
+    @Override
     public void setString(Column col, String val)
         throws SQLException {
         setObject(col, val, JavaTypes.STRING, false);
     }
 
+    @Override
     public void setTime(Column col, Time val, Calendar cal)
         throws SQLException {
         Object obj;
@@ -526,6 +567,7 @@ public class RowImpl
         setObject(col, obj, JavaSQLTypes.TIME, false);
     }
 
+    @Override
     public void setTimestamp(Column col, Timestamp val, Calendar cal)
         throws SQLException {
         Object obj;
@@ -536,6 +578,7 @@ public class RowImpl
         setObject(col, obj, JavaSQLTypes.TIMESTAMP, false);
     }
 
+    @Override
     public void setObject(Column col, Object val)
         throws SQLException {
         if (val instanceof Raw)
@@ -544,80 +587,95 @@ public class RowImpl
             setObject(col, val, col.getJavaType(), false);
     }
 
+    @Override
     public void whereArray(Column col, Array val)
         throws SQLException {
         whereObject(col, val, JavaSQLTypes.SQL_ARRAY);
     }
 
+    @Override
     public void whereAsciiStream(Column col, InputStream val, int length)
         throws SQLException {
         whereObject(col, (val == null) ? null : new Sized(val, length),
             JavaSQLTypes.ASCII_STREAM);
     }
 
+    @Override
     public void whereBigDecimal(Column col, BigDecimal val)
         throws SQLException {
         whereObject(col, val, JavaTypes.BIGDECIMAL);
     }
 
+    @Override
     public void whereBigInteger(Column col, BigInteger val)
         throws SQLException {
         whereObject(col, val, JavaTypes.BIGINTEGER);
     }
 
+    @Override
     public void whereBinaryStream(Column col, InputStream val, int length)
         throws SQLException {
         whereObject(col, (val == null) ? null : new Sized(val, length),
             JavaSQLTypes.BINARY_STREAM);
     }
 
+    @Override
     public void whereBlob(Column col, Blob val)
         throws SQLException {
         whereObject(col, val, JavaSQLTypes.BLOB);
     }
 
+    @Override
     public void whereBoolean(Column col, boolean val)
         throws SQLException {
         whereObject(col, ((val) ? Boolean.TRUE : Boolean.FALSE),
             JavaTypes.BOOLEAN);
     }
 
+    @Override
     public void whereByte(Column col, byte val)
         throws SQLException {
         whereObject(col, new Byte(val), JavaTypes.BYTE);
     }
 
+    @Override
     public void whereBytes(Column col, byte[] val)
         throws SQLException {
         whereObject(col, val, JavaSQLTypes.BYTES);
     }
 
+    @Override
     public void whereCalendar(Column col, Calendar val)
         throws SQLException {
         whereObject(col, val, JavaTypes.CALENDAR);
     }
 
+    @Override
     public void whereChar(Column col, char val)
         throws SQLException {
         whereObject(col, new Character(val), JavaTypes.CHAR);
     }
 
+    @Override
     public void whereCharacterStream(Column col, Reader val, int length)
         throws SQLException {
         whereObject(col, (val == null) ? null : new Sized(val, length),
             JavaSQLTypes.CHAR_STREAM);
     }
 
+    @Override
     public void whereClob(Column col, Clob val)
         throws SQLException {
         whereObject(col, val, JavaSQLTypes.CLOB);
     }
 
+    @Override
     public void whereDate(Column col, Date val)
         throws SQLException {
         whereObject(col, val, JavaTypes.DATE);
     }
 
+    @Override
     public void whereDate(Column col, java.sql.Date val, Calendar cal)
         throws SQLException {
         Object obj;
@@ -628,56 +686,67 @@ public class RowImpl
         whereObject(col, obj, JavaSQLTypes.SQL_DATE);
     }
 
+    @Override
     public void whereDouble(Column col, double val)
         throws SQLException {
         whereObject(col, new Double(val), JavaTypes.DOUBLE);
     }
 
+    @Override
     public void whereFloat(Column col, float val)
         throws SQLException {
         whereObject(col, new Float(val), JavaTypes.FLOAT);
     }
 
+    @Override
     public void whereInt(Column col, int val)
         throws SQLException {
         whereObject(col, val, JavaTypes.INT);
     }
 
+    @Override
     public void whereLong(Column col, long val)
         throws SQLException {
         whereObject(col, val, JavaTypes.LONG);
     }
 
+    @Override
     public void whereLocale(Column col, Locale val)
         throws SQLException {
         whereObject(col, val, JavaTypes.LOCALE);
     }
 
+    @Override
     public void whereNull(Column col)
         throws SQLException {
         whereObject(col, null, col.getJavaType());
     }
 
+    @Override
     public void whereNumber(Column col, Number val)
         throws SQLException {
         whereObject(col, val, JavaTypes.NUMBER);
     }
 
+    @Override
     public void whereRaw(Column col, String val)
         throws SQLException {
         whereObject(col, val, RAW);
     }
 
+    @Override
     public void whereShort(Column col, short val)
         throws SQLException {
         whereObject(col, new Short(val), JavaTypes.SHORT);
     }
 
+    @Override
     public void whereString(Column col, String val)
         throws SQLException {
         whereObject(col, val, JavaTypes.STRING);
     }
 
+    @Override
     public void whereTime(Column col, Time val, Calendar cal)
         throws SQLException {
         Object obj;
@@ -688,6 +757,7 @@ public class RowImpl
         whereObject(col, obj, JavaSQLTypes.TIME);
     }
 
+    @Override
     public void whereTimestamp(Column col, Timestamp val, Calendar cal)
         throws SQLException {
         Object obj;
@@ -698,6 +768,7 @@ public class RowImpl
         whereObject(col, obj, JavaSQLTypes.TIMESTAMP);
     }
 
+    @Override
     public void whereObject(Column col, Object val)
         throws SQLException {
         if (val instanceof Raw)
@@ -951,6 +1022,7 @@ public class RowImpl
     /**
      * Performs a proper deep clone.
      */
+    @Override
     public Object clone() {
         RowImpl clone = newInstance(getColumns(), getAction());
         copyInto(clone, false);

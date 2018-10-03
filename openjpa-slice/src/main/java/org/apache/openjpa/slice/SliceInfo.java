@@ -32,9 +32,9 @@ import org.apache.openjpa.util.InternalException;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class SliceInfo implements Serializable {
-	private final boolean  _isReplicated;
+    private static final long serialVersionUID = 1L;
+    private final boolean  _isReplicated;
 	private String[] _slices;
 
 	private static transient Localizer _loc = Localizer.forPackage(SliceInfo.class);

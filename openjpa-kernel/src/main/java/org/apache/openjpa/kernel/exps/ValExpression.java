@@ -30,6 +30,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class ValExpression
     extends Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
 
     /**
@@ -39,12 +41,14 @@ class ValExpression
         _val = val;
     }
 
+    @Override
     protected boolean eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object o = _val.eval(candidate, orig, ctx, params);
         return o != null && ((Boolean) o).booleanValue();
     }
 
+    @Override
     protected boolean eval(Collection candidates, StoreContext ctx,
         Object[] params) {
         Collection c = _val.eval(candidates, null, ctx, params);
@@ -52,6 +56,7 @@ class ValExpression
         return o != null && ((Boolean) o).booleanValue();
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

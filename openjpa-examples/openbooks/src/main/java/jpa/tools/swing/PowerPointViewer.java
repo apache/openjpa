@@ -40,9 +40,9 @@ import openbook.client.Images;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class PowerPointViewer extends JPanel {
-    private List<WeakReference<ImageIcon>> _slides = new ArrayList<WeakReference<ImageIcon>>();
+    private static final long serialVersionUID = 1L;
+    private List<WeakReference<ImageIcon>> _slides = new ArrayList<>();
     private int _total;      // Total number of slides in the deck.
     private String _dir;
     private List<URL> _slideURLs;
@@ -89,6 +89,7 @@ public class PowerPointViewer extends JPanel {
         _prev = new RoundButton(Images.BACK);
         buttons.add(_prev);
         _prev.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 prevPage();
             }
@@ -101,6 +102,7 @@ public class PowerPointViewer extends JPanel {
                 buttons.add(gotoLabel);
                 buttons.add(_goto);
                 _goto.addChangeListener(new ChangeListener() {
+                    @Override
                     public void stateChanged(ChangeEvent e) {
                         Integer page = (Integer)_goto.getValue();
                         showPage(page-1);
@@ -112,6 +114,7 @@ public class PowerPointViewer extends JPanel {
             buttons.add(_navButtons[i]);
             _navButtons[i].putClientProperty(SLIDE_INDEX, i+1);
             _navButtons[i].addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     JButton button = (JButton)e.getSource();
                     int index = (Integer)button.getClientProperty(SLIDE_INDEX);
@@ -123,6 +126,7 @@ public class PowerPointViewer extends JPanel {
         buttons.add(Box.createHorizontalGlue());
         buttons.add(_next);
         _next.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 nextPage();
             }
@@ -198,12 +202,12 @@ public class PowerPointViewer extends JPanel {
     ImageIcon loadSlide(int index) {
         URL imgURL = _slideURLs.get(index);
         ImageIcon icon = new ImageIcon(imgURL);
-        _slides.add(index, new WeakReference<ImageIcon>(icon));
+        _slides.add(index, new WeakReference<>(icon));
         return icon;
     }
 
     List<URL> validateSlides(String dir, List<String> slides) {
-        List<URL> valid = new ArrayList<URL>();
+        List<URL> valid = new ArrayList<>();
         for (String slide : slides) {
             URL url = findResource(dir + slide);
             if (url != null) {

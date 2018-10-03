@@ -46,6 +46,9 @@ import org.apache.openjpa.util.InternalException;
 public class Version
     implements VersionStrategy, MetaDataContext, MetaDataModes {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage(Version.class);
 
     private final ClassMapping _mapping;
@@ -65,6 +68,7 @@ public class Version
         _info = getMappingRepository().newMappingInfo(this);
     }
 
+    @Override
     public MetaDataRepository getRepository() {
         return _mapping.getRepository();
     }
@@ -277,88 +281,107 @@ public class Version
     // VersionStrategy implementation
     //////////////////////////////////
 
+    @Override
     public String getAlias() {
         return assertStrategy().getAlias();
     }
 
+    @Override
     public void map(boolean adapt) {
         assertStrategy().map(adapt);
     }
 
+    @Override
     public void initialize() {
         assertStrategy().initialize();
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         assertStrategy().insert(sm, store, rm);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         assertStrategy().update(sm, store, rm);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         assertStrategy().delete(sm, store, rm);
     }
 
+    @Override
     public Boolean isCustomInsert(OpenJPAStateManager sm, JDBCStore store) {
         return assertStrategy().isCustomInsert(sm, store);
     }
 
+    @Override
     public Boolean isCustomUpdate(OpenJPAStateManager sm, JDBCStore store) {
         return assertStrategy().isCustomUpdate(sm, store);
     }
 
+    @Override
     public Boolean isCustomDelete(OpenJPAStateManager sm, JDBCStore store) {
         return assertStrategy().isCustomDelete(sm, store);
     }
 
+    @Override
     public void customInsert(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         assertStrategy().customInsert(sm, store);
     }
 
+    @Override
     public void customUpdate(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         assertStrategy().customUpdate(sm, store);
     }
 
+    @Override
     public void customDelete(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         assertStrategy().customDelete(sm, store);
     }
 
+    @Override
     public void setVersion(Version owner) {
         assertStrategy().setVersion(owner);
     }
 
+    @Override
     public boolean select(Select sel, ClassMapping mapping) {
         return assertStrategy().select(sel, mapping);
     }
 
+    @Override
     public Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
         throws SQLException {
         return assertStrategy().load(sm, store, res);
     }
 
+    @Override
     public Object load(OpenJPAStateManager sm, JDBCStore store, Result res, Joins joins)
         throws SQLException {
         return assertStrategy().load(sm, store, res, joins);
     }
 
+    @Override
     public void afterLoad(OpenJPAStateManager sm, JDBCStore store) {
         assertStrategy().afterLoad(sm, store);
     }
 
+    @Override
     public boolean checkVersion(OpenJPAStateManager sm, JDBCStore store,
         boolean updateVersion)
         throws SQLException {
         return assertStrategy().checkVersion(sm, store, updateVersion);
     }
 
+    @Override
     public int compareVersion(Object v1, Object v2) {
         return assertStrategy().compareVersion(v1, v2);
     }
@@ -369,6 +392,7 @@ public class Version
         return _strategy;
     }
 
+    @Override
     public String toString() {
         return _mapping + "<version>";
     }
@@ -379,6 +403,7 @@ public class Version
      *
      * @since 1.0.0
      */
+    @Override
     public Map<Column,?> getBulkUpdateValues() {
         return _strategy.getBulkUpdateValues();
     }

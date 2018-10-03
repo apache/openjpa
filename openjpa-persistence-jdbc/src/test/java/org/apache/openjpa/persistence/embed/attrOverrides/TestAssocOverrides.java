@@ -25,9 +25,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+import junit.framework.Assert;
 
 public class TestAssocOverrides  extends SQLListenerTestCase {
     public int numEmployees = 2;
@@ -42,6 +42,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
     public int peId = 1;
     public int pId = 1;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Address.class, ContactInfo.class,
             EmergencyContactInfo.class, Employee.class, JobInfo.class,

@@ -98,6 +98,7 @@ public class Department implements Serializable {
         this.employee2s = employees;
     }
 
+    @Override
     public String toString() {
         return "[Department:depno=" + deptno + ", version=" + version + ", name=" + name +
                         ", employees=" + employees + ", employee2s=" + employee2s+ ']';

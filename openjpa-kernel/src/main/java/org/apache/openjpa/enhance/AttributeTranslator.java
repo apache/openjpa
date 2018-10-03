@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.enhance;
 
+import org.apache.openjpa.meta.FieldMetaData;
+
 /**
  * Instances of this interface can convert a positional index for a
  * {@link FieldMetaData} that uses property access into the underlying
@@ -27,5 +29,5 @@ package org.apache.openjpa.enhance;
  * @since 1.0.0
  */
 public interface AttributeTranslator {
-    public String pcAttributeIndexToFieldName(int i);
+    String pcAttributeIndexToFieldName(int i);
 }

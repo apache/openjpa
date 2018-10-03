@@ -35,11 +35,15 @@ import java.util.Objects;
  */
 public abstract class AbstractSequentialResultList extends AbstractResultList {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Implement this method and {@link #size}.
      */
     protected abstract ListIterator itr(int index);
 
+    @Override
     public boolean contains(Object o) {
         assertOpen();
         for (Iterator itr = itr(0); itr.hasNext();)
@@ -48,6 +52,7 @@ public abstract class AbstractSequentialResultList extends AbstractResultList {
         return false;
     }
 
+    @Override
     public boolean containsAll(Collection c) {
         assertOpen();
         for (Iterator itr = c.iterator(); itr.hasNext();)
@@ -56,11 +61,13 @@ public abstract class AbstractSequentialResultList extends AbstractResultList {
         return true;
     }
 
+    @Override
     public Object get(int index) {
         assertOpen();
         return itr(index).next();
     }
 
+    @Override
     public int indexOf(Object o) {
         assertOpen();
         int index = 0;
@@ -70,6 +77,7 @@ public abstract class AbstractSequentialResultList extends AbstractResultList {
         return -1;
     }
 
+    @Override
     public int lastIndexOf(Object o) {
         assertOpen();
         int index = -1;
@@ -80,23 +88,28 @@ public abstract class AbstractSequentialResultList extends AbstractResultList {
         return index;
     }
 
+    @Override
     public boolean isEmpty() {
         assertOpen();
         return !itr(0).hasNext();
     }
 
+    @Override
     public Iterator iterator() {
         return listIterator();
     }
 
+    @Override
     public ListIterator listIterator() {
         return listIterator(0);
     }
 
+    @Override
     public ListIterator listIterator(int index) {
         return new ResultListIterator(itr(index), this);
     }
 
+    @Override
     public Object[] toArray() {
         assertOpen();
         ArrayList list = new ArrayList();
@@ -105,6 +118,7 @@ public abstract class AbstractSequentialResultList extends AbstractResultList {
         return list.toArray();
     }
 
+    @Override
     public Object[] toArray(Object[] a) {
         assertOpen();
         ArrayList list = new ArrayList();

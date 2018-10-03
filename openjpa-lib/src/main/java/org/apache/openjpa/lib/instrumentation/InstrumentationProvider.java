@@ -33,22 +33,22 @@ public interface InstrumentationProvider {
      * Whether the instrumentation provider started
      * @return true if the provider is started
      */
-    public boolean isStarted();
+    boolean isStarted();
     /**
      * Starts the instrumentation provider
      */
-    public void stop();
+    void stop();
 
     /**
      * Stops the instrumentation provider
      */
-    public void start();
+    void start();
 
     /**
      * Gets the configuration associated with the instrumentation provider
      * @return the configuration associated with the provider
      */
-    public Configuration getConfiguration();
+    Configuration getConfiguration();
 
     /**
      * Used to associate one or more instruments to a provider.  Instruments
@@ -61,25 +61,25 @@ public interface InstrumentationProvider {
      *
      * @param instruments  one or more instrument class names or aliases
      */
-    public void setInstrument(String instruments);
+    void setInstrument(String instruments);
 
     /**
      * Returns the string-based list of instruments directly configured by
      * this provider via setInstrument.
      */
-    public String getInstrument();
+    String getInstrument();
 
     /**
      * Sets configuration options for this provider
      * @param options
      */
-    public void setOptions(String options);
+    void setOptions(String options);
 
     /**
      * Gets configuration options for this provider
      * @param options
      */
-    public String getOptions();
+    String getOptions();
 
     /**
      * Returns an string array of identifier to class name aliases for
@@ -89,7 +89,7 @@ public interface InstrumentationProvider {
      *   "QueryCache", "org.apache.openjpa.instrumentation.QueryCacheInstrument"}
      * @return a string array of identifier, class name pairs.
      */
-    public String[] getInstrumentAliases();
+    String[] getInstrumentAliases();
 
     /**
      * Adds an instrument to this providers list of managed instruments.  The
@@ -97,28 +97,28 @@ public interface InstrumentationProvider {
      * depending on the instrumentation level.
      * @param instrument
      */
-    public void addInstrument(Instrument instrument);
+    void addInstrument(Instrument instrument);
 
     /**
      * Stops all instruments of the specified instrumentation level and context.
      * @param level instrumentation level
      * @param context  instrumentation context (factory, broker, config)
      */
-    public void stopInstruments(InstrumentationLevel level, Object context);
+    void stopInstruments(InstrumentationLevel level, Object context);
 
     /**
      * Starts all instruments of the specified instrumentation level and context.
      * @param level instrumentation level
      * @param context  instrumentation context (factory, broker, config)
      */
-    public void startInstruments(InstrumentationLevel level, Object context);
+    void startInstruments(InstrumentationLevel level, Object context);
 
     /**
      * Initializes an instrument within the provided context.
      * @param instrument an instrument
      * @param context  instrumentation context (factory, broker, config)
      */
-    public void initializeInstrument(Instrument instrument, Object context);
+    void initializeInstrument(Instrument instrument, Object context);
 
     /**
      * Initializes an instrument within the provided options and context.
@@ -126,43 +126,43 @@ public interface InstrumentationProvider {
      * @param options configuration options to provide the instrument during initialization
      * @param context  instrumentation context (factory, broker, config)
      */
-    public void initializeInstrument(Instrument instrument, String options, Object context);
+    void initializeInstrument(Instrument instrument, String options, Object context);
 
     /**
      * Returns an instrument instrumented by this provider by name
      * @param name the name of the instrument to return
      * @return the instrument or null if not instrumented by this provider
      */
-    public Instrument getInstrumentByName(String name);
+    Instrument getInstrumentByName(String name);
 
     /**
      * Removes an instrument instrumented by this provider by name
      * @param name the name of the instrument to remove
      */
-    public void removeInstrumentByName(String name);
+    void removeInstrumentByName(String name);
 
     /**
      * Gets all instruments instrumented by this provider
      * @return instruments instrumented by this provider
      */
-    public Set<Instrument> getInstruments();
+    Set<Instrument> getInstruments();
 
     /**
      * Starts an instrument
      * @param instrument this instrument to start
      */
-    public void startInstrument(Instrument instrument);
+    void startInstrument(Instrument instrument);
 
     /**
      * Stops an instrument
      * @param instrument the instrument to stop
      */
-    public void stopInstrument(Instrument instrument);
+    void stopInstrument(Instrument instrument);
 
     /**
      * Stops an instrument, forcing the stop, if necessary.
      * @param instrument the instrument to stop
      * @param force forces the stop if the instrument does not stop gracefully.
      */
-    public void stopInstrument(Instrument instrument, boolean force);
+    void stopInstrument(Instrument instrument, boolean force);
 }

@@ -18,10 +18,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
-
-import org.apache.openjpa.lib.jdbc.*;
+import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
+import org.apache.openjpa.lib.jdbc.JDBCEvent;
 
 /**
  * Test case that provides access to all the SQL that is executed.
@@ -40,6 +44,7 @@ public abstract class TestSQLListenerTestCase
         super(name);
     }
 
+    @Override
     public void setUp()
         throws Exception {
         super.setUp();
@@ -53,6 +58,7 @@ public abstract class TestSQLListenerTestCase
     public void setUpTestCase() {
     }
 
+    @Override
     public final void tearDown()
         throws Exception {
         super.tearDown();
@@ -164,6 +170,7 @@ public abstract class TestSQLListenerTestCase
     public static class Listener
         extends AbstractJDBCListener {
 
+        @Override
         public void beforeExecuteStatement(JDBCEvent event) {
             if (event.getSQL() != null)
                 sql.add(event.getSQL());

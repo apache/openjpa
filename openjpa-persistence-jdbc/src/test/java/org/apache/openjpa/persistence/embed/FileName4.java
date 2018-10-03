@@ -49,6 +49,7 @@ public class FileName4 {
         this.lName = lName;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof FileName4)) return false;
         FileName4 other = (FileName4) o;
@@ -58,6 +59,7 @@ public class FileName4 {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret += lName.hashCode();

@@ -18,10 +18,11 @@
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
-import javax.persistence.*;
-
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.
-        CallbackStorage;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class LifeCycleDDEntity

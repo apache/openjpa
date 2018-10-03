@@ -26,6 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestParallelEagerMap extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, MapKeyParent.class, MapKeyChild.class,
             "openjpa.jdbc.EagerFetchMode", "parallel");
@@ -36,7 +37,7 @@ public class TestParallelEagerMap extends SingleEMFTestCase {
         MapKeyParent[] parents = { new MapKeyParent(), new MapKeyParent() };
         for (MapKeyParent parent : parents) {
             Map<String, MapKeyChild> children =
-                new HashMap<String, MapKeyChild>();
+                new HashMap<>();
             for (String key : new String[] { "childA" }) {
                 MapKeyChild child = new MapKeyChild();
                 child.setParent(parent);

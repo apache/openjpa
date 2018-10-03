@@ -187,6 +187,7 @@ public class TestQueryByExample extends CriteriaTest {
                 + "AND t0.name = ? AND t0.rating = ? AND t0.salary = ?)");
     }
 
+    @Override
     void executeAndCompareSQL(CriteriaQuery<?> q, String expected) {
         auditor.clear();
         em.createQuery(q).getResultList();

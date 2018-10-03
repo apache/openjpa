@@ -19,7 +19,12 @@
 package org.apache.openjpa.persistence.enhance.identity;
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
 
 @Entity
 @IdClass(DependentId5.class)

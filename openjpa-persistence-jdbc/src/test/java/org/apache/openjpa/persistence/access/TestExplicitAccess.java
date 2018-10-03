@@ -36,6 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestExplicitAccess extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES,
             PropAccess.class, FieldAccess.class,
@@ -898,7 +899,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         eid.setCode("IdCode");
         pa.setEmbedId(eid); // embedded id
 
-        Collection<EmbedPropAccess> elc = new ArrayList<EmbedPropAccess>();
+        Collection<EmbedPropAccess> elc = new ArrayList<>();
         EmbedPropAccess epa1 = new EmbedPropAccess("Abe", "Lincoln");
         EmbedPropAccess epa2 = new EmbedPropAccess("John", "Kennedy");
         elc.add(epa1);
@@ -916,7 +917,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         propa.setStrProp("PropAccess");
         pa.setManyToOne(propa); // many to one
 
-        Collection<FieldAccess> fac = new ArrayList<FieldAccess>();
+        Collection<FieldAccess> fac = new ArrayList<>();
         FieldAccess fa = new FieldAccess();
         fa.setStrField("FieldAccess");
         fac.add(fa);
@@ -990,7 +991,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         eid.setCode("IdCode");
         fa.setEmbedId(eid); // embedded id
 
-        Collection<EmbedPropAccess> elc = new ArrayList<EmbedPropAccess>();
+        Collection<EmbedPropAccess> elc = new ArrayList<>();
         EmbedPropAccess epa1 = new EmbedPropAccess("George", "Washington");
         EmbedPropAccess epa2 = new EmbedPropAccess("James", "Carter");
         elc.add(epa1);
@@ -1008,7 +1009,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         propa.setStrProp("PropAccess");
         fa.setManyToOne(propa); // many to one
 
-        Collection<FieldAccess> fac = new ArrayList<FieldAccess>();
+        Collection<FieldAccess> fac = new ArrayList<>();
         FieldAccess fae = new FieldAccess();
         fae.setStrField("FieldAccess");
         fac.add(fae);
@@ -1076,7 +1077,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         MenuItem mi = new MenuItem();
         mi.setName("PB & J Sandwich");
 
-        Map<String, Ingredient> ingredients = new HashMap<String, Ingredient>();
+        Map<String, Ingredient> ingredients = new HashMap<>();
         mi.setIngredients(ingredients);
 
         Ingredient i1 = new Ingredient("Peanut Butter");

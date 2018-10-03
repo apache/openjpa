@@ -26,9 +26,7 @@ import java.io.Serializable;
  * org.apache.openjpa.enhance.ApplicationIdTool
  */
 public class AccountingHierarchyRateOpenJPAKey implements Serializable {
-	/**
-	 *
-	 */
+	
 	private static final long serialVersionUID = -2345673847908844341L;
 
 	static {
@@ -63,19 +61,22 @@ public class AccountingHierarchyRateOpenJPAKey implements Serializable {
 		this.id = id;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return accountingHierarchy
 			+ "::" + id;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		int rs = 17;
 		rs = rs * 37 + ((accountingHierarchy == null) ? 0 : accountingHierarchy.hashCode());
 		rs = rs * 37 + ((id == null) ? 0 : id.hashCode());
 		return rs;
 	}
 
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if(this == obj)
 			return true;
 		if(obj == null || obj.getClass() != getClass())

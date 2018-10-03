@@ -33,7 +33,8 @@ public class TestOutOfBoundsEx extends SingleEMFTestCase {
 	private EntityManager em = null;
 	private Lookup lookup;
 
-	public void setUp() throws Exception {
+	@Override
+    public void setUp() throws Exception {
 		super.setUp(Lookup.class, Case.class, Role.class, ScheduledAssignment.class, ScheduleDay.class,
         DROP_TABLES);
 		em = emf.createEntityManager();

@@ -1297,7 +1297,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
      * @return median time to execute a query and iterate through its results
      */
     long run(String jpql, boolean isNamedQuery, Object[] params, int expectedCount, boolean useCache, int N) {
-        List<Long> stats = new ArrayList<Long>();
+        List<Long> stats = new ArrayList<>();
         String cacheKey = getJPQLString(jpql, isNamedQuery);
         QueryStatistics<String> cacheStats = getPreparedQueryCache().getStatistics();
         getPreparedQueryCache().clear();
@@ -1395,7 +1395,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
      *
      */
     public class SQLAuditor extends AbstractJDBCListener {
-        private List<String> sqls = new ArrayList<String>();
+        private List<String> sqls = new ArrayList<>();
 
         @Override
         public void beforeExecuteStatement(JDBCEvent event) {
@@ -1409,7 +1409,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         }
 
         List<String> getSQLs() {
-            return new ArrayList<String>(sqls);
+            return new ArrayList<>(sqls);
         }
     }
 
@@ -1423,6 +1423,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
             this.jpql = jpql;
         }
 
+        @Override
         public void run() {
             try {
                 for (int i = 0; i < 10 && !failed; i++) {

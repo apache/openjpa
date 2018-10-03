@@ -34,6 +34,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
     private int numFTEmployees = 2;
     private int numContractors = 3;
 
+    @Override
     public void setUp() {
         setUp(Contractor.class, Employee.class, Department.class, Person.class,
             FulltimeEmployee.class, ParttimeEmployee.class,
@@ -99,7 +100,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
             assertTrue(rs.get(i) instanceof Contractor);
 
         qS = "select p from Person p where TYPE(p) in ?1 order by p.name";
-        Collection<Class<?>> params = new ArrayList<Class<?>>(2);
+        Collection<Class<?>> params = new ArrayList<>(2);
         params.add(Contractor.class);
         params.add(Employee.class);
         try {

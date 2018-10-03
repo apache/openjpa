@@ -18,8 +18,11 @@
  */
 package org.apache.openjpa.persistence.models.company.basic;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import org.apache.openjpa.persistence.models.company.IAddress;
 
 @Entity(name="BAS_Address")
 public class Address implements IAddress {
@@ -43,46 +46,56 @@ public class Address implements IAddress {
     @Basic
     private String phoneNumber;
 
+    @Override
     public void setStreetAddress(String streetAddress) {
         this.streetAddress = streetAddress;
     }
 
+    @Override
     public String getStreetAddress() {
         return this.streetAddress;
     }
 
 
+    @Override
     public void setCity(String city) {
         this.city = city;
     }
 
+    @Override
     public String getCity() {
         return this.city;
     }
 
 
+    @Override
     public void setState(String state) {
         this.state = state;
     }
 
+    @Override
     public String getState() {
         return this.state;
     }
 
 
+    @Override
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
 
+    @Override
     public String getPostalCode() {
         return this.postalCode;
     }
 
 
+    @Override
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
+    @Override
     public String getPhoneNumber() {
         return this.phoneNumber;
     }

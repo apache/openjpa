@@ -51,7 +51,7 @@ public class Child implements Serializable {
   private Integer childKey;
 
   @OneToMany(mappedBy = "child", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  private Collection<GrandChild> grandChilds = new ArrayList<GrandChild>();
+  private Collection<GrandChild> grandChilds = new ArrayList<>();
 
   public Parent getParent() { return parent;  }
   public void setParent(Parent parent) { this.parent = parent;  }

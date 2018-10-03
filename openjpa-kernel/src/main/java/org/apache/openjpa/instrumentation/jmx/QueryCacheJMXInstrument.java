@@ -66,6 +66,7 @@ public class QueryCacheJMXInstrument extends AbstractQueryCacheInstrument
         setContextRef(Integer.toString(System.identityHashCode(getContext())));
     }
 
+    @Override
     public ObjectName getObjectName() {
         if (_objName != null) {
             return _objName;
@@ -79,10 +80,12 @@ public class QueryCacheJMXInstrument extends AbstractQueryCacheInstrument
         }
     }
 
+    @Override
     public void start() {
         getProvider().startInstrument(this);
     }
 
+    @Override
     public void stop() {
         getProvider().stopInstrument(this);
     }

@@ -20,12 +20,12 @@ package org.apache.openjpa.persistence.enhance;
 
 import java.io.IOException;
 
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.util.OpenJPAException;
 
 public class TestNoNoArgs
@@ -40,6 +40,7 @@ public class TestNoNoArgs
         super(s, "enhancecactusapp");
     }
 
+    @Override
     public void setUp() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();

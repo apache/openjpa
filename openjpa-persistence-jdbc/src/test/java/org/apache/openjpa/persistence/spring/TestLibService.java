@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.spring;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.models.library.*;
+import org.apache.openjpa.persistence.AutoDetachType;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.models.library.Book;
+import org.apache.openjpa.persistence.models.library.Borrower;
+import org.apache.openjpa.persistence.models.library.Subject;
+import org.apache.openjpa.persistence.models.library.Volunteer;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestLibService extends SingleEMFTestCase
@@ -34,6 +39,7 @@ public class TestLibService extends SingleEMFTestCase
 
     private LibService service;
 
+    @Override
     public EntityManager getTransactionalEntityManager() {
         // return a transactionally scoped entity manager
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -42,6 +48,7 @@ public class TestLibService extends SingleEMFTestCase
         return em;
     }
 
+    @Override
     public void setUp() {
         // declare the library model classes
         super.setUp(DROP_TABLES, Book.class, Borrower.class, Subject.class,
@@ -58,6 +65,7 @@ public class TestLibService extends SingleEMFTestCase
         service.setTransactionalEntityManagerFactory(this);
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         service = null;

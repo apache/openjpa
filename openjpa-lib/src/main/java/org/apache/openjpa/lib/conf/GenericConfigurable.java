@@ -37,5 +37,5 @@ public interface GenericConfigurable {
      * values remain in <code>opts</code> after this method is executed,
      * an exception will be thrown identifying those key-value pairs as invalid.
      */
-    public void setInto(Options opts);
+    void setInto(Options opts);
 }

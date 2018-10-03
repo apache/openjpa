@@ -57,6 +57,7 @@ class FindCommand extends AbstractCommand {
         return 1;
     }
 
+    @Override
     protected Collection<String> getValidQualifiers() {
         return _validQualifiers;
     }

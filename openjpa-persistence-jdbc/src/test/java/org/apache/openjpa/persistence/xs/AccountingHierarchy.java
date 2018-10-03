@@ -40,7 +40,7 @@ public class AccountingHierarchy implements Serializable {
     private String code;
     private String shortDesc;
 
-    private List<AccountingHierarchyRate> accRateList = new ArrayList<AccountingHierarchyRate>(0);
+    private List<AccountingHierarchyRate> accRateList = new ArrayList<>(0);
 
     private Long version;
 

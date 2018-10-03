@@ -28,6 +28,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class ToUpperCase
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
 
     /**
@@ -37,19 +39,23 @@ class ToUpperCase
         _val = val;
     }
 
+    @Override
     public Class getType() {
         return String.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return _val.eval(candidate, orig, ctx, params).toString().
             toUpperCase();
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

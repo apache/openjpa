@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.persistence.jest;
 
+import static org.apache.openjpa.persistence.jest.Constants.MIME_TYPE_JSON;
+
 import java.io.BufferedReader;
 import java.io.CharArrayWriter;
 import java.io.IOException;
@@ -45,7 +47,6 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.meta.Members;
-import static org.apache.openjpa.persistence.jest.Constants.MIME_TYPE_JSON;
 
 /**
  * Marshals a root instance and its persistent closure as JSON object.
@@ -57,6 +58,7 @@ import static org.apache.openjpa.persistence.jest.Constants.MIME_TYPE_JSON;
  */
 public class JSONObjectFormatter implements ObjectFormatter<JSON> {
 
+    @Override
     public String getMimeType() {
         return MIME_TYPE_JSON;
     }
@@ -77,6 +79,7 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
         return;
     }
 
+    @Override
     public JSON writeOut(Collection<OpenJPAStateManager> sms, Metamodel model, String title, String desc,
         String uri, OutputStream out) throws IOException {
         JSON json = encode(sms,model);
@@ -84,6 +87,7 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
         return json;
     }
 
+    @Override
     public JSON encode(Collection<OpenJPAStateManager> sms, Metamodel model) {
         return encodeManagedInstances(sms, model);
     }

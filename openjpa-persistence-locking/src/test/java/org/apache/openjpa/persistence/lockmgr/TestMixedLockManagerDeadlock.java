@@ -34,6 +34,7 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
     private DBType dbType;
     private HashMap<DBType,Class<?>[]> expWriteLockExClasses;
 
+    @Override
     public void setUp() {
         setSupportedDatabases(
                 org.apache.openjpa.jdbc.sql.DB2Dictionary.class,
@@ -58,7 +59,7 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
 			if ((db2dict.getDB2MajorVersion() * 100 + db2dict.getDB2MinorVersion()) > 905)
 				expDB2ExClass = null;
 		}
-        expWriteLockExClasses = new HashMap<DBType,Class<?>[]>();
+        expWriteLockExClasses = new HashMap<>();
         expWriteLockExClasses.put(DBType.db2, expDB2ExClass);
         expWriteLockExClasses.put(DBType.derby, ExpectingOptimisticLockExClass);
         expWriteLockExClasses.put(DBType.oracle, null);

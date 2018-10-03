@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Objects;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
@@ -63,6 +63,8 @@ import org.apache.openjpa.util.UserException;
  */
 public class PCPath extends CandidatePath implements JDBCPath {
 
+    
+    private static final long serialVersionUID = 1L;
     protected static final String TRUE = "1 = 1";
     protected static final String FALSE = "1 <> 1";
 
@@ -138,15 +140,18 @@ public class PCPath extends CandidatePath implements JDBCPath {
         _varName = sub.getCandidateAlias();
     }
 
+    @Override
     public void setSchemaAlias(String schemaAlias) {
         if (_schemaAlias == null)
             _schemaAlias = schemaAlias;
     }
 
+    @Override
     public String getSchemaAlias() {
         return _schemaAlias;
     }
 
+    @Override
     public void setSubqueryContext(Context context, String correlationVar) {
         Action action = lastFieldAction();
         if (action == null)
@@ -203,10 +208,12 @@ public class PCPath extends CandidatePath implements JDBCPath {
         _cid = true;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _class;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _class = (ClassMapping) meta;
     }
@@ -215,6 +222,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         return _key;
     }
 
+    @Override
     public boolean isXPath() {
         return _type == XPATH;
     }
@@ -350,6 +358,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
             : _class.getPrimaryKeyColumns();
     }
 
+    @Override
     public boolean isVariable() {
         if (_actions == null)
             return false;
@@ -357,6 +366,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         return action.op == Action.UNBOUND_VAR || action.op == Action.VAR;
     }
 
+    @Override
     public void get(FieldMetaData field, boolean nullTraversal) {
         if (_actions == null)
             _actions = new LinkedList();
@@ -370,6 +380,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         _key = false;
     }
 
+    @Override
     public void get(FieldMetaData fmd, XMLMetaData meta) {
         if (_actions == null)
             _actions = new LinkedList();
@@ -383,6 +394,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         _xmlfield = fmd;
     }
 
+    @Override
     public void get(XMLMetaData meta, String name) {
         Action action = new Action();
         action.op = Action.GET_XPATH;
@@ -393,6 +405,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         _type = XPATH;
     }
 
+    @Override
     public XMLMetaData getXmlMapping() {
         Action act = (Action) _actions.getLast();
         if (act != null)
@@ -400,6 +413,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         return null;
     }
 
+    @Override
     public synchronized void getKey() {
         if (_cid)
             return;
@@ -433,6 +447,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
          }
     }
 
+    @Override
     public FieldMetaData last() {
         Action act = lastFieldAction();
         return (act == null) ? null : isXPath() ?
@@ -460,6 +475,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         return null;
     }
 
+    @Override
     public Class getType() {
         if (_cast != null)
             return _cast;
@@ -493,10 +509,12 @@ public class PCPath extends CandidatePath implements JDBCPath {
         return Object.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _cast = type;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         PathExpState pstate = new PathExpState(sel.newJoins());
         boolean key = false;
@@ -591,7 +609,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
 
                 owner = pstate.field.getDefiningMapping();
                 if (pstate.field.getManagement()
-                    != FieldMapping.MANAGE_PERSISTENT)
+                    != FieldMetaData.MANAGE_PERSISTENT)
                     throw new UserException(_loc.get("non-pers-field",
                         pstate.field));
 
@@ -725,6 +743,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         return true;
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         if (_actions == null)
@@ -826,6 +845,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         pstate.joinedRel = true;
     }
 
+    @Override
     public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state,
         Object val) {
         PathExpState pstate = (PathExpState) state;
@@ -846,11 +866,13 @@ public class PCPath extends CandidatePath implements JDBCPath {
             ctx.store);
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         selectColumns(sel, ctx, state, pks);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.setSchemaAlias(_schemaAlias);
@@ -872,10 +894,11 @@ public class PCPath extends CandidatePath implements JDBCPath {
             int subs = (_type == UNBOUND_VAR) ? Select.SUBS_JOINABLE
                 : Select.SUBS_ANY_JOINABLE;
             sel.select(mapping, subs, ctx.store, ctx.fetch,
-                JDBCFetchConfiguration.EAGER_NONE, sel.outer(pstate.joins));
+                EagerFetchModes.EAGER_NONE, sel.outer(pstate.joins));
         }
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
@@ -889,11 +912,13 @@ public class PCPath extends CandidatePath implements JDBCPath {
         }
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(getColumns(state), asc, sel.outer(state.joins), false);
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return load(ctx, state, res, false);
@@ -961,6 +986,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
             pstate.joins);
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         // we don't create the SQL b/c it forces the Select to cache aliases
@@ -975,6 +1001,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
             throw new UserException(_loc.get("no-order-column", fm.getName()));
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return getColumns(state).length;
     }
@@ -989,6 +1016,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         Column col = getColumns(state)[index];
@@ -1010,6 +1038,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
             sql.append(sel.getColumnAlias(col, state.joins));
     }
 
+    @Override
     public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         PathExpState pstate = (PathExpState) state;
@@ -1019,6 +1048,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
             pstate.field.appendIsEmpty(sql, sel, pstate.joins);
     }
 
+    @Override
     public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         PathExpState pstate = (PathExpState) state;
@@ -1028,6 +1058,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
             pstate.field.appendIsNotEmpty(sql, sel, pstate.joins);
     }
 
+    @Override
     public void appendIndex(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         PathExpState pstate = (PathExpState) state;
@@ -1037,6 +1068,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
             pstate.field.appendIndex(sql, sel, pstate.joins);
     }
 
+    @Override
     public void appendType(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         Discriminator disc = null;
@@ -1064,6 +1096,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
         }
     }
 
+    @Override
     public void appendSize(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         PathExpState pstate = (PathExpState) state;
@@ -1073,6 +1106,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
             pstate.field.appendSize(sql, sel, pstate.joins);
     }
 
+    @Override
     public void appendIsNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         PathExpState pstate = (PathExpState) state;
@@ -1082,6 +1116,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
             pstate.field.appendIsNull(sql, sel, pstate.joins);
     }
 
+    @Override
     public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         PathExpState pstate = (PathExpState) state;
@@ -1098,12 +1133,14 @@ public class PCPath extends CandidatePath implements JDBCPath {
         return false;
     }
 
+    @Override
     public int hashCode() {
         if (_actions == null)
             return _candidate.hashCode();
         return _candidate.hashCode() ^ _actions.hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -1114,6 +1151,7 @@ public class PCPath extends CandidatePath implements JDBCPath {
             && Objects.equals(_actions, path._actions);
     }
 
+    @Override
     public int getId() {
         return Val.VAL;
     }
@@ -1125,6 +1163,8 @@ public class PCPath extends CandidatePath implements JDBCPath {
     private static class Action
         implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public static final int GET = 0;
         public static final int GET_OUTER = 1;
         public static final int GET_KEY = 2;
@@ -1139,16 +1179,19 @@ public class PCPath extends CandidatePath implements JDBCPath {
         public String var = null;
         public Context context = null;
 
+        @Override
         public String toString() {
             return op + "|" + data;
         }
 
+        @Override
         public int hashCode() {
             if (data == null)
                 return op;
             return op ^ data.hashCode();
         }
 
+        @Override
         public boolean equals(Object other) {
             if (other == null)
                 return false;

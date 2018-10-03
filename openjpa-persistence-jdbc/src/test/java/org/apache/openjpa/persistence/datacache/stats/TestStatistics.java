@@ -34,7 +34,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestStatistics extends SingleEMFTestCase {
 	private CacheStatistics stats;
 
-	public void setUp() {
+	@Override
+    public void setUp() {
 		super.setUp(CLEAR_TABLES, Customer.class, Order.class,
                 "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
 				"sjvm");

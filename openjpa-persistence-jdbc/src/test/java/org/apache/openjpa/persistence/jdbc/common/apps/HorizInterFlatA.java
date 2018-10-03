@@ -32,18 +32,22 @@ public class HorizInterFlatA
     private String stringA;
     private int intA;
 
+    @Override
     public void setStringA(String stringA) {
         this.stringA = stringA;
     }
 
+    @Override
     public String getStringA() {
         return this.stringA;
     }
 
+    @Override
     public void setIntA(int intA) {
         this.intA = intA;
     }
 
+    @Override
     public int getIntA() {
         return this.intA;
     }

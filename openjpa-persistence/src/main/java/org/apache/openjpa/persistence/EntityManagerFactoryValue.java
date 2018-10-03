@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence;
 
+import javax.persistence.EntityManagerFactory;
+
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.PluginValue;

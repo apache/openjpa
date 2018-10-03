@@ -41,6 +41,7 @@ import org.apache.openjpa.util.OpenJPAException;
 public class TestTimeoutException extends SingleEMFTestCase {
     private final Class<?> entityClass = PObject.class;
 
+    @Override
     public void setUp() {
         // Disable tests for any DB that has supportsSelectForUpdate==false, like HSQLDictionary
         OpenJPAEntityManagerFactorySPI tempEMF = emf;
@@ -113,7 +114,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
         final Object entity2 = em2.find(entityClass, oid);
         final long timeout = 1000;
         try {
-            Map<String,Object> hint = new HashMap<String, Object>();
+            Map<String,Object> hint = new HashMap<>();
             hint.put("javax.persistence.lock.timeout", timeout);
             em2.lock(entity2, LockModeType.PESSIMISTIC_WRITE, hint);
             fail("Expected " + PessimisticLockException.class.getName());
@@ -145,7 +146,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
 
         em2.getTransaction().begin();
         try {
-            Map<String,Object> hint = new HashMap<String, Object>();
+            Map<String,Object> hint = new HashMap<>();
             hint.put("javax.persistence.lock.timeout", timeout);
             //em2.setProperty("javax.persistence.lock.timeout", timeout);
 

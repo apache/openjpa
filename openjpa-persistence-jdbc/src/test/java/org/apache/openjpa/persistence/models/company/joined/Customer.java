@@ -18,15 +18,24 @@
  */
 package org.apache.openjpa.persistence.models.company.joined;
 
-import java.util.*;
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import org.apache.openjpa.persistence.models.company.IAddress;
+import org.apache.openjpa.persistence.models.company.ICustomer;
+import org.apache.openjpa.persistence.models.company.IProductOrder;
 
 @Entity(name="JI_Customer")
 @Inheritance(strategy=InheritanceType.JOINED)
 public class Customer extends Person implements ICustomer {
     @OneToMany(mappedBy="customer")
-    private Collection<ProductOrder> orders = new ArrayList<ProductOrder>();
+    private Collection<ProductOrder> orders = new ArrayList<>();
 
     @OneToOne
     private Address shippingAddress;
@@ -34,28 +43,34 @@ public class Customer extends Person implements ICustomer {
     @OneToOne
     private Address billingAddress;
 
+    @Override
     public void setOrders(Collection<? extends IProductOrder> orders) {
         this.orders = (Collection<ProductOrder>) orders;
     }
 
+    @Override
     public Collection<ProductOrder> getOrders() {
         return this.orders;
     }
 
 
+    @Override
     public void setShippingAddress(IAddress shippingAddress) {
         this.shippingAddress = (Address) shippingAddress;
     }
 
+    @Override
     public IAddress getShippingAddress() {
         return this.shippingAddress;
     }
 
 
+    @Override
     public void setBillingAddress(IAddress billingAddress) {
         this.billingAddress = (Address) billingAddress;
     }
 
+    @Override
     public IAddress getBillingAddress() {
         return this.billingAddress;
     }

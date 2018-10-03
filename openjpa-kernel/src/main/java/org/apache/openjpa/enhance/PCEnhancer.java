@@ -27,8 +27,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
-import java.io.Serializable;
 import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -60,38 +59,42 @@ import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.Services;
-import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.svn.SVNUtils;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.ApplicationIds;
-import org.apache.openjpa.util.GeneralException;
-import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.BigDecimalId;
 import org.apache.openjpa.util.BigIntegerId;
 import org.apache.openjpa.util.ByteId;
 import org.apache.openjpa.util.CharId;
 import org.apache.openjpa.util.DateId;
 import org.apache.openjpa.util.DoubleId;
-import org.apache.openjpa.util.Id;
-import org.apache.openjpa.util.IntId;
 import org.apache.openjpa.util.FloatId;
+import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.Id;
+import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.IntId;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.LongId;
 import org.apache.openjpa.util.ObjectId;
+import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
-import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.util.ImplHelper;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
+import serp.bytecode.ClassInstruction;
 import serp.bytecode.Code;
 import serp.bytecode.Constants;
 import serp.bytecode.Exceptions;
@@ -106,7 +109,6 @@ import serp.bytecode.MethodInstruction;
 import serp.bytecode.Project;
 import serp.bytecode.PutFieldInstruction;
 import serp.bytecode.TableSwitchInstruction;
-import serp.bytecode.ClassInstruction;
 
 /**
  * Bytecode enhancer used to enhance persistent classes from metadata. The
@@ -252,6 +254,7 @@ public class PCEnhancer {
      * @deprecated use {@link #PCEnhancer(OpenJPAConfiguration, BCClass,
         MetaDataRepository, ClassLoader)} instead.
      */
+    @Deprecated
     public PCEnhancer(OpenJPAConfiguration conf, BCClass type,
         MetaDataRepository repos) {
         this(conf, type, repos, null);
@@ -280,7 +283,7 @@ public class PCEnhancer {
 
         if (repos == null) {
             _repos = conf.newMetaDataRepositoryInstance();
-            _repos.setSourceMode(MetaDataRepository.MODE_META);
+            _repos.setSourceMode(MetaDataModes.MODE_META);
         } else
             _repos = repos;
         _meta = _repos.getMetaData(type.getType(), loader, false);
@@ -735,13 +738,13 @@ public class PCEnhancer {
     private void addAttributeTranslation() {
 
         // Get all field metadata
-        ArrayList<Integer> propFmds = new ArrayList<Integer>();
+        ArrayList<Integer> propFmds = new ArrayList<>();
         FieldMetaData[] fmds = _meta.getFields();
 
         if (_meta.isMixedAccess()) {
             // Stores indexes of property access fields to be used in
             //
-            propFmds = new ArrayList<Integer>();
+            propFmds = new ArrayList<>();
 
             // Determine which fields have property access and save their
             // indexes
@@ -4798,6 +4801,7 @@ public class PCEnhancer {
     public static boolean run(final String[] args, Options opts) {
         return Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts) throws IOException {
                 OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
                 try {
@@ -4850,7 +4854,7 @@ public class PCEnhancer {
 
         if (repos == null) {
             repos = conf.newMetaDataRepositoryInstance();
-            repos.setSourceMode(MetaDataRepository.MODE_META);
+            repos.setSourceMode(MetaDataModes.MODE_META);
         }
 
         Log log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
@@ -4925,10 +4929,10 @@ public class PCEnhancer {
     /**
      * Plugin interface for additional enhancement.
      */
-    public static interface AuxiliaryEnhancer
+    public interface AuxiliaryEnhancer
     {
-        public void run (BCClass bc, ClassMetaData meta);
-        public boolean skipEnhance(BCMethod m);
+        void run (BCClass bc, ClassMetaData meta);
+        boolean skipEnhance(BCMethod m);
     }
 
     private void addGetIDOwningClass() throws NoSuchMethodException {
@@ -4992,7 +4996,7 @@ public class PCEnhancer {
         // collect all object id fields and verify they
         // a) have a private field
         // b) do not have a public setter
-        ArrayList<Integer> pkFields = new ArrayList<Integer>();
+        ArrayList<Integer> pkFields = new ArrayList<>();
         // build list of primary key fields
         for (int i = 0; i < fmds.length; i++) {
             if (!fmds[i].isPrimaryKey())

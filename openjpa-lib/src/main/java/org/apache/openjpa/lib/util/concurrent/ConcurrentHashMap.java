@@ -233,20 +233,24 @@ public class ConcurrentHashMap extends AbstractMap
         return loadFactor;
     }
 
+    @Override
     public int getMaxSize() {
         return maxSize;
     }
 
+    @Override
     public void setMaxSize(int maxSize) {
         this.maxSize = (maxSize < 0) ? Integer.MAX_VALUE : maxSize;
         if (this.maxSize != Integer.MAX_VALUE)
             removeOverflow(this.maxSize);
     }
 
+    @Override
     public boolean isFull() {
         return maxSize != Integer.MAX_VALUE && size() >= maxSize;
     }
 
+    @Override
     public void overflowRemoved(Object key, Object value) {
     }
 
@@ -255,6 +259,7 @@ public class ConcurrentHashMap extends AbstractMap
      *
      * @return the number of key-value mappings in this map.
      */
+    @Override
     public final int size() {
         return size;
     }
@@ -264,6 +269,7 @@ public class ConcurrentHashMap extends AbstractMap
      *
      * @return <tt>true</tt> if this map contains no key-value mappings.
      */
+    @Override
     public final boolean isEmpty() {
         return size == 0;
     }
@@ -281,6 +287,7 @@ public class ConcurrentHashMap extends AbstractMap
      * <tt>null</tt> if the map contains no mapping for this key.
      * @see #put(Object, Object)
      */
+    @Override
     public Object get(Object key) {
         Entry e = getEntry(key);
         return e == null ? null : e.value;
@@ -294,6 +301,7 @@ public class ConcurrentHashMap extends AbstractMap
      * @return <tt>true</tt> if this map contains a mapping for the specified
      * key.
      */
+    @Override
     public final boolean containsKey(Object key) {
         return getEntry(key) != null;
     }
@@ -325,6 +333,7 @@ public class ConcurrentHashMap extends AbstractMap
      * also indicate that the ConcurrentHashMap previously associated
      * <tt>null</tt> with the specified key.
      */
+    @Override
     public Object put(Object key, Object value) {
         Object k = maskNull(key);
         int hash = hash(k);
@@ -359,6 +368,7 @@ public class ConcurrentHashMap extends AbstractMap
         }
     }
 
+    @Override
     public Object putIfAbsent(Object key, Object value) {
         Object k = maskNull(key);
         int hash = hash(k);
@@ -416,6 +426,7 @@ public class ConcurrentHashMap extends AbstractMap
      * @param t mappings to be stored in this map.
      * @throws NullPointerException if the specified map is null.
      */
+    @Override
     public final synchronized void putAll(Map t) {
         // Expand enough to hold t's elements without resizing.
         int n = t.size();
@@ -443,6 +454,7 @@ public class ConcurrentHashMap extends AbstractMap
      * also indicate that the map previously associated <tt>null</tt>
      * with the specified key.
      */
+    @Override
     public Object remove(Object key) {
         Entry e = removeEntryForKey(key);
         return (e == null ? e : e.value);
@@ -514,6 +526,7 @@ public class ConcurrentHashMap extends AbstractMap
     /**
      * Removes all mappings from this map.
      */
+    @Override
     public synchronized void clear() {
         table = new Entry[table.length];
         size = 0;
@@ -528,6 +541,7 @@ public class ConcurrentHashMap extends AbstractMap
         return (int) (RANDOMS[randomEntry++] * table.length);
     }
 
+    @Override
     public Map.Entry removeRandom() {
         if (size == 0)
             return null;
@@ -564,6 +578,7 @@ public class ConcurrentHashMap extends AbstractMap
         }
     }
 
+    @Override
     public Iterator randomEntryIterator() {
         // pass index so calculated before iterator refs table, in case table
         // gets replace with a larger one
@@ -578,6 +593,7 @@ public class ConcurrentHashMap extends AbstractMap
      * @return <tt>true</tt> if this map maps one or more keys to the
      * specified value.
      */
+    @Override
     public final boolean containsValue(Object value) {
         if (value == null) return containsNullValue();
 
@@ -609,6 +625,7 @@ public class ConcurrentHashMap extends AbstractMap
      *
      * @return a shallow copy of this map.
      */
+    @Override
     public final Object clone() {
         return new ConcurrentHashMap(this);
     }
@@ -634,20 +651,24 @@ public class ConcurrentHashMap extends AbstractMap
             hash = h;
         }
 
+        @Override
         public Object getKey() {
             return unmaskNull(key);
         }
 
+        @Override
         public Object getValue() {
             return value;
         }
 
+        @Override
         public Object setValue(Object newValue) {
             Object oldValue = value;
             value = newValue;
             return oldValue;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry)) return false;
             Map.Entry e = (Map.Entry) o;
@@ -662,15 +683,18 @@ public class ConcurrentHashMap extends AbstractMap
             return false;
         }
 
+        @Override
         public int hashCode() {
             return (key == NULL_KEY ? 0 : key.hashCode()) ^
                 (value == null ? 0 : value.hashCode());
         }
 
+        @Override
         public String toString() {
             return getKey() + "=" + getValue();
         }
 
+        @Override
         protected Object clone() {
             // It is the callers responsibility to set the next field
             // correctly.
@@ -702,6 +726,7 @@ public class ConcurrentHashMap extends AbstractMap
             index = startIndex;
         }
 
+        @Override
         public boolean hasNext() {
             if (entry != null) {
                 return true;
@@ -723,6 +748,7 @@ public class ConcurrentHashMap extends AbstractMap
             return false;
         }
 
+        @Override
         public Object next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -731,6 +757,7 @@ public class ConcurrentHashMap extends AbstractMap
             return type == KEYS ? e.key : (type == VALUES ? e.value : e);
         }
 
+        @Override
         public void remove() {
             if (lastReturned == null)
                 throw new IllegalStateException();
@@ -772,6 +799,7 @@ public class ConcurrentHashMap extends AbstractMap
      *
      * @return a set view of the keys contained in this map.
      */
+    @Override
     public final Set keySet() {
         Set ks = keySet;
         return (ks != null ? ks : (keySet = new KeySet()));
@@ -779,22 +807,27 @@ public class ConcurrentHashMap extends AbstractMap
 
     private final class KeySet extends AbstractSet {
 
+        @Override
         public Iterator iterator() {
             return new HashIterator(KEYS, table.length - 1);
         }
 
+        @Override
         public int size() {
             return size;
         }
 
+        @Override
         public boolean contains(Object o) {
             return containsKey(o);
         }
 
+        @Override
         public boolean remove(Object o) {
             return ConcurrentHashMap.this.removeEntryForKey(o) != null;
         }
 
+        @Override
         public void clear() {
             ConcurrentHashMap.this.clear();
         }
@@ -811,6 +844,7 @@ public class ConcurrentHashMap extends AbstractMap
      *
      * @return a collection view of the values contained in this map.
      */
+    @Override
     public final Collection values() {
         Collection vs = values;
         return (vs != null ? vs : (values = new Values()));
@@ -818,18 +852,22 @@ public class ConcurrentHashMap extends AbstractMap
 
     private final class Values extends AbstractCollection {
 
+        @Override
         public Iterator iterator() {
             return new HashIterator(VALUES, table.length - 1);
         }
 
+        @Override
         public int size() {
             return size;
         }
 
+        @Override
         public boolean contains(Object o) {
             return containsValue(o);
         }
 
+        @Override
         public void clear() {
             ConcurrentHashMap.this.clear();
         }
@@ -848,6 +886,7 @@ public class ConcurrentHashMap extends AbstractMap
      * @return a collection view of the mappings contained in this map.
      * @see Map.Entry
      */
+    @Override
     public final Set entrySet() {
         Set es = entrySet;
         return (es != null ? es : (entrySet = new EntrySet()));
@@ -855,10 +894,12 @@ public class ConcurrentHashMap extends AbstractMap
 
     private final class EntrySet extends AbstractSet {
 
+        @Override
         public Iterator iterator() {
             return new HashIterator(ENTRIES, table.length - 1);
         }
 
+        @Override
         public boolean contains(Object o) {
             if (!(o instanceof Map.Entry)) return false;
             Map.Entry e = (Map.Entry) o;
@@ -866,14 +907,17 @@ public class ConcurrentHashMap extends AbstractMap
             return candidate != null && candidate.equals(e);
         }
 
+        @Override
         public boolean remove(Object o) {
             return removeMapping(o) != null;
         }
 
+        @Override
         public int size() {
             return size;
         }
 
+        @Override
         public void clear() {
             ConcurrentHashMap.this.clear();
         }

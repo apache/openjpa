@@ -42,9 +42,9 @@ import java.util.Set;
 public class BreadthFirstWalk {
 
     private final Graph _graph;
-    private final Set<GraphVisitor> _visitors = new HashSet<GraphVisitor>();
-    private final List<Object> _queue = new LinkedList<Object>();
-    private final Map<Object, NodeInfo> _nodeInfo = new HashMap<Object, NodeInfo>();
+    private final Set<GraphVisitor> _visitors = new HashSet<>();
+    private final List<Object> _queue = new LinkedList<>();
+    private final Map<Object, NodeInfo> _nodeInfo = new HashMap<>();
 
     public BreadthFirstWalk(Graph graph) {
         _graph = graph;

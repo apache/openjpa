@@ -29,5 +29,5 @@ public interface ExpirationListener {
     /**
      * Notification that an object has expired from the cache.
      */
-    public void onExpire(ExpirationEvent event);
+    void onExpire(ExpirationEvent event);
 }

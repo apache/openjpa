@@ -34,8 +34,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-
-
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.persistence.FetchPlan;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachA;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachB;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachC;
@@ -45,12 +48,6 @@ import org.apache.openjpa.persistence.kernel.common.apps.AttachF;
 import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
 import org.apache.openjpa.persistence.kernel.common.apps.
         FetchGroupTestObjectChild;
-
-import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.persistence.FetchPlan;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 
 public class TestFetchGroups extends BaseKernelTest {
 
@@ -68,6 +65,7 @@ public class TestFetchGroups extends BaseKernelTest {
     public TestFetchGroups() {
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(FetchGroupTestObject.class, FetchGroupTestObjectChild.class,
             AttachA.class, AttachB.class, AttachC.class, AttachD.class, AttachE.class, AttachF.class);

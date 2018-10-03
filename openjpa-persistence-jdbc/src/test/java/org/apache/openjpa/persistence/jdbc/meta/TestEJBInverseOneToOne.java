@@ -31,7 +31,8 @@ public class TestEJBInverseOneToOne
 		super(name);
 	}
 
-	public void setUp ()
+	@Override
+    public void setUp ()
 	{
 		deleteAll(InvertA.class);
 		deleteAll(InvertB.class);

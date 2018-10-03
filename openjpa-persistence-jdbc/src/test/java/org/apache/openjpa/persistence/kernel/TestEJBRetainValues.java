@@ -19,11 +19,11 @@
 package org.apache.openjpa.persistence.kernel;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
-
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 
 public class TestEJBRetainValues extends AbstractTestCase {
 
@@ -31,6 +31,7 @@ public class TestEJBRetainValues extends AbstractTestCase {
         super(testName, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }

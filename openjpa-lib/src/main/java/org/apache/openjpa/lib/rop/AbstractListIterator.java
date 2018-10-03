@@ -32,16 +32,19 @@ abstract class AbstractListIterator<E> implements ListIterator<E> {
     private static final Localizer _loc = Localizer.forPackage
         (AbstractListIterator.class);
 
+    @Override
     public void add(E o) {
         throw new UnsupportedOperationException(_loc.get("read-only")
             .getMessage());
     }
 
+    @Override
     public void set(E o) {
         throw new UnsupportedOperationException(_loc.get("read-only")
             .getMessage());
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException(_loc.get("read-only")
             .getMessage());

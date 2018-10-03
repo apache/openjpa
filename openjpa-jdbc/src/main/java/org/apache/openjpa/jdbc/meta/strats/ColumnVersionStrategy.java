@@ -28,7 +28,6 @@ import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.VersionMappingInfo;
-import org.apache.openjpa.jdbc.meta.strats.AbstractVersionStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -39,6 +38,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
@@ -56,6 +56,8 @@ import org.apache.openjpa.util.MetaDataException;
 public abstract class ColumnVersionStrategy
     extends AbstractVersionStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (ColumnVersionStrategy.class);
 
@@ -136,6 +138,7 @@ public abstract class ColumnVersionStrategy
 		return total;
 	}
 
+    @Override
     public void map(boolean adapt) {
         ClassMapping cls = vers.getClassMapping();
         if (cls.getJoinablePCSuperclassMapping() != null
@@ -181,6 +184,7 @@ public abstract class ColumnVersionStrategy
         }
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Column[] cols = vers.getColumns();
@@ -198,6 +202,7 @@ public abstract class ColumnVersionStrategy
         sm.setNextVersion(nextVersion);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Column[] cols = vers.getColumns();
@@ -231,6 +236,7 @@ public abstract class ColumnVersionStrategy
             sm.setNextVersion(nextVersion);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Column[] cols = vers.getColumns();
@@ -255,16 +261,19 @@ public abstract class ColumnVersionStrategy
         }
     }
 
+    @Override
     public boolean select(Select sel, ClassMapping mapping) {
         sel.select(vers.getColumns());
         return true;
     }
 
+    @Override
     public Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
         throws SQLException {
         return this.load(sm, store, res, null);
     }
 
+    @Override
     public Object load(OpenJPAStateManager sm, JDBCStore store, Result res, Joins joins)
         throws SQLException {
         // typically if one version column is in the result, they all are, so
@@ -284,6 +293,7 @@ public abstract class ColumnVersionStrategy
         return version;
     }
 
+    @Override
     public boolean checkVersion(OpenJPAStateManager sm, JDBCStore store,
         boolean updateVersion)
         throws SQLException {
@@ -296,7 +306,7 @@ public abstract class ColumnVersionStrategy
         JDBCFetchConfiguration fetch = store.getFetchConfiguration();
         if (!updateVersion && fetch.getReadLockLevel() >= MixedLockLevels.LOCK_PESSIMISTIC_READ) {
             fetch = (JDBCFetchConfiguration) fetch.clone();
-            fetch.setReadLockLevel(MixedLockLevels.LOCK_NONE);
+            fetch.setReadLockLevel(LockLevels.LOCK_NONE);
         }
         Result res = sel.execute(store, fetch);
         try {
@@ -315,6 +325,7 @@ public abstract class ColumnVersionStrategy
         }
     }
 
+    @Override
     public int compareVersion(Object v1, Object v2) {
         if (v1 == v2)
             return StoreManager.VERSION_SAME;

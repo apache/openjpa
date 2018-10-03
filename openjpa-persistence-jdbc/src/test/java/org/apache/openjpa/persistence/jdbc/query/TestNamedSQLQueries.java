@@ -27,13 +27,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
-import java.util.*;
-import org.apache.openjpa.persistence.OpenJPAQuery;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.common.apps.NamedSQL;
 
 
 public class TestNamedSQLQueries
@@ -48,6 +47,7 @@ public class TestNamedSQLQueries
         super(test);
     }
 
+    @Override
     public void setUp() {
        deleteAll(NamedSQL.class);
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();

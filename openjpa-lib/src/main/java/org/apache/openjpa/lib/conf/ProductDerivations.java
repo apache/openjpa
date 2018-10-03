@@ -32,11 +32,11 @@ import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Services;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Utilities for running product derivations.
@@ -61,7 +61,7 @@ public class ProductDerivations {
         _derivationNames = Services.getImplementors(ProductDerivation.class, l);
         _derivationErrors = new Throwable[_derivationNames.length];
         List<ProductDerivation> derivations =
-            new ArrayList<ProductDerivation>(_derivationNames.length);
+            new ArrayList<>(_derivationNames.length);
         boolean errors = false;
         for (int i = 0; i < _derivationNames.length; i++) {
             try {
@@ -106,7 +106,7 @@ public class ProductDerivations {
         _derivations =
             derivations.toArray(new ProductDerivation[derivations.size()]);
 
-        List<String> prefixes = new ArrayList<String>(2);
+        List<String> prefixes = new ArrayList<>(2);
         prefixes.add("openjpa");
         for (int i = 0; i < _derivations.length; i++) {
             String prefix = _derivations[i].getConfigurationPrefix();
@@ -394,7 +394,7 @@ public class ProductDerivations {
      */
     public static List<String> getFullyQualifiedAnchorsInPropertiesLocation(
         final String propertiesLocation) {
-        List<String> fqAnchors = new ArrayList<String>();
+        List<String> fqAnchors = new ArrayList<>();
         StringBuilder errs = null;
         Throwable err = null;
         for (int i = _derivations.length - 1; i >= 0; i--) {
@@ -447,7 +447,7 @@ public class ProductDerivations {
 
 
     public static Set<String> getSupportedQueryHints() {
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
         // most specific to least
         for (int i = _derivations.length - 1; i >= 0; i--) {
             Set<String> members = _derivations[i].getSupportedQueryHints();
@@ -464,6 +464,7 @@ public class ProductDerivations {
     private static class ProductDerivationComparator
         implements Comparator<ProductDerivation> {
 
+        @Override
         public int compare(ProductDerivation o1, ProductDerivation o2) {
             int type1 = o1.getType();
             int type2 = o2.getType();

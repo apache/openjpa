@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestAutoIncrement extends SingleEMTestCase {
     boolean disabled = false;
+    @Override
     public void setUp() {
         super.setUp(DROP_TABLES, AutoIncrementEntity.class);
         DBDictionary dic = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();

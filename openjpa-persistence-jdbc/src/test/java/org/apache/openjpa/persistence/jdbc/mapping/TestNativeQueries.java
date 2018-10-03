@@ -38,6 +38,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
 
     private EntityManager em;
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, Entity1.class, Entity2.class);
 

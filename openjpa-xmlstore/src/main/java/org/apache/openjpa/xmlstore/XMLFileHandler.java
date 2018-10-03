@@ -39,11 +39,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.xml.parsers.SAXParser;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.lib.util.Base16Encoder;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -57,6 +55,9 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Stores {@link ObjectData} objects by serializing a collection
@@ -187,7 +188,7 @@ public class XMLFileHandler {
             // run through each field writing out the value
             FieldMetaData[] fmds = meta.getFields();
             for (int i = 0; i < fmds.length; i++) {
-                if (fmds[i].getManagement() != fmds[i].MANAGE_PERSISTENT)
+                if (fmds[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
                     continue;
 
                 out.write("<field name=\"");
@@ -339,6 +340,7 @@ public class XMLFileHandler {
             return _extent;
         }
 
+        @Override
         public void startElement(String uri, String localName, String qName,
             Attributes attrs)
             throws SAXException {
@@ -364,7 +366,7 @@ public class XMLFileHandler {
 
                     // construct the oid object
                     Object oid;
-                    if (meta.getIdentityType() == meta.ID_DATASTORE)
+                    if (meta.getIdentityType() == ClassMetaData.ID_DATASTORE)
                         oid = new Id(attrs.getValue("oid"), _conf, null);
                     else
                         oid = PCRegistry.newObjectId(meta.getDescribedType(),
@@ -404,6 +406,7 @@ public class XMLFileHandler {
             }
         }
 
+        @Override
         public void endElement(String uri, String localName, String qName)
             throws SAXException {
             try {
@@ -469,6 +472,7 @@ public class XMLFileHandler {
             _buf = null;
         }
 
+        @Override
         public void characters(char[] ch, int start, int length) {
             if (_buf != null)
                 _buf.append(ch, start, length);

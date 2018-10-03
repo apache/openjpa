@@ -19,7 +19,10 @@
 
 package org.apache.openjpa.persistence.detachment.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 public class SimpleRef {

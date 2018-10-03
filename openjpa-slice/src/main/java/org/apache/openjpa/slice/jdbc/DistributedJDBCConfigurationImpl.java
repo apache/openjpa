@@ -71,7 +71,7 @@ import org.apache.openjpa.util.UserException;
 public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         implements DistributedJDBCConfiguration {
 
-    private final List<Slice> _slices = new ArrayList<Slice>();
+    private final List<Slice> _slices = new ArrayList<>();
     private Slice _master;
 
     private DistributedDataSource virtualDataSource;
@@ -154,8 +154,9 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     /**
      * Gets the name of the active slices.
      */
+    @Override
     public List<String> getActiveSliceNames() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Slice slice : _slices) {
            if (slice.isActive() && !result.contains(slice.getName()))
               result.add(slice.getName());
@@ -166,8 +167,9 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     /**
      * Gets the name of the available slices.
      */
+    @Override
     public List<String> getAvailableSliceNames() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Slice slice : _slices)
             result.add(slice.getName());
         return result;
@@ -176,10 +178,11 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     /**
      * Gets the slices of given status. Null returns all irrespective of status.
      */
+    @Override
     public List<Slice> getSlices(Slice.Status...statuses) {
         if (statuses == null)
             return _slices == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(_slices);
-        List<Slice> result = new ArrayList<Slice>();
+        List<Slice> result = new ArrayList<>();
         for (Slice slice:_slices) {
             for (Slice.Status status:statuses)
                 if (slice.getStatus().equals(status))
@@ -189,6 +192,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     }
 
 
+    @Override
     public Slice getSlice(String name) {
         return getSlice(name, false);
     }
@@ -210,6 +214,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return null;
     }
 
+    @Override
     public DistributionPolicy getDistributionPolicyInstance() {
         if (distributionPolicyPlugin.get() == null) {
             distributionPolicyPlugin.instantiate(DistributionPolicy.class,
@@ -218,6 +223,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return (DistributionPolicy) distributionPolicyPlugin.get();
     }
 
+    @Override
     public String getDistributionPolicy() {
         if (distributionPolicyPlugin.get() == null) {
             distributionPolicyPlugin.instantiate(DistributionPolicy.class,
@@ -226,14 +232,17 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return distributionPolicyPlugin.getString();
     }
 
+    @Override
     public void setDistributionPolicyInstance(DistributionPolicy policy) {
         distributionPolicyPlugin.set(policy);
     }
 
+    @Override
     public void setDistributionPolicy(String policy) {
         distributionPolicyPlugin.setString(policy);
     }
 
+    @Override
     public ReplicationPolicy getReplicationPolicyInstance() {
         if (replicationPolicyPlugin.get() == null) {
             replicationPolicyPlugin.instantiate(ReplicationPolicy.class,
@@ -242,6 +251,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return (ReplicationPolicy) replicationPolicyPlugin.get();
     }
 
+    @Override
     public String getReplicationPolicy() {
         if (replicationPolicyPlugin.get() == null) {
             replicationPolicyPlugin.instantiate(ReplicationPolicy.class,
@@ -250,14 +260,17 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return replicationPolicyPlugin.getString();
     }
 
+    @Override
     public void setReplicationPolicyInstance(ReplicationPolicy policy) {
         replicationPolicyPlugin.set(policy);
     }
 
+    @Override
     public void setReplicationPolicy(String policy) {
         replicationPolicyPlugin.setString(policy);
     }
 
+    @Override
     public QueryTargetPolicy getQueryTargetPolicyInstance() {
         if (queryTargetPolicyPlugin.get() == null) {
             queryTargetPolicyPlugin.instantiate(QueryTargetPolicy.class,
@@ -266,6 +279,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return (QueryTargetPolicy) queryTargetPolicyPlugin.get();
     }
 
+    @Override
     public String getQueryTargetPolicy() {
         if (queryTargetPolicyPlugin.get() == null) {
             queryTargetPolicyPlugin.instantiate(QueryTargetPolicy.class,
@@ -274,14 +288,17 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return queryTargetPolicyPlugin.getString();
     }
 
+    @Override
     public void setQueryTargetPolicyInstance(QueryTargetPolicy policy) {
         queryTargetPolicyPlugin.set(policy);
     }
 
+    @Override
     public void setQueryTargetPolicy(String policy) {
         queryTargetPolicyPlugin.setString(policy);
     }
 
+    @Override
     public FinderTargetPolicy getFinderTargetPolicyInstance() {
         if (finderTargetPolicyPlugin.get() == null) {
             finderTargetPolicyPlugin.instantiate(FinderTargetPolicy.class,
@@ -290,6 +307,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return (FinderTargetPolicy) finderTargetPolicyPlugin.get();
     }
 
+    @Override
     public String getFinderTargetPolicy() {
         if (finderTargetPolicyPlugin.get() == null) {
             finderTargetPolicyPlugin.instantiate(FinderTargetPolicy.class,
@@ -298,14 +316,17 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return finderTargetPolicyPlugin.getString();
     }
 
+    @Override
     public void setFinderTargetPolicyInstance(FinderTargetPolicy policy) {
         finderTargetPolicyPlugin.set(policy);
     }
 
+    @Override
     public void setFinderTargetPolicy(String policy) {
         finderTargetPolicyPlugin.setString(policy);
     }
 
+    @Override
     public DistributedDataSource getConnectionFactory() {
         if (virtualDataSource == null) {
             virtualDataSource = createDistributedDataStore();
@@ -330,6 +351,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     /**
      * Gets the master slice.
      */
+    @Override
     public Slice getMasterSlice() {
         if (_master == null) {
             String value = masterPlugin.get();
@@ -348,7 +370,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      * connected.
      */
     private DistributedDataSource createDistributedDataStore() {
-        List<DataSource> dataSources = new ArrayList<DataSource>();
+        List<DataSource> dataSources = new ArrayList<>();
         boolean isXA = true;
         for (Slice slice : _slices) {
             try {
@@ -483,7 +505,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      * are then ordered alphabetically by their identifier.
      */
     private List<String> findSlices(Map p) {
-        List<String> sliceNames = new ArrayList<String>();
+        List<String> sliceNames = new ArrayList<>();
 
         Log log = getConfigurationLog();
         String key = namesPlugin.getProperty();
@@ -512,7 +534,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      * to determine the names of all available slices.
      */
     private List<String> scanForSliceNames(Map p) {
-        List<String> sliceNames = new ArrayList<String>();
+        List<String> sliceNames = new ArrayList<>();
         for (Object o : p.keySet()) {
             String key = o.toString();
             if (key.startsWith(PREFIX_SLICE) && getPartCount(key) > 3) {
@@ -627,6 +649,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return virtualDataSource;
     }
 
+    @Override
     public boolean isReplicated(Class<?> cls) {
         if (_replicationRepos == null) {
             _replicationRepos = new ReplicatedTypeRepository(getMetaDataRepositoryInstance(),
@@ -643,8 +666,8 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      *
      */
     private static class ReplicatedTypeRepository {
-        private Set<Class<?>> _replicatedTypes = new HashSet<Class<?>>();
-        private Set<Class<?>> _nonreplicatedTypes = new HashSet<Class<?>>();
+        private Set<Class<?>> _replicatedTypes = new HashSet<>();
+        private Set<Class<?>> _nonreplicatedTypes = new HashSet<>();
 
 
         List<String> names;

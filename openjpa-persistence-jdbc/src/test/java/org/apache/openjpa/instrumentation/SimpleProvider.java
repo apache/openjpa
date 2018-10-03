@@ -29,10 +29,12 @@ public class SimpleProvider extends AbstractInstrumentationProvider {
         "QuerySQLCache","org.apache.openjpa.instrumentation.QSCInstrument"
     };
 
+    @Override
     public void start() {
         setStarted(true);
     }
 
+    @Override
     public void stop() {
         setStarted(false);
         for (Instrument inst : getInstruments()) {
@@ -40,10 +42,12 @@ public class SimpleProvider extends AbstractInstrumentationProvider {
         }
     }
 
+    @Override
     public void startInstrument(Instrument instrument) {
         instrument.start();
     }
 
+    @Override
     public void stopInstrument(Instrument instrument, boolean force) {
         instrument.stop();
     }

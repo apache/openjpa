@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 
 @Entity
@@ -42,10 +44,12 @@ public class EntityC_U11JT {
         this.name = name;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode() + (int)id;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof EntityC_U11JT)) return false;
         EntityC_U11JT c = (EntityC_U11JT)o;

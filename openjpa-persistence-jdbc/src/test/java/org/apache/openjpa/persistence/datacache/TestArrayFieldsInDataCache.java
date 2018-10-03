@@ -19,14 +19,15 @@
 package org.apache.openjpa.persistence.datacache;
 
 import java.util.Arrays;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.kernel.PCData;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.StoreCacheImpl;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -39,6 +40,7 @@ public class TestArrayFieldsInDataCache
     private Object jpaOid;
     private Object internalOid;
 
+    @Override
     public void setUp() {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",

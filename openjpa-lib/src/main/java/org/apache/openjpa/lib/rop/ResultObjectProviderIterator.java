@@ -44,6 +44,7 @@ public class ResultObjectProviderIterator implements Iterator, Closeable {
     /**
      * Close the underlying result object provider.
      */
+    @Override
     public void close() {
         if (Boolean.TRUE.equals(_open)) {
             try {
@@ -54,10 +55,12 @@ public class ResultObjectProviderIterator implements Iterator, Closeable {
         }
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean hasNext() {
         if (Boolean.FALSE.equals(_open))
             return false;
@@ -87,6 +90,7 @@ public class ResultObjectProviderIterator implements Iterator, Closeable {
         return true;
     }
 
+    @Override
     public Object next() {
         if (!hasNext())
             throw new NoSuchElementException();
@@ -104,6 +108,7 @@ public class ResultObjectProviderIterator implements Iterator, Closeable {
         }
     }
 
+    @Override
     protected void finalize() {
         close();
     }

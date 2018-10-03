@@ -57,20 +57,24 @@ public class TupleImpl implements Tuple {
         values = new Object[factory.getElements().size()];
     }
 
+    @Override
     public <X> X get(TupleElement<X> tupleElement) {
         int i = factory.getIndex(tupleElement);
         return assertAndConvertType(""+i, values[i], tupleElement.getJavaType());
     }
 
+    @Override
     public <X> X get(String alias, Class<X> type) {
         Object val = values[factory.getIndex(alias)];
         return assertAndConvertType(alias, val, type);
     }
 
+    @Override
     public Object get(String alias) {
         return get(alias, null);
     }
 
+    @Override
     public <X> X get(int i, Class<X> type) {
         if (i >= values.length || i < 0) {
             throw new IllegalArgumentException(_loc.get("tuple-exceeded-size", i, values.length).getMessage());
@@ -79,14 +83,17 @@ public class TupleImpl implements Tuple {
         return assertAndConvertType(""+i, val, type);
     }
 
+    @Override
     public Object get(int i) {
         return get(i, null);
     }
 
+    @Override
     public Object[] toArray() {
         return values;
     }
 
+    @Override
     public List<TupleElement<?>> getElements() {
         return factory.getElements();
     }

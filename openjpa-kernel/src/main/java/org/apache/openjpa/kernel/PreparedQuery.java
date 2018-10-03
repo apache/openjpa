@@ -55,22 +55,22 @@ public interface PreparedQuery  {
      * Get the immutable identifier of this receiver used for
      * * {@link PreparedQueryCache cache}.
      */
-	public String getIdentifier();
+	String getIdentifier();
 
 	/**
 	 * Get the target database query.
 	 */
-    public String getTargetQuery();
+    String getTargetQuery();
 
     /**
      * Get the original query.
      */
-    public String getOriginalQuery();
+    String getOriginalQuery();
 
     /**
      * Gets the language in which this query is expressed.
      */
-    public String getLanguage();
+    String getLanguage();
 
     /**
      * Fill in the post-compilation state of the given Query. This must be
@@ -80,7 +80,7 @@ public interface PreparedQuery  {
      * @param q A Query which has been substituted by this receiver and hence
      * does not have its post-compilation state.
      */
-	public void setInto(Query q);
+	void setInto(Query q);
 
 	/**
 	 * Initialize from the given argument.
@@ -91,12 +91,12 @@ public interface PreparedQuery  {
 	 * @return Exclusion if this receiver can initialize itself from the given
 	 * argument. false otherwise.
 	 */
-	public Exclusion initialize(Object o);
+	Exclusion initialize(Object o);
 
 	/**
 	 * Affirms if this receiver has been initialized.
 	 */
-	public boolean isInitialized();
+	boolean isInitialized();
 
 	/**
      * Get the list of parameters in a map where an entry represents a parameter
@@ -107,6 +107,6 @@ public interface PreparedQuery  {
 	 * @param user the map of parameter key and value set by the user on the
 	 * original query.
 	 */
-	public Map reparametrize(Map user, Broker broker);
+	Map reparametrize(Map user, Broker broker);
 
 }

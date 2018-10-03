@@ -18,12 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
+import java.util.Map;
 
 public interface MappedByMapPC {
 
     /**
      * Map of string to {@link HelperPC}.
      */
-    public Map getHelpers();
+    Map getHelpers();
 }

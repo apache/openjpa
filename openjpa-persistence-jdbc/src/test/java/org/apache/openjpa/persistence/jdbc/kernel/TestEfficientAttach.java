@@ -28,17 +28,20 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.meta.MetaDataRepository;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.jdbc.common.apps.AttachA;
+import org.apache.openjpa.persistence.jdbc.common.apps.AttachB;
+import org.apache.openjpa.persistence.jdbc.common.apps.AttachC;
+import org.apache.openjpa.persistence.jdbc.common.apps.AttachD;
+import org.apache.openjpa.persistence.jdbc.common.apps.AttachE;
+import org.apache.openjpa.persistence.jdbc.common.apps.AttachF;
 
 public class TestEfficientAttach extends TestSQLListenerTestCase {
 

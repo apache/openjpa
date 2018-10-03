@@ -43,11 +43,15 @@ import org.apache.openjpa.util.InternalException;
 public class ObjectIdValueHandler
     extends EmbedValueHandler {
 
+    
+    private static final long serialVersionUID = 1L;
     private Object[] _args = null;
 
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
         DBDictionary dict = vm.getMappingRepository().getDBDictionary();
@@ -146,10 +150,12 @@ public class ObjectIdValueHandler
         return false;
     }
 
+    @Override
     public Object getResultArgument(ValueMapping vm) {
         return _args;
     }
 
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         OpenJPAStateManager sm = (val == null) ? null
@@ -161,6 +167,7 @@ public class ObjectIdValueHandler
         return super.toDataStoreValue(sm, vm, store, cols, rval, 0);
     }
 
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val) {
         if (val == null)
             return null;

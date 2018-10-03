@@ -17,8 +17,13 @@
  * under the License.
  */
 package org.apache.openjpa.persistence.datacache.common.apps;
-import javax.persistence.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.MapKey;
 
 @Entity
 public class M2MEntityE  {
@@ -30,7 +35,7 @@ public class M2MEntityE  {
 	private Map<Integer,M2MEntityF> entityf;
 
 	public M2MEntityE() {
-		entityf = new HashMap<Integer,M2MEntityF>();
+		entityf = new HashMap<>();
 		name="entitye";
 	}
 
@@ -43,7 +48,8 @@ public class M2MEntityE  {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String toString(){
+	@Override
+    public String toString(){
 		return "EntityE:"+id;
 	}
 	public void print(){

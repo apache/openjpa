@@ -30,6 +30,8 @@ import org.apache.openjpa.util.ImplHelper;
 class ConstGetObjectId
     extends Const {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Const _constant;
 
     /**
@@ -39,13 +41,16 @@ class ConstGetObjectId
         _constant = constant;
     }
 
+    @Override
     public Class getType() {
         return Object.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public Object getValue(Object[] params) {
         Object o = _constant.getValue(params);
         if (!(ImplHelper.isManageable(o)))
@@ -55,19 +60,23 @@ class ConstGetObjectId
             .pcFetchObjectId();
     }
 
+    @Override
     public Object getValue(ExpContext ctx, ExpState state) {
         return ctx.store.getContext().getObjectId(_constant.getValue(ctx,
             ((ConstGetObjectIdExpState) state).constantState));
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         return new ConstGetObjectIdExpState(_constant.initialize(sel, ctx, 0));
     }
 
+    @Override
     public Object getSQLValue(Select sel, ExpContext ctx, ExpState state) {
         return ((ConstGetObjectIdExpState) state).sqlValue;
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
@@ -82,6 +91,7 @@ class ConstGetObjectId
             cstate.sqlValue = oid;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         ConstGetObjectIdExpState cstate = (ConstGetObjectIdExpState) state;

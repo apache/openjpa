@@ -19,13 +19,21 @@
 package org.apache.openjpa.persistence.enhance.identity;
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 @IdClass(DependentId4.class)
 public class Dependent4 implements Serializable {
 
-	@Id
+	
+    private static final long serialVersionUID = 1L;
+
+    @Id
 	@Column(name = "id", unique = false, nullable = false)
 	private long id;
 

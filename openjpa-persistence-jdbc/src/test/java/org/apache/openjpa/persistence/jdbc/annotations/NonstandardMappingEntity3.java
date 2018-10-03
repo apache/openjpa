@@ -40,7 +40,7 @@ public class NonstandardMappingEntity3 {
 
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(name="EmbedVal3s")
-    private List<EmbedValue3> embedVal3s = new ArrayList<EmbedValue3>();
+    private List<EmbedValue3> embedVal3s = new ArrayList<>();
 
     @Embedded
     private EmbedValue3 embedVal3;

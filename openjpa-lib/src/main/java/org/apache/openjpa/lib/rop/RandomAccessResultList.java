@@ -74,14 +74,17 @@ public class RandomAccessResultList extends AbstractNonSequentialResultList {
         return new HashMap();
     }
 
+    @Override
     public boolean isProviderOpen() {
         return _state == OPEN;
     }
 
+    @Override
     public boolean isClosed() {
         return _state == CLOSED;
     }
 
+    @Override
     public void close() {
         if (_state != CLOSED) {
             free();
@@ -89,6 +92,7 @@ public class RandomAccessResultList extends AbstractNonSequentialResultList {
         }
     }
 
+    @Override
     protected Object getInternal(int index) {
         if (_full != null) {
             if (index >= _full.length)
@@ -165,6 +169,7 @@ public class RandomAccessResultList extends AbstractNonSequentialResultList {
         }
     }
 
+    @Override
     public int size() {
         assertOpen();
         if (_size != -1)
@@ -204,6 +209,7 @@ public class RandomAccessResultList extends AbstractNonSequentialResultList {
         return list;
     }
 
+    @Override
     public String toString() {
         return getClass().getName()
             + "; identity: " + System.identityHashCode(this)
@@ -211,11 +217,13 @@ public class RandomAccessResultList extends AbstractNonSequentialResultList {
             + "; requests: " + _requests;
     }
 
+    @Override
     public int hashCode() {
         // superclass tries to traverses entire list for hashcode
         return System.identityHashCode(this);
     }
 
+    @Override
     public boolean equals(Object other) {
         // superclass tries to traverse entire list for equality
         return other == this;

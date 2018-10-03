@@ -76,7 +76,7 @@ public class EntityB {
 
     public Set<EntityC> getCs() {
         if (linacs == null)
-            linacs = new HashSet<EntityC>();
+            linacs = new HashSet<>();
         return linacs;
     }
 }

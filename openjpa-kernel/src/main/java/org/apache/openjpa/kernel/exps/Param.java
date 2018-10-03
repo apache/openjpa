@@ -29,6 +29,8 @@ class Param
     extends Val
     implements Parameter {
 
+    
+    private static final long serialVersionUID = 1L;
     private Object _key = null;
     private Class _type = null;
     private int _index = -1;
@@ -41,26 +43,32 @@ class Param
         _type = type;
     }
 
+    @Override
     public Object getParameterKey() {
         return _key;
     }
 
+    @Override
     public Class getType() {
         return _type;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _type = type;
     }
 
+    @Override
     public void setIndex(int index) {
         _index = index;
     }
 
+    @Override
     public Object getValue(Object[] params) {
         return params[_index];
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return getValue(params);

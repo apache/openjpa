@@ -71,18 +71,22 @@ public class ValueMetaDataImpl
     protected ValueMetaDataImpl() {
     }
 
+    @Override
     public FieldMetaData getFieldMetaData() {
         return _owner;
     }
 
+    @Override
     public MetaDataRepository getRepository() {
         return _owner.getRepository();
     }
 
+    @Override
     public Class getType() {
         return (_type == null) ? _decType : _type;
     }
 
+    @Override
     public void setType(Class type) {
         _type = type;
         _typeMeta = null;
@@ -90,19 +94,23 @@ public class ValueMetaDataImpl
             setTypeCode(JavaTypes.getTypeCode(type));
     }
 
+    @Override
     public int getTypeCode() {
         return (_type == null) ? _decCode : _code;
     }
 
+    @Override
     public void setTypeCode(int code) {
         _code = code;
     }
 
+    @Override
     public boolean isTypePC() {
         return getTypeCode() == JavaTypes.PC
             || getTypeCode() == JavaTypes.PC_UNTYPED;
     }
 
+    @Override
     public ClassMetaData getTypeMetaData() {
         if (_type == null)
             return getDeclaredTypeMetaData();
@@ -114,10 +122,12 @@ public class ValueMetaDataImpl
         return _typeMeta;
     }
 
+    @Override
     public Class getDeclaredType() {
         return _decType;
     }
 
+    @Override
     public void setDeclaredType(Class type) {
         _decType = type;
         _decTypeMeta = null;
@@ -126,18 +136,22 @@ public class ValueMetaDataImpl
             _embeddedMeta.setDescribedType(type);
     }
 
+    @Override
     public int getDeclaredTypeCode() {
         return _decCode;
     }
 
+    @Override
     public void setDeclaredTypeCode(int code) {
         _decCode = code;
     }
 
+    @Override
     public boolean isDeclaredTypePC() {
         return _decCode == JavaTypes.PC || _decCode == JavaTypes.PC_UNTYPED;
     }
 
+    @Override
     public ClassMetaData getDeclaredTypeMetaData() {
         if (_decTypeMeta == null && _decCode == JavaTypes.PC) {
             if (isEmbedded())
@@ -151,8 +165,9 @@ public class ValueMetaDataImpl
         return _decTypeMeta;
     }
 
+    @Override
     public boolean isEmbedded() {
-        if (_owner.getManagement() != _owner.MANAGE_PERSISTENT)
+        if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return false;
         if (_embedded == null) {
             // field left as default; embedded setting depends on type
@@ -170,6 +185,7 @@ public class ValueMetaDataImpl
         return _embedded.booleanValue();
     }
 
+    @Override
     public void setEmbedded(boolean embedded) {
         if (embedded && _embedded != Boolean.TRUE) {
             _decTypeMeta = null;
@@ -178,16 +194,19 @@ public class ValueMetaDataImpl
         _embedded = (embedded) ? Boolean.TRUE : Boolean.FALSE;
     }
 
+    @Override
     public boolean isEmbeddedPC() {
         return _decCode == JavaTypes.PC && isEmbedded();
     }
 
+    @Override
     public ClassMetaData getEmbeddedMetaData() {
         if (_embeddedMeta == null && isEmbeddedPC())
             addEmbeddedMetaData();
         return _embeddedMeta;
     }
 
+    @Override
     public ClassMetaData addEmbeddedMetaData(int access) {
         MetaDataRepository repos = _owner.getRepository();
         _embeddedMeta = repos.newEmbeddedClassMetaData(this);
@@ -199,10 +218,12 @@ public class ValueMetaDataImpl
         return _embeddedMeta;
     }
 
+    @Override
     public ClassMetaData addEmbeddedMetaData() {
         return addEmbeddedMetaData(AccessCode.UNKNOWN);
     }
 
+    @Override
     public int getCascadeDelete() {
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return CASCADE_NONE;
@@ -230,10 +251,12 @@ public class ValueMetaDataImpl
         return CASCADE_NONE;
     }
 
+    @Override
     public void setCascadeDelete(int delete) {
         _delete = delete;
     }
 
+    @Override
     public int getCascadePersist() {
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return CASCADE_NONE;
@@ -276,15 +299,18 @@ public class ValueMetaDataImpl
         return _persist;
     }
 
+    @Override
     public void setCascadePersist(int persist) {
         setCascadePersist(persist, true);
     }
 
+    @Override
     public void setCascadePersist(int persist, boolean checkPUDefault) {
         _persist = persist;
         _checkPUDefaultCascadePersist = checkPUDefault;
     }
 
+    @Override
     public int getCascadeAttach() {
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT
             || !isDeclaredTypePC()) // attach acts on declared type
@@ -294,12 +320,14 @@ public class ValueMetaDataImpl
         return _attach;
     }
 
+    @Override
     public void setCascadeAttach(int attach) {
         if (attach == CASCADE_AUTO)
             throw new IllegalArgumentException("CASCADE_AUTO");
         _attach = attach;
     }
 
+    @Override
     public int getCascadeDetach() {
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT
                 || !isDeclaredTypePC()) // detach acts on declared type
@@ -309,10 +337,12 @@ public class ValueMetaDataImpl
         return _detach;
     }
 
+    @Override
     public void setCascadeDetach(int detach) {
         _detach = detach;
     }
 
+    @Override
     public int getCascadeRefresh() {
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT
             || !isDeclaredTypePC()) // refresh acts on declared type
@@ -320,18 +350,22 @@ public class ValueMetaDataImpl
         return _refresh;
     }
 
+    @Override
     public void setCascadeRefresh(int refresh) {
         _refresh = refresh;
     }
 
+    @Override
     public boolean isSerialized() {
         return _serialized;
     }
 
+    @Override
     public void setSerialized(boolean serialized) {
         _serialized = serialized;
     }
 
+    @Override
     public String getValueMappedBy() {
         if (_mappedBy == MAPPED_BY_PK) {
             // use this instead of getting meta from element b/c that
@@ -349,6 +383,7 @@ public class ValueMetaDataImpl
         return _mappedBy;
     }
 
+    @Override
     public void setValueMappedBy(String mapped) {
         if (_owner.getKey() != this && mapped != null)
             throw new UserException(_loc.get("mapped-by-not-key", this));
@@ -358,6 +393,7 @@ public class ValueMetaDataImpl
         }
     }
 
+    @Override
     public FieldMetaData getValueMappedByMetaData() {
         if (getValueMappedBy() != null && _mappedByMeta == null) {
             ClassMetaData meta = _owner.getElement().getTypeMetaData();
@@ -374,14 +410,17 @@ public class ValueMetaDataImpl
         return _mappedByMeta;
     }
 
+    @Override
     public Class getTypeOverride() {
         return _typeOverride;
     }
 
+    @Override
     public void setTypeOverride(Class val) {
         _typeOverride = val;
     }
 
+    @Override
     public String toString() {
         String ret = _owner.getFullName(true);
         if (this == _owner.getKey())
@@ -398,14 +437,17 @@ public class ValueMetaDataImpl
     // Resolve and validate
     ////////////////////////
 
+    @Override
     public int getResolve() {
         return _resMode;
     }
 
+    @Override
     public void setResolve(int mode) {
         _resMode = mode;
     }
 
+    @Override
     public void setResolve(int mode, boolean on) {
         if (mode == MODE_NONE)
             _resMode = mode;
@@ -415,6 +457,7 @@ public class ValueMetaDataImpl
             _resMode &= ~mode;
     }
 
+    @Override
     public boolean resolve(int mode) {
         if ((_resMode & mode) == mode)
             return true;
@@ -496,6 +539,7 @@ public class ValueMetaDataImpl
             _decTypeMeta = meta;
     }
 
+    @Override
     public void copy(ValueMetaData vmd) {
         // copy declared types, but if OID revert to PC until we resolve
         // to OID ourselves

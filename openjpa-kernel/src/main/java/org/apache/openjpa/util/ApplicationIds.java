@@ -604,82 +604,102 @@ public class ApplicationIds {
             _store = store;
         }
 
+        @Override
         public void storeBooleanField(int field, boolean val) {
             store((val) ? Boolean.TRUE : Boolean.FALSE);
         }
 
+        @Override
         public void storeByteField(int field, byte val) {
             store(Byte.valueOf(val));
         }
 
+        @Override
         public void storeCharField(int field, char val) {
             store(Character.valueOf(val));
         }
 
+        @Override
         public void storeShortField(int field, short val) {
             store(Short.valueOf(val));
         }
 
+        @Override
         public void storeIntField(int field, int val) {
             store(val);
         }
 
+        @Override
         public void storeLongField(int field, long val) {
             store(val);
         }
 
+        @Override
         public void storeFloatField(int field, float val) {
             store(Float.valueOf(val));
         }
 
+        @Override
         public void storeDoubleField(int field, double val) {
             store(Double.valueOf(val));
         }
 
+        @Override
         public void storeStringField(int field, String val) {
             store(val);
         }
 
+        @Override
         public void storeObjectField(int field, Object val) {
             store(val);
         }
 
+        @Override
         public boolean fetchBooleanField(int field) {
             return (retrieve(field) == Boolean.TRUE) ? true : false;
         }
 
+        @Override
         public char fetchCharField(int field) {
             return ((Character) retrieve(field)).charValue();
         }
 
+        @Override
         public byte fetchByteField(int field) {
             return ((Number) retrieve(field)).byteValue();
         }
 
+        @Override
         public short fetchShortField(int field) {
             return ((Number) retrieve(field)).shortValue();
         }
 
+        @Override
         public int fetchIntField(int field) {
             return ((Number) retrieve(field)).intValue();
         }
 
+        @Override
         public long fetchLongField(int field) {
             return ((Number) retrieve(field)).longValue();
         }
 
+        @Override
         public float fetchFloatField(int field) {
             return ((Number) retrieve(field)).floatValue();
         }
 
+        @Override
         public double fetchDoubleField(int field) {
             return ((Number) retrieve(field)).doubleValue();
         }
 
+        @Override
         public String fetchStringField(int field) {
             return (String) retrieve(field);
         }
 
+        @Override
         public Object fetchObjectField(int field) {
             return retrieve(field);
         }

@@ -35,6 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestTablePerClassInheritance
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(TablePerClass1.class, TablePerClass2.class, EmbedOwner.class,
             EmbedValue.class, CLEAR_TABLES);

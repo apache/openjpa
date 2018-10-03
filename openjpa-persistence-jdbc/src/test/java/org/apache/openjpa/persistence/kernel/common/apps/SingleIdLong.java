@@ -30,10 +30,12 @@ public class SingleIdLong implements SingleId {
     private long pk;
     private String str;
 
+    @Override
     public boolean correctIdClass(Class c) {
         return LongId.class.equals(c);
     }
 
+    @Override
     public String getPkString() {
         return pk + "";
     }
@@ -46,10 +48,12 @@ public class SingleIdLong implements SingleId {
         pk = i;
     }
 
+    @Override
     public String getString() {
         return str;
     }
 
+    @Override
     public void setString(String s) {
         str = s;
     }

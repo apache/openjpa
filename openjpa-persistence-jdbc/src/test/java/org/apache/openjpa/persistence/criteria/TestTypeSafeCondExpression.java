@@ -45,8 +45,6 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.openjpa.persistence.criteria.AbstractCriteriaTestCase.QueryDecorator;
-
 /**
  * Tests type-strict version of Criteria API. The test scenarios are adapted
  * from TestEJBQLCondExpression in
@@ -165,6 +163,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         cq.select(c.get(CompUser_.name));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("name", "%|_%");
             }
@@ -507,6 +506,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         cq.orderBy(cb.asc(e.get(CompUser_.name)));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("a", MaleUser.class);
                 q.setParameter("b", FemaleUser.class);
@@ -526,6 +526,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         q.where(cb.equal(e.type(), param1).not());
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("t", MaleUser.class);
             }
@@ -539,7 +540,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Root<Address> a = q.from(Address.class);
         Root<FemaleUser> e = q.from(FemaleUser.class);
         q.multiselect(e, cb.literal(FemaleUser.class), a);
-        q.where(e.get(FemaleUser_.address).isNotNull());
+        q.where(e.get(CompUser_.address).isNotNull());
 
         assertEquivalence(q, query);
     }

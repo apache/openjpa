@@ -45,7 +45,7 @@ public interface LRSCollectionFieldStrategy
     /**
      * The owning field mapping.
      */
-    public FieldMapping getFieldMapping();
+    FieldMapping getFieldMapping();
 
     /**
      * Return all independent mappings to which this strategy must join in
@@ -55,20 +55,20 @@ public interface LRSCollectionFieldStrategy
      * @see ValueMapping#getIndependentTypeMappings
      * @see ClassMapping#EMPTY_MAPPINGS
      */
-    public ClassMapping[] getIndependentElementMappings(boolean traverse);
+    ClassMapping[] getIndependentElementMappings(boolean traverse);
 
     /**
      * Return the foreign key used to join to the owning field for the given
      * element mapping from {@link #getIndependentElementMappings} (or null).
      */
-    public ForeignKey getJoinForeignKey(ClassMapping elem);
+    ForeignKey getJoinForeignKey(ClassMapping elem);
 
     /**
      * Return the columns holding the data for a collection element for the
      * given element mapping from {@link #getIndependentElementMappings}
      * (or null).
      */
-    public Column[] getElementColumns(ClassMapping elem);
+    Column[] getElementColumns(ClassMapping elem);
 
     /**
      * Implement this method to select the elements of this field for the
@@ -76,7 +76,7 @@ public interface LRSCollectionFieldStrategy
      * (or null). Elements of the result will be loaded with
      * {@link #loadElement}.
      */
-    public void selectElement(Select sel, ClassMapping elem,
+    void selectElement(Select sel, ClassMapping elem,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode,
         Joins joins);
 
@@ -85,7 +85,7 @@ public interface LRSCollectionFieldStrategy
      * null if the load is for a projection or for processing eager parallel
      * results.
      */
-    public Object loadElement(OpenJPAStateManager sm, JDBCStore store,
+    Object loadElement(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException;
 
@@ -95,5 +95,5 @@ public interface LRSCollectionFieldStrategy
      *
      * @see FieldMapping#joinRelation
      */
-    public Joins joinElementRelation(Joins joins, ClassMapping elem);
+    Joins joinElementRelation(Joins joins, ClassMapping elem);
 }

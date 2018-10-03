@@ -20,7 +20,14 @@ package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityResult;
+import javax.persistence.FieldResult;
+import javax.persistence.Id;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
+import javax.persistence.Table;
 
 
 /** This simple domain class without any relationship is for testing basic
@@ -78,7 +85,9 @@ public class SQLMapItem
 	implements Serializable
 {
 
-	private int id;
+	
+    private static final long serialVersionUID = 1L;
+    private int id;
 	private String name;
 	private float  price;
 
@@ -109,7 +118,8 @@ public class SQLMapItem
 	}
 
 
-	public String toString()
+	@Override
+    public String toString()
 	{
 		return getId() + ":"+getName();
 		//System.identityHashCode(this) + ":[" + id + "." + name + "]";

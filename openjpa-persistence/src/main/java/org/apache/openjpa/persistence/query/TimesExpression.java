@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class TimesExpression extends BinaryOperatorExpression {
-	public TimesExpression(Expression op1, Expression op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public TimesExpression(Expression op1, Expression op2) {
 		super(op1, BinaryFunctionalOperator.TIMES, op2);
 	}
 }

@@ -23,17 +23,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
+import org.apache.openjpa.lib.meta.MetaDataSerializer;
+import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
+import org.apache.openjpa.persistence.XMLPersistenceMetaDataSerializer;
 import org.apache.openjpa.persistence.meta.common.apps.MetaTest1;
 import org.apache.openjpa.persistence.meta.common.apps.MetaTest2;
 import org.apache.openjpa.persistence.meta.common.apps.MetaTest3;
 import org.apache.openjpa.persistence.meta.common.apps.MetaTest5;
 import org.apache.openjpa.persistence.meta.common.apps.MetaTest6;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
-import org.apache.openjpa.meta.MetaDataRepository;
-import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
-import org.apache.openjpa.persistence.XMLPersistenceMetaDataSerializer;
 
 /**
  * <p>Tests the {@link MetaDataSerializer} by parsing all the metadata
@@ -49,6 +49,7 @@ public class TestXMLPersistenceMetaDataSerializer
         super(test);
     }
 
+    @Override
     protected MetaDataRepository getRepository()
         throws Exception {
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
@@ -63,7 +64,7 @@ public class TestXMLPersistenceMetaDataSerializer
             new XMLPersistenceMetaDataSerializer(conf);
         ser.addAll(repos);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ser.serialize(new OutputStreamWriter(out), ser.PRETTY);
+        ser.serialize(new OutputStreamWriter(out), MetaDataSerializer.PRETTY);
         byte[] bytes = out.toByteArray();
 
         XMLPersistenceMetaDataParser parser =

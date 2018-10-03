@@ -21,8 +21,9 @@ package org.apache.openjpa.persistence.simple;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Negative test case to verify that EntityManager throws required exceptions
@@ -35,6 +36,7 @@ public class TestEntityManagerMethodsThrowAfterClose
 
     private AllFieldTypes aft = new AllFieldTypes();
 
+    @Override
     public void setUp() {
         setUp(AllFieldTypes.class);
         close();

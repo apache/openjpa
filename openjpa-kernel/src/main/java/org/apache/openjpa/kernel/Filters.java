@@ -635,7 +635,7 @@ public class Filters {
         char cur;
         int start = 0;
         boolean skipSpace = false;
-        List<String> results = new ArrayList<String>(6);
+        List<String> results = new ArrayList<>(6);
         for (int i = 0; i < dec.length(); i++) {
             cur = dec.charAt(i);
             if (cur == bad)
@@ -722,7 +722,7 @@ public class Filters {
                 case '\r':
                     if (c == split && !string && parenDepth == 0 && nonspace) {
                         if (exps == null)
-                            exps = new ArrayList<String>(expected);
+                            exps = new ArrayList<>(expected);
                         exps.add(str.substring(begin, pos).trim());
                         begin = pos + 1;
                         nonspace = false;
@@ -731,7 +731,7 @@ public class Filters {
                 default:
                     if (c == split && !string && parenDepth == 0) {
                         if (exps == null)
-                            exps = new ArrayList<String>(expected);
+                            exps = new ArrayList<>(expected);
                         exps.add(str.substring(begin, pos).trim());
                         begin = pos + 1;
                     }
@@ -762,7 +762,7 @@ public class Filters {
 
         // create set of base class metadatas in access path
         if (metas == null)
-            metas = new ArrayList<ClassMetaData>();
+            metas = new ArrayList<>();
         int last = metas.size();
 
         // for every element in the path of this executor, compare it

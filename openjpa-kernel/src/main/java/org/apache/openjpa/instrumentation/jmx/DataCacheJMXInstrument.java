@@ -77,6 +77,7 @@ public class DataCacheJMXInstrument extends AbstractDataCacheInstrument implemen
         setContextRef(Integer.toString(System.identityHashCode(getContext())));
     }
 
+    @Override
     public ObjectName getObjectName() {
         if (_objName != null) {
             return _objName;
@@ -90,10 +91,12 @@ public class DataCacheJMXInstrument extends AbstractDataCacheInstrument implemen
         }
     }
 
+    @Override
     public void start() {
         getProvider().startInstrument(this);
     }
 
+    @Override
     public void stop() {
         getProvider().stopInstrument(this);
     }

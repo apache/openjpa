@@ -56,6 +56,7 @@ public class TestPersistenceProviderResolver extends TestCase {
     ClassLoader originalLoader = null;
     TempUrlLoader tempLoader = null;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 
@@ -77,6 +78,7 @@ public class TestPersistenceProviderResolver extends TestCase {
         originalLoader = (URLClassLoader)Thread.currentThread().getContextClassLoader();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         // Restore the original classloader, in case there was an exception
@@ -84,7 +86,7 @@ public class TestPersistenceProviderResolver extends TestCase {
     }
 
     public void testDefault() {
-        List<String> providerNames = new LinkedList<String>();
+        List<String> providerNames = new LinkedList<>();
         providerNames.add(openjpaProvider);
         checkProviders(providerNames);
     }
@@ -99,7 +101,7 @@ public class TestPersistenceProviderResolver extends TestCase {
         AccessController.doPrivileged(J2DoPrivHelper
             .setContextClassLoaderAction(tempLoader));
 
-        List<String> providerNames = new LinkedList<String>();
+        List<String> providerNames = new LinkedList<>();
         providerNames.add(openjpaProvider);
         providerNames.add(dummyProvider1);
         checkProviders(providerNames);
@@ -118,7 +120,7 @@ public class TestPersistenceProviderResolver extends TestCase {
         AccessController.doPrivileged(J2DoPrivHelper
             .setContextClassLoaderAction(tempLoader));
 
-        List<String> providerNames = new LinkedList<String>();
+        List<String> providerNames = new LinkedList<>();
         providerNames.add(openjpaProvider);
         providerNames.add(dummyProvider1);
         providerNames.add(dummyProvider2);
@@ -136,7 +138,7 @@ public class TestPersistenceProviderResolver extends TestCase {
         assertNotNull(providers);
         resolver.clearCachedProviders();
 
-        List<String> providerNames = new LinkedList<String>();
+        List<String> providerNames = new LinkedList<>();
         providerNames.add(openjpaProvider);
         checkProviders(providerNames);
     }

@@ -20,11 +20,12 @@ package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
 import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.FetchType;
-import javax.persistence.CascadeType;
 
 @Entity
 @Table(name = "Site")

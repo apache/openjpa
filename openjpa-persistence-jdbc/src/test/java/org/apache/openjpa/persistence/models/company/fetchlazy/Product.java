@@ -18,9 +18,17 @@
  */
 package org.apache.openjpa.persistence.models.company.fetchlazy;
 
-import java.util.*;
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+
+import org.apache.openjpa.persistence.models.company.ICompany;
+import org.apache.openjpa.persistence.models.company.IProduct;
 
 @Entity(name="LAZ_Product")
 public class Product implements IProduct {
@@ -39,39 +47,47 @@ public class Product implements IProduct {
     private float price;
 
     @ManyToMany(fetch=FetchType.LAZY)
-    private Set<Company> distributors = new HashSet<Company>();
+    private Set<Company> distributors = new HashSet<>();
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
 
 
+    @Override
     public void setImage(byte[] image) {
         this.image = image;
     }
 
+    @Override
     public byte[] getImage() {
         return this.image;
     }
 
 
+    @Override
     public void setPrice(float price) {
         this.price = price;
     }
 
+    @Override
     public float getPrice() {
         return this.price;
     }
 
 
+    @Override
     public void setDistributors(Set<? extends ICompany> distributors) {
         this.distributors = (Set<Company>) distributors;
     }
 
+    @Override
     public Set<Company> getDistributors() {
         return this.distributors;
     }

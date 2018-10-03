@@ -44,6 +44,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -59,6 +60,9 @@ import org.apache.openjpa.util.Proxy;
 public abstract class RelationToManyInverseKeyFieldStrategy
     extends StoreCollectionFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (RelationToManyInverseKeyFieldStrategy.class);
 
@@ -66,14 +70,17 @@ public abstract class RelationToManyInverseKeyFieldStrategy
     private boolean _orderUpdate = false;
     private boolean _uni1MFK = false;
 
+    @Override
     protected ClassMapping[] getIndependentElementMappings(boolean traverse) {
         return field.getElementMapping().getIndependentTypeMappings();
     }
 
+    @Override
     protected ForeignKey getJoinForeignKey(ClassMapping elem) {
         return field.getElementMapping().getForeignKey(elem);
     }
 
+    @Override
     protected void selectElement(Select sel, ClassMapping elem,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode,
         Joins joins) {
@@ -81,6 +88,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             store, fetch, eagerMode, joins);
     }
 
+    @Override
     protected Object loadElement(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
@@ -90,6 +98,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         return res.load(elem, store, fetch, joins);
     }
 
+    @Override
     protected Joins join(Joins joins, ClassMapping elem) {
         ValueMapping vm = field.getElementMapping();
         ForeignKey fk = vm.getForeignKey(elem);
@@ -104,10 +113,12 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             vm.getSelectSubclasses(), true, true);
     }
 
+    @Override
     protected Joins joinElementRelation(Joins joins, ClassMapping elem) {
         return joinRelation(joins, false, false);
     }
 
+    @Override
     public void map(boolean adapt) {
         OpenJPAConfiguration conf = field.getRepository().getConfiguration();
         boolean isNonDefaultMappingAllowed = field.getRepository().
@@ -132,7 +143,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         ValueMappingInfo vinfo = elem.getValueInfo();
         boolean criteria = vinfo.getUseClassCriteria();
         if (mapped != null) {
-            mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
+            mapped.resolve(MetaDataModes.MODE_META | MetaDataModes.MODE_MAPPING);
             if (!(mapped.getStrategy() instanceof RelationFieldStrategy
                || mapped.getHandler() instanceof UntypedPCValueHandler))
                 throw new MetaDataException(_loc.get("not-inv-relation",
@@ -182,6 +193,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         field.setOrderColumnIO(finfo.getColumnIO());
     }
 
+    @Override
     public void initialize() {
         Column order = field.getOrderColumn();
         _orderInsert = field.getOrderColumnIO().isInsertable(order, false);
@@ -197,6 +209,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         }
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if (field.getMappedBy() == null || _orderInsert || _orderUpdate)
@@ -217,6 +230,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             updateInverse(sm.getContext(), itr.next(), rel, rm, sm, idx);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if (field.getMappedBy() != null && !_orderInsert && !_orderUpdate)
@@ -259,6 +273,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             ct.setNextSequence(seq);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if (field.getMappedBy() != null)
@@ -357,11 +372,13 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             row.setInt(order, idx);
     }
 
+    @Override
     public Object toDataStoreValue(Object val, JDBCStore store) {
         ClassMapping cm = field.getElementMapping().getTypeMapping();
         return cm.toDataStoreValue(val, cm.getPrimaryKeyColumns(), store);
     }
 
+    @Override
     public Joins join(Joins joins, boolean forceOuter) {
         ValueMapping elem = field.getElementMapping();
         ClassMapping[] clss = elem.getIndependentTypeMappings();

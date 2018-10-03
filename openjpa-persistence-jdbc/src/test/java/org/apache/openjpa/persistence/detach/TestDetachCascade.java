@@ -50,8 +50,9 @@ public class TestDetachCascade extends SingleEMFTestCase {
     Entity13 e13;   // references a Map<String, Entity11> - cascade ALL
     Entity14 e14;
 
-    Collection<Object> allEntities = new HashSet<Object>();
+    Collection<Object> allEntities = new HashSet<>();
 
+    @Override
     public void setUp() throws Exception {
         setUp(Entity1.class,
             Entity3.class,
@@ -113,12 +114,12 @@ public class TestDetachCascade extends SingleEMFTestCase {
         e6.setE7(e7);
         e8.setE9(e9);
 
-        Collection<Entity8> collection = new HashSet<Entity8>();
+        Collection<Entity8> collection = new HashSet<>();
         collection.add(e8);
         collection.add(e8a); // e8a contains a null value for Entity9
         e10.setCollection(collection);
 
-        Map<String, Entity11> map = new HashMap<String, Entity11>();
+        Map<String, Entity11> map = new HashMap<>();
         map.put(e11.getName(), e11);
         e13.setMap(map);
 

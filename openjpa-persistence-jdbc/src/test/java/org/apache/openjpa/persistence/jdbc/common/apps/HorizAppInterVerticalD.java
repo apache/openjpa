@@ -33,18 +33,22 @@ public class HorizAppInterVerticalD
     private String stringD;
     private int intD;
 
+    @Override
     public void setStringD(String stringD) {
         this.stringD = stringD;
     }
 
+    @Override
     public String getStringD() {
         return this.stringD;
     }
 
+    @Override
     public void setIntD(int intD) {
         this.intD = intD;
     }
 
+    @Override
     public int getIntD() {
         return this.intD;
     }

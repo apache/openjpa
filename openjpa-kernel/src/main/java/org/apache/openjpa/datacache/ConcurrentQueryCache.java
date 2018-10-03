@@ -36,6 +36,8 @@ public class ConcurrentQueryCache
     extends AbstractQueryCache
     implements RemoteCommitListener {
 
+    
+    private static final long serialVersionUID = 1L;
     private CacheMap _cache;
     protected boolean _lru = false;
     private int _cacheSize = Integer.MIN_VALUE;
@@ -91,6 +93,7 @@ public class ConcurrentQueryCache
         _softRefs = size;
     }
 
+    @Override
     public void initialize(DataCacheManager mgr) {
         super.initialize(mgr);
         conf.getRemoteCommitEventManager().addInternalListener(this);
@@ -103,11 +106,13 @@ public class ConcurrentQueryCache
         }
     }
 
+    @Override
     public void writeLock() {
         // delegate actually does nothing, but in case that changes...
         _cache.writeLock();
     }
 
+    @Override
     public void writeUnlock() {
         // delegate actually does nothing, but in case that changes...
         _cache.writeUnlock();
@@ -122,30 +127,37 @@ public class ConcurrentQueryCache
         return res;
     }
 
+    @Override
     protected QueryResult getInternal(QueryKey qk) {
         return (QueryResult) _cache.get(qk);
     }
 
+    @Override
     protected QueryResult putInternal(QueryKey qk, QueryResult result) {
         return (QueryResult) _cache.put(qk, result);
     }
 
+    @Override
     protected QueryResult removeInternal(QueryKey qk) {
         return (QueryResult) _cache.remove(qk);
     }
 
+    @Override
     protected void clearInternal() {
         _cache.clear();
     }
 
+    @Override
     protected boolean pinInternal(QueryKey qk) {
         return _cache.pin(qk);
     }
 
+    @Override
     protected boolean unpinInternal(QueryKey qk) {
         return _cache.unpin(qk);
     }
 
+    @Override
     protected Collection keySet() {
         return _cache.keySet ();
 	}
@@ -153,6 +165,7 @@ public class ConcurrentQueryCache
     /**
      * Returns the eviction policy of the query cache
      */
+    @Override
     public EvictPolicy getEvictPolicy() {
         return super.evictPolicy;
     }

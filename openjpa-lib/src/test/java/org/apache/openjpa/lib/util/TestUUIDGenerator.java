@@ -86,6 +86,7 @@ public class TestUUIDGenerator extends TestCase {
         // those fields are null. Wrap this  method in doPrivledgedAction so it
         // doesn't fail when running with security.
         AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+            @Override
             public Object run() throws Exception {
                 Class uuid = UUIDGenerator.class;
                 Field[] fields = uuid.getDeclaredFields();
@@ -99,6 +100,7 @@ public class TestUUIDGenerator extends TestCase {
                     }
                 }
                 Thread t = new Thread() {
+                    @Override
                     public void run() {
                         UUIDGenerator.createType1();
                     }

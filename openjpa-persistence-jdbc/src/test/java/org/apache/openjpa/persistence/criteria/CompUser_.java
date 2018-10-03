@@ -25,6 +25,7 @@ package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
+
 import org.apache.openjpa.persistence.criteria.CompUser.CreditRating;
 
 @javax.persistence.metamodel.StaticMetamodel

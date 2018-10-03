@@ -18,7 +18,13 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 import org.apache.openjpa.persistence.DataCache;
 
@@ -84,6 +90,7 @@ public class Usage {
         this.child = child;
     }
 
+    @Override
     public String toString() {
         return "Usage:"+id+" quantity:"+quantity+" child:"+child.getPartno()+
             " parent"+parent.getPartno();

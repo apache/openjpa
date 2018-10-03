@@ -46,7 +46,7 @@ public class Student {
         inverseJoinColumns=@JoinColumn(name="SEMESTER"))
     @MapKeyJoinColumn(name="COURSE")
     private Map<Course, Semester> enrollment =
-        new HashMap<Course, Semester>();
+        new HashMap<>();
 
     public int getId() {
         return id;

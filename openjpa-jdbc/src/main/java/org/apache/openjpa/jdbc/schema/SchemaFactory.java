@@ -31,12 +31,12 @@ public interface SchemaFactory {
     /**
      * Return the schema group for the current object model and database.
      */
-    public SchemaGroup readSchema();
+    SchemaGroup readSchema();
 
     /**
      * Record the schema group after changes may have been made.
      *
      * @param schema the schema definition for the entire system
      */
-    public void storeSchema(SchemaGroup schema);
+    void storeSchema(SchemaGroup schema);
 }

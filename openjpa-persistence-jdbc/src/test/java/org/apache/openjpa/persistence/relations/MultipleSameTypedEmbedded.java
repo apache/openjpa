@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import javax.persistence.AttributeOverride;
 import javax.persistence.AssociationOverride;
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;

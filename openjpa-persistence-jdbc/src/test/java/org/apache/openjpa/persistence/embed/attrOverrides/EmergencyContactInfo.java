@@ -21,7 +21,10 @@ package org.apache.openjpa.persistence.embed.attrOverrides;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 
 
 @Embeddable
@@ -36,7 +39,7 @@ public class EmergencyContactInfo {
 
 	@ElementCollection
 	@OrderBy
-	Collection<String> nickNames = new ArrayList<String>();
+	Collection<String> nickNames = new ArrayList<>();
 
     public PhoneNumber getPhoneNumber() {
         return phoneNumber;

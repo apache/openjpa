@@ -18,7 +18,12 @@
  */
 package org.apache.openjpa.slice;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Version;
 
 @Entity
 public class Person {
@@ -63,7 +68,8 @@ public class Person {
 		return id;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return name;
 	}
 

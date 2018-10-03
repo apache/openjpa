@@ -22,32 +22,32 @@ import java.util.Date;
 
 public interface IPerson extends IAnnuityObject {
 
-	public Date getDateOfBirth();
+	Date getDateOfBirth();
 
-	public void setDateOfBirth(Date dateOfBirth);
+	void setDateOfBirth(Date dateOfBirth);
 
-	public String getFirstName();
+	String getFirstName();
 
-	public void setFirstName(String firstName);
+	void setFirstName(String firstName);
 
-	public String getGovernmentId();
+	String getGovernmentId();
 
-	public void setGovernmentId(String governmentId);
+	void setGovernmentId(String governmentId);
 
-	public String getLastName();
+	String getLastName();
 
-	public void setLastName(String lastName);
+	void setLastName(String lastName);
 
-	public Byte[] getPicture();
+	Byte[] getPicture();
 
-	public void setPicture(Byte[] picture);
+	void setPicture(Byte[] picture);
 
-	public Date getTimeOfBirth();
+	Date getTimeOfBirth();
 
-	public void setTimeOfBirth(Date timeOfBirth);
+	void setTimeOfBirth(Date timeOfBirth);
 
-	public IContact getContact();
+	IContact getContact();
 
-	public void setContact(IContact contact);
+	void setContact(IContact contact);
 
 }

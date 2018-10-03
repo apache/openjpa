@@ -32,12 +32,12 @@ public interface FlushTransactionListener {
      *
      * @see TransactionEvent#BEFORE_FLUSH
      */
-    public void beforeFlush(TransactionEvent event);
+    void beforeFlush(TransactionEvent event);
 
     /**
      * Notification that a transaction has flushed all object changes.
      *
      * @see TransactionEvent#AFTER_FLUSH
      */
-    public void afterFlush(TransactionEvent event);
+    void afterFlush(TransactionEvent event);
 }

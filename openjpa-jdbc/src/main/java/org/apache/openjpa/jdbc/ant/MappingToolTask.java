@@ -20,8 +20,6 @@ package org.apache.openjpa.jdbc.ant;
 
 import java.security.AccessController;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.MappingTool;
@@ -32,6 +30,8 @@ import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.MultiLoaderClassResolver;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.types.EnumeratedAttribute;
 
 /**
  * Executes the {@link MappingTool} on the specified files.
@@ -194,10 +194,12 @@ public class MappingToolTask
         flags.meta = meta;
     }
 
+    @Override
     protected ConfigurationImpl newConfiguration() {
         return new JDBCConfigurationImpl();
     }
 
+    @Override
     protected void executeOn(String[] files)
         throws Exception {
         if (MappingTool.ACTION_IMPORT.equals(flags.action))
@@ -235,6 +237,7 @@ public class MappingToolTask
     public static class Action
         extends EnumeratedAttribute {
 
+        @Override
         public String[] getValues() {
             return MappingTool.ACTIONS;
         }
@@ -243,6 +246,7 @@ public class MappingToolTask
     public static class SchemaAction
         extends EnumeratedAttribute {
 
+        @Override
         public String[] getValues() {
             String[] actions = new String[SchemaTool.ACTIONS.length + 1];
             System.arraycopy(SchemaTool.ACTIONS, 0, actions, 0,

@@ -39,7 +39,7 @@ public interface Strategy
      * Return the alias of this strategy. For custom strategies, return the
      * full class name.
      */
-    public String getAlias();
+    String getAlias();
 
     /**
      * Map the owning mapping using this strategy.
@@ -48,21 +48,21 @@ public interface Strategy
      * to set its ORM data; if false, ORM data will already be set
      * @throws MetaDataException if unable to map
      */
-    public void map(boolean adapt);
+    void map(boolean adapt);
 
     /**
      * Perform caching and other initialization operations. This method is
      * called after {@link #map}, and after all related components have been
      * mapped as well.
      */
-    public void initialize();
+    void initialize();
 
     /**
      * Set values for the mapping into the proper rows. For class mappings,
      * this method	will be called only after the corresponding method has
      * been called for all fields of this mapping.
      */
-    public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
+    void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException;
 
     /**
@@ -70,7 +70,7 @@ public interface Strategy
      *
      * @see #insert
      */
-    public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
+    void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException;
 
     /**
@@ -80,7 +80,7 @@ public interface Strategy
      *
      * @see #insert
      */
-    public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
+    void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException;
 
     /**
@@ -90,7 +90,7 @@ public interface Strategy
      * being called. Implement the {@link #customInsert} method
      * to implement the custom insertion behavior.
      */
-    public Boolean isCustomInsert(OpenJPAStateManager sm, JDBCStore store);
+    Boolean isCustomInsert(OpenJPAStateManager sm, JDBCStore store);
 
     /**
      * Return {@link Boolean#FALSE} if this mapping does not customize the
@@ -99,7 +99,7 @@ public interface Strategy
      * being called. Implement the {@link #customUpdate} method
      * to override the default update behavior.
      */
-    public Boolean isCustomUpdate(OpenJPAStateManager sm, JDBCStore store);
+    Boolean isCustomUpdate(OpenJPAStateManager sm, JDBCStore store);
 
     /**
      * Return {@link Boolean#FALSE} if this mapping does not customize the
@@ -108,7 +108,7 @@ public interface Strategy
      * being called. Implement the {@link #customDelete} method
      * to override the default deletion behavior.
      */
-    public Boolean isCustomDelete(OpenJPAStateManager sm, JDBCStore store);
+    Boolean isCustomDelete(OpenJPAStateManager sm, JDBCStore store);
 
     /**
      * Override this method to customize flushing this mapping. For classes,
@@ -116,14 +116,14 @@ public interface Strategy
      * is called after the owning object is inserted, so if this field is in
      * a row with other fields, that row will already exist.
      */
-    public void customInsert(OpenJPAStateManager sm, JDBCStore store)
+    void customInsert(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException;
 
     /**
      * Override this method to customize flushing this mapping. For classes,
      * this method must also flush all fields.
      */
-    public void customUpdate(OpenJPAStateManager sm, JDBCStore store)
+    void customUpdate(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException;
 
     /**
@@ -131,6 +131,6 @@ public interface Strategy
      * this method must also flush all fields. For fields, this method
      * will be called after the owning object is deleted.
      */
-    public void customDelete(OpenJPAStateManager sm, JDBCStore store)
+    void customDelete(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException;
 }

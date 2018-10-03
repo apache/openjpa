@@ -28,9 +28,8 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 
 public class TestSerialize extends BaseKernelTest {
 
@@ -47,6 +46,7 @@ public class TestSerialize extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         RuntimeTest1 a = new RuntimeTest1("1NAME", 1);
         a.setSelfOneOne(new RuntimeTest1("2NAME", 2));

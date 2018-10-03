@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.spring;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 
-import org.apache.openjpa.persistence.models.library.*;
+import org.apache.openjpa.persistence.models.library.Book;
+import org.apache.openjpa.persistence.models.library.Borrower;
+import org.apache.openjpa.persistence.models.library.Subject;
+import org.apache.openjpa.persistence.models.library.Volunteer;
 
 public class LibTestingService {
     private EntityManager em;

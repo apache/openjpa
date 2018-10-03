@@ -24,6 +24,8 @@ import javax.persistence.Entity;
 public class ManyOneEntitySub
     extends ManyOneEntity {
 
+    
+    private static final long serialVersionUID = 1L;
     private int subInt;
 
     public int getSubInt() {

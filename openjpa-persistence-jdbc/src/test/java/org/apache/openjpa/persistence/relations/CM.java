@@ -41,7 +41,7 @@ public class CM {
     private String cmId;
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="cm")
-    private Set<C> cs = new HashSet<C>();
+    private Set<C> cs = new HashSet<>();
 
     @ManyToOne
     @ForeignKey

@@ -31,5 +31,5 @@ public interface ProxyBean
      * Create a new instance of this proxy type with the same state as the
      * given instance.
      */
-    public ProxyBean newInstance(Object orig);
+    ProxyBean newInstance(Object orig);
 }

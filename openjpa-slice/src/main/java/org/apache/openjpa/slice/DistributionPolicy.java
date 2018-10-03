@@ -64,6 +64,7 @@ public interface DistributionPolicy {
 	 */
 	public static class Default implements DistributionPolicy {
 		private static Random RNG = new Random();
+        @Override
         public String distribute(Object pc, List<String> slices, Object ctx) {
 			return slices.get(RNG.nextInt(slices.size()));
 		}

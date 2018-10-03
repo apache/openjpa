@@ -54,6 +54,7 @@ public class Bicycle {
         return model;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Bicycle) {
             Bicycle bike = (Bicycle)obj;

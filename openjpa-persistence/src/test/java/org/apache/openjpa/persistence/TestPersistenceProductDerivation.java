@@ -36,13 +36,13 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.encryption.EncryptionProvider;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
+
+import junit.framework.TestCase;
 
 public class TestPersistenceProductDerivation extends TestCase {
     private File sourceFile;
@@ -51,6 +51,7 @@ public class TestPersistenceProductDerivation extends TestCase {
     ClassLoader originalLoader = null;
     ClassLoader tempLoader = null;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         String currentDir = System.getProperty("user.dir");
@@ -81,6 +82,7 @@ public class TestPersistenceProductDerivation extends TestCase {
             .setContextClassLoaderAction(tempLoader));
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         // Restore the original classloader.
@@ -303,7 +305,8 @@ public class TestPersistenceProductDerivation extends TestCase {
 		 *
 		 * @see EncryptionProvider#decrypt(String)
 		 */
-		public String decrypt(String password) {
+		@Override
+        public String decrypt(String password) {
 			encryptedPassword = password;
 
 			return decryptedPassword;
@@ -312,7 +315,8 @@ public class TestPersistenceProductDerivation extends TestCase {
 		/**
 		 * @see EncryptionProvider#encrypt(String)
 		 */
-		public String encrypt(String password) {
+		@Override
+        public String encrypt(String password) {
 			return password;
 		}
 	}

@@ -19,9 +19,13 @@
 package org.apache.openjpa.persistence.common.apps;
 
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 
 /**

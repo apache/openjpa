@@ -31,6 +31,7 @@ public class TestPrecisionMapping extends SingleEMFTestCase {
             { "primDbl", "dbl" };
     private static final String _BIG_DECIMAL_FIELD = "bigDecimal";
 
+    @Override
     public void setUp() {
         setUp(PrecisionTestEntity.class);
     }

@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.test;
 
 public interface JPAEntityClassEnum {
-    public String getEntityClassName();
-    public String getEntityName();
+    String getEntityClassName();
+    String getEntityName();
 }
 

@@ -21,7 +21,6 @@ package org.apache.openjpa.util;
 import java.io.Serializable;
 
 import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
-import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 /**
@@ -29,9 +28,11 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
  *
  * @author Steve Kim
  */
-@SuppressWarnings("serial")
 public abstract class OpenJPAId
     implements Comparable, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     public static final char TYPE_VALUE_SEP = '-';
 
     // cache the types' generated hash codes
@@ -106,6 +107,7 @@ public abstract class OpenJPAId
      * Generate the hash code for this Id.  Cache the type's generated hash code
      * so that it doesn't have to be generated each time.
      */
+    @Override
     public int hashCode() {
         if (_typeHash == 0) {
             Integer typeHashInt = (Integer) _typeCache.get(type);
@@ -125,6 +127,7 @@ public abstract class OpenJPAId
         return _typeHash ^ idHash();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this)
             return true;
@@ -136,10 +139,12 @@ public abstract class OpenJPAId
             || (subs && type.isAssignableFrom(id.type)));
     }
 
+    @Override
     public String toString() {
         return type.getName() + TYPE_VALUE_SEP + getIdObject();
     }
 
+    @Override
     public int compareTo(Object other) {
         if (other == this)
             return 0;

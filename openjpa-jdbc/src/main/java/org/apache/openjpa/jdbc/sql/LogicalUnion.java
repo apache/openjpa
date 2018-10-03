@@ -29,13 +29,13 @@ import java.util.List;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.kernel.exps.Value;
-import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.kernel.exps.Context;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UnsupportedException;
@@ -104,21 +104,26 @@ public class LogicalUnion
         return new UnionSelect(seed, pos);
     }
 
+    @Override
     public Select[] getSelects() {
         return sels;
     }
 
+    @Override
     public boolean isUnion() {
         return false;
     }
 
+    @Override
     public void abortUnion() {
     }
 
+    @Override
     public String getOrdering() {
         return null;
     }
 
+    @Override
     public JDBCConfiguration getConfiguration() {
         return sels[0].getConfiguration();
     }
@@ -127,69 +132,84 @@ public class LogicalUnion
         return dict;
     }
 
+    @Override
     public SQLBuffer toSelect(boolean forUpdate, JDBCFetchConfiguration fetch) {
         return dict.toSelect(sels[0], forUpdate, fetch);
     }
 
+    @Override
     public SQLBuffer getSQL() {
         return sels.length == 1 ? sels[0].getSQL() : null;
     }
 
+    @Override
     public SQLBuffer toSelectCount() {
         return dict.toSelectCount(sels[0]);
     }
 
+    @Override
     public boolean getAutoDistinct() {
         return sels[0].getAutoDistinct();
     }
 
+    @Override
     public void setAutoDistinct(boolean distinct) {
         for (int i = 0; i < sels.length; i++)
             sels[i].setAutoDistinct(distinct);
     }
 
+    @Override
     public boolean isDistinct() {
         return _distinct;
     }
 
+    @Override
     public void setDistinct(boolean distinct) {
         _distinct = distinct;
     }
 
+    @Override
     public boolean isLRS() {
         return sels[0].isLRS();
     }
 
+    @Override
     public void setLRS(boolean lrs) {
         for (int i = 0; i < sels.length; i++)
             sels[i].setLRS(lrs);
     }
 
+    @Override
     public int getExpectedResultCount() {
         return sels[0].getExpectedResultCount();
     }
 
+    @Override
     public void setExpectedResultCount(int expectedResultCount,
         boolean force) {
         for (int i = 0; i < sels.length; i++)
             sels[i].setExpectedResultCount(expectedResultCount, force);
     }
 
+    @Override
     public int getJoinSyntax() {
         return sels[0].getJoinSyntax();
     }
 
+    @Override
     public void setJoinSyntax(int syntax) {
         for (int i = 0; i < sels.length; i++)
             sels[i].setJoinSyntax(syntax);
     }
 
+    @Override
     public boolean supportsRandomAccess(boolean forUpdate) {
         if (sels.length == 1)
             return sels[0].supportsRandomAccess(forUpdate);
         return false;
     }
 
+    @Override
     public boolean supportsLocking() {
         if (sels.length == 1)
             return sels[0].supportsLocking();
@@ -199,12 +219,14 @@ public class LogicalUnion
         return true;
     }
 
+    @Override
     public boolean hasMultipleSelects() {
         if (sels != null && sels.length > 1)
             return true;
         return sels[0].hasMultipleSelects();
     }
 
+    @Override
     public int getCount(JDBCStore store)
         throws SQLException {
         int count = 0;
@@ -213,6 +235,7 @@ public class LogicalUnion
         return count;
     }
 
+    @Override
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
         throws SQLException {
         if (fetch == null)
@@ -220,6 +243,7 @@ public class LogicalUnion
         return execute(store, fetch, fetch.getReadLockLevel());
     }
 
+    @Override
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
         throws SQLException {
@@ -292,11 +316,13 @@ public class LogicalUnion
         return new MergedResult(res, comp);
     }
 
+    @Override
     public void select(Union.Selector selector) {
         for (int i = 0; i < sels.length; i++)
             selector.select(sels[i], i);
     }
 
+    @Override
     public String toString() {
         return toSelect(false, null).getSQL();
     }
@@ -304,12 +330,12 @@ public class LogicalUnion
     /**
      * A callback used to create the selects in a SQL union.
      */
-    public static interface Selector {
+    public interface Selector {
 
         /**
          * Populate the <code>i</code>th select in the union.
          */
-        public void select(Select sel, int i);
+        void select(Select sel, int i);
     }
 
     /**
@@ -346,268 +372,333 @@ public class LogicalUnion
             return orderIdxs;
         }
 
+        @Override
         public JDBCConfiguration getConfiguration() {
             return sel.getConfiguration();
         }
 
+        @Override
         public int indexOf() {
             return pos;
         }
 
+        @Override
         public SQLBuffer toSelect(boolean forUpdate,
             JDBCFetchConfiguration fetch) {
             return sel.toSelect(forUpdate, fetch);
         }
 
+        @Override
         public SQLBuffer getSQL() {
             return sel.getSQL();
         }
 
+        @Override
         public SQLBuffer toSelectCount() {
             return sel.toSelectCount();
         }
 
+        @Override
         public boolean getAutoDistinct() {
             return sel.getAutoDistinct();
         }
 
+        @Override
         public void setAutoDistinct(boolean distinct) {
             sel.setAutoDistinct(distinct);
         }
 
+        @Override
         public boolean isDistinct() {
             return sel.isDistinct();
         }
 
+        @Override
         public void setDistinct(boolean distinct) {
             sel.setDistinct(distinct);
         }
 
+        @Override
         public boolean isLRS() {
             return sel.isLRS();
         }
 
+        @Override
         public void setLRS(boolean lrs) {
             sel.setLRS(lrs);
         }
 
+        @Override
         public int getJoinSyntax() {
             return sel.getJoinSyntax();
         }
 
+        @Override
         public void setJoinSyntax(int joinSyntax) {
             sel.setJoinSyntax(joinSyntax);
         }
 
+        @Override
         public boolean supportsRandomAccess(boolean forUpdate) {
             return sel.supportsRandomAccess(forUpdate);
         }
 
+        @Override
         public boolean supportsLocking() {
             return sel.supportsLocking();
         }
 
+        @Override
         public boolean hasMultipleSelects() {
             return sel.hasMultipleSelects();
         }
 
+        @Override
         public int getCount(JDBCStore store)
             throws SQLException {
             return sel.getCount(store);
         }
 
+        @Override
         public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
             throws SQLException {
             return sel.execute(store, fetch);
         }
 
+        @Override
         public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
             int lockLevel)
             throws SQLException {
             return sel.execute(store, fetch, lockLevel);
         }
 
+        @Override
         public List getSubselects() {
             return Collections.EMPTY_LIST;
         }
 
+        @Override
         public Select getParent() {
             return null;
         }
 
+        @Override
         public String getSubselectPath() {
             return null;
         }
 
+        @Override
         public void setParent(Select parent, String path) {
             throw new UnsupportedException(_loc.get("union-element"));
         }
 
+        @Override
         public void setHasSubselect(boolean hasSub) {
             sel.setHasSubselect(hasSub);
         }
 
+        @Override
         public boolean getHasSubselect() {
             return sel.getHasSubselect();
         }
 
+        @Override
         public Select getFromSelect() {
             return null;
         }
 
+        @Override
         public void setFromSelect(Select sel) {
             throw new UnsupportedException(_loc.get("union-element"));
         }
 
+        @Override
         public boolean hasEagerJoin(boolean toMany) {
             return sel.hasEagerJoin(toMany);
         }
 
+        @Override
         public boolean hasJoin(boolean toMany) {
             return sel.hasJoin(toMany);
         }
 
+        @Override
         public boolean isSelected(Table table) {
             return sel.isSelected(table);
         }
 
+        @Override
         public Collection getTableAliases() {
             return sel.getTableAliases();
         }
 
+        @Override
         public List getSelects() {
             return sel.getSelects();
         }
 
+        @Override
         public List getSelectAliases() {
             return sel.getSelectAliases();
         }
 
+        @Override
         public List getIdentifierAliases() {
             return sel.getIdentifierAliases();
         }
 
+        @Override
         public SQLBuffer getOrdering() {
             return sel.getOrdering();
         }
 
+        @Override
         public SQLBuffer getGrouping() {
             return sel.getGrouping();
         }
 
+        @Override
         public SQLBuffer getWhere() {
             return sel.getWhere();
         }
 
+        @Override
         public SQLBuffer getHaving() {
             return sel.getHaving();
         }
 
+        @Override
         public void addJoinClassConditions() {
             sel.addJoinClassConditions();
         }
 
+        @Override
         public Joins getJoins() {
             return sel.getJoins();
         }
 
+        @Override
         public Iterator getJoinIterator() {
             return sel.getJoinIterator();
         }
 
+        @Override
         public long getStartIndex() {
             return sel.getStartIndex();
         }
 
+        @Override
         public long getEndIndex() {
             return sel.getEndIndex();
         }
 
+        @Override
         public void setRange(long start, long end) {
             sel.setRange(start, end);
         }
 
+        @Override
         public String getColumnAlias(Column col) {
             return sel.getColumnAlias(col);
         }
 
+        @Override
         public String getColumnAlias(Column col, Joins joins) {
             return sel.getColumnAlias(col, joins);
         }
 
+        @Override
         public String getColumnAlias(Column col, Object alias) {
             return sel.getColumnAlias(col, alias);
         }
 
+        @Override
         public String getColumnAlias(String col, Table table) {
             return sel.getColumnAlias(col, table);
         }
 
+        @Override
         public String getColumnAlias(String col, Table table, Joins joins) {
             return sel.getColumnAlias(col, table, joins);
         }
 
+        @Override
         public boolean isAggregate() {
             return sel.isAggregate();
         }
 
+        @Override
         public void setAggregate(boolean agg) {
             sel.setAggregate(agg);
         }
 
+        @Override
         public boolean isLob() {
             return sel.isLob();
         }
 
+        @Override
         public void setLob(boolean lob) {
             sel.setLob(lob);
         }
 
+        @Override
         public void selectPlaceholder(String sql) {
             sel.selectPlaceholder(sql);
         }
 
+        @Override
         public void clearSelects() {
             sel.clearSelects();
         }
 
+        @Override
         public boolean select(SQLBuffer sql, Object id) {
             return sel.select(sql, id);
         }
 
+        @Override
         public boolean select(SQLBuffer sql, Object id, Joins joins) {
             return sel.select(sql, id, joins);
         }
 
+        @Override
         public boolean select(String sql, Object id) {
             return sel.select(sql, id);
         }
 
+        @Override
         public boolean select(String sql, Object id, Joins joins) {
             return sel.select(sql, id, joins);
         }
 
+        @Override
         public boolean select(Column col) {
             return sel.select(col);
         }
 
+        @Override
         public boolean select(Column col, Joins joins) {
             return sel.select(col, joins);
         }
 
+        @Override
         public int select(Column[] cols) {
             return sel.select(cols);
         }
 
+        @Override
         public int select(Column[] cols, Joins joins) {
             return sel.select(cols, joins);
         }
 
+        @Override
         public void select(ClassMapping mapping, int subclasses,
             JDBCStore store, JDBCFetchConfiguration fetch, int eager) {
             select(mapping, subclasses, store, fetch, eager, null, false);
         }
 
+        @Override
         public void select(ClassMapping mapping, int subclasses,
             JDBCStore store, JDBCFetchConfiguration fetch, int eager,
             Joins joins) {
@@ -627,46 +718,56 @@ public class LogicalUnion
                 joins, identifier);
         }
 
+        @Override
         public boolean selectIdentifier(Column col) {
             return sel.selectIdentifier(col);
         }
 
+        @Override
         public boolean selectIdentifier(Column col, Joins joins) {
             return sel.selectIdentifier(col, joins);
         }
 
+        @Override
         public int selectIdentifier(Column[] cols) {
             return sel.selectIdentifier(cols);
         }
 
+        @Override
         public int selectIdentifier(Column[] cols, Joins joins) {
             return sel.selectIdentifier(cols, joins);
         }
 
+        @Override
         public void selectIdentifier(ClassMapping mapping, int subclasses,
             JDBCStore store, JDBCFetchConfiguration fetch, int eager) {
             select(mapping, subclasses, store, fetch, eager, null, true);
         }
 
+        @Override
         public void selectIdentifier(ClassMapping mapping, int subclasses,
             JDBCStore store, JDBCFetchConfiguration fetch, int eager,
             Joins joins) {
             select(mapping, subclasses, store, fetch, eager, joins, true);
         }
 
+        @Override
         public int selectPrimaryKey(ClassMapping mapping) {
             return sel.selectPrimaryKey(mapping);
         }
 
+        @Override
         public int selectPrimaryKey(ClassMapping mapping, Joins joins) {
             return sel.selectPrimaryKey(mapping, joins);
         }
 
+        @Override
         public int orderByPrimaryKey(ClassMapping mapping, boolean asc,
             boolean select) {
             return orderByPrimaryKey(mapping, asc, null, select);
         }
 
+        @Override
         public int orderByPrimaryKey(ClassMapping mapping, boolean asc,
             Joins joins, boolean select) {
             ClassMapping pks = mapping;
@@ -701,233 +802,287 @@ public class LogicalUnion
                 recordOrder(cols[i], asc);
         }
 
+        @Override
         public boolean orderBy(Column col, boolean asc, boolean select) {
             return orderBy(col, asc, null, select);
         }
 
+        @Override
         public boolean orderBy(Column col, boolean asc, Joins joins,
             boolean select) {
             recordOrder(col, asc);
             return sel.orderBy(col, asc, joins, select, isUnion());
         }
 
+        @Override
         public int orderBy(Column[] cols, boolean asc, boolean select) {
             return orderBy(cols, asc, null, select);
         }
 
+        @Override
         public int orderBy(Column[] cols, boolean asc, Joins joins,
             boolean select) {
             recordOrderColumns(cols, asc);
             return sel.orderBy(cols, asc, joins, select, isUnion());
         }
 
+        @Override
         public boolean orderBy(SQLBuffer sql, boolean asc, boolean select,
             Value selAs) {
             return orderBy(sql, asc, null, select, selAs);
         }
 
+        @Override
         public boolean orderBy(SQLBuffer sql, boolean asc, Joins joins,
             boolean select, Value selAs) {
             recordOrder(sql.getSQL(false), asc);
             return sel.orderBy(sql, asc, joins, select, isUnion(), selAs);
         }
 
+        @Override
         public boolean orderBy(String sql, boolean asc, boolean select) {
             return orderBy(sql, asc, null, select);
         }
 
+        @Override
         public boolean orderBy(String sql, boolean asc, Joins joins,
             boolean select) {
             recordOrder(sql, asc);
             return sel.orderBy(sql, asc, joins, select, isUnion());
         }
 
+        @Override
         public void clearOrdering() {
             sel.clearOrdering();
         }
 
+        @Override
         public void wherePrimaryKey(Object oid, ClassMapping mapping,
             JDBCStore store) {
             sel.wherePrimaryKey(oid, mapping, store);
         }
 
+        @Override
         public void whereForeignKey(ForeignKey fk, Object oid,
             ClassMapping mapping, JDBCStore store) {
             sel.whereForeignKey(fk, oid, mapping, store);
         }
 
+        @Override
         public void where(Joins joins) {
             sel.where(joins);
         }
 
+        @Override
         public void where(SQLBuffer sql) {
             sel.where(sql);
         }
 
+        @Override
         public void where(SQLBuffer sql, Joins joins) {
             sel.where(sql, joins);
         }
 
+        @Override
         public void where(String sql) {
             sel.where(sql);
         }
 
+        @Override
         public void where(String sql, Joins joins) {
             sel.where(sql, joins);
         }
 
+        @Override
         public void having(SQLBuffer sql) {
             sel.having(sql);
         }
 
+        @Override
         public void having(SQLBuffer sql, Joins joins) {
             sel.having(sql, joins);
         }
 
+        @Override
         public void having(String sql) {
             sel.having(sql);
         }
 
+        @Override
         public void having(String sql, Joins joins) {
             sel.having(sql, joins);
         }
 
+        @Override
         public void groupBy(SQLBuffer sql) {
             sel.groupBy(sql);
         }
 
+        @Override
         public void groupBy(SQLBuffer sql, Joins joins) {
             sel.groupBy(sql, joins);
         }
 
+        @Override
         public void groupBy(String sql) {
             sel.groupBy(sql);
         }
 
+        @Override
         public void groupBy(String sql, Joins joins) {
             sel.groupBy(sql, joins);
         }
 
+        @Override
         public void groupBy(Column col) {
             sel.groupBy(col);
         }
 
+        @Override
         public void groupBy(Column col, Joins joins) {
             sel.groupBy(col, joins);
         }
 
+        @Override
         public void groupBy(Column[] cols) {
             sel.groupBy(cols);
         }
 
+        @Override
         public void groupBy(Column[] cols, Joins joins) {
             sel.groupBy(cols, joins);
         }
 
+        @Override
         public void groupBy(ClassMapping mapping, int subclasses,
             JDBCStore store, JDBCFetchConfiguration fetch) {
             sel.groupBy(mapping, subclasses, store, fetch);
         }
 
+        @Override
         public void groupBy(ClassMapping mapping, int subclasses,
             JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
             sel.groupBy(mapping, subclasses, store, fetch, joins);
         }
 
+        @Override
         public SelectExecutor whereClone(int sels) {
             return sel.whereClone(sels);
         }
 
+        @Override
         public SelectExecutor fullClone(int sels) {
             return sel.fullClone(sels);
         }
 
+        @Override
         public SelectExecutor eagerClone(FieldMapping key, int eagerType,
             boolean toMany, int sels) {
             SelectExecutor ex = sel.eagerClone(key, eagerType, toMany, sels);
             return (ex == sel) ? this : ex;
         }
 
+        @Override
         public SelectExecutor getEager(FieldMapping key) {
             SelectExecutor ex = sel.getEager(key);
             return (ex == sel) ? this : ex;
         }
 
+        @Override
         public Joins newJoins() {
             return sel.newJoins();
         }
 
+        @Override
         public Joins newOuterJoins() {
             return sel.newOuterJoins();
         }
 
+        @Override
         public void append(SQLBuffer buf, Joins joins) {
             sel.append(buf, joins);
         }
 
+        @Override
         public Joins and(Joins joins1, Joins joins2) {
             return sel.and(joins1, joins2);
         }
 
+        @Override
         public Joins or(Joins joins1, Joins joins2) {
             return sel.or(joins1, joins2);
         }
 
+        @Override
         public Joins outer(Joins joins) {
             return sel.outer(joins);
         }
 
+        @Override
         public String toString() {
             return sel.toString();
         }
 
+        @Override
         public int getExpectedResultCount() {
             return sel.getExpectedResultCount();
         }
 
+        @Override
         public void setExpectedResultCount(int expectedResultCount,
             boolean force) {
             sel.setExpectedResultCount(expectedResultCount, force);
         }
 
+        @Override
         public void setContext(Context context) {
             sel.setContext(context);
         }
 
+        @Override
         public Context ctx() {
             return sel.ctx();
         }
 
+        @Override
         public void setSchemaAlias(String schemaAlias) {
             sel.setSchemaAlias(schemaAlias);
         }
 
+        @Override
         public void logEagerRelations() {
             sel.logEagerRelations();
         }
+        @Override
         public void setTablePerClassMeta(ClassMapping meta) {
         }
 
+        @Override
         public ClassMapping getTablePerClassMeta() {
             return sel.getTablePerClassMeta();
         }
 
+        @Override
         public void setJoinedTableClassMeta(List meta) {
             sel.setJoinedTableClassMeta(meta);
         }
 
+        @Override
         public List getJoinedTableClassMeta() {
             return sel.getJoinedTableClassMeta();
         }
 
+        @Override
         public void setExcludedJoinedTableClassMeta(List meta) {
             sel.setExcludedJoinedTableClassMeta(meta);
         }
 
+        @Override
         public List getExcludedJoinedTableClassMeta() {
             return sel.getExcludedJoinedTableClassMeta();
         }
 
+        @Override
         public DBDictionary getDictionary() {
             return dict;
         }
@@ -949,6 +1104,7 @@ public class LogicalUnion
             _dict = dict;
         }
 
+        @Override
         public Object getOrderingValue(Result res, int idx) {
             // if one value just return it
             ResultSet rs = ((ResultSetResult) res).getResultSet();
@@ -973,6 +1129,7 @@ public class LogicalUnion
             }
         }
 
+        @Override
         public int compare(Object o1, Object o2) {
             if (o1 == o2)
                 return 0;

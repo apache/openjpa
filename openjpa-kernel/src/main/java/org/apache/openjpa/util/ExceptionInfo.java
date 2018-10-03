@@ -27,13 +27,13 @@ package org.apache.openjpa.util;
  */
 public interface ExceptionInfo {
 
-    public static final int GENERAL = 0;
-    public static final int INTERNAL = 1;
-    public static final int STORE = 2;
-    public static final int UNSUPPORTED = 3;
-    public static final int USER = 4;
-    public static final int WRAPPED = 5;
-    public static final int UNAVAILABLE = 6;
+    int GENERAL = 0;
+    int INTERNAL = 1;
+    int STORE = 2;
+    int UNSUPPORTED = 3;
+    int USER = 4;
+    int WRAPPED = 5;
+    int UNAVAILABLE = 6;
 
 
     /**
@@ -41,7 +41,7 @@ public interface ExceptionInfo {
      *
      * @see Throwable#getMessage
      */
-    public String getMessage();
+    String getMessage();
 
     /**
      * Returns the first {@link Throwable} from {@link #getNestedThrowables}
@@ -49,38 +49,38 @@ public interface ExceptionInfo {
      *
      * @see Throwable#getCause
      */
-    public Throwable getCause();
+    Throwable getCause();
 
     /**
      * Stack.
      *
      * @see Throwable#printStackTrace
      */
-    public void printStackTrace();
+    void printStackTrace();
 
     /**
      * Exception type.
      */
-    public int getType();
+    int getType();
 
     /**
      * Exception subtype.
      */
-    public int getSubtype();
+    int getSubtype();
 
     /**
      * Whether this error is fatal.
      */
-    public boolean isFatal();
+    boolean isFatal();
 
     /**
      * The nested throwables.
      */
-    public Throwable[] getNestedThrowables();
+    Throwable[] getNestedThrowables();
 
     /**
      * The failed object.
      */
-    public Object getFailedObject();
+    Object getFailedObject();
 }
 

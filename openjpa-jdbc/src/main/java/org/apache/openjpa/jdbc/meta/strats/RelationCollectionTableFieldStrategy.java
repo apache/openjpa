@@ -45,48 +45,60 @@ public class RelationCollectionTableFieldStrategy
     extends RelationToManyTableFieldStrategy
     implements LRSCollectionFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (RelationCollectionTableFieldStrategy.class);
 
+    @Override
     public FieldMapping getFieldMapping() {
         return field;
     }
 
+    @Override
     public ClassMapping[] getIndependentElementMappings(boolean traverse) {
         return super.getIndependentElementMappings(traverse);
     }
 
+    @Override
     public Column[] getElementColumns(ClassMapping elem) {
         return field.getElementMapping().getColumns();
     }
 
+    @Override
     public ForeignKey getJoinForeignKey(ClassMapping elem) {
         return super.getJoinForeignKey(elem);
     }
 
+    @Override
     public void selectElement(Select sel, ClassMapping elem, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode, Joins joins) {
         super.selectElement(sel, elem, store, fetch, eagerMode, joins);
     }
 
+    @Override
     public Object loadElement(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         return super.loadElement(sm, store, fetch, res, joins);
     }
 
+    @Override
     public Joins join(Joins joins, ClassMapping elem) {
         return super.join(joins, elem);
     }
 
+    @Override
     public Joins joinElementRelation(Joins joins, ClassMapping elem) {
         return super.joinElementRelation(joins, elem);
     }
 
+    @Override
     protected Proxy newLRSProxy() {
         return new LRSProxyCollection(this);
     }
 
+    @Override
     public void map(boolean adapt) {
         if (field.getTypeCode() != JavaTypes.COLLECTION
             && field.getTypeCode() != JavaTypes.ARRAY)
@@ -94,18 +106,21 @@ public class RelationCollectionTableFieldStrategy
         super.map(adapt);
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
     	if (!field.isBidirectionalJoinTableMappingOwner())
     		super.insert(sm, store, rm);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
     	if (!field.isBidirectionalJoinTableMappingOwner())
     		super.update(sm, store, rm);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
     	if (!field.isBidirectionalJoinTableMappingOwner())

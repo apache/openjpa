@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.relations;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -33,7 +34,7 @@ public class HandlerToHandlerMapInstance {
 
     @PersistentMap
     @ContainerTable(name="NONSTD_MAPPING_MAP")
-    private Map<String,String> map = new HashMap<String,String>();
+    private Map<String,String> map = new HashMap<>();
 
     public Map<String,String> getMap() {
         return map;

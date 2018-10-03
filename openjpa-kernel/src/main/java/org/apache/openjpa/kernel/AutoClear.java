@@ -29,10 +29,10 @@ public interface AutoClear {
     /**
      * Clear state when entering a datastore transaction.
      */
-    public static final int CLEAR_DATASTORE = 0;
+    int CLEAR_DATASTORE = 0;
 
     /**
      * Clear state when entering any transaction.
      */
-    public static final int CLEAR_ALL = 1;
+    int CLEAR_ALL = 1;
 }

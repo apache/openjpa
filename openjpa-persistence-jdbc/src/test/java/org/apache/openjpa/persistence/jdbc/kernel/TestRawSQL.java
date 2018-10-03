@@ -20,29 +20,27 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Iterator;
 
 import javax.persistence.EntityManager;
 
-import java.sql.*;
-import java.util.*;
-import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.jdbc.kernel.GenericResultObjectProvider;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.ResultSetResult;
-import org.apache.openjpa.lib.rop.ResultObjectProvider;
-import org.apache.openjpa.jdbc.kernel.GenericResultObjectProvider;
-import org.apache.openjpa.lib.rop.ResultList;
-import org.apache.openjpa.lib.rop.EagerResultList;
-import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.kernel.AbstractPCResultObjectProvider;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.FetchConfiguration;
-/**
- *
- */
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.rop.EagerResultList;
+import org.apache.openjpa.lib.rop.ResultList;
+import org.apache.openjpa.lib.rop.ResultObjectProvider;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.jdbc.common.apps.RawSQL;
+
 
 
 public class TestRawSQL extends BaseJDBCTest {
@@ -56,6 +54,7 @@ public class TestRawSQL extends BaseJDBCTest {
         super(test);
     }
 
+    @Override
     public void setUp() {
        deleteAll(RawSQL.class);
         EntityManager em = currentEntityManager();
@@ -104,38 +103,47 @@ public class TestRawSQL extends BaseJDBCTest {
         ResultObjectProvider rop = new AbstractPCResultObjectProvider(broker) {
             private int _row = -1;
 
+            @Override
             public boolean supportsRandomAccess() {
                 return true;
             }
 
+            @Override
             public boolean next() {
                 return ++_row < _oids.length;
             }
 
+            @Override
             public boolean absolute(int pos) {
                 _row = pos;
                 return _row < _oids.length;
             }
 
+            @Override
             public int size() {
                 return _oids.length;
             }
 
+            @Override
             public void close() {
             }
 
+            @Override
             public void handleCheckedException(Exception e) {
                 throw new RuntimeException(e.toString());
             }
 
+            @Override
             protected Object getObjectId(ClassMetaData meta) {
                 return _oids[_row];
             }
 
+            @Override
             protected Class getPCType() {
                 return RawSQL.class;
             }
 
+            @Override
             protected void load(OpenJPAStateManager sm,
                 FetchConfiguration fetch) {
                 ClassMetaData meta = sm.getMetaData();

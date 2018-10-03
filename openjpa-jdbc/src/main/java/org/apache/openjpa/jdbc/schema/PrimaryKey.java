@@ -27,10 +27,8 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public class PrimaryKey
-    extends LocalConstraint {
-
+public class PrimaryKey extends LocalConstraint {
+    private static final long serialVersionUID = 1L;
     private boolean _logical = false;
 
     /**
@@ -46,6 +44,7 @@ public class PrimaryKey
      * @param table the table of the primary key
      * @deprecated
      */
+    @Deprecated
     public PrimaryKey(String name, Table table) {
         super(name, table);
     }
@@ -54,6 +53,7 @@ public class PrimaryKey
         super(name, table);
     }
 
+    @Override
     public boolean isLogical() {
         return _logical;
     }
@@ -62,6 +62,7 @@ public class PrimaryKey
         _logical = logical;
     }
 
+    @Override
     void remove() {
         // check all foreign keys in the schema group, removing ones that
         // reference this primary key
@@ -76,6 +77,7 @@ public class PrimaryKey
         super.remove();
     }
 
+    @Override
     public void addColumn(Column col) {
         super.addColumn(col);
         col.setPrimaryKey(true);

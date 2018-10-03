@@ -40,6 +40,7 @@ public class SubclassG extends BaseClass4 {
         return classGName;
     }
 
+    @Override
     public String toString() {
         return super.toString() + ";classGName=" + classGName +
             ";intFieldSup=" + intFieldSup;

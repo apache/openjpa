@@ -39,7 +39,9 @@ import java.util.LinkedList;
  */
 abstract class AbstractPath extends ExpressionImpl implements
 		PathExpression {
-	protected final AbstractPath  _parent;
+	
+    private static final long serialVersionUID = 1L;
+    protected final AbstractPath  _parent;
 	protected final Object 		  _part2;
 	protected final PathOperator  _operator;
 	protected final QueryDefinitionImpl _owner;
@@ -85,35 +87,43 @@ abstract class AbstractPath extends ExpressionImpl implements
     // -----------------------------------------------------------------------
     // Implementation of PathExpression
     // -----------------------------------------------------------------------
-	public Aggregate avg() {
+	@Override
+    public Aggregate avg() {
 		return new AverageExpression(this);
 	}
 
-	public Aggregate count() {
+	@Override
+    public Aggregate count() {
 		return new CountExpression(this);
 	}
 
-	public Predicate isEmpty() {
+	@Override
+    public Predicate isEmpty() {
 		return new IsEmptyExpression(this);
 	}
 
-	public Aggregate max() {
+	@Override
+    public Aggregate max() {
 		return new MaxExpression(this);
 	}
 
-	public Aggregate min() {
+	@Override
+    public Aggregate min() {
 		return new MinExpression(this);
 	}
 
-	public Expression size() {
+	@Override
+    public Expression size() {
 		return new SizeExpression(this);
 	}
 
-	public Aggregate sum() {
+	@Override
+    public Aggregate sum() {
 		return new SumExpression(this);
 	}
 
-	public Expression type() {
+	@Override
+    public Expression type() {
 		return new TypeExpression(this);
 	}
 

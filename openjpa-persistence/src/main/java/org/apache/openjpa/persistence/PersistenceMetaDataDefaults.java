@@ -18,6 +18,20 @@
  */
 package org.apache.openjpa.persistence;
 
+import static javax.persistence.AccessType.FIELD;
+import static javax.persistence.AccessType.PROPERTY;
+import static org.apache.openjpa.persistence.PersistenceStrategy.BASIC;
+import static org.apache.openjpa.persistence.PersistenceStrategy.ELEM_COLL;
+import static org.apache.openjpa.persistence.PersistenceStrategy.EMBEDDED;
+import static org.apache.openjpa.persistence.PersistenceStrategy.MANY_MANY;
+import static org.apache.openjpa.persistence.PersistenceStrategy.MANY_ONE;
+import static org.apache.openjpa.persistence.PersistenceStrategy.ONE_MANY;
+import static org.apache.openjpa.persistence.PersistenceStrategy.ONE_ONE;
+import static org.apache.openjpa.persistence.PersistenceStrategy.PERS;
+import static org.apache.openjpa.persistence.PersistenceStrategy.PERS_COLL;
+import static org.apache.openjpa.persistence.PersistenceStrategy.PERS_MAP;
+import static org.apache.openjpa.persistence.PersistenceStrategy.TRANSIENT;
+
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -26,15 +40,15 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Locale;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -56,9 +70,11 @@ import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.AbstractMetaDataDefaults;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -66,16 +82,9 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueMetaData;
-
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
-import static org.apache.openjpa.persistence.PersistenceStrategy.*;
-
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.Reflection;
 
 /**
  * JPA-based metadata defaults.
@@ -91,8 +100,8 @@ public class PersistenceMetaDataDefaults
         (PersistenceMetaDataDefaults.class);
 
     private static final Map<Class<?>, PersistenceStrategy> _strats =
-        new HashMap<Class<?>, PersistenceStrategy>();
-    private static final Set<String> _ignoredAnnos = new HashSet<String>();
+        new HashMap<>();
+    private static final Set<String> _ignoredAnnos = new HashSet<>();
 
     static {
         _strats.put(Basic.class, BASIC);
@@ -419,7 +428,7 @@ public class PersistenceMetaDataDefaults
      */
     private List<Method> matchGetterAndSetter(List<Method> getters,
     		List<Method> setters) {
-        Collection<Method> unmatched =  new ArrayList<Method>();
+        Collection<Method> unmatched =  new ArrayList<>();
 
         for (Method getter : getters) {
             String getterName = getter.getName();
@@ -512,7 +521,7 @@ public class PersistenceMetaDataDefaults
      */
     @Override
     public List<Member> getPersistentMembers(ClassMetaData meta, boolean ignoreTransient) {
-    	List<Member> members = new ArrayList<Member>();
+    	List<Member> members = new ArrayList<>();
     	List<Field> fields   = getPersistentFields(meta, ignoreTransient);
     	List<Method> getters = getPersistentMethods(meta, ignoreTransient);
 
@@ -587,6 +596,7 @@ public class PersistenceMetaDataDefaults
         return isDefaultPersistent(meta, member, name, false);
     }
 
+    @Override
     protected boolean isDefaultPersistent(ClassMetaData meta, Member member,
         String name, boolean ignoreTransient) {
         int mods = member.getModifiers();
@@ -682,6 +692,7 @@ public class PersistenceMetaDataDefaults
      * Gets either the instance field or the getter method depending upon the
      * access style of the given meta-data.
      */
+    @Override
     public Member getMemberByProperty(ClassMetaData meta, String property,
     	int access, boolean applyDefaultRule) {
     	Class<?> cls = meta.getDescribedType();
@@ -736,7 +747,7 @@ public class PersistenceMetaDataDefaults
      * Inclusive element filtering predicate.
      *
      */
-    private static interface InclusiveFilter<T extends AnnotatedElement> {
+    private interface InclusiveFilter<T extends AnnotatedElement> {
         /**
          * Return true to include the given element.
          */
@@ -749,7 +760,7 @@ public class PersistenceMetaDataDefaults
      */
     <T extends AnnotatedElement> List<T> filter(T[] array,
     	InclusiveFilter... filters) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (T e : array) {
             boolean include = true;
             for (InclusiveFilter f : filters) {
@@ -766,7 +777,7 @@ public class PersistenceMetaDataDefaults
 
     <T extends AnnotatedElement> List<T> filter(List<T> list,
         	InclusiveFilter... filters) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (T e : list) {
             boolean include = true;
             for (InclusiveFilter f : filters) {
@@ -791,6 +802,7 @@ public class PersistenceMetaDataDefaults
 
         private boolean includePrivate;
 
+        @Override
         public boolean includes(Method method) {
             return isGetter(method, isIncludePrivate());
         }
@@ -810,6 +822,7 @@ public class PersistenceMetaDataDefaults
      *
      */
     static class SetterFilter implements InclusiveFilter<Method> {
+        @Override
         public boolean includes(Method method) {
             return isSetter(method);
         }
@@ -837,6 +850,7 @@ public class PersistenceMetaDataDefaults
             this.target = target;
         }
 
+        @Override
         public boolean includes(AnnotatedElement obj) {
         	Access access = obj.getAnnotation(Access.class);
         	return access != null && access.value().equals(target);
@@ -855,6 +869,7 @@ public class PersistenceMetaDataDefaults
             this.target = target;
         }
 
+        @Override
         public boolean includes(AnnotatedElement obj) {
         	int mods = ((Member)obj).getModifiers();
 
@@ -876,6 +891,7 @@ public class PersistenceMetaDataDefaults
             modifierOnly = modOnly;
         }
 
+        @Override
         public boolean includes(AnnotatedElement obj) {
             if (modifierOnly) {
                 return !Modifier.isTransient(((Member)obj).getModifiers());
@@ -891,6 +907,7 @@ public class PersistenceMetaDataDefaults
      * marked to be ignored.
      */
     static class AnnotatedFilter implements InclusiveFilter<AnnotatedElement> {
+        @Override
         public boolean includes(AnnotatedElement obj) {
             Annotation[] annos = AccessController.doPrivileged(J2DoPrivHelper
                     .getAnnotationsAction(obj));
@@ -930,6 +947,7 @@ public class PersistenceMetaDataDefaults
     	return methods.toString();
     }
 
+    @Override
     public boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf) {
         if (_isAbstractMappingUniDirectional == null)
             setAbstractMappingUniDirectional(conf);
@@ -940,6 +958,7 @@ public class PersistenceMetaDataDefaults
         _isAbstractMappingUniDirectional = conf.getCompatibilityInstance().isAbstractMappingUniDirectional();
     }
 
+    @Override
     public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf) {
         if (_isNonDefaultMappingAllowed == null)
             setNonDefaultMappingAllowed(conf);
@@ -951,10 +970,12 @@ public class PersistenceMetaDataDefaults
             isNonDefaultMappingAllowed();
     }
 
+    @Override
     public Boolean isDefaultCascadePersistEnabled() {
         return _isCascadePersistPersistenceUnitDefaultEnabled;
     }
 
+    @Override
     public void setDefaultCascadePersistEnabled(Boolean bool) {
         _isCascadePersistPersistenceUnitDefaultEnabled = bool;
     }

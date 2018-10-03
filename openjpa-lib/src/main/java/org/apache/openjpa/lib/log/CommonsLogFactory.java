@@ -32,6 +32,7 @@ public class CommonsLogFactory extends LogFactoryAdapter {
         _factory = org.apache.commons.logging.LogFactory.getFactory();
     }
 
+    @Override
     protected org.apache.openjpa.lib.log.Log newLogAdapter(String channel) {
         return new LogAdapter(_factory.getInstance(channel));
     }
@@ -52,62 +53,77 @@ public class CommonsLogFactory extends LogFactoryAdapter {
             return _log;
         }
 
+        @Override
         public boolean isErrorEnabled() {
             return _log.isErrorEnabled();
         }
 
+        @Override
         public boolean isFatalEnabled() {
             return _log.isFatalEnabled();
         }
 
+        @Override
         public boolean isInfoEnabled() {
             return _log.isInfoEnabled();
         }
 
+        @Override
         public boolean isTraceEnabled() {
             return _log.isTraceEnabled();
         }
 
+        @Override
         public boolean isWarnEnabled() {
             return _log.isWarnEnabled();
         }
 
+        @Override
         public void trace(Object o) {
             _log.trace(o);
         }
 
+        @Override
         public void trace(Object o, Throwable t) {
             _log.trace(o, t);
         }
 
+        @Override
         public void info(Object o) {
             _log.info(o);
         }
 
+        @Override
         public void info(Object o, Throwable t) {
             _log.info(o, t);
         }
 
+        @Override
         public void warn(Object o) {
             _log.warn(o);
         }
 
+        @Override
         public void warn(Object o, Throwable t) {
             _log.warn(o, t);
         }
 
+        @Override
         public void error(Object o) {
             _log.error(o);
         }
 
+        @Override
         public void error(Object o, Throwable t) {
             _log.error(o, t);
         }
 
+        @Override
         public void fatal(Object o) {
             _log.fatal(o);
         }
 
+        @Override
         public void fatal(Object o, Throwable t) {
             _log.fatal(o, t);
         }

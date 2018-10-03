@@ -79,6 +79,7 @@ public class Order {
         return oid;
     }
 
+    @Override
     public String toString(){
         return "Order:" + oid + " amount:" + amount + " delivered:" + delivered
             + " customer:" + ( customer != null ? customer.getCid() : -1 );

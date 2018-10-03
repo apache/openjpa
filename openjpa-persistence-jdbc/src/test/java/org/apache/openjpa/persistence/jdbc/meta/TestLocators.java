@@ -27,17 +27,17 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.Extent;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.jdbc.common.apps.LocatorTestObject;
 
 
 public class TestLocators
@@ -52,6 +52,7 @@ public class TestLocators
     /** Creates a new instance of TestLocators */
     public TestLocators() {
     }
+    @Override
     public void setUp() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
@@ -65,6 +66,7 @@ public class TestLocators
         pm.close();
     }
 
+    @Override
     public void tearDown()
         throws Exception {
         super.tearDown();

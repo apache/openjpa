@@ -39,6 +39,8 @@ import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
@@ -50,6 +52,8 @@ import org.apache.openjpa.util.MetaDataException;
 public abstract class EmbedValueHandler
     extends AbstractValueHandler {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (EmbedValueHandler.class);
 
@@ -57,6 +61,7 @@ public abstract class EmbedValueHandler
      * Maps embedded value and gathers columns and arguments into given lists.
      * @deprecated
      */
+    @Deprecated
     protected void map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt, List cols, List args) {
         DBDictionary dict = vm.getMappingRepository().getDBDictionary();
@@ -70,7 +75,7 @@ public abstract class EmbedValueHandler
     protected void map(ValueMapping vm, DBIdentifier name, ColumnIO io,
         boolean adapt, List cols, List args) {
         // have to resolve embedded value to collect its columns
-        vm.getEmbeddedMapping().resolve(vm.MODE_META | vm.MODE_MAPPING);
+        vm.getEmbeddedMapping().resolve(MetaDataModes.MODE_META | MetaDataModes.MODE_MAPPING);
 
         // gather columns and result arguments
         FieldMapping[] fms = vm.getEmbeddedMapping().getFieldMappings();
@@ -78,7 +83,7 @@ public abstract class EmbedValueHandler
         Object[] curArgs;
         ColumnIO curIO;
         for (int i = 0; i < fms.length; i++) {
-            if (fms[i].getManagement() != FieldMapping.MANAGE_PERSISTENT)
+            if (fms[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
                 continue;
             FieldStrategy strat = fms[i].getStrategy();
 
@@ -149,7 +154,7 @@ public abstract class EmbedValueHandler
         Column[] ecols;
         Embeddable embed;
         for (int i = 0; i < fms.length; i++) {
-            if (fms[i].getManagement() != FieldMapping.MANAGE_PERSISTENT)
+            if (fms[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
                 continue;
 
             // This recursive code is mainly to deal with situations
@@ -231,7 +236,7 @@ public abstract class EmbedValueHandler
         Object cval;
         Column[] ecols;
         for (int i = 0; i < fms.length; i++) {
-            if (fms[i].getManagement() != FieldMapping.MANAGE_PERSISTENT)
+            if (fms[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
                 continue;
 
             ValueMapping vm1 = fms[i].getValueMapping();
@@ -281,7 +286,7 @@ public abstract class EmbedValueHandler
         return idx;
     }
     private Column[] getColumns(FieldMapping fm) {
-        List<Column> colList = new ArrayList<Column>();
+        List<Column> colList = new ArrayList<>();
         getEmbeddedIdCols(fm, colList);
         Column[] cols = new Column[colList.size()];
         int i = 0;

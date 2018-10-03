@@ -39,6 +39,7 @@ class HasContainsExpressionVisitor
         return v._found;
     }
 
+    @Override
     public void enter(Expression exp) {
         if (!_found)
             _found = exp instanceof ContainsExpression

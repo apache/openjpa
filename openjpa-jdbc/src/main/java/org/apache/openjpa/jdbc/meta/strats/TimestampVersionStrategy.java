@@ -19,8 +19,8 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.Timestamp;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -33,20 +33,26 @@ import org.apache.openjpa.jdbc.schema.Column;
 public class TimestampVersionStrategy
     extends ColumnVersionStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     public static final String ALIAS = "timestamp";
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     protected int getJavaType() {
         return JavaSQLTypes.TIMESTAMP;
     }
 
+    @Override
     protected Object nextVersion(Object version) {
         return new Timestamp(System.currentTimeMillis());
     }
 
+    @Override
     public Map getBulkUpdateValues() {
         Column[] cols = vers.getColumns();
         Map map = new HashMap(cols.length);

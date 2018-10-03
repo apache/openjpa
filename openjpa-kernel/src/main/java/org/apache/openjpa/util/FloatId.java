@@ -26,6 +26,8 @@ package org.apache.openjpa.util;
 public final class FloatId
     extends OpenJPAId {
 
+    
+    private static final long serialVersionUID = 1L;
     private final float key;
 
     public FloatId(Class cls, Float key) {
@@ -50,18 +52,22 @@ public final class FloatId
         return key;
     }
 
+    @Override
     public Object getIdObject() {
         return Float.valueOf(key);
     }
 
+    @Override
     public String toString() {
         return Float.toString(key);
     }
 
+    @Override
     protected int idHash() {
         return Float.floatToIntBits(key);
     }
 
+    @Override
     protected boolean idEquals(OpenJPAId o) {
         return key == ((FloatId) o).key;
     }

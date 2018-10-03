@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.Map;
 
 import javax.persistence.Query;
@@ -32,6 +32,7 @@ import org.apache.openjpa.jdbc.meta.strats.ClassNameDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -47,6 +48,7 @@ public class TestNonstandardMappingAnnotations
     private ClassMapping _mapping;
     private DBDictionary _dict;
 
+    @Override
     public void setUp() {
         setUp(NonstandardMappingEntity.class, NonstandardMappingEntity3.class, ExtensionsEntity.class,
             NonstandardMappingMappedSuper.class, EmbedValue2.class, EmbedValue3.class,
@@ -78,7 +80,7 @@ public class TestNonstandardMappingAnnotations
 
     public void testDataStoreIdColumn() {
         assertEquals("NONSTD_ENTITY", _mapping.getTable().getName());
-        assertEquals(ClassMapping.ID_DATASTORE, _mapping.getIdentityType());
+        assertEquals(ClassMetaData.ID_DATASTORE, _mapping.getIdentityType());
         assertEquals(1, _mapping.getPrimaryKeyColumns().length);
         assertEquals("OID", _mapping.getPrimaryKeyColumns()[0].getName());
     }

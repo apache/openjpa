@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.lib.log;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link LogFactory} implementation that delegates to the SLF4J framework.
@@ -27,6 +27,7 @@ import org.slf4j.Logger;
  */
 public class SLF4JLogFactory extends LogFactoryAdapter {
 
+    @Override
     protected Log newLogAdapter(String channel) {
         return new LogAdapter((Logger) LoggerFactory.getLogger(channel));
     }
@@ -47,6 +48,7 @@ public class SLF4JLogFactory extends LogFactoryAdapter {
             return _log;
         }
 
+        @Override
         public boolean isTraceEnabled() {
             return _log.isTraceEnabled();
         }
@@ -56,27 +58,33 @@ public class SLF4JLogFactory extends LogFactoryAdapter {
             return _log.isDebugEnabled();
         }
 
+        @Override
         public boolean isInfoEnabled() {
             return _log.isInfoEnabled();
         }
 
+        @Override
         public boolean isWarnEnabled() {
             return _log.isWarnEnabled();
         }
 
+        @Override
         public boolean isErrorEnabled() {
             return _log.isErrorEnabled();
         }
 
+        @Override
         public boolean isFatalEnabled() {
             // SLF4J has no FATAL level, so map to ERROR like log4j-over-slf4j
             return _log.isErrorEnabled();
         }
 
+        @Override
         public void trace(Object o) {
             _log.trace(objectToString(o));
         }
 
+        @Override
         public void trace(Object o, Throwable t) {
             _log.trace(objectToString(o), t);
         }
@@ -91,35 +99,43 @@ public class SLF4JLogFactory extends LogFactoryAdapter {
             _log.debug(objectToString(o), t);
         }
 
+        @Override
         public void info(Object o) {
             _log.info(objectToString(o));
         }
 
+        @Override
         public void info(Object o, Throwable t) {
             _log.info(objectToString(o), t);
         }
 
+        @Override
         public void warn(Object o) {
             _log.warn(objectToString(o));
         }
 
+        @Override
         public void warn(Object o, Throwable t) {
             _log.warn(objectToString(o), t);
         }
 
+        @Override
         public void error(Object o) {
             _log.error(objectToString(o));
         }
 
+        @Override
         public void error(Object o, Throwable t) {
             _log.error(objectToString(o), t);
         }
 
+        @Override
         public void fatal(Object o) {
             // SLF4J has no FATAL level, so map to ERROR like log4j-over-slf4j
             _log.error(objectToString(o));
         }
 
+        @Override
         public void fatal(Object o, Throwable t) {
             // SLF4J has no FATAL level, so map to ERROR like log4j-over-slf4j
             _log.error(objectToString(o), t);

@@ -43,6 +43,9 @@ public abstract class AbstractFieldStrategy
     extends AbstractStrategy
     implements FieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (AbstractFieldStrategy.class);
 
@@ -60,123 +63,150 @@ public abstract class AbstractFieldStrategy
                 getAlias()));
     }
 
+    @Override
     public void setFieldMapping(FieldMapping owner) {
         field = owner;
     }
 
+    @Override
     public int supportsSelect(Select sel, int type, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch) {
         return 0;
     }
 
+    @Override
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
     }
 
+    @Override
     public void selectEagerParallel(SelectExecutor sel, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
     }
 
+    @Override
     public boolean isEagerSelectToMany() {
         return false;
     }
 
+    @Override
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode) {
         return -1;
     }
 
+    @Override
     public Object loadEagerParallel(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Object res)
         throws SQLException {
         return res;
     }
 
+    @Override
     public void loadEagerJoin(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
     }
 
+    @Override
     public void load(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
     }
 
+    @Override
     public void load(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch)
         throws SQLException {
     }
 
+    @Override
     public Object toDataStoreValue(Object val, JDBCStore store) {
         return val;
     }
 
+    @Override
     public Object toKeyDataStoreValue(Object val, JDBCStore store) {
         return val;
     }
 
+    @Override
     public void appendIsEmpty(SQLBuffer sql, Select sel, Joins joins) {
         sql.append("1 <> 1");
     }
 
+    @Override
     public void appendIsNotEmpty(SQLBuffer sql, Select sel, Joins joins) {
         sql.append("1 = 1");
     }
 
+    @Override
     public void appendIsNull(SQLBuffer sql, Select sel, Joins joins) {
         sql.append("1 <> 1");
     }
 
+    @Override
     public void appendIsNotNull(SQLBuffer sql, Select sel, Joins joins) {
         sql.append("1 <> 1");
     }
 
+    @Override
     public void appendSize(SQLBuffer sql, Select sel, Joins joins) {
         sql.append("1");
     }
 
+    @Override
     public void appendIndex(SQLBuffer sql, Select sel, Joins joins) {
         sql.append("1");
     }
 
+    @Override
     public void appendType(SQLBuffer sql, Select sel, Joins joins) {
         sql.append("1");
     }
 
+    @Override
     public Joins join(Joins joins, boolean forceOuter) {
         return joins;
     }
 
+    @Override
     public Joins joinKey(Joins joins, boolean forceOuter) {
         return joins;
     }
 
+    @Override
     public Joins joinRelation(Joins joins, boolean forceOuter,
         boolean traverse) {
         return joins;
     }
 
+    @Override
     public Joins joinKeyRelation(Joins joins, boolean forceOuter,
         boolean traverse) {
         return joins;
     }
 
+    @Override
     public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
         return null;
     }
 
+    @Override
     public Object loadKeyProjection(JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         return null;
     }
 
+    @Override
     public boolean isVersionable() {
         return false;
     }
 
+    @Override
     public void where(OpenJPAStateManager sm, JDBCStore store, RowManager rm,
         Object prevValue)
         throws SQLException {

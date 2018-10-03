@@ -29,10 +29,10 @@ public interface StoreListener {
     /**
      * Invoked just prior to store.
      */
-    public void beforeStore(LifecycleEvent event);
+    void beforeStore(LifecycleEvent event);
 
     /**
      * Invoked just after store.
      */
-    public void afterStore(LifecycleEvent event);
+    void afterStore(LifecycleEvent event);
 }

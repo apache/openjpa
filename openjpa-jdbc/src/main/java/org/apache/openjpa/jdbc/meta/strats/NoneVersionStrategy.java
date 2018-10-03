@@ -28,6 +28,9 @@ import org.apache.openjpa.jdbc.meta.Version;
 public class NoneVersionStrategy
     extends AbstractVersionStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final String ALIAS = "none";
 
     private static final NoneVersionStrategy _instance =
@@ -46,10 +49,12 @@ public class NoneVersionStrategy
     private NoneVersionStrategy() {
     }
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     public void setVersion(Version owner) {
     }
 }

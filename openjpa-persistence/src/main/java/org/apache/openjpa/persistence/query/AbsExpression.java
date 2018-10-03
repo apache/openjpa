@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class AbsExpression extends UnaryOperatorExpression {
-	public AbsExpression(ExpressionImpl op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public AbsExpression(ExpressionImpl op) {
 		super(op, UnaryFunctionalOperator.ABS);
 	}
 }

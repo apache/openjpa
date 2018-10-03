@@ -167,6 +167,7 @@ public abstract class DetachOptions
     public static class Loaded
         extends DetachOptions {
 
+        @Override
         public int getDetachState() {
             return DETACH_LOADED;
         }
@@ -178,6 +179,7 @@ public abstract class DetachOptions
     public static class FetchGroups
         extends DetachOptions {
 
+        @Override
         public int getDetachState() {
             return DETACH_FGS;
         }
@@ -189,6 +191,7 @@ public abstract class DetachOptions
     public static class All
         extends DetachOptions {
 
+        @Override
         public int getDetachState() {
             return DETACH_ALL;
 		}

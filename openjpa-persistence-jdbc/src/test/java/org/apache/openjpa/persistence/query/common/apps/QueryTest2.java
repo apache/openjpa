@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.query.common.apps;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

@@ -34,6 +34,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
 
     private int _id;
 
+    @Override
     public void setUp() {
       setUp(Item.class,"openjpa.Compatibility",
                 "default(flushBeforeDetach=false,copyOnDetach=true)");
@@ -101,7 +102,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
 
         i.setItemData("MNOP");
 
-        Collection<Item> c = new ArrayList<Item>();
+        Collection<Item> c = new ArrayList<>();
         c.add(i);
         OpenJPAPersistence.cast(em).detachAll(c);
         em.getTransaction().rollback();

@@ -55,6 +55,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         return getDBCPConnection(props);
     }
 
+    @Override
     public void close() throws SQLException {
         try {
             if (_ds != null) {
@@ -287,15 +288,18 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
     }
 
     // Configurable interface methods
+    @Override
     public void setConfiguration(Configuration conf) {
         if (conf instanceof JDBCConfiguration)
             this.conf = (JDBCConfiguration)conf;
     }
 
+    @Override
     public void startConfiguration() {
         // no-op
     }
 
+    @Override
     public void endConfiguration() {
         // no-op
     }

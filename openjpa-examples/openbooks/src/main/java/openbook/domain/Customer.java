@@ -32,9 +32,9 @@ import javax.persistence.Version;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 @Entity
 public class Customer implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue
     private long id;
@@ -71,6 +71,7 @@ public class Customer implements Serializable {
         return new ShoppingCart(this);
     }
 
+    @Override
     public String toString() {
         return name;
     }

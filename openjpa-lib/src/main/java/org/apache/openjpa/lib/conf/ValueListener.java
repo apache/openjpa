@@ -28,5 +28,5 @@ public interface ValueListener {
     /**
      * Callback used by {@link Value} objects to notify listener of change.
      */
-    public void valueChanged(Value val);
+    void valueChanged(Value val);
 }

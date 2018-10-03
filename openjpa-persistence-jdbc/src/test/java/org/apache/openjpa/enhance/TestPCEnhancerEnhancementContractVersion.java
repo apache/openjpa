@@ -20,13 +20,14 @@ package org.apache.openjpa.enhance;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.NoneLogFactory.NoneLog;
-import org.apache.openjpa.persistence.DummyPersistenceCapeable;
 import org.apache.openjpa.persistence.Country;
+import org.apache.openjpa.persistence.DummyPersistenceCapeable;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 public class TestPCEnhancerEnhancementContractVersion extends AbstractPersistenceTestCase {
     Log log = NoneLog.getInstance();
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         // Create to trigger static initializer to run.

@@ -20,16 +20,16 @@ package org.apache.openjpa.persistence.property;
 
 public interface IContact {
 
-    public IAddress getAddress();
-    public void setAddress(IAddress address);
+    IAddress getAddress();
+    void setAddress(IAddress address);
 
-    public String getEmail();
-    public void setEmail(String email);
+    String getEmail();
+    void setEmail(String email);
 
-    public String getPhone();
-    public void setPhone(String phone);
+    String getPhone();
+    void setPhone(String phone);
 
-    public String getType();
-    public void setType(String type);
+    String getType();
+    void setType(String type);
 
 }

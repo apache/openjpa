@@ -20,8 +20,9 @@ package org.apache.openjpa.persistence.inheritance;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Perform basic operations on an inheritance hierarchy involving multiple
@@ -32,6 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestMultipleMappedSuperclassHierarchy
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(MappedSuperclassBase.class, MappedSuperclassL2.class,
             EntityL3.class);

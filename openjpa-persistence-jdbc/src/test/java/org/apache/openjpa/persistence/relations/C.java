@@ -44,7 +44,7 @@ public class C {
     private CM cm;
 
 	@OneToMany(mappedBy="c")
-	private Set<D> ds = new HashSet<D>();
+	private Set<D> ds = new HashSet<>();
 
     public C() {
     }

@@ -26,6 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestFetchGroupStacks extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(FGManager.class, FGDepartment.class, FGEmployee.class,
             FGAddress.class);

@@ -30,6 +30,7 @@ import org.apache.openjpa.util.ProxyCalendar;
 
 public class TestCalendarField extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(TemporalFieldTypes.class);
     }

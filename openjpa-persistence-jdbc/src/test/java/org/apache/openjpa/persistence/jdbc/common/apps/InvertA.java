@@ -21,18 +21,23 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 /**
  *	Used to test invert one-to-ones and stuff
  *
  *	@author		skim
  */
-@SuppressWarnings("serial")
 @Entity
 public class InvertA implements Serializable
 {
-	@Id
+    private static final long serialVersionUID = 1L;
+
+    @Id
 	private int id;
 
 	@Column(length=35)

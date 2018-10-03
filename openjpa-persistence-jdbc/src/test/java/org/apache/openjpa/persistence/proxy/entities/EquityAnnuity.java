@@ -35,20 +35,24 @@ public class EquityAnnuity extends Annuity implements IEquityAnnuity {
 
 	private Double indexRate;
 
-	@Column(name="FUND_NAMES")
+	@Override
+    @Column(name="FUND_NAMES")
 	public String getFundNames() {
 		return fundNames;
 	}
 
-	public void setFundNames(String fundNames) {
+	@Override
+    public void setFundNames(String fundNames) {
 		this.fundNames = fundNames;
 	}
 
-	@Column(name="INDEX_RATE")
+	@Override
+    @Column(name="INDEX_RATE")
 	public Double getIndexRate() {
 		return indexRate;
 	}
 
+    @Override
     public void setIndexRate(Double indexRate) {
         if (indexRate != null) {
             DecimalFormat df = new DecimalFormat("#.##");

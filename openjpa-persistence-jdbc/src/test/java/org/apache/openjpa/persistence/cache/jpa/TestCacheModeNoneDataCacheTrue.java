@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 public class TestCacheModeNoneDataCacheTrue extends TestCacheModeNone{
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
-        Map<String,Object> props = new HashMap<String,Object>();
+        Map<String,Object> props = new HashMap<>();
         props.put("openjpa.DataCache", "true");
         props.put("openjpa.RemoteCommitProvider", "sjvm");
         if (emf == null) {

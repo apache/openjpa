@@ -41,6 +41,9 @@ import javax.persistence.Embedded;
 
 @Embeddable
 public final class PageId1 implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     private int number;
 
     @Embedded
@@ -66,6 +69,7 @@ public final class PageId1 implements Serializable {
         this.number = number;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof PageId1)) {
             return false;
@@ -84,6 +88,7 @@ public final class PageId1 implements Serializable {
         return true;
     }
 
+    @Override
     public int hashCode() {
         return number * (book != null ? getBook().hashCode() : 31);
     }

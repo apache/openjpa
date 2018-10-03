@@ -20,13 +20,13 @@ package org.apache.openjpa.persistence.jpql.entities;
 
 public interface INameEntity {
 
-    public int getId();
+    int getId();
 
-    public void setId(int id);
+    void setId(int id);
 
-    public String getName();
+    String getName();
 
-    public void setName(String name);
+    void setName(String name);
 
-    public String toString();
+    @Override String toString();
 }

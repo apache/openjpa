@@ -18,16 +18,17 @@
  */
 package org.apache.openjpa.openjpa2018;
 
-import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 /**
  * This test verifies that select IN statements with

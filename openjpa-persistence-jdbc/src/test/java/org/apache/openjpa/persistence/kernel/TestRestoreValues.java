@@ -28,12 +28,9 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.math.BigInteger;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.RestoreStateType;
+import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
 
 public class TestRestoreValues extends BaseKernelTest {
 
@@ -46,6 +43,7 @@ public class TestRestoreValues extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         deleteAll(FetchGroupTestObject.class);
 
@@ -64,6 +62,7 @@ public class TestRestoreValues extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Override
     public OpenJPAEntityManager getPM() {
         OpenJPAEntityManager pm = super.getPM();
         pm.setOptimistic(true);

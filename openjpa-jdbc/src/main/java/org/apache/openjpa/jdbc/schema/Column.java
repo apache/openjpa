@@ -28,12 +28,12 @@ import java.sql.Types;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.VersionStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 
 /**
@@ -43,10 +43,8 @@ import org.apache.openjpa.meta.JavaTypes;
  * @author Abe White
  * @author Stephen Kim
  */
-@SuppressWarnings("serial")
-public class Column
-    extends ReferenceCounter {
-
+public class Column extends ReferenceCounter {
+    private static final long serialVersionUID = 1L;
     public static final int FLAG_UNINSERTABLE = 2 << 0;
     public static final int FLAG_UNUPDATABLE = 2 << 1;
     public static final int FLAG_DIRECT_INSERT = 2 << 2;
@@ -84,7 +82,7 @@ public class Column
     private String _comment = null;
     private boolean _XML = false;
     private boolean _isUni1MFK = false;
-    private Set<Constraint> _constraints = new HashSet<Constraint>();
+    private Set<Constraint> _constraints = new HashSet<>();
 
     /**
      * Default constructor.
@@ -99,6 +97,7 @@ public class Column
      * @param table the column's table
      * @deprecated
      */
+    @Deprecated
     public Column(String name, Table table) {
         this(DBIdentifier.newColumn(name), table);
     }
@@ -185,6 +184,7 @@ public class Column
      * The column's table name.
      * @deprecated
      */
+    @Deprecated
     public String getTableName() {
         return getTableIdentifier().getName();
     }
@@ -198,6 +198,7 @@ public class Column
      * whose table object is not set.
      * @deprecated
      */
+    @Deprecated
     public void setTableName(String name) {
         setTableIdentifier(DBIdentifier.newTable(name));
     }
@@ -214,6 +215,7 @@ public class Column
      * includes the schema name
      * @deprecated
      */
+    @Deprecated
     public void resetTableName(String name) {
         _tableName = DBIdentifier.newTable(name);
     }
@@ -226,6 +228,7 @@ public class Column
      * The column's schema name.
      * @deprecated
      */
+    @Deprecated
     public String getSchemaName() {
         return getSchemaIdentifier().getName();
     }
@@ -239,6 +242,7 @@ public class Column
      * whose table object is not set.
      * @deprecated use setSchemaIdentifier(DBIdentifier name)
      */
+    @Deprecated
     public void setSchemaName(String name) {
         setSchemaIdentifier(DBIdentifier.newSchema(name));
     }
@@ -253,6 +257,7 @@ public class Column
      * Return the column's name.
      * @deprecated use getIdentifier()
      */
+    @Deprecated
     public String getName() {
         return getIdentifier().getName();
     }
@@ -267,6 +272,7 @@ public class Column
      * whose table object is not set.
      * @deprecated use setIdentifier(DBIdentifier name)
      */
+    @Deprecated
     public void setName(String name) {
         setIdentifier(DBIdentifier.newColumn(name));
     }
@@ -282,6 +288,7 @@ public class Column
      * Return the column's full name, in the form &lt;table&gt;.&lt;name&gt;.
      * @deprecated use getFullDBIdentifier()
      */
+    @Deprecated
     public String getFullName() {
         return getFullDBIdentifier().getName();
     }
@@ -317,6 +324,7 @@ public class Column
      * The database-specific SQL type of this column.
      * @deprecated
      */
+    @Deprecated
     public String getTypeName() {
         return getTypeIdentifier().getName();
     }
@@ -329,6 +337,7 @@ public class Column
      * The database-specific SQL type of this column.
      * @deprecated
      */
+    @Deprecated
     public void setTypeName(String typeName) {
         setTypeIdentifier(DBIdentifier.newColumnDefinition(typeName));
     }
@@ -574,6 +583,7 @@ public class Column
      * The name of the column this column joins to, if any. Used for mapping.
      * @deprecated use getTargetIdentifier()
      */
+    @Deprecated
     public String getTarget() {
         return getTargetIdentifier().getName();
     }
@@ -586,6 +596,7 @@ public class Column
      * The name of the column this column joins to, if any. Used for mapping.
      * @deprecated use setTargetIdentifier(DBIdentifier target)
      */
+    @Deprecated
     public void setTarget(String target) {
         setTargetIdentifier(DBIdentifier.newColumn(StringUtil.trimToNull(target)));
     }
@@ -775,6 +786,7 @@ public class Column
     /**
      * Returns the column name.
      */
+    @Override
     public String toString() {
         return getIdentifier().getName();
     }
@@ -974,7 +986,7 @@ public class Column
      * Gets all constrains of the given type attached to this column.
      */
     public <T extends Constraint> Set<T> getConstraints(Class<T> type) {
-        Set<T> result = new HashSet<T>();
+        Set<T> result = new HashSet<>();
         for (Constraint c : _constraints) {
             if (c.getClass() == type) {
                 result.add((T)c);

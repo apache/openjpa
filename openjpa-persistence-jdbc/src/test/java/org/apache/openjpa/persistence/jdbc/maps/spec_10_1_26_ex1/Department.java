@@ -21,7 +21,13 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex1;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="S26x1Dept")
@@ -32,7 +38,7 @@ public class Department {
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="dept", fetch=FetchType.EAGER)
     @MapKey(name="empId")
-    Map<Integer, Employee> empMap = new HashMap<Integer, Employee>();
+    Map<Integer, Employee> empMap = new HashMap<>();
 
     public int getDeptId() {
         return deptId;

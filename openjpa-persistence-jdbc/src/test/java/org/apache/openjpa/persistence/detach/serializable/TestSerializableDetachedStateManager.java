@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestSerializableDetachedStateManager extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, SerializableDetachedStateManager.class, DROP_TABLES, "openjpa.DetachState",
             "fgs(DetachedStateField=true)");

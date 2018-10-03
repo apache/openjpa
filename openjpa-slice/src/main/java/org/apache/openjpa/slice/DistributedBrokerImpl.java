@@ -38,8 +38,8 @@ import org.apache.openjpa.util.OpenJPAId;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class DistributedBrokerImpl extends FinalizingBrokerImpl implements DistributedBroker {
+    private static final long serialVersionUID = 1L;
     private transient String _rootSlice;
     private transient DistributedConfiguration _conf;
     private final ReentrantSliceLock _lock;
@@ -51,6 +51,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl implements Distr
         _lock = new ReentrantSliceLock();
     }
 
+    @Override
     public DistributedConfiguration getConfiguration() {
         if (_conf == null) {
             _conf = (DistributedConfiguration) super.getConfiguration();
@@ -58,10 +59,12 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl implements Distr
         return _conf;
     }
 
+    @Override
     public DistributedStoreManager getDistributedStoreManager() {
         return (DistributedStoreManager) getStoreManager().getInnermostDelegate();
     }
 
+    @Override
     public TargetFetchConfiguration getFetchConfiguration() {
         return (TargetFetchConfiguration) super.getFetchConfiguration();
     }
@@ -125,6 +128,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl implements Distr
     /**
      * Create a new query.
      */
+    @Override
     protected QueryImpl newQueryImpl(String lang, StoreQuery sq) {
         return new DistributedQueryImpl(this, lang, sq);
     }

@@ -28,20 +28,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
+import junit.framework.Assert;
+
 public class TestAttrOverridesXml extends SQLListenerTestCase {
 
     public int numPersons = 4;
-    public List<String> namedQueries = new ArrayList<String>();
+    public List<String> namedQueries = new ArrayList<>();
     public int eId = 1;
 
+    @Override
     public void setUp() {
         setUp(
         org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed.class,
@@ -73,7 +74,7 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
 
         BasicEmbedXML bem = new BasicEmbedXML();
         bem.setNotIntegerValue(new Random().nextInt());
-        ArrayList<BasicEmbedXML> al = new ArrayList<BasicEmbedXML>();
+        ArrayList<BasicEmbedXML> al = new ArrayList<>();
         al.add(bem);
         be.setListIntAttrOverEmbed(al);
 

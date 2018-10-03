@@ -89,6 +89,7 @@ public class Course {
         return name;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Course) {
             Course course = (Course)obj;

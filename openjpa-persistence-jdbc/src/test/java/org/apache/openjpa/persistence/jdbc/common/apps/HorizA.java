@@ -18,14 +18,18 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Entity;
 
 @Entity
 public abstract class HorizA
     implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private String stringA;
     private int intA;
     private Set relations = new HashSet();

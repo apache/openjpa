@@ -31,6 +31,7 @@ public class AutoIncrementOpOrderPCSub
 	@Id
     private String sub;
 
+    @Override
     public String getSub() {
         return sub;
     }

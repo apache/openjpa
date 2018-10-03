@@ -109,6 +109,7 @@ public abstract class EmbeddableDomainTestCase extends AbstractCriteriaTestCase 
         }
     }
 
+    @Override
     protected OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         return emf;
     }
@@ -117,6 +118,7 @@ public abstract class EmbeddableDomainTestCase extends AbstractCriteriaTestCase 
         EmbeddableDomainTestCase.emf = emf;
     }
 
+    @Override
     protected SQLAuditor getAuditor() {
         return auditor;
     }
@@ -133,6 +135,7 @@ public abstract class EmbeddableDomainTestCase extends AbstractCriteriaTestCase 
         this.cb = cb;
     }
 
+    @Override
     protected EntityManager getEntityManager() {
         return em;
     }

@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,6 +34,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "holder")
 public class InterfaceHolder implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     private Set intfs = new HashSet();
 
@@ -78,6 +82,7 @@ public class InterfaceHolder implements Serializable {
         return this.id;
     }
 
+    @Override
     public String toString() {
         return "intfs: " + intfs + ", StringField: " + stringField +
             ", Intf: " + intf + ".";

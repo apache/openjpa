@@ -31,10 +31,10 @@ import org.apache.openjpa.meta.ClassMetaData;
  * events and callbacks.
  *
  */
-@SuppressWarnings("serial")
 public class ValidatingLifecycleEventManager extends LifecycleEventManager
     implements Configurable {
 
+    private static final long serialVersionUID = 1L;
     private OpenJPAConfiguration _conf = null;
     private Validator _validator = null;
     protected boolean _validationEnabled = true;
@@ -50,6 +50,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
     /* (non-Javadoc)
      * @see org.apache.openjpa.lib.conf.Configurable#endConfiguration()
      */
+    @Override
     public void endConfiguration() {
         _validator = (Validator)_conf.getValidatorInstance();
     }
@@ -58,6 +59,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
      * @see org.apache.openjpa.lib.conf.Configurable#setConfiguration(
      *      org.apache.openjpa.lib.conf.Configuration)
      */
+    @Override
     public void setConfiguration(Configuration conf) {
         if (conf instanceof OpenJPAConfiguration) {
             _conf = (OpenJPAConfiguration)conf;
@@ -67,6 +69,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
     /* (non-Javadoc)
      * @see org.apache.openjpa.lib.conf.Configurable#startConfiguration()
      */
+    @Override
     public void startConfiguration() {
     }
 

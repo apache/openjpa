@@ -28,13 +28,13 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ReferentialIntegrityException;
@@ -250,6 +250,7 @@ public class HSQLDictionary extends DBDictionary {
         return super.getPrimaryKeyConstraintSQL(pk);
     }
 
+    @Override
     public boolean isSystemIndex(String name, Table table) {
         return name.toUpperCase(Locale.ENGLISH).startsWith("SYS_");
     }

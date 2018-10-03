@@ -38,6 +38,7 @@ public class ImageValidator implements ConstraintValidator<ImageConstraint, Imag
      * types it should support.
      * @param constraint the constraint definition
      */
+    @Override
     public void initialize(ImageConstraint constraint) {
         allowedTypes = Arrays.asList(constraint.value());
     }
@@ -45,6 +46,7 @@ public class ImageValidator implements ConstraintValidator<ImageConstraint, Imag
     /**
      * Validate a specified value.
      */
+    @Override
     public boolean isValid(Image value, ConstraintValidatorContext context) {
         // JSR-303 best practice.  Promotes the use of @NotNull to perform
         // null checking.

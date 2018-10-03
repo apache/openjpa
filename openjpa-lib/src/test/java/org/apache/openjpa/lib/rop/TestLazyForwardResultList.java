@@ -29,6 +29,7 @@ public class TestLazyForwardResultList extends ResultListTest {
         super(test, true);
     }
 
+    @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new LazyForwardResultList(provider);
     }

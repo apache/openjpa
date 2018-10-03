@@ -41,7 +41,7 @@ public class MyUserEntity {
     private String username;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<AddressEntity> addresses = new ArrayList<AddressEntity>();
+    private List<AddressEntity> addresses = new ArrayList<>();
 
     public MyUserEntity() {
     }

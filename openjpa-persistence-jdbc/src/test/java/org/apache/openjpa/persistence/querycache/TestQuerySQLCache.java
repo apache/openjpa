@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestQuerySQLCache extends SQLListenerTestCase {
     EntityManager em;
 
+    @Override
     public void setUp() {
         super.setUp(
             DROP_TABLES,

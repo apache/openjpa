@@ -28,6 +28,6 @@ public interface Constant {
     /**
      * Return the value for this constant given the specified parameters.
      */
-    public Object getValue(Object[] parameters);
+    Object getValue(Object[] parameters);
 }
 

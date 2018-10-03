@@ -37,27 +37,33 @@ public class Rider extends AnnuityPersistebleObject implements IRider {
 	private Date effectiveDate;
 	private RiderType type;
 
-	@Column(name="EFFECTIVE_DATE")
+	@Override
+    @Column(name="EFFECTIVE_DATE")
 	public Date getEffectiveDate() {
 		return effectiveDate;
 	}
-	public void setEffectiveDate(Date effectiveDate) {
+	@Override
+    public void setEffectiveDate(Date effectiveDate) {
 		this.effectiveDate = effectiveDate;
 	}
 
-	@Column(name="RIDER_RULE")
+	@Override
+    @Column(name="RIDER_RULE")
 	public String getRule() {
 		return rule;
 	}
-	public void setRule(String rule) {
+	@Override
+    public void setRule(String rule) {
 		this.rule = rule;
 	}
 
-	@Enumerated(EnumType.STRING)
+	@Override
+    @Enumerated(EnumType.STRING)
 	public RiderType getType() {
 		return type;
 	}
-	public void setType(RiderType type) {
+	@Override
+    public void setType(RiderType type) {
 		this.type = type;
 	}
 

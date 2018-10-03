@@ -22,27 +22,27 @@ import java.util.Collection;
 
 public interface IDepartment {
 
-    public void setEmployees(Collection<IEmployee> employees);
+    void setEmployees(Collection<IEmployee> employees);
 
-    public Collection<IEmployee> getEmployees();
+    Collection<IEmployee> getEmployees();
 
-    public void setId(int id);
+    void setId(int id);
 
-    public int getId();
+    int getId();
 
-    public void setLocations(Collection<Location> locations);
+    void setLocations(Collection<Location> locations);
 
-    public Collection<Location> getLocations();
+    Collection<Location> getLocations();
 
-    public void setProducts(Collection<Product> products);
+    void setProducts(Collection<Product> products);
 
-    public Collection<Product> getProducts();
+    Collection<Product> getProducts();
 
-    public void setCertifications(Collection<Certification> certifications);
+    void setCertifications(Collection<Certification> certifications);
 
-    public Collection<Certification> getCertifications();
+    Collection<Certification> getCertifications();
 
-    public void setAwards(Collection<Award> awards);
+    void setAwards(Collection<Award> awards);
 
-    public Collection<Award> getAwards();
+    Collection<Award> getAwards();
 }

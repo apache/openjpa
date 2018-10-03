@@ -22,11 +22,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
-import org.apache.openjpa.persistence.kernel.common.apps.DependentFieldsPC;
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.kernel.common.apps.DependentFieldsPC;
 
 public class TestDependentFields2 extends BaseKernelTest {
 
@@ -48,6 +47,7 @@ public class TestDependentFields2 extends BaseKernelTest {
         super(casename);
     }
 
+    @Override
     public void setUp() throws Exception {
         deleteAll(DependentFieldsPC.class);
 

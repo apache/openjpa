@@ -21,6 +21,6 @@ package org.apache.openjpa.persistence.proxy.entities;
 import java.util.Date;
 
 public interface IAnnuityObject extends Identifiable {
-	public void setLastUpdateDate(Date date);
-	public Date getLastUpdateDate();
+	void setLastUpdateDate(Date date);
+	Date getLastUpdateDate();
 }

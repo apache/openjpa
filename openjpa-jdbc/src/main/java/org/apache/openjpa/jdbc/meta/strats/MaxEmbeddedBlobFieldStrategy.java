@@ -41,15 +41,20 @@ import org.apache.openjpa.util.MetaDataException;
 public class MaxEmbeddedBlobFieldStrategy
     extends MaxEmbeddedLobFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (MaxEmbeddedBlobFieldStrategy.class);
 
     private int _maxSize = 0;
 
+    @Override
     protected int getExpectedJavaType() {
         return JavaTypes.OBJECT;
     }
 
+    @Override
     protected void update(OpenJPAStateManager sm, Row row)
         throws SQLException {
         byte[] b = (byte[]) sm.getImplData(field.getIndex());
@@ -63,6 +68,7 @@ public class MaxEmbeddedBlobFieldStrategy
         }
     }
 
+    @Override
     protected Boolean isCustom(OpenJPAStateManager sm, JDBCStore store) {
         // have we already stored our serialized data?
         byte[] b = (byte[]) sm.getImplData(field.getIndex());
@@ -85,6 +91,7 @@ public class MaxEmbeddedBlobFieldStrategy
         return (b.length > _maxSize) ? null : Boolean.FALSE;
     }
 
+    @Override
     protected void putData(OpenJPAStateManager sm, ResultSet rs,
         DBDictionary dict)
         throws SQLException {
@@ -93,18 +100,21 @@ public class MaxEmbeddedBlobFieldStrategy
         dict.putBytes(blob, b);
     }
 
+    @Override
     public void map(boolean adapt) {
         if (!field.isSerialized())
             throw new MetaDataException(_loc.get("not-serialized", field));
         super.map(adapt);
     }
 
+    @Override
     public void initialize() {
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         _maxSize = dict.maxEmbeddedBlobSize;
         field.setUsesImplData(Boolean.TRUE);
     }
 
+    @Override
     protected Object getValue(OpenJPAStateManager sm) {
         byte[] b = (byte[]) sm.getImplData(field.getIndex());
         if (b == null || (b.length > _maxSize && !field.getColumns()[0].isNotNull()))

@@ -24,8 +24,8 @@ import org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 
-@SuppressWarnings("serial")
 public class DummyBrokerFactory extends JDBCBrokerFactory {
+    private static final long serialVersionUID = 1L;
     JDBCConfiguration _conf;
     public DummyBrokerFactory(JDBCConfiguration conf) {
         super(conf);

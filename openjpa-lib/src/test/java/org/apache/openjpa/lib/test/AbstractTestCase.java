@@ -53,18 +53,19 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import junit.framework.TestCase;
-import junit.framework.TestResult;
-import junit.textui.TestRunner;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.log.LogFactoryImpl;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.apache.regexp.REUtil;
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.log.LogFactoryImpl;
-import org.apache.openjpa.lib.util.Localizer;
+
+import junit.framework.TestCase;
+import junit.framework.TestResult;
+import junit.textui.TestRunner;
 
 /**
  * TestCase framework to run various tests against solarmetric code.
@@ -138,6 +139,7 @@ public abstract class AbstractTestCase extends TestCase {
     protected void preTimeout() {
     }
 
+    @Override
     public void run(TestResult result) {
         if (skipTest()) {
             // keep track of the tests we skip so that we can get an
@@ -220,6 +222,7 @@ public abstract class AbstractTestCase extends TestCase {
     public void tearDownTestClass() throws Exception {
     }
 
+    @Override
     public void tearDown() throws Exception {
         if ("true".equals(System.getProperty("meminfo")))
             printMemoryInfo();
@@ -571,6 +574,7 @@ public abstract class AbstractTestCase extends TestCase {
             }
         }
 
+        @Override
         public Class findClass(String name) throws ClassNotFoundException {
             // don't isolate PC and related classes in kodo.enhnace
             if (name.indexOf(".enhance.") != -1)
@@ -954,6 +958,7 @@ public abstract class AbstractTestCase extends TestCase {
      */
     public static void main() {
         String caller = new SecurityManager() {
+            @Override
             public String toString() {
                 return getClassContext()[2].getName();
             }
@@ -1035,6 +1040,7 @@ public abstract class AbstractTestCase extends TestCase {
             _timeoutms = timeoutMin * 60 * 1000;
         }
 
+        @Override
         public void run() {
             while (true) {
                 try {
@@ -1045,6 +1051,7 @@ public abstract class AbstractTestCase extends TestCase {
                 if (_endtime > 0 && System.currentTimeMillis() > _endtime) {
                     Thread preTimeout = new Thread
                         ("Attempting pre-timeout for " + _curtest) {
+                        @Override
                         public void run() {
                             _curtest.preTimeout();
                         }

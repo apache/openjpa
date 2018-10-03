@@ -35,6 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestByteArray extends SingleEMTestCase {
     boolean runTest=false;
 
+    @Override
     public void setUp()  {
         super.setUp();
         OpenJPAEntityManagerFactorySPI ojpaEmf = (OpenJPAEntityManagerFactorySPI) emf;

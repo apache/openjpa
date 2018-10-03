@@ -18,9 +18,11 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import java.math.BigDecimal;
+
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test case to ensure that the proper JPA clear semantics are processed.
@@ -30,6 +32,7 @@ import java.math.BigDecimal;
 public class TestEntityManagerClear
     extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(AllFieldTypes.class, Item.class,CLEAR_TABLES);
     }

@@ -110,6 +110,7 @@ public class SpecificationPlugin extends ObjectValue implements ValueListener {
         }
     }
 
+    @Override
     public void valueChanged(Value value) {
         if (this.getClass().isInstance(value))
             ProductDerivations.afterSpecificationSet(_conf);

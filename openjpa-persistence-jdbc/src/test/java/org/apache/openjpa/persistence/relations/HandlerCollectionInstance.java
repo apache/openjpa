@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.relations;
 
 import java.util.Collection;
 import java.util.HashSet;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -31,7 +32,7 @@ public class HandlerCollectionInstance {
     private int id;
 
     @PersistentCollection
-    private Collection<String> collection = new HashSet<String>();
+    private Collection<String> collection = new HashSet<>();
 
     public Collection<String> getCollection() {
         return collection;

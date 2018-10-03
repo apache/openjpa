@@ -44,6 +44,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestWildCardCount extends SQLListenerTestCase {
     private EntityManager em;
+    @Override
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, "openjpa.jdbc.QuerySQLCache", "false");
         em = emf.createEntityManager();

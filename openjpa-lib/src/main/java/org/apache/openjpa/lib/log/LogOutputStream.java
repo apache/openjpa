@@ -51,6 +51,7 @@ public class LogOutputStream extends ByteArrayOutputStream {
         _level = level;
     }
 
+    @Override
     public void flush() throws IOException {
         super.flush();
         byte[] bytes = toByteArray();

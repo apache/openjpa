@@ -40,7 +40,7 @@ public class EntityAInverseEager  {
 
 	@OneToMany(fetch=FetchType.EAGER, mappedBy="entityA")
     private List<EntityBInverseEager> listB =
-        new ArrayList<EntityBInverseEager>();
+        new ArrayList<>();
 
 	public EntityAInverseEager() {}
 

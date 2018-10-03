@@ -27,15 +27,19 @@ package org.apache.openjpa.kernel.exps;
 public abstract class AbstractExpressionVisitor
     implements ExpressionVisitor {
 
+    @Override
     public void enter(Expression exp) {
     }
 
+    @Override
     public void exit(Expression exp) {
     }
 
+    @Override
     public void enter(Value val) {
     }
 
+    @Override
     public void exit(Value val) {
     }
 }

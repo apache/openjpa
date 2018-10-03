@@ -50,6 +50,7 @@ public class XMLFieldEmbedEntity {
         epa = ep;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLFieldEmbedEntity) {
             XMLFieldEmbedEntity ps = (XMLFieldEmbedEntity)obj;

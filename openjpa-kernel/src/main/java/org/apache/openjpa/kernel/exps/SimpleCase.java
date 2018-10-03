@@ -27,6 +27,8 @@ import org.apache.openjpa.kernel.StoreContext;
  * @author Catalina Wei
  */
 public class SimpleCase extends Val {
+    
+    private static final long serialVersionUID = 1L;
     private final Val _caseOperand;
     private final Exp[] _exp;
     private final Val _val;
@@ -86,6 +88,7 @@ public class SimpleCase extends Val {
             || (o1 != null && o1.equals(o2));
     }
 
+    @Override
     public Class getType() {
         Class c1 = _val.getType();
         for (int i = 0; i < _exp.length; i++) {
@@ -95,9 +98,11 @@ public class SimpleCase extends Val {
         return c1;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _caseOperand.acceptVisit(visitor);

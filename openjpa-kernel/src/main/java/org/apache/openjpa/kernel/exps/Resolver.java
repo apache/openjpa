@@ -35,27 +35,27 @@ public interface Resolver {
      * imports, and will properly handle primitives and java.lang types
      * as well. Returns null if the name does not match a known type.
      */
-    public Class classForName(String name, String[] imports);
+    Class classForName(String name, String[] imports);
 
     /**
      * Return the filter listener for the given tag, or null if none.
      */
-    public FilterListener getFilterListener(String tag);
+    FilterListener getFilterListener(String tag);
 
     /**
      * Return the function listener for the given tag, or null if none.
      */
-    public AggregateListener getAggregateListener(String tag);
+    AggregateListener getAggregateListener(String tag);
 
     /**
      * Return the OpenJPA configuration.
      */
-    public OpenJPAConfiguration getConfiguration ();
+    OpenJPAConfiguration getConfiguration ();
 
     /**
      * The {@link QueryContext} for which this resolver was created
      *
      * @since 1.1.0
      */
-    public QueryContext getQueryContext();
+    QueryContext getQueryContext();
 }

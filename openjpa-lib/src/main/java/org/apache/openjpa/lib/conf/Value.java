@@ -95,7 +95,7 @@ public abstract class Value implements Cloneable {
      */
     public void addEquivalentKey(String other) {
         if (otherNames == null)
-            otherNames = new HashSet<String>();
+            otherNames = new HashSet<>();
         otherNames.add(other);
     }
 
@@ -118,7 +118,7 @@ public abstract class Value implements Cloneable {
      * @since 2.0.0
      */
     public List<String> getPropertyKeys() {
-        List<String> result = new ArrayList<String>(1 +
+        List<String> result = new ArrayList<>(1 +
             (otherNames ==null ? 0 : otherNames.size()));
         result.add(getProperty());
         if (otherNames != null)
@@ -444,7 +444,7 @@ public abstract class Value implements Cloneable {
     	if (listener == null)
     		return;
     	if (listeners == null)
-    		listeners = new ArrayList<ValueListener>();
+    		listeners = new ArrayList<>();
         listeners.add(listener);
     }
 
@@ -519,6 +519,7 @@ public abstract class Value implements Cloneable {
      * for non-dynamic Values and ensures that modifying dynamic Values do not
      * impact equality or hashCode contract.
      */
+    @Override
     public int hashCode() {
         String str = (isDynamic()) ? getOriginalValue() : getString();
         int strHash = (str == null) ? 0 : str.hashCode();
@@ -532,6 +533,7 @@ public abstract class Value implements Cloneable {
      * for non-dynamic Values and ensures that modifying dynamic Values do not
      * impact equality or hashCode contract.
      */
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -546,6 +548,7 @@ public abstract class Value implements Cloneable {
             && Objects.equals(thisStr, thatStr);
     }
 
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -590,6 +593,7 @@ public abstract class Value implements Cloneable {
      */
     public abstract Object get();
 
+    @Override
     public String toString() {
         return getProperty()+ ":" + get() + "[" + getValueType().getName() + "]";
     }

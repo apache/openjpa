@@ -45,6 +45,9 @@ import org.apache.openjpa.persistence.jdbc.VersionColumn;
 @IdClass(PageId.class)
 @VersionColumn
 public class Page implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     @Column(name="PAGE_NUMBER",nullable = false)
     private int number;

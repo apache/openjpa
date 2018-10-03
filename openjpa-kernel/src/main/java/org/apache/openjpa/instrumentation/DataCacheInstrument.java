@@ -29,114 +29,114 @@ public interface DataCacheInstrument {
     /**
      * Gets number of total read requests for the given class since last reset.
      */
-    public long getReadCount(String className);
+    long getReadCount(String className);
 
     /**
      * Gets number of total read requests that has been found in cache for the given class since last reset.
      */
-    public long getHitCount(String className);
+    long getHitCount(String className);
 
     /**
      * Gets number of total write requests for the given class since last reset.
      */
-    public long getWriteCount(String className);
+    long getWriteCount(String className);
 
     /**
      * Gets number of total read requests for the given class since start.
      */
-    public long getTotalReadCount(String className);
+    long getTotalReadCount(String className);
 
     /**
      * Gets number of total read requests that has been found in cache for the given class since start.
      */
-    public long getTotalHitCount(String className);
+    long getTotalHitCount(String className);
 
     /**
      * Gets number of total write requests for the given class since start.
      */
-    public long getTotalWriteCount(String className);
+    long getTotalWriteCount(String className);
 
     /**
      * Returns the name of the cache
      */
-    public String getCacheName();
+    String getCacheName();
 
     /**
      * Returns the hit count since cache statistics were last reset
      */
-    public long getHitCount();
+    long getHitCount();
 
     /**
      * Returns the read count since cache statistics were last reset
      */
-    public long getReadCount();
+    long getReadCount();
 
     /**
      * Returns the total hits since start.
      */
-    public long getTotalHitCount();
+    long getTotalHitCount();
 
     /**
      * Returns the total reads since start.
      */
-    public long getTotalReadCount();
+    long getTotalReadCount();
 
     /**
      * Returns the total writes since start.
      */
-    public long getTotalWriteCount();
+    long getTotalWriteCount();
 
     /**
      * Returns the write count since cache statistics were last reset
      */
-    public long getWriteCount();
+    long getWriteCount();
 
     /**
      * Resets cache statistics
      */
-    public void reset();
+    void reset();
 
     /**
      * Returns date since cache statistics collection were last reset.
      */
-    public Date sinceDate();
+    Date sinceDate();
 
     /**
      * Returns date cache statistics collection started.
      */
-    public Date startDate();
+    Date startDate();
 
     /**
      * Returns the names of classes that are known to the cache and whether or not they are currently being cached.
      */
-    public Map<String, Boolean> listKnownTypes();
+    Map<String, Boolean> listKnownTypes();
 
     /**
      * Returns true if cache statistics are currently being calculated. False otherwise.
      */
-    public Boolean getStatisticsEnabled();
+    Boolean getStatisticsEnabled();
 
     /**
      *
      * @param enable - If true, the cache will start collecting statistics. Else cache statistics will not be collected.
      */
-    public void collectStatistics(boolean enable);
+    void collectStatistics(boolean enable);
 
     /**
      * This method is used to enable/disable caching for the specified className.
      */
-    public void cache(String className, boolean enable);
+    void cache(String className, boolean enable);
 
     /**
      * Returns the CacheStatistics for the cache.
      * The format for this map is:
      *  Type(String) => Enabled(Boolean),Read(Long),Hit(Long),Write(Long)
      */
-    public Map<String, long[]> getCacheStatistics();
+    Map<String, long[]> getCacheStatistics();
 
 
     /**
      * Clears all data from the DataCache.
      */
-    public void clear();
+    void clear();
 }

@@ -30,6 +30,9 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class NoResultException
     extends InvalidStateException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public NoResultException(Message msg) {
         super(msg);
     }
@@ -39,6 +42,7 @@ public class NoResultException
         setFailedObject(failed);
     }
 
+    @Override
     public int getSubtype() {
         return NO_RESULT;
     }

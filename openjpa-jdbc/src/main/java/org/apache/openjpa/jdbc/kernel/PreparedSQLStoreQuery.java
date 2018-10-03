@@ -34,8 +34,8 @@ import org.apache.openjpa.jdbc.sql.ResultSetResult;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.jdbc.sql.SelectImpl;
-import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.ExpressionStoreQuery.AbstractExpressionExecutor;
+import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
@@ -48,18 +48,20 @@ import org.apache.openjpa.util.InternalException;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class PreparedSQLStoreQuery extends SQLStoreQuery {
+    private static final long serialVersionUID = 1L;
     private PreparedQueryImpl _cached;
     public PreparedSQLStoreQuery(JDBCStore store) {
         super(store);
     }
 
+    @Override
     public Executor newDataStoreExecutor(ClassMetaData meta,
         boolean subclasses) {
         return new PreparedSQLExecutor(this, meta);
     }
 
+    @Override
     public boolean setQuery(Object query) {
         if (query instanceof PreparedQueryImpl == false) {
             throw new InternalException(query.getClass() + " not recognized");
@@ -86,14 +88,17 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
             _query = q;
         }
 
+        @Override
         public QueryExpressions[] getQueryExpressions() {
             return _query.getPreparedQuery().getQueryExpressions();
         }
 
+        @Override
         public Class[] getProjectionTypes(StoreQuery q) {
             return _query.getPreparedQuery().getProjectionTypes();
         }
 
+        @Override
         public ResultObjectProvider executeQuery(StoreQuery q, Object[] params, Range range) {
             PreparedSQLStoreQuery psq = (PreparedSQLStoreQuery) q;
             PreparedQueryImpl pq = psq.getPreparedQuery();
@@ -152,6 +157,7 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
          *
          * @see PreparedQueryImpl#reparametrize(Map, org.apache.openjpa.kernel.Broker)
          */
+        @Override
         public synchronized Object[] toParameterArray(StoreQuery q, Map userParams) {
             Object[] array = new Object[userParams.size()];
 

@@ -33,6 +33,7 @@ public class IntValue extends Value {
         super(prop);
     }
 
+    @Override
     public Class<Integer> getValueType() {
         return int.class;
     }
@@ -51,14 +52,17 @@ public class IntValue extends Value {
     /**
      * The internal value.
      */
+    @Override
     public Integer get() {
         return this.value;
     }
 
+    @Override
     protected String getInternalString() {
         return String.valueOf(this.value);
     }
 
+    @Override
     protected void setInternalString(String val) {
         if (StringUtil.isEmpty(val))
             set(0);
@@ -66,6 +70,7 @@ public class IntValue extends Value {
             set(Integer.parseInt(val));
     }
 
+    @Override
     protected void setInternalObject(Object obj) {
         if (obj == null)
             set(0);

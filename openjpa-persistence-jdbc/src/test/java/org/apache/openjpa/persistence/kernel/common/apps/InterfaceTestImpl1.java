@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -28,11 +29,10 @@ import javax.persistence.Table;
  * @author Abe White
  */
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "impl_1")
 public class InterfaceTestImpl1 implements InterfaceTest, Serializable {
-
+    private static final long serialVersionUID = 1L;
     private String stringField;
 
     protected InterfaceTestImpl1() {
@@ -42,10 +42,12 @@ public class InterfaceTestImpl1 implements InterfaceTest, Serializable {
         this.stringField = str;
     }
 
+    @Override
     public String getStringField() {
         return this.stringField;
     }
 
+    @Override
     public void setStringField(String str) {
         this.stringField = str;
     }

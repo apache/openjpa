@@ -25,9 +25,8 @@ import org.apache.openjpa.kernel.Filters;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class Sum
-    extends NullableAggregateUnaryOp { // OPENJPA-1794
+class Sum extends NullableAggregateUnaryOp { // OPENJPA-1794
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructor. Provide the value to operate on.
@@ -36,6 +35,7 @@ class Sum
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         Class wrap = Filters.wrap(c);
         if (wrap == Integer.class
@@ -45,10 +45,12 @@ class Sum
         return c;
     }
 
+    @Override
     protected String getOperator() {
         return "SUM";
     }
 
+    @Override
     public boolean isAggregate() {
         return true;
     }

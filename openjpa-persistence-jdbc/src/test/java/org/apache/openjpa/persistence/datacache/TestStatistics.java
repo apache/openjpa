@@ -20,13 +20,13 @@ package org.apache.openjpa.persistence.datacache;
 
 import javax.persistence.EntityManager;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.StoreCache;
 import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Tests statistics of data cache operation.
@@ -47,6 +47,7 @@ public class TestStatistics extends SingleEMFTestCase {
     private StoreCache cache;
     CacheStatistics stats;
 
+    @Override
     public void setUp() {
         super.setUp(p);
         cache = emf.getStoreCache();

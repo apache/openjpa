@@ -23,6 +23,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestInitializeEagerly extends SingleEMFTestCase {
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class,
             "openjpa.InitializeEagerly", "true",

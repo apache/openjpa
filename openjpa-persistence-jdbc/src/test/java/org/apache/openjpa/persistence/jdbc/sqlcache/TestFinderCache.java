@@ -60,6 +60,7 @@ public class TestFinderCache extends SQLListenerTestCase {
         em.close();
     }
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES,
                 "openjpa.RuntimeUnenhancedClasses", "unsupported",
@@ -102,7 +103,7 @@ public class TestFinderCache extends SQLListenerTestCase {
      */
     <T> long run(int N, Class<T> cls, long[] ids) {
         EntityManager em = emf.createEntityManager();
-        List<Long> stats = new ArrayList<Long>();
+        List<Long> stats = new ArrayList<>();
         for (int n = 0; n < N; n++) {
             em.clear();
             long start = System.nanoTime();

@@ -20,20 +20,21 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.List;
 
-import org.apache.openjpa.persistence.test.SingleEMTestCase;
-import org.apache.openjpa.persistence.models.company.fetchlazy.ProductOrder;
-import org.apache.openjpa.persistence.models.company.fetchlazy.LineItem;
-import org.apache.openjpa.persistence.models.company.fetchlazy.Product;
-import org.apache.openjpa.persistence.models.company.fetchlazy.Customer;
 import org.apache.openjpa.persistence.models.company.fetchlazy.Address;
 import org.apache.openjpa.persistence.models.company.fetchlazy.Company;
+import org.apache.openjpa.persistence.models.company.fetchlazy.Customer;
 import org.apache.openjpa.persistence.models.company.fetchlazy.Employee;
-import org.apache.openjpa.persistence.models.company.fetchlazy.PartTimeEmployee;
 import org.apache.openjpa.persistence.models.company.fetchlazy.FullTimeEmployee;
+import org.apache.openjpa.persistence.models.company.fetchlazy.LineItem;
+import org.apache.openjpa.persistence.models.company.fetchlazy.PartTimeEmployee;
 import org.apache.openjpa.persistence.models.company.fetchlazy.Person;
+import org.apache.openjpa.persistence.models.company.fetchlazy.Product;
+import org.apache.openjpa.persistence.models.company.fetchlazy.ProductOrder;
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestDistinctQueries extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(Address.class, Company.class, Customer.class, Employee.class,
             FullTimeEmployee.class, LineItem.class, PartTimeEmployee.class,

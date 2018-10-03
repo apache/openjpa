@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -31,6 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestManyToMany
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class, CLEAR_TABLES);
     }

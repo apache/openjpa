@@ -36,28 +36,28 @@ public interface ExpressionParser
     /**
      * Return a string key describing the language that this instance parses.
      */
-    public String getLanguage();
+    String getLanguage();
 
     /**
      * Return a parsed intermediate form of the given query string.
      */
-    public Object parse(String ql, ExpressionStoreQuery query);
+    Object parse(String ql, ExpressionStoreQuery query);
 
     /**
      * Use the parsed query form to set information such as candidate type,
      * result type, etc that was encoded in the query string.
      */
-    public void populate(Object parsed, ExpressionStoreQuery query);
+    void populate(Object parsed, ExpressionStoreQuery query);
 
     /**
      * Parse the given query string.
      */
-    public QueryExpressions eval(Object parsed, ExpressionStoreQuery query,
+    QueryExpressions eval(Object parsed, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate);
 
     /**
      * Parse the given value clauses.
      */
-    public Value[] eval(String[] vals, ExpressionStoreQuery query,
+    Value[] eval(String[] vals, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate);
 }

@@ -22,10 +22,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.FlightSchedule;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Schedule;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="excluded")
 public class TestAdvAnnot extends AnnotationTestCase
@@ -35,7 +35,8 @@ public class TestAdvAnnot extends AnnotationTestCase
 		super(name, "annotationcactusapp");
 	}
 
-	public void setUp() {
+	@Override
+    public void setUp() {
 		deleteAll(Schedule.class);
 		deleteAll(FlightSchedule.class);
 

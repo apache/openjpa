@@ -19,9 +19,8 @@
 package org.apache.openjpa.persistence.query;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
-
-
 
 import org.apache.openjpa.persistence.query.common.apps.Entity1;
 import org.apache.openjpa.persistence.query.common.apps.Entity2;
@@ -32,6 +31,7 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(Entity1.class, Entity2.class, Order.class, OrderItem.class);
 

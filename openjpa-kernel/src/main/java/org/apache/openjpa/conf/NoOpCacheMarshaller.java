@@ -28,21 +28,26 @@ public class NoOpCacheMarshaller
 
     private String id;
 
+    @Override
     public Object load() {
         return null;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setValidationPolicy(String policy) {
     }
 
+    @Override
     public void store(Object o) {
     }
 }

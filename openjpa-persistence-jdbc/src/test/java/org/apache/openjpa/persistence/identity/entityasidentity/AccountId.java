@@ -56,6 +56,7 @@ public class AccountId implements java.io.Serializable {
         this.accountHolder = accountHolder;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
@@ -73,6 +74,7 @@ public class AccountId implements java.io.Serializable {
         return false;
     }
 
+    @Override
     public int hashCode() {
         if (hashcode == null) {
             String hashStr = this.groupId + ":" + this.accountHolder + ":" + this.accountId;

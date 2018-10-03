@@ -30,6 +30,7 @@ import org.apache.openjpa.meta.ValueMetaData;
 public class NoneOrphanedKeyAction
     implements OrphanedKeyAction {
 
+    @Override
     public Object orphan(Object oid, OpenJPAStateManager sm,
         ValueMetaData vmd) {
         return null;

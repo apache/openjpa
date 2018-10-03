@@ -20,9 +20,9 @@ package org.apache.openjpa.meta;
 
 import java.util.Comparator;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.util.ImplHelper;
 
 /**
@@ -33,6 +33,8 @@ import org.apache.openjpa.util.ImplHelper;
 class InMemoryRelatedFieldOrder
     implements Order, Comparator {
 
+    
+    private static final long serialVersionUID = 1L;
     private final FieldMetaData _rel;
     private final boolean _asc;
     private final OpenJPAConfiguration _conf;
@@ -44,18 +46,22 @@ class InMemoryRelatedFieldOrder
         _conf = conf;
     }
 
+    @Override
     public String getName() {
         return _rel.getName();
     }
 
+    @Override
     public boolean isAscending() {
         return _asc;
     }
 
+    @Override
     public Comparator getComparator() {
         return this;
     }
 
+    @Override
     public int compare(Object o1, Object o2) {
         if (o1 == o2)
             return 0;

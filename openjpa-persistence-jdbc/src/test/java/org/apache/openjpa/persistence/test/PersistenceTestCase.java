@@ -37,14 +37,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
-import junit.framework.TestResult;
-
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+
+import junit.framework.TestCase;
+import junit.framework.TestResult;
 
 /**
  * Base test class providing persistence utilities.
@@ -57,6 +57,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
  *
  * @deprecated use AbstractEMFCacheTestCase or AbstractPersistenceTestCase instead
  */
+@Deprecated
 public abstract class PersistenceTestCase
     extends TestCase {
     private static FixedMap _emfs = new FixedMap();
@@ -139,8 +140,8 @@ public abstract class PersistenceTestCase
     }
 
     protected Map<String,Object> getPropertiesMap(Object ... props) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        Map<String, Object> map = new HashMap<>();
+        List<Class<?>> types = new ArrayList<>();
         boolean prop = false;
 
         for (int i = 0; props != null && i < props.length; i++) {
@@ -247,7 +248,7 @@ public abstract class PersistenceTestCase
         if (emf == null || types.length == 0)
             return;
 
-        List<ClassMetaData> metas = new ArrayList<ClassMetaData>(types.length);
+        List<ClassMetaData> metas = new ArrayList<>(types.length);
         for (Class c : types) {
             ClassMetaData meta = JPAFacadeHelper.getMetaData(emf, c);
             if (meta != null)
@@ -574,6 +575,10 @@ public abstract class PersistenceTestCase
 
     private static class FixedMap extends LinkedHashMap<EMFKey,
             OpenJPAEntityManagerFactorySPI> {
+        
+        private static final long serialVersionUID = 1L;
+
+        @Override
         public boolean removeEldestEntry(Map.Entry<EMFKey,
                 OpenJPAEntityManagerFactorySPI> entry) {
             return this.size() > 2;
@@ -588,10 +593,12 @@ public abstract class PersistenceTestCase
             this.config = config;
         }
 
+        @Override
         public int hashCode() {
             return (unit != null ? unit.hashCode() : 0) + config.hashCode();
         }
 
+        @Override
         public boolean equals(Object other) {
             EMFKey that = (EMFKey)other;
             return (unit != null ? unit.equals(that.unit) : that.unit == null)

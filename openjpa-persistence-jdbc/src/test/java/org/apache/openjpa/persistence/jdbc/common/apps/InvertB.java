@@ -20,7 +20,11 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 
 /**
@@ -28,12 +32,12 @@ import javax.persistence.*;
  *
  *	@author		skim
  */
-@SuppressWarnings("serial")
 @Entity
 public class InvertB implements Serializable
 {
+    private static final long serialVersionUID = 1L;
 
-	@Id
+    @Id
 	private int id;
 
 	@OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})

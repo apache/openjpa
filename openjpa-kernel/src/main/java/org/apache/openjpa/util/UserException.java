@@ -29,6 +29,8 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class UserException
     extends OpenJPAException {
 
+    
+    private static final long serialVersionUID = 1L;
     public static final int METADATA = 1;
     public static final int INVALID_STATE = 2;
     public static final int NO_TRANSACTION = 3;
@@ -59,6 +61,7 @@ public class UserException
         super(msg, cause);
     }
 
+    @Override
     public int getType() {
         return USER;
     }

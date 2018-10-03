@@ -84,11 +84,12 @@ public class TestSwitchConnection extends SingleEMFTestCase {
     }
 
     protected EntityManager getEm(EntityManagerFactory emf1, String name, String value) {
-        Map<String, Object> props = new HashMap<String, Object>();
+        Map<String, Object> props = new HashMap<>();
         props.put(name, value);
         return emf1.createEntityManager(props);
     }
 
+    @Override
     public String getPersistenceUnitName() {
         return "TestCfSwitching";
     }

@@ -27,10 +27,8 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier;
  * @author Abe White
  * @author Stephen Kim
  */
-@SuppressWarnings("serial")
-public class Index
-    extends LocalConstraint {
-
+public class Index extends LocalConstraint {
+    private static final long serialVersionUID = 1L;
     private boolean _unique = false;
 
     /**
@@ -46,6 +44,7 @@ public class Index
      * @param table the table of the index
      * @deprecated
      */
+    @Deprecated
     public Index(String name, Table table) {
         super(name, table);
     }
@@ -68,6 +67,7 @@ public class Index
         _unique = unique;
     }
 
+    @Override
     public boolean isLogical() {
         return false;
     }
@@ -75,10 +75,13 @@ public class Index
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public String getFullName() {
         return getFullIdentifier().getName();
     }
 
+    @Override
     public DBIdentifier getFullIdentifier() {
         return getQualifiedPath().getIdentifier();
     }

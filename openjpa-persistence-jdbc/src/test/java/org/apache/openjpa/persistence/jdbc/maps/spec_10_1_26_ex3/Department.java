@@ -37,7 +37,7 @@ public class Department {
 
     @OneToMany(cascade=CascadeType.ALL)
     @MapKey(name="name")
-    Map<EmployeeName, Employee> emps = new HashMap<EmployeeName, Employee>();
+    Map<EmployeeName, Employee> emps = new HashMap<>();
 
     public int getDeptId() {
         return deptId;

@@ -29,6 +29,9 @@ import java.util.Map;
 class BindValueVariableExpression
     extends BindVariableExpression {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor.
      *
@@ -39,6 +42,7 @@ class BindValueVariableExpression
         super(var, val);
     }
 
+    @Override
     protected Collection getCollection(Object values) {
         Map map = (Map) values;
         return (map == null) ? null : map.values();

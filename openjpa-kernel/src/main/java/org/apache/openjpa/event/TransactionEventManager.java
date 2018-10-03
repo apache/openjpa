@@ -31,10 +31,13 @@ import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 public class TransactionEventManager
     extends AbstractConcurrentEventManager {
 
+    
+    private static final long serialVersionUID = 1L;
     private int _begin = 0;
     private int _flush = 0;
     private int _end = 0;
 
+    @Override
     public void addListener(Object listener) {
         super.addListener(listener);
         if (listener instanceof BeginTransactionListener)
@@ -45,6 +48,7 @@ public class TransactionEventManager
             _end++;
     }
 
+    @Override
     public boolean removeListener(Object listener) {
         if (!super.removeListener(listener))
             return false;
@@ -82,6 +86,7 @@ public class TransactionEventManager
     /**
      * Fire the given event to all registered listeners.
      */
+    @Override
     protected void fireEvent(Object event, Object listener) {
         TransactionEvent ev = (TransactionEvent) event;
         switch (ev.getType()) {

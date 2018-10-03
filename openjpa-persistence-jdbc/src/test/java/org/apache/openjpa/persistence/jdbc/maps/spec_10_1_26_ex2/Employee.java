@@ -20,7 +20,11 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex2;
 
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="S6E2Emp")

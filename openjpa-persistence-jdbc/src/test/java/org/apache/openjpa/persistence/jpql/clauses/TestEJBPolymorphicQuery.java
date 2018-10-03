@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jpql.clauses;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.apps.RuntimeTest1;
@@ -31,6 +32,7 @@ public class TestEJBPolymorphicQuery extends AbstractTestCase {
         super(name, "jpqlclausescactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);

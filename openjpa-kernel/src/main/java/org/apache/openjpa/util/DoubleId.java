@@ -26,6 +26,8 @@ package org.apache.openjpa.util;
 public final class DoubleId
     extends OpenJPAId {
 
+    
+    private static final long serialVersionUID = 1L;
     private final double key;
 
     public DoubleId(Class cls, Double key) {
@@ -50,19 +52,23 @@ public final class DoubleId
         return key;
     }
 
+    @Override
     public Object getIdObject() {
         return Double.valueOf(key);
     }
 
+    @Override
     public String toString() {
         return Double.toString(key);
     }
 
+    @Override
     protected int idHash() {
         return (int) (Double.doubleToLongBits(key)
             ^ (Double.doubleToLongBits(key) >>> 32));
     }
 
+    @Override
     protected boolean idEquals(OpenJPAId o) {
         return key == ((DoubleId) o).key;
     }

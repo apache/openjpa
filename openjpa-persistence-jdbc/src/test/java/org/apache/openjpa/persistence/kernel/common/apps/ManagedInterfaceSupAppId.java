@@ -22,20 +22,22 @@ import java.util.StringTokenizer;
 
 public interface ManagedInterfaceSupAppId {
 
-    public int getId1();
+    int getId1();
 
-    public void setId1(int i);
+    void setId1(int i);
 
-    public int getId2();
+    int getId2();
 
-    public void setId2(int i);
+    void setId2(int i);
 
-    public int getIntFieldSup();
+    int getIntFieldSup();
 
-    public void setIntFieldSup(int i);
+    void setIntFieldSup(int i);
 
     public static class Id implements java.io.Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public int id1;
         public int id2;
 
@@ -48,14 +50,17 @@ public interface ManagedInterfaceSupAppId {
             id2 = Integer.parseInt(tok.nextToken());
         }
 
+        @Override
         public String toString() {
             return id1 + "," + id2;
         }
 
+        @Override
         public int hashCode() {
             return id1 + id2;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof Id))
                 return false;

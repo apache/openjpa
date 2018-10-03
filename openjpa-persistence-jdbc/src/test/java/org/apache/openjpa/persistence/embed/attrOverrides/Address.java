@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="ADR_AO")
@@ -72,7 +76,8 @@ public class Address {
     	this.zipcode = zipcode;
     }
 
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (o == this) return true;
 		if (!(o instanceof Address)) return false;
 		Address a = (Address) o;
@@ -83,7 +88,8 @@ public class Address {
 		return true;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		int ret = 0;
 		ret = ret + 31 * city.hashCode();
 		ret = ret + 31 * state.hashCode();

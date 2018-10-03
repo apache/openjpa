@@ -28,10 +28,12 @@ public class TestDataCachePCDataGenerator
         super(test);
     }
 
+    @Override
     protected String[] getConfs() {
         return addGenerator(super.getConfs());
     }
 
+    @Override
     protected String[] getConfs2() {
         return addGenerator(super.getConfs2());
     }

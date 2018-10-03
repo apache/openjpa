@@ -44,7 +44,8 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	private static String BOOK_NAME    = "foo";
 	private static int    NUM_PAGES    = 3;
 
-	public void setUp() throws Exception {
+	@Override
+    public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, Library.class, Book.class, Page.class,
                 "openjpa.RuntimeUnenhancedClasses", "unsupported");
 		create();

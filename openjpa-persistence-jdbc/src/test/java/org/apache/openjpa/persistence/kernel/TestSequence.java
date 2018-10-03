@@ -28,10 +28,9 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import org.apache.openjpa.persistence.kernel.common.apps.AImplB;
-
 import org.apache.openjpa.persistence.Generator;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.AImplB;
 
 public class TestSequence extends BaseKernelTest {
 
@@ -45,6 +44,7 @@ public class TestSequence extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(AImplB.class);
     }

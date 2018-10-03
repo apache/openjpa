@@ -75,7 +75,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
 
         // create the Map to test overrides
         //   Just use current class object, as we have no provider to test with
-        Map<String,Object> props = new HashMap<String,Object>();
+        Map<String,Object> props = new HashMap<>();
         props.put("javax.persistence.validation.factory",
             this.getClass());
 
@@ -105,7 +105,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
 
         // create the Map to test overrides
         //   Just use current class object, as we have no provider to test with
-        Map<String,Object> props = new HashMap<String,Object>();
+        Map<String,Object> props = new HashMap<>();
         props.put("javax.persistence.validation.factory",
             this.getClass());
 
@@ -135,7 +135,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
 
         // create the Map to test overrides
         //   Just use current class object, as we have no provider to test with
-        Map<String,Object> props = new HashMap<String,Object>();
+        Map<String,Object> props = new HashMap<>();
         props.put("javax.persistence.validation.factory",
             this.getClass());
         props.put("javax.persistence.validation.mode",

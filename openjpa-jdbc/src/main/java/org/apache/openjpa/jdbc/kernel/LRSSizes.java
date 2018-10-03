@@ -31,16 +31,16 @@ public interface LRSSizes {
      * Mode for returning {@link Integer#MAX_VALUE} for the size of
      * large result sets.
      */
-    public static final int SIZE_UNKNOWN = 0;
+    int SIZE_UNKNOWN = 0;
 
     /**
      * Mode for using {@link ResultSet#last} to calcualte the size of
      * large result sets.
      */
-    public static final int SIZE_LAST = 1;
+    int SIZE_LAST = 1;
 
     /**
      * Mode for using a query to calculate the size of large result sets.
      */
-    public static final int SIZE_QUERY = 2;
+    int SIZE_QUERY = 2;
 }

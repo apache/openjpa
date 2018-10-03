@@ -38,6 +38,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     private static final String PROXY = new String("$proxy");
     private Log _log;
 
+    @Override
     public void setUp() {
         setUp(DROP_TABLES, Entity20.class);
         _log = emf.getConfiguration().getLog("test");
@@ -180,7 +181,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         OpenJPAEntityManager em = emf2.createEntityManager();
         em.clear();
 
-        ArrayList<Entity20> e20List = new ArrayList<Entity20>(numEntities);
+        ArrayList<Entity20> e20List = new ArrayList<>(numEntities);
         for (int i=0; i<numEntities; i++) {
             Entity20 e20 = em.find(Entity20.class, new Integer(i));
             e20List.add(e20);
@@ -235,7 +236,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         OpenJPAEntityManager em = emf1.createEntityManager();
         em.clear();
 
-        ArrayList<Entity20> e20List = new ArrayList<Entity20>(numEntities);
+        ArrayList<Entity20> e20List = new ArrayList<>(numEntities);
         for (int i=0; i<numEntities; i++) {
             Entity20 e20 = em.find(Entity20.class, new Integer(i));
             e20List.add(e20);
@@ -289,7 +290,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         OpenJPAEntityManager em = emf2.createEntityManager();
         em.clear();
 
-        ArrayList<Entity20> e20List = new ArrayList<Entity20>(numEntities);
+        ArrayList<Entity20> e20List = new ArrayList<>(numEntities);
         for (int i=0; i<numEntities; i++) {
             Entity20 e20 = em.find(Entity20.class, new Integer(i));
             e20List.add(e20);
@@ -343,7 +344,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         OpenJPAEntityManager em = emf2.createEntityManager();
         em.clear();
 
-        ArrayList<Entity20> e20List = new ArrayList<Entity20>(numEntities);
+        ArrayList<Entity20> e20List = new ArrayList<>(numEntities);
         for (int i=0; i<numEntities; i++) {
             Entity20 e20 = em.find(Entity20.class, new Integer(i));
             e20List.add(e20);

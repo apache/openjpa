@@ -76,6 +76,7 @@ class MappedQueryResultObjectProvider
         _mres = new MappingResult(res);
     }
 
+    @Override
     public boolean supportsRandomAccess() {
         try {
             return _mres.supportsRandomAccess();
@@ -84,9 +85,11 @@ class MappedQueryResultObjectProvider
         }
     }
 
+    @Override
     public void open() {
     }
 
+    @Override
     public Object getResultObject()
         throws SQLException {
         QueryResultMapping.PCResult[] pcs = _map.getPCResults();
@@ -108,16 +111,19 @@ class MappedQueryResultObjectProvider
         return ret;
     }
 
+    @Override
     public boolean next()
         throws SQLException {
         return _mres.next();
     }
 
+    @Override
     public boolean absolute(int pos)
         throws SQLException {
         return _mres.absolute(pos);
     }
 
+    @Override
     public int size()
         throws SQLException {
         if (_fetch.getLRSSize() == LRSSizes.SIZE_UNKNOWN
@@ -126,14 +132,17 @@ class MappedQueryResultObjectProvider
         return _mres.size();
     }
 
+    @Override
     public void reset() {
         throw new UnsupportedException();
     }
 
+    @Override
     public void close() {
         _mres.close();
     }
 
+    @Override
     public void handleCheckedException(Exception e) {
         if (e instanceof SQLException)
             throw SQLExceptions.getStore((SQLException) e,
@@ -174,12 +183,14 @@ class MappedQueryResultObjectProvider
             }
         }
 
+        @Override
         public Object load(ClassMapping mapping, JDBCStore store,
             JDBCFetchConfiguration fetch)
             throws SQLException {
             return load(mapping, store, fetch, null);
         }
 
+        @Override
         public Object load(ClassMapping mapping, JDBCStore store,
             JDBCFetchConfiguration fetch, Joins joins)
             throws SQLException {
@@ -192,6 +203,7 @@ class MappedQueryResultObjectProvider
                 _pc.getExcludes(_requests), this);
         }
 
+        @Override
         public Object getEager(FieldMapping key) {
             Object ret = _res.getEager(key);
             if (_pc == null || ret != null)
@@ -199,64 +211,78 @@ class MappedQueryResultObjectProvider
             return (_pc.hasEager(_requests, key)) ? this : null;
         }
 
+        @Override
         public void putEager(FieldMapping key, Object res) {
             _res.putEager(key, res);
         }
 
+        @Override
         public void close() {
             _res.close();
         }
 
+        @Override
         public Joins newJoins() {
             return _res.newJoins();
         }
 
+        @Override
         public boolean supportsRandomAccess()
             throws SQLException {
             return _res.supportsRandomAccess();
         }
 
+        @Override
         public ClassMapping getBaseMapping() {
             return _res.getBaseMapping();
         }
 
+        @Override
         public int size()
             throws SQLException {
             return _res.size();
         }
 
+        @Override
         public void startDataRequest(Object mapping) {
             _requests.push(mapping);
         }
 
+        @Override
         public void endDataRequest() {
             _requests.pop();
         }
 
+        @Override
         public boolean wasNull()
             throws SQLException {
             return _res.wasNull();
         }
 
+        @Override
         protected Object translate(Object obj, Joins joins) {
             return (_pc == null) ? obj : _pc.map(_requests, obj, joins);
         }
 
+        @Override
         protected boolean absoluteInternal(int row)
             throws SQLException {
             return _res.absolute(row);
         }
 
+        @Override
         protected boolean nextInternal()
             throws SQLException {
             return _res.next();
         }
 
+        @Override
         protected boolean containsInternal(Object obj, Joins joins)
             throws SQLException {
             return _res.contains(translate(obj, joins));
         }
 
+        @Override
         protected Array getArrayInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -264,6 +290,7 @@ class MappedQueryResultObjectProvider
             return _res.getArray(obj);
         }
 
+        @Override
         protected InputStream getAsciiStreamInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -271,6 +298,7 @@ class MappedQueryResultObjectProvider
             return _res.getAsciiStream(obj);
         }
 
+        @Override
         protected BigDecimal getBigDecimalInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -278,6 +306,7 @@ class MappedQueryResultObjectProvider
             return _res.getBigDecimal(obj);
         }
 
+        @Override
         protected Number getNumberInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -285,6 +314,7 @@ class MappedQueryResultObjectProvider
             return _res.getNumber(obj);
         }
 
+        @Override
         protected BigInteger getBigIntegerInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -292,6 +322,7 @@ class MappedQueryResultObjectProvider
             return _res.getBigInteger(obj);
         }
 
+        @Override
         protected InputStream getBinaryStreamInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -299,6 +330,7 @@ class MappedQueryResultObjectProvider
             return _res.getBinaryStream(obj);
         }
 
+        @Override
         protected Blob getBlobInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -306,6 +338,7 @@ class MappedQueryResultObjectProvider
             return _res.getBlob(obj);
         }
 
+        @Override
         protected boolean getBooleanInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -313,6 +346,7 @@ class MappedQueryResultObjectProvider
             return _res.getBoolean(obj);
         }
 
+        @Override
         protected byte getByteInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -320,6 +354,7 @@ class MappedQueryResultObjectProvider
             return _res.getByte(obj);
         }
 
+        @Override
         protected byte[] getBytesInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -327,6 +362,7 @@ class MappedQueryResultObjectProvider
             return _res.getBytes(obj);
         }
 
+        @Override
         protected Calendar getCalendarInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -334,6 +370,7 @@ class MappedQueryResultObjectProvider
             return _res.getCalendar(obj);
         }
 
+        @Override
         protected char getCharInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -341,6 +378,7 @@ class MappedQueryResultObjectProvider
             return _res.getChar(obj);
         }
 
+        @Override
         protected Reader getCharacterStreamInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -348,6 +386,7 @@ class MappedQueryResultObjectProvider
             return _res.getCharacterStream(obj);
         }
 
+        @Override
         protected Clob getClobInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -355,6 +394,7 @@ class MappedQueryResultObjectProvider
             return _res.getClob(obj);
         }
 
+        @Override
         protected Date getDateInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -362,6 +402,7 @@ class MappedQueryResultObjectProvider
             return _res.getDate(obj);
         }
 
+        @Override
         protected java.sql.Date getDateInternal(Object obj, Calendar cal,
             Joins joins)
             throws SQLException {
@@ -370,6 +411,7 @@ class MappedQueryResultObjectProvider
             return _res.getDate(obj, cal);
         }
 
+        @Override
         protected double getDoubleInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -377,6 +419,7 @@ class MappedQueryResultObjectProvider
             return _res.getDouble(obj);
         }
 
+        @Override
         protected float getFloatInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -384,6 +427,7 @@ class MappedQueryResultObjectProvider
             return _res.getFloat(obj);
         }
 
+        @Override
         protected int getIntInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -391,6 +435,7 @@ class MappedQueryResultObjectProvider
             return _res.getInt(obj);
         }
 
+        @Override
         protected Locale getLocaleInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -398,6 +443,7 @@ class MappedQueryResultObjectProvider
             return _res.getLocale(obj);
         }
 
+        @Override
         protected long getLongInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -413,12 +459,14 @@ class MappedQueryResultObjectProvider
          * @see org.apache.openjpa.jdbc.sql.AbstractResult#getObject(org.apache.
          * openjpa.jdbc.schema.Column, java.lang.Object, org.apache.openjpa.jdbc.sql.Joins)
          */
+        @Override
         public Object getObject(Column col, Object arg, Joins joins)
             throws SQLException {
             return getObjectInternal(translate(col, joins), col.getJavaType(),
                 arg, joins);
         }
 
+        @Override
         protected Object getObjectInternal(Object obj, int metaTypeCode,
             Object arg, Joins joins)
             throws SQLException {
@@ -435,6 +483,7 @@ class MappedQueryResultObjectProvider
             return _res.getObject(obj, metaTypeCode, arg);
         }
 
+        @Override
         protected Object getSQLObjectInternal(Object obj, Map map, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -442,6 +491,7 @@ class MappedQueryResultObjectProvider
             return _res.getSQLObject(obj, map);
         }
 
+        @Override
         protected Object getStreamInternal(JDBCStore store, Object obj,
             int metaTypeCode, Object arg, Joins joins) throws SQLException {
             if (obj instanceof Column)
@@ -449,6 +499,7 @@ class MappedQueryResultObjectProvider
             return _res.getObject(obj, metaTypeCode, arg);
         }
 
+        @Override
         protected Ref getRefInternal(Object obj, Map map, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -456,6 +507,7 @@ class MappedQueryResultObjectProvider
             return _res.getRef(obj, map);
         }
 
+        @Override
         protected short getShortInternal(Object obj, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -470,6 +522,7 @@ class MappedQueryResultObjectProvider
             return _res.getString(obj);
         }
 
+        @Override
         protected Time getTimeInternal(Object obj, Calendar cal, Joins joins)
             throws SQLException {
             if (obj instanceof Column)
@@ -477,6 +530,7 @@ class MappedQueryResultObjectProvider
             return _res.getTime(obj, cal);
         }
 
+        @Override
         protected Timestamp getTimestampInternal(Object obj, Calendar cal,
             Joins joins)
             throws SQLException {

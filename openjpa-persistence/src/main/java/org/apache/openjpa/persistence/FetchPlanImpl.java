@@ -51,12 +51,12 @@ public class FetchPlanImpl
      * Structure holds ranking of equivalent hint keys. Each entry value is a list of other keys that are higher rank
      * than the entry key.
      */
-    protected static Map<String, List<String>> _precedence = new HashMap<String, List<String>>();
+    protected static Map<String, List<String>> _precedence = new HashMap<>();
 
     /**
      * Structure holds one or more converters for a user-specified hint value.
      */
-    protected static Map<String,HintValueConverter[]> _hints = new HashMap<String,HintValueConverter[]>();
+    protected static Map<String,HintValueConverter[]> _hints = new HashMap<>();
 
     /**
      * Statically registers supported hint keys with their ranking and converters.
@@ -101,7 +101,7 @@ public class FetchPlanImpl
         }
         if (keys.length > 1) {
             for (int i = 0; i < keys.length-1; i++) {
-                List<String> list = new ArrayList<String>(keys.length-i-1);
+                List<String> list = new ArrayList<>(keys.length-i-1);
                 for (int j = i+1; j < keys.length; j++) {
                     list.add(keys[j]);
                 }
@@ -127,151 +127,185 @@ public class FetchPlanImpl
     /**
      * Delegate.
      */
+    @Override
     public FetchConfiguration getDelegate() {
         return _fetch.getDelegate();
     }
 
+    @Override
     public int getMaxFetchDepth() {
         return _fetch.getMaxFetchDepth();
     }
 
+    @Override
     public FetchPlan setMaxFetchDepth(int depth) {
         _fetch.setMaxFetchDepth(depth);
         return this;
     }
 
+    @Override
     public int getFetchBatchSize() {
         return _fetch.getFetchBatchSize();
     }
 
+    @Override
     public FetchPlan setFetchBatchSize(int fetchBatchSize) {
         _fetch.setFetchBatchSize(fetchBatchSize);
         return this;
     }
 
+    @Override
     public boolean getQueryResultCacheEnabled() {
         return _fetch.getQueryCacheEnabled();
     }
 
+    @Override
     public FetchPlan setQueryResultCacheEnabled(boolean cache) {
         _fetch.setQueryCacheEnabled(cache);
         return this;
     }
 
+    @Override
     public boolean getQueryResultCache() {
         return getQueryResultCacheEnabled();
     }
 
+    @Override
     public FetchPlan setQueryResultCache(boolean cache) {
         return setQueryResultCacheEnabled(cache);
     }
 
+    @Override
     public Collection<String> getFetchGroups() {
         return _fetch.getFetchGroups();
     }
 
+    @Override
     public FetchPlan addFetchGroup(String group) {
         _fetch.addFetchGroup(group);
         return this;
     }
 
+    @Override
     public FetchPlan addFetchGroups(String... groups) {
         return addFetchGroups(Arrays.asList(groups));
     }
 
+    @Override
     public FetchPlan addFetchGroups(Collection groups) {
         _fetch.addFetchGroups(groups);
         return this;
     }
 
+    @Override
     public FetchPlan removeFetchGroup(String group) {
         _fetch.removeFetchGroup(group);
         return this;
     }
 
+    @Override
     public FetchPlan removeFetchGroups(String... groups) {
         return removeFetchGroups(Arrays.asList(groups));
     }
 
+    @Override
     public FetchPlan removeFetchGroups(Collection groups) {
         _fetch.removeFetchGroups(groups);
         return this;
     }
 
+    @Override
     public FetchPlan clearFetchGroups() {
         _fetch.clearFetchGroups();
         return this;
     }
 
+    @Override
     public FetchPlan resetFetchGroups() {
         _fetch.resetFetchGroups();
         return this;
     }
 
+    @Override
     public Collection<String> getFields() {
         return (Collection<String>) _fetch.getFields();
     }
 
+    @Override
     public boolean hasField(String field) {
         return _fetch.hasField(field);
     }
 
+    @Override
     public boolean hasField(Class cls, String field) {
         return hasField(toFieldName(cls, field));
     }
 
+    @Override
     public FetchPlan addField(String field) {
         _fetch.addField(field);
         return this;
     }
 
+    @Override
     public FetchPlan addField(Class cls, String field) {
         return addField(toFieldName(cls, field));
     }
 
+    @Override
     public FetchPlan addFields(String... fields) {
         return addFields(Arrays.asList(fields));
     }
 
+    @Override
     public FetchPlan addFields(Class cls, String... fields) {
         return addFields(cls, Arrays.asList(fields));
     }
 
+    @Override
     public FetchPlan addFields(Collection fields) {
         _fetch.addFields(fields);
         return this;
     }
 
+    @Override
     public FetchPlan addFields(Class cls, Collection fields) {
         return addFields(toFieldNames(cls, fields));
     }
 
+    @Override
     public FetchPlan removeField(String field) {
         _fetch.removeField(field);
         return this;
     }
 
+    @Override
     public FetchPlan removeField(Class cls, String field) {
         return removeField(toFieldName(cls, field));
     }
 
+    @Override
     public FetchPlan removeFields(String... fields) {
         return removeFields(Arrays.asList(fields));
     }
 
+    @Override
     public FetchPlan removeFields(Class cls, String... fields) {
         return removeFields(cls, Arrays.asList(fields));
     }
 
+    @Override
     public FetchPlan removeFields(Collection fields) {
         _fetch.removeFields(fields);
         return this;
     }
 
+    @Override
     public FetchPlan removeFields(Class cls, Collection fields) {
         return removeFields(toFieldNames(cls, fields));
     }
 
+    @Override
     public FetchPlan clearFields() {
         _fetch.clearFields();
         return this;
@@ -290,60 +324,73 @@ public class FetchPlanImpl
         return names;
     }
 
+    @Override
     public int getLockTimeout() {
         return _fetch.getLockTimeout();
     }
 
+    @Override
     public FetchPlan setLockTimeout(int timeout) {
         _fetch.setLockTimeout(timeout);
         return this;
     }
 
+    @Override
     public PessimisticLockScope getLockScope() {
         return LockScopesHelper.fromLockScope(_fetch.getLockScope());
     }
 
+    @Override
     public FetchPlan setLockScope(PessimisticLockScope scope) {
         _fetch.setLockScope(LockScopesHelper.toLockScope(scope));
         return this;
     }
 
+    @Override
     public int getQueryTimeout() {
         return _fetch.getQueryTimeout();
     }
 
+    @Override
     public FetchPlan setQueryTimeout(int timeout) {
         _fetch.setQueryTimeout(timeout);
         return this;
     }
 
+    @Override
     public LockModeType getReadLockMode() {
         return MixedLockLevelsHelper.fromLockLevel(_fetch.getReadLockLevel());
     }
 
+    @Override
     public FetchPlan setReadLockMode(LockModeType mode) {
         _fetch.setReadLockLevel(MixedLockLevelsHelper.toLockLevel(mode));
         return this;
     }
 
+    @Override
     public LockModeType getWriteLockMode() {
         return MixedLockLevelsHelper.fromLockLevel(_fetch.getWriteLockLevel());
     }
 
+    @Override
     public FetchPlan setWriteLockMode(LockModeType mode) {
         _fetch.setWriteLockLevel(MixedLockLevelsHelper.toLockLevel(mode));
         return this;
     }
 
+    @Override
     public boolean getExtendedPathLookup() {
         return _fetch.getExtendedPathLookup();
     }
 
+    @Override
     public FetchPlan setExtendedPathLookup(boolean flag) {
         _fetch.setExtendedPathLookup(flag);
         return this;
     }
 
+    @Override
     public Object getHint(String key) {
         return _fetch.getHint(key);
     }
@@ -352,6 +399,7 @@ public class FetchPlanImpl
      * Sets the hint after converting the value appropriately.
      * If a higher ranking equivalent hint is already set, then bypasses this hint.
      */
+    @Override
     public void setHint(String key, Object value) {
         if (!isRecognizedHint(key))
             return;
@@ -375,14 +423,17 @@ public class FetchPlanImpl
         }
     }
 
+    @Override
     public Map<String, Object> getHints() {
         return _fetch.getHints();
     }
 
+    @Override
     public int hashCode() {
         return ((_fetch == null) ? 0  : _fetch.hashCode());
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -394,19 +445,23 @@ public class FetchPlanImpl
         return _fetch.equals(((FetchPlanImpl) other)._fetch);
     }
 
+    @Override
     public DataCacheRetrieveMode getCacheRetrieveMode() {
         return _fetch.getCacheRetrieveMode();
     }
 
+    @Override
     public DataCacheStoreMode getCacheStoreMode() {
         return _fetch.getCacheStoreMode();
     }
 
+    @Override
     public FetchPlan setCacheStoreMode(DataCacheStoreMode mode) {
         _fetch.setCacheStoreMode(mode);
         return this;
     }
 
+    @Override
     public FetchPlan setCacheRetrieveMode(DataCacheRetrieveMode mode) {
         _fetch.setCacheRetrieveMode(mode);
         return this;

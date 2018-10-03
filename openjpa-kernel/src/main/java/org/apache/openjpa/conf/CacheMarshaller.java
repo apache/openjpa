@@ -37,23 +37,23 @@ public interface CacheMarshaller {
      * {@link Configurable#startConfiguration()}, and
      * {@link Configurable#endConfiguration()} on the instance before returning.
      */
-    public Object load();
+    Object load();
 
     /**
      * Store <code>o</code> into the cache.
      */
-    public void store(Object o);
+    void store(Object o);
 
     /**
      * The id that this marshaller is responsible for.
      * A value for this parameter is required.
      */
-    public void setId(String id);
+    void setId(String id);
 
     /**
      * The id that this marshaller is responsible for.
      */
-    public String getId();
+    String getId();
 
     /**
      * The {@link ValidationPolicy} that this marshaller should use.
@@ -63,7 +63,7 @@ public interface CacheMarshaller {
      * {@link org.apache.openjpa.lib.conf.GenericConfigurable}, it will be taken
      * through the appropriate lifecycle.
      */
-    public void setValidationPolicy(String policy)
+    void setValidationPolicy(String policy)
         throws InstantiationException, IllegalAccessException;
 
     /**
@@ -83,11 +83,11 @@ public interface CacheMarshaller {
          * on <code>o</code>. If <code>o</code> is not valid, this method
          * will return <code>null</code>.
          */
-        public Object getValidData(Object o);
+        Object getValidData(Object o);
 
         /**
          * Return an object that the {@link CacheMarshaller} should store.
          */
-        public Object getCacheableData(Object o);
+        Object getCacheableData(Object o);
     }
 }

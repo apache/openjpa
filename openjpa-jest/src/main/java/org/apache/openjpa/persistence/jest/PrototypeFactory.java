@@ -43,7 +43,7 @@ import org.apache.openjpa.kernel.Filters;
  *
  */
 public class PrototypeFactory<K,T> {
-    private Map<K, Class<? extends T>> _registry = new TreeMap<K, Class<? extends T>>();
+    private Map<K, Class<? extends T>> _registry = new TreeMap<>();
 
     /**
      * Register the given class with the given key.

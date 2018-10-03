@@ -49,6 +49,7 @@ public class EmployeeName {
         this.lName = lName;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof EmployeeName))
             return false;
@@ -59,6 +60,7 @@ public class EmployeeName {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret += lName.hashCode();

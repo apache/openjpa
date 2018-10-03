@@ -32,7 +32,7 @@ import java.util.Set;
  *
  */
 public class ReservedWords {
-    public static final Set<String> KEYWORDS = new HashSet<String>();
+    public static final Set<String> KEYWORDS = new HashSet<>();
     static {
         KEYWORDS.addAll(Arrays.asList(
             "ABS", "ALL", "AND", "ANY", "AS", "ASC", "AVG",

@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class EqualExpression extends BinaryExpressionPredicate {
-	public EqualExpression(Expression op1, Expression op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public EqualExpression(Expression op1, Expression op2) {
 		super(op1,
 		    BinaryConditionalOperator.EQUAL,
 		    BinaryConditionalOperator.EQUAL_NOT,

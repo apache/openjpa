@@ -29,15 +29,15 @@ public interface RestoreState {
     /**
      * Do not restore any state on rollback.
      */
-    public static final int RESTORE_NONE = 0;
+    int RESTORE_NONE = 0;
 
     /**
      * Restore immutable state on rollback; clear mutable state.
      */
-    public static final int RESTORE_IMMUTABLE = 1;
+    int RESTORE_IMMUTABLE = 1;
 
     /**
      * Restore all state on rollback.
      */
-    public static final int RESTORE_ALL = 2;
+    int RESTORE_ALL = 2;
 }

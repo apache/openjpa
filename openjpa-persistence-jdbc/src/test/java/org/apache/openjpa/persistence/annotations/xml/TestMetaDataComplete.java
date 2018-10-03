@@ -48,7 +48,8 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	private static ClassMetaData entityA, entityB, derivedA, derivedB;
 	private static int currentTest = 0;
 
-	public void setUp() throws Exception {
+	@Override
+    public void setUp() throws Exception {
         currentTest++;
 		if (oemf == null) {
             super.setUp(EntityA.class, EntityB.class, DerivedA.class,
@@ -65,7 +66,8 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 		}
 	}
 
-	public void tearDown() throws Exception {
+	@Override
+    public void tearDown() throws Exception {
 	    // only cleanup after the last test has run
 	    if (currentTest >= 6) {
 	        closeEMF(oemf);
@@ -78,7 +80,8 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	    }
 	}
 
-	protected String getPersistenceUnitName() {
+	@Override
+    protected String getPersistenceUnitName() {
 		return "test-metadata-complete";
 	}
 

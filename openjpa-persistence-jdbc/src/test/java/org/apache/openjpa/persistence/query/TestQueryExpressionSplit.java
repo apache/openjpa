@@ -29,9 +29,6 @@ package org.apache.openjpa.persistence.query;
 import java.util.Arrays;
 import java.util.List;
 
-
-
-
 import org.apache.openjpa.kernel.Filters;
 
 public class TestQueryExpressionSplit extends BaseQueryTest {

@@ -51,6 +51,9 @@ import org.apache.openjpa.persistence.jdbc.VersionColumn;
 @Table(name="DI_PAGE1")
 @VersionColumn
 public class Page1 implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @EmbeddedId
     @AttributeOverride(name="number", column=@Column(name="PAGE_NUM"))
     private PageId1 pid;
@@ -64,7 +67,7 @@ public class Page1 implements Serializable {
     private Book1 book;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "page")
-    private Set<Line1> lines = new HashSet<Line1>();
+    private Set<Line1> lines = new HashSet<>();
 
     public PageId1 getPid() {
         return pid;

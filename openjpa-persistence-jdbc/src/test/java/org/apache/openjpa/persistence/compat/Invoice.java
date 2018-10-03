@@ -19,7 +19,11 @@ package org.apache.openjpa.persistence.compat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.OneToMany;
 
 @Entity
 @IdClass(InvoiceKey.class)
@@ -33,7 +37,7 @@ public class Invoice {
     private double price;
 
     @OneToMany(cascade={CascadeType.ALL})
-    private List<LineItem> lineItems = new ArrayList<LineItem>();
+    private List<LineItem> lineItems = new ArrayList<>();
 
     public Invoice() {
     }

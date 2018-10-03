@@ -49,20 +49,20 @@ public interface ValueHandler
      * have to set this information if returning templates
      * @param adapt whether to adapt the mapping or schema
      */
-    public Column[] map(ValueMapping vm, String name, ColumnIO io,
+    Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt);
 
     /**
      * Return whether the values managed by this handler can be used in
      * state image versioning.
      */
-    public boolean isVersionable(ValueMapping vm);
+    boolean isVersionable(ValueMapping vm);
 
     /**
      * Return whether this handler potentially must load extra data to extract
      * the object value from its datastore representation.
      */
-    public boolean objectValueRequiresLoad(ValueMapping vm);
+    boolean objectValueRequiresLoad(ValueMapping vm);
 
     /**
      * Return the argument to pass to the result set when loading data
@@ -70,7 +70,7 @@ public interface ValueHandler
      * occupies multiple columns, return an array with one element per
      * column. You may return null if all array elements would be null.
      */
-    public Object getResultArgument(ValueMapping vm);
+    Object getResultArgument(ValueMapping vm);
 
     /**
      * Translate the given value to its datastore equivalent. If this value
@@ -78,7 +78,7 @@ public interface ValueHandler
      * per column. For relation id columns, return the state manager
      * the column depends on.
      */
-    public Object toDataStoreValue(ValueMapping vm, Object val,
+    Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store);
 
     /**
@@ -87,7 +87,7 @@ public interface ValueHandler
      * array with one entry per column. This method is only called if
      * {@link #objectValueRequiresLoad} returns false.
      */
-    public Object toObjectValue(ValueMapping vm, Object val);
+    Object toObjectValue(ValueMapping vm, Object val);
 
     /**
      * Translate the given datastore value into its Java equivalent. If
@@ -98,7 +98,7 @@ public interface ValueHandler
      * @param sm the state manager that owns the value; may be null if
      * loading a projection
      */
-    public Object toObjectValue(ValueMapping vm, Object val,
+    Object toObjectValue(ValueMapping vm, Object val,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch)
         throws SQLException;
 }

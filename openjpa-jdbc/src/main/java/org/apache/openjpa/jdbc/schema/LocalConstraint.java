@@ -32,9 +32,8 @@ import org.apache.openjpa.util.InvalidStateException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public abstract class LocalConstraint
-    extends Constraint {
+public abstract class LocalConstraint extends Constraint {
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage
         (LocalConstraint.class);
@@ -55,6 +54,7 @@ public abstract class LocalConstraint
      * @param table the table of the constraint
      * @deprecated
      */
+    @Deprecated
     public LocalConstraint(String name, Table table) {
         super(name, table);
     }
@@ -65,6 +65,7 @@ public abstract class LocalConstraint
 /**
      * Called when the constraint is removed from its table.
      */
+    @Override
     void remove() {
         // remove all columns
         for (Column c : _cols) {
@@ -107,7 +108,7 @@ public abstract class LocalConstraint
                 col == null ? null : getTable()));
 
         if (_colList == null)
-            _colList = new ArrayList<Column>(3);
+            _colList = new ArrayList<>(3);
         else if (_colList.contains(col))
             return;
 

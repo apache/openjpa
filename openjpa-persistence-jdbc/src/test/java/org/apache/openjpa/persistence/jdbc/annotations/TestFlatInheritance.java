@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestFlatInheritance extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(Flat1.class, Flat2.class, CLEAR_TABLES);
     }

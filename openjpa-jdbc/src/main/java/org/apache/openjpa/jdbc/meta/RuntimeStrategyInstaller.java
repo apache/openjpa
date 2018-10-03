@@ -22,6 +22,7 @@ import java.lang.reflect.Modifier;
 
 import org.apache.openjpa.jdbc.meta.strats.NoneFieldStrategy;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.MetaDataException;
 
@@ -35,6 +36,8 @@ import org.apache.openjpa.util.MetaDataException;
 public class RuntimeStrategyInstaller
     extends StrategyInstaller {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (RuntimeStrategyInstaller.class);
 
@@ -45,8 +48,9 @@ public class RuntimeStrategyInstaller
         super(repos);
     }
 
+    @Override
     public void installStrategy(ClassMapping cls) {
-        if ((cls.getSourceMode() & cls.MODE_MAPPING) == 0)
+        if ((cls.getSourceMode() & MetaDataModes.MODE_MAPPING) == 0)
             throw new MetaDataException(_loc.get("no-mapping", cls));
 
         ClassStrategy strat = repos.namedStrategy(cls);
@@ -55,6 +59,7 @@ public class RuntimeStrategyInstaller
         cls.setStrategy(strat, Boolean.FALSE);
     }
 
+    @Override
     public void installStrategy(FieldMapping field) {
         FieldStrategy strategy = null;
         ClassMapping owner = getOutermostDefiningMapping(field);
@@ -95,6 +100,7 @@ public class RuntimeStrategyInstaller
         return null;
     }
 
+    @Override
     public void installStrategy(Version version) {
         VersionStrategy strat = repos.namedStrategy(version);
         if (strat == null)
@@ -102,6 +108,7 @@ public class RuntimeStrategyInstaller
         version.setStrategy(strat, Boolean.FALSE);
     }
 
+    @Override
     public void installStrategy(Discriminator discrim) {
         DiscriminatorStrategy strat = repos.namedStrategy(discrim);
         if (strat == null)

@@ -32,6 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestVersionFieldType extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, LongVersionEntity.class,
             ShortVersionEntity.class, PrimativeLongVersionEntity.class,

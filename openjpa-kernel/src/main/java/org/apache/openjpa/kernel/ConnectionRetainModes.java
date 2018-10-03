@@ -29,17 +29,17 @@ public interface ConnectionRetainModes {
     /**
      * Constant indicating that connections will be obtained as needed.
      */
-    public static final int CONN_RETAIN_DEMAND = 0;
+    int CONN_RETAIN_DEMAND = 0;
 
     /**
      * Constant indicating that connections will be retained for the life
      * of each transaction.
      */
-    public static final int CONN_RETAIN_TRANS = 1;
+    int CONN_RETAIN_TRANS = 1;
 
     /**
      * Constant indicating that each broker will retain a single connection
      * that it will use for its lifespan.
      */
-    public static final int CONN_RETAIN_ALWAYS = 2;
+    int CONN_RETAIN_ALWAYS = 2;
 }

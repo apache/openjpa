@@ -18,6 +18,85 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ASSOC_OVERRIDE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ASSOC_OVERRIDES;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ATTR_OVERRIDE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ATTR_OVERRIDES;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.CLASS_CRIT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.COLLECTION_TABLE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.COLUMN_RESULT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.CONTAINER_TABLE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.DATASTORE_ID_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.DISCRIM_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.DISCRIM_STRAT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.DISCRIM_VAL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.EAGER_FETCH_MODE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ELEM_CLASS_CRIT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ELEM_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ELEM_COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ELEM_EMBEDDED_MAPPING;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ELEM_FK;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ELEM_INDEX;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ELEM_JOIN_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ELEM_JOIN_COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ELEM_NONPOLY;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ELEM_STRAT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.EMBEDDED_MAPPING;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ENTITY_RESULT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ENUMERATED;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.FIELD_RESULT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.FK;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.INDEX;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.INHERITANCE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_TABLE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.KEY_CLASS_CRIT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.KEY_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.KEY_COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.KEY_EMBEDDED_MAPPING;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.KEY_FK;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.KEY_INDEX;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.KEY_JOIN_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.KEY_JOIN_COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.KEY_NONPOLY;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.KEY_STRAT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAPPING_OVERRIDE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAPPING_OVERRIDES;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_ENUMERATED;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_JOIN_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_JOIN_COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.MAP_KEY_TEMPORAL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.NONPOLY;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ORDER_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.ORDER_COLUMN;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.PK_JOIN_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.PK_JOIN_COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.SECONDARY_TABLE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.SECONDARY_TABLES;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.SQL_RESULT_SET_MAPPING;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.SQL_RESULT_SET_MAPPINGS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.STRAT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.SUBCLASS_FETCH_MODE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.TABLE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.TABLE_GEN;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.TEMPORAL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.UNIQUE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.VERSION_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.VERSION_COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.VERSION_STRAT;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.X_EMBEDDED_MAPPING;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.X_JOIN_COL;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.X_JOIN_COLS;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.X_MAPPING_OVERRIDE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.X_MAPPING_OVERRIDES;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.X_SECONDARY_TABLE;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.X_SECONDARY_TABLES;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.X_TABLE;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
@@ -28,6 +107,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
@@ -61,11 +141,10 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.UniqueConstraint;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
@@ -75,6 +154,7 @@ import org.apache.openjpa.jdbc.meta.FieldMappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
+import org.apache.openjpa.jdbc.meta.QueryResultMapping.PCResult;
 import org.apache.openjpa.jdbc.meta.SequenceMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
@@ -87,14 +167,15 @@ import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataParser;
-import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
@@ -117,7 +198,7 @@ public class AnnotationPersistenceMappingParser
         (AnnotationPersistenceMappingParser.class);
 
     private static final Map<Class<?>, MappingTag> _tags =
-        new HashMap<Class<?>, MappingTag>();
+        new HashMap<>();
 
     private DBDictionary _dict;
 
@@ -265,7 +346,7 @@ public class AnnotationPersistenceMappingParser
         meta.setInitialValue(gen.initialValue());
         meta.setAllocate(gen.allocationSize());
         meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
-            meta.SRC_ANNOTATIONS);
+            SourceTracker.SRC_ANNOTATIONS);
 
         switch (gen.uniqueConstraints().length) {
         case 0:
@@ -437,7 +518,7 @@ public class AnnotationPersistenceMappingParser
                         sup, assoc.name()));
 
             if (scols != null && scols.length > 0) {
-                jcols = new ArrayList<Column>(scols.length);
+                jcols = new ArrayList<>(scols.length);
                 unique = 0;
                 for (JoinColumn scol : scols) {
                     unique |= (scol.unique()) ? TRUE : FALSE;
@@ -473,7 +554,7 @@ public class AnnotationPersistenceMappingParser
      */
     private void parsePrimaryKeyJoinColumns(ClassMapping cm,
         PrimaryKeyJoinColumn... joins) {
-        List<Column> cols = new ArrayList<Column>(joins.length);
+        List<Column> cols = new ArrayList<>(joins.length);
         for (PrimaryKeyJoinColumn join : joins)
             cols.add(newColumn(join));
         cm.getMappingInfo().setColumns(cols);
@@ -511,7 +592,7 @@ public class AnnotationPersistenceMappingParser
                 sName = QualifiedDBIdentifier.newPath(sSchema, sName);
             }
             if (table.pkJoinColumns().length > 0) {
-                joins = new ArrayList<Column>(table.pkJoinColumns().length);
+                joins = new ArrayList<>(table.pkJoinColumns().length);
                 for (PrimaryKeyJoinColumn join : table.pkJoinColumns())
                     joins.add(newColumn(join));
                 info.setSecondaryTableJoinColumns(sName, joins);
@@ -607,13 +688,13 @@ public class AnnotationPersistenceMappingParser
 
             result = repos.addQueryResultMapping(null, anno.name());
             result.setSource(getSourceFile(), cm.getDescribedType(),
-                result.SRC_ANNOTATIONS);
+                SourceTracker.SRC_ANNOTATIONS);
 
             for (EntityResult entity : anno.entities()) {
                 QueryResultMapping.PCResult entityResult = result.addPCResult
                     (entity.entityClass());
                 if (!StringUtil.isEmpty(entity.discriminatorColumn()))
-                    entityResult.addMapping(entityResult.DISCRIMINATOR,
+                    entityResult.addMapping(PCResult.DISCRIMINATOR,
                         entity.discriminatorColumn());
 
                 for (FieldResult field : entity.fields()) {
@@ -847,7 +928,7 @@ public class AnnotationPersistenceMappingParser
         if (vcols.length == 0)
             return;
 
-        List<Column> cols = new ArrayList<Column>(vcols.length);
+        List<Column> cols = new ArrayList<>(vcols.length);
         for (VersionColumn vcol : vcols)
             cols.add(newColumn(vcol, delimit()));
         cm.getVersion().getMappingInfo().setColumns(cols);
@@ -939,7 +1020,7 @@ public class AnnotationPersistenceMappingParser
         if (pcols.length == 0)
             return;
 
-        List<Column> cols = new ArrayList<Column>(pcols.length);
+        List<Column> cols = new ArrayList<>(pcols.length);
         int unique = 0;
         for (int i = 0; i < pcols.length; i++) {
             cols.add(newColumn(pcols[i], delimit()));
@@ -975,7 +1056,7 @@ public class AnnotationPersistenceMappingParser
         if (joins.length == 0)
             return;
 
-        List<Column> cols = new ArrayList<Column>(joins.length);
+        List<Column> cols = new ArrayList<>(joins.length);
         int unique = 0;
         for (int i = 0; i < joins.length; i++) {
             cols.add(newColumn(joins[i], delimit()));
@@ -1311,7 +1392,7 @@ public class AnnotationPersistenceMappingParser
                     fm, assoc.name()));
             if (ecols != null && ecols.length > 0) {
                 unique = 0;
-                jcols = new ArrayList<Column>(ecols.length);
+                jcols = new ArrayList<>(ecols.length);
                 for (JoinColumn ecol : ecols) {
                     unique |= (ecol.unique()) ? TRUE : FALSE;
                     jcols.add(newColumn(ecol));
@@ -1576,7 +1657,7 @@ public class AnnotationPersistenceMappingParser
                 setupColumn((Column) cols.get(i), pcols[i], delimit());
             else {
                 if (cols.isEmpty())
-                    cols = new ArrayList<Column>(pcols.length);
+                    cols = new ArrayList<>(pcols.length);
                 cols.add(newColumn(pcols[i], delimit()));
             }
             if (xmlRootElementClass != null
@@ -1691,7 +1772,7 @@ public class AnnotationPersistenceMappingParser
         if (joins.length == 0)
             return;
 
-        List<Column> cols = new ArrayList<Column>(joins.length);
+        List<Column> cols = new ArrayList<>(joins.length);
         int unique = 0;
         DBIdentifier sSecondary = DBIdentifier.NULL;
 
@@ -1774,7 +1855,7 @@ public class AnnotationPersistenceMappingParser
         if (pcols.length == 0)
             return;
 
-        List<Column> cols = new ArrayList<Column>(pcols.length);
+        List<Column> cols = new ArrayList<>(pcols.length);
         int unique = 0;
         for (int i = 0; i < pcols.length; i++) {
             cols.add(newColumn(pcols[i], delimit()));
@@ -1808,7 +1889,7 @@ public class AnnotationPersistenceMappingParser
      */
     private void parsePrimaryKeyJoinColumns(FieldMapping fm,
         PrimaryKeyJoinColumn... joins) {
-        List<Column> cols = new ArrayList<Column>(joins.length);
+        List<Column> cols = new ArrayList<>(joins.length);
         for (PrimaryKeyJoinColumn join : joins)
             cols.add(newColumn(join));
         setColumns(fm, fm.getValueInfo(), cols, 0);
@@ -1822,7 +1903,7 @@ public class AnnotationPersistenceMappingParser
         if (joins.length == 0)
             return;
 
-        List<Column> cols = new ArrayList<Column>(joins.length);
+        List<Column> cols = new ArrayList<>(joins.length);
         int unique = 0;
         DBIdentifier sSecondary = DBIdentifier.NULL;
         for (int i = 0; i < joins.length; i++) {
@@ -2002,7 +2083,7 @@ public class AnnotationPersistenceMappingParser
         if (joins.length == 0)
             return;
 
-        List<Column> cols = new ArrayList<Column>(joins.length);
+        List<Column> cols = new ArrayList<>(joins.length);
         int unique = 0;
         for (int i = 0; i < joins.length; i++) {
             cols.add(newColumn(joins[i], delimit()));
@@ -2075,7 +2156,7 @@ public class AnnotationPersistenceMappingParser
      */
     protected void setMapKeyColumn(FieldMapping fm, MappingInfo info,
         Column col, int unique) {
-        List<Column> cols = new ArrayList<Column>();
+        List<Column> cols = new ArrayList<>();
         cols.add(col);
         info.setColumns(cols);
         if (unique == TRUE)
@@ -2090,7 +2171,7 @@ public class AnnotationPersistenceMappingParser
         if (joins.length == 0)
             return;
 
-        List<Column> cols = new ArrayList<Column>(joins.length);
+        List<Column> cols = new ArrayList<>(joins.length);
         int unique = 0;
         for (int i = 0; i < joins.length; i++) {
             cols.add(newColumn(joins[i]));

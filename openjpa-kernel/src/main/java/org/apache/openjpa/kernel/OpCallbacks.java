@@ -26,21 +26,21 @@ package org.apache.openjpa.kernel;
  */
 public interface OpCallbacks {
 
-    public static final int OP_PERSIST = 0;
-    public static final int OP_DELETE = 1;
-    public static final int OP_REFRESH = 2;
-    public static final int OP_RETRIEVE = 3;
-    public static final int OP_RELEASE = 4;
-    public static final int OP_EVICT = 5;
-    public static final int OP_ATTACH = 6;
-    public static final int OP_DETACH = 7;
-    public static final int OP_NONTRANSACTIONAL = 8;
-    public static final int OP_TRANSACTIONAL = 9;
-    public static final int OP_LOCK = 10;
+    int OP_PERSIST = 0;
+    int OP_DELETE = 1;
+    int OP_REFRESH = 2;
+    int OP_RETRIEVE = 3;
+    int OP_RELEASE = 4;
+    int OP_EVICT = 5;
+    int OP_ATTACH = 6;
+    int OP_DETACH = 7;
+    int OP_NONTRANSACTIONAL = 8;
+    int OP_TRANSACTIONAL = 9;
+    int OP_LOCK = 10;
 
-    public static final int ACT_NONE = 0;
-    public static final int ACT_CASCADE = 2 << 0;
-    public static final int ACT_RUN = 2 << 1;
+    int ACT_NONE = 0;
+    int ACT_CASCADE = 2 << 0;
+    int ACT_RUN = 2 << 1;
 
     /**
      * Process operation argument. Throw proper
@@ -51,5 +51,5 @@ public interface OpCallbacks {
      * @param sm the argument's state manager, or null if none
      * @return the action to take on the argument
      */
-    public int processArgument(int op, Object arg, OpenJPAStateManager sm);
+    int processArgument(int op, Object arg, OpenJPAStateManager sm);
 }

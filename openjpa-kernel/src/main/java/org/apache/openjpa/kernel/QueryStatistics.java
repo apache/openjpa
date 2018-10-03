@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
-import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 /**
@@ -47,7 +46,7 @@ public interface QueryStatistics<T> extends Serializable {
     /**
      *  Gets all the identifier keys for the cached queries.
      */
-    public Set<T> keys();
+    Set<T> keys();
 
 	/**
 	 * Record that the given query has been executed.
@@ -62,79 +61,79 @@ public interface QueryStatistics<T> extends Serializable {
 	/**
 	 * Gets number of total query execution since last reset.
 	 */
-	public long getExecutionCount();
+	long getExecutionCount();
 
 	/**
 	 * Gets number of total query execution since start.
 	 */
-	public long getTotalExecutionCount();
+	long getTotalExecutionCount();
 
 	/**
 	 * Gets number of executions for the given query since last reset.
 	 */
-	public long getExecutionCount(T query);
+	long getExecutionCount(T query);
 
 	/**
 	 * Gets number of executions for the given query since start.
 	 */
-	public long getTotalExecutionCount(T query);
+	long getTotalExecutionCount(T query);
 
 	/**
      * Gets number of total query execution that are cached since last reset.
 	 */
-	public long getHitCount();
+	long getHitCount();
 
 	/**
 	 * Gets number of total query execution that are cached since start.
 	 */
-	public long getTotalHitCount();
+	long getTotalHitCount();
 
 	/**
 	 * Gets number of executions for the given query that are cached since
 	 * last reset.
 	 */
-	public long getHitCount(T query);
+	long getHitCount(T query);
 
 	/**
 	 * Gets number of executions for the given query that are cached since
 	 * start.
 	 */
-	public long getTotalHitCount(T query);
+	long getTotalHitCount(T query);
 
 	 /**
      * Gets number of total query evictions since last reset.
      */
-    public long getEvictionCount();
+    long getEvictionCount();
 
     /**
      * Gets number of total query evictions since start.
      */
-    public long getTotalEvictionCount();
+    long getTotalEvictionCount();
 
 	/**
 	 * Gets the time of last reset.
 	 */
-	public Date since();
+	Date since();
 
 	/**
 	 * Gets the time of start.
 	 */
-	public Date start();
+	Date start();
 
 	/**
 	 * Clears all  statistics accumulated since last reset.
 	 */
-	public void reset();
+	void reset();
 
 	/**
 	 * Clears all statistics accumulated since start.
 	 */
-	public void clear();
+	void clear();
 
 	/**
 	 * Dumps on the given output stream.
 	 */
-	public void dump(PrintStream out);
+	void dump(PrintStream out);
 
 	/**
 	 * A default implementation.
@@ -144,7 +143,9 @@ public interface QueryStatistics<T> extends Serializable {
 	 *
 	 */
 	public static class Default<T> implements QueryStatistics<T> {
-	    private static final int FIXED_SIZE = 1000;
+	    
+        private static final long serialVersionUID = 1L;
+        private static final int FIXED_SIZE = 1000;
 	    private static final float LOAD_FACTOR = 0.75f;
 	    private static final int CONCURRENCY = 16;
 
@@ -176,39 +177,48 @@ public interface QueryStatistics<T> extends Serializable {
             astats = aStatsMap;
         }
 
-		public Set<T> keys() {
+		@Override
+        public Set<T> keys() {
 		    return stats.keySet();
 		}
 
-		public long getExecutionCount() {
+		@Override
+        public long getExecutionCount() {
 			return stat[READ];
 		}
 
-		public long getTotalExecutionCount() {
+		@Override
+        public long getTotalExecutionCount() {
 			return astat[READ];
 		}
 
-		public long getExecutionCount(T query) {
+		@Override
+        public long getExecutionCount(T query) {
 			return getCount(stats, query, READ);
 		}
 
-		public long getTotalExecutionCount(T query) {
+		@Override
+        public long getTotalExecutionCount(T query) {
 			return getCount(astats, query, READ);
 		}
 
-		public long getHitCount() {
+		@Override
+        public long getHitCount() {
 			return stat[HIT];
 		}
 
-		public long getTotalHitCount() {
+		@Override
+        public long getTotalHitCount() {
 			return astat[HIT];
 		}
 
-		public long getHitCount(T query) {
+		@Override
+        public long getHitCount(T query) {
 			return getCount(stats, query, HIT);
 		}
 
-		public long getTotalHitCount(T query) {
+		@Override
+        public long getTotalHitCount(T query) {
 			return getCount(astats, query, HIT);
 		}
 
@@ -217,21 +227,25 @@ public interface QueryStatistics<T> extends Serializable {
 			return (row == null) ? 0 : row[i];
 		}
 
-		public Date since() {
+		@Override
+        public Date since() {
 			return since;
 		}
 
-		public Date start() {
+		@Override
+        public Date start() {
 			return start;
 		}
 
-		public synchronized void reset() {
+		@Override
+        public synchronized void reset() {
 			stat = new long[ARRAY_SIZE];
 			stats.clear();
 			since = new Date();
 		}
 
-	    public synchronized void clear() {
+	    @Override
+        public synchronized void clear() {
 	       astat = new long[ARRAY_SIZE];
 	       stat  = new long[ARRAY_SIZE];
 	       initializeMaps();
@@ -256,7 +270,8 @@ public interface QueryStatistics<T> extends Serializable {
 			target.put(query, row);
 		}
 
-		public void recordExecution(T query) {
+		@Override
+        public void recordExecution(T query) {
 		    if (query == null)
 		        return;
 		    boolean cached = astats.containsKey(query);
@@ -265,6 +280,7 @@ public interface QueryStatistics<T> extends Serializable {
 				addSample(query, HIT);
 		}
 
+        @Override
         public void recordEviction(T query) {
             if (query == null) {
                 return;
@@ -272,7 +288,8 @@ public interface QueryStatistics<T> extends Serializable {
             addSample(query, EVICT);
         }
 
-		public void dump(PrintStream out) {
+		@Override
+        public void dump(PrintStream out) {
             String header = "Query Statistics starting from " + start;
 			out.print(header);
 			if (since == start) {
@@ -308,10 +325,12 @@ public interface QueryStatistics<T> extends Serializable {
             return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) + "%)";
 		}
 
+        @Override
         public long getEvictionCount() {
             return stat[EVICT];
         }
 
+        @Override
         public long getTotalEvictionCount() {
             return astat[EVICT];
         }
@@ -325,75 +344,95 @@ public interface QueryStatistics<T> extends Serializable {
 	 * @param <T>
 	 */
 	public static class None<T> implements QueryStatistics<T> {
+        
+        private static final long serialVersionUID = 1L;
         private Date start = new Date();
         private Date since = start;
 
+        @Override
         public void clear() {
         }
 
+        @Override
         public void dump(PrintStream out) {
         }
 
+        @Override
         public long getExecutionCount() {
             return 0;
         }
 
+        @Override
         public long getExecutionCount(T query) {
             return 0;
         }
 
+        @Override
         public long getHitCount() {
             return 0;
         }
 
+        @Override
         public long getHitCount(T query) {
             return 0;
         }
 
+        @Override
         public long getTotalExecutionCount() {
             return 0;
         }
 
+        @Override
         public long getTotalExecutionCount(T query) {
             return 0;
         }
 
+        @Override
         public long getTotalHitCount() {
             return 0;
         }
 
+        @Override
         public long getTotalHitCount(T query) {
             return 0;
         }
 
+        @Override
         public long getEvictionCount() {
             return 0;
         }
 
+        @Override
         public long getTotalEvictionCount() {
             return 0;
         }
 
+        @Override
         public Set<T> keys() {
             return Collections.emptySet();
         }
 
+        @Override
         public void recordExecution(T query) {
         }
 
+        @Override
         public void reset() {
             start  = new Date();
             since  = start;
         }
 
+        @Override
         public Date since() {
             return since;
         }
 
+        @Override
         public Date start() {
             return start;
         }
 
+        @Override
         public void recordEviction(T query) {
         }
 	}

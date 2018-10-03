@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestMerge extends SQLListenerTestCase {
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, Parent.class,
             Child.class, GrandChild.class);

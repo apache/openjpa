@@ -20,13 +20,13 @@ package org.apache.openjpa.kernel;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.event.AbstractLifecycleListener;
 import org.apache.openjpa.event.AbstractTransactionListener;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.TransactionEvent;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.simple.AllFieldTypes;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestBrokerFactoryListenerRegistry
     extends SingleEMFTestCase {

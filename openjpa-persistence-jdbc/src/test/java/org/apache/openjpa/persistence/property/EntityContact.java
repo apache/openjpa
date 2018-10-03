@@ -33,10 +33,12 @@ public class EntityContact implements IContact {
     private String type;
     private EmbeddableAddress theAddress;
 
+    @Override
     @Transient
     public IAddress getAddress() {
         return(IAddress) this.getTheAddress();
     }
+    @Override
     public void setAddress(IAddress address) {
         if (address instanceof EmbeddableAddress) {
             this.setTheAddress((EmbeddableAddress)address);
@@ -58,23 +60,29 @@ public class EntityContact implements IContact {
         this.id = id;
     }
 
+    @Override
     public String getEmail() {
         return email;
     }
+    @Override
     public void setEmail(String email) {
         this.email = email;
     }
 
+    @Override
     public String getPhone() {
         return phone;
     }
+    @Override
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
+    @Override
     public String getType() {
         return type;
     }
+    @Override
     public void setType(String type) {
         this.type = type;
     }
@@ -87,6 +95,7 @@ public class EntityContact implements IContact {
         this.theAddress = address;
     }
 
+    @Override
     public String toString() {
         return( "org.apache.openjpa.persistence.compatible.EntityContact: " +
                 " id: " + getId() +

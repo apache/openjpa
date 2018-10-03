@@ -20,12 +20,12 @@ package org.apache.openjpa.persistence.models.company;
 
 public interface IPerson {
 
-    public void setFirstName(String firstName);
-    public String getFirstName();
+    void setFirstName(String firstName);
+    String getFirstName();
 
-    public void setLastName(String lastName);
-    public String getLastName();
+    void setLastName(String lastName);
+    String getLastName();
 
-    public void setHomeAddress(IAddress homeAddress);
-    public IAddress getHomeAddress();
+    void setHomeAddress(IAddress homeAddress);
+    IAddress getHomeAddress();
 }

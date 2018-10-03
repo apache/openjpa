@@ -18,21 +18,22 @@
  */
 package org.apache.openjpa.persistence.managedinterface;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
+import java.util.Set;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
+
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.Extent;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
-import org.apache.openjpa.persistence.Extent;
-import org.apache.openjpa.persistence.query.SimpleEntity;
-import org.apache.openjpa.meta.ClassMetaData;
 
 @AllowFailure(message=
     "On JDK6 Upgrade these tests are failing with wrong mapping. " +

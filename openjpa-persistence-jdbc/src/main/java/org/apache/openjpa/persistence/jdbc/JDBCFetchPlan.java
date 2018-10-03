@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jdbc;
 
 import java.util.Collection;
+
 import javax.persistence.LockModeType;
 
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
@@ -40,62 +41,62 @@ public interface JDBCFetchPlan
     /**
      * Eager fetch mode in loading relations.
      */
-    public FetchMode getEagerFetchMode();
+    FetchMode getEagerFetchMode();
 
     /**
      * Eager fetch mode in loading relations.
      */
-    public JDBCFetchPlan setEagerFetchMode(FetchMode mode);
+    JDBCFetchPlan setEagerFetchMode(FetchMode mode);
 
     /**
      * Eager fetch mode in loading subclasses.
      */
-    public FetchMode getSubclassFetchMode();
+    FetchMode getSubclassFetchMode();
 
     /**
      * Eager fetch mode in loading subclasses.
      */
-    public JDBCFetchPlan setSubclassFetchMode(FetchMode mode);
+    JDBCFetchPlan setSubclassFetchMode(FetchMode mode);
 
     /**
      * Type of JDBC result set to use for query results.
      */
-    public ResultSetType getResultSetType();
+    ResultSetType getResultSetType();
 
     /**
      * Type of JDBC result set to use for query results.
      */
-    public JDBCFetchPlan setResultSetType(ResultSetType type);
+    JDBCFetchPlan setResultSetType(ResultSetType type);
 
     /**
      * Result set fetch direction.
      */
-    public FetchDirection getFetchDirection();
+    FetchDirection getFetchDirection();
 
     /**
      * Result set fetch direction.
      */
-    public JDBCFetchPlan setFetchDirection(FetchDirection direction);
+    JDBCFetchPlan setFetchDirection(FetchDirection direction);
 
     /**
      * How to determine the size of a large result set.
      */
-    public LRSSizeAlgorithm getLRSSizeAlgorithm();
+    LRSSizeAlgorithm getLRSSizeAlgorithm();
 
     /**
      * How to determine the size of a large result set.
      */
-    public JDBCFetchPlan setLRSSizeAlgorithm(LRSSizeAlgorithm lrsSizeAlgorithm);
+    JDBCFetchPlan setLRSSizeAlgorithm(LRSSizeAlgorithm lrsSizeAlgorithm);
 
     /**
      * SQL join syntax.
      */
-    public JoinSyntax getJoinSyntax();
+    JoinSyntax getJoinSyntax();
 
     /**
      * SQL join syntax.
      */
-    public JDBCFetchPlan setJoinSyntax(JoinSyntax syntax);
+    JDBCFetchPlan setJoinSyntax(JoinSyntax syntax);
 
     /**
      * The isolation level for queries issued to the database. This overrides
@@ -104,7 +105,7 @@ public interface JDBCFetchPlan
      *
      * @since 0.9.7
      */
-    public IsolationLevel getIsolation();
+    IsolationLevel getIsolation();
 
     /**
      * The isolation level for queries issued to the database. This overrides
@@ -113,120 +114,120 @@ public interface JDBCFetchPlan
      *
      * @since 0.9.7
      */
-    public JDBCFetchPlan setIsolation(IsolationLevel level);
+    JDBCFetchPlan setIsolation(IsolationLevel level);
 
 
     // covariant type support for return vals
 
-    public JDBCFetchPlan addFetchGroup(String group);
-    public JDBCFetchPlan addFetchGroups(Collection groups);
-    public JDBCFetchPlan addFetchGroups(String... groups);
-    public JDBCFetchPlan addField(Class cls, String field);
-    public JDBCFetchPlan addField(String field);
-    public JDBCFetchPlan addFields(Class cls, Collection fields);
-    public JDBCFetchPlan addFields(Class cls, String... fields);
-    public JDBCFetchPlan addFields(Collection fields);
-    public JDBCFetchPlan addFields(String... fields);
-    public JDBCFetchPlan clearFetchGroups();
-    public JDBCFetchPlan clearFields();
-    public JDBCFetchPlan removeFetchGroup(String group);
-    public JDBCFetchPlan removeFetchGroups(Collection groups);
-    public JDBCFetchPlan removeFetchGroups(String... groups);
-    public JDBCFetchPlan removeField(Class cls, String field);
-    public JDBCFetchPlan removeField(String field);
-    public JDBCFetchPlan removeFields(Class cls, Collection fields);
-    public JDBCFetchPlan removeFields(Class cls, String... fields);
-    public JDBCFetchPlan removeFields(String... fields);
-    public JDBCFetchPlan removeFields(Collection fields);
-    public JDBCFetchPlan resetFetchGroups();
-    public JDBCFetchPlan setQueryResultCacheEnabled(boolean cache);
-    public JDBCFetchPlan setFetchBatchSize(int fetchBatchSize);
-    public JDBCFetchPlan setLockTimeout(int timeout);
-    public JDBCFetchPlan setMaxFetchDepth(int depth);
-    public JDBCFetchPlan setReadLockMode(LockModeType mode);
-    public JDBCFetchPlan setWriteLockMode(LockModeType mode);
-    public JDBCFetchPlan setQueryTimeout(int timeout);
+    @Override JDBCFetchPlan addFetchGroup(String group);
+    @Override JDBCFetchPlan addFetchGroups(Collection groups);
+    @Override JDBCFetchPlan addFetchGroups(String... groups);
+    @Override JDBCFetchPlan addField(Class cls, String field);
+    @Override JDBCFetchPlan addField(String field);
+    @Override JDBCFetchPlan addFields(Class cls, Collection fields);
+    @Override JDBCFetchPlan addFields(Class cls, String... fields);
+    @Override JDBCFetchPlan addFields(Collection fields);
+    @Override JDBCFetchPlan addFields(String... fields);
+    @Override JDBCFetchPlan clearFetchGroups();
+    @Override JDBCFetchPlan clearFields();
+    @Override JDBCFetchPlan removeFetchGroup(String group);
+    @Override JDBCFetchPlan removeFetchGroups(Collection groups);
+    @Override JDBCFetchPlan removeFetchGroups(String... groups);
+    @Override JDBCFetchPlan removeField(Class cls, String field);
+    @Override JDBCFetchPlan removeField(String field);
+    @Override JDBCFetchPlan removeFields(Class cls, Collection fields);
+    @Override JDBCFetchPlan removeFields(Class cls, String... fields);
+    @Override JDBCFetchPlan removeFields(String... fields);
+    @Override JDBCFetchPlan removeFields(Collection fields);
+    @Override JDBCFetchPlan resetFetchGroups();
+    @Override JDBCFetchPlan setQueryResultCacheEnabled(boolean cache);
+    @Override JDBCFetchPlan setFetchBatchSize(int fetchBatchSize);
+    @Override JDBCFetchPlan setLockTimeout(int timeout);
+    @Override JDBCFetchPlan setMaxFetchDepth(int depth);
+    @Override JDBCFetchPlan setReadLockMode(LockModeType mode);
+    @Override JDBCFetchPlan setWriteLockMode(LockModeType mode);
+    @Override JDBCFetchPlan setQueryTimeout(int timeout);
 
     /**
      * @deprecated use the {@link FetchMode} enum instead.
      */
-    public static final int EAGER_NONE = EagerFetchModes.EAGER_NONE;
+    @Deprecated int EAGER_NONE = EagerFetchModes.EAGER_NONE;
 
     /**
      * @deprecated use the {@link FetchMode} enum instead.
      */
-    public static final int EAGER_JOIN = EagerFetchModes.EAGER_JOIN;
+    @Deprecated int EAGER_JOIN = EagerFetchModes.EAGER_JOIN;
 
     /**
      * @deprecated use the {@link FetchMode} enum instead.
      */
-    public static final int EAGER_PARALLEL = EagerFetchModes.EAGER_PARALLEL;
+    @Deprecated int EAGER_PARALLEL = EagerFetchModes.EAGER_PARALLEL;
 
     /**
      * @deprecated use the {@link LRSSizeAlgorithm} enum instead.
      */
-    public static final int SIZE_UNKNOWN = LRSSizes.SIZE_UNKNOWN;
+    @Deprecated int SIZE_UNKNOWN = LRSSizes.SIZE_UNKNOWN;
 
     /**
      * @deprecated use the {@link LRSSizeAlgorithm} enum instead.
      */
-    public static final int SIZE_LAST = LRSSizes.SIZE_LAST;
+    @Deprecated int SIZE_LAST = LRSSizes.SIZE_LAST;
 
     /**
      * @deprecated use the {@link LRSSizeAlgorithm} enum instead.
      */
-    public static final int SIZE_QUERY = LRSSizes.SIZE_QUERY;
+    @Deprecated int SIZE_QUERY = LRSSizes.SIZE_QUERY;
 
     /**
      * @deprecated use the {@link JoinSyntax} enum instead.
      */
-    public static final int SYNTAX_SQL92 = JoinSyntaxes.SYNTAX_SQL92;
+    @Deprecated int SYNTAX_SQL92 = JoinSyntaxes.SYNTAX_SQL92;
 
     /**
      * @deprecated use the {@link JoinSyntax} enum instead.
      */
-    public static final int SYNTAX_TRADITIONAL =
+    @Deprecated int SYNTAX_TRADITIONAL =
         JoinSyntaxes.SYNTAX_TRADITIONAL;
 
     /**
      * @deprecated use the {@link JoinSyntax} enum instead.
      */
-    public static final int SYNTAX_DATABASE = JoinSyntaxes.SYNTAX_DATABASE;
+    @Deprecated int SYNTAX_DATABASE = JoinSyntaxes.SYNTAX_DATABASE;
 
     /**
      * @deprecated use {@link #setEagerFetchMode(FetchMode)} instead.
      */
-    public JDBCFetchPlan setEagerFetchMode(int mode);
+    @Deprecated JDBCFetchPlan setEagerFetchMode(int mode);
 
     /**
      * @deprecated use {@link #setSubclassFetchMode(FetchMode)} instead.
      */
-    public JDBCFetchPlan setSubclassFetchMode(int mode);
+    @Deprecated JDBCFetchPlan setSubclassFetchMode(int mode);
 
     /**
      * @deprecated use {@link #setResultSetType(ResultSetType)} instead.
      */
-    public JDBCFetchPlan setResultSetType(int mode);
+    @Deprecated JDBCFetchPlan setResultSetType(int mode);
 
     /**
      * @deprecated use {@link #setFetchDirection(FetchDirection)} instead.
      */
-    public JDBCFetchPlan setFetchDirection(int direction);
+    @Deprecated JDBCFetchPlan setFetchDirection(int direction);
 
     /**
      * @deprecated use {@link #getLRSSizeAlgorithm()} instead.
      */
-    public int getLRSSize();
+    @Deprecated int getLRSSize();
 
     /**
      * @deprecated use {@link #setLRSSizeAlgorithm(LRSSizeAlgorithm)} instead.
      */
-    public JDBCFetchPlan setLRSSize(int lrsSizeMode);
+    @Deprecated JDBCFetchPlan setLRSSize(int lrsSizeMode);
 
     /**
      * @deprecated use {@link #setJoinSyntax(JoinSyntax)} instead.
      */
-    public JDBCFetchPlan setJoinSyntax(int syntax);
+    @Deprecated JDBCFetchPlan setJoinSyntax(int syntax);
 
     /**
      * Affirms if foreign key for a relation field will be pre-fetched as part of the owning object irrespective of
@@ -236,7 +237,7 @@ public interface JDBCFetchPlan
      *
      * @since 2.2.0
      */
-    public boolean getIgnoreDfgForFkSelect();
+    boolean getIgnoreDfgForFkSelect();
 
     /**
      * Affirms if foreign key for a relation field will be pre-fetched as part of the owning object irrespective of
@@ -246,5 +247,5 @@ public interface JDBCFetchPlan
      *
      * @since 2.2.0
      */
-    public void setIgnoreDfgForFkSelect(boolean b);
+    void setIgnoreDfgForFkSelect(boolean b);
 }

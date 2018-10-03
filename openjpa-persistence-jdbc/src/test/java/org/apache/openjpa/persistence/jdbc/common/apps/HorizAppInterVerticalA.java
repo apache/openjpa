@@ -33,24 +33,30 @@ public class HorizAppInterVerticalA
     private String stringA;
     private int intA;
 
+    @Override
     public void setStringA(String stringA) {
         this.stringA = stringA;
     }
 
+    @Override
     public String getStringA() {
         return this.stringA;
     }
 
+    @Override
     public void setIntA(int intA) {
         this.intA = intA;
     }
 
+    @Override
     public int getIntA() {
         return this.intA;
     }
 
     public static class Id implements java.io.Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public int pk;
 
         public Id() {
@@ -60,14 +66,17 @@ public class HorizAppInterVerticalA
             pk = Integer.parseInt(str);
         }
 
+        @Override
         public String toString() {
             return pk + "";
         }
 
+        @Override
         public int hashCode() {
             return pk;
         }
 
+        @Override
         public boolean equals(Object other) {
             return other instanceof Id
                 && ((Id) other).pk == pk;

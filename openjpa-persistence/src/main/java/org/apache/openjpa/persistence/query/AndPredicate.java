@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import static org.apache.openjpa.persistence.query.ConditionalOperator.*;
+import static org.apache.openjpa.persistence.query.ConditionalOperator.AND;
+import static org.apache.openjpa.persistence.query.ConditionalOperator.OR;
 
 /**
  * Denotes (e1 AND e2) predicate.
@@ -27,7 +28,10 @@ import static org.apache.openjpa.persistence.query.ConditionalOperator.*;
  *
  */
 public class AndPredicate extends LogicalPredicate {
-	public AndPredicate(Predicate p1, Predicate p2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public AndPredicate(Predicate p1, Predicate p2) {
 		super(p1, AND, OR, p2);
 	}
 }

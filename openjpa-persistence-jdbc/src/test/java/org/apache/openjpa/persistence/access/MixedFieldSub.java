@@ -56,6 +56,7 @@ public class MixedFieldSub extends MixedMappedSuper {
         crtDate = date;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof MixedFieldSub) {
             MixedFieldSub ps = (MixedFieldSub)obj;

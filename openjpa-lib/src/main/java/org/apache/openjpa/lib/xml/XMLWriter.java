@@ -47,16 +47,19 @@ public class XMLWriter extends FilterWriter {
         super(out);
     }
 
+    @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
         for (int i = 0; i < len; i++)
             write(cbuf[off + i]);
     }
 
+    @Override
     public void write(String str, int off, int len) throws IOException {
         for (int i = 0; i < len; i++)
             write(str.charAt(off + i));
     }
 
+    @Override
     public void write(int c) throws IOException {
         // the basic idea of this method is to make sure that when a tag
         // or a text block starts, it is placed on a separate line and

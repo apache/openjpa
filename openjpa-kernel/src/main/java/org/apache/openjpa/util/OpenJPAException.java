@@ -35,11 +35,11 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * @author Abe White
  * @since 0.4.0
  */
-@SuppressWarnings("serial")
 public abstract class OpenJPAException
     extends RuntimeException
     implements Serializable, ExceptionInfo {
 
+    private static final long serialVersionUID = 1L;
     private transient boolean _fatal = false;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
@@ -90,11 +90,13 @@ public abstract class OpenJPAException
     /**
      * Exception type.
      */
+    @Override
     public abstract int getType();
 
     /**
      * Exception subtype.
      */
+    @Override
     public int getSubtype() {
         return 0;
     }
@@ -102,6 +104,7 @@ public abstract class OpenJPAException
     /**
      * Whether this error is fatal.
      */
+    @Override
     public boolean isFatal() {
         return _fatal;
     }
@@ -120,6 +123,7 @@ public abstract class OpenJPAException
      *
      * @see Throwable#getCause
      */
+    @Override
     public Throwable getCause() {
         if (_nested == null || _nested.length == 0)
             return null;
@@ -141,6 +145,7 @@ public abstract class OpenJPAException
     /**
      * The nested throwables.
      */
+    @Override
     public Throwable[] getNestedThrowables() {
         return (_nested == null) ? Exceptions.EMPTY_THROWABLES : _nested;
     }
@@ -156,6 +161,7 @@ public abstract class OpenJPAException
     /**
      * The failed object.
      */
+    @Override
     public Object getFailedObject() {
         return _failed;
     }
@@ -168,19 +174,23 @@ public abstract class OpenJPAException
         return this;
     }
 
+    @Override
     public String toString() {
         return Exceptions.toString(this);
     }
 
+    @Override
     public void printStackTrace() {
         printStackTrace(System.err);
     }
 
+    @Override
     public void printStackTrace(PrintStream out) {
         super.printStackTrace(out);
         Exceptions.printNestedThrowables(this, out);
     }
 
+    @Override
     public void printStackTrace(PrintWriter out) {
         super.printStackTrace(out);
         Exceptions.printNestedThrowables(this, out);

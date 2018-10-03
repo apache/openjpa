@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 class AnyExpression extends UnaryOperatorExpression implements Subquery {
-	public AnyExpression(QueryDefinitionImpl sub) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public AnyExpression(QueryDefinitionImpl sub) {
 		super(sub, UnaryFunctionalOperator.ANY);
 	}
 }

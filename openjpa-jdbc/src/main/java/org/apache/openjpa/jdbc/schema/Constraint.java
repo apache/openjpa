@@ -27,10 +27,8 @@ import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public abstract class Constraint
-    extends ReferenceCounter {
-
+public abstract class Constraint extends ReferenceCounter {
+    private static final long serialVersionUID = 1L;
     private DBIdentifier _name = DBIdentifier.NULL;
     private QualifiedDBIdentifier _fullPath = null;
     private Table _table = null;
@@ -52,6 +50,7 @@ public abstract class Constraint
      * @param table the local table of the constraint
      * @deprecated
      */
+    @Deprecated
     Constraint(String name, Table table) {
         this(DBIdentifier.newConstant(name), table);
     }
@@ -84,6 +83,7 @@ public abstract class Constraint
      * Return the column's table name.
      * @deprecated
      */
+    @Deprecated
     public String getTableName() {
         return getTableIdentifier().getName();
     }
@@ -97,6 +97,7 @@ public abstract class Constraint
      * columns whose table object is not set.
      * @deprecated
      */
+    @Deprecated
     public void setTableName(String name) {
         setTableIdentifier(DBIdentifier.newTable(name));
     }
@@ -113,6 +114,7 @@ public abstract class Constraint
      * Return the column table's schema name.
      * @deprecated
      */
+    @Deprecated
     public String getSchemaName() {
         return getSchemaIdentifier().getName();
     }
@@ -126,6 +128,7 @@ public abstract class Constraint
      * columns whose table object is not set.
      * @deprecated
      */
+    @Deprecated
     public void setSchemaName(String schema) {
         setSchemaIdentifier(DBIdentifier.newSchema(schema));
     }
@@ -140,6 +143,7 @@ public abstract class Constraint
      * Return the column's name.
      * @deprecated
      */
+    @Deprecated
     public String getColumnName() {
         return getColumnIdentifier().getName();
     }
@@ -153,6 +157,7 @@ public abstract class Constraint
      * columns whose table object is not set.
      * @deprecated
      */
+    @Deprecated
     public void setColumnName(String name) {
         setColumnIdentifier(DBIdentifier.newColumn(name));
     }
@@ -167,6 +172,7 @@ public abstract class Constraint
      * Return the name of the constraint.
      * @deprecated
      */
+    @Deprecated
     public String getName() {
         return getIdentifier().getName();
     }
@@ -181,6 +187,7 @@ public abstract class Constraint
      * constraint already belongs to a table.
      * @deprecated
      */
+    @Deprecated
     public void setName(String name) {
         setIdentifier(DBIdentifier.newConstraint(name));
     }
@@ -196,6 +203,7 @@ public abstract class Constraint
      * Return the full name of the constraint.
      * @deprecated
      */
+    @Deprecated
     public String getFullName() {
         return getFullIdentifier().getName();
     }
@@ -232,6 +240,7 @@ public abstract class Constraint
         _deferred = deferred;
     }
 
+    @Override
     public String toString() {
         if (!getIdentifier().isNull())
             return getIdentifier().getName();

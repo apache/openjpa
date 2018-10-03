@@ -49,6 +49,7 @@ public class XMLEmbedMixedAccess {
         setMName(mname);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLEmbedMixedAccess) {
             XMLEmbedMixedAccess ps = (XMLEmbedMixedAccess)obj;

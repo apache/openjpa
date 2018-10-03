@@ -26,31 +26,31 @@ package org.apache.openjpa.kernel.exps;
 public interface Literal
     extends Value, Constant {
 
-    public static final int TYPE_UNKNOWN = 0;
-    public static final int TYPE_NUMBER = 1;
-    public static final int TYPE_BOOLEAN = 2;
-    public static final int TYPE_STRING = 3;
-    public static final int TYPE_SQ_STRING = 4; // single-quoted string
-    public static final int TYPE_CLASS = 5;
-    public static final int TYPE_ENUM = 6;
-    public static final int TYPE_COLLECTION = 7;
-    public static final int TYPE_DATE = 8;
-    public static final int TYPE_TIME = 9;
-    public static final int TYPE_TIMESTAMP = 10;
+    int TYPE_UNKNOWN = 0;
+    int TYPE_NUMBER = 1;
+    int TYPE_BOOLEAN = 2;
+    int TYPE_STRING = 3;
+    int TYPE_SQ_STRING = 4; // single-quoted string
+    int TYPE_CLASS = 5;
+    int TYPE_ENUM = 6;
+    int TYPE_COLLECTION = 7;
+    int TYPE_DATE = 8;
+    int TYPE_TIME = 9;
+    int TYPE_TIMESTAMP = 10;
 
     /**
      * The value of this literal.
      */
-    public Object getValue();
+    Object getValue();
 
     /**
      * The value of this literal.
      */
-    public void setValue(Object val);
+    void setValue(Object val);
 
     /**
      * The type the literal was parsed as.
      */
-    public int getParseType();
+    int getParseType();
 }
 

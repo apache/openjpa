@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -49,6 +50,9 @@ import org.apache.openjpa.persistence.FetchGroups;
     })
 @Table(name="K_ATTACHE")
 public class AttachE implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

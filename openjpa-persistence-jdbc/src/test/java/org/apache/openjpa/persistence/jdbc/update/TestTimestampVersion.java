@@ -36,7 +36,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestTimestampVersion extends SingleEMFTestCase {
-	public void setUp() {
+	@Override
+    public void setUp() {
         super.setUp(CLEAR_TABLES, TimestampedEntity.class, NumericVersionedEntity.class, BaseTimestampedEntity.class);
     }
 	public void testQueryOnVersion() {

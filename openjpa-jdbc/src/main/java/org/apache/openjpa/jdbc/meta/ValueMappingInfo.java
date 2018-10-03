@@ -41,9 +41,8 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public class ValueMappingInfo
-    extends MappingInfo {
+public class ValueMappingInfo extends MappingInfo {
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage
         (ValueMappingInfo.class);
@@ -87,6 +86,7 @@ public class ValueMappingInfo
      * @param inversable whether an inverse join is allowed
      * @deprecated
      */
+    @Deprecated
     public ForeignKey getTypeJoin(final ValueMapping val, final String name,
         boolean inversable, boolean adapt) {
         return getTypeJoin(val, DBIdentifier.newForeignKey(name), inversable, adapt);
@@ -99,11 +99,13 @@ public class ValueMappingInfo
             return null;
 
         ForeignKeyDefaults def = new ForeignKeyDefaults() {
+            @Override
             public ForeignKey get(Table local, Table foreign, boolean inverse) {
                 return val.getMappingRepository().getMappingDefaults().
                     getForeignKey(val, name, local, foreign, inverse);
             }
 
+            @Override
             public void populate(Table local, Table foreign, Column col,
                 Object target, boolean inverse, int pos, int cols) {
                 val.getMappingRepository().getMappingDefaults().
@@ -133,6 +135,7 @@ public class ValueMappingInfo
      * Return the join from the related type to this value.
      * @deprecated
      */
+    @Deprecated
     public ForeignKey getInverseTypeJoin(final ValueMapping val,
         final String name, boolean adapt) {
         return getInverseTypeJoin(val, DBIdentifier.newForeignKey(name), adapt);
@@ -145,11 +148,13 @@ public class ValueMappingInfo
             return null;
 
         ForeignKeyDefaults def = new ForeignKeyDefaults() {
+            @Override
             public ForeignKey get(Table local, Table foreign, boolean inverse) {
                 return val.getMappingRepository().getMappingDefaults().
                     getForeignKey(val, name, local, foreign, !inverse);
             }
 
+            @Override
             public void populate(Table local, Table foreign, Column col,
                 Object target, boolean inverse, int pos, int cols) {
                 val.getMappingRepository().getMappingDefaults().
@@ -165,6 +170,7 @@ public class ValueMappingInfo
      * Return the columns for this value, based on the given templates.
      * @deprecated
      */
+    @Deprecated
     public Column[] getColumns(ValueMapping val, String name,
         Column[] tmplates, Table table, boolean adapt) {
         return getColumns(val, DBIdentifier.newColumn(name), tmplates, table, adapt);
@@ -191,7 +197,7 @@ public class ValueMappingInfo
             return;
 
         int pos = 0;
-        Column cur = (Column) cols.get(0);
+        Column cur = cols.get(0);
         Column next;
         for (int i = 0; i < cols.size(); i++) {
             if (cur.getTargetField() == null)
@@ -202,7 +208,7 @@ public class ValueMappingInfo
                 throw new MetaDataException(_loc.get("bad-targetfield",
                     val, cur.getTargetField()));
 
-            next = (Column) cols.get(pos);
+            next = cols.get(pos);
             cols.set(pos, cur);
             cur = next;
         }
@@ -222,6 +228,7 @@ public class ValueMappingInfo
      * Return a unique constraint for the given columns, or null if none.
      * @deprecated
      */
+    @Deprecated
     public Unique getUnique(ValueMapping val, String name, boolean adapt) {
         return getUnique(val, DBIdentifier.newConstraint(name), adapt);
     }
@@ -240,6 +247,7 @@ public class ValueMappingInfo
      * Return an index for the given columns, or null if none.
      * @deprecated
      */
+    @Deprecated
     public Index getIndex(ValueMapping val, String name, boolean adapt) {
         return getIndex(val, DBIdentifier.newIndex(name), adapt);
     }
@@ -258,6 +266,7 @@ public class ValueMappingInfo
      * Return the null indicator column for this value, or null if none.
      * @deprecated
      */
+    @Deprecated
     public Column getNullIndicatorColumn(ValueMapping val, String name,
         Table table, boolean adapt) {
         return getNullIndicatorColumn(val, DBIdentifier.newColumn(name), table, adapt);
@@ -351,6 +360,7 @@ public class ValueMappingInfo
         }
     }
 
+    @Override
     protected void clear(boolean canFlags) {
         super.clear(canFlags);
         if (canFlags) {
@@ -359,6 +369,7 @@ public class ValueMappingInfo
         }
     }
 
+    @Override
     public void copy(MappingInfo info) {
         super.copy(info);
         if (!(info instanceof ValueMappingInfo))

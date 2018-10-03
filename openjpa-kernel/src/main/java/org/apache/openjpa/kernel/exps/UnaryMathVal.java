@@ -28,6 +28,8 @@ import org.apache.openjpa.kernel.StoreContext;
 abstract class UnaryMathVal
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
 
     /**
@@ -37,13 +39,16 @@ abstract class UnaryMathVal
         _val = val;
     }
 
+    @Override
     public Class getType() {
         return getType(_val.getType());
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object o1 = _val.eval(candidate, orig, ctx, params);
@@ -61,6 +66,7 @@ abstract class UnaryMathVal
      */
     protected abstract Object operate(Object o, Class c);
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

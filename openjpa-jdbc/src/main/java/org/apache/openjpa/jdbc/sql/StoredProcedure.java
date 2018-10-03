@@ -18,11 +18,6 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.schema.Schemas;
-import org.apache.openjpa.meta.MultiQueryMetaData;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.DatabaseMetaData;
@@ -32,6 +27,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Schemas;
+import org.apache.openjpa.meta.MultiQueryMetaData;
 
 /**
  * Holds metadata about a Database Stored Procedure.
@@ -52,11 +52,11 @@ public class StoredProcedure {
     private DBIdentifier _catalog;
     private DBIdentifier _schema;
     private DBIdentifier _name;
-    private List<Column> _cols = new ArrayList<Column>();
-    private List<String> _params = new ArrayList<String>();
+    private List<Column> _cols = new ArrayList<>();
+    private List<String> _params = new ArrayList<>();
 
 
-    private List<String> _sql = new ArrayList<String>();
+    private List<String> _sql = new ArrayList<>();
     private final boolean _fromDatabase;
 
     /**
@@ -185,7 +185,7 @@ public class StoredProcedure {
         List<Column> cols = null;
         for (Column col : _cols) {
             if (col.getFlag(flag)) {
-                if (cols == null) cols = new ArrayList<Column>();
+                if (cols == null) cols = new ArrayList<>();
                 cols.add(col);
             }
         }
@@ -330,6 +330,7 @@ public class StoredProcedure {
         }
     }
 
+    @Override
     public String toString() {
         return getName();
     }

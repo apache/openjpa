@@ -26,6 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestPropertyAccess
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(PropertyAccess1.class, CLEAR_TABLES);
     }

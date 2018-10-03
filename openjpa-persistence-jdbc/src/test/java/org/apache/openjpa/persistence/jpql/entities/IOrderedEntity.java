@@ -22,19 +22,19 @@ import java.util.List;
 
 public interface IOrderedEntity {
 
-    public int getId();
+    int getId();
 
-    public void setId(int id);
+    void setId(int id);
 
-    public List<INameEntity> getEntities();
+    List<INameEntity> getEntities();
 
-    public void setEntities(List<INameEntity> entities);
+    void setEntities(List<INameEntity> entities);
 
-    public void addEntity(INameEntity newElement);
+    void addEntity(INameEntity newElement);
 
-    public INameEntity removeEntity(int location);
+    INameEntity removeEntity(int location);
 
-    public void insertEntity(int location, INameEntity entity);
+    void insertEntity(int location, INameEntity entity);
 
-    public String toString();
+    @Override String toString();
 }

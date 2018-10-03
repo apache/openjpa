@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import java.util.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="PMEmbedTest")
@@ -30,7 +34,7 @@ public class ProgramManager {
     int id;
 
     @OneToMany(mappedBy="jobInfo.pm")
-    Collection<Employee> manages = new ArrayList<Employee>();
+    Collection<Employee> manages = new ArrayList<>();
 
     public int getId() {
         return id;

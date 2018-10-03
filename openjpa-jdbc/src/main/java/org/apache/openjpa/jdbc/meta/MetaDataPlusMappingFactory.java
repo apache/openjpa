@@ -84,25 +84,30 @@ public class MetaDataPlusMappingFactory
         return _map;
     }
 
+    @Override
     public void setRepository(MetaDataRepository repos) {
         super.setRepository(repos);
         _map.setRepository(repos);
     }
 
+    @Override
     public void setStoreDirectory(File dir) {
         super.setStoreDirectory(dir);
         _map.setStoreDirectory(dir);
     }
 
+    @Override
     public void setStoreMode(int store) {
         super.setStoreMode(store);
         _map.setStoreMode(store);
     }
 
+    @Override
     public void setStrict(boolean strict) {
         // always in strict mode
     }
 
+    @Override
     public void load(Class cls, int mode, ClassLoader envLoader) {
         if ((mode & ~MODE_MAPPING) != MODE_NONE)
             super.load(cls, mode & ~MODE_MAPPING, envLoader);
@@ -110,6 +115,7 @@ public class MetaDataPlusMappingFactory
             _map.load(cls, mode & ~MODE_META, envLoader);
     }
 
+    @Override
     public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
         SequenceMetaData[] seqs, int mode, Map output) {
         boolean store = true;
@@ -122,6 +128,7 @@ public class MetaDataPlusMappingFactory
         return store;
     }
 
+    @Override
     public boolean drop(Class[] cls, int mode, ClassLoader envLoader) {
         boolean drop = true;
         if ((mode & ~MODE_MAPPING) != MODE_NONE)
@@ -131,6 +138,7 @@ public class MetaDataPlusMappingFactory
         return drop;
     }
 
+    @Override
     public Set getPersistentTypeNames(boolean classpath,
         ClassLoader envLoader) {
         Set names = super.getPersistentTypeNames(classpath, envLoader);
@@ -139,16 +147,19 @@ public class MetaDataPlusMappingFactory
         return _map.getPersistentTypeNames(classpath, envLoader);
     }
 
+    @Override
     public void clear() {
         super.clear();
         _map.clear();
     }
 
+    @Override
     public void addClassExtensionKeys(Collection exts) {
         super.addClassExtensionKeys(exts);
         _map.addClassExtensionKeys(exts);
     }
 
+    @Override
     public void addFieldExtensionKeys(Collection exts) {
         super.addFieldExtensionKeys(exts);
         _map.addFieldExtensionKeys(exts);

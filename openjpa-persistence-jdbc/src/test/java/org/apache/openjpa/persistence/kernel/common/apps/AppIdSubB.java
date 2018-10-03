@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.util.StringTokenizer;
+
 import javax.persistence.Entity;
 
 /**
@@ -53,6 +54,8 @@ public abstract class AppIdSubB
     public static abstract class ID
         extends AppIdSubA.ID {
 
+        
+        private static final long serialVersionUID = 1L;
         public String pkb;
 
         public ID() {
@@ -64,21 +67,25 @@ public abstract class AppIdSubB
             fromString(str);
         }
 
+        @Override
         public int hashCode() {
             return (super.hashCode() + (pkb == null ? 0 : pkb.hashCode()))
                 % Integer.MAX_VALUE;
         }
 
+        @Override
         public boolean equals(Object other) {
             return super.equals(other)
                 && ((ID) other).pkb == null ? pkb == null
                 : ((ID) other).pkb.equals(pkb);
         }
 
+        @Override
         public String toString() {
             return super.toString() + DELIMITER + pkb;
         }
 
+        @Override
         StringTokenizer fromString(String idString) {
             StringTokenizer tok = super.fromString(idString);
             pkb = tok.nextToken();

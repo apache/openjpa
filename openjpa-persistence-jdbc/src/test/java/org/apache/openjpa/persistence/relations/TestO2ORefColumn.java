@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.relations;
 
 import javax.persistence.EntityManager;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.framework.Assert;
 
 /**
  * Unit test to verify the foreign key of a Join column in an association (aText), that is exposed as an
@@ -35,6 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestO2ORefColumn extends SingleEMFTestCase {
 
+    @Override
     public void setUp () {
         setUp(CLEAR_TABLES,
                 ACase.class, AText.class, AEvident.class,

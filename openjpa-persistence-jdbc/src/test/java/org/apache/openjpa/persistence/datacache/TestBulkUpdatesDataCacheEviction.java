@@ -30,6 +30,7 @@ public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
     Object[] noEvictProps = new Object[] { CLEAR_TABLES, CachedEntityStatistics.class
         , "openjpa.DataCache", "true(EvictOnBulkUpdate=false)" };
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(props);
     }

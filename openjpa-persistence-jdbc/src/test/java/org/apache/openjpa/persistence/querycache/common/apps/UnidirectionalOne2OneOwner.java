@@ -19,7 +19,12 @@
 
 package org.apache.openjpa.persistence.querycache.common.apps;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Version;
+
+import org.apache.openjpa.persistence.datacache.TestDataCacheBehavesIdentical;
 
 /**
  * A persistent entity that owns unidirectional single-valued relationship.
@@ -81,7 +86,8 @@ public class UnidirectionalOne2OneOwner {
 		return version;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return this.getClass().getSimpleName() + ":" + id + ":" + name;
 	}
 }

@@ -87,6 +87,7 @@ public class Specification {
     /**
      * Affirms if the given argument is equal to this receiver.
      */
+    @Override
     public boolean equals(Object other) {
         if (this == other)
             return true;
@@ -126,6 +127,7 @@ public class Specification {
         return _major > other._major ? 1 : _major == other._major ? 0 : -1;
     }
 
+    @Override
     public String toString() {
         return _name.toUpperCase(Locale.ENGLISH) + " " + _major + "." + _minor;
     }

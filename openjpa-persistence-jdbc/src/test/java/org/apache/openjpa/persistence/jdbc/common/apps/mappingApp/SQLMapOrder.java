@@ -20,7 +20,14 @@ package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.ColumnResult;
+import javax.persistence.Entity;
+import javax.persistence.EntityResult;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PostLoad;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.Table;
 
 /** Exemplifies a mapping that is overwritten in orm.xml file.
  *
@@ -39,7 +46,10 @@ import javax.persistence.*;
 @Entity
 @Table(name = "SQLMAP_ORDER")
 public class SQLMapOrder implements Serializable {
-	@Id
+	
+    private static final long serialVersionUID = 1L;
+
+    @Id
 	int id;
 
 	int quantity;

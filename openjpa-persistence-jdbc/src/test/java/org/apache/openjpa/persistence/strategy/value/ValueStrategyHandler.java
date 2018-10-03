@@ -46,7 +46,8 @@ public class ValueStrategyHandler extends AbstractValueHandler {
 		return new Column[]{col};
 	}
 
-	public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store){
+	@Override
+    public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store){
 
 		if(val == null){
 			return null;
@@ -55,7 +56,8 @@ public class ValueStrategyHandler extends AbstractValueHandler {
 		return val.toString();
 	}
 
-	public Object toObjectValue(ValueMapping vm, Object val){
+	@Override
+    public Object toObjectValue(ValueMapping vm, Object val){
 		if(val == null){
 			return null;
 		}

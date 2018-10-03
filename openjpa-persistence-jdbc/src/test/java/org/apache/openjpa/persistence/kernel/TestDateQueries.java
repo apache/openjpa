@@ -34,12 +34,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
 
 public class TestDateQueries extends BaseKernelTest {
 
@@ -58,6 +55,7 @@ public class TestDateQueries extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp()
         throws Exception {
         super.setUp(AllFieldTypesTest.class);

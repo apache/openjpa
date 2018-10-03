@@ -20,6 +20,6 @@ package org.apache.openjpa.persistence.models.company;
 
 public interface IFullTimeEmployee extends IEmployee {
 
-    public void setSalary(float salary);
-    public float getSalary();
+    void setSalary(float salary);
+    float getSalary();
 }

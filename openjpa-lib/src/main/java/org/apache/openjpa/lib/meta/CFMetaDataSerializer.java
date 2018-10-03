@@ -20,9 +20,9 @@ package org.apache.openjpa.lib.meta;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.xml.sax.SAXException;
 
@@ -59,7 +59,7 @@ public abstract class CFMetaDataSerializer extends XMLMetaDataSerializer {
     protected Map<String, Collection<Object>> groupByPackage(
         Collection<Object> objs) throws SAXException {
         Map<String, Collection<Object>> packages =
-            new LinkedHashMap<String, Collection<Object>>();
+            new LinkedHashMap<>();
         String packageName;
         Collection<Object> packageObjs;
         Object obj;
@@ -68,7 +68,7 @@ public abstract class CFMetaDataSerializer extends XMLMetaDataSerializer {
             packageName = getPackage(obj);
             packageObjs = packages.get(packageName);
             if (packageObjs == null) {
-                packageObjs = new LinkedList<Object>();
+                packageObjs = new LinkedList<>();
                 packages.put(packageName, packageObjs);
             }
             packageObjs.add(obj);

@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import javax.persistence.Entity;
 
+import org.apache.openjpa.persistence.jdbc.kernel.TestByteArrayAppId;
+
 /**
  * <p>Persistent type using a byte[] for a primary key field.  Used in
  * {@link TestByteArrayAppId}.</p>

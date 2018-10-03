@@ -57,8 +57,8 @@ public class PUDEntityAE01 {
     private AnEmbeddable ane;
 
     public PUDEntityAE01() {
-        colM2M = new ArrayList<PUDEntityB>();
-        colO2M = new ArrayList<PUDEntityB>();
+        colM2M = new ArrayList<>();
+        colO2M = new ArrayList<>();
     }
 
     public int getId() {

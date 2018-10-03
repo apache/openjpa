@@ -25,6 +25,8 @@ package org.apache.openjpa.lib.conf;
  *
  */
 public class BootstrapException extends RuntimeException {
+    
+    private static final long serialVersionUID = 1L;
     private boolean _fatal = false;
 
 	public BootstrapException() {

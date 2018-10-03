@@ -20,7 +20,11 @@ package org.apache.openjpa.persistence.compat;
 
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 
 
@@ -56,10 +60,12 @@ public class Bi_1ToM_JT {
         this.entityCs = entityCs;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Bi_1ToM_JT)) return false;
         Bi_1ToM_JT b = (Bi_1ToM_JT)o;

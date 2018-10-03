@@ -19,9 +19,8 @@
 package org.apache.openjpa.persistence.query;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
-
-
 
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest2;
@@ -32,6 +31,7 @@ public class TestEJBPolymorphicQuery extends BaseQueryTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);

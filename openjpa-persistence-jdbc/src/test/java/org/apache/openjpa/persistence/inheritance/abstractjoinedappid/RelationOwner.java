@@ -18,8 +18,16 @@
  */
 package org.apache.openjpa.persistence.inheritance.abstractjoinedappid;
 
-import java.util.*;
-import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 
@@ -28,7 +36,7 @@ import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 public class RelationOwner {
 
 	private Integer id;
-	private Collection<Superclass> supers = new ArrayList<Superclass>();
+	private Collection<Superclass> supers = new ArrayList<>();
 
 	@Id
 	@Column(name="ID")

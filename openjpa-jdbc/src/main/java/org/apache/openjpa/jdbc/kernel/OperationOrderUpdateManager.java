@@ -41,19 +41,23 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 public class OperationOrderUpdateManager
     extends AbstractUpdateManager {
 
+    @Override
     public boolean orderDirty() {
         return true;
     }
 
+    @Override
     protected RowManager newRowManager() {
         return new RowManagerImpl(true);
     }
 
+    @Override
     protected PreparedStatementManager newPreparedStatementManager
         (JDBCStore store, Connection conn) {
         return new PreparedStatementManagerImpl(store, conn);
     }
 
+    @Override
     protected Collection flush(RowManager rowMgr,
         PreparedStatementManager psMgr, Collection exceps) {
         RowManagerImpl rmimpl = (RowManagerImpl) rowMgr;

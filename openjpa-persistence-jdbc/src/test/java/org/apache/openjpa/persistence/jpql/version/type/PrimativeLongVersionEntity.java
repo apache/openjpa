@@ -20,10 +20,15 @@ package org.apache.openjpa.persistence.jpql.version.type;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Version;
 
 @Entity
 public class PrimativeLongVersionEntity implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     private int id;
 

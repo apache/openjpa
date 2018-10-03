@@ -19,16 +19,16 @@
 package org.apache.openjpa.jdbc.kernel;
 
 
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
 import org.apache.openjpa.jdbc.sql.ResultSetResult;
 import org.apache.openjpa.lib.rop.BatchedResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.util.InternalException;
-
-import java.sql.CallableStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Gets multiple Result Object Providers each with different mapping.
@@ -123,6 +123,7 @@ public class XROP implements BatchedResultObjectProvider {
      * <br>
      * <b.NOTE</b>: The side effect is to advance to the statement's next result.
      */
+    @Override
     public boolean hasMoreResults() {
         try {
             return stmt.getMoreResults();
@@ -131,6 +132,7 @@ public class XROP implements BatchedResultObjectProvider {
         }
     }
 
+    @Override
     public boolean getExecutionResult() {
         return executionResult;
     }

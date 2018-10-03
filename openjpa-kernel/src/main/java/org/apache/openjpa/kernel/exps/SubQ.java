@@ -32,6 +32,9 @@ class SubQ
     extends Val
     implements Subquery {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage(Subquery.class);
 
     private final String _alias;
@@ -43,33 +46,41 @@ class SubQ
         _subqAlias = alias;
     }
 
+    @Override
     public Object getSelect() {
         return null;
     }
 
+    @Override
     public String getCandidateAlias() {
         return _alias;
     }
 
+    @Override
     public void setSubqAlias(String subqAlias) {
         _subqAlias = subqAlias;
     }
 
+    @Override
     public String getSubqAlias() {
         return _subqAlias;
     }
 
+    @Override
     public void setQueryExpressions(QueryExpressions q) {
     }
 
+    @Override
     public Class getType() {
         return _type;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _type = type;
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         throw new UnsupportedException(_loc.get("in-mem-subquery"));

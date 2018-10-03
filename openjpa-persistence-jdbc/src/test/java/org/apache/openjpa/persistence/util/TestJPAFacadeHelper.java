@@ -68,6 +68,7 @@ import org.apache.openjpa.util.UserException;
 public class TestJPAFacadeHelper extends SingleEMFTestCase {
     MetaDataRepository repo = null;
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, EmbeddedIdEntity.class, EmbeddedIdClass.class, EBigDecimalID.class, EDBigDecimalID.class,
             EBigIntegerID.class, EDBigIntegerID.class, EDateID.class, EDDateID.class, ESQLDateID.class,

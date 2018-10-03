@@ -35,9 +35,12 @@ import org.apache.openjpa.util.MetaDataException;
 public class EmbeddedClassStrategy
     extends AbstractClassStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (EmbeddedClassStrategy.class);
 
+    @Override
     public void map(boolean adapt) {
         ValueMapping vm = cls.getEmbeddingMapping();
         if (vm == null || vm.getType() != cls.getDescribedType())
@@ -91,6 +94,7 @@ public class EmbeddedClassStrategy
         return false;
     }
 
+    @Override
     public boolean isPrimaryKeyObjectId(boolean hasAll) {
         return cls.getEmbeddingMapping().getFieldMapping().
             getDefiningMapping().isPrimaryKeyObjectId(hasAll);

@@ -44,23 +44,28 @@ public class ImplClassA implements ManagedIface {
         return implClassAName;
     }
 
+    @Override
     public String toString() {
         return super.toString() + ";implClassAName=" + implClassAName +
             ";intFieldSup=" + intFieldSup;
     }
 
+    @Override
     public int getId() {
         return this.id;
     }
 
+    @Override
     public int getIntFieldSup() {
         return intFieldSup;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public void setIntFieldSup(int i) {
         this.intFieldSup = i;
     }

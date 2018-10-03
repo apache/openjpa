@@ -21,17 +21,15 @@ package org.apache.openjpa.persistence.event;
 import java.util.HashMap;
 import java.util.Map;
 
-
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.common.utils.BufferedLogFactory;
-
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.persistence.EntityNotFoundException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.common.utils.BufferedLogFactory;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.util.OpenJPAException;
 
 /**
@@ -49,6 +47,7 @@ public class TestOrphanedKeyAction
         super(s, "eventcactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
 

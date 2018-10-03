@@ -29,13 +29,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.ReferenceMap;
-import org.apache.openjpa.lib.util.Reflectable;
 import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.lib.util.Reflectable;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.UserException;
@@ -859,7 +858,7 @@ public class Reflection {
         Method[] methods = c.getMethods();
         if (methods == null || methods.length < 2)
             return Collections.emptySet();
-        result = new TreeSet<String>();
+        result = new TreeSet<>();
         for (Method m : methods) {
             if (m.getName().startsWith("get")) {
                 if (!canReflect(m))
@@ -891,7 +890,7 @@ public class Reflection {
         Field[] fields = c.getFields();
         if (fields == null || fields.length == 0)
             return Collections.EMPTY_SET;
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
         for (Field f : fields) {
             if (canReflect(f))
                 result.add(f.getName());
@@ -911,7 +910,7 @@ public class Reflection {
         Field[] fields = c.getFields();
         if (fields == null || fields.length == 0)
             return Collections.EMPTY_SET;
-        Set<T> result = new TreeSet<T>();
+        Set<T> result = new TreeSet<>();
         for (Field f : fields) {
             if (mods == f.getModifiers()
             && (t == Object.class || t.isAssignableFrom(f.getType()))

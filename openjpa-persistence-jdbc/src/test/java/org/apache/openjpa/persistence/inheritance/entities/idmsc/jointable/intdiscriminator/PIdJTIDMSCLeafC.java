@@ -30,11 +30,13 @@ public class PIdJTIDMSCLeafC
 extends PIdJTIDMSCMappedSuperclass implements LeafC {
     private String leafCData;
 
+    @Override
     public String getLeafCData()
     {
         return leafCData;
     }
 
+    @Override
     public void setLeafCData(String leafCData) {
         this.leafCData = leafCData;
     }

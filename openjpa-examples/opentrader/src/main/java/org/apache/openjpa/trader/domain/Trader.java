@@ -26,12 +26,12 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name="TRADER",
        uniqueConstraints= @UniqueConstraint(columnNames={"NAME"}))
 
 public class Trader implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Id
     private String name;
 

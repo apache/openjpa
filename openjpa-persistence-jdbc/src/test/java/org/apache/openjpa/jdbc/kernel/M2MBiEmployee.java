@@ -38,7 +38,7 @@ public class M2MBiEmployee {
 
     @ManyToMany(fetch=FetchType.EAGER)
     public Collection<M2MBiDepartment> departments = new ArrayList
-        <M2MBiDepartment>();
+        <>();
 
     public String name;
 

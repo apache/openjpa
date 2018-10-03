@@ -28,11 +28,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+
+import junit.framework.TestCase;
 
 /**
  * Test reparameterization of cached query under heavy load.
@@ -45,6 +45,7 @@ public class TestMultithreadedReparameterization extends TestCase {
     private static String UNIT_NAME = "PreparedQuery";
     protected static OpenJPAEntityManagerFactory emf;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         if (emf == null) {
@@ -193,6 +194,7 @@ public class TestMultithreadedReparameterization extends TestCase {
             this.exceptions = exceptions;
         }
 
+        @Override
         public void run()  {
             try {
                 for (int i = 0; i < nTimes; i++) {

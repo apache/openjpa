@@ -18,26 +18,26 @@
  */
 package org.apache.openjpa.enhance;
 
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
 import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.Collections;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
+import java.util.Collections;
+import java.util.List;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.event.AbstractLifecycleListener;
+import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.ImplHelper;
-import org.apache.openjpa.event.AbstractLifecycleListener;
-import org.apache.openjpa.event.LifecycleEvent;
 
 public abstract class AbstractUnenhancedClassTest
     extends SingleEMFTestCase {
@@ -52,6 +52,7 @@ public abstract class AbstractUnenhancedClassTest
     //   * Java 5 with javaagent
     //   * Java 5 without javaagent
 
+    @Override
     public void setUp() {
         setUp(getUnenhancedClass(), getUnenhancedSubclass(), CLEAR_TABLES);
         // trigger class redefinition

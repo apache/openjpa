@@ -46,12 +46,14 @@ public class TestDelayedArrayListProxy extends DelayedProxyCollectionsTestCase {
         Account.class
     };
 
+    @Override
     public void setUp() {
         super.setUp(_pcList);
     }
 
+    @Override
     public void setUp(Object... props){
-        List<Object> parms = new ArrayList<Object>();
+        List<Object> parms = new ArrayList<>();
         // Add package-specific types
         parms.addAll(Arrays.asList(_pcList));
         // Add properties from super
@@ -59,29 +61,35 @@ public class TestDelayedArrayListProxy extends DelayedProxyCollectionsTestCase {
         super.setUp(parms.toArray());
     }
 
+    @Override
     public IUserIdentity findUserIdentity(EntityManager em, int id) {
         return em.find(UserIdentity.class, id);
     }
 
+    @Override
     public IDepartment findDepartment(EntityManager em, int id) {
         return em.find(Department.class, id);
     }
 
+    @Override
     public IUserIdentity createUserIdentity() {
         UserIdentity ui = new UserIdentity();
         return ui;
     }
 
+    @Override
     public IAccount createAccount(String name, IUserIdentity ui) {
         IAccount acct = new Account(name, ui);
         return acct;
     }
 
+    @Override
     public IDepartment createDepartment() {
         Department d = new Department();
         return d;
     }
 
+    @Override
     public IMember createMember(String name) {
         Member m = new Member();
         m.setName(name);
@@ -96,32 +104,32 @@ public class TestDelayedArrayListProxy extends DelayedProxyCollectionsTestCase {
 
     @Override
     public Collection<IEmployee> createEmployees() {
-        return new ArrayList<IEmployee>();
+        return new ArrayList<>();
     }
 
     @Override
     public Collection<Product> createProducts() {
-        return new ArrayList<Product>();
+        return new ArrayList<>();
     }
 
     @Override
     public Collection<Award> createAwards() {
-        return new ArrayList<Award>();
+        return new ArrayList<>();
     }
 
     @Override
     public Collection<Location> createLocations() {
-        return new ArrayList<Location>();
+        return new ArrayList<>();
     }
 
     @Override
     public Collection<Certification> createCertifications() {
-        return new ArrayList<Certification>();
+        return new ArrayList<>();
     }
 
     @Override
     public Collection<IAccount> createAccounts() {
-        return new ArrayList<IAccount>();
+        return new ArrayList<>();
     }
 
     @Override

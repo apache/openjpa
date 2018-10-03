@@ -41,42 +41,52 @@ public abstract class AbstractVersionStrategy
     extends AbstractStrategy
     implements VersionStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     /**
      * The owning version.
      */
     protected Version vers = null;
 
+    @Override
     public void setVersion(Version owner) {
         vers = owner;
     }
 
+    @Override
     public boolean select(Select sel, ClassMapping mapping) {
         return false;
     }
 
+    @Override
     public Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
         throws SQLException {
     	return null;
     }
 
+    @Override
     public Object load(OpenJPAStateManager sm, JDBCStore store, Result res, Joins joins)
         throws SQLException {
         return null;
     }
 
+    @Override
     public void afterLoad(OpenJPAStateManager sm, JDBCStore store) {
     }
 
+    @Override
     public boolean checkVersion(OpenJPAStateManager sm, JDBCStore store,
         boolean updateVersion)
         throws SQLException {
         return !updateVersion;
     }
 
+    @Override
     public int compareVersion(Object v1, Object v2) {
         return StoreManager.VERSION_SAME;
     }
 
+    @Override
     public Map getBulkUpdateValues() {
         return Collections.EMPTY_MAP;
     }

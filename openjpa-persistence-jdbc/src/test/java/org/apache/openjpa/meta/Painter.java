@@ -23,6 +23,9 @@ import javax.persistence.Entity;
 @Entity
 public class Painter extends Artist {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public Painter() {
         super();
     }

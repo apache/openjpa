@@ -46,10 +46,11 @@ import org.apache.openjpa.util.MetaDataException;
  * @author Abe White
  * @author Pinaki Poddar
  */
-@SuppressWarnings("serial")
 public class FieldMappingInfo
     extends MappingInfo
     implements Commentable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage
         (FieldMappingInfo.class);
@@ -65,6 +66,7 @@ public class FieldMappingInfo
      * The user-supplied name of the table for this field.
      * @deprecated
      */
+    @Deprecated
     public String getTableName() {
         return getTableIdentifier().getName();
     }
@@ -77,6 +79,7 @@ public class FieldMappingInfo
      * The user-supplied name of the table for this field.
      * @deprecated
      */
+    @Deprecated
     public void setTableName(String tableName) {
         setTableIdentifier(DBIdentifier.newTable(tableName));
     }
@@ -149,12 +152,14 @@ public class FieldMappingInfo
                 getSecondaryTableIdentifier(tableName);
 
         return createTable(field, new TableDefaults() {
+            @Override
             public String get(Schema schema) {
                 // delay this so that we don't do schema reflection for unique
                 // table name unless necessary
                 return field.getMappingRepository().getMappingDefaults().
                     getTableName(field, schema);
             }
+            @Override
             public DBIdentifier getIdentifier(Schema schema) {
                 return field.getMappingRepository().getMappingDefaults().
                     getTableIdentifier(field, schema);
@@ -196,11 +201,13 @@ public class FieldMappingInfo
                 getSecondaryTableJoinColumns(_tableName);
         }
         ForeignKeyDefaults def = new ForeignKeyDefaults() {
+            @Override
             public ForeignKey get(Table local, Table foreign, boolean inverse) {
                 return field.getMappingRepository().getMappingDefaults().
                     getJoinForeignKey(field, local, foreign);
             }
 
+            @Override
             public void populate(Table local, Table foreign, Column col,
                 Object target, boolean inverse, int pos, int cols) {
                 field.getMappingRepository().getMappingDefaults().
@@ -243,7 +250,7 @@ public class FieldMappingInfo
      */
     public void addJoinTableUnique(Unique u) {
     	if (_joinTableUniques == null)
-    		_joinTableUniques = new ArrayList<Unique>();
+    		_joinTableUniques = new ArrayList<>();
     	_joinTableUniques.add(u);
     }
 
@@ -259,7 +266,7 @@ public class FieldMappingInfo
     		boolean def, boolean adapt) {
         if (uniques == null || uniques.isEmpty())
             return new Unique[0];
-        Collection<Unique> result = new ArrayList<Unique>();
+        Collection<Unique> result = new ArrayList<>();
         for (Unique template : uniques) {
             Column[] templateColumns = template.getColumns();
             Column[] uniqueColumns = new Column[templateColumns.length];
@@ -405,7 +412,7 @@ public class FieldMappingInfo
             _joinTableUniques = null;
             return;
         }
-        _joinTableUniques = new ArrayList<Unique>();
+        _joinTableUniques = new ArrayList<>();
         for (Unique unique:unqs) {
         	Unique copy = new Unique();
         	copy.setIdentifier(unique.getIdentifier());
@@ -415,11 +422,13 @@ public class FieldMappingInfo
     }
 
 
+    @Override
     public boolean hasSchemaComponents() {
         return super.hasSchemaComponents() || !DBIdentifier.isNull(_tableName)
             || _orderCol != null;
     }
 
+    @Override
     protected void clear(boolean canFlags) {
         super.clear(canFlags);
         _tableName = DBIdentifier.NULL;
@@ -428,6 +437,7 @@ public class FieldMappingInfo
             _canOrderCol = true;
     }
 
+    @Override
     public void copy(MappingInfo info) {
         super.copy(info);
         if (!(info instanceof FieldMappingInfo))
@@ -447,10 +457,12 @@ public class FieldMappingInfo
         }
     }
 
+    @Override
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
 
+    @Override
     public void setComments(String[] comments) {
         _comments = comments;
     }

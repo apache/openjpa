@@ -28,9 +28,8 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class HollowState
-    extends PCState {
+class HollowState extends PCState {
+    private static final long serialVersionUID = 1L;
 
     @Override
     void initialize(StateManagerImpl context, PCState previous) {
@@ -39,49 +38,60 @@ class HollowState
         context.setDirty(false);
     }
 
+    @Override
     PCState delete(StateManagerImpl context) {
         context.preDelete();
         return PDELETED;
     }
 
+    @Override
     PCState transactional(StateManagerImpl context) {
         return PCLEAN;
     }
 
+    @Override
     PCState release(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState beforeRead(StateManagerImpl context, int field) {
         return PCLEAN;
     }
 
+    @Override
     PCState beforeOptimisticRead(StateManagerImpl context, int field) {
         return PNONTRANS;
     }
 
+    @Override
     PCState beforeNontransactionalRead(StateManagerImpl context, int field) {
         return PNONTRANS;
     }
 
+    @Override
     PCState beforeWrite(StateManagerImpl context, int field, boolean mutate) {
         return PDIRTY;
     }
 
+    @Override
     PCState beforeOptimisticWrite(StateManagerImpl context, int field,
         boolean mutate) {
         return PDIRTY;
     }
 
+    @Override
     PCState beforeNontransactionalWrite(StateManagerImpl context, int field,
         boolean mutate) {
         return PNONTRANS;
     }
 
+    @Override
     boolean isPersistent() {
         return true;
     }
 
+    @Override
     public String toString() {
         return "Hollow";
     }

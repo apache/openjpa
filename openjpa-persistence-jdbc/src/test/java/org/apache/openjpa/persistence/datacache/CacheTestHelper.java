@@ -23,13 +23,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.apache.openjpa.datacache.DataCache;
+import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.QueryCache;
 import org.apache.openjpa.datacache.QueryKey;
-import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+
+import junit.framework.TestCase;
 
 class CacheTestHelper {
 
@@ -37,11 +39,11 @@ class CacheTestHelper {
         boolean[] stati) {
         for (int i = 0; i < ids.length; i++) {
             if (stati[i])
-                tc.assertTrue("id " + i + " (" + ids[i]
+                TestCase.assertTrue("id " + i + " (" + ids[i]
                     + ") was not in cache; should have been",
                     cache.contains(ids[i]));
             else
-                tc.assertFalse("id " + i + " (" + ids[i]
+                TestCase.assertFalse("id " + i + " (" + ids[i]
                     + ") was in cache; should not have been",
                     cache.contains(ids[i]));
         }
@@ -68,17 +70,17 @@ class CacheTestHelper {
 
         QueryCache qc = cacheManager(factory).getSystemQueryCache();
         if (inCache == Boolean.FALSE && qc.get(qk) != null) {
-            tc.fail("query should not be in cache; was.");
+            TestCase.fail("query should not be in cache; was.");
         } else if (inCache == Boolean.TRUE || (inCache == null
             && qc.get(qk) != null)) {
             Object res = (args == null) ? query.execute()
                 : query.execute(args);
             if (inCache == Boolean.TRUE &&
                 !isCachedResult(res, inCache, query.getBroker()))
-                tc.fail("query should be in cache; was not.");
+                TestCase.fail("query should be in cache; was not.");
             else if (inCache == null &&
                 isCachedResult(res, inCache, query.getBroker()))
-                tc.fail("query should not be returned to user; was.");
+                TestCase.fail("query should not be returned to user; was.");
             query.closeAll();
         }
     }

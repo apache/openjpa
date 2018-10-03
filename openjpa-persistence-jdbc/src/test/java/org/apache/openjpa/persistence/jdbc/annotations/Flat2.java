@@ -19,7 +19,8 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
 
 @Entity(name="Flat2")
 public class Flat2

@@ -21,7 +21,8 @@ package org.apache.openjpa.persistence.relations;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestConcurrentMap extends SingleEMTestCase {
-	public void setUp() {
+	@Override
+    public void setUp() {
         setUp(ConcurrentEntityLeft.class, ConcurrentEntityRight.class,
               CLEAR_TABLES);
     }

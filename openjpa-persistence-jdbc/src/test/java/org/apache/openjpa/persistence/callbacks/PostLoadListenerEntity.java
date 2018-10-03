@@ -19,9 +19,9 @@
 package org.apache.openjpa.persistence.callbacks;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
 import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 
 @Entity

@@ -89,14 +89,16 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
         return this;
     }
 
+    @Override
     public List<Expression<Boolean>> getExpressions() {
-        List<Expression<Boolean>> result = new CopyOnWriteArrayList<Expression<Boolean>>();
+        List<Expression<Boolean>> result = new CopyOnWriteArrayList<>();
         if (_exps.isEmpty())
             return result;
         result.addAll(_exps);
         return result;
     }
 
+    @Override
     public final BooleanOperator getOperator() {
         return _op;
     }
@@ -108,6 +110,7 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
     /**
      * Is this predicate created by negating another predicate?
      */
+    @Override
     public final boolean isNegated() {
         return _negated;
     }
@@ -120,6 +123,7 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
      * Derived predicates can return the inverse expression, if exists.
      * For example, NotEqual for Equal or LessThan for GreaterThanEqual etc.
      */
+    @Override
     public PredicateImpl not() {
         return new Expressions.Not(this).markNegated();
     }
@@ -131,7 +135,7 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
 
     public static Predicate TRUE() {
     	if (TRUE == null) {
-    	    ExpressionImpl<Integer> ONE  = new Expressions.Constant<Integer>(1);
+    	    ExpressionImpl<Integer> ONE  = new Expressions.Constant<>(1);
     		TRUE = new Expressions.Equal(ONE, ONE);
     	}
     	return TRUE;
@@ -139,7 +143,7 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
 
     public static Predicate FALSE() {
     	if (FALSE == null) {
-    	    ExpressionImpl<Integer> ONE  = new Expressions.Constant<Integer>(1);
+    	    ExpressionImpl<Integer> ONE  = new Expressions.Constant<>(1);
     		FALSE = new Expressions.NotEqual(ONE, ONE);
     	}
     	return FALSE;

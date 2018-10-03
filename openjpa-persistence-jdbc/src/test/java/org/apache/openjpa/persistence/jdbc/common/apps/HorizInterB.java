@@ -26,11 +26,11 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 public interface HorizInterB
     extends HorizInterA {
 
-    public void setStringB(String stringB);
+    void setStringB(String stringB);
 
-    public String getStringB();
+    String getStringB();
 
-    public void setIntB(int intB);
+    void setIntB(int intB);
 
-    public int getIntB();
+    int getIntB();
 }

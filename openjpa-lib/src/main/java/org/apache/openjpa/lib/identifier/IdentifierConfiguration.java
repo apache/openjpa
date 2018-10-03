@@ -29,62 +29,62 @@ public interface IdentifierConfiguration {
     /**
      * Returns the leading delimiter value to use when delimiting a name.
      */
-    public String getLeadingDelimiter();
+    String getLeadingDelimiter();
 
     /**
      * Returns the trailing delimiter value to use when delimiting a name.
      */
-    public String getTrailingDelimiter();
+    String getTrailingDelimiter();
 
     /**
      * Returns true if global name delimiting is enabled.
      */
-    public boolean delimitAll();
+    boolean delimitAll();
 
     /**
      * Returns true if delimiting is supported
      */
-    public boolean getSupportsDelimitedIdentifiers();
+    boolean getSupportsDelimitedIdentifiers();
 
     /**
      * Returns the value used to concatenate multiple names together.
      * For example: "_" used in TABLE1_TABLE2
      */
-    public String getIdentifierConcatenator();
+    String getIdentifierConcatenator();
 
     /**
      * Returns the value used to delimit between individual names.
      * For example: "." used in MYSCHEMA.MYTABLE
      */
-    public String getIdentifierDelimiter();
+    String getIdentifierDelimiter();
 
     /**
      * Gets the default naming rule
      */
-    public IdentifierRule getDefaultIdentifierRule();
+    IdentifierRule getDefaultIdentifierRule();
 
     /**
      * Returns all naming rules
      */
-    public <T> Map<T, IdentifierRule> getIdentifierRules();
+    <T> Map<T, IdentifierRule> getIdentifierRules();
 
     /**
      * Returns a naming rule or null if the rule is
      * not found.
      */
-    public <T> IdentifierRule getIdentifierRule(T t);
+    <T> IdentifierRule getIdentifierRule(T t);
 
     /**
      * Returns the case that is used when delimiting.
      * @return upper, lower, or preserve
      */
-    public String getDelimitedCase();
+    String getDelimitedCase();
 
     /**
      * Returns the case that is used when delimiters are not used.
      * @return upper, lower, or preserve
      */
-    public String getSchemaCase();
+    String getSchemaCase();
 
     /**
      * Returns a key that can be used to determine whether conversion
@@ -92,5 +92,5 @@ public interface IdentifierConfiguration {
      * to their configuration.  The typical key is:
      * leading delimiter (") + name separator(.) + trailing delimiter(")
      */
-    public String getConversionKey();
+    String getConversionKey();
 }

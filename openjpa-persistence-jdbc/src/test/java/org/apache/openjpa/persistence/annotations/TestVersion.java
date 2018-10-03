@@ -18,19 +18,19 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import javax.persistence.* ;
+import javax.persistence.EntityManager;
 
-import org.apache.openjpa.jdbc.conf.* ;
-import org.apache.openjpa.jdbc.meta.* ;
-import org.apache.openjpa.jdbc.meta.strats.* ;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
-import org.apache.openjpa.persistence.test.AllowFailure;
-
+import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.strats.NoneVersionStrategy;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest3;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedOwner;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 /*
    Test for opt-lock
@@ -51,7 +51,8 @@ public class TestVersion extends AnnotationTestCase
 		super(name, "annotationcactusapp");
 	}
 
-	public void setUp()
+	@Override
+    public void setUp()
 	{
 		new AnnoTest1();
 		new AnnoTest2();

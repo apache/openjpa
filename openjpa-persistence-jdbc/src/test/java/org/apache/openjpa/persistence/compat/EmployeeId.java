@@ -22,6 +22,8 @@ import java.io.Serializable;
 
 public class EmployeeId implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private String ssn;
 
     public EmployeeId(){
@@ -29,6 +31,7 @@ public class EmployeeId implements Serializable {
     public EmployeeId(String ssn){
         this.ssn = ssn;
     }
+    @Override
     public boolean equals (Object other)
     {
         if (other == this)
@@ -49,6 +52,7 @@ public class EmployeeId implements Serializable {
     }
 
 
+    @Override
     public int hashCode ()
     {
         return (ssn.hashCode());

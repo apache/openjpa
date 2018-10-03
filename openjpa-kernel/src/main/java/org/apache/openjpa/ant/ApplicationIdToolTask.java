@@ -98,10 +98,12 @@ public class ApplicationIdToolTask
         return flags.format;
     }
 
+    @Override
     protected ConfigurationImpl newConfiguration() {
         return new OpenJPAConfigurationImpl();
     }
 
+    @Override
     protected void executeOn(String[] files)
         throws IOException, ClassNotFoundException {
         flags.directory = (dirName == null) ? null

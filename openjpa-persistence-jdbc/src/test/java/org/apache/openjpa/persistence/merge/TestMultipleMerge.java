@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMultipleMerge extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         //Since a JPA 1.0 p.xml file is used the property "NonDefaultMappingAllowed=true" is
         //needed for this test.  This is needed since Order uses an @JoinColumn; something

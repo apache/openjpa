@@ -31,6 +31,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.EntityType;
 
+import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
+
 import openbook.domain.Author;
 import openbook.domain.Author_;
 import openbook.domain.Book;
@@ -46,8 +48,6 @@ import openbook.domain.Range;
 import openbook.domain.ShoppingCart;
 import openbook.util.PropertyHelper;
 import openbook.util.Randomizer;
-
-import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 
 /**
  * A demonstrative example of a transaction service with persistent entity using Java Persistence API.
@@ -67,9 +67,8 @@ import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 class OpenBookServiceImpl extends PersistenceService implements OpenBookService {
-
+    private static final long serialVersionUID = 1L;
     public static final int   CUSTOMER_COUNT     = 10;
     public static final int   BOOK_COUNT         = 100;
     public static final int   AUTHOR_COUNT       = 40;
@@ -78,8 +77,8 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
     /**
      * Range of number of queries executed for a {@linkplain #shop() shopping} trip.
      */
-    public static final Range<Double> PRICE_RANGE  = new Range<Double>(4.99, 120.99);
-    public static final Range<Integer> STOCK_RANGE = new Range<Integer>(5, 50);
+    public static final Range<Double> PRICE_RANGE  = new Range<>(4.99, 120.99);
+    public static final Range<Integer> STOCK_RANGE = new Range<>(5, 50);
     public static final int REORDER_LEVEL          = 10;
 
     OpenBookServiceImpl(String unit, EntityManagerFactory emf, boolean managed,
@@ -93,6 +92,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
      *
      * @return true if new inventory is created. false otherwise.
      */
+    @Override
     public boolean initialize(Map<String,Object> config) {
         if (isInitialized()) {
             return false;
@@ -119,7 +119,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
             em.persist(customer);
         }
 
-        List<Author> allAuthors = new ArrayList<Author>();
+        List<Author> allAuthors = new ArrayList<>();
         System.err.println("Creating " + nAuthor + " new Authors");
         for (int i = 1; i <= nAuthor; i++) {
             Author author = new Author();
@@ -164,6 +164,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
      *
      * @return a Customer
      */
+    @Override
     public Customer login(String name) {
         EntityManager em = begin();
 
@@ -191,6 +192,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
     /**
      * Find books that match title and price range.
      */
+    @Override
     public List<Book> select(String title, Double minPrice, Double maxPrice, String author,
             QueryDecorator...decorators) {
         CriteriaQuery<Book> q = buildQuery(title, minPrice, maxPrice, author);
@@ -208,6 +210,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
      * But OpenJPA produces a readable form that is quite <em>similar</em> to
      * equivalent JPQL.
      */
+    @Override
     public String getQuery(String title, Double minPrice, Double maxPrice, String author) {
         CriteriaQuery<Book> q = buildQuery(title, minPrice, maxPrice, author);
         return q.toString();
@@ -238,7 +241,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
         q.select(book);
 
         // Builds the predicates conditionally for the filled-in input fields
-        List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Predicate> predicates = new ArrayList<>();
         if (!isEmpty(title)) {
             Predicate matchTitle = cb.like(book.get(Book_.title), title);
             predicates.add(matchTitle);
@@ -280,6 +283,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
      * The transactions may fail because of either insufficient inventory or
      * concurrent modification of the same inventory by {@link #supply(Book, int) the supplier}.
      */
+    @Override
     public PurchaseOrder deliver(PurchaseOrder o) {
         if (o.isDelivered())
             return o;
@@ -293,13 +297,14 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
         return o;
     }
 
+    @Override
     public List<PurchaseOrder> getOrders(PurchaseOrder.Status status, Customer customer) {
         EntityManager em = begin();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PurchaseOrder> q = cb.createQuery(PurchaseOrder.class);
         Root<PurchaseOrder> order = q.from(PurchaseOrder.class);
         q.select(order);
-        List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Predicate> predicates = new ArrayList<>();
         if (status != null) {
             predicates.add(cb.equal(order.get(PurchaseOrder_.status), status));
         }
@@ -326,6 +331,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
      *
      * @param cart a non-null Shopping cart.
      */
+    @Override
     public PurchaseOrder placeOrder(ShoppingCart cart) {
         EntityManager em = begin();
         PurchaseOrder order = new PurchaseOrder(cart);
@@ -342,6 +348,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
      * transaction. Some of the transactions may fail due to concurrent modification on
      * the {@linkplain Inventory} by the {@linkplain #deliver() delivery} process.
      */
+    @Override
     public Book supply(Book b, int quantity) {
         EntityManager em = begin();
         b = em.merge(b);
@@ -350,6 +357,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
         return b;
     }
 
+    @Override
     public List<Inventory> getReorderableBooks(int limit) {
         EntityManager em = begin();
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -368,6 +376,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
         return result;
     }
 
+    @Override
     public long count(Class<?> cls) {
         EntityManager em = getEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -391,6 +400,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
         return result;
     }
 
+    @Override
     public <T> List<T> getExtent(Class<T> entityClass) {
         EntityManager em = begin();
         CriteriaQuery<T> c = em.getCriteriaBuilder().createQuery(entityClass);
@@ -400,6 +410,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
         return result;
     }
 
+    @Override
     public <T> List<T> query(String jpql, Class<T> resultClass, QueryDecorator... decorators) {
         EntityManager em = begin();
         TypedQuery<T> query = em.createQuery(jpql, resultClass);
@@ -413,6 +424,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
         return result;
     }
 
+    @Override
     public void clean() {
         EntityManager em = begin();
         Set<EntityType<?>> entities = em.getMetamodel().getEntities();

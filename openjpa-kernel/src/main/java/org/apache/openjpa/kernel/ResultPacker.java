@@ -36,9 +36,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
@@ -52,7 +52,7 @@ public class ResultPacker {
 
     private static final Localizer _loc = Localizer.forPackage
         (ResultPacker.class);
-    private static final Set<Class<?>> _stdTypes = new HashSet<Class<?>>();
+    private static final Set<Class<?>> _stdTypes = new HashSet<>();
 
     static {
         _stdTypes.add(Object[].class);
@@ -207,7 +207,7 @@ public class ResultPacker {
         if (_resultClass == Object[].class)
             return new Object[]{ result };
         if (_resultClass == HashMap.class || _resultClass == Map.class) {
-            HashMap<String,Object> map = new HashMap<String,Object>(1, 1F);
+            HashMap<String,Object> map = new HashMap<>(1, 1F);
             map.put(_aliases[0], result);
             return map;
         }
@@ -248,7 +248,7 @@ public class ResultPacker {
         if (_resultClass == Object.class)
             return result[0];
         if (_resultClass == HashMap.class || _resultClass == Map.class) {
-            Map<String,Object> map = new HashMap<String,Object>(result.length);
+            Map<String,Object> map = new HashMap<>(result.length);
             for (int i = 0; i < _aliases.length; i++)
                 map.put(_aliases[i], result[i]);
             return map;

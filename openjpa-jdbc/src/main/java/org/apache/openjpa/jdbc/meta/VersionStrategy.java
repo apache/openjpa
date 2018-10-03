@@ -40,7 +40,7 @@ public interface VersionStrategy
     /**
      * Set the version that uses this strategy. This will be called before use.
      */
-    public void setVersion(Version owner);
+    void setVersion(Version owner);
 
     /**
      * Select the data for this indicator.
@@ -49,25 +49,25 @@ public interface VersionStrategy
      * not be the base class in the inheritance hierarchy
      * @return true if anything was selected; false otherwise
      */
-    public boolean select(Select sel, ClassMapping mapping);
+    boolean select(Select sel, ClassMapping mapping);
 
     /**
      * Load data.
      */
-    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
+    Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
         throws SQLException;
 
     /**
      * Load data.
      */
-    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res, Joins joins)
+    Object load(OpenJPAStateManager sm, JDBCStore store, Result res, Joins joins)
         throws SQLException;
 
     /**
      * This method is called after data is loaded into the instance, in
      * case the version indicator works off of a state image.
      */
-    public void afterLoad(OpenJPAStateManager sm, JDBCStore store);
+    void afterLoad(OpenJPAStateManager sm, JDBCStore store);
 
     /**
      * Checks the version of the given state manager with the version
@@ -75,14 +75,14 @@ public interface VersionStrategy
      *
      * @return true if the in-memory version was up-to-date, false otherwise
      */
-    public boolean checkVersion(OpenJPAStateManager sm, JDBCStore store,
+    boolean checkVersion(OpenJPAStateManager sm, JDBCStore store,
         boolean updateVersion)
         throws SQLException;
 
     /**
      * @see StoreManager#compareVersion
      */
-    public int compareVersion(Object v1, Object v2);
+    int compareVersion(Object v1, Object v2);
 
     /**
      * @return a Map<Column,Object> specifying how to update each version
@@ -90,5 +90,5 @@ public interface VersionStrategy
      *
      * @since 1.0.0
      */
-    public Map<Column,?> getBulkUpdateValues();
+    Map<Column,?> getBulkUpdateValues();
 }

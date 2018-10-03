@@ -19,7 +19,13 @@
 package org.apache.openjpa.persistence.compat;
 
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="C_B1M_Map_JT")
@@ -61,10 +67,12 @@ public class EntityC_B1M_Map_JT {
         return bi1mjt;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode() + (int)id;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof EntityC_B1M_Map_JT)) return false;
         EntityC_B1M_Map_JT c = (EntityC_B1M_Map_JT)o;

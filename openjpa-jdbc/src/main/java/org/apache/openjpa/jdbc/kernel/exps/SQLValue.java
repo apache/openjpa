@@ -27,11 +27,15 @@ package org.apache.openjpa.jdbc.kernel.exps;
  *
  * @deprecated Use {@link SQLEmbed} directly
  */
+@Deprecated
 public class SQLValue
     extends SQLEmbed {
 
+    
+    private static final long serialVersionUID = 1L;
     public static final String TAG = "sqlVal";
 
+    @Override
     public String getTag() {
         return TAG;
     }

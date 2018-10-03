@@ -45,6 +45,8 @@ import org.apache.openjpa.util.Proxy;
 public abstract class AbstractPCData
     implements PCData {
 
+    
+    private static final long serialVersionUID = 1L;
     public static final Object NULL = new Object();
     private static final Object[] EMPTY_ARRAY = new Object[0];
 
@@ -58,6 +60,7 @@ public abstract class AbstractPCData
      */
     public abstract AbstractPCData newEmbeddedPCData(OpenJPAStateManager sm);
 
+    @Override
     public boolean isLoaded(int field) {
         return getLoaded().get(field);
     }
@@ -408,6 +411,9 @@ public abstract class AbstractPCData
      */
     private static class ProxyDataList
         extends ArrayList {
+
+        
+        private static final long serialVersionUID = 1L;
 
         public static final ProxyDataList EMPTY_LIST = new ProxyDataList(0);
 

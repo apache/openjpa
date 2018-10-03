@@ -35,61 +35,61 @@ public interface Value
      * Return the expected type for this value, or <code>Object</code> if
      * the type is unknown.
      */
-    public Class getType();
+    Class getType();
 
     /**
      * Set the implicit type of the value, based on how it is used in the
      * filter. This method is only called on values who return
      * <code>Object</code> from {@link #getType}.
      */
-    public void setImplicitType(Class type);
+    void setImplicitType(Class type);
 
     /**
      * Return true if this value is a variable.
      */
-    public boolean isVariable();
+    boolean isVariable();
 
     /**
      * Return true if this value is an aggregate.
      */
-    public boolean isAggregate();
+    boolean isAggregate();
 
     /**
      * Return true if this value is an XML Path.
      */
-    public boolean isXPath();
+    boolean isXPath();
 
     /**
      * Return any associated persistent type.
      */
-    public ClassMetaData getMetaData();
+    ClassMetaData getMetaData();
 
     /**
      * Associate a persistent type with this value.
      */
-    public void setMetaData(ClassMetaData meta);
+    void setMetaData(ClassMetaData meta);
 
     /**
      * Accept a visit from a tree visitor.
      */
-    public void acceptVisit(ExpressionVisitor visitor);
+    void acceptVisit(ExpressionVisitor visitor);
 
     /**
      * Return select item alias
      */
-    public String getAlias();
+    String getAlias();
 
     /**
      * Set select item alias
      */
-    public void setAlias(String alias);
+    void setAlias(String alias);
 
     /**
      * Return 'this' concrete class if alias is set, otherwise null
      */
-    public Value getSelectAs();
+    Value getSelectAs();
 
-    public Path getPath();
+    Path getPath();
 
-    public String getName();
+    String getName();
 }

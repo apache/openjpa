@@ -29,12 +29,10 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.math.BigDecimal;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
-import junit.framework.AssertionFailedError;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
+
+import junit.framework.AssertionFailedError;
 
 public class TestBigDecimals extends BaseKernelTest {
 

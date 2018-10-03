@@ -20,13 +20,14 @@ package org.apache.openjpa.persistence.jpql.clauses;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.common.apps.Course;
 import org.apache.openjpa.persistence.common.apps.ArtCourse;
+import org.apache.openjpa.persistence.common.apps.Course;
 import org.apache.openjpa.persistence.common.apps.Department;
 import org.apache.openjpa.persistence.common.apps.Student;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestEJBClauses extends AbstractTestCase {
 
@@ -34,6 +35,7 @@ public class TestEJBClauses extends AbstractTestCase {
         super(name, "jpqlclausescactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(Course.class);
         deleteAll(Student.class);
@@ -43,8 +45,8 @@ public class TestEJBClauses extends AbstractTestCase {
         startTx(em);
 
         String name = "";
-        List<Course> clist = new ArrayList<Course>();
-        List<Department> dlist = new ArrayList<Department>();
+        List<Course> clist = new ArrayList<>();
+        List<Department> dlist = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
             Course curr = new Course("Math " + i, i * 2, i);

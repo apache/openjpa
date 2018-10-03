@@ -19,18 +19,20 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
+import org.apache.openjpa.persistence.PersistentCollection;
+import org.apache.openjpa.persistence.jdbc.Nonpolymorphic;
 
 @MappedSuperclass
 public class NonstandardMappingMappedSuper {
 
     @PersistentCollection
-    private List<String> superCollection = new ArrayList<String>();
+    private List<String> superCollection = new ArrayList<>();
 
     @ManyToOne
     @Nonpolymorphic

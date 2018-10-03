@@ -36,10 +36,12 @@ public class TestQuery extends SliceTestCase {
     private int VALUE_MIN = 100;
     private int VALUE_MAX = VALUE_MIN + POBJECT_COUNT - 1;
 
+    @Override
     protected String getPersistenceUnitName() {
         return "ordering";
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
                 Car.class, Manufacturer.class,
@@ -191,7 +193,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     public void testHint() {
-        List<String> targets = new ArrayList<String>();
+        List<String> targets = new ArrayList<>();
         targets.add("Even");
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -206,7 +208,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     public void testQueryTargetPolicy() {
-        List<String> targets = new ArrayList<String>();
+        List<String> targets = new ArrayList<>();
         targets.add("Even");
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

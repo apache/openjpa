@@ -26,9 +26,11 @@ import javax.persistence.spi.PersistenceProviderResolver;
 public class DummyPersistenceProviderResolver implements
     PersistenceProviderResolver {
 
+    @Override
     public void clearCachedProviders() {
     }
 
+    @Override
     public List<PersistenceProvider> getPersistenceProviders() {
         return null;
     }

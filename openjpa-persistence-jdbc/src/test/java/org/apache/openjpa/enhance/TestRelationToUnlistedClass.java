@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestRelationToUnlistedClass
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(UnenhancedUnlistedReferer.class, CLEAR_TABLES);
     }

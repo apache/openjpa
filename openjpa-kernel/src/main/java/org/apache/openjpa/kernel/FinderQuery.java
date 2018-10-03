@@ -34,13 +34,13 @@ public interface FinderQuery<K,V,R>  {
      * Gets the identifier of this receiver.
      *
      */
-    public K getIdentifier();
+    K getIdentifier();
 
     /**
      * Gets the value to which this receiver delegates its execution.
      *
      */
-    public V getDelegate();
+    V getDelegate();
 
     /**
      * Execute the query for a given instance.
@@ -53,12 +53,12 @@ public interface FinderQuery<K,V,R>  {
      * @return the result of execution.
      *
      */
-    public R execute(OpenJPAStateManager sm, StoreManager store,
+    R execute(OpenJPAStateManager sm, StoreManager store,
         FetchConfiguration fetch);
 
     /**
      * Gets the query string.
      *
      */
-    public String getQueryString();
+    String getQueryString();
 }

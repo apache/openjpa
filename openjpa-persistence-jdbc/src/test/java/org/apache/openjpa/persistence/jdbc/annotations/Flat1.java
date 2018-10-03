@@ -19,7 +19,15 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity(name="Flat1")
 @Table(name="Flat1")

@@ -20,8 +20,9 @@ package org.apache.openjpa.persistence.embed;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Embeddable;
+
 import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class Embed_Coll_Integer {
@@ -31,7 +32,7 @@ public class Embed_Coll_Integer {
 
     @ElementCollection // use default table name
     //@CollectionTable
-    protected Set<Integer> otherIntVals = new HashSet<Integer>();
+    protected Set<Integer> otherIntVals = new HashSet<>();
 
     public int getIntVal1() {
         return intVal1;

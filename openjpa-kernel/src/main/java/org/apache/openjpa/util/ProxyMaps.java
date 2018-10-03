@@ -22,8 +22,9 @@ import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.util.AbstractSet;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -205,17 +206,17 @@ public class ProxyMaps
     /**
      * Marker interface for a proxy entry set.
      */
-    public static interface ProxyEntrySet
+    public interface ProxyEntrySet
         extends Set {
 
-        public static final int VIEW_KEYS = 0;
-        public static final int VIEW_VALUES = 1;
-        public static final int VIEW_ENTRIES = 2;
+        int VIEW_KEYS = 0;
+        int VIEW_VALUES = 1;
+        int VIEW_ENTRIES = 2;
 
         /**
          * Set what entry view this set exposes.
          */
-        public void setView(int view);
+        void setView(int view);
     }
 
     /**
@@ -247,14 +248,17 @@ public class ProxyMaps
         /**
          * View mode.
          */
+        @Override
         public void setView(int view) {
             _view = view;
         }
 
+        @Override
         public int size() {
             return _entries.size();
         }
 
+        @Override
         public boolean remove(Object o) {
             if (_view != VIEW_KEYS)
                 throw new UnsupportedOperationException();
@@ -265,15 +269,18 @@ public class ProxyMaps
             return true;
         }
 
+        @Override
         public Iterator iterator() {
             final Iterator itr = _entries.iterator();
             return new Iterator() {
                 private Map.Entry _last = null;
 
+                @Override
                 public boolean hasNext() {
                     return itr.hasNext();
                 }
 
+                @Override
                 public Object next() {
                     _last = (Map.Entry) itr.next();
                     switch (_view) {
@@ -286,6 +293,7 @@ public class ProxyMaps
                     }
                 }
 
+                @Override
                 public void remove() {
                     dirty(_map, false);
                     itr.remove();

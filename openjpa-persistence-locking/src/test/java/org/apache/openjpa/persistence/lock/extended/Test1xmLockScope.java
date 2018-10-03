@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
  */
 public class Test1xmLockScope extends LockScopeTestCase {
 
+    @Override
     public void setUp() {
         setSupportedDatabases(
                 org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
@@ -121,6 +122,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
         commonLockTest(testName, LSE1xmLf.class, idLf0, extended,
                 "SELECT c FROM LSE1xmLf c WHERE c.firstName LIKE :firstName", "findLSE1xmLf" + scope,
                 new AssertCallback() {
+                    @Override
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -137,6 +139,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -161,6 +164,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -184,6 +188,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -200,6 +205,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -223,6 +229,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -310,6 +317,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                 "SELECT c FROM LSE1xmLfEgr c WHERE c.firstName LIKE :firstName", "findLSE1xmLfEgr"
                         + scope,
                 new AssertCallback() {
+                    @Override
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -337,6 +345,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -396,6 +405,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:       //TODO: **Non-atomic lock. if jpa2, DO NOT lock LSE1xmRt
@@ -466,6 +476,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -493,6 +504,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:   //TODO: **Non-atomic lock. if jpa2, DO NOT lock LSE1xmRt
@@ -563,6 +575,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -659,6 +672,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
         commonLockTest(testName, LSE1xmLfJT.class, idLf0, extended,
                 "SELECT c FROM LSE1xmLfJT c WHERE c.firstName LIKE :firstName", "findLSE1xmLfJT" + scope,
                 new AssertCallback() {
+                    @Override
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -675,6 +689,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -699,6 +714,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -722,6 +738,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -738,6 +755,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -761,6 +779,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -848,6 +867,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                 "SELECT c FROM LSE1xmLfJTEgr c WHERE c.firstName LIKE :firstName", "findLSE1xmLfJTEgr"
                         + scope,
                 new AssertCallback() {
+                    @Override
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -875,6 +895,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -934,6 +955,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:       //TODO: **Non-atomic lock. if jpa2, DO NOT lock LSE1xmRt
@@ -1005,6 +1027,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -1032,6 +1055,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:   //TODO: **Non-atomic lock. if jpa2, DO NOT lock LSE1xmRt
@@ -1103,6 +1127,7 @@ public class Test1xmLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:

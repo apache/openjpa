@@ -25,7 +25,9 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class SubStringExpression extends UnaryOperatorExpression {
-	private final Expression _start;
+	
+    private static final long serialVersionUID = 1L;
+    private final Expression _start;
 	private final Expression _length;
 	public SubStringExpression(Expression op, Expression start) {
 		super(op, UnaryFunctionalOperator.SUBSTR);
@@ -51,7 +53,8 @@ public class SubStringExpression extends UnaryOperatorExpression {
 		_length = new ConstantExpression(l);
 	}
 
-	public String asExpression(AliasContext ctx) {
+	@Override
+    public String asExpression(AliasContext ctx) {
 		return _op + "(" + ((Visitable)_e).asExpression(ctx)
 			 + "," + ((Visitable)_start).asExpression(ctx)
              + (_length == null ? "" : ","

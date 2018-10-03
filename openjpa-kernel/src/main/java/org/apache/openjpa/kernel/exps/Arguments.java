@@ -29,5 +29,5 @@ public interface Arguments
     /**
      * Return the values that make up the arguments.
      */
-    public Value[] getValues();
+    Value[] getValues();
 }

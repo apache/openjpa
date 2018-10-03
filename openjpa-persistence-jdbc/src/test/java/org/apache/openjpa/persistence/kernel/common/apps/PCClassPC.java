@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.io.Serializable;
+
 import javax.persistence.Entity;
 
 import org.apache.openjpa.persistence.Persistent;
@@ -32,6 +33,9 @@ import org.apache.openjpa.persistence.Type;
 @Entity
 public class PCClassPC
     implements PCClassInterface, Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     @Persistent
     @Type(PCClassPC.class)

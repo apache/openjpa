@@ -29,14 +29,11 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.util.List;
 
-
-
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
 import org.apache.openjpa.persistence.kernel.common.apps.
         FetchGroupTestObjectChild;
-
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAQuery;
 
 public class TestFetchGroupsQuery extends TestFetchGroups {
 
@@ -50,6 +47,7 @@ public class TestFetchGroupsQuery extends TestFetchGroups {
         super(s);
     }
 
+    @Override
     protected FetchGroupTestObject getO1(OpenJPAEntityManager pm) {
 //        OpenJPAQuery q = pm.createNativeQuery("a == 5",
 //                FetchGroupTestObject.class);
@@ -63,6 +61,7 @@ public class TestFetchGroupsQuery extends TestFetchGroups {
         return (FetchGroupTestObject) (l.iterator().next());
     }
 
+    @Override
     protected FetchGroupTestObject getO2(OpenJPAEntityManager pm) {
 //        OpenJPAQuery q = pm.createNativeQuery("a == 3",
 //                FetchGroupTestObject.class);
@@ -76,6 +75,7 @@ public class TestFetchGroupsQuery extends TestFetchGroups {
         return (FetchGroupTestObject) (l.iterator().next());
     }
 
+    @Override
     protected FetchGroupTestObjectChild getC1(OpenJPAEntityManager pm) {
 //        OpenJPAQuery q = pm.createNativeQuery("a == 4",
 //                FetchGroupTestObjectChild.class);

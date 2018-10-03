@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class LessEqualExpression extends BinaryExpressionPredicate {
-	public LessEqualExpression(Expression op1, Expression op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public LessEqualExpression(Expression op1, Expression op2) {
 		super(op1, BinaryConditionalOperator.LESSEQUAL,
 			BinaryConditionalOperator.GREATER, op2);
 	}

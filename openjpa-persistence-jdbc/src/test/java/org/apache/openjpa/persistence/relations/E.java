@@ -37,10 +37,10 @@ public class E {
 	private String name;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "e")
-	private Set<VCS> vcss = new HashSet<VCS>();
+	private Set<VCS> vcss = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "e")
-	private Set<CM> cms = new HashSet<CM>();
+	private Set<CM> cms = new HashSet<>();
 
 	public E() {
 	}

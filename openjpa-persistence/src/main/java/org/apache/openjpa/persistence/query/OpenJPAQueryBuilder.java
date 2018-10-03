@@ -31,15 +31,15 @@ public interface OpenJPAQueryBuilder extends QueryBuilder {
 	/**
 	 * Create a QueryDefinition from the given JPQL String.
 	 */
-	public QueryDefinition createQueryDefinition(String jpql);
+	QueryDefinition createQueryDefinition(String jpql);
 
 	/**
 	 * Create a QueryDefinition from the given OpenJPA Query instance.
 	 */
-	public QueryDefinition createQueryDefinition(Query jpql);
+	QueryDefinition createQueryDefinition(Query jpql);
 
 	/**
 	 * Gets equivalent JPQL String for the given QueryDefinition.
 	 */
-	public String toJPQL(QueryDefinition qdef);
+	String toJPQL(QueryDefinition qdef);
 }

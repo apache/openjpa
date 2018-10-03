@@ -32,6 +32,9 @@ import org.apache.openjpa.lib.util.Localizer;
 public class QueryException
     extends StoreException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final transient Localizer _loc =
             Localizer.forPackage(QueryException.class);
 
@@ -48,6 +51,7 @@ public class QueryException
         setTimeout(timeout);
     }
 
+    @Override
     public int getSubtype() {
         return QUERY;
     }
@@ -67,6 +71,7 @@ public class QueryException
         return this;
     }
 
+    @Override
     public String toString() {
         String str = super.toString();
         if (timeout < 0)

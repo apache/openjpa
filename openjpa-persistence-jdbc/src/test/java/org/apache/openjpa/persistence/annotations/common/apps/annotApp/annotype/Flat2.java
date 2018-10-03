@@ -19,7 +19,8 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
 
 @Entity
 public class Flat2

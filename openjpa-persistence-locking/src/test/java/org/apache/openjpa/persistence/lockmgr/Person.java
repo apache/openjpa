@@ -74,6 +74,7 @@ public class Person implements Externalizable {
         phoneNumbers = numbers;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + '@'
             + Integer.toHexString(System.identityHashCode(this)) + "[id="
@@ -81,6 +82,7 @@ public class Person implements Externalizable {
             + ", last=" + getLastName() + " phone numbers="+phoneNumbers.toString();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
         ClassNotFoundException {
         id = in.readInt();
@@ -89,6 +91,7 @@ public class Person implements Externalizable {
         phoneNumbers = (List<PhoneNumber>) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(id);
         out.writeObject(firstName);

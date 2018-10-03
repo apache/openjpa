@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class DividedByExpression extends BinaryOperatorExpression {
-	public DividedByExpression(Expression op1, Expression op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public DividedByExpression(Expression op1, Expression op2) {
 		super(op1, BinaryFunctionalOperator.DIVIDE, op2);
 	}
 }

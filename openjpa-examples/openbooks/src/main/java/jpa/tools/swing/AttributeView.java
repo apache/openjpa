@@ -24,8 +24,8 @@ import javax.swing.JLabel;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class AttributeView extends JLabel {
+    private static final long serialVersionUID = 1L;
     private final Attribute<?,?> _attr;
 
     public AttributeView(Attribute<?,?> attr) {

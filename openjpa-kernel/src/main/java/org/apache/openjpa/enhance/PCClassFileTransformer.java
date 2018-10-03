@@ -107,6 +107,7 @@ public class PCClassFileTransformer
             _log.info(_loc.get("runtime-enhance-pcclasses"));
     }
 
+    @Override
     public byte[] transform(ClassLoader loader, String className,
         Class redef, ProtectionDomain domain, byte[] bytes)
         throws IllegalClassFormatException {

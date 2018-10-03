@@ -30,9 +30,9 @@ package org.apache.openjpa.persistence.jdbc.meta.tableperclass;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.persistence.jdbc.common.apps.PlaceholderTypesA;
+import org.apache.openjpa.persistence.jdbc.common.apps.PlaceholderTypesB;
 import org.apache.openjpa.util.Id;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 
 public class TestUnionPlaceholderTypes
@@ -46,6 +46,7 @@ public class TestUnionPlaceholderTypes
 
     private boolean _union = false;
 
+    @Override
     public void setUpTestCase() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         //FIXME jthomas

@@ -38,6 +38,7 @@ public class VersionLockManager
      * lock object is a number. If the given instance is embedded, traverses
      * to its owner. Override if lock is not stored as a number.
      */
+    @Override
     public int getLockLevel(OpenJPAStateManager sm) {
         while (sm.getOwner() != null)
             sm = sm.getOwner();
@@ -56,6 +57,7 @@ public class VersionLockManager
     /**
      * Nulls given instance's lock object.
      */
+    @Override
     public void release(OpenJPAStateManager sm) {
         sm.setLock(null);
     }
@@ -66,11 +68,13 @@ public class VersionLockManager
      * is not new, and is not already locked at a higher level. After
      * locking, calls {@link #setLockLevel} with the given level.
      */
+    @Override
     public void lock(OpenJPAStateManager sm, int level, int timeout,
         Object sdata) {
         commonLock(sm, level, timeout, sdata, !_refreshing);
     }
 
+    @Override
     public void refreshLock(OpenJPAStateManager sm, int level, int timeout,
             Object sdata) {
     	try {

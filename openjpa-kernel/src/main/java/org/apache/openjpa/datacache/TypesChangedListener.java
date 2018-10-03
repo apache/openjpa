@@ -29,5 +29,5 @@ public interface TypesChangedListener {
     /**
      * Notification that instances of persistent types have changed.
      */
-    public void onTypesChanged(TypesChangedEvent event);
+    void onTypesChanged(TypesChangedEvent event);
 }

@@ -1514,6 +1514,7 @@ public class TestJPQLSubquery extends CriteriaTest {
 
         q.where(cb.and(cb.and(cb.and(p1, p2), p3), p4));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("empid",   101L);
                 q.setParameter("minDate", new Date(100));

@@ -22,6 +22,6 @@ package
 
 public interface NamedEntity
 {
-	public String getName();
+	String getName();
 
 }

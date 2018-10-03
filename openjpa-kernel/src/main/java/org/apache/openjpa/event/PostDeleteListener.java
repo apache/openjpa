@@ -29,5 +29,5 @@ public interface PostDeleteListener {
      * is called after the delete operation, whereas this is called after the
      * delete statements have been sent to the data store.
      */
-    public void afterDeletePerformed(LifecycleEvent event);
+    void afterDeletePerformed(LifecycleEvent event);
 }

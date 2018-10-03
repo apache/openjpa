@@ -19,13 +19,13 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
-import javax.persistence.PrePersist;
+import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
-import javax.persistence.PreRemove;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
+import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
-import javax.persistence.PostLoad;
 
 public class DefaultCallbackListener
 {

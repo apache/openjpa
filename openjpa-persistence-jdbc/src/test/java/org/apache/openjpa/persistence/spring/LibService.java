@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.persistence.spring;
 
-import org.apache.openjpa.persistence.models.library.*;
+import org.apache.openjpa.persistence.models.library.Book;
+import org.apache.openjpa.persistence.models.library.Borrower;
 
 /**
  * The Spring library example is intended to mirror the behavior of an
@@ -81,14 +82,14 @@ import org.apache.openjpa.persistence.models.library.*;
  */
 
 public interface LibService {
-    public Borrower findBorrowerByName(String name);
+    Borrower findBorrowerByName(String name);
 
-    public Book findBookByTitle(String title);
+    Book findBookByTitle(String title);
 
-    public void borrowBook(Borrower borrower, Book book);
+    void borrowBook(Borrower borrower, Book book);
 
-    public void returnBook(Book book);
+    void returnBook(Book book);
 
-    public void setTransactionalEntityManagerFactory(
+    void setTransactionalEntityManagerFactory(
             TransactionalEntityManagerFactory txEMF);
 }

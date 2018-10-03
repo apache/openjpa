@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.jdbc.conf;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.meta.MetaDataPlusMappingFactory;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -26,6 +25,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.MetaDataFactory;
 
 /**
@@ -146,7 +146,7 @@ public class MappingFactoryValue
         Configurations.configureInstance(meta, conf, metaProps,
             (fatal) ? metaPlugin.getProperty() : null);
 
-        Log log = conf.getLog(JDBCConfiguration.LOG_METADATA);
+        Log log = conf.getLog(OpenJPAConfiguration.LOG_METADATA);
         if (log.isTraceEnabled()) {
             log.trace(_loc.get("meta-factory", meta));
             if (map != null)

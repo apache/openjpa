@@ -20,5 +20,5 @@ package org.apache.openjpa.persistence.relations;
 
 public interface IFace {
 
-    public String getName();
+    String getName();
 }

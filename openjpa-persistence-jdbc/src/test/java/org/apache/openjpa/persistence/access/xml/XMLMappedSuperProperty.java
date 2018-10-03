@@ -40,6 +40,7 @@ public class XMLMappedSuperProperty {
         return name;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLMappedSuperProperty) {
             XMLMappedSuperProperty ps = (XMLMappedSuperProperty)obj;

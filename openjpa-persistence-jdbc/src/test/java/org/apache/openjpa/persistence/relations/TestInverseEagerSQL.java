@@ -27,14 +27,14 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.textui.TestRunner;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.query.Magazine;
 import org.apache.openjpa.persistence.query.Publisher;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+import junit.textui.TestRunner;
 
 
 public class TestInverseEagerSQL
@@ -46,6 +46,7 @@ public class TestInverseEagerSQL
     public int _nPeople = 3;
     public int _nPhones = 3;
 
+    @Override
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             EntityAInverseEager.class, EntityA1InverseEager.class,

@@ -30,6 +30,9 @@ import org.apache.openjpa.kernel.BrokerFactory;
 public class BrokerFactoryEvent
     extends EventObject {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Fired after a {@link BrokerFactory} has been fully created.
      * This happens after the factory has been made read-only.

@@ -18,14 +18,22 @@
  */
 package org.apache.openjpa.persistence.models.company.fetchlazy;
 
-import java.util.*;
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import org.apache.openjpa.persistence.models.company.IAddress;
+import org.apache.openjpa.persistence.models.company.ICustomer;
+import org.apache.openjpa.persistence.models.company.IProductOrder;
 
 @Entity(name="LAZ_Customer")
 public class Customer extends Person implements ICustomer {
     @OneToMany(mappedBy="customer",fetch=FetchType.LAZY)
-    private Collection<ProductOrder> orders = new ArrayList<ProductOrder>();
+    private Collection<ProductOrder> orders = new ArrayList<>();
 
     @OneToOne(fetch=FetchType.LAZY)
     private Address shippingAddress;
@@ -33,28 +41,34 @@ public class Customer extends Person implements ICustomer {
     @OneToOne(fetch=FetchType.LAZY)
     private Address billingAddress;
 
+    @Override
     public void setOrders(Collection<? extends IProductOrder> orders) {
         this.orders = (Collection<ProductOrder>) orders;
     }
 
+    @Override
     public Collection<ProductOrder> getOrders() {
         return this.orders;
     }
 
 
+    @Override
     public void setShippingAddress(IAddress shippingAddress) {
         this.shippingAddress = (Address) shippingAddress;
     }
 
+    @Override
     public IAddress getShippingAddress() {
         return this.shippingAddress;
     }
 
 
+    @Override
     public void setBillingAddress(IAddress billingAddress) {
         this.billingAddress = (Address) billingAddress;
     }
 
+    @Override
     public IAddress getBillingAddress() {
         return this.billingAddress;
     }

@@ -40,5 +40,5 @@ public interface ClassResolver {
      * was obtained; may be null if operating outside
      * the context of persistence environment
      */
-    public ClassLoader getClassLoader(Class<?> contextClass, ClassLoader envLoader);
+    ClassLoader getClassLoader(Class<?> contextClass, ClassLoader envLoader);
 }

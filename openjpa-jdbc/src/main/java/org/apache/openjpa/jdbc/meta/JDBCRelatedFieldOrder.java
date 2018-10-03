@@ -31,9 +31,8 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class JDBCRelatedFieldOrder
-    implements JDBCOrder {
+class JDBCRelatedFieldOrder implements JDBCOrder {
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage
         (JDBCRelatedFieldOrder.class);
@@ -54,26 +53,33 @@ class JDBCRelatedFieldOrder
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public String getName() {
         return _fm.getName();
     }
 
+    @Override
     public DBIdentifier getIdentifier() {
         return DBIdentifier.newColumn(_fm.getName());
     }
 
+    @Override
     public boolean isAscending() {
         return _asc;
     }
 
+    @Override
     public Comparator<?> getComparator() {
         return null;
     }
 
+    @Override
     public boolean isInRelation() {
         return true;
     }
 
+    @Override
     public void order(Select sel, ClassMapping elem, Joins joins) {
         FieldMapping fm = _fm;
         if (elem != null) {

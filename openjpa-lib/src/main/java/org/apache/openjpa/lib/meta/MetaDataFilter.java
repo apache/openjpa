@@ -31,21 +31,21 @@ public interface MetaDataFilter {
     /**
      * Return whether the given resource passes the filter.
      */
-    public boolean matches(Resource rsrc) throws IOException;
+    boolean matches(Resource rsrc) throws IOException;
 
     /**
      * Information about a metadata resource.
      */
-    public static interface Resource {
+    public interface Resource {
 
         /**
          * The name of the resource.
          */
-        public String getName();
+        String getName();
 
         /**
          * Resource content.
          */
-        public byte[] getContent() throws IOException;
+        byte[] getContent() throws IOException;
     }
 }

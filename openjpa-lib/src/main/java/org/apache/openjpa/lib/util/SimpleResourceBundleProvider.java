@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
  */
 class SimpleResourceBundleProvider implements ResourceBundleProvider {
 
+    @Override
     public ResourceBundle findResource(String name, Locale locale,
         ClassLoader loader) {
         ResourceBundle bundle = null;

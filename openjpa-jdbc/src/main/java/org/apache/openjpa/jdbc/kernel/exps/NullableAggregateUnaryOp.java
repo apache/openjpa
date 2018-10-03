@@ -23,8 +23,8 @@ package org.apache.openjpa.jdbc.kernel.exps;
  * An aggregate unary operation that can indicate whether a null value from the data store
  * should be returned as null.
  */
-@SuppressWarnings("serial")
 public abstract class NullableAggregateUnaryOp extends UnaryOp {
+    private static final long serialVersionUID = 1L;
 
     public NullableAggregateUnaryOp(Val val) {
         super(val);

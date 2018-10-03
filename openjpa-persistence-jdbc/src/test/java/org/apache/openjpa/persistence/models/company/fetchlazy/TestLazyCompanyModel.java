@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.models.company.fetchlazy;
 
-import org.apache.openjpa.persistence.models.company.*;
+import org.apache.openjpa.persistence.models.company.CompanyModelTest;
 
 public class TestLazyCompanyModel extends CompanyModelTest {
 }

@@ -46,7 +46,8 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 	public static final int MEMBER_COUNT_PROJEKT2 = 4;
 	public static final int MEMBER_COUNT_TOTAL    = 8;
 
-	public void setUp() throws Exception {
+	@Override
+    public void setUp() throws Exception {
 		super.setUp(CLEAR_TABLES, Osoba.class, Projekt.class);
 		createData();
 	}
@@ -76,7 +77,8 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 		em.clear();
 	}
 
-	public void tearDown() throws Exception {
+	@Override
+    public void tearDown() throws Exception {
 		super.tearDown();
 	}
 

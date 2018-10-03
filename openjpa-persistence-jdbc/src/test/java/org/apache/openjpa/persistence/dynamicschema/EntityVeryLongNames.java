@@ -39,6 +39,9 @@ import javax.persistence.Table;
             "Name______________________________________________" )
 public class EntityVeryLongNames implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     @Column(name="ID________________________________________________" +
                  "Very______________________________________________" +

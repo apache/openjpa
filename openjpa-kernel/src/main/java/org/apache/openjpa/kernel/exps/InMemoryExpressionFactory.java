@@ -28,9 +28,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.Set;
 
-import java.util.Objects;
 import org.apache.openjpa.kernel.Extent;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
@@ -328,7 +328,7 @@ public class InMemoryExpressionFactory
         // no need to do distinct if not instructed to, or if these are
         // candidate objects from an extent
         int len = exps.projections.length;
-        if ((exps.distinct & exps.DISTINCT_TRUE) == 0
+        if ((exps.distinct & QueryExpressions.DISTINCT_TRUE) == 0
             || (fromExtent && len == 0))
             return matches;
 
@@ -356,66 +356,82 @@ public class InMemoryExpressionFactory
         return (distinct == null) ? matches : distinct;
     }
 
+    @Override
     public Expression emptyExpression() {
         return new Exp();
     }
 
+    @Override
     public Expression asExpression(Value v) {
         return new ValExpression((Val) v);
     }
 
+    @Override
     public Expression equal(Value v1, Value v2) {
         return new EqualExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression notEqual(Value v1, Value v2) {
         return new NotEqualExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression lessThan(Value v1, Value v2) {
         return new LessThanExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression greaterThan(Value v1, Value v2) {
         return new GreaterThanExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression lessThanEqual(Value v1, Value v2) {
         return new LessThanEqualExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression greaterThanEqual(Value v1, Value v2) {
         return new GreaterThanEqualExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression isEmpty(Value v1) {
         return new IsEmptyExpression((Val) v1);
     }
 
+    @Override
     public Expression isNotEmpty(Value v1) {
         return not(isEmpty(v1));
     }
 
+    @Override
     public Expression contains(Value v1, Value v2) {
         return new ContainsExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression containsKey(Value v1, Value v2) {
         return new ContainsKeyExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression containsValue(Value v1, Value v2) {
         return new ContainsValueExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Value getMapValue(Value map, Value arg) {
         return new GetMapValue((Val) map, (Val) arg);
     }
 
+    @Override
     public Expression isInstance(Value v1, Class c) {
         return new InstanceofExpression((Val) v1, c);
     }
 
+    @Override
     public Expression and(Expression exp1, Expression exp2) {
         if (exp1 instanceof BindVariableExpression)
             return new BindVariableAndExpression((BindVariableExpression) exp1,
@@ -423,124 +439,152 @@ public class InMemoryExpressionFactory
         return new AndExpression((Exp) exp1, (Exp) exp2);
     }
 
+    @Override
     public Expression or(Expression exp1, Expression exp2) {
         return new OrExpression((Exp) exp1, (Exp) exp2);
     }
 
+    @Override
     public Expression not(Expression exp) {
         return new NotExpression((Exp) exp);
     }
 
+    @Override
     public Expression bindVariable(Value var, Value val) {
         return new BindVariableExpression((BoundVariable) var, (Val) val);
     }
 
+    @Override
     public Expression bindKeyVariable(Value var, Value val) {
         return new BindKeyVariableExpression((BoundVariable) var, (Val) val);
     }
 
+    @Override
     public Expression bindValueVariable(Value var, Value val) {
         return new BindValueVariableExpression((BoundVariable) var, (Val) val);
     }
 
+    @Override
     public Expression endsWith(Value v1, Value v2) {
         return new EndsWithExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Expression matches(Value v1, Value v2,
         String single, String multi, String esc) {
         return new MatchesExpression((Val) v1, (Val) v2, single, multi, esc,
             true);
     }
 
+    @Override
     public Expression notMatches(Value v1, Value v2,
         String single, String multi, String esc) {
         return new MatchesExpression((Val) v1, (Val) v2, single, multi, esc,
             false);
     }
 
+    @Override
     public Expression startsWith(Value v1, Value v2) {
         return new StartsWithExpression((Val) v1, (Val) v2);
     }
 
+    @Override
     public Subquery newSubquery(ClassMetaData candidate, boolean subs,
         String alias) {
         return new SubQ(alias);
     }
 
+    @Override
     public Path newPath() {
         return new CandidatePath();
     }
 
+    @Override
     public Path newPath(Value val) {
         return new ValuePath((Val) val);
     }
 
+    @Override
     public Literal newLiteral(Object val, int parseType) {
         return new Lit(val, parseType);
     }
 
+    @Override
     public Literal newTypeLiteral(Object val, int parseType) {
         return new TypeLit(val, parseType);
     }
 
+    @Override
     public Value getThis() {
         return new This();
     }
 
+    @Override
     public Value getNull() {
         return NULL;
     }
 
+    @Override
     public <T extends Date> Value getCurrentDate(Class<T> dateType) {
         return new CurrentDate(dateType);
     }
 
+    @Override
     public  <T extends Date> Value getCurrentTime(Class<T> dateType) {
         return new CurrentDate(dateType);
     }
 
+    @Override
     public <T extends Date> Value getCurrentTimestamp(Class<T> dateType) {
         return new CurrentDate(dateType);
     }
 
+    @Override
     public Parameter newParameter(Object name, Class type) {
         return new Param(name, type);
     }
 
+    @Override
     public Parameter newCollectionValuedParameter(Object name, Class type) {
         return new CollectionParam(name, type);
     }
 
+    @Override
     public Value newExtension(FilterListener listener, Value target,
         Value arg) {
         return new Extension(listener, (Val) target, (Val) arg);
     }
 
+    @Override
     public Value newAggregate(AggregateListener listener, Value arg) {
         return new Aggregate(listener, (Val) arg);
     }
 
+    @Override
     public Arguments newArgumentList(Value val1, Value val2) {
         return new Args(val1, val2);
     }
 
+    @Override
     public Arguments newArgumentList(Value... values) {
         return new Args(values);
     }
 
+    @Override
     public Value newUnboundVariable(String name, Class type) {
         UnboundVariable var = new UnboundVariable(type);
         if (_unbounds == null)
-            _unbounds = new ArrayList<UnboundVariable>(3);
+            _unbounds = new ArrayList<>(3);
         _unbounds.add(var);
         return var;
     }
 
+    @Override
     public Value newBoundVariable(String name, Class type) {
         return new BoundVariable(type);
     }
 
+    @Override
     public Value cast(Value val, Class cls) {
         if (val instanceof CandidatePath)
             ((CandidatePath) val).castTo(cls);
@@ -551,118 +595,147 @@ public class InMemoryExpressionFactory
         return val;
     }
 
+    @Override
     public Value add(Value val1, Value val2) {
         return new Add((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value subtract(Value val1, Value val2) {
         return new Subtract((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value multiply(Value val1, Value val2) {
         return new Multiply((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value divide(Value val1, Value val2) {
         return new Divide((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value mod(Value val1, Value val2) {
         return new Mod((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value abs(Value val) {
         return new Abs((Val) val);
     }
 
+    @Override
     public Value indexOf(Value val1, Value val2) {
         return new IndexOf((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value concat(Value val1, Value val2) {
         return new Concat((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value stringLength(Value str) {
         return new StringLength((Val) str);
     }
 
+    @Override
     public Value trim(Value str, Value trimChar, Boolean where) {
         return new Trim((Val) str, (Val) trimChar, where);
     }
 
+    @Override
     public Value sqrt(Value val) {
         return new Sqrt((Val) val);
     }
 
+    @Override
     public Value substring(Value val1, Value val2) {
         return new Substring((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value toUpperCase(Value val) {
         return new ToUpperCase((Val) val);
     }
 
+    @Override
     public Value toLowerCase(Value val) {
         return new ToLowerCase((Val) val);
     }
 
+    @Override
     public Value avg(Value val) {
         return new Avg((Val) val);
     }
 
+    @Override
     public Value count(Value val) {
         return new Count((Val) val);
     }
 
+    @Override
     public Value distinct(Value val) {
         return new Distinct((Val) val);
     }
 
+    @Override
     public Value max(Value val) {
         return new Max((Val) val);
     }
 
+    @Override
     public Value min(Value val) {
         return new Min((Val) val);
     }
 
+    @Override
     public Value sum(Value val) {
         return new Sum((Val) val);
     }
 
+    @Override
     public Value any(Value val) {
         return new Any((Val) val);
     }
 
+    @Override
     public Value all(Value val) {
         return new All((Val) val);
     }
 
+    @Override
     public Value size(Value val) {
         return new Size((Val) val);
     }
 
+    @Override
     public Value index(Value val) {
         return new Index((Val) val);
     }
 
+    @Override
     public Value type(Value val) {
         return new Type((Val) val);
     }
 
+    @Override
     public Value mapEntry(Value key, Value val) {
         throw new UnsupportedException("not implemented yet");
     }
 
+    @Override
     public Value mapKey(Value key, Value val) {
         throw new UnsupportedException("not implemented yet");
     }
 
+    @Override
     public Value getKey(Value val) {
         throw new UnsupportedException("not implemented yet");
     }
 
+    @Override
     public Value getObjectId(Value val) {
         return new GetObjectId((Val) val);
     }
@@ -678,6 +751,7 @@ public class InMemoryExpressionFactory
             _arr = arr;
         }
 
+        @Override
         public int hashCode() {
             int rs = 17;
             for (int i = 0; i < _arr.length; i++)
@@ -685,6 +759,7 @@ public class InMemoryExpressionFactory
             return rs;
         }
 
+        @Override
         public boolean equals(Object other) {
             if (other == this)
                 return true;
@@ -724,6 +799,7 @@ public class InMemoryExpressionFactory
             _params = params;
         }
 
+        @Override
         public int compare(Object o1, Object o2) {
             if (_idx != -1) {
                 o1 = ((Object[]) o1)[_idx];
@@ -758,6 +834,7 @@ public class InMemoryExpressionFactory
 		}
 	}
 
+    @Override
     public Value generalCaseExpression(Expression[] exp, Value val) {
         Exp[] exps = new Exp[exp.length];
         for (int i = 0; i < exp.length; i++)
@@ -765,6 +842,7 @@ public class InMemoryExpressionFactory
         return new GeneralCase(exps, (Val) val);
     }
 
+    @Override
     public Value simpleCaseExpression(Value caseOperand, Expression[] exp,
         Value val) {
             Exp[] exps = new Exp[exp.length];
@@ -773,14 +851,17 @@ public class InMemoryExpressionFactory
             return new SimpleCase((Val) caseOperand, exps, (Val) val);
     }
 
+    @Override
     public Expression whenCondition(Expression exp, Value val) {
         return new WhenCondition((Exp) exp, (Val) val);
     }
 
+    @Override
     public Expression whenScalar(Value val1, Value val2) {
         return new WhenScalar((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value coalesceExpression(Value[] val) {
         Val[] vals = new Val[val.length];
         for (int i = 0; i < val.length; i++)
@@ -788,14 +869,17 @@ public class InMemoryExpressionFactory
         return new Coalesce(vals);
     }
 
+    @Override
     public Value nullIfExpression(Value val1, Value val2) {
         return new NullIf((Val) val1, (Val) val2);
     }
 
+    @Override
     public Value newFunction(String functionName, Class<?> resultType, Value... args) {
         throw new AbstractMethodError();
     }
 
+    @Override
     public boolean isVerticalType(Value val) {
         return false;
     }

@@ -40,6 +40,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 public class SimpleCaseExpression
     extends AbstractVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _caseOperand;
     private final Exp[] _exp;
     private final Val _val;
@@ -69,6 +71,7 @@ public class SimpleCaseExpression
         return _val;
     }
 
+    @Override
     public Class getType() {
         if (_cast != null)
             return _cast;
@@ -81,6 +84,7 @@ public class SimpleCaseExpression
         return type;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         ExpState[] states = new ExpState[_exp.length+2];
         Joins joins = null;
@@ -116,6 +120,7 @@ public class SimpleCaseExpression
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf, int index) {
         SimpleCaseExpState cstate = (SimpleCaseExpState) state;
@@ -147,6 +152,7 @@ public class SimpleCaseExpression
         buf.append(" END ");
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         SimpleCaseExpState cstate = (SimpleCaseExpState) state;
@@ -157,6 +163,7 @@ public class SimpleCaseExpression
         _val.selectColumns(sel, ctx, cstate.states[_exp.length+1], pks);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _caseOperand.acceptVisit(visitor);
@@ -166,10 +173,12 @@ public class SimpleCaseExpression
         visitor.exit(this);
     }
 
+    @Override
     public int getId() {
         return Val.SIMPLECASE_VAL;
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         SimpleCaseExpState cstate = (SimpleCaseExpState) state;
@@ -186,10 +195,12 @@ public class SimpleCaseExpression
             otherState);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
@@ -201,29 +212,35 @@ public class SimpleCaseExpression
         return buf;
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state, boolean pks){
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _cast = type;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }

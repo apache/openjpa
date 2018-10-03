@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence;
 
+import static org.apache.openjpa.meta.MetaDataModes.MODE_MAPPING;
+import static org.apache.openjpa.meta.MetaDataModes.MODE_META;
+import static org.apache.openjpa.meta.MetaDataModes.MODE_NONE;
+import static org.apache.openjpa.meta.MetaDataModes.MODE_QUERY;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -43,13 +48,11 @@ import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataInheritanceComparator;
-import static org.apache.openjpa.meta.MetaDataModes.*;
-
-import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.Order;
 import org.apache.openjpa.meta.QueryMetaData;
@@ -136,6 +139,7 @@ public class XMLPersistenceMetaDataSerializer
      * The serialization mode according to the expected document type. The
      * mode constants act as bit flags, and therefore can be combined.
      */
+    @Override
     public void setMode(int mode) {
         _mode = mode;
     }
@@ -208,18 +212,20 @@ public class XMLPersistenceMetaDataSerializer
     /**
      * Add a class meta data to the set to be serialized.
      */
+    @Override
     public void addMetaData(ClassMetaData meta) {
         if (meta == null)
             return;
 
         if (_metas == null)
-            _metas = new HashMap<String, ClassMetaData>();
+            _metas = new HashMap<>();
         _metas.put(meta.getDescribedType().getName(), meta);
     }
 
     /**
      * Add a sequence meta data to the set to be serialized.
      */
+    @Override
     public void addSequenceMetaData(SequenceMetaData meta) {
         if (meta == null)
             return;
@@ -229,7 +235,7 @@ public class XMLPersistenceMetaDataSerializer
         if (meta.getSourceScope() instanceof Class)
             defName = ((Class) meta.getSourceScope()).getName();
         if (_seqs == null)
-            _seqs = new HashMap<String, List>();
+            _seqs = new HashMap<>();
         else
             seqs = _seqs.get(defName);
 
@@ -244,6 +250,7 @@ public class XMLPersistenceMetaDataSerializer
     /**
      * Add a query meta data to the set to be serialized.
      */
+    @Override
     public void addQueryMetaData(QueryMetaData meta) {
         if (meta == null)
             return;
@@ -253,7 +260,7 @@ public class XMLPersistenceMetaDataSerializer
         if (meta.getSourceScope() instanceof Class)
             defName = ((Class) meta.getSourceScope()).getName();
         if (_queries == null)
-            _queries = new HashMap<String, List>();
+            _queries = new HashMap<>();
         else
             queries = _queries.get(defName);
 
@@ -268,6 +275,7 @@ public class XMLPersistenceMetaDataSerializer
     /**
      * Add all components in the given repository to the set to be serialized.
      */
+    @Override
     public void addAll(MetaDataRepository repos) {
         if (repos == null)
             return;
@@ -285,6 +293,7 @@ public class XMLPersistenceMetaDataSerializer
      *
      * @return true if removed, false if not in set
      */
+    @Override
     public boolean removeMetaData(ClassMetaData meta) {
         return _metas != null && meta != null
             && _metas.remove(meta.getDescribedType().getName()) != null;
@@ -589,7 +598,7 @@ public class XMLPersistenceMetaDataSerializer
      */
     private void serializeQuery(QueryMetaData meta)
         throws SAXException {
-        if (!_annos && meta.getSourceType() == meta.SRC_ANNOTATIONS)
+        if (!_annos && meta.getSourceType() == SourceTracker.SRC_ANNOTATIONS)
             return;
 
         Log log = getLog();
@@ -637,7 +646,7 @@ public class XMLPersistenceMetaDataSerializer
      */
     protected void serializeSequence(SequenceMetaData meta)
         throws SAXException {
-        if (!_annos && meta.getSourceType() == meta.SRC_ANNOTATIONS)
+        if (!_annos && meta.getSourceType() == SourceTracker.SRC_ANNOTATIONS)
             return;
 
         Log log = getLog();
@@ -682,7 +691,7 @@ public class XMLPersistenceMetaDataSerializer
      */
     protected void serializeClass(ClassMetaData meta, boolean access)
         throws SAXException {
-        if (!_annos && meta.getSourceType() == meta.SRC_ANNOTATIONS)
+        if (!_annos && meta.getSourceType() == SourceTracker.SRC_ANNOTATIONS)
             return;
 
         Log log = getLog();
@@ -1014,27 +1023,27 @@ public class XMLPersistenceMetaDataSerializer
         Collection<String> cascades = null;
         if (vmd.getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE) {
             if (cascades == null)
-                cascades = new ArrayList<String>();
+                cascades = new ArrayList<>();
             cascades.add("cascade-persist");
         }
         if (vmd.getCascadeAttach() == ValueMetaData.CASCADE_IMMEDIATE) {
             if (cascades == null)
-                cascades = new ArrayList<String>();
+                cascades = new ArrayList<>();
             cascades.add("cascade-merge");
         }
         if (vmd.getCascadeDelete() == ValueMetaData.CASCADE_IMMEDIATE) {
             if (cascades == null)
-                cascades = new ArrayList<String>();
+                cascades = new ArrayList<>();
             cascades.add("cascade-remove");
         }
         if (vmd.getCascadeRefresh() == ValueMetaData.CASCADE_IMMEDIATE) {
             if (cascades == null)
-                cascades = new ArrayList<String>();
+                cascades = new ArrayList<>();
             cascades.add("cascade-refresh");
         }
         if (vmd.getCascadeDetach() == ValueMetaData.CASCADE_IMMEDIATE) {
             if (cascades == null)
-                cascades = new ArrayList<String>();
+                cascades = new ArrayList<>();
             cascades.add("cascade-detach");
         }
         if (cascades != null && cascades.size() == 5) // ALL
@@ -1056,7 +1065,7 @@ public class XMLPersistenceMetaDataSerializer
      * Return the serialized strategy name.
      */
     protected PersistenceStrategy getStrategy(FieldMetaData fmd) {
-        if (fmd.getManagement() == fmd.MANAGE_NONE)
+        if (fmd.getManagement() == FieldMetaData.MANAGE_NONE)
             return PersistenceStrategy.TRANSIENT;
 
         if (fmd.isSerialized()
@@ -1243,34 +1252,42 @@ public class XMLPersistenceMetaDataSerializer
         /**
          * Compare sequence metadata on name.
          */
+        @Override
         public int compare(SequenceMetaData o1, SequenceMetaData o2) {
             return o1.getName().compareTo(o2.getName());
         }
 
+        @Override
         public File getSourceFile() {
             return _seqs[0].getSourceFile();
         }
 
+        @Override
         public Object getSourceScope() {
             return _seqs[0].getSourceScope();
         }
 
+        @Override
         public int getSourceType() {
             return _seqs[0].getSourceType();
         }
 
+        @Override
         public String getResourceName() {
             return _seqs[0].getResourceName();
         }
 
+        @Override
         public int getLineNumber() {
             return _seqs[0].getLineNumber();
         }
 
+        @Override
         public int getColNumber() {
             return _seqs[0].getColNumber();
         }
 
+        @Override
         public int compareTo(ClassSeqs other) {
             if (other == this)
                 return 0;
@@ -1313,6 +1330,7 @@ public class XMLPersistenceMetaDataSerializer
          * If the given queries use same language, then their names are
          * compared.
          */
+        @Override
         public int compare(QueryMetaData o1, QueryMetaData o2) {
             // normal queries before native
             if (!Objects.equals(o1.getLanguage(), o2.getLanguage())) {
@@ -1324,30 +1342,37 @@ public class XMLPersistenceMetaDataSerializer
             return o1.getName().compareTo(o2.getName());
         }
 
+        @Override
         public File getSourceFile() {
             return _queries[0].getSourceFile();
         }
 
+        @Override
         public Object getSourceScope() {
             return _queries[0].getSourceScope();
         }
 
+        @Override
         public int getSourceType() {
             return _queries[0].getSourceType();
         }
 
+        @Override
         public String getResourceName() {
             return _queries[0].getResourceName();
         }
 
+        @Override
         public int getLineNumber() {
             return _queries[0].getLineNumber();
         }
 
+        @Override
         public int getColNumber() {
             return _queries[0].getColNumber();
         }
 
+        @Override
         public int compareTo(ClassQueries other) {
             if (other == this)
                 return 0;
@@ -1371,6 +1396,10 @@ public class XMLPersistenceMetaDataSerializer
     protected class SerializationComparator
         extends MetaDataInheritanceComparator {
 
+        
+        private static final long serialVersionUID = 1L;
+
+        @Override
         public int compare(Object o1, Object o2) {
             if (o1 == o2)
                 return 0;
@@ -1463,6 +1492,7 @@ public class XMLPersistenceMetaDataSerializer
     private class FieldComparator
         implements Comparator {
 
+        @Override
         public int compare(Object o1, Object o2) {
             FieldMetaData fmd1 = (FieldMetaData) o1;
             FieldMetaData fmd2 = (FieldMetaData) o2;

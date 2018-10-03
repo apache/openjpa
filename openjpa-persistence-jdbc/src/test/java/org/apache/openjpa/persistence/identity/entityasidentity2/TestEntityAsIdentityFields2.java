@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEntityAsIdentityFields2 extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(Attendance.class, Course.class, Person.class, Student.class);
     }

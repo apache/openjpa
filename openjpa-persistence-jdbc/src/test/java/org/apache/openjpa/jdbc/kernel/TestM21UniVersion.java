@@ -31,6 +31,7 @@ public class TestM21UniVersion extends SingleEMFTestCase {
     public static String EMPLOYEE3ID = "EMPLOYEE3";
 
 
+    @Override
     public void setUp() {
         setUp(
                 M21UniDepartment.class,

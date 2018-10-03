@@ -27,14 +27,17 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.sql.DataSource;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.TableJDBCSeq;
 import org.apache.openjpa.kernel.Broker;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
+import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
 
 
 public class TestDBSequenceFactory
@@ -86,6 +89,7 @@ public class TestDBSequenceFactory
             _set = set;
         }
 
+        @Override
         public void run() {
             try {
                 JDBCConfiguration conf = new JDBCConfigurationImpl();

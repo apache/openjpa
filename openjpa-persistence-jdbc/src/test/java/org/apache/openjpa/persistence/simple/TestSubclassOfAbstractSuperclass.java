@@ -20,8 +20,9 @@ package org.apache.openjpa.persistence.simple;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test persisting a class which has an abstract superclass.
@@ -29,6 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSubclassOfAbstractSuperclass
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(SubclassPerson.class);
     }

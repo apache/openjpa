@@ -27,7 +27,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.LockModeType;
 
-
 import org.apache.openjpa.persistence.cache.jpa.model.CacheableEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -38,6 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMultiEMFCacheModes extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp( CLEAR_TABLES, CacheableEntity.class,
                "openjpa.ConnectionFactoryProperties", "PrintParameters=true",
@@ -93,7 +93,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
 
         // Refresh the entity - this will load the entity into the L1 and with storeMode=REFRESH,
         // should also refresh it in the L2
-        java.util.Map<String, Object> cacheStoreModeMap = new java.util.HashMap<String, Object>();
+        java.util.Map<String, Object> cacheStoreModeMap = new java.util.HashMap<>();
         cacheStoreModeMap.put("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
         em.refresh(ce, cacheStoreModeMap);
 
@@ -168,7 +168,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
 
         // Refresh the entity with storeMode=REFRESH.  The entity has been deleted so it will be
         // purged from the L2 cache when the DB load fails.
-        java.util.Map<String, Object> cacheStoreModeMap = new java.util.HashMap<String, Object>();
+        java.util.Map<String, Object> cacheStoreModeMap = new java.util.HashMap<>();
         cacheStoreModeMap.put("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
         try {
             em.refresh(ce, cacheStoreModeMap);

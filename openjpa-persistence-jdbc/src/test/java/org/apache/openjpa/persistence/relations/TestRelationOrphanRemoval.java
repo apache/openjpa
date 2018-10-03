@@ -26,6 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestRelationOrphanRemoval extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(Parent.class, Child.class, GrandChild.class, CLEAR_TABLES
              );

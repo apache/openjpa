@@ -28,17 +28,14 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.io.Serializable;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.PCClassInterface;
-import org.apache.openjpa.persistence.kernel.common.apps.PCClassPC;
-
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.PCClassInterface;
+import org.apache.openjpa.persistence.kernel.common.apps.PCClassPC;
 
 public class TestPCClass extends BaseKernelTest {
 
@@ -52,6 +49,7 @@ public class TestPCClass extends BaseKernelTest {
         super(test);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(PCClassPC.class);
     }

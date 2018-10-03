@@ -67,7 +67,7 @@ public class AText {
 	}
 
 
-	private Set<AEvident> aEvidents = new HashSet<AEvident>();
+	private Set<AEvident> aEvidents = new HashSet<>();
 	@OneToMany(targetEntity=AEvident.class, mappedBy="aText", cascade=CascadeType.MERGE)
 	public Set<AEvident> getAEvidents() {
 		return aEvidents;

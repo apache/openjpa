@@ -36,27 +36,35 @@ import org.apache.openjpa.util.UserException;
 public class SQLEmbed
     implements JDBCFilterListener {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static String TAG = "sql";
 
     private static final Localizer _loc = Localizer.forPackage(SQLEmbed.class);
 
+    @Override
     public String getTag() {
         return TAG;
     }
 
+    @Override
     public boolean expectsArguments() {
         return true;
     }
 
+    @Override
     public boolean expectsTarget() {
         return false;
     }
 
+    @Override
     public Object evaluate(Object target, Class targetClass, Object[] args,
         Class[] argClasses, Object candidate, StoreContext ctx) {
         throw new UnsupportedException(_loc.get("no-in-mem", TAG));
     }
 
+    @Override
     public void appendTo(SQLBuffer buf, FilterValue target, FilterValue[] args,
         ClassMapping type, JDBCStore store) {
         if (!args[0].isConstant())
@@ -64,6 +72,7 @@ public class SQLEmbed
         buf.append(args[0].getValue().toString());
     }
 
+    @Override
     public Class getType(Class targetClass, Class[] argClasses) {
         return Object.class;
     }

@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 class AllExpression extends QueryExpression implements Subquery {
-	public AllExpression(QueryDefinitionImpl sub) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public AllExpression(QueryDefinitionImpl sub) {
 		super(sub, UnaryFunctionalOperator.ALL);
 	}
 }

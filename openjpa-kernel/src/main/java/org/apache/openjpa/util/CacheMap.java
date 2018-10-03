@@ -25,19 +25,17 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.iterators.FilterIterator;
 import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.LRUMap;
-import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.SizedMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
-
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Fixed-size map that has ability to pin/unpin entries and move overflow to
@@ -99,6 +97,7 @@ public class CacheMap
      * @deprecated use {@link CacheMap#CacheMap(boolean, int, int, float, int)}
      * instead.
      */
+    @Deprecated
     public CacheMap(boolean lru, int max, int size, float load) {
         this(lru, max, size, load, 16);
     }
@@ -115,10 +114,12 @@ public class CacheMap
 
         softMap = new ConcurrentReferenceHashMap(ReferenceStrength.HARD,
             ReferenceStrength.SOFT, size, load) {
+            @Override
             public void overflowRemoved(Object key, Object value) {
                 softMapOverflowRemoved(key, value);
             }
 
+            @Override
             public void valueExpired(Object key) {
                 softMapValueExpired(key);
             }
@@ -127,12 +128,20 @@ public class CacheMap
 
         if (!lru) {
             cacheMap = new ConcurrentHashMap(size, load) {
+                
+                private static final long serialVersionUID = 1L;
+
+                @Override
                 public void overflowRemoved(Object key, Object value) {
                     cacheMapOverflowRemoved(key, value);
                 }
             };
         } else {
             cacheMap = new LRUMap(size, load) {
+                
+                private static final long serialVersionUID = 1L;
+
+                @Override
                 public void overflowRemoved(Object key, Object value) {
                     cacheMapOverflowRemoved(key, value);
                 }
@@ -346,6 +355,7 @@ public class CacheMap
     protected void entryAdded(Object key, Object value) {
     }
 
+    @Override
     public Object get(Object key) {
         boolean putcache = false;
         Object val = null;
@@ -370,6 +380,7 @@ public class CacheMap
         }
     }
 
+    @Override
     public Object put(Object key, Object value) {
         writeLock();
         try {
@@ -412,6 +423,7 @@ public class CacheMap
         }
     }
 
+    @Override
     public void putAll(Map map) {
         putAll(map, true);
     }
@@ -430,6 +442,7 @@ public class CacheMap
      * If <code>key</code> is pinned into the cache, the pin is
      * cleared and the object is removed.
      */
+    @Override
     public Object remove(Object key) {
         writeLock();
         try {
@@ -461,6 +474,7 @@ public class CacheMap
     /**
      * Removes pinned objects as well as unpinned ones.
      */
+    @Override
     public void clear() {
         writeLock();
         try {
@@ -487,6 +501,7 @@ public class CacheMap
         }
     }
 
+    @Override
     public int size() {
         readLock();
         try {
@@ -496,10 +511,12 @@ public class CacheMap
         }
     }
 
+    @Override
     public boolean isEmpty() {
         return size() == 0;
     }
 
+    @Override
     public boolean containsKey(Object key) {
         readLock();
         try {
@@ -509,6 +526,7 @@ public class CacheMap
         }
     }
 
+    @Override
     public boolean containsValue(Object val) {
         readLock();
         try {
@@ -518,18 +536,22 @@ public class CacheMap
         }
     }
 
+    @Override
     public Set keySet() {
         return new KeySet();
     }
 
+    @Override
     public Collection values() {
         return new ValueCollection();
     }
 
+    @Override
     public Set entrySet() {
         return new EntrySet();
     }
 
+    @Override
     public String toString() {
         readLock();
         try {
@@ -545,16 +567,19 @@ public class CacheMap
     private class EntrySet
         extends AbstractSet {
 
+        @Override
         public int size() {
             return CacheMap.this.size();
         }
 
+        @Override
         public boolean add(Object o) {
             Map.Entry entry = (Map.Entry) o;
             put(entry.getKey(), entry.getValue());
             return true;
         }
 
+        @Override
         public Iterator iterator() {
             return new EntryIterator(EntryIterator.ENTRY);
         }
@@ -566,10 +591,12 @@ public class CacheMap
     private class KeySet
         extends AbstractSet {
 
+        @Override
         public int size() {
             return CacheMap.this.size();
         }
 
+        @Override
         public Iterator iterator() {
             return new EntryIterator(EntryIterator.KEY);
         }
@@ -581,10 +608,12 @@ public class CacheMap
     private class ValueCollection
         extends AbstractCollection {
 
+        @Override
         public int size() {
             return CacheMap.this.size();
         }
 
+        @Override
         public Iterator iterator() {
             return new EntryIterator(EntryIterator.VALUE);
         }
@@ -627,18 +656,22 @@ public class CacheMap
             }
         }
 
+        @Override
         public boolean hasNext() {
             return _itr.hasNext();
         }
 
+        @Override
         public Object next() {
             return _itr.next();
         }
 
+        @Override
         public void remove() {
             _itr.remove();
         }
 
+        @Override
         public boolean evaluate(Object obj) {
             switch (_type) {
                 case ENTRY:

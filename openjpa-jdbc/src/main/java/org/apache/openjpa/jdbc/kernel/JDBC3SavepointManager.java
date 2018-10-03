@@ -22,6 +22,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
+import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.SavepointManager;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
@@ -42,6 +44,7 @@ public class JDBC3SavepointManager
     private static final Localizer _loc = Localizer.forPackage
         (JDBC3SavepointManager.class);
 
+    @Override
     protected void rollbackDataStore(ConnectionSavepoint savepoint) {
         try {
             Connection conn = savepoint.getConnection();
@@ -52,6 +55,7 @@ public class JDBC3SavepointManager
         }
     }
 
+    @Override
     protected void setDataStore(ConnectionSavepoint savepoint) {
         try {
             Connection conn = savepoint.getConnection();

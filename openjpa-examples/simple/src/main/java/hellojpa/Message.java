@@ -18,8 +18,11 @@
  */
 package hellojpa;
 
-import java.util.*;
-import javax.persistence.*;
+import java.util.Date;
+
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 
 /**

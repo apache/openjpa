@@ -21,7 +21,14 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="COMPANY_PQC")
@@ -47,7 +54,7 @@ public class Company {
 	private int startYear;
 
 	@OneToMany(mappedBy="company", cascade=CascadeType.ALL)
-	private Collection<Department> departments = new HashSet<Department>();
+	private Collection<Department> departments = new HashSet<>();
 
 	public String getName() {
 		return name;

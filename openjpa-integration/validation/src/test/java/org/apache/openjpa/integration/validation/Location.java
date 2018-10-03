@@ -89,6 +89,7 @@ public class Location {
         return zipCode;
     }
 
+    @Override
     public String toString() {
         return "[Location:city=" + city + ",street=" + street + ",state=" + state + ",country=" + country + ",zipCode="
                 + zipCode + ']';

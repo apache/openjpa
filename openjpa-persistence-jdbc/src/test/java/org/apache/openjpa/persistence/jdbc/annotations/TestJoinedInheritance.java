@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestJoinedInheritance extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, AnnoTest3.class, Flat1.class,
             CLEAR_TABLES);

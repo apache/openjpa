@@ -24,60 +24,72 @@ package org.apache.openjpa.kernel;
  *
  * @author Steve Kim
  */
-@SuppressWarnings("serial")
-public class PNonTransDeletedState
-    extends PCState {
+public class PNonTransDeletedState extends PCState {
+    private static final long serialVersionUID = 1L;
 
+    @Override
     PCState persist(StateManagerImpl context) {
         return PNONTRANS;
     }
 
+    @Override
     PCState transactional(StateManagerImpl context) {
         return PDELETED;
     }
 
+    @Override
     PCState beforeRead(StateManagerImpl context, int field) {
         return error("deleted", context);
     }
 
+    @Override
     PCState beforeNontransactionalRead(StateManagerImpl context, int field) {
         return error("deleted", context);
     }
 
+    @Override
     PCState beforeOptimisticRead(StateManagerImpl context, int field) {
         return error("deleted", context);
     }
 
+    @Override
     PCState beforeWrite(StateManagerImpl context, int field, boolean mutate) {
         return error("deleted", context);
     }
 
+    @Override
     PCState beforeOptimisticWrite(StateManagerImpl context, int field,
         boolean mutate) {
         return error("deleted", context);
     }
 
+    @Override
     PCState beforeNontransactionalWrite(StateManagerImpl context, int field,
         boolean mutate) {
         return error("deleted", context);
     }
 
+    @Override
     boolean isPendingTransactional() {
         return true;
     }
 
+    @Override
     boolean isPersistent() {
         return true;
     }
 
+    @Override
     boolean isDeleted() {
         return true;
     }
 
+    @Override
     boolean isDirty() {
         return true;
     }
 
+    @Override
     public String toString() {
         return "Persistent-Notransactional-Deleted";
     }

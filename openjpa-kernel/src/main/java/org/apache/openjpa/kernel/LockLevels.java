@@ -29,15 +29,15 @@ public interface LockLevels {
     /**
      * No lock. Value of 0.
      */
-    public static final int LOCK_NONE = 0;
+    int LOCK_NONE = 0;
 
     /**
      * Generic read lock level. Value of 10.
      */
-    public static final int LOCK_READ = 10;
+    int LOCK_READ = 10;
 
     /**
      * Generic write lock level. Value of 20.
      */
-    public static final int LOCK_WRITE = 20;
+    int LOCK_WRITE = 20;
 }

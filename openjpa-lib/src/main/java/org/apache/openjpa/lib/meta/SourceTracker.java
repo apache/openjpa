@@ -28,40 +28,40 @@ import java.io.File;
  */
 public interface SourceTracker {
 
-    public static final int SRC_OTHER = 0;
-    public static final int SRC_ANNOTATIONS = 1;
-    public static final int SRC_XML = 2;
+    int SRC_OTHER = 0;
+    int SRC_ANNOTATIONS = 1;
+    int SRC_XML = 2;
 
     /**
      * Return the file from which this instance was parsed.
      */
-    public File getSourceFile();
+    File getSourceFile();
 
     /**
      * Return the domain-dependent scope of this instance within its file.
      */
-    public Object getSourceScope();
+    Object getSourceScope();
 
     /**
      * Return the type of source.
      */
-    public int getSourceType();
+    int getSourceType();
 
     /**
      * Return the domain-meaningful name of the resource that was loaded
      * from this source. I.e., if we had loaded the source for a Java
      * class, this would return the name of the class.
      */
-    public String getResourceName();
+    String getResourceName();
 
     /**
      * Return the line number of the file at which this instance was parsed.
      */
-    public int getLineNumber();
+    int getLineNumber();
 
     /**
      * Return the column number in the line of the file at which this
      * instance was parsed.
      */
-    public int getColNumber();
+    int getColNumber();
 }

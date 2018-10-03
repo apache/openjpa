@@ -48,6 +48,7 @@ public class TestQueries extends BaseKernelTest {
     public TestQueries() {
     }
 
+    @Override
     public void setUp()
         throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);

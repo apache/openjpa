@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestGeneratedValues extends SingleEMFTestCase {
     DBDictionary _dict;
 
+    @Override
     public void setUp() {
         setUp(GeneratedValues.class, CLEAR_TABLES);
         _dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();

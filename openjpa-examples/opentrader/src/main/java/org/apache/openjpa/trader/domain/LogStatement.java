@@ -20,8 +20,8 @@ package org.apache.openjpa.trader.domain;
 
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
 public class LogStatement implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String level;
     private String context;
     private String thread;

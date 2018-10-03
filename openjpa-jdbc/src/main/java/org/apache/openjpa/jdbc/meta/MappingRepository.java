@@ -106,6 +106,9 @@ import org.apache.openjpa.util.UserException;
  */
 public class MappingRepository extends MetaDataRepository {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (MappingRepository.class);
 
@@ -113,7 +116,7 @@ public class MappingRepository extends MetaDataRepository {
     private transient MappingDefaults _defaults = null;
 
     // object->queryresultmapping
-    private Map<Object, QueryResultMapping> _results = new HashMap<Object, QueryResultMapping>();
+    private Map<Object, QueryResultMapping> _results = new HashMap<>();
     private SchemaGroup _schema = null;
     private StrategyInstaller _installer = null;
 
@@ -369,6 +372,7 @@ public class MappingRepository extends MetaDataRepository {
             mustExist);
     }
 
+    @Override
     public void clear() {
         if (_locking) {
             synchronized (this) {
@@ -383,6 +387,7 @@ public class MappingRepository extends MetaDataRepository {
         }
     }
 
+    @Override
     protected void prepareMapping(ClassMetaData meta) {
         // make sure superclass resolved first; resolving superclass may have
         // resolved this mapping
@@ -416,45 +421,55 @@ public class MappingRepository extends MetaDataRepository {
         mapping.resolveNonRelationMappings();
     }
 
+    @Override
     protected ClassMetaData newClassMetaData(Class<?> type) {
         return new ClassMapping(type, this);
     }
 
+    @Override
     protected ClassMetaData[] newClassMetaDataArray(int length) {
         return new ClassMapping[length];
     }
 
+    @Override
     protected FieldMetaData newFieldMetaData(String name, Class<?> type,
         ClassMetaData owner) {
         return new FieldMapping(name, type, (ClassMapping) owner);
     }
 
+    @Override
     protected FieldMetaData[] newFieldMetaDataArray(int length) {
         return new FieldMapping[length];
     }
 
+    @Override
     protected ClassMetaData newEmbeddedClassMetaData(ValueMetaData owner) {
         return new ClassMapping(owner);
     }
 
+    @Override
     protected ValueMetaData newValueMetaData(FieldMetaData owner) {
         return new ValueMappingImpl((FieldMapping) owner);
     }
 
+    @Override
     protected SequenceMetaData newSequenceMetaData(String name) {
         return new SequenceMapping(name, this);
     }
 
+    @Override
     protected Order newValueOrder(FieldMetaData owner, boolean asc) {
         return new JDBCValueOrder((FieldMapping) owner, asc);
     }
 
+    @Override
     protected Order newRelatedFieldOrder(FieldMetaData owner,
         FieldMetaData rel, boolean asc) {
         return new JDBCRelatedFieldOrder((FieldMapping) owner,
             (FieldMapping) rel, asc);
     }
 
+    @Override
     protected Order[] newOrderArray(int size) {
         return new JDBCOrder[size];
     }
@@ -1369,8 +1384,8 @@ public class MappingRepository extends MetaDataRepository {
      */
     private boolean useUntypedPCHandler(ValueMapping val) {
         ClassMapping rel = val.getTypeMapping();
-        return rel.getIdentityType() == ClassMapping.ID_UNKNOWN
-            || (rel.getIdentityType() == ClassMapping.ID_APPLICATION
+        return rel.getIdentityType() == ClassMetaData.ID_UNKNOWN
+            || (rel.getIdentityType() == ClassMetaData.ID_APPLICATION
             && (rel.getPrimaryKeyFields().length == 0
             || (!rel.isOpenJPAIdentity() && Modifier.isAbstract
             (rel.getObjectIdType().getModifiers()))));
@@ -1513,6 +1528,7 @@ public class MappingRepository extends MetaDataRepository {
         }
     }
 
+    @Override
     public void endConfiguration() {
         super.endConfiguration();
 

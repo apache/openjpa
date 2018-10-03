@@ -28,6 +28,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class Substring
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private final Val _args;
 
@@ -40,13 +42,16 @@ class Substring
         _args = args;
     }
 
+    @Override
     public Class getType() {
         return String.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object str = _val.eval(candidate, orig, ctx, params);
@@ -61,6 +66,7 @@ class Substring
         return str.toString().substring(((Number) arg).intValue() - 1);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

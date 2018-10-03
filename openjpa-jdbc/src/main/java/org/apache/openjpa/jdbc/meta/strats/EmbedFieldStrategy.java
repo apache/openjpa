@@ -37,6 +37,7 @@ import java.util.Locale;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -66,6 +67,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -80,6 +82,8 @@ public class EmbedFieldStrategy
     extends AbstractFieldStrategy
     implements Embeddable {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final int INSERT = 0;
     private static final int UPDATE = 1;
     private static final int DELETE = 2;
@@ -89,6 +93,7 @@ public class EmbedFieldStrategy
 
     private boolean _synthetic = false;
 
+    @Override
     public void map(boolean adapt) {
         if (field.getEmbeddedMetaData() == null)
             throw new MetaDataException(_loc.get("not-embed", field));
@@ -109,7 +114,7 @@ public class EmbedFieldStrategy
 
         // before we map the null indicator column, we need to make sure our
         // value is mapped so we can tell whether the column is synthetic
-        field.getValueMapping().resolve(field.MODE_META | field.MODE_MAPPING);
+        field.getValueMapping().resolve(MetaDataModes.MODE_META | MetaDataModes.MODE_MAPPING);
         Column col = vinfo.getNullIndicatorColumn(field, field.getName(),
             field.getTable(), adapt);
         if (col != null) {
@@ -120,6 +125,7 @@ public class EmbedFieldStrategy
         field.mapPrimaryKey(adapt);
     }
 
+    @Override
     public void initialize() {
         Column[] cols = field.getColumns();
         if (cols.length != 1)
@@ -141,6 +147,7 @@ public class EmbedFieldStrategy
         }
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
@@ -177,6 +184,7 @@ public class EmbedFieldStrategy
             setNullIndicatorColumn(sm, row);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         OpenJPAStateManager em = store.getContext().getStateManager
@@ -232,6 +240,7 @@ public class EmbedFieldStrategy
             setNullIndicatorColumn(sm, row);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         OpenJPAStateManager em = null;
@@ -279,6 +288,7 @@ public class EmbedFieldStrategy
             row.setObject(col, val);
     }
 
+    @Override
     public Boolean isCustomInsert(OpenJPAStateManager sm, JDBCStore store) {
         OpenJPAStateManager em = sm.getContext().getStateManager(sm.fetchObject
             (field.getIndex()));
@@ -288,6 +298,7 @@ public class EmbedFieldStrategy
         return custom;
     }
 
+    @Override
     public Boolean isCustomUpdate(OpenJPAStateManager sm, JDBCStore store) {
         OpenJPAStateManager em = sm.getContext().getStateManager(sm.fetchObject
             (field.getIndex()));
@@ -297,6 +308,7 @@ public class EmbedFieldStrategy
         return custom;
     }
 
+    @Override
     public Boolean isCustomDelete(OpenJPAStateManager sm, JDBCStore store) {
         OpenJPAStateManager em = sm.getContext().getStateManager(sm.fetchObject
             (field.getIndex()));
@@ -339,6 +351,7 @@ public class EmbedFieldStrategy
         return (hasCustom) ? Boolean.TRUE : Boolean.FALSE;
     }
 
+    @Override
     public void customInsert(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         OpenJPAStateManager em = store.getContext().getStateManager
@@ -351,6 +364,7 @@ public class EmbedFieldStrategy
                 fields[i].customInsert(em, store);
     }
 
+    @Override
     public void customUpdate(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         OpenJPAStateManager em = store.getContext().getStateManager
@@ -365,6 +379,7 @@ public class EmbedFieldStrategy
                 fields[i].customUpdate(em, store);
     }
 
+    @Override
     public void customDelete(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         OpenJPAStateManager em = store.getContext().getStateManager
@@ -377,6 +392,7 @@ public class EmbedFieldStrategy
                 fields[i].customDelete(em, store);
     }
 
+    @Override
     public int supportsSelect(Select sel, int type, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch) {
         if (type == Select.TYPE_JOINLESS && sel.isSelected(field.getTable()))
@@ -384,6 +400,7 @@ public class EmbedFieldStrategy
         return 0;
     }
 
+    @Override
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode) {
         Joins joins = field.join(sel);
@@ -392,12 +409,13 @@ public class EmbedFieldStrategy
         // limit eager mode to join b/c at this point the select has been
         // modified and an attempt to clone it for a to-many eager select can
         // result in a clone that produces invalid SQL
-        eagerMode = Math.min(eagerMode, JDBCFetchConfiguration.EAGER_JOIN);
-        sel.select(field.getEmbeddedMapping(), sel.SUBS_EXACT, store,
+        eagerMode = Math.min(eagerMode, EagerFetchModes.EAGER_JOIN);
+        sel.select(field.getEmbeddedMapping(), Select.SUBS_EXACT, store,
             fetch, eagerMode, joins);
         return 1;
     }
 
+    @Override
     public void load(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
@@ -432,7 +450,7 @@ public class EmbedFieldStrategy
         // configured fields if anything is missing.
         if (needsLoad &&
             fetch.requiresFetch(field.getFieldMetaData()) ==
-                JDBCFetchConfiguration.FETCH_LOAD) {
+                FetchConfiguration.FETCH_LOAD) {
           em.load(fetch);
         }
     }
@@ -548,15 +566,18 @@ public class EmbedFieldStrategy
         return Boolean.FALSE;
     }
 
+    @Override
     public Object toDataStoreValue(Object val, JDBCStore store) {
         ClassMapping type = field.getTypeMapping();
         return type.toDataStoreValue(val, type.getPrimaryKeyColumns(), store);
     }
 
+    @Override
     public void appendIsNull(SQLBuffer sql, Select sel, Joins joins) {
         appendTestNull(sql, sel, joins, true);
     }
 
+    @Override
     public void appendIsNotNull(SQLBuffer sql, Select sel, Joins joins) {
         appendTestNull(sql, sel, joins, false);
     }
@@ -597,6 +618,7 @@ public class EmbedFieldStrategy
         sql.appendValue(val, cols[0]);
     }
 
+    @Override
     public Joins join(Joins joins, boolean forceOuter) {
         return field.join(joins, forceOuter, false);
     }
@@ -604,6 +626,7 @@ public class EmbedFieldStrategy
     /**
      * Loading embed object without instantiating owner entity
      */
+    @Override
     public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
@@ -624,7 +647,7 @@ public class EmbedFieldStrategy
         // configured fields if anything is missing.
         if (needsLoad &&
             fetch.requiresFetch(field.getFieldMetaData()) ==
-                JDBCFetchConfiguration.FETCH_LOAD) {
+                FetchConfiguration.FETCH_LOAD) {
           em.load(fetch);
         }
 
@@ -635,27 +658,33 @@ public class EmbedFieldStrategy
     // Embeddable implementation
     /////////////////////////////
 
+    @Override
     public Column[] getColumns() {
         return field.getColumns();
     }
 
+    @Override
     public ColumnIO getColumnIO() {
         return field.getColumnIO();
     }
 
+    @Override
     public Object[] getResultArguments() {
         return null;
     }
 
+    @Override
     public Object toEmbeddedDataStoreValue(Object val, JDBCStore store) {
         return toDataStoreValue(val, store);
     }
 
+    @Override
     public Object toEmbeddedObjectValue(Object val) {
         //return UNSUPPORTED;
         return null;
     }
 
+    @Override
     public void loadEmbedded(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Object val)
         throws SQLException {
@@ -696,86 +725,107 @@ public class EmbedFieldStrategy
             _vmd = vmd;
         }
 
+        @Override
         public void initialize(Class forType, PCState state) {
             throw new InternalException();
         }
 
+        @Override
         public void load(FetchConfiguration fetch) {
             throw new InternalException();
         }
 
+        @Override
         public boolean assignObjectId(boolean flush) {
             throw new InternalException();
         }
 
+        @Override
         public Object getManagedInstance() {
             return null;
         }
 
+        @Override
         public PersistenceCapable getPersistenceCapable() {
             return null;
         }
 
+        @Override
         public ClassMetaData getMetaData() {
             return _vmd.getEmbeddedMetaData();
         }
 
+        @Override
         public OpenJPAStateManager getOwner() {
             return _owner;
         }
 
+        @Override
         public int getOwnerIndex() {
             return _vmd.getFieldMetaData().getIndex();
         }
 
+        @Override
         public boolean isEmbedded() {
             return true;
         }
 
+        @Override
         public boolean isTransactional() {
             return true;
         }
 
+        @Override
         public boolean isPersistent() {
             return true;
         }
 
+        @Override
         public boolean isNew() {
             return _owner.isNew();
         }
 
+        @Override
         public boolean isDeleted() {
             return _owner.isDeleted();
         }
 
+        @Override
         public boolean isDetached() {
             return _owner.isDetached();
         }
 
+        @Override
         public boolean isVersionUpdateRequired() {
             return _owner.isVersionUpdateRequired();
         }
 
+        @Override
         public boolean isVersionCheckRequired() {
             return _owner.isVersionCheckRequired();
         }
 
+        @Override
         public boolean isDirty() {
             return true;
         }
 
+        @Override
         public boolean isFlushed() {
             return _owner.isFlushed();
         }
 
+        @Override
         public boolean isFlushedDirty() {
             return isFlushed();
         }
 
+        @Override
         public boolean isProvisional() {
             return _owner.isProvisional();
         }
 
+        @Override
         public BitSet getLoaded() {
             // consider everything loaded
             if (_full == null) {
@@ -787,6 +837,7 @@ public class EmbedFieldStrategy
             return _full;
         }
 
+        @Override
         public BitSet getDirty() {
             // consider everything dirty
             if (_full == null) {
@@ -798,290 +849,362 @@ public class EmbedFieldStrategy
             return _full;
         }
 
+        @Override
         public BitSet getFlushed() {
             return EMPTY_BITSET;
         }
 
+        @Override
         public BitSet getUnloaded(FetchConfiguration fetch) {
             throw new InternalException();
         }
 
+        @Override
         public Object newProxy(int field) {
             throw new InternalException();
         }
 
+        @Override
         public Object newFieldProxy(int field) {
             throw new InternalException();
         }
 
+        @Override
         public boolean isDefaultValue(int field) {
             return true;
         }
 
+        @Override
         public StoreContext getContext() {
             return _owner.getContext();
         }
 
+        @Override
         public Object getId() {
             return _owner.getId();
         }
 
+        @Override
         public Object getObjectId() {
             return _owner.getObjectId();
         }
 
+        @Override
         public void setObjectId(Object oid) {
             throw new InternalException();
         }
 
+        @Override
         public Object getLock() {
             return null;
         }
 
+        @Override
         public void setLock(Object lock) {
             throw new InternalException();
         }
 
+        @Override
         public Object getVersion() {
             return null;
         }
 
+        @Override
         public void setVersion(Object version) {
             throw new InternalException();
         }
 
+        @Override
         public void setNextVersion(Object version) {
             throw new InternalException();
         }
 
+        @Override
         public PCState getPCState() {
             return (_owner.isDeleted()) ? PCState.EDELETED : PCState.ECOPY;
         }
 
+        @Override
         public Object getImplData() {
             return null;
         }
 
+        @Override
         public Object setImplData(Object data, boolean cacheable) {
             throw new InternalException();
         }
 
+        @Override
         public boolean isImplDataCacheable() {
             return false;
         }
 
+        @Override
         public Object getImplData(int field) {
             return null;
         }
 
+        @Override
         public Object setImplData(int field, Object data) {
             throw new InternalException();
         }
 
+        @Override
         public boolean isImplDataCacheable(int field) {
             return false;
         }
 
+        @Override
         public Object getIntermediate(int field) {
             return null;
         }
 
+        @Override
         public void setIntermediate(int field, Object value) {
             throw new InternalException();
         }
 
+        @Override
         public boolean fetchBooleanField(int field) {
             return false;
         }
 
+        @Override
         public byte fetchByteField(int field) {
             return (byte) 0;
         }
 
+        @Override
         public char fetchCharField(int field) {
             return (char) 0;
         }
 
+        @Override
         public double fetchDoubleField(int field) {
             return 0D;
         }
 
+        @Override
         public float fetchFloatField(int field) {
             return 0F;
         }
 
+        @Override
         public int fetchIntField(int field) {
             return 0;
         }
 
+        @Override
         public long fetchLongField(int field) {
             return 0L;
         }
 
+        @Override
         public Object fetchObjectField(int field) {
             return null;
         }
 
+        @Override
         public short fetchShortField(int field) {
             return (short) 0;
         }
 
+        @Override
         public String fetchStringField(int field) {
             return null;
         }
 
+        @Override
         public Object fetchField(int field, boolean transitions) {
             return null;
         }
 
+        @Override
         public void storeBooleanField(int field, boolean externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeByteField(int field, byte externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeCharField(int field, char externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeDoubleField(int field, double externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeFloatField(int field, float externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeIntField(int field, int externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeLongField(int field, long externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeObjectField(int field, Object externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeShortField(int field, short externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeStringField(int field, String externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeField(int field, Object value) {
             throw new InternalException();
         }
 
+        @Override
         public boolean fetchBoolean(int field) {
             return false;
         }
 
+        @Override
         public byte fetchByte(int field) {
             return (byte) 0;
         }
 
+        @Override
         public char fetchChar(int field) {
             return (char) 0;
         }
 
+        @Override
         public double fetchDouble(int field) {
             return 0D;
         }
 
+        @Override
         public float fetchFloat(int field) {
             return 0F;
         }
 
+        @Override
         public int fetchInt(int field) {
             return 0;
         }
 
+        @Override
         public long fetchLong(int field) {
             return 0L;
         }
 
+        @Override
         public Object fetchObject(int field) {
             return null;
         }
 
+        @Override
         public short fetchShort(int field) {
             return (short) 0;
         }
 
+        @Override
         public String fetchString(int field) {
             return null;
         }
 
+        @Override
         public Object fetch(int field) {
             return null;
         }
 
+        @Override
         public void storeBoolean(int field, boolean externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeByte(int field, byte externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeChar(int field, char externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeDouble(int field, double externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeFloat(int field, float externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeInt(int field, int externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeLong(int field, long externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeObject(int field, Object externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeShort(int field, short externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void storeString(int field, String externalVal) {
             throw new InternalException();
         }
 
+        @Override
         public void store(int field, Object value) {
             throw new InternalException();
         }
 
+        @Override
         public Object fetchInitialField(int field) {
             throw new InternalException();
         }
 
+        @Override
         public void dirty(int field) {
             throw new InternalException();
         }
 
+        @Override
         public void removed(int field, Object removed, boolean key) {
             throw new InternalException();
         }
 
+        @Override
         public boolean beforeRefresh(boolean refreshAll) {
             throw new InternalException();
         }
 
+        @Override
         public void setRemote(int field, Object value) {
             throw new InternalException();
         }
@@ -1090,177 +1213,216 @@ public class EmbedFieldStrategy
         // StateManager implementation
         ///////////////////////////////
 
+        @Override
         public Object getPCPrimaryKey(Object oid, int field) {
             throw new InternalException();
         }
 
+        @Override
         public StateManager replaceStateManager(StateManager sm) {
             throw new InternalException();
         }
 
+        @Override
         public Object getGenericContext() {
             return getContext();
         }
 
+        @Override
         public void dirty(String field) {
             throw new InternalException();
         }
 
+        @Override
         public Object fetchObjectId() {
             return getObjectId();
         }
 
+        @Override
         public void accessingField(int field) {
         }
 
+        @Override
         public boolean serializing() {
             throw new InternalException();
         }
 
+        @Override
         public boolean writeDetached(ObjectOutput out) {
             throw new InternalException();
         }
 
+        @Override
         public void proxyDetachedDeserialized(int idx) {
             throw new InternalException();
         }
 
+        @Override
         public void settingBooleanField(PersistenceCapable pc, int field,
             boolean val1, boolean val2, int set) {
             throw new InternalException();
         }
 
+        @Override
         public void settingCharField(PersistenceCapable pc, int field,
             char val1, char val2, int set) {
             throw new InternalException();
         }
 
+        @Override
         public void settingByteField(PersistenceCapable pc, int field,
             byte val1, byte val2, int set) {
             throw new InternalException();
         }
 
+        @Override
         public void settingShortField(PersistenceCapable pc, int field,
             short val1, short val2, int set) {
             throw new InternalException();
         }
 
+        @Override
         public void settingIntField(PersistenceCapable pc, int field,
             int val1, int val2, int set) {
             throw new InternalException();
         }
 
+        @Override
         public void settingLongField(PersistenceCapable pc, int field,
             long val1, long val2, int set) {
             throw new InternalException();
         }
 
+        @Override
         public void settingFloatField(PersistenceCapable pc, int field,
             float val1, float val2, int set) {
             throw new InternalException();
         }
 
+        @Override
         public void settingDoubleField(PersistenceCapable pc, int field,
             double val1, double val2, int set) {
             throw new InternalException();
         }
 
+        @Override
         public void settingStringField(PersistenceCapable pc, int field,
             String val1, String val2, int set) {
             throw new InternalException();
         }
 
+        @Override
         public void settingObjectField(PersistenceCapable pc, int field,
             Object val1, Object val2, int set) {
             throw new InternalException();
         }
 
+        @Override
         public void providedBooleanField(PersistenceCapable pc, int field,
             boolean val) {
             throw new InternalException();
         }
 
+        @Override
         public void providedCharField(PersistenceCapable pc, int field,
             char val) {
             throw new InternalException();
         }
 
+        @Override
         public void providedByteField(PersistenceCapable pc, int field,
             byte val) {
             throw new InternalException();
         }
 
+        @Override
         public void providedShortField(PersistenceCapable pc, int field,
             short val) {
             throw new InternalException();
         }
 
+        @Override
         public void providedIntField(PersistenceCapable pc, int field,
             int val) {
             throw new InternalException();
         }
 
+        @Override
         public void providedLongField(PersistenceCapable pc, int field,
             long val) {
             throw new InternalException();
         }
 
+        @Override
         public void providedFloatField(PersistenceCapable pc, int field,
             float val) {
             throw new InternalException();
         }
 
+        @Override
         public void providedDoubleField(PersistenceCapable pc, int field,
             double val) {
             throw new InternalException();
         }
 
+        @Override
         public void providedStringField(PersistenceCapable pc, int field,
             String val) {
             throw new InternalException();
         }
 
+        @Override
         public void providedObjectField(PersistenceCapable pc, int field,
             Object val) {
             throw new InternalException();
         }
 
+        @Override
         public boolean replaceBooleanField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
 
+        @Override
         public char replaceCharField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
 
+        @Override
         public byte replaceByteField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
 
+        @Override
         public short replaceShortField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
 
+        @Override
         public int replaceIntField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
 
+        @Override
         public long replaceLongField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
 
+        @Override
         public float replaceFloatField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
 
+        @Override
         public double replaceDoubleField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
 
+        @Override
         public String replaceStringField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
 
+        @Override
         public Object replaceObjectField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
@@ -1327,6 +1489,7 @@ public class EmbedFieldStrategy
             throw new InternalException();
         }
 
+        @Override
         public Row getRow(Table table, int action, OpenJPAStateManager sm,
             boolean create) {
             while (sm != null && sm.getOwner() != null)
@@ -1337,19 +1500,23 @@ public class EmbedFieldStrategy
             return new EmbeddedRow(_rm.getRow(table, action, sm, create));
         }
 
+        @Override
         public Row getSecondaryRow(Table table, int action) {
             return new EmbeddedRow(_rm.getSecondaryRow(table, action));
         }
 
+        @Override
         public void flushSecondaryRow(Row row)
             throws SQLException {
             _rm.flushSecondaryRow(((EmbeddedRow) row).getDelegate());
         }
 
+        @Override
         public Row getAllRows(Table table, int action) {
             return new EmbeddedRow(_rm.getAllRows(table, action));
         }
 
+        @Override
         public void flushAllRows(Row row)
             throws SQLException {
             _rm.flushAllRows(((EmbeddedRow) row).getDelegate());
@@ -1372,45 +1539,54 @@ public class EmbedFieldStrategy
             return _row;
         }
 
+        @Override
         public boolean isValid() {
             return _row.isValid();
         }
 
+        @Override
         public void setValid(boolean valid) {
             _row.setValid(valid);
         }
 
+        @Override
         public void setPrimaryKey(OpenJPAStateManager sm)
             throws SQLException {
             _row.setPrimaryKey(getOwner(sm));
         }
 
+        @Override
         public void setPrimaryKey(ColumnIO io, OpenJPAStateManager sm)
             throws SQLException {
             _row.setPrimaryKey(io, getOwner(sm));
         }
 
+        @Override
         public void wherePrimaryKey(OpenJPAStateManager sm)
             throws SQLException {
             _row.wherePrimaryKey(getOwner(sm));
         }
 
+        @Override
         public void setForeignKey(ForeignKey fk, OpenJPAStateManager sm)
             throws SQLException {
             _row.setForeignKey(fk, getOwner(sm));
         }
 
+        @Override
         public void setForeignKey(ForeignKey fk, ColumnIO io,
             OpenJPAStateManager sm)
             throws SQLException {
             _row.setForeignKey(fk, io, getOwner(sm));
         }
 
+        @Override
         public void whereForeignKey(ForeignKey fk, OpenJPAStateManager sm)
             throws SQLException {
             _row.whereForeignKey(fk, getOwner(sm));
         }
 
+        @Override
         public void setRelationId(Column col, OpenJPAStateManager sm,
             RelationId rel)
             throws SQLException {
@@ -1427,306 +1603,368 @@ public class EmbedFieldStrategy
         // Pass-through methods
         ////////////////////////
 
+        @Override
         public Table getTable() {
             return _row.getTable();
         }
 
+        @Override
         public int getAction() {
             return _row.getAction();
         }
 
+        @Override
         public Object getFailedObject() {
             return _row.getFailedObject();
         }
 
+        @Override
         public void setFailedObject(Object failed) {
             _row.setFailedObject(failed);
         }
 
+        @Override
         public OpenJPAStateManager getPrimaryKey() {
             return _row.getPrimaryKey();
         }
 
+        @Override
         public void setArray(Column col, Array val)
             throws SQLException {
             _row.setArray(col, val);
         }
 
+        @Override
         public void setAsciiStream(Column col, InputStream val, int length)
             throws SQLException {
             _row.setAsciiStream(col, val, length);
         }
 
+        @Override
         public void setBigDecimal(Column col, BigDecimal val)
             throws SQLException {
             _row.setBigDecimal(col, val);
         }
 
+        @Override
         public void setBigInteger(Column col, BigInteger val)
             throws SQLException {
             _row.setBigInteger(col, val);
         }
 
+        @Override
         public void setBinaryStream(Column col, InputStream val, int length)
             throws SQLException {
             _row.setBinaryStream(col, val, length);
         }
 
+        @Override
         public void setBlob(Column col, Blob val)
             throws SQLException {
             _row.setBlob(col, val);
         }
 
+        @Override
         public void setBoolean(Column col, boolean val)
             throws SQLException {
             _row.setBoolean(col, val);
         }
 
+        @Override
         public void setByte(Column col, byte val)
             throws SQLException {
             _row.setByte(col, val);
         }
 
+        @Override
         public void setBytes(Column col, byte[] val)
             throws SQLException {
             _row.setBytes(col, val);
         }
 
+        @Override
         public void setCalendar(Column col, Calendar val)
             throws SQLException {
             _row.setCalendar(col, val);
         }
 
+        @Override
         public void setChar(Column col, char val)
             throws SQLException {
             _row.setChar(col, val);
         }
 
+        @Override
         public void setCharacterStream(Column col, Reader val, int length)
             throws SQLException {
             _row.setCharacterStream(col, val, length);
         }
 
+        @Override
         public void setClob(Column col, Clob val)
             throws SQLException {
             _row.setClob(col, val);
         }
 
+        @Override
         public void setDate(Column col, Date val)
             throws SQLException {
             _row.setDate(col, val);
         }
 
+        @Override
         public void setDate(Column col, java.sql.Date val, Calendar cal)
             throws SQLException {
             _row.setDate(col, val, cal);
         }
 
+        @Override
         public void setDouble(Column col, double val)
             throws SQLException {
             _row.setDouble(col, val);
         }
 
+        @Override
         public void setFloat(Column col, float val)
             throws SQLException {
             _row.setFloat(col, val);
         }
 
+        @Override
         public void setInt(Column col, int val)
             throws SQLException {
             _row.setInt(col, val);
         }
 
+        @Override
         public void setLong(Column col, long val)
             throws SQLException {
             _row.setLong(col, val);
         }
 
+        @Override
         public void setLocale(Column col, Locale val)
             throws SQLException {
             _row.setLocale(col, val);
         }
 
+        @Override
         public void setNull(Column col)
             throws SQLException {
             _row.setNull(col);
         }
 
+        @Override
         public void setNull(Column col, boolean overrideDefault)
             throws SQLException {
             _row.setNull(col, overrideDefault);
         }
 
+        @Override
         public void setNumber(Column col, Number val)
             throws SQLException {
             _row.setNumber(col, val);
         }
 
+        @Override
         public void setObject(Column col, Object val)
             throws SQLException {
             _row.setObject(col, val);
         }
 
+        @Override
         public void setRaw(Column col, String val)
             throws SQLException {
             _row.setRaw(col, val);
         }
 
+        @Override
         public void setShort(Column col, short val)
             throws SQLException {
             _row.setShort(col, val);
         }
 
+        @Override
         public void setString(Column col, String val)
             throws SQLException {
             _row.setString(col, val);
         }
 
+        @Override
         public void setTime(Column col, Time val, Calendar cal)
             throws SQLException {
             _row.setTime(col, val, cal);
         }
 
+        @Override
         public void setTimestamp(Column col, Timestamp val, Calendar cal)
             throws SQLException {
             _row.setTimestamp(col, val, cal);
         }
 
+        @Override
         public void whereArray(Column col, Array val)
             throws SQLException {
             _row.whereArray(col, val);
         }
 
+        @Override
         public void whereAsciiStream(Column col, InputStream val, int length)
             throws SQLException {
             _row.whereAsciiStream(col, val, length);
         }
 
+        @Override
         public void whereBigDecimal(Column col, BigDecimal val)
             throws SQLException {
             _row.whereBigDecimal(col, val);
         }
 
+        @Override
         public void whereBigInteger(Column col, BigInteger val)
             throws SQLException {
             _row.whereBigInteger(col, val);
         }
 
+        @Override
         public void whereBinaryStream(Column col, InputStream val, int length)
             throws SQLException {
             _row.whereBinaryStream(col, val, length);
         }
 
+        @Override
         public void whereBlob(Column col, Blob val)
             throws SQLException {
             _row.whereBlob(col, val);
         }
 
+        @Override
         public void whereBoolean(Column col, boolean val)
             throws SQLException {
             _row.whereBoolean(col, val);
         }
 
+        @Override
         public void whereByte(Column col, byte val)
             throws SQLException {
             _row.whereByte(col, val);
         }
 
+        @Override
         public void whereBytes(Column col, byte[] val)
             throws SQLException {
             _row.whereBytes(col, val);
         }
 
+        @Override
         public void whereCalendar(Column col, Calendar val)
             throws SQLException {
             _row.whereCalendar(col, val);
         }
 
+        @Override
         public void whereChar(Column col, char val)
             throws SQLException {
             _row.whereChar(col, val);
         }
 
+        @Override
         public void whereCharacterStream(Column col, Reader val, int length)
             throws SQLException {
             _row.whereCharacterStream(col, val, length);
         }
 
+        @Override
         public void whereClob(Column col, Clob val)
             throws SQLException {
             _row.whereClob(col, val);
         }
 
+        @Override
         public void whereDate(Column col, Date val)
             throws SQLException {
             _row.whereDate(col, val);
         }
 
+        @Override
         public void whereDate(Column col, java.sql.Date val, Calendar cal)
             throws SQLException {
             _row.whereDate(col, val, cal);
         }
 
+        @Override
         public void whereDouble(Column col, double val)
             throws SQLException {
             _row.whereDouble(col, val);
         }
 
+        @Override
         public void whereFloat(Column col, float val)
             throws SQLException {
             _row.whereFloat(col, val);
         }
 
+        @Override
         public void whereInt(Column col, int val)
             throws SQLException {
             _row.whereInt(col, val);
         }
 
+        @Override
         public void whereLong(Column col, long val)
             throws SQLException {
             _row.whereLong(col, val);
         }
 
+        @Override
         public void whereLocale(Column col, Locale val)
             throws SQLException {
             _row.whereLocale(col, val);
         }
 
+        @Override
         public void whereNull(Column col)
             throws SQLException {
             _row.whereNull(col);
         }
 
+        @Override
         public void whereNumber(Column col, Number val)
             throws SQLException {
             _row.whereNumber(col, val);
         }
 
+        @Override
         public void whereObject(Column col, Object val)
             throws SQLException {
             _row.whereObject(col, val);
         }
 
+        @Override
         public void whereRaw(Column col, String val)
             throws SQLException {
             _row.whereRaw(col, val);
         }
 
+        @Override
         public void whereShort(Column col, short val)
             throws SQLException {
             _row.whereShort(col, val);
         }
 
+        @Override
         public void whereString(Column col, String val)
             throws SQLException {
             _row.whereString(col, val);
         }
 
+        @Override
         public void whereTime(Column col, Time val, Calendar cal)
             throws SQLException {
             _row.whereTime(col, val, cal);
         }
 
+        @Override
         public void whereTimestamp(Column col, Timestamp val, Calendar cal)
             throws SQLException {
             _row.whereTimestamp(col, val, cal);

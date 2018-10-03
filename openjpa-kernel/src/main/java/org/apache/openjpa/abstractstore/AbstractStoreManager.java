@@ -121,6 +121,7 @@ public abstract class AbstractStoreManager
 
     protected StoreContext ctx;
 
+    @Override
     public final void setContext(StoreContext ctx) {
         this.ctx = ctx;
         open();
@@ -145,6 +146,7 @@ public abstract class AbstractStoreManager
      * locking semantics for your data store if you need notification of
      * the beginning of an optimistic transaction.
      */
+    @Override
     public void beginOptimistic() {
     }
 
@@ -153,6 +155,7 @@ public abstract class AbstractStoreManager
      * locking semantics for your data store if you need notification of
      * a rollback of an optimistic transaction before {@link #begin} is invoked.
      */
+    @Override
     public void rollbackOptimistic() {
     }
 
@@ -164,6 +167,7 @@ public abstract class AbstractStoreManager
      * support any concept of locking or transactions, you need not
      * override this method.
      */
+    @Override
     public void begin() {
     }
 
@@ -173,6 +177,7 @@ public abstract class AbstractStoreManager
      * override this method. If it does, then override this method to
      * notify the data store that the current transaction should be committed.
      */
+    @Override
     public void commit() {
     }
 
@@ -182,6 +187,7 @@ public abstract class AbstractStoreManager
      * override this method. If it does, then override this method to
      * notify the data store that the current transaction should be rolled back.
      */
+    @Override
     public void rollback() {
     }
 
@@ -189,6 +195,7 @@ public abstract class AbstractStoreManager
      * Since this store manager does not provide optimistic locking
      * support, this method always returns <code>true</code>.
      */
+    @Override
     public boolean syncVersion(OpenJPAStateManager sm, Object edata) {
         return true;
     }
@@ -211,6 +218,7 @@ public abstract class AbstractStoreManager
      * <code>OpenJPAStateManager.store<em>type</em></code> method) to put the
      * data into the object.
      */
+    @Override
     public abstract boolean initialize(OpenJPAStateManager sm, PCState state,
         FetchConfiguration fetch, Object edata);
 
@@ -223,6 +231,7 @@ public abstract class AbstractStoreManager
      * <code>OpenJPAStateManager.store<em>type</em></code> method) to put the
      * data into the object.
      */
+    @Override
     public abstract boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object edata);
 
@@ -233,6 +242,7 @@ public abstract class AbstractStoreManager
      * bulk loading APIs, overriding this method to be more clever may be
      * advantageous.
      */
+    @Override
     public Collection<Object> loadAll(Collection<OpenJPAStateManager> sms, PCState state, int load,
         FetchConfiguration fetch, Object edata) {
         return ImplHelper.loadAll(sms, this, state, load, fetch, edata);
@@ -243,14 +253,15 @@ public abstract class AbstractStoreManager
      * states, and delegates to
      * {@link #flush(Collection,Collection,Collection,Collection,Collection)}.
      */
+    @Override
     public Collection<Exception> flush(Collection<OpenJPAStateManager> sms) {
         // break down state managers by state; initialize as empty lists;
         // use constants for efficiency
-        Collection<OpenJPAStateManager> pNew = new LinkedList<OpenJPAStateManager>();
-        Collection<OpenJPAStateManager> pNewUpdated = new LinkedList<OpenJPAStateManager>();
-        Collection<OpenJPAStateManager> pNewFlushedDeleted = new LinkedList<OpenJPAStateManager>();
-        Collection<OpenJPAStateManager> pDirty = new LinkedList<OpenJPAStateManager>();
-        Collection<OpenJPAStateManager> pDeleted = new LinkedList<OpenJPAStateManager>();
+        Collection<OpenJPAStateManager> pNew = new LinkedList<>();
+        Collection<OpenJPAStateManager> pNewUpdated = new LinkedList<>();
+        Collection<OpenJPAStateManager> pNewFlushedDeleted = new LinkedList<>();
+        Collection<OpenJPAStateManager> pDirty = new LinkedList<>();
+        Collection<OpenJPAStateManager> pDeleted = new LinkedList<>();
 
         for (OpenJPAStateManager sm : sms) {
             if (sm.getPCState() == PCState.PNEW && !sm.isFlushed())
@@ -274,10 +285,12 @@ public abstract class AbstractStoreManager
         return flush(pNew, pNewUpdated, pNewFlushedDeleted, pDirty, pDeleted);
     }
 
+    @Override
     public void beforeStateChange(OpenJPAStateManager sm, PCState fromState,
         PCState toState) {
     }
 
+    @Override
     public boolean assignObjectId(OpenJPAStateManager sm, boolean preFlush) {
         ClassMetaData meta = sm.getMetaData();
         if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION)
@@ -303,6 +316,7 @@ public abstract class AbstractStoreManager
         return true;
     }
 
+    @Override
     public boolean assignField(OpenJPAStateManager sm, int field,
         boolean preFlush) {
         FieldMetaData fmd = sm.getMetaData().getField(field);
@@ -313,22 +327,26 @@ public abstract class AbstractStoreManager
         return true;
     }
 
+    @Override
     public Class<?> getManagedType(Object oid) {
         if (oid instanceof Id)
             return ((Id) oid).getType();
         return null;
     }
 
+    @Override
     public Class<?> getDataStoreIdType(ClassMetaData meta) {
         return Id.class;
     }
 
+    @Override
     public Object copyDataStoreId(Object oid, ClassMetaData meta) {
         Id id = (Id) oid;
         return new Id(meta.getDescribedType(), id.getId(),
             id.hasSubclasses());
     }
 
+    @Override
     public Object newDataStoreId(Object val, ClassMetaData meta) {
         // we use base types for all oids
         while (meta.getPCSuperclass() != null)
@@ -339,12 +357,14 @@ public abstract class AbstractStoreManager
     /**
      * Override to retain a dedicated connection.
      */
+    @Override
     public void retainConnection() {
     }
 
     /**
      * Override to release previously-retained connection.
      */
+    @Override
     public void releaseConnection() {
     }
 
@@ -352,6 +372,7 @@ public abstract class AbstractStoreManager
      * Returns <code>null</code>. If your data store can provide a
      * distinct connection object, return it here.
      */
+    @Override
     public Object getClientConnection() {
         return null;
     }
@@ -375,13 +396,16 @@ public abstract class AbstractStoreManager
      * {@link #load} method will have to issue another command to the data
      * store in order to fetch the data to be loaded.
      */
+    @Override
     public abstract ResultObjectProvider executeExtent(ClassMetaData meta,
         boolean subs, FetchConfiguration fetch);
 
+    @Override
     public StoreQuery newQuery(String language) {
         return null;
     }
 
+    @Override
     public FetchConfiguration newFetchConfiguration() {
         return new FetchConfigurationImpl();
     }
@@ -394,6 +418,7 @@ public abstract class AbstractStoreManager
      * #VERSION_LATER}. If either <code>v1</code> or <code>v2</code> are
      * <code>null</code>, returns {@link #VERSION_DIFFERENT}.
      */
+    @Override
     public int compareVersion(OpenJPAStateManager state, Object v1, Object v2) {
         if (v1 == null || v2 == null)
             return VERSION_DIFFERENT;
@@ -413,6 +438,7 @@ public abstract class AbstractStoreManager
      * {@link #getDataStoreIdType}, {@link #copyDataStoreId},
      * {@link #newDataStoreId}.
      */
+    @Override
     public Seq getDataStoreIdSequence(ClassMetaData forClass) {
         return ctx.getConfiguration().getSequenceInstance();
     }
@@ -420,6 +446,7 @@ public abstract class AbstractStoreManager
     /**
      * Returns null.
      */
+    @Override
     public Seq getValueSequence(FieldMetaData forField) {
         return null;
     }
@@ -430,10 +457,12 @@ public abstract class AbstractStoreManager
      * currently-running queries and return <code>true</code> if any
      * were cancelled.
      */
+    @Override
     public boolean cancelAll() {
         return false;
     }
 
+    @Override
     public void close() {
     }
 
@@ -496,7 +525,7 @@ public abstract class AbstractStoreManager
      * </ul>
      */
     protected Collection<String> getUnsupportedOptions() {
-        Collection<String> c = new HashSet<String>();
+        Collection<String> c = new HashSet<>();
         c.add(OpenJPAConfiguration.OPTION_OPTIMISTIC);
         c.add(OpenJPAConfiguration.OPTION_ID_DATASTORE);
         c.add(OpenJPAConfiguration.OPTION_INC_FLUSH);

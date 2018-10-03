@@ -30,6 +30,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name="TB11A")
 public class EntityA_Embed_MappedToOneCascadeDelete implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     Integer id;
 

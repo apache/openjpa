@@ -18,7 +18,18 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityResult;
+import javax.persistence.FieldResult;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
+import javax.persistence.Table;
 
 @SqlResultSetMappings(value={
 @SqlResultSetMapping(name="SQLSelectsBothEndOfTheRelation",

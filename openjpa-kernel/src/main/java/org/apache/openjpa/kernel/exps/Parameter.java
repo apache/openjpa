@@ -29,10 +29,10 @@ public interface Parameter
     /**
      * Set the index of this parameter.
      */
-    public void setIndex(int index);
+    void setIndex(int index);
 
     /**
      * Returns the key of the parameter.
      */
-    public Object getParameterKey();
+    Object getParameterKey();
 }

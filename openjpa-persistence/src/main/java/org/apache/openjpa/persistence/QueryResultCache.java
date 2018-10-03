@@ -34,31 +34,31 @@ public interface QueryResultCache {
     /**
      * Pin the given query's result to the cache.
      */
-    public void pin(Query q);
+    void pin(Query q);
 
     /**
      * Unpin a previously-pinned query result.
      */
-    public void unpin(Query q);
+    void unpin(Query q);
 
     /**
      * Evict a query result from the cache.
      */
-    public void evict(Query q);
+    void evict(Query q);
 
     /**
      * Clear the cache.
      */
-    public void evictAll();
+    void evictAll();
 
     /**
      * Evict all result for queries involving the given class.
      */
-    public void evictAll(Class cls);
+    void evictAll(Class cls);
 
     /**
      * @deprecated cast to {@link QueryResultCacheImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public QueryCache getDelegate();
+    @Deprecated QueryCache getDelegate();
 }

@@ -32,89 +32,109 @@ import org.apache.openjpa.kernel.exps.Value;
 abstract class AbstractVal
     implements Val {
 
+    
+    private static final long serialVersionUID = 1L;
     protected static final String TRUE = "1 = 1";
     protected static final String FALSE = "1 <> 1";
     private String _alias = null;
 
+    @Override
     public boolean isVariable() {
         return false;
     }
 
+    @Override
     public boolean isAggregate() {
         return false;
     }
 
+    @Override
     public boolean isXPath() {
         return false;
     }
 
+    @Override
     public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state,
         Object val) {
         return val;
     }
 
+    @Override
     public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         sql.append(FALSE);
     }
 
+    @Override
     public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql){
         sql.append(TRUE);
     }
 
+    @Override
     public void appendIsNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         appendTo(sel, ctx, state, sql, 0);
         sql.append(" IS ").appendValue(null);
     }
 
+    @Override
     public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         appendTo(sel, ctx, state, sql, 0);
         sql.append(" IS NOT ").appendValue(null);
     }
 
+    @Override
     public void appendIndex(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         sql.append("1");
     }
 
+    @Override
     public void appendType(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         sql.append("1");
     }
 
+    @Override
     public void appendSize(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql) {
         sql.append("1");
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         visitor.exit(this);
     }
 
+    @Override
     public int getId() {
         return Val.VAL;
     }
 
+    @Override
     public String getAlias() {
         return _alias;
     }
 
+    @Override
     public void setAlias(String alias) {
         _alias = alias;
     }
 
+    @Override
     public Value getSelectAs() {
         return _alias != null ? this : null;
     }
 
+    @Override
     public Path getPath() {
         return null;
     }
 
+    @Override
     public String getName() {
         return null;
     }

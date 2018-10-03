@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -43,6 +44,9 @@ import javax.persistence.TemporalType;
 @DiscriminatorValue("dataRt1")
 public class RuntimeTest1
     implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     public static final String someStaticField = "someField";
 
@@ -82,7 +86,7 @@ public class RuntimeTest1
 
     @OneToMany(mappedBy = "selfOneOne",
         cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    private Set<RuntimeTest1> selfOneMany = new HashSet<RuntimeTest1>();
+    private Set<RuntimeTest1> selfOneMany = new HashSet<>();
 
     public RuntimeTest1() {
     }

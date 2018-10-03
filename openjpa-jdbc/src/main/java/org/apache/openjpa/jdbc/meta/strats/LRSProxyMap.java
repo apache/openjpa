@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -61,6 +62,7 @@ class LRSProxyMap
         _strat = strat;
     }
 
+    @Override
     protected synchronized int count() {
         boolean derivedVal = _strat.getFieldMapping().getElement().
             getValueMappedBy() != null;
@@ -72,6 +74,7 @@ class LRSProxyMap
         Union union = store.getSQLFactory().newUnion
             (Math.max(1, clss.length));
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 ClassMapping cls = (clss.length == 0) ? null : clss[idx];
                 sel.whereForeignKey(_strat.getJoinForeignKey(cls),
@@ -87,10 +90,12 @@ class LRSProxyMap
         }
     }
 
+    @Override
     protected boolean hasKey(Object key) {
         return has(key, true);
     }
 
+    @Override
     protected boolean hasValue(Object value) {
         return has(value, false);
     }
@@ -110,6 +115,7 @@ class LRSProxyMap
         Union union = store.getSQLFactory().newUnion
             (Math.max(1, clss.length));
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 ClassMapping cls = (clss.length == 0) ? null : clss[idx];
                 sel.whereForeignKey(_strat.getJoinForeignKey(cls),
@@ -155,6 +161,7 @@ class LRSProxyMap
         }
     }
 
+    @Override
     protected Collection keys(final Object obj) {
         final OpenJPAStateManager sm = assertOwner();
         final JDBCStore store = getStore();
@@ -172,9 +179,10 @@ class LRSProxyMap
         Union union = store.getSQLFactory().newUnion
             (Math.max(1, clss.length));
         if (fetch.getSubclassFetchMode(_strat.getFieldMapping().
-            getKeyMapping().getTypeMapping()) != fetch.EAGER_JOIN)
+            getKeyMapping().getTypeMapping()) != EagerFetchModes.EAGER_JOIN)
             union.abortUnion();
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 ClassMapping cls = (clss.length == 0) ? null : clss[idx];
                 sel.whereForeignKey(_strat.getJoinForeignKey(cls),
@@ -226,6 +234,7 @@ class LRSProxyMap
         }
     }
 
+    @Override
     protected Object value(final Object obj) {
         final OpenJPAStateManager sm = assertOwner();
         final JDBCStore store = getStore();
@@ -243,9 +252,10 @@ class LRSProxyMap
         union.setExpectedResultCount(1, false);
         if (fetch.getSubclassFetchMode(_strat.getFieldMapping().
             getElementMapping().getTypeMapping())
-            != JDBCFetchConfiguration.EAGER_JOIN)
+            != EagerFetchModes.EAGER_JOIN)
             union.abortUnion();
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 ClassMapping cls = (clss.length == 0) ? null : clss[idx];
                 sel.whereForeignKey(_strat.getJoinForeignKey(cls),
@@ -296,13 +306,14 @@ class LRSProxyMap
         }
     }
 
+    @Override
     protected Iterator itr() {
         OpenJPAStateManager sm = assertOwner();
         JDBCStore store = getStore();
         JDBCFetchConfiguration fetch = store.getFetchConfiguration();
         try {
             Joins[] joins = new Joins[2];
-            Result[] res = _strat.getResults(sm, store, fetch, fetch.EAGER_JOIN,
+            Result[] res = _strat.getResults(sm, store, fetch, EagerFetchModes.EAGER_JOIN,
                 joins, true);
             return new ResultIterator(sm, store, fetch, res, joins);
         } catch (SQLException se) {
@@ -345,6 +356,7 @@ class LRSProxyMap
             _joins = joins;
         }
 
+        @Override
         public boolean hasNext() {
             if (_next == null) {
                 try {
@@ -358,6 +370,7 @@ class LRSProxyMap
             return _next.booleanValue();
         }
 
+        @Override
         public Object next() {
             if (!hasNext())
                 throw new NoSuchElementException();
@@ -386,10 +399,12 @@ class LRSProxyMap
             }
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void close() {
             _next = Boolean.FALSE;
             _res[0].close();
@@ -407,14 +422,17 @@ class LRSProxyMap
         public Object key;
         public Object val;
 
+        @Override
         public Object getKey() {
             return key;
         }
 
+        @Override
         public Object getValue() {
             return val;
         }
 
+        @Override
         public Object setValue(Object val) {
             throw new UnsupportedOperationException();
         }

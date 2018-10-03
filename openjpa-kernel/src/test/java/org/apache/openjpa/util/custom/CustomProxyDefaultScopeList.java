@@ -25,12 +25,14 @@ import java.util.ListIterator;
 
 class CustomProxyDefaultScopeList<E> extends AbstractSequentialList<E> {
 
-    private final List<E> _delegate = new ArrayList<E>();
+    private final List<E> _delegate = new ArrayList<>();
 
+    @Override
     public int size() {
         return _delegate.size();
     }
 
+    @Override
     public ListIterator<E> listIterator(int idx) {
         return _delegate.listIterator(idx);
     }

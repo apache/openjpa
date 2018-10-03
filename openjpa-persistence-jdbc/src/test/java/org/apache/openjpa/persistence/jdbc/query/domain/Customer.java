@@ -57,7 +57,7 @@ public class Customer {
 
 	public void addOrder(Order order) {
 		if (orders == null)
-			orders = new ArrayList<Order>();
+			orders = new ArrayList<>();
 		this.orders.add(order);
 		order.setCustomer(this);
 	}

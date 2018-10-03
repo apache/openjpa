@@ -19,9 +19,9 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Metamodel;
 
@@ -36,7 +36,7 @@ public interface OpenJPACriteriaBuilder extends CriteriaBuilder {
     /**
      * The mnemonic to identify the query language.
      */
-    public static final String LANG_CRITERIA = "javax.persistence.criteria";
+    String LANG_CRITERIA = "javax.persistence.criteria";
 
     /**
      * Create a predicate based upon the attribute values of a given
@@ -61,37 +61,38 @@ public interface OpenJPACriteriaBuilder extends CriteriaBuilder {
      *
      * @return a predicate
      */
-    public <T> Predicate qbe(From<?, T> from, T example, ComparisonStyle style, Attribute<?,?>... excludes);
+    <T> Predicate qbe(From<?, T> from, T example, ComparisonStyle style, Attribute<?,?>... excludes);
 
     /**
      * Overloaded with no extra attribute to exclude.
      */
-    public <T> Predicate qbe(From<?, T> from, T example, ComparisonStyle style);
+    <T> Predicate qbe(From<?, T> from, T example, ComparisonStyle style);
 
     /**
      * Overloaded with default comparison style.
      */
-    public <T> Predicate qbe(From<?, T> from, T example, Attribute<?,?>... excludes);
+    <T> Predicate qbe(From<?, T> from, T example, Attribute<?,?>... excludes);
 
     /**
      * Overloaded with default comparison style and no extra attribute to exclude.
      */
-    public <T> Predicate qbe(From<?, T> from, T example);
+    <T> Predicate qbe(From<?, T> from, T example);
 
     /**
      * Create a mutable style to apply on query-by-example.
      */
-    public ComparisonStyle qbeStyle();
+    ComparisonStyle qbeStyle();
 
     /**
      * Gets the metamodel for the managed, persistent domain entities.
      */
-    public Metamodel getMetamodel();
+    Metamodel getMetamodel();
 
     /**
      *  Create a <code>CriteriaQuery</code> object.
      *  @return criteria query object
      */
+    @Override
     OpenJPACriteriaQuery<Object> createQuery();
 
     /**
@@ -100,6 +101,7 @@ public interface OpenJPACriteriaBuilder extends CriteriaBuilder {
      *  @param resultClass  type of the query result
      *  @return criteria query object
      */
+    @Override
     <T> OpenJPACriteriaQuery<T> createQuery(Class<T> resultClass);
 
     /**
@@ -107,6 +109,7 @@ public interface OpenJPACriteriaBuilder extends CriteriaBuilder {
      *  objects as its result.
      *  @return criteria query object
      */
+    @Override
     OpenJPACriteriaQuery<Tuple> createTupleQuery();
 
 }

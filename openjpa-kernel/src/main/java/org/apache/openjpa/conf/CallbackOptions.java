@@ -26,6 +26,8 @@ import java.io.Serializable;
  * @author Pinaki Poddar
  */
 public class CallbackOptions implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     private boolean _isPostPersistCallbackImmediate = false;
     private boolean _allowsMultipleMethodsForSameCallback = false;
     private boolean _allowsDuplicateListener = true;

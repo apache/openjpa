@@ -34,13 +34,16 @@ import java.util.List;
 
 
 public class EntityA_Coll_Embed_EmbedXml implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     Integer id;
 
     String name;
 
     int age;
 
-    protected List<Embed_EmbedXml> embeds = new ArrayList<Embed_EmbedXml>();
+    protected List<Embed_EmbedXml> embeds = new ArrayList<>();
 
     public int getAge() {
         return age;

@@ -168,13 +168,16 @@ public class NativeJDBCSeq
         return _conf;
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _conf = (JDBCConfiguration) conf;
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
         buildSequence();
 
@@ -389,6 +392,7 @@ public class NativeJDBCSeq
         final String[] arguments = opts.setFromCmdLine(args);
         boolean ret = Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts) throws Exception {
                 JDBCConfiguration conf = new JDBCConfigurationImpl();
                 try {
@@ -451,6 +455,7 @@ public class NativeJDBCSeq
     /**
      * @deprecated
      */
+    @Deprecated
     public void setSchema(String schema) {
         _schema = DBIdentifier.newSchema(schema);
     }
@@ -458,6 +463,7 @@ public class NativeJDBCSeq
     /**
      * @deprecated
      */
+    @Deprecated
     public String getSchema() {
         return _schema.getName();
     }

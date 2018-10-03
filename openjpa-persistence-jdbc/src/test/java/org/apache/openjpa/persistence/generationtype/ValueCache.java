@@ -19,5 +19,5 @@
 package org.apache.openjpa.persistence.generationtype;
 
 public interface ValueCache {
-    public void setValue(int val);
+    void setValue(int val);
 }

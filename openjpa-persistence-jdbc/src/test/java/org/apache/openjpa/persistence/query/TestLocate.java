@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
  */
 public class TestLocate extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(SimpleEntity.class, CLEAR_TABLES);
 

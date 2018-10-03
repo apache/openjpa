@@ -42,6 +42,7 @@ public class PColl_EntityC {
         this.id = id;
     }
 
+    @Override
     public String toString() {
         return "PColl_EntityC<id=" + id + ",ver=" + version + ">";
     }

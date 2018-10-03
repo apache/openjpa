@@ -21,10 +21,10 @@ package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 import java.util.Collection;
 
 public interface IParent {
-	public long getId();
-	public void setId(long id);
-	public String getName();
-	public void setName(String name);
-	public Collection<Child> getChildren();
-	public void addChild(Child child);
+	long getId();
+	void setId(long id);
+	String getName();
+	void setName(String name);
+	Collection<Child> getChildren();
+	void addChild(Child child);
 }

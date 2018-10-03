@@ -18,9 +18,15 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
-import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="EMP3_MBI")
@@ -32,7 +38,7 @@ public class Employee3 {
     String name;
 
     @OneToMany(mappedBy="emp")
-    List<Dependent3> dependents = new ArrayList<Dependent3>();
+    List<Dependent3> dependents = new ArrayList<>();
 
     public int getEmpId() {
         return empId;
@@ -58,6 +64,7 @@ public class Employee3 {
         dependents.add(d);
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof Employee3)) return false;
@@ -76,6 +83,7 @@ public class Employee3 {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + empId;

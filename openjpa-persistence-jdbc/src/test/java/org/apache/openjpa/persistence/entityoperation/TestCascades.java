@@ -19,10 +19,10 @@
 package org.apache.openjpa.persistence.entityoperation;
 
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.entityoperation.common.apps.
         CascadesEntity;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * <p>Test EJB persistence cascade options.</p>
@@ -35,6 +35,7 @@ public class TestCascades extends AbstractTestCase {
         super(name, "entityopcactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(CascadesEntity.class);
     }

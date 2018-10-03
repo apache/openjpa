@@ -67,6 +67,9 @@ public class ClassMapping
     extends ClassMetaData
     implements ClassStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final ClassMapping[] EMPTY_MAPPINGS = new ClassMapping[0];
 
     private static final Localizer _loc = Localizer.forPackage
@@ -551,6 +554,7 @@ public class ClassMapping
     // MetaData interface
     //////////////////////
 
+    @Override
     protected void setDescribedType(Class type) {
         super.setDescribedType(type);
         // this method called from superclass constructor, so _info not yet
@@ -603,6 +607,7 @@ public class ClassMapping
      * if it has a null strategy, and therefore is probably in the process of
      * being mapped).
      */
+    @Override
     public boolean isMapped() {
         if (!super.isMapped())
             return false;
@@ -837,6 +842,7 @@ public class ClassMapping
         return (FieldMapping) addDeclaredField(name, type);
     }
 
+    @Override
     protected void resolveMapping(boolean runtime) {
         super.resolveMapping(runtime);
 
@@ -924,6 +930,7 @@ public class ClassMapping
         _version.resolve(MODE_MAPPING);
     }
 
+    @Override
     protected void initializeMapping() {
         super.initializeMapping();
 
@@ -935,23 +942,27 @@ public class ClassMapping
         _strategy.initialize();
     }
 
+    @Override
     protected void clearDefinedFieldCache() {
         // just make this method available to other classes in this package
         super.clearDefinedFieldCache();
     }
 
+    @Override
     protected void clearSubclassCache() {
         super.clearSubclassCache();
         _joinSubMaps = null;
         _assignMaps = null;
     }
 
+    @Override
     public void copy(ClassMetaData cls) {
         super.copy(cls);
         if (_subclassMode == Integer.MAX_VALUE)
             _subclassMode = ((ClassMapping) cls).getSubclassFetchMode();
     }
 
+    @Override
     protected boolean validateDataStoreExtensionPrefix(String prefix) {
         return "jdbc-".equals(prefix);
     }
@@ -960,78 +971,95 @@ public class ClassMapping
     // ClassStrategy implementation
     ////////////////////////////////
 
+    @Override
     public String getAlias() {
         return assertStrategy().getAlias();
     }
 
+    @Override
     public void map(boolean adapt) {
         assertStrategy().map(adapt);
     }
 
+    @Override
     public void initialize() {
         assertStrategy().initialize();
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         assertStrategy().insert(sm, store, rm);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         assertStrategy().update(sm, store, rm);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         assertStrategy().delete(sm, store, rm);
     }
 
+    @Override
     public Boolean isCustomInsert(OpenJPAStateManager sm, JDBCStore store) {
         return assertStrategy().isCustomInsert(sm, store);
     }
 
+    @Override
     public Boolean isCustomUpdate(OpenJPAStateManager sm, JDBCStore store) {
         return assertStrategy().isCustomUpdate(sm, store);
     }
 
+    @Override
     public Boolean isCustomDelete(OpenJPAStateManager sm, JDBCStore store) {
         return assertStrategy().isCustomDelete(sm, store);
     }
 
+    @Override
     public void customInsert(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         assertStrategy().customInsert(sm, store);
     }
 
+    @Override
     public void customUpdate(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         assertStrategy().customUpdate(sm, store);
     }
 
+    @Override
     public void customDelete(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         assertStrategy().customDelete(sm, store);
     }
 
+    @Override
     public void setClassMapping(ClassMapping owner) {
         assertStrategy().setClassMapping(owner);
     }
 
+    @Override
     public boolean isPrimaryKeyObjectId(boolean hasAll) {
         return assertStrategy().isPrimaryKeyObjectId(hasAll);
     }
 
+    @Override
     public Joins joinSuperclass(Joins joins, boolean toThis) {
         return assertStrategy().joinSuperclass(joins, toThis);
     }
 
+    @Override
     public boolean supportsEagerSelect(Select sel, OpenJPAStateManager sm,
         JDBCStore store, ClassMapping base, JDBCFetchConfiguration fetch) {
         return assertStrategy().supportsEagerSelect(sel, sm, store, base,
             fetch);
     }
 
+    @Override
     public ResultObjectProvider customLoad(JDBCStore store, boolean subclasses,
         JDBCFetchConfiguration fetch, long startIdx, long endIdx)
         throws SQLException {
@@ -1039,12 +1067,14 @@ public class ClassMapping
             startIdx, endIdx);
     }
 
+    @Override
     public boolean customLoad(OpenJPAStateManager sm, JDBCStore store,
         PCState state, JDBCFetchConfiguration fetch)
         throws SQLException, ClassNotFoundException {
         return assertStrategy().customLoad(sm, store, state, fetch);
     }
 
+    @Override
     public boolean customLoad(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result result)
         throws SQLException {
@@ -1071,7 +1101,7 @@ public class ClassMapping
     		List<FieldMapping> fms = hasColumn(c, prime);
     		if (fms == null) continue;
 			if (result == null)
-				result = new ArrayList<FieldMapping>();
+				result = new ArrayList<>();
 			for (FieldMapping fm : fms)
 				if (!result.contains(fm))
 					result.add(fm);
@@ -1093,7 +1123,7 @@ public class ClassMapping
     		Column[] cols = fm.getColumns();
     		if (contains(cols, c)) {
     			if (result == null)
-    				result = new ArrayList<FieldMapping>();
+    				result = new ArrayList<>();
     			result.add(fm);
     		}
     	}

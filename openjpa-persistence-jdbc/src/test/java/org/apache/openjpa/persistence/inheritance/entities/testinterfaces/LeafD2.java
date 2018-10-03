@@ -20,6 +20,6 @@
 package org.apache.openjpa.persistence.inheritance.entities.testinterfaces;
 
 public interface LeafD2 {
-    public String getLeafD2Data();
-    public void setLeafD2Data(String leafD2Data);
+    String getLeafD2Data();
+    void setLeafD2Data(String leafD2Data);
 }

@@ -29,6 +29,9 @@ import java.util.Map;
 class ContainsValueExpression
     extends ContainsExpression {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor.
      *
@@ -39,6 +42,7 @@ class ContainsValueExpression
         super(val1, val2);
     }
 
+    @Override
     protected Collection getCollection(Object obj) {
         return (obj == null) ? null : ((Map) obj).values();
     }

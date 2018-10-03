@@ -30,6 +30,8 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.List;
 
+import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.query.common.apps.ComplexA;
 import org.apache.openjpa.persistence.query.common.apps.ComplexB;
 import org.apache.openjpa.persistence.query.common.apps.ComplexC;
@@ -37,8 +39,6 @@ import org.apache.openjpa.persistence.query.common.apps.ComplexD;
 import org.apache.openjpa.persistence.query.common.apps.ComplexE;
 import org.apache.openjpa.persistence.query.common.apps.ComplexF;
 import org.apache.openjpa.persistence.query.common.apps.ComplexG;
-import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.kernel.jpql.JPQLParser;
 
 public class TestComplexQueries extends BaseQueryTest {
 
@@ -50,6 +50,7 @@ public class TestComplexQueries extends BaseQueryTest {
         super(test);
     }
 
+    @Override
     public void setUp() {
         clear();
     }

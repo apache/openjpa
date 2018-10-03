@@ -73,6 +73,7 @@ public class BeanLifecycleCallbacks
         }
     }
 
+    @Override
     public void makeCallback(Object obj, Object rel, int eventType)
         throws Exception {
         Method callback = getCallbackMethod();
@@ -85,6 +86,7 @@ public class BeanLifecycleCallbacks
             callback.invoke(_listener, new Object[]{ obj });
     }
 
+    @Override
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         super.readExternal(in);
@@ -92,6 +94,7 @@ public class BeanLifecycleCallbacks
         _listener = newListener(cls);
     }
 
+    @Override
     public void writeExternal(ObjectOutput out)
         throws IOException {
         super.writeExternal(out);

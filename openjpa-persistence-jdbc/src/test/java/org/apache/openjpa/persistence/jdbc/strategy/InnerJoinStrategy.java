@@ -25,6 +25,10 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 
 public class InnerJoinStrategy extends RelationFieldStrategy {
+    
+    private static final long serialVersionUID = 1L;
+
+    @Override
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
 

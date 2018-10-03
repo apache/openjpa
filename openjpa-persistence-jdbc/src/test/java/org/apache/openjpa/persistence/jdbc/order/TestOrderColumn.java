@@ -43,6 +43,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
     private Student[] students = new Student[12];
 
+    @Override
     public void setUp() {
         super.setUp(
                 CLEAR_TABLES,
@@ -72,7 +73,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
         // Create some data
         Player[] players = new Player[10];
-        ArrayList<Player> playersArr = new ArrayList<Player>();
+        ArrayList<Player> playersArr = new ArrayList<>();
         em.getTransaction().begin();
         for (int i = 0; i < 10 ; i++) {
             players[i] = new Player("Player" + i, i+100);
@@ -137,7 +138,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
         // Create some data
         BiOrderMappedByEntity bome = new BiOrderMappedByEntity();
         bome.setId(1);
-        List<BiOrderEntity> boea = new ArrayList<BiOrderEntity>();
+        List<BiOrderEntity> boea = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             BiOrderEntity boe = new BiOrderEntity();
             boe.setId(i+1);
@@ -205,7 +206,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
         // Create a list of basic types
         java.sql.Date dates[] = new java.sql.Date[10];
-        ArrayList<java.sql.Date> rainDates = new ArrayList<java.sql.Date>(10);
+        ArrayList<java.sql.Date> rainDates = new ArrayList<>(10);
         Calendar today = Calendar.getInstance();
         for (int i = 0; i < 10; i++) {
             today.set(2009, 1, i+1);
@@ -270,7 +271,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
         // Create some data
         Player[] players = new Player[10];
-        ArrayList<Player> playersArr = new ArrayList<Player>();
+        ArrayList<Player> playersArr = new ArrayList<>();
         em.getTransaction().begin();
         for (int i = 0; i < 10 ; i++) {
             players[i] = new Player("Player" + i, i+100);
@@ -339,7 +340,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
         // Create a list of basic types
         java.sql.Date dates[] = new java.sql.Date[10];
-        ArrayList<java.sql.Date> rainDates = new ArrayList<java.sql.Date>(10);
+        ArrayList<java.sql.Date> rainDates = new ArrayList<>(10);
         Calendar today = Calendar.getInstance();
         for (int i = 0; i < 10; i++) {
             today.set(2009, 1, i+1);
@@ -413,7 +414,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
 
         // Add it to the persistent list in reverse order
-        ArrayList<Player> playersArr = new ArrayList<Player>();
+        ArrayList<Player> playersArr = new ArrayList<>();
         for (int i = 0; i < 10 ; i++) {
             playersArr.add(players[9 - i]);
         }
@@ -476,7 +477,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
         em.getTransaction().commitAndResume();
 
         // Add it to the persistent list in reverse order
-        ArrayList<Player> pinchArr = new ArrayList<Player>();
+        ArrayList<Player> pinchArr = new ArrayList<>();
         for (int i = 0; i < players.length ; i++) {
             pinchArr.add(players[players.length - 1 - i]);
         }
@@ -522,7 +523,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
         Trainer[] trainers = new Trainer[5];
         for (int i = 0; i < trainers.length; i++) {
             trainers[i] = new Trainer("Trainer" + i);
-            ArrayList<Player> trained = new ArrayList<Player>();
+            ArrayList<Player> trained = new ArrayList<>();
             for (int j = ((i * 5) + 4); j >= (i * 5); j--) {
                 trained.add(players[j]);
                 if (players[j].getTrainers() == null)
@@ -580,7 +581,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
         Game[] games = new Game[5];
         for (int i = 0; i < games.length; i++) {
             games[i] = new Game();
-            ArrayList<Player> playedIn = new ArrayList<Player>();
+            ArrayList<Player> playedIn = new ArrayList<>();
             for (int j = ((i * 5) + 4); j >= (i * 5); j--) {
                 playedIn.add(players[j]);
                 if (players[j].getGamesPlayedIn() == null)
@@ -629,7 +630,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
         // Create a list of basic types
         java.sql.Date dates[] = new java.sql.Date[10];
-        ArrayList<java.sql.Date> rainDates = new ArrayList<java.sql.Date>(10);
+        ArrayList<java.sql.Date> rainDates = new ArrayList<>(10);
         Calendar today = Calendar.getInstance();
         for (int i = 0; i < 10; i++) {
             today.set(2009, 1, i+1);
@@ -670,7 +671,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
         // Create a list of basic types
         Inning innings[] = new Inning[9];
-        Collection<Inning> inningCol = new ArrayList<Inning>();
+        Collection<Inning> inningCol = new ArrayList<>();
         Random rnd = new Random();
         for (int i = 8; i >= 0; i--) {
             innings[i] = new Inning(i, Math.abs(rnd.nextInt()) % 10,
@@ -761,11 +762,11 @@ public class TestOrderColumn extends SingleEMFTestCase {
                 "widget_m2m_table", "widgets_ORDER");
 
         Owner owner = new Owner();
-        Collection<Car> cars = new ArrayList<Car>();
-        Collection<Home> homes = new ArrayList<Home>();
-        Collection<Bicycle> bicycles = new ArrayList<Bicycle>();
-        Collection<Widget> widgets = new ArrayList<Widget>();
-        Collection<Owner> owners = new ArrayList<Owner>();
+        Collection<Car> cars = new ArrayList<>();
+        Collection<Home> homes = new ArrayList<>();
+        Collection<Bicycle> bicycles = new ArrayList<>();
+        Collection<Widget> widgets = new ArrayList<>();
+        Collection<Owner> owners = new ArrayList<>();
         owner.setCars(cars);
         owner.setHomes(homes);
         owner.setBikeColl(bicycles);
@@ -898,26 +899,26 @@ public class TestOrderColumn extends SingleEMFTestCase {
         Course courseA = new Course("Course A");
         Course courseB = new Course("Course B");
 
-        HashSet<Course> courses = new HashSet<Course>();
+        HashSet<Course> courses = new HashSet<>();
         courses.add(courseA);
         courses.add(courseB);
-        HashSet<Student> cAstudents = new HashSet<Student>();
+        HashSet<Student> cAstudents = new HashSet<>();
         for (int i = 0; i < 5; i++) {
             cAstudents.add(students[i]);
             students[i].setCourses(courses);
         }
         courseA.setStudents(cAstudents);
-        ArrayList<Student> cAwaitlist = new ArrayList<Student>();
+        ArrayList<Student> cAwaitlist = new ArrayList<>();
         cAwaitlist.add(students[11]);
         cAwaitlist.add(students[10]);
         courseA.setWaitList(cAwaitlist);
 
-        HashSet<Student> cBstudents = new HashSet<Student>();
+        HashSet<Student> cBstudents = new HashSet<>();
         for (int i = 5; i < 10; i++) {
             cBstudents.add(students[i]);
         }
         courseB.setStudents(cBstudents);
-        ArrayList<Student> cBwaitlist = new ArrayList<Student>();
+        ArrayList<Student> cBwaitlist = new ArrayList<>();
         cBwaitlist.add(students[10]);
         cBwaitlist.add(students[11]);
         courseB.setWaitList(cBwaitlist);
@@ -942,7 +943,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
         assertNotNull(rlist);
         assertEquals(objs.length, rlist.size());
-        TreeMap<Long, Object> objMap = new TreeMap<Long, Object>();
+        TreeMap<Long, Object> objMap = new TreeMap<>();
         for (int i = 0; i < objs.length; i++)
         {
             Object[] rvals = (Object[])rlist.get(i);
@@ -969,7 +970,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
     assertNotNull(rlist);
     assertEquals(objs.length, rlist.size());
-    TreeMap<Long, Object> objMap = new TreeMap<Long, Object>();
+    TreeMap<Long, Object> objMap = new TreeMap<>();
     for (int i = 0; i < objs.length; i++)
     {
         Object[] rvals = (Object[])rlist.get(i);

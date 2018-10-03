@@ -24,7 +24,6 @@ import java.util.Objects;
 
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ParseException;
-
 import org.apache.openjpa.lib.util.StringUtil;
 
 /**
@@ -56,10 +55,12 @@ public class StringListValue extends Value {
     /**
      * The internal value.
      */
+    @Override
     public String[] get() {
         return _values;
     }
 
+    @Override
     public Class<String []> getValueType() {
         return String[].class;
     }
@@ -69,6 +70,7 @@ public class StringListValue extends Value {
      * UNLESS the string passed is a list of values for a property that
      * has aliases.
      */
+    @Override
     public String unalias(String str) {
 
         // defer to super.unalias
@@ -119,10 +121,12 @@ public class StringListValue extends Value {
         return retv.toString();
     }
 
+    @Override
     protected String getInternalString() {
         return StringUtil.join(_values, ", ");
     }
 
+    @Override
     protected void setInternalString(String val) {
         String[] vals = StringUtil.split(val, ",", 0);
         if (vals != null) {
@@ -133,6 +137,7 @@ public class StringListValue extends Value {
         set(vals);
     }
 
+    @Override
     protected void setInternalObject(Object obj) {
         set((String[]) obj);
     }

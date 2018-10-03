@@ -18,8 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.persistence.Entity;
 
@@ -42,34 +44,42 @@ public class HorizAppMultiA
     private int intA;
     private List relations = new ArrayList();
 
+    @Override
     public void setPk1(String pk1) {
         this.pk1 = pk1;
     }
 
+    @Override
     public String getPk1() {
         return this.pk1;
     }
 
+    @Override
     public void setPk2(int pk2) {
         this.pk2 = pk2;
     }
 
+    @Override
     public int getPk2() {
         return this.pk2;
     }
 
+    @Override
     public void setStringA(String stringA) {
         this.stringA = stringA;
     }
 
+    @Override
     public String getStringA() {
         return this.stringA;
     }
 
+    @Override
     public void setIntA(int intA) {
         this.intA = intA;
     }
 
+    @Override
     public int getIntA() {
         return this.intA;
     }
@@ -77,6 +87,8 @@ public class HorizAppMultiA
     public static class ID
         implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public String pk1;
         public int pk2;
 
@@ -89,15 +101,18 @@ public class HorizAppMultiA
             pk2 = Integer.parseInt(tok.nextToken());
         }
 
+        @Override
         public String toString() {
             return pk1 + ":" + pk2;
         }
 
+        @Override
         public int hashCode() {
             return (pk2 + (pk1 == null ? 0 : pk1.hashCode()))
                 % Integer.MAX_VALUE;
         }
 
+        @Override
         public boolean equals(Object other) {
             return other instanceof ID
                 && ((ID) other).pk2 == pk2

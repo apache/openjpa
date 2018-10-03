@@ -21,10 +21,10 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.openjpa.kernel.QueryStatistics;
 
-@SuppressWarnings("serial")
 class QueryStatisticsModel extends AbstractTableModel {
+    private static final long serialVersionUID = 1L;
     QueryStatistics<String> _stats;
-    private List<String> _keys = new ArrayList<String>();
+    private List<String> _keys = new ArrayList<>();
 
     QueryStatisticsModel(QueryStatistics<String> stats) {
         _stats = stats;
@@ -65,7 +65,7 @@ class QueryStatisticsModel extends AbstractTableModel {
 
     void sortKeys(QueryStatistics<String> stats) {
         if (_stats.keys().size() != _keys.size()) {
-            _keys = new ArrayList<String>(_stats.keys());
+            _keys = new ArrayList<>(_stats.keys());
             if (_keys.size() > 1) {
                 Collections.sort(_keys);
             }

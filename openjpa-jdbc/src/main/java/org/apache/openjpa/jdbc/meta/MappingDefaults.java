@@ -38,13 +38,13 @@ public interface MappingDefaults {
      * default values supplied by this plugin. A value of false means that
      * all mapping information must be present at runtime.
      */
-    public boolean defaultMissingInfo();
+    boolean defaultMissingInfo();
 
     /**
      * The default for whether relations use the related object's
      * expected class as part of the join criteria.
      */
-    public boolean useClassCriteria();
+    boolean useClassCriteria();
 
     /**
      * Default mapping strategy when there is no explicit strategy
@@ -55,7 +55,7 @@ public interface MappingDefaults {
      * @param adapt whether we can adapt the mapping or schema
      * @return the strategy alias or a strategy instance, or null
      */
-    public Object getStrategy(ClassMapping cls, boolean adapt);
+    Object getStrategy(ClassMapping cls, boolean adapt);
 
     /**
      * Default version mapping strategy when there is no explicit strategy.
@@ -65,7 +65,7 @@ public interface MappingDefaults {
      * @param adapt whether we can adapt the mapping or schema
      * @return the strategy alias or a strategy instance, or null
      */
-    public Object getStrategy(Version vers, boolean adapt);
+    Object getStrategy(Version vers, boolean adapt);
 
     /**
      * Default discriminator mapping strategy when there is no explicit
@@ -76,7 +76,7 @@ public interface MappingDefaults {
      * @param adapt whether we can adapt the mapping or schema
      * @return the strategy alias or a strategy instance, or null
      */
-    public Object getStrategy(Discriminator disc, boolean adapt);
+    Object getStrategy(Discriminator disc, boolean adapt);
 
     /**
      * Custom handler or strategy for the given field, or null if none
@@ -88,25 +88,25 @@ public interface MappingDefaults {
      * @param adapt whether we can adapt the mapping or schema
      * @return the handler/strategy alias or instance, or null
      */
-    public Object getStrategy(ValueMapping vm, Class<?> type, boolean adapt);
+    Object getStrategy(ValueMapping vm, Class<?> type, boolean adapt);
 
     /**
      * Return the default discriminator value for the given instance.
      */
-    public Object getDiscriminatorValue(Discriminator disc, boolean adapt);
+    Object getDiscriminatorValue(Discriminator disc, boolean adapt);
 
     /**
      * Return the default table name for the given class. This method is
      * only called for classes mapped to their own table.
      * @deprecated
      */
-    public String getTableName(ClassMapping cls, Schema defaultSchema);
+    @Deprecated String getTableName(ClassMapping cls, Schema defaultSchema);
 
     /**
      * Return the default table name for the given class. This method is
      * only called for classes mapped to their own table.
      */
-    public DBIdentifier getTableIdentifier(ClassMapping cls, Schema defaultSchema);
+    DBIdentifier getTableIdentifier(ClassMapping cls, Schema defaultSchema);
 
     /**
      * Return the default secondary table name for the given field. This
@@ -114,21 +114,21 @@ public interface MappingDefaults {
      * table.
      * @deprecated
      */
-    public String getTableName(FieldMapping fm, Schema defaultSchema);
+    @Deprecated String getTableName(FieldMapping fm, Schema defaultSchema);
 
     /**
      * Return the default secondary table name for the given field. This
      * method is only called for fields whose strategy requires a secondary
      * table.
      */
-    public DBIdentifier getTableIdentifier(FieldMapping fm, Schema defaultSchema);
+    DBIdentifier getTableIdentifier(FieldMapping fm, Schema defaultSchema);
 
     /**
      * Fill in default information for the given datastore identity columns.
      * The columns' name and Java type will already be populated with generic
      * defaults that may be replaced.
      */
-    public void populateDataStoreIdColumns(ClassMapping cls, Table table,
+    void populateDataStoreIdColumns(ClassMapping cls, Table table,
         Column[] cols);
 
     /**
@@ -136,14 +136,14 @@ public interface MappingDefaults {
      * The columns' name and Java type will already be populated with generic
      * defaults that may be replaced.
      */
-    public void populateColumns(Version vers, Table table, Column[] cols);
+    void populateColumns(Version vers, Table table, Column[] cols);
 
     /**
      * Fill in default information for the given discriminator columns.
      * The columns' name and Java type will already be populated with generic
      * defaults that may be replaced.
      */
-    public void populateColumns(Discriminator disc, Table table,
+    void populateColumns(Discriminator disc, Table table,
         Column[] cols);
 
     /**
@@ -157,7 +157,7 @@ public interface MappingDefaults {
      * @param pos the index of this column in the logical foreign key
      * @param cols the number of columns in the logical foreign key
      */
-    public void populateJoinColumn(ClassMapping cm, Table local, Table foreign,
+    void populateJoinColumn(ClassMapping cm, Table local, Table foreign,
         Column col, Object target, int pos, int cols);
 
     /**
@@ -171,7 +171,7 @@ public interface MappingDefaults {
      * @param pos the index of this column in the logical foreign key
      * @param cols the number of columns in the logical foreign key
      */
-    public void populateJoinColumn(FieldMapping fm, Table local, Table foreign,
+    void populateJoinColumn(FieldMapping fm, Table local, Table foreign,
         Column col, Object target, int pos, int cols);
 
     /**
@@ -188,7 +188,7 @@ public interface MappingDefaults {
      * @param cols the number of columns in the logical foreign key
      * @deprecated
      */
-    public void populateForeignKeyColumn(ValueMapping vm, String name,
+    @Deprecated void populateForeignKeyColumn(ValueMapping vm, String name,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols);
 
@@ -205,7 +205,7 @@ public interface MappingDefaults {
      * @param pos the index of this column in the logical foreign key
      * @param cols the number of columns in the logical foreign key
      */
-    public void populateForeignKeyColumn(ValueMapping vm, DBIdentifier name,
+    void populateForeignKeyColumn(ValueMapping vm, DBIdentifier name,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols);
 
@@ -217,7 +217,7 @@ public interface MappingDefaults {
      * @param name base name for value, as decided by mapping
      * @deprecated
      */
-    public void populateColumns(ValueMapping vm, String name, Table table,
+    @Deprecated void populateColumns(ValueMapping vm, String name, Table table,
         Column[] cols);
 
     /**
@@ -227,7 +227,7 @@ public interface MappingDefaults {
      *
      * @param name base name for value, as decided by mapping
      */
-    public void populateColumns(ValueMapping vm, DBIdentifier name, Table table,
+    void populateColumns(ValueMapping vm, DBIdentifier name, Table table,
         Column[] cols);
 
     /**
@@ -239,7 +239,7 @@ public interface MappingDefaults {
      * by default; fill in default information even when returning
      * false in case the user forces ordering
      */
-    public boolean populateOrderColumns(FieldMapping fm, Table table,
+    boolean populateOrderColumns(FieldMapping fm, Table table,
         Column[] cols);
 
     /**
@@ -253,7 +253,7 @@ public interface MappingDefaults {
      * when returning false in case the user forces an indicator
      * @deprecated
      */
-    public boolean populateNullIndicatorColumns(ValueMapping vm, String name,
+    @Deprecated boolean populateNullIndicatorColumns(ValueMapping vm, String name,
         Table table, Column[] cols);
 
     /**
@@ -266,7 +266,7 @@ public interface MappingDefaults {
      * columns by default; fill in default information even
      * when returning false in case the user forces an indicator
      */
-    public boolean populateNullIndicatorColumns(ValueMapping vm, DBIdentifier name,
+    boolean populateNullIndicatorColumns(ValueMapping vm, DBIdentifier name,
         Table table, Column[] cols);
 
     /**
@@ -275,7 +275,7 @@ public interface MappingDefaults {
      * add columns to the key or add the key to the table; only fill in
      * its information such as name, delete action, etc.
      */
-    public ForeignKey getJoinForeignKey(ClassMapping cls, Table local,
+    ForeignKey getJoinForeignKey(ClassMapping cls, Table local,
         Table foreign);
 
     /**
@@ -284,7 +284,7 @@ public interface MappingDefaults {
      * add columns to the key or add the key to the table; only fill in
      * its information such as name, delete action, etc.
      */
-    public ForeignKey getJoinForeignKey(FieldMapping fm, Table local,
+    ForeignKey getJoinForeignKey(FieldMapping fm, Table local,
         Table foreign);
 
     /**
@@ -297,7 +297,7 @@ public interface MappingDefaults {
      * @param inverse whether this is an inverse key
      * @deprecated
      */
-    public ForeignKey getForeignKey(ValueMapping vm, String name, Table local,
+    @Deprecated ForeignKey getForeignKey(ValueMapping vm, String name, Table local,
         Table foreign, boolean inverse);
 
     /**
@@ -309,7 +309,7 @@ public interface MappingDefaults {
      * @param name base name for value, as decided by mapping
      * @param inverse whether this is an inverse key
      */
-    public ForeignKey getForeignKey(ValueMapping vm, DBIdentifier name, Table local,
+    ForeignKey getForeignKey(ValueMapping vm, DBIdentifier name, Table local,
         Table foreign, boolean inverse);
 
     /**
@@ -318,7 +318,7 @@ public interface MappingDefaults {
      * add columns to the index or add the index to the table; only fill in
      * its information such as name, uniqueness, etc.
      */
-    public Index getJoinIndex(FieldMapping fm, Table table, Column[] cols);
+    Index getJoinIndex(FieldMapping fm, Table table, Column[] cols);
 
     /**
      * Return a default index for the value, or null if the value columns
@@ -329,7 +329,7 @@ public interface MappingDefaults {
      * @param name base name for value, as decided by mapping
      * @deprecated
      */
-    public Index getIndex(ValueMapping vm, String name, Table table,
+    @Deprecated Index getIndex(ValueMapping vm, String name, Table table,
         Column[] cols);
 
     /**
@@ -340,7 +340,7 @@ public interface MappingDefaults {
      *
      * @param name base name for value, as decided by mapping
      */
-    public Index getIndex(ValueMapping vm, DBIdentifier name, Table table,
+    Index getIndex(ValueMapping vm, DBIdentifier name, Table table,
         Column[] cols);
 
     /**
@@ -349,7 +349,7 @@ public interface MappingDefaults {
      * add columns to the index or add the index to the table; only fill in
      * its information such as name, uniqueness, etc.
      */
-    public Index getIndex(Version vers, Table table, Column[] cols);
+    Index getIndex(Version vers, Table table, Column[] cols);
 
     /**
      * Return a default index for the discriminator, or null if the
@@ -357,7 +357,7 @@ public interface MappingDefaults {
      * add columns to the index or add the index to the table; only fill in
      * its information such as name, uniqueness, etc.
      */
-    public Index getIndex(Discriminator disc, Table table, Column[] cols);
+    Index getIndex(Discriminator disc, Table table, Column[] cols);
 
     /**
      * Return a default constraint for the join, or null if the join columns
@@ -365,7 +365,7 @@ public interface MappingDefaults {
      * constraint or add the constraint to the table; only fill in its
      * information such as name, deferrability, etc.
      */
-    public Unique getJoinUnique(FieldMapping fm, Table table, Column[] cols);
+    Unique getJoinUnique(FieldMapping fm, Table table, Column[] cols);
 
     /**
      * Return a default constraint for the value, or null if the value columns
@@ -376,7 +376,7 @@ public interface MappingDefaults {
      * @param name base name for value, as decided by mapping
      * @deprecated
      */
-    public Unique getUnique(ValueMapping vm, String name, Table table,
+    @Deprecated Unique getUnique(ValueMapping vm, String name, Table table,
         Column[] cols);
 
     /**
@@ -387,7 +387,7 @@ public interface MappingDefaults {
      *
      * @param name base name for value, as decided by mapping
      */
-    public Unique getUnique(ValueMapping vm, DBIdentifier name, Table table,
+    Unique getUnique(ValueMapping vm, DBIdentifier name, Table table,
         Column[] cols);
 
     /**
@@ -395,16 +395,16 @@ public interface MappingDefaults {
      * or null for database default.
      * @deprecated
      */
-    public String getPrimaryKeyName(ClassMapping cm, Table table);
+    @Deprecated String getPrimaryKeyName(ClassMapping cm, Table table);
 
     /**
      * Return the name of the primary key for the table of the given class,
      * or null for database default.
      */
-    public DBIdentifier getPrimaryKeyIdentifier(ClassMapping cm, Table table);
+    DBIdentifier getPrimaryKeyIdentifier(ClassMapping cm, Table table);
 
     /**
      * If desired, install a primary key on the given secondary table.
      */
-    public void installPrimaryKey(FieldMapping fm, Table table);
+    void installPrimaryKey(FieldMapping fm, Table table);
 }

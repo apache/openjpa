@@ -75,10 +75,12 @@ public class DelegatingExtent<T>
         return (_del == null) ? _extent : _del.getInnermostDelegate();
     }
 
+    @Override
     public int hashCode() {
         return getInnermostDelegate().hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -94,6 +96,7 @@ public class DelegatingExtent<T>
         return (_trans == null) ? re : _trans.translate(re);
     }
 
+    @Override
     public Class<T> getElementType() {
         try {
             return _extent.getElementType();
@@ -102,6 +105,7 @@ public class DelegatingExtent<T>
         }
     }
 
+    @Override
     public boolean hasSubclasses() {
         try {
             return _extent.hasSubclasses();
@@ -110,6 +114,7 @@ public class DelegatingExtent<T>
         }
     }
 
+    @Override
     public Broker getBroker() {
         try {
             return _extent.getBroker();
@@ -118,6 +123,7 @@ public class DelegatingExtent<T>
         }
     }
 
+    @Override
     public FetchConfiguration getFetchConfiguration() {
         try {
             return _extent.getFetchConfiguration();
@@ -126,6 +132,7 @@ public class DelegatingExtent<T>
         }
     }
 
+    @Override
     public boolean getIgnoreChanges() {
         try {
             return _extent.getIgnoreChanges();
@@ -134,6 +141,7 @@ public class DelegatingExtent<T>
         }
     }
 
+    @Override
     public void setIgnoreChanges(boolean ignoreCache) {
         try {
             _extent.setIgnoreChanges(ignoreCache);
@@ -142,6 +150,7 @@ public class DelegatingExtent<T>
         }
     }
 
+    @Override
     public List<T> list() {
         try {
             return _extent.list();
@@ -150,6 +159,7 @@ public class DelegatingExtent<T>
         }
     }
 
+    @Override
     public Iterator<T> iterator() {
         try {
             return _extent.iterator();
@@ -158,6 +168,7 @@ public class DelegatingExtent<T>
         }
     }
 
+    @Override
     public void closeAll() {
         try {
             _extent.closeAll();
@@ -166,6 +177,7 @@ public class DelegatingExtent<T>
         }
     }
 
+    @Override
     public void lock() {
         try {
             _extent.lock();
@@ -174,6 +186,7 @@ public class DelegatingExtent<T>
         }
     }
 
+    @Override
     public void unlock() {
         try {
             _extent.unlock();

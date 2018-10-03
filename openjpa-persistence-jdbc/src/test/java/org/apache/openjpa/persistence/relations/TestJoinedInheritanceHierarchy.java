@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestJoinedInheritanceHierarchy
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
     	super.setUp(CLEAR_TABLES, InheritanceHierarchyConcrete.class,
     			InheritanceHierarchyAbstract.class);
@@ -40,7 +41,7 @@ public class TestJoinedInheritanceHierarchy
     	parent.setValue(42);
     	child.setValue(21);
 
-    	Set<InheritanceHierarchyAbstract> children = new HashSet<InheritanceHierarchyAbstract>();
+    	Set<InheritanceHierarchyAbstract> children = new HashSet<>();
     	children.add(child);
     	parent.setChildren(children);
     	child.setParent(parent);

@@ -40,6 +40,7 @@ public enum ResultSetType implements OpenJPAEnum<ResultSetType>{
         resultSetConstant = value;
     }
 
+    @Override
     public int toKernelConstant() {
         return resultSetConstant;
     }
@@ -60,10 +61,12 @@ public enum ResultSetType implements OpenJPAEnum<ResultSetType>{
         }
     }
 
+    @Override
     public int convertToKernelConstant(String s) {
         return ResultSetType.toKernelConstantFromString(s);
     }
 
+    @Override
     public int convertToKernelConstant(int i) {
         if (i == FetchConfiguration.DEFAULT)
             return i;

@@ -24,11 +24,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.textui.TestRunner;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Simple test case to test the GenerationType for
@@ -42,6 +42,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestGenerationType
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         if (getName().endsWith("WithoutGetGeneratedKeys")) {
             setUp(IdentityGenerationType.class,

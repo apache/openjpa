@@ -111,7 +111,8 @@ public class Entity1 implements Serializable
 		return entity2Field;
 	}
 
-	public String toString()
+	@Override
+    public String toString()
 	{
         return("PK: " + pk + " StringField: " + stringField
                 + " IntField: " + intField);

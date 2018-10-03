@@ -27,11 +27,11 @@ package org.apache.openjpa.jdbc.meta.strats;
  */
 public interface LobEntity {
 
-    public void setStream(Object o);
+    void setStream(Object o);
 
-    public void setId(int id);
+    void setId(int id);
 
-    public Object getStream();
+    Object getStream();
 
-    public int getId();
+    int getId();
 }

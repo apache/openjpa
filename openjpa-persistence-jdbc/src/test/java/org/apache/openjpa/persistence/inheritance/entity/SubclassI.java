@@ -39,15 +39,18 @@ public class SubclassI extends AbstractClass {
         return classIName;
     }
 
+    @Override
     public String toString() {
         return super.toString() + ";classIName=" + classIName +
         ";Version=" + version;
     }
 
+    @Override
     public void setVersion(int version) {
         this.version = version;
     }
 
+    @Override
     public int getVersion() {
         return version;
     }

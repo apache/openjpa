@@ -24,13 +24,13 @@ import java.util.Properties;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+
+import junit.framework.TestCase;
 
 /**
  * Tests that we can detect if a query is using query parameters for fields whose values are externalized.
@@ -43,6 +43,7 @@ public class TestExternalizedParameter extends TestCase {
     private static String UNIT_NAME = "PreparedQuery";
     private static EntityManagerFactory emf;
 
+    @Override
     public void setUp() throws Exception {
         if (emf == null) {
             Properties config = new Properties();

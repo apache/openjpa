@@ -18,8 +18,15 @@
  */
 package org.apache.openjpa.persistence.models.company.basic;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.OneToOne;
+
+import org.apache.openjpa.persistence.models.company.IAddress;
+import org.apache.openjpa.persistence.models.company.IPerson;
 
 @Entity(name="BAS_Person")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
@@ -38,28 +45,34 @@ public abstract class Person implements IPerson {
     @OneToOne
     private Address homeAddress;
 
+    @Override
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    @Override
     public String getFirstName() {
         return this.firstName;
     }
 
 
+    @Override
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
+    @Override
     public String getLastName() {
         return this.lastName;
     }
 
 
+    @Override
     public void setHomeAddress(IAddress homeAddress) {
         this.homeAddress = (Address) homeAddress;
     }
 
+    @Override
     public IAddress getHomeAddress() {
         return this.homeAddress;
     }

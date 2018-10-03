@@ -38,7 +38,7 @@ public interface DiscriminatorStrategy
      * Set the Discriminator that uses this strategy. This will be called
      * before use.
      */
-    public void setDiscriminator(Discriminator owner);
+    void setDiscriminator(Discriminator owner);
 
     /**
      * Select the data for this Discriminator.
@@ -47,18 +47,18 @@ public interface DiscriminatorStrategy
      * not be the base class in the inheritance hierarchy
      * @return true if anything was selected; false otherwise
      */
-    public boolean select(Select sel, ClassMapping mapping);
+    boolean select(Select sel, ClassMapping mapping);
 
     /**
      * Load all subclasses of the owning class mapping into the JVM.
      */
-    public void loadSubclasses(JDBCStore store)
+    void loadSubclasses(JDBCStore store)
         throws SQLException, ClassNotFoundException;
 
     /**
      * Return the class for the current result row.
      */
-    public Class<?> getClass(JDBCStore store, ClassMapping base, Result result)
+    Class<?> getClass(JDBCStore store, ClassMapping base, Result result)
         throws SQLException, ClassNotFoundException;
 
     /**
@@ -66,13 +66,13 @@ public interface DiscriminatorStrategy
      *
      * @see #getClassConditions
      */
-    public boolean hasClassConditions(ClassMapping base, boolean subs);
+    boolean hasClassConditions(ClassMapping base, boolean subs);
 
     /**
      * Return SQL to limit the classes selected as much as possible to the
      * given base class, and optionally its subclasses. The select and joins
      * instances are supplied in order to get column aliases.
      */
-    public SQLBuffer getClassConditions(Select sel, Joins joins,
+    SQLBuffer getClassConditions(Select sel, Joins joins,
         ClassMapping base, boolean subs);
 }

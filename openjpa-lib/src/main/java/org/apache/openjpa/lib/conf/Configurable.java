@@ -31,15 +31,15 @@ public interface Configurable {
     /**
      * Invoked prior to setting bean properties.
      */
-    public void setConfiguration(Configuration conf);
+    void setConfiguration(Configuration conf);
 
     /**
      * Invoked before bean property configuration is begun on this object.
      */
-    public void startConfiguration();
+    void startConfiguration();
 
     /**
      * Invoked upon completion of bean property configuration for this object.
      */
-    public void endConfiguration();
+    void endConfiguration();
 }

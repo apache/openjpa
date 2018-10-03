@@ -20,14 +20,10 @@ package org.apache.openjpa.persistence.query.sqlresultmapping;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Properties;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.querycache.QCEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /*
@@ -35,6 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestSQLResultSetMapping extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(DROP_TABLES, CrtOperacaoEntity.class,
             CrtRequisicaoEntity.class, CrtRequisicaoChequePersEntity.class);

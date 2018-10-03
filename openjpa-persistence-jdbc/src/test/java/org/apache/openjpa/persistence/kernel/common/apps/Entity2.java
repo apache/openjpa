@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,9 +31,7 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Entity2 implements Serializable {
 
-    /**
-     *
-     */
+    
     private static final long serialVersionUID = 4723739219953167343L;
 
     @Id
@@ -74,6 +73,7 @@ public class Entity2 implements Serializable {
         return intField;
     }
 
+    @Override
     public String toString() {
         return ("PK: " + pk + " StringField: " + stringField + " IntField: " +
             intField);

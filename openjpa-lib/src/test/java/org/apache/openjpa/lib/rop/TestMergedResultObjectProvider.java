@@ -32,10 +32,12 @@ public class TestMergedResultObjectProvider extends ResultListTest {
         super(test);
     }
 
+    @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new WindowResultList(provider, 10);
     }
 
+    @Override
     protected ResultObjectProvider[] getResultObjectProviders(List list) {
         // test 3 merges:
         // 1. first rop empty,

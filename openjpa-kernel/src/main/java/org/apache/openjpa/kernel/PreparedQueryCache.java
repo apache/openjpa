@@ -80,7 +80,7 @@ public interface PreparedQueryCache extends Configurable {
      *         it is known not to be cacheable from a previous attempt or
      *         a hint is given to ignore the cached version.
      */
-    public Boolean register(String key, Query query, FetchConfiguration hints);
+    Boolean register(String key, Query query, FetchConfiguration hints);
 
     /**
      * Initialize the cached Prepared Query registered with the given
@@ -96,12 +96,12 @@ public interface PreparedQueryCache extends Configurable {
      * initialize the cached, possibly hollow Prepared Query from the given
      * result, return null.
      */
-    public PreparedQuery initialize(String key, Object executionResult);
+    PreparedQuery initialize(String key, Object executionResult);
 
 	/**
 	 * Get a map view of the cached queries indexed by identifier.
 	 */
-	public Map<String, String> getMapView();
+	Map<String, String> getMapView();
 
 	/**
 	 * Cache the given PreparedQuery.
@@ -116,18 +116,18 @@ public interface PreparedQueryCache extends Configurable {
 	 * @see #setExcludes(String)
 	 * @see #addExclusionPattern(String)
 	 */
-	public boolean cache(PreparedQuery q);
+	boolean cache(PreparedQuery q);
 
 	/**
 	 * Remove the PreparedQuery with the given identifier from this cache.
 	 */
-	public boolean invalidate(String id);
+	boolean invalidate(String id);
 
 	/**
 	 * Get the PreparedQuery with the given identifier if it exists. null
 	 * otherwise.
 	 */
-	public PreparedQuery get(String id);
+	PreparedQuery get(String id);
 
 	/**
 	 * Affirms if a PreparedQuery can be cached against the given key.
@@ -139,7 +139,7 @@ public interface PreparedQueryCache extends Configurable {
 	 * this key can be cached on not.
 	 *
 	 */
-	public Boolean isCachable(String id);
+	Boolean isCachable(String id);
 
 	/**
 	 * Marks the given key as not amenable to caching.
@@ -152,33 +152,33 @@ public interface PreparedQueryCache extends Configurable {
      * @return The value for the given key if it had been cached before. null
 	 * otherwise.
 	 */
-	public PreparedQuery markUncachable(String id, Exclusion exclusion);
+	PreparedQuery markUncachable(String id, Exclusion exclusion);
 
 	/**
 	 * Returns the exclusion status of if the given query key.
 	 *
 	 * @return null implies that the key is not excluded.
 	 */
-	public Exclusion isExcluded(String id);
+	Exclusion isExcluded(String id);
 
 	/**
 	 * Gets the exclusion patterns.
 	 */
-	public List<Exclusion> getExcludes();
+	List<Exclusion> getExcludes();
 
 	/**
 	 * Sets one or more exclusion regular expression patterns separated by
      * semicolon. Any existing cache entry whose key matches any of the given
 	 * pattern will be marked non-cachable in a reversible manner.
 	 */
-	public void setExcludes(String excludes);
+	void setExcludes(String excludes);
 
 	/**
      * Adds the given pattern to the list of excluded patterns. Any existing
 	 * cache entry whose key matches the given pattern will be marked
 	 * non-cachable in a reversible manner.
 	 */
-	public void addExclusionPattern(String pattern);
+	void addExclusionPattern(String pattern);
 
 	/**
 	 * Removes the given pattern from the list of excluded patterns.
@@ -187,51 +187,51 @@ public interface PreparedQueryCache extends Configurable {
 	 *
 	 * @see #markUncachable(String, Exclusion)
 	 */
-	public void removeExclusionPattern(String pattern);
+	void removeExclusionPattern(String pattern);
 
 	/**
 	 * Clears all cached queries.
 	 */
-	public void clear();
+	void clear();
 
 	/**
 	 * Enable/disable gathering of statistics.
 	 *
 	 */
-    public void setEnableStatistics(boolean enable);
+    void setEnableStatistics(boolean enable);
 
     /**
      * Affirm if statistics is gathered.
      *
      */
-    public boolean getEnableStatistics();
+    boolean getEnableStatistics();
 
 	/**
 	 * Gets the simple statistics for executed queries.
 	 * If the statistics gathering is disabled, an empty statistics is returned.
 	 */
-	public QueryStatistics<String> getStatistics();
+	QueryStatistics<String> getStatistics();
 
 	/**
 	 * A structure to describe the strength and reason for excluding a query from the cache.
 	 *
 	 */
-	public static interface Exclusion {
+	public interface Exclusion {
 	    /**
 	     * Affirms if this exclusion is strong i.e. can never be reversed.
 	     */
-	    public boolean isStrong();
+	    boolean isStrong();
 
 	    /**
 	     * Gets the human-readable reason for excluding this query from being cached.
 	     */
-	    public String getReason();
+	    String getReason();
 
 	    /**
 	     * The pattern (either the exact query string or a regular expression) that
 	     * denotes this exclusion.
 	     */
-	    public String getPattern();
+	    String getPattern();
 
 	    /**
 	     * Affirms if this exclusion matches the given identifier.

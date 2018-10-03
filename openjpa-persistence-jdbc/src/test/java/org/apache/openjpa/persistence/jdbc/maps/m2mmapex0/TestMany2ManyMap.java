@@ -27,20 +27,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
+import junit.framework.Assert;
+
 public class TestMany2ManyMap extends SQLListenerTestCase {
 
     public int numEmployees = 2;
     public int numPhoneNumbersPerEmployee = 2;
-    public Map<Integer, Employee> empMap = new HashMap<Integer, Employee>();
+    public Map<Integer, Employee> empMap = new HashMap<>();
     public Map<Integer, PhoneNumber> phoneMap =
-        new HashMap<Integer, PhoneNumber>();
+        new HashMap<>();
 
 
     public int empId = 1;
@@ -49,6 +49,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
     public List rsAllPhones = null;
     public List rsAllEmps = null;
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, Division.class,
             Employee.class, PhoneNumber.class);

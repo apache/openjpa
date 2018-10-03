@@ -19,9 +19,11 @@
 package org.apache.openjpa.persistence;
 
 import java.util.Locale;
+
 import javax.persistence.LockModeType;
 
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.MixedLockLevels;
 
 /**
@@ -37,13 +39,13 @@ public class MixedLockLevelsHelper implements HintValueConverter {
      */
     public static int toLockLevel(LockModeType mode) {
         if (mode == null || mode == LockModeType.NONE)
-            return MixedLockLevels.LOCK_NONE;
+            return LockLevels.LOCK_NONE;
         if (mode == LockModeType.READ)
-            return MixedLockLevels.LOCK_READ;
+            return LockLevels.LOCK_READ;
         if (mode == LockModeType.OPTIMISTIC)
             return MixedLockLevels.LOCK_OPTIMISTIC;
         if (mode == LockModeType.WRITE)
-            return MixedLockLevels.LOCK_WRITE;
+            return LockLevels.LOCK_WRITE;
         if (mode == LockModeType.OPTIMISTIC_FORCE_INCREMENT)
             return MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT;
         if (mode == LockModeType.PESSIMISTIC_READ)
@@ -60,9 +62,9 @@ public class MixedLockLevelsHelper implements HintValueConverter {
         case MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT:
         case MixedLockLevels.LOCK_PESSIMISTIC_READ:
         case MixedLockLevels.LOCK_PESSIMISTIC_WRITE:
-        case MixedLockLevels.LOCK_NONE:
-        case MixedLockLevels.LOCK_READ:
-        case MixedLockLevels.LOCK_WRITE:
+        case LockLevels.LOCK_NONE:
+        case LockLevels.LOCK_READ:
+        case LockLevels.LOCK_WRITE:
         case FetchConfiguration.DEFAULT:
             return mode;
          default:
@@ -75,11 +77,11 @@ public class MixedLockLevelsHelper implements HintValueConverter {
      * Translates internal lock level to javax.persistence LockModeType.
      */
     public static LockModeType fromLockLevel(int level) {
-        if (level < MixedLockLevels.LOCK_READ)
+        if (level < LockLevels.LOCK_READ)
             return LockModeType.NONE;
         if (level < MixedLockLevels.LOCK_OPTIMISTIC)
             return LockModeType.READ;
-        if (level < MixedLockLevels.LOCK_WRITE)
+        if (level < LockLevels.LOCK_WRITE)
             return LockModeType.OPTIMISTIC;
         if (level < MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT)
             return LockModeType.WRITE;
@@ -92,10 +94,12 @@ public class MixedLockLevelsHelper implements HintValueConverter {
         return LockModeType.PESSIMISTIC_FORCE_INCREMENT;
     }
 
+    @Override
     public boolean canConvert(Class<?> type) {
         return type == LockModeType.class || type == String.class || type == Integer.class || type == int.class;
     }
 
+    @Override
     public Object convert(Object original) {
         if (original instanceof LockModeType)
             return MixedLockLevelsHelper.toLockLevel((LockModeType)original);
@@ -105,7 +109,7 @@ public class MixedLockLevelsHelper implements HintValueConverter {
                 return MixedLockLevelsHelper.toLockLevel(value);
             } catch (NumberFormatException nfe) {
                 if ("none".equalsIgnoreCase(original.toString())) {
-                    return MixedLockLevels.LOCK_NONE;
+                    return LockLevels.LOCK_NONE;
                 }
                 return MixedLockLevelsHelper.toLockLevel(
                         LockModeType.valueOf(original.toString().toUpperCase(Locale.ENGLISH).replace('-', '_')));

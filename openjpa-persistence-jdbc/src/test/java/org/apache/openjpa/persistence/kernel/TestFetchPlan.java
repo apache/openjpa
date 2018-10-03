@@ -30,7 +30,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-
+import org.apache.openjpa.persistence.FetchPlan;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.PCAddress;
 import org.apache.openjpa.persistence.kernel.common.apps.PCCompany;
 import org.apache.openjpa.persistence.kernel.common.apps.PCCountry;
@@ -39,10 +41,6 @@ import org.apache.openjpa.persistence.kernel.common.apps.PCDirectory;
 import org.apache.openjpa.persistence.kernel.common.apps.PCEmployee;
 import org.apache.openjpa.persistence.kernel.common.apps.PCFile;
 import org.apache.openjpa.persistence.kernel.common.apps.PCPerson;
-
-import org.apache.openjpa.persistence.FetchPlan;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAQuery;
 
 public class TestFetchPlan extends BaseKernelTest {
 
@@ -69,6 +67,7 @@ public class TestFetchPlan extends BaseKernelTest {
      * Clear test data before and not <em>after</em> such that one can analyze
      * the database for test failures.
      */
+    @Override
     public void setUp() throws Exception {
         if (firstTime) {
             firstTime = false;
@@ -487,6 +486,7 @@ public class TestFetchPlan extends BaseKernelTest {
                 FetchPlan.GROUP_DEFAULT));
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

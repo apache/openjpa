@@ -24,10 +24,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 
-
-import org.apache.openjpa.persistence.kernel.common.apps.ArraysTest;
-import junit.framework.AssertionFailedError;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.ArraysTest;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Test varying kinds of array values.
@@ -446,6 +446,7 @@ public class TestArrayValues2 extends BaseKernelTest {
 
         private Collator collator = Collator.getInstance();
 
+        @Override
         public int compare(Object o1, Object o2) {
             if (o1.equals(o2))
                 return 0;

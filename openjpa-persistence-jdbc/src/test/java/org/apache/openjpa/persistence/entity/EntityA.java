@@ -43,7 +43,7 @@ public class EntityA implements Serializable {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "center", orphanRemoval = true, cascade = CascadeType.ALL)
     @OrderColumn
-    private Set<EntityB> services = new LinkedHashSet<EntityB>();
+    private Set<EntityB> services = new LinkedHashSet<>();
 
     public EntityA() {
     }

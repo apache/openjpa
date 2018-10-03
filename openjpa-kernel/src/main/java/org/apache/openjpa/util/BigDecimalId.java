@@ -27,6 +27,8 @@ import java.math.BigDecimal;
 public class BigDecimalId
     extends OpenJPAId {
 
+    
+    private static final long serialVersionUID = 1L;
     private final BigDecimal key;
 
     public BigDecimalId(Class cls, String key) {
@@ -47,10 +49,12 @@ public class BigDecimalId
         return key;
     }
 
+    @Override
     public Object getIdObject() {
         return key;
     }
 
+    @Override
     public String toString() {
         if (key == null) {
             return "NULL";
@@ -58,6 +62,7 @@ public class BigDecimalId
         return key.toString();
     }
 
+    @Override
     protected int idHash() {
         if (key != null) {
             return key.hashCode();
@@ -65,6 +70,7 @@ public class BigDecimalId
         return 0;
     }
 
+    @Override
     protected boolean idEquals(OpenJPAId other) {
         if ((key == null) ||
             (!BigDecimalId.class.isAssignableFrom(other.getClass()))) {

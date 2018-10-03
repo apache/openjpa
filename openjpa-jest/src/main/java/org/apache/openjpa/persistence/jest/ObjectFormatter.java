@@ -51,12 +51,12 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
  *
  */
 public interface ObjectFormatter<T> {
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
 
     /**
      * Gets the mime type produced by this formatter.
      */
-    public String getMimeType();
+    String getMimeType();
 
     /**
      * Encode the {@link Closure persistent closure} of the given collection of managed instances as a
@@ -68,7 +68,7 @@ public interface ObjectFormatter<T> {
      *
      * @return an encoded object e.g. a XML or HTML Document or a JSON object.
      */
-    public T encode(Collection<OpenJPAStateManager> objs, Metamodel model);
+    T encode(Collection<OpenJPAStateManager> objs, Metamodel model);
 
     /**
      * Encode the given domain model in to a object.
@@ -77,7 +77,7 @@ public interface ObjectFormatter<T> {
      *
      * @return an encoded object e.g. a XML or HTML Document or a JSON object.
      */
-    public T encode(Metamodel model);
+    T encode(Metamodel model);
 
     /**
      * Encodes the {@link Closure persistent closure} of the given collection of objects, then write it into
@@ -91,7 +91,7 @@ public interface ObjectFormatter<T> {
      * @param writer a text-oriented output stream
      * @throws IOException
      */
-    public T writeOut(Collection<OpenJPAStateManager> objs, Metamodel model,
+    T writeOut(Collection<OpenJPAStateManager> objs, Metamodel model,
         String title, String desc, String uri, OutputStream out) throws IOException;
 
     /**
@@ -102,5 +102,5 @@ public interface ObjectFormatter<T> {
      *
      * @throws IOException
      */
-    public T writeOut(Metamodel model, String title, String desc, String uri, OutputStream out) throws IOException;
+    T writeOut(Metamodel model, String title, String desc, String uri, OutputStream out) throws IOException;
 }

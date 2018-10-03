@@ -18,9 +18,20 @@
  */
 package org.apache.openjpa.persistence.models.company.joined;
 
-import java.util.*;
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import org.apache.openjpa.persistence.models.company.IAddress;
+import org.apache.openjpa.persistence.models.company.ICompany;
+import org.apache.openjpa.persistence.models.company.IEmployee;
+import org.apache.openjpa.persistence.models.company.IProduct;
 
 @Entity(name="JI_Company")
 public class Company implements ICompany {
@@ -36,42 +47,50 @@ public class Company implements ICompany {
     private Address address;
 
     @OneToMany(mappedBy="company")
-    private Set<Employee> employees = new HashSet<Employee>();
+    private Set<Employee> employees = new HashSet<>();
 
     @ManyToMany(mappedBy="distributors")
-    private Set<Product> products = new HashSet<Product>();
+    private Set<Product> products = new HashSet<>();
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
 
 
+    @Override
     public void setAddress(IAddress address) {
         this.address = (Address) address;
     }
 
+    @Override
     public IAddress getAddress() {
         return this.address;
     }
 
 
+    @Override
     public void setEmployees(Set<? extends IEmployee> employees) {
         this.employees = (Set<Employee>) employees;
     }
 
+    @Override
     public Set<Employee> getEmployees() {
         return this.employees;
     }
 
 
+    @Override
     public void setProducts(Set<? extends IProduct> products) {
         this.products = (Set<Product>) products;
     }
 
+    @Override
     public Set<Product> getProducts() {
         return this.products;
     }

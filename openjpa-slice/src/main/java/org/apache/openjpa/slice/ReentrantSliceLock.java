@@ -26,8 +26,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class ReentrantSliceLock extends ReentrantLock {
+    private static final long serialVersionUID = 1L;
 
     public ReentrantSliceLock() {
     }

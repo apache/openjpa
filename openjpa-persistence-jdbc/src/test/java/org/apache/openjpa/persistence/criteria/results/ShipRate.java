@@ -21,7 +21,12 @@ package org.apache.openjpa.persistence.criteria.results;
 
 import java.math.BigDecimal;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EntityResult;
+import javax.persistence.FieldResult;
+import javax.persistence.Id;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.SqlResultSetMapping;
 
 @Entity
 @SqlResultSetMapping(name="selectShipRateMapping",

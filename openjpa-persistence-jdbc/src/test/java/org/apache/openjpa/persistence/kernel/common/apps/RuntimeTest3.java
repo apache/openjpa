@@ -31,6 +31,8 @@ import javax.persistence.Entity;
 public class RuntimeTest3
     extends RuntimeTest2 {
 
+    
+    private static final long serialVersionUID = 1L;
     //@Id
     private int intField3;
 

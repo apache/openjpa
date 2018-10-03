@@ -29,15 +29,18 @@ public class DCInstrument extends AbstractDataCacheInstrument {
         return NAME;
     }
 
+    @Override
     public void initialize() {
         OpenJPAConfiguration config = (OpenJPAConfiguration)getProvider().getConfiguration();
         setDataCache(config.getDataCacheManagerInstance().getSystemDataCache());
     }
 
+    @Override
     public void start() {
         setStarted(true);
     }
 
+    @Override
     public void stop() {
         setStarted(false);
     }

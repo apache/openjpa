@@ -26,6 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestMultipleInsertDeleteSameId
     extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(RuntimeTest1.class, CLEAR_TABLES);
     }

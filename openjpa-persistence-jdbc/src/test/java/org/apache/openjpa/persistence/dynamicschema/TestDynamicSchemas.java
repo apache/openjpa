@@ -53,6 +53,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDynamicSchemas extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
     }
 

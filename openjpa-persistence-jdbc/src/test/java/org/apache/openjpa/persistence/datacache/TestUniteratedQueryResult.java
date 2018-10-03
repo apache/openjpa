@@ -22,15 +22,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.EntityManagerFactory;
-
-
-import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 @AllowFailure(message="surefire excluded")
 public class TestUniteratedQueryResult
@@ -42,6 +41,7 @@ public class TestUniteratedQueryResult
 
     private EntityManagerFactory _pmf;
 
+    @Override
     public void setUp() {
         System.out.println("****Deleted Records "
             + deleteAll(CacheObjectA.class));

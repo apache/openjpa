@@ -31,5 +31,5 @@ public interface RuntimeExceptionTranslator
     /**
      * Translate the given exception.
      */
-    public RuntimeException translate(RuntimeException re);
+    RuntimeException translate(RuntimeException re);
 }

@@ -22,10 +22,10 @@ import java.io.Serializable;
 import java.util.Map;
 
 public interface Parameterizable <K,V> extends Serializable{
-	public void addParameter(K key, V value);
-	public void removeParameter(K key);
-	public void clearAllParameters();
-	public Map<K, V> getParameters();
-	public V getParameterValue(K key);
-	public void addAllParams(Map<K,V> newParams);
+	void addParameter(K key, V value);
+	void removeParameter(K key);
+	void clearAllParameters();
+	Map<K, V> getParameters();
+	V getParameterValue(K key);
+	void addAllParams(Map<K,V> newParams);
 }

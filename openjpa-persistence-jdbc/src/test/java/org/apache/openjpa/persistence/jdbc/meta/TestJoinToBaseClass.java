@@ -33,12 +33,11 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.jdbc.common.apps.MappingTest1;
+import org.apache.openjpa.persistence.jdbc.common.apps.MappingTest2;
+import org.apache.openjpa.persistence.jdbc.common.apps.MappingTest5;
 
 
 public class TestJoinToBaseClass

@@ -30,27 +30,27 @@ public interface MixedLockLevels extends LockLevels {
      * Generic optimistic read lock level. Value of 15.
      *
      */
-    public static final int LOCK_OPTIMISTIC = LOCK_READ + 5;
+    int LOCK_OPTIMISTIC = LOCK_READ + 5;
 
     /**
      * Generic optimistic write lock level. Value of 25.
      */
-    public static final int LOCK_OPTIMISTIC_FORCE_INCREMENT =
+    int LOCK_OPTIMISTIC_FORCE_INCREMENT =
         LockLevels.LOCK_WRITE + 5;
 
     /**
      * Generic pessimistic read lock level. Value of 30.
      */
-    public static final int LOCK_PESSIMISTIC_READ = 30;
+    int LOCK_PESSIMISTIC_READ = 30;
 
     /**
      * Generic pessimistic write lock level. Value of 40.
      */
-    public static final int LOCK_PESSIMISTIC_WRITE = 40;
+    int LOCK_PESSIMISTIC_WRITE = 40;
 
     /**
      * Generic pessimistic force increment level. Value of 50.
      */
-    public static final int LOCK_PESSIMISTIC_FORCE_INCREMENT = 50;
+    int LOCK_PESSIMISTIC_FORCE_INCREMENT = 50;
 
 }

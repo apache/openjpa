@@ -50,10 +50,10 @@ import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.jdbc.schema.ForeignKey.FKMapKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.jdbc.schema.ForeignKey.FKMapKey;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -550,6 +550,7 @@ public class OracleDictionary
      * fetch configuration, and if so, append the Oracle hint after the
      * "SELECT" part of the query.
      */
+    @Override
     public String getSelectOperation(JDBCFetchConfiguration fetch) {
         Object hint = fetch == null ? null : fetch.getHint(SELECT_HINT);
         String select = "SELECT";
@@ -558,6 +559,7 @@ public class OracleDictionary
         return select;
     }
 
+    @Override
     public void setString(PreparedStatement stmnt, int idx, String val,
         Column col)
         throws SQLException {
@@ -776,6 +778,7 @@ public class OracleDictionary
         }
     }
 
+    @Override
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
         throws SQLException {
@@ -786,6 +789,7 @@ public class OracleDictionary
             DBIdentifier.newColumn(columnName),conn);
     }
 
+    @Override
     public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
         DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
         throws SQLException {
@@ -856,7 +860,7 @@ public class OracleDictionary
             }
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
-            List<PrimaryKey> pkList = new ArrayList<PrimaryKey>();
+            List<PrimaryKey> pkList = new ArrayList<>();
             while (rs != null && rs.next()) {
                 pkList.add(newPrimaryKey(rs));
             }
@@ -950,11 +954,11 @@ public class OracleDictionary
         DBIdentifier schemaName, DBIdentifier tableName, Connection conn, boolean partialKeys)
         throws SQLException {
         StringBuilder delAction = new StringBuilder("DECODE(t1.DELETE_RULE").
-            append(", 'NO ACTION', ").append(meta.importedKeyNoAction).
-            append(", 'RESTRICT', ").append(meta.importedKeyRestrict).
-            append(", 'CASCADE', ").append(meta.importedKeyCascade).
-            append(", 'SET NULL', ").append(meta.importedKeySetNull).
-            append(", 'SET DEFAULT', ").append(meta.importedKeySetDefault).
+            append(", 'NO ACTION', ").append(DatabaseMetaData.importedKeyNoAction).
+            append(", 'RESTRICT', ").append(DatabaseMetaData.importedKeyRestrict).
+            append(", 'CASCADE', ").append(DatabaseMetaData.importedKeyCascade).
+            append(", 'SET NULL', ").append(DatabaseMetaData.importedKeySetNull).
+            append(", 'SET DEFAULT', ").append(DatabaseMetaData.importedKeySetDefault).
             append(")");
 
         StringBuilder buf = new StringBuilder();
@@ -968,9 +972,9 @@ public class OracleDictionary
             append(delAction).append(" AS DELETE_RULE, ").
             append("t0.CONSTRAINT_NAME AS FK_NAME, ").
             append("DECODE(t1.DEFERRED, 'DEFERRED', ").
-            append(meta.importedKeyInitiallyDeferred).
+            append(DatabaseMetaData.importedKeyInitiallyDeferred).
             append(", 'IMMEDIATE', ").
-            append(meta.importedKeyInitiallyImmediate).
+            append(DatabaseMetaData.importedKeyInitiallyImmediate).
             append(") AS DEFERRABILITY ").
             append("FROM ALL_CONS_COLUMNS t0, ALL_CONSTRAINTS t1, ").
             append("ALL_CONS_COLUMNS t2 ").
@@ -996,8 +1000,8 @@ public class OracleDictionary
                 setString(stmnt, idx++, convertSchemaCase(tableName), null);
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
-            List<ForeignKey> fkList = new ArrayList<ForeignKey>();
-            Map<FKMapKey, ForeignKey> fkMap = new HashMap<FKMapKey, ForeignKey>();
+            List<ForeignKey> fkList = new ArrayList<>();
+            Map<FKMapKey, ForeignKey> fkMap = new HashMap<>();
 
             while (rs != null && rs.next()) {
                 ForeignKey nfk = newForeignKey(rs);
@@ -1105,6 +1109,7 @@ public class OracleDictionary
         return buf.toString();
     }
 
+    @Override
     public boolean isSystemSequence(String name, String schema,
         boolean targetSchema) {
         return isSystemSequence(DBIdentifier.newSequence(name),
@@ -1307,6 +1312,7 @@ public class OracleDictionary
      * @param lhs the left hand side of the comparison
      * @param rhs the right hand side of the comparison
      */
+    @Override
     public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
         FilterValue rhs, boolean lhsxml, boolean rhsxml) {
         super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
@@ -1357,6 +1363,7 @@ public class OracleDictionary
         buf.append("')");
     }
 
+    @Override
     public void insertClobForStreamingLoad(Row row, Column col, Object ob)
         throws SQLException {
         if (ob == null) {
@@ -1367,6 +1374,7 @@ public class OracleDictionary
         }
     }
 
+    @Override
     public int getBatchUpdateCount(PreparedStatement ps) throws SQLException {
         int updateSuccessCnt = 0;
         if (batchLimit != 0 && ps != null) {
@@ -1406,6 +1414,7 @@ public class OracleDictionary
         }
     }
 
+    @Override
     public boolean isImplicitJoin() {
         return joinSyntax == SYNTAX_DATABASE;
     }

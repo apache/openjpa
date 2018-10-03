@@ -40,12 +40,12 @@ public class IdOrderedOneManyParent {
     @OneToMany(mappedBy="explicitParent")
     @OrderBy("id ASC")
     private List<IdOrderedOneManyChild> explicitChildren =
-        new ArrayList<IdOrderedOneManyChild>();
+        new ArrayList<>();
 
     @OneToMany(mappedBy="implicitParent")
     @OrderBy
     private List<IdOrderedOneManyChild> implicitChildren =
-        new ArrayList<IdOrderedOneManyChild>();
+        new ArrayList<>();
 
     @Version
     private int optLock;

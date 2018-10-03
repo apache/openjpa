@@ -46,8 +46,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class SimpleApp extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     EntityManagerFactory _emf;
     private static String UNIT_NAME = "jestdemo";
 

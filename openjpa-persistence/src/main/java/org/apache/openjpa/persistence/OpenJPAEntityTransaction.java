@@ -38,7 +38,7 @@ public interface OpenJPAEntityTransaction
      * @see javax.persistence.EntityTransaction#commit()
      * @see javax.persistence.EntityTransaction#begin()
      */
-    public void commitAndResume();
+    void commitAndResume();
 
     /**
      * Issue a rollback and then start a new transaction. This is identical to:
@@ -49,7 +49,7 @@ public interface OpenJPAEntityTransaction
      * @see javax.persistence.EntityTransaction#rollback()
      * @see javax.persistence.EntityTransaction#begin()
      */
-    public void rollbackAndResume();
+    void rollbackAndResume();
 
     /**
      * Mark the current transaction for rollback with the specified cause
@@ -57,7 +57,7 @@ public interface OpenJPAEntityTransaction
      *
      * @since 0.9.7
      */
-    public void setRollbackOnly(Throwable cause);
+    void setRollbackOnly(Throwable cause);
 
     /**
      * Returns the Throwable that caused the transaction to be
@@ -67,5 +67,5 @@ public interface OpenJPAEntityTransaction
      *
      * @since 0.9.7
      */
-    public Throwable getRollbackCause();
+    Throwable getRollbackCause();
 }

@@ -31,6 +31,8 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class ObjectNotFoundException
     extends StoreException {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final transient Localizer _loc = Localizer.forPackage
         (ObjectNotFoundException.class);
 
@@ -48,6 +50,7 @@ public class ObjectNotFoundException
         setNestedThrowables(nested);
     }
 
+    @Override
     public int getSubtype() {
         return OBJECT_NOT_FOUND;
     }

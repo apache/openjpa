@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex0;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="S27x0VP")
@@ -56,6 +60,7 @@ public class VicePresident {
         this.co = co;
     }
 
+    @Override
     public boolean equals(Object v) {
         if (this == v)
             return true;

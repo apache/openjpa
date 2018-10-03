@@ -37,15 +37,15 @@ import org.apache.openjpa.meta.ValueStrategies;
 public interface StoreManager
     extends Closeable {
 
-    public static final int VERSION_LATER = 1;
-    public static final int VERSION_EARLIER = 2;
-    public static final int VERSION_SAME = 3;
-    public static final int VERSION_DIFFERENT = 4;
+    int VERSION_LATER = 1;
+    int VERSION_EARLIER = 2;
+    int VERSION_SAME = 3;
+    int VERSION_DIFFERENT = 4;
 
-    public static final int FORCE_LOAD_NONE = 0;
-    public static final int FORCE_LOAD_DFG = 1;
-    public static final int FORCE_LOAD_REFRESH = 3;
-    public static final int FORCE_LOAD_ALL = 2;
+    int FORCE_LOAD_NONE = 0;
+    int FORCE_LOAD_DFG = 1;
+    int FORCE_LOAD_REFRESH = 3;
+    int FORCE_LOAD_ALL = 2;
 
     /**
      * Set a reference to the corresponding context. This method
@@ -53,20 +53,20 @@ public interface StoreManager
      * is responsible for pulling any necessary configuration data from the
      * context, including the transaction mode and connection retain mode.
      */
-    public void setContext(StoreContext ctx);
+    void setContext(StoreContext ctx);
 
     /**
      * Notification that an optimistic transaction has started. This method
      * does not replace the {@link #begin} method, which will still be called
      * when a true data store transaction should begin.
      */
-    public void beginOptimistic();
+    void beginOptimistic();
 
     /**
      * Notification that an optimistic transaction was rolled back before
      * a data store transaction ever began.
      */
-    public void rollbackOptimistic();
+    void rollbackOptimistic();
 
     /**
      * Begin a data store transaction. After this method is called,
@@ -83,30 +83,30 @@ public interface StoreManager
      *
      * @since 0.2.5
      */
-    public void begin();
+    void begin();
 
     /**
      * Commit the current data store transaction.
      */
-    public void commit();
+    void commit();
 
     /**
      * Rollback the current data store transaction.
      */
-    public void rollback();
+    void rollback();
 
     /**
      * Verify that the given instance exists in the data store; return false
      * if it does not.
      */
-    public boolean exists(OpenJPAStateManager sm, Object edata);
+    boolean exists(OpenJPAStateManager sm, Object edata);
 
     /**
      * Verify that the given instance exists in the data store in memory; return false
      * if it does not. When an object is found in memory the corresponding element of
      * the BitSet is set to 1.
      */
-    public boolean isCached(List<Object> oids, BitSet edata);
+    boolean isCached(List<Object> oids, BitSet edata);
 
     /**
      * Update the version information in the given state manager to the
@@ -118,7 +118,7 @@ public interface StoreManager
      * @return true if the instance still exists in the
      * datastore and is up-to-date, false otherwise
      */
-    public boolean syncVersion(OpenJPAStateManager sm, Object edata);
+    boolean syncVersion(OpenJPAStateManager sm, Object edata);
 
     /**
      * Initialize the given state manager. The object id of the
@@ -146,7 +146,7 @@ public interface StoreManager
      * @return true if the matching instance exists in the data
      * store, false otherwise
      */
-    public boolean initialize(OpenJPAStateManager sm, PCState state,
+    boolean initialize(OpenJPAStateManager sm, PCState state,
         FetchConfiguration fetch, Object edata);
 
     /**
@@ -174,7 +174,7 @@ public interface StoreManager
      * @return false if the object no longer exists in the
      * database, true otherwise
      */
-    public boolean load(OpenJPAStateManager sm, BitSet fields,
+    boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object edata);
 
     /**
@@ -221,7 +221,7 @@ public interface StoreManager
      * which no data store record exists
      * @see org.apache.openjpa.util.ImplHelper#loadAll
      */
-    public Collection<Object> loadAll(Collection<OpenJPAStateManager> sms, PCState state, int load,
+    Collection<Object> loadAll(Collection<OpenJPAStateManager> sms, PCState state, int load,
         FetchConfiguration fetch, Object edata);
 
     /**
@@ -231,7 +231,7 @@ public interface StoreManager
      *
      * @since 0.3.0
      */
-    public void beforeStateChange(OpenJPAStateManager sm, PCState fromState,
+    void beforeStateChange(OpenJPAStateManager sm, PCState fromState,
         PCState toState);
 
     /**
@@ -252,7 +252,7 @@ public interface StoreManager
      *
      * @see org.apache.openjpa.util.ApplicationIds#assign()
      */
-    public Collection<Exception> flush(Collection<OpenJPAStateManager> sms);
+    Collection<Exception> flush(Collection<OpenJPAStateManager> sms);
 
     /**
      * Assign an object id to the given new instance. Return false if the
@@ -272,7 +272,7 @@ public interface StoreManager
      * @see org.apache.openjpa.util.ApplicationIds#assign()
      * @since 0.3.3
      */
-    public boolean assignObjectId(OpenJPAStateManager sm, boolean preFlush);
+    boolean assignObjectId(OpenJPAStateManager sm, boolean preFlush);
 
     /**
      * Assign a value to the given field. Return false if the value cannot
@@ -287,7 +287,7 @@ public interface StoreManager
      * @see org.apache.openjpa.util.ImplHelper#generateFieldValue
      * @since 0.4.0
      */
-    public boolean assignField(OpenJPAStateManager sm, int field,
+    boolean assignField(OpenJPAStateManager sm, int field,
         boolean preFlush);
 
     /**
@@ -296,7 +296,7 @@ public interface StoreManager
      *
      * @since 0.3.0
      */
-    public Class<?> getManagedType(Object oid);
+    Class<?> getManagedType(Object oid);
 
     /**
      * Return the class used by this StoreManager for datastore identity
@@ -304,19 +304,19 @@ public interface StoreManager
      * value should the common datastore identity class for all classes, or
      * null if this store manager does not use a common identity class.
      */
-    public Class<?> getDataStoreIdType(ClassMetaData meta);
+    Class<?> getDataStoreIdType(ClassMetaData meta);
 
     /**
      * Copy the given object id value. Use the described type of the given
      * metadata, which may be a subclass of the given oid's described type.
      */
-    public Object copyDataStoreId(Object oid, ClassMetaData meta);
+    Object copyDataStoreId(Object oid, ClassMetaData meta);
 
     /**
      * Create a new unique datastore identity for the given type from
      * the given oid value (presumably pk, stringified oid, or oid instance).
      */
-    public Object newDataStoreId(Object oidVal, ClassMetaData meta);
+    Object newDataStoreId(Object oidVal, ClassMetaData meta);
 
     /**
      * Return a connection to the data store suitable for client use. If
@@ -324,21 +324,21 @@ public interface StoreManager
      * must be transactional. If no connection is in use, this method should
      * create one to return.
      */
-    public Object getClientConnection();
+    Object getClientConnection();
 
     /**
      * Instruct the store to retain a connection for continued use. This
      * will be invoked automatically based on the user's configured connection
      * retain mode.
      */
-    public void retainConnection();
+    void retainConnection();
 
     /**
      * Instruct the store to release a retained connection. This
      * will be invoked automatically based on the user's configured connection
      * retain mode.
      */
-    public void releaseConnection();
+    void releaseConnection();
 
     /**
      * Cancel all pending data store statements.
@@ -346,7 +346,7 @@ public interface StoreManager
      * @return true if any statements cancelled, false otherwise
      * @since 0.3.1
      */
-    public boolean cancelAll();
+    boolean cancelAll();
 
     /**
      * Return a provider for all instances of the given candidate class,
@@ -354,7 +354,7 @@ public interface StoreManager
      * unmapped type with mapped subclasses. If the provider is iterated
      * within a data store transaction, returned instances should be locked.
      */
-    public ResultObjectProvider executeExtent(ClassMetaData meta,
+    ResultObjectProvider executeExtent(ClassMetaData meta,
         boolean subclasses, FetchConfiguration fetch);
 
     /**
@@ -366,13 +366,13 @@ public interface StoreManager
      *
      * @param language the query language
      */
-    public StoreQuery newQuery(String language);
+    StoreQuery newQuery(String language);
 
     /**
      * Return a fetch configuration suitable for this runtime. Typically
      * will be or extend <code>FetchConfigurationImpl</code>.
      */
-    public FetchConfiguration newFetchConfiguration();
+    FetchConfiguration newFetchConfiguration();
 
     /**
      * Compare the two version objects.
@@ -392,7 +392,7 @@ public interface StoreManager
      * difference of the versions cannot be determined</li>
      * </ul>
      */
-    public int compareVersion(OpenJPAStateManager state, Object v1, Object v2);
+    int compareVersion(OpenJPAStateManager state, Object v1, Object v2);
 
     /**
      * Return a sequence that generates datastore identity values for the
@@ -408,7 +408,7 @@ public interface StoreManager
      *
      * @since 0.4.0
      */
-    public Seq getDataStoreIdSequence(ClassMetaData forClass);
+    Seq getDataStoreIdSequence(ClassMetaData forClass);
 
     /**
      * Return a sequence that generates values for the given field. This
@@ -423,12 +423,12 @@ public interface StoreManager
      *
      * @since 0.4.0
      */
-    public Seq getValueSequence(FieldMetaData forField);
+    Seq getValueSequence(FieldMetaData forField);
 
     /**
      * Free any resources this store manager is using.
      *
      * @since 0.2.5
      */
-    public void close ();
+    @Override void close ();
 }

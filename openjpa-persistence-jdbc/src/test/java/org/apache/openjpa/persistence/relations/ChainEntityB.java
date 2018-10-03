@@ -47,14 +47,14 @@ public class ChainEntityB {
 
 	public void addChainEntityC (ChainEntityC bean) {
 		if (null == chainEntityCSet)
-			chainEntityCSet = new LinkedHashSet<ChainEntityC> ();
+			chainEntityCSet = new LinkedHashSet<> ();
 		chainEntityCSet.add (bean);
 		bean.setChainEntityB (this);
 	}
 
 	public Collection<ChainEntityC> getChainEntityCSet () {
 		if (null == chainEntityCSet)
-			chainEntityCSet = new LinkedHashSet<ChainEntityC> ();
+			chainEntityCSet = new LinkedHashSet<> ();
 		return chainEntityCSet;
 	}
 

@@ -18,7 +18,18 @@
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
+import javax.persistence.Transient;
 
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -46,7 +57,8 @@ public class Employee implements NamedEntity
 		this.name = name;
 	}
 
-	public String getName()
+	@Override
+    public String getName()
 	{
 		return name;
 	}
@@ -92,7 +104,8 @@ public class Employee implements NamedEntity
 		store.getClist().add("employeepou");
 	}
 
-	public String toString()
+	@Override
+    public String toString()
 	{
         return "Name: " + name + " of " + this.getClass().getName()
             + " Id: " + id + " Synctime: " + syncTime;

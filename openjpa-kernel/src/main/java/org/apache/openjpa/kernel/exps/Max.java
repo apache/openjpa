@@ -29,6 +29,9 @@ import java.util.Iterator;
 class Max
     extends AggregateVal {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the value to maximize.
      */
@@ -36,10 +39,12 @@ class Max
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         return c;
     }
 
+    @Override
     protected Object operate(Collection os, Class c) {
         Comparable max = null;
         Comparable cur;

@@ -31,6 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestHungarianNotationRemoval extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(HungarianNotationFieldDuplicates.class,
             HungarianNotationFields.class, OtherClass.class, CLEAR_TABLES,

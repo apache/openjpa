@@ -84,7 +84,8 @@ public class X {
 		return true;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return "X[" + id + "]";
 	}
 }

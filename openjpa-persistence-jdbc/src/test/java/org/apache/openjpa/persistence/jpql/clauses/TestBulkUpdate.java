@@ -21,7 +21,8 @@ package org.apache.openjpa.persistence.jpql.clauses;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.common.apps.*;
+import org.apache.openjpa.persistence.common.apps.Entity1;
+import org.apache.openjpa.persistence.common.apps.Entity2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestBulkUpdate extends AbstractTestCase {
@@ -30,6 +31,7 @@ public class TestBulkUpdate extends AbstractTestCase {
         super(name, "jpqlclausescactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(Entity1.class);
         deleteAll(Entity2.class);

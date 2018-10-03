@@ -49,60 +49,74 @@ public class Person extends AnnuityPersistebleObject implements IPerson {
 	private IContact contact;
 
 
-	@Column(name="DATE_OF_BIRTH")
+	@Override
+    @Column(name="DATE_OF_BIRTH")
 	@Temporal(TemporalType.DATE)
 	public Date getDateOfBirth() {
 		return dateOfBirth;
 	}
-	public void setDateOfBirth(Date dateOfBirth) {
+	@Override
+    public void setDateOfBirth(Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
-	@Column(name="FIRST_NAME")
+	@Override
+    @Column(name="FIRST_NAME")
 	public String getFirstName() {
 		return firstName;
 	}
-	public void setFirstName(String firstName) {
+	@Override
+    public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	@Column(name="GOVERNMENT_ID")
+	@Override
+    @Column(name="GOVERNMENT_ID")
 	public String getGovernmentId() {
 		return governmentId;
 	}
-	public void setGovernmentId(String governmentId) {
+	@Override
+    public void setGovernmentId(String governmentId) {
 		this.governmentId = governmentId;
 	}
-	@Column(name="LAST_NAME")
+	@Override
+    @Column(name="LAST_NAME")
 	public String getLastName() {
 		return lastName;
 	}
-	public void setLastName(String lastName) {
+	@Override
+    public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	@Column(name="PICTURE")
+	@Override
+    @Column(name="PICTURE")
 	@Lob
 	public Byte[] getPicture() {
 		return picture;
 	}
-	public void setPicture(Byte[] picture) {
+	@Override
+    public void setPicture(Byte[] picture) {
 		this.picture = picture;
 	}
-	@Column(name="TIME_OF_BIRTH")
+	@Override
+    @Column(name="TIME_OF_BIRTH")
 	@Temporal(TemporalType.TIME)
 	public Date getTimeOfBirth() {
 		return timeOfBirth;
 	}
-	public void setTimeOfBirth(Date timeOfBirth) {
+	@Override
+    public void setTimeOfBirth(Date timeOfBirth) {
 		this.timeOfBirth = timeOfBirth;
 	}
 
-	@OneToOne(
+	@Override
+    @OneToOne(
 			cascade={CascadeType.REFRESH, CascadeType.MERGE},
 			targetEntity=Contact.class)
 	@JoinColumn(name="FK_CONTACT_ID")
 	public IContact getContact() {
 		return this.contact;
 	}
-	public void setContact(IContact contact) {
+	@Override
+    public void setContact(IContact contact) {
 		this.contact = contact;
 	}
 

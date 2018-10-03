@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
@@ -33,6 +32,7 @@ import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
@@ -59,7 +59,7 @@ public abstract class AbstractTask extends MatchingTask {
     private static final Localizer _loc = Localizer.forPackage
         (AbstractTask.class);
 
-    protected final List<FileSet> fileSets = new ArrayList<FileSet>();
+    protected final List<FileSet> fileSets = new ArrayList<>();
     protected boolean haltOnError = true;
     protected Path classpath = null;
     protected boolean useParent = false;
@@ -159,6 +159,7 @@ public abstract class AbstractTask extends MatchingTask {
         fileSets.add(set);
     }
 
+    @Override
     public void execute() throws BuildException {
         // if the user didn't supply a conf file, load the default
         if (_conf == null)
@@ -201,7 +202,7 @@ public abstract class AbstractTask extends MatchingTask {
     }
 
     private String[] getFiles() {
-        List<String> files = new ArrayList<String>();
+        List<String> files = new ArrayList<>();
         for(FileSet fs : fileSets) {
             DirectoryScanner ds = fs.getDirectoryScanner(getProject());
 

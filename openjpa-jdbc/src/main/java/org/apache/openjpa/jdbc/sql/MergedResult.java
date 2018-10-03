@@ -80,41 +80,50 @@ public class MergedResult
         _status = (comp == null) ? null : new byte[res.length];
     }
 
+    @Override
     public Object getEager(FieldMapping key) {
         return _res[_idx].getEager(key);
     }
 
+    @Override
     public void putEager(FieldMapping key, Object res) {
         _res[_idx].putEager(key, res);
     }
 
+    @Override
     public Joins newJoins() {
         return _res[_idx].newJoins();
     }
 
+    @Override
     public void close() {
         for (int i = 0; i < _res.length; i++)
             _res[i].close();
     }
 
+    @Override
     public void setLocking(boolean locking) {
         _res[_idx].setLocking(locking);
     }
 
+    @Override
     public boolean isLocking() {
         return _res[_idx].isLocking();
     }
 
+    @Override
     public boolean supportsRandomAccess()
         throws SQLException {
         return false;
     }
 
+    @Override
     public boolean absolute(int row)
         throws SQLException {
         throw new UnsupportedException();
     }
 
+    @Override
     public boolean next()
         throws SQLException {
         if (_pushedBack) {
@@ -174,11 +183,13 @@ public class MergedResult
         return true;
     }
 
+    @Override
     public void pushBack()
         throws SQLException {
         _pushedBack = true;
     }
 
+    @Override
     public int size()
         throws SQLException {
         int size = 0;
@@ -187,361 +198,434 @@ public class MergedResult
         return size;
     }
 
+    @Override
     public boolean contains(Object obj)
         throws SQLException {
         return _res[_idx].contains(obj);
     }
 
+    @Override
     public boolean containsAll(Object[] objs)
         throws SQLException {
         return _res[_idx].containsAll(objs);
     }
 
+    @Override
     public boolean contains(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].contains(col, joins);
     }
 
+    @Override
     public boolean containsAll(Column[] cols, Joins joins)
         throws SQLException {
         return _res[_idx].containsAll(cols, joins);
     }
 
+    @Override
     public ClassMapping getBaseMapping() {
         return _res[_idx].getBaseMapping();
     }
 
+    @Override
     public void setBaseMapping(ClassMapping mapping) {
         _res[_idx].setBaseMapping(mapping);
     }
 
+    @Override
     public FieldMapping getMappedByFieldMapping() {
         return _res[_idx].getMappedByFieldMapping();
     }
 
+    @Override
     public void setMappedByFieldMapping(FieldMapping fieldMapping) {
         _res[_idx].setMappedByFieldMapping(fieldMapping);
     }
 
+    @Override
     public Object getMappedByValue() {
         return _res[_idx].getMappedByValue();
     }
 
+    @Override
     public void setMappedByValue(Object mappedByValue) {
         _res[_idx].setMappedByValue(mappedByValue);
     }
 
+    @Override
     public int indexOf() {
         return _res[_idx].indexOf();
     }
 
+    @Override
     public Object load(ClassMapping mapping, JDBCStore store,
         JDBCFetchConfiguration fetch)
         throws SQLException {
         return _res[_idx].load(mapping, store, fetch);
     }
 
+    @Override
     public Object load(ClassMapping mapping, JDBCStore store,
         JDBCFetchConfiguration fetch, Joins joins)
         throws SQLException {
         return _res[_idx].load(mapping, store, fetch, joins);
     }
 
+    @Override
     public Array getArray(Object obj)
         throws SQLException {
         return _res[_idx].getArray(obj);
     }
 
+    @Override
     public InputStream getAsciiStream(Object obj)
         throws SQLException {
         return _res[_idx].getAsciiStream(obj);
     }
 
+    @Override
     public BigDecimal getBigDecimal(Object obj)
         throws SQLException {
         return _res[_idx].getBigDecimal(obj);
     }
 
+    @Override
     public BigInteger getBigInteger(Object obj)
         throws SQLException {
         return _res[_idx].getBigInteger(obj);
     }
 
+    @Override
     public InputStream getBinaryStream(Object obj)
         throws SQLException {
         return _res[_idx].getBinaryStream(obj);
     }
 
+    @Override
     public InputStream getLOBStream(JDBCStore store, Object obj)
         throws SQLException {
         return _res[_idx].getLOBStream(store, obj);
     }
 
+    @Override
     public Blob getBlob(Object obj)
         throws SQLException {
         return _res[_idx].getBlob(obj);
     }
 
+    @Override
     public boolean getBoolean(Object obj)
         throws SQLException {
         return _res[_idx].getBoolean(obj);
     }
 
+    @Override
     public byte getByte(Object obj)
         throws SQLException {
         return _res[_idx].getByte(obj);
     }
 
+    @Override
     public byte[] getBytes(Object obj)
         throws SQLException {
         return _res[_idx].getBytes(obj);
     }
 
+    @Override
     public Calendar getCalendar(Object obj)
         throws SQLException {
         return _res[_idx].getCalendar(obj);
     }
 
+    @Override
     public char getChar(Object obj)
         throws SQLException {
         return _res[_idx].getChar(obj);
     }
 
+    @Override
     public Reader getCharacterStream(Object obj)
         throws SQLException {
         return _res[_idx].getCharacterStream(obj);
     }
 
+    @Override
     public Clob getClob(Object obj)
         throws SQLException {
         return _res[_idx].getClob(obj);
     }
 
+    @Override
     public Date getDate(Object obj)
         throws SQLException {
         return _res[_idx].getDate(obj);
     }
 
+    @Override
     public java.sql.Date getDate(Object obj, Calendar cal)
         throws SQLException {
         return _res[_idx].getDate(obj, cal);
     }
 
+    @Override
     public double getDouble(Object obj)
         throws SQLException {
         return _res[_idx].getDouble(obj);
     }
 
+    @Override
     public float getFloat(Object obj)
         throws SQLException {
         return _res[_idx].getFloat(obj);
     }
 
+    @Override
     public int getInt(Object obj)
         throws SQLException {
         return _res[_idx].getInt(obj);
     }
 
+    @Override
     public Locale getLocale(Object obj)
         throws SQLException {
         return _res[_idx].getLocale(obj);
     }
 
+    @Override
     public long getLong(Object obj)
         throws SQLException {
         return _res[_idx].getLong(obj);
     }
 
+    @Override
     public Number getNumber(Object obj)
         throws SQLException {
         return _res[_idx].getNumber(obj);
     }
 
+    @Override
     public Object getObject(Object obj, int metaType, Object arg)
         throws SQLException {
         return _res[_idx].getObject(obj, metaType, arg);
     }
 
+    @Override
     public Object getSQLObject(Object obj, Map map)
         throws SQLException {
         return _res[_idx].getSQLObject(obj, map);
     }
 
+    @Override
     public Ref getRef(Object obj, Map map)
         throws SQLException {
         return _res[_idx].getRef(obj, map);
     }
 
+    @Override
     public short getShort(Object obj)
         throws SQLException {
         return _res[_idx].getShort(obj);
     }
 
+    @Override
     public String getString(Object obj)
         throws SQLException {
         return _res[_idx].getString(obj);
     }
 
+    @Override
     public Time getTime(Object obj, Calendar cal)
         throws SQLException {
         return _res[_idx].getTime(obj, cal);
     }
 
+    @Override
     public Timestamp getTimestamp(Object obj, Calendar cal)
         throws SQLException {
         return _res[_idx].getTimestamp(obj, cal);
     }
 
+    @Override
     public Array getArray(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getArray(col, joins);
     }
 
+    @Override
     public InputStream getAsciiStream(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getAsciiStream(col, joins);
     }
 
+    @Override
     public BigDecimal getBigDecimal(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getBigDecimal(col, joins);
     }
 
+    @Override
     public BigInteger getBigInteger(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getBigInteger(col, joins);
     }
 
+    @Override
     public InputStream getBinaryStream(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getBinaryStream(col, joins);
     }
 
+    @Override
     public Blob getBlob(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getBlob(col, joins);
     }
 
+    @Override
     public boolean getBoolean(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getBoolean(col, joins);
     }
 
+    @Override
     public byte getByte(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getByte(col, joins);
     }
 
+    @Override
     public byte[] getBytes(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getBytes(col, joins);
     }
 
+    @Override
     public Calendar getCalendar(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getCalendar(col, joins);
     }
 
+    @Override
     public char getChar(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getChar(col, joins);
     }
 
+    @Override
     public Reader getCharacterStream(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getCharacterStream(col, joins);
     }
 
+    @Override
     public Clob getClob(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getClob(col, joins);
     }
 
+    @Override
     public Date getDate(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getDate(col, joins);
     }
 
+    @Override
     public java.sql.Date getDate(Column col, Calendar cal, Joins joins)
         throws SQLException {
         return _res[_idx].getDate(col, cal, joins);
     }
 
+    @Override
     public double getDouble(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getDouble(col, joins);
     }
 
+    @Override
     public float getFloat(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getFloat(col, joins);
     }
 
+    @Override
     public int getInt(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getInt(col, joins);
     }
 
+    @Override
     public Locale getLocale(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getLocale(col, joins);
     }
 
+    @Override
     public long getLong(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getLong(col, joins);
     }
 
+    @Override
     public Number getNumber(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getNumber(col, joins);
     }
 
+    @Override
     public Object getObject(Column col, Object arg, Joins joins)
         throws SQLException {
         return _res[_idx].getObject(col, arg, joins);
     }
 
+    @Override
     public Object getSQLObject(Column col, Map map, Joins joins)
         throws SQLException {
         return _res[_idx].getSQLObject(col, map, joins);
     }
 
+    @Override
     public Ref getRef(Column col, Map map, Joins joins)
         throws SQLException {
         return _res[_idx].getRef(col, map, joins);
     }
 
+    @Override
     public short getShort(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getShort(col, joins);
     }
 
+    @Override
     public String getString(Column col, Joins joins)
         throws SQLException {
         return _res[_idx].getString(col, joins);
     }
 
+    @Override
     public Time getTime(Column col, Calendar cal, Joins joins)
         throws SQLException {
         return _res[_idx].getTime(col, cal, joins);
     }
 
+    @Override
     public Timestamp getTimestamp(Column col, Calendar cal, Joins joins)
         throws SQLException {
         return _res[_idx].getTimestamp(col, cal, joins);
     }
 
+    @Override
     public boolean wasNull()
         throws SQLException {
         return _res[_idx].wasNull();
     }
 
+    @Override
     public void startDataRequest(Object mapping) {
         for (int i = 0; i < _res.length; i++)
             _res[i].startDataRequest(mapping);
     }
 
+    @Override
     public void endDataRequest() {
         for (int i = 0; i < _res.length; i++)
             _res[i].endDataRequest();
@@ -550,12 +634,12 @@ public class MergedResult
     /**
      * Comparator for ordering result rows.
      */
-    public static interface ResultComparator
+    public interface ResultComparator
         extends Comparator {
 
         /**
          * Return the ordering value of the current row of the given result.
          */
-        public Object getOrderingValue(Result res, int idx);
+        Object getOrderingValue(Result res, int idx);
     }
 }

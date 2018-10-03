@@ -32,6 +32,7 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  */
 public class TestEmLockTimeout extends SequencedActionsTest {
 
+    @Override
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -96,7 +97,7 @@ public class TestEmLockTimeout extends SequencedActionsTest {
 
         EntityManager em = emf.createEntityManager();
 
-        Map<String,Object> props2 = new HashMap<String,Object>();
+        Map<String,Object> props2 = new HashMap<>();
         props2.put("javax.persistence.lock.timeout", 3333);
         em.find(LockEmployee.class, 1, props2);
 

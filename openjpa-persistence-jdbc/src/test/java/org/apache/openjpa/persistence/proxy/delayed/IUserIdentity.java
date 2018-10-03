@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.proxy.delayed;
 
 public interface IUserIdentity {
 
-    public void setMember(IMember member);
+    void setMember(IMember member);
 
-    public IMember getMember();
+    IMember getMember();
 
-    public void setId(int id);
+    void setId(int id);
 
-    public int getId();
+    int getId();
 }

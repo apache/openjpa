@@ -19,12 +19,15 @@
 package org.apache.openjpa.persistence.enhance.common.apps;
 
 import java.io.Serializable;
+
 import javax.persistence.Entity;
 
 @Entity
 public class DetachableVersionedPC
     implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private long id;
     private String val;
     private int version;

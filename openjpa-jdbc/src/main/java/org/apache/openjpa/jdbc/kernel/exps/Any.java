@@ -26,10 +26,14 @@ package org.apache.openjpa.jdbc.kernel.exps;
 class Any
     extends UnaryOp {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public Any(Val val) {
         super(val, true);
     }
 
+    @Override
     protected String getOperator() {
         return "ANY";
     }

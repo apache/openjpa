@@ -29,6 +29,9 @@ import javax.persistence.OrderColumn;
 @Entity
 public class OrderedElementEntity implements IOrderedElements, java.io.Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     private int id;
 
@@ -36,29 +39,35 @@ public class OrderedElementEntity implements IOrderedElements, java.io.Serializa
     @OrderColumn
     private List<String> elements;
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public List<String> getListElements() {
         return elements;
     }
 
+    @Override
     public void setListElements(List<String> elements) {
         this.elements = elements;
     }
 
+    @Override
     public void addListElements(String element) {
         if( elements == null) {
-            elements = new ArrayList<String>();
+            elements = new ArrayList<>();
         }
         elements.add(element);
     }
 
+    @Override
     public String removeListElements(int location) {
         String rtnVal = null;
         if( elements != null) {
@@ -67,13 +76,15 @@ public class OrderedElementEntity implements IOrderedElements, java.io.Serializa
         return rtnVal;
     }
 
+    @Override
     public void insertListElements(int location, String name) {
         if( elements == null) {
-            elements = new ArrayList<String>();
+            elements = new ArrayList<>();
         }
         elements.add(location, name);
     }
 
+    @Override
     public String toString() {
         return "OrderedElementEntity[" + id + "]=" + elements;
     }

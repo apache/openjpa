@@ -41,6 +41,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 class Variable
     extends AbstractVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private final String _name;
     private Class _type;
     private ClassMetaData _meta;
@@ -58,6 +60,7 @@ class Variable
     /**
      * Return the variable name.
      */
+    @Override
     public String getName() {
         return _name;
     }
@@ -76,6 +79,7 @@ class Variable
         return _path;
     }
 
+    @Override
     public Path getPath() {
         return _path;
     }
@@ -87,32 +91,38 @@ class Variable
         _path = path;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
         if (meta != null)
             _type = meta.getDescribedType();
     }
 
+    @Override
     public boolean isVariable() {
         return true;
     }
 
+    @Override
     public Class getType() {
         if (_cast != null)
             return _cast;
         return _type;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _cast = type;
         if (_path != null)
             _path.setImplicitType(type);
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         if (_path != null) {
             _path.addVariableAction(this);
@@ -121,60 +131,74 @@ class Variable
         return ExpState.NULL;
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return null;
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         if (_path != null)
             _path.calculateValue(sel, ctx, state, other, otherState);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 0;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
     }
 
+    @Override
     public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
     }
 
+    @Override
     public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
     }
 
+    @Override
     public void appendSize(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
     }
 
+    @Override
     public void appendIsNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
     }
 
+    @Override
     public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         if (_path != null)

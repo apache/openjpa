@@ -47,10 +47,11 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
     EntityD entityD;
     EntityE entityE;
 
-    List<EntityC> list = new ArrayList<EntityC>();
+    List<EntityC> list = new ArrayList<>();
 
-    Collection<Object> allEntities = new HashSet<Object>();
+    Collection<Object> allEntities = new HashSet<>();
 
+    @Override
     public void setUp() throws Exception {
         setUp(org.apache.openjpa.persistence.detach.EntityA.class,
             org.apache.openjpa.persistence.detach.EntityB.class,

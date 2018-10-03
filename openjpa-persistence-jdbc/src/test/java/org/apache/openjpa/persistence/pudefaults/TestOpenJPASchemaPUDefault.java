@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestOpenJPASchemaPUDefault extends SQLListenerTestCase {
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(PUDefaultSchemaEntity.class, PUSchemaInSequenceAnnotationEntity.class,
             PUSchemaInTableAnnotationEntity.class, PUSchemaInTableMappingEntity.class,
@@ -37,6 +38,7 @@ public class TestOpenJPASchemaPUDefault extends SQLListenerTestCase {
         setSupportedDatabases(org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

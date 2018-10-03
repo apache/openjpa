@@ -37,6 +37,7 @@ import org.apache.openjpa.jdbc.schema.SchemaParser;
 import org.apache.openjpa.jdbc.schema.SchemaSerializer;
 import org.apache.openjpa.jdbc.schema.XMLSchemaParser;
 import org.apache.openjpa.jdbc.schema.XMLSchemaSerializer;
+import org.apache.openjpa.lib.meta.MetaDataSerializer;
 
 
 public class TestXMLSchemaSerializer extends TestXMLSchemaParser{
@@ -51,6 +52,7 @@ public class TestXMLSchemaSerializer extends TestXMLSchemaParser{
         super(test);
     }
 
+    @Override
     protected SchemaGroup getSchemaGroup()
     throws Exception {
         // parse in the schema group, then serialize it to a buffer, then
@@ -61,7 +63,7 @@ public class TestXMLSchemaSerializer extends TestXMLSchemaParser{
         ser.addAll(group);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ser.serialize(new OutputStreamWriter(out), ser.PRETTY);
+        ser.serialize(new OutputStreamWriter(out), MetaDataSerializer.PRETTY);
         byte[] bytes = out.toByteArray();
 
         SchemaParser parser = new XMLSchemaParser(this.conf);

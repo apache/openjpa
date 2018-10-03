@@ -19,26 +19,26 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 
-import java.util.*;
+import java.util.List;
 
 
 
 public interface OpOrder {
 
 
-    public long getId();
+    long getId();
 
-    public OpOrder getRel();
+    OpOrder getRel();
 
-    public OpOrder getOwner();
+    OpOrder getOwner();
 
-    public String getSecondary();
+    String getSecondary();
 
-    public String getSub();
+    String getSub();
 
-    public List getRelList();
+    List getRelList();
 
-    public List getMappedRelList();
+    List getMappedRelList();
 
-    public List getInverseKeyRelList();
+    List getInverseKeyRelList();
 }

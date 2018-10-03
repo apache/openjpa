@@ -18,11 +18,12 @@
  */
 package org.apache.openjpa.lib.util;
 
+import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 
 /**
  * Tests the {@link AbstractConcurrentEventManager}.
@@ -70,6 +71,10 @@ public class TestAbstractEventManager extends TestCase {
 
     private static class EventManager extends AbstractConcurrentEventManager {
 
+        
+        private static final long serialVersionUID = 1L;
+
+        @Override
         protected void fireEvent(Object event, Object listener) {
             ((Listener) listener).fire();
         }

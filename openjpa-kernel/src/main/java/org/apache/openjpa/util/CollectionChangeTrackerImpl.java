@@ -63,20 +63,24 @@ public class CollectionChangeTrackerImpl
         return _order;
     }
 
+    @Override
     public void added(Object elem) {
         super.added(elem);
     }
 
+    @Override
     public void removed(Object elem) {
         super.removed(elem);
     }
 
+    @Override
     protected int initialSequence() {
         if (_order)
             return _coll.size();
         return super.initialSequence();
     }
 
+    @Override
     protected void add(Object elem) {
         if (rem == null || !rem.remove(elem)) {
             // after a point it's inefficient to keep tracking
@@ -101,6 +105,7 @@ public class CollectionChangeTrackerImpl
         }
     }
 
+    @Override
     protected void remove(Object elem) {
         // if the collection contains multiple copies of the elem, we can't
         // use change tracking because some back-ends can't just delete a
@@ -120,6 +125,7 @@ public class CollectionChangeTrackerImpl
         }
     }
 
+    @Override
     protected void change(Object elem) {
         throw new InternalException();
     }

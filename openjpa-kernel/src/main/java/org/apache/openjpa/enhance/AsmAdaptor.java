@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.enhance;
 
+import static java.util.Arrays.asList;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,9 +34,8 @@ import org.apache.xbean.asm6.ClassReader;
 import org.apache.xbean.asm6.ClassVisitor;
 import org.apache.xbean.asm6.ClassWriter;
 import org.apache.xbean.asm6.Opcodes;
-import serp.bytecode.BCClass;
 
-import static java.util.Arrays.asList;
+import serp.bytecode.BCClass;
 
 
 /**
@@ -201,6 +202,8 @@ public final class AsmAdaptor {
     }
 
     private static class EnhancedStatusException extends RuntimeException {
+        
+        private static final long serialVersionUID = 1L;
         private final boolean status;
 
         private EnhancedStatusException(final boolean status) {

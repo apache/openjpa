@@ -26,16 +26,16 @@ public interface QueryHints {
     // Declaring a public static final String variable in this class will
     // make it register as a supported hint key
     // if you do not want that then annotate as {@link Reflectable(false)}.
-    public static final String HINT_SUBCLASSES          = "openjpa.Subclasses";
-    public static final String HINT_FILTER_LISTENER     = "openjpa.FilterListener";
-    public static final String HINT_FILTER_LISTENERS    = "openjpa.FilterListeners";
-    public static final String HINT_AGGREGATE_LISTENER  = "openjpa.AggregateListener";
-    public static final String HINT_AGGREGATE_LISTENERS = "openjpa.AggregateListeners";
+    String HINT_SUBCLASSES          = "openjpa.Subclasses";
+    String HINT_FILTER_LISTENER     = "openjpa.FilterListener";
+    String HINT_FILTER_LISTENERS    = "openjpa.FilterListeners";
+    String HINT_AGGREGATE_LISTENER  = "openjpa.AggregateListener";
+    String HINT_AGGREGATE_LISTENERS = "openjpa.AggregateListeners";
 
     /**
      * Hint to specify the number of rows to optimize for.
      */
-    public static final String HINT_RESULT_COUNT = "openjpa.hint.OptimizeResultCount";
+    String HINT_RESULT_COUNT = "openjpa.hint.OptimizeResultCount";
 
     /**
      * Hints to signal that the JPQL/SQL query string contains a parameter
@@ -43,7 +43,7 @@ public interface QueryHints {
      * to count number of parameters assuming that all <code>?</code> characters
      * designate a bind parameter. This assumption makes the parse faster.
      */
-    public static final String HINT_PARAM_MARKER_IN_QUERY = "openjpa.hint.ParameterMarkerInQuery";
+    String HINT_PARAM_MARKER_IN_QUERY = "openjpa.hint.ParameterMarkerInQuery";
 
     /**
      * A directive to invalidate any prepared SQL that might have been cached
@@ -60,7 +60,7 @@ public interface QueryHints {
      *
      * @see #HINT_IGNORE_PREPARED_QUERY
      */
-    public static final String HINT_INVALIDATE_PREPARED_QUERY = "openjpa.hint.InvalidatePreparedQuery";
+    String HINT_INVALIDATE_PREPARED_QUERY = "openjpa.hint.InvalidatePreparedQuery";
 
     /**
      * A directive to ignore any prepared SQL that might have been cached
@@ -78,34 +78,34 @@ public interface QueryHints {
      *
      * @see #HINT_INVALIDATE_PREPARED_QUERY
      */
-    public static final String HINT_IGNORE_PREPARED_QUERY = "openjpa.hint.IgnorePreparedQuery";
+    String HINT_IGNORE_PREPARED_QUERY = "openjpa.hint.IgnorePreparedQuery";
 
     /**
      * A directive to ignore any cached finder query for find() operation.
      * The cached entry, if any, remains in the cache.
      */
-    public static final String HINT_IGNORE_FINDER = "openjpa.hint.IgnoreFinder";
+    String HINT_IGNORE_FINDER = "openjpa.hint.IgnoreFinder";
 
     /**
      * A directive to invalidate any cached finder query.
      */
-    public static final String HINT_INVALIDATE_FINDER = "openjpa.hint.InvalidateFinder";
+    String HINT_INVALIDATE_FINDER = "openjpa.hint.InvalidateFinder";
 
     /**
      * A directive to overwrite a cached finder query by a new query.
      */
-    public static final String HINT_RECACHE_FINDER =
+    String HINT_RECACHE_FINDER =
         "openjpa.hint.RecacheFinder";
 
     /**
      * A boolean directive to relax checking of binding parameter value and the predicate
      * it binds to.
      */
-    public static final String HINT_RELAX_BIND_PARAM_TYPE_CHECK = "openjpa.hint.RelaxParameterTypeChecking";
+    String HINT_RELAX_BIND_PARAM_TYPE_CHECK = "openjpa.hint.RelaxParameterTypeChecking";
 
     /**
      * A boolean directive to generate literal directly into the SQL statement instead of using position parameter,
      * if possible.
      */
-    public static final String HINT_USE_LITERAL_IN_SQL = "openjpa.hint.UseLiteralInSQL";
+    String HINT_USE_LITERAL_IN_SQL = "openjpa.hint.UseLiteralInSQL";
 }

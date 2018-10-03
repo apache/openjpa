@@ -31,6 +31,8 @@ import java.util.EventObject;
 public class ExpirationEvent
     extends EventObject {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Object _key;
     private final boolean _expired;
 

@@ -21,8 +21,8 @@ package org.apache.openjpa.meta;
 import javax.persistence.Entity;
 
 @Entity
-public class Artist
-    extends Person {
+public class Artist extends Person {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Default constructor required for enhancement.

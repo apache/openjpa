@@ -30,7 +30,7 @@ public interface CacheStatisticsSPI extends CacheStatistics {
      * @param hit
      *            - true for a cache hit, false otherwise
      */
-    public void newGet(Class<?> cls, boolean hit);
+    void newGet(Class<?> cls, boolean hit);
 
 
     /**
@@ -39,16 +39,16 @@ public interface CacheStatisticsSPI extends CacheStatistics {
      * @param cls
      *            - The class describing the type that is contained in the cache.
      */
-    public void newPut(Class<?> cls);
+    void newPut(Class<?> cls);
 
 
     /**
      * Enable statistics collection.
      */
-    public void enable();
+    void enable();
 
     /**
      * Disable statistics collection.
      */
-    public void disable();
+    void disable();
 }

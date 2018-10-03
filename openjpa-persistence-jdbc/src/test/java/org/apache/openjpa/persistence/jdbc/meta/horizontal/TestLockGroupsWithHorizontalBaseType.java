@@ -28,9 +28,9 @@
 package org.apache.openjpa.persistence.jdbc.meta.horizontal;
 
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.jdbc.common.apps.LockGroupSubclass;
 
 
 public class TestLockGroupsWithHorizontalBaseType extends AbstractTestCase
@@ -42,6 +42,7 @@ public class TestLockGroupsWithHorizontalBaseType extends AbstractTestCase
     }
 
 
+    @Override
     public void setUp() {
        deleteAll(LockGroupSubclass.class);
     }

@@ -35,7 +35,7 @@ public class Item5 {
 
     @ElementCollection
     @MapKeyTemporal(TemporalType.TIME)
-    Map<Timestamp, FileName4> images = new HashMap<Timestamp, FileName4>();
+    Map<Timestamp, FileName4> images = new HashMap<>();
 
     public int getId() {
         return id;

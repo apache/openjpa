@@ -23,8 +23,8 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.inheritance.entity.Department;
 import org.apache.openjpa.persistence.inheritance.entity.Employee;
 import org.apache.openjpa.persistence.inheritance.entity.FTEmployee;
-import org.apache.openjpa.persistence.inheritance.entity.PTEmployee;
 import org.apache.openjpa.persistence.inheritance.entity.Manager;
+import org.apache.openjpa.persistence.inheritance.entity.PTEmployee;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -39,7 +39,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestJoinTableStrategy extends SingleEMFTestCase {
 
-	public void setUp() {
+	@Override
+    public void setUp() {
 		super.setUp(CLEAR_TABLES, Department.class, Employee.class,
 				PTEmployee.class, FTEmployee.class, Manager.class);
 

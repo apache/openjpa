@@ -18,12 +18,12 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import javax.persistence.*;
+import javax.persistence.MapKey;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Flat1;
 
 
 /**
@@ -43,6 +43,7 @@ public class TestMapKey extends AnnotationTestCase
 
     //private ClassMapping _mapping;
 
+    @Override
     public void setUp()
     {
         deleteAll(Flat1.class);

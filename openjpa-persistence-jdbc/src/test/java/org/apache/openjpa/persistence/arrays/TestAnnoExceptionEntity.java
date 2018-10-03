@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestAnnoExceptionEntity extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(AnnoExceptionEntity.class);
     }

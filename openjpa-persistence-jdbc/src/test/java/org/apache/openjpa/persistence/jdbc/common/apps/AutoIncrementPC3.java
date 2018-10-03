@@ -19,10 +19,16 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 
 /**

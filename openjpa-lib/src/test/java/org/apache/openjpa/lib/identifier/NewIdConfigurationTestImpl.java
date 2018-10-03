@@ -21,13 +21,9 @@ package org.apache.openjpa.lib.identifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
-import org.apache.openjpa.lib.identifier.IdentifierRule;
-import org.apache.openjpa.lib.identifier.IdentifierUtil;
-
 public class NewIdConfigurationTestImpl implements IdentifierConfiguration {
 
-    Map<String, IdentifierRule> _rules = new HashMap<String, IdentifierRule>();
+    Map<String, IdentifierRule> _rules = new HashMap<>();
     private final String conversionKey = getLeadingDelimiter() + getIdentifierDelimiter() + getTrailingDelimiter();
 
     public NewIdConfigurationTestImpl() {
@@ -36,30 +32,37 @@ public class NewIdConfigurationTestImpl implements IdentifierConfiguration {
 
     private IdentifierRule _defRule = new IdentifierRule();
 
+    @Override
     public boolean delimitAll() {
         return false;
     }
 
+    @Override
     public IdentifierRule getDefaultIdentifierRule() {
         return _defRule;
     }
 
+    @Override
     public String getDelimitedCase() {
         return IdentifierUtil.CASE_PRESERVE;
     }
 
+    @Override
     public String getLeadingDelimiter() {
         return "\"";
     }
 
+    @Override
     public String getIdentifierDelimiter() {
         return ".";
     }
 
+    @Override
     public String getIdentifierConcatenator() {
         return "_";
     }
 
+    @Override
     public <T> IdentifierRule getIdentifierRule(T t) {
         IdentifierRule r =  _rules.get(t);
         if (r == null) {
@@ -68,23 +71,28 @@ public class NewIdConfigurationTestImpl implements IdentifierConfiguration {
         return r;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> Map<T, IdentifierRule> getIdentifierRules() {
         return (Map<T, IdentifierRule>) _rules;
     }
 
+    @Override
     public String getTrailingDelimiter() {
         return "\"";
     }
 
+    @Override
     public String getSchemaCase() {
         return IdentifierUtil.CASE_UPPER;
     }
 
+    @Override
     public boolean getSupportsDelimitedIdentifiers() {
         return true;
     }
 
+    @Override
     public String getConversionKey() {
         return conversionKey;
     }

@@ -20,12 +20,13 @@ package org.apache.openjpa.event;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestLifecycleListener
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }

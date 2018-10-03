@@ -29,15 +29,15 @@ import org.apache.openjpa.meta.ClassMetaData;
 public interface Seq
     extends Closeable {
 
-    public static final int TYPE_DEFAULT = 0;
-    public static final int TYPE_NONTRANSACTIONAL = 1;
-    public static final int TYPE_TRANSACTIONAL = 2;
-    public static final int TYPE_CONTIGUOUS = 3;
+    int TYPE_DEFAULT = 0;
+    int TYPE_NONTRANSACTIONAL = 1;
+    int TYPE_TRANSACTIONAL = 2;
+    int TYPE_CONTIGUOUS = 3;
 
     /**
      * Set the type of sequence.
      */
-    public void setType(int type);
+    void setType(int type);
 
     /**
      * Return the next value in the sequence.
@@ -46,7 +46,7 @@ public interface Seq
      * @param cls if this is a datastore identity sequence, the
      * persistent class the identity value is for; else null
      */
-    public Object next(StoreContext ctx, ClassMetaData cls);
+    Object next(StoreContext ctx, ClassMetaData cls);
 
     /**
      * Return the current value of the sequence, or null if not available.
@@ -55,7 +55,7 @@ public interface Seq
      * @param cls if this is a datastore identity sequence, the
      * persistent class the identity value is for; else null
      */
-    public Object current(StoreContext ctx, ClassMetaData cls);
+    Object current(StoreContext ctx, ClassMetaData cls);
 
     /**
      * Allocate additional values efficiently.
@@ -64,10 +64,10 @@ public interface Seq
      * @param cls if this is a datastore identity sequence, the
      * persistent class the identity value is for; else null
      */
-    public void allocate(int additional, StoreContext ctx, ClassMetaData cls);
+    void allocate(int additional, StoreContext ctx, ClassMetaData cls);
 
     /**
      * Free resources used by this sequence.
      */
-    public void close ();
+    @Override void close ();
 }

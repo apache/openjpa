@@ -103,99 +103,120 @@ public class JDBCFetchPlanImpl
         return _fetch;
     }
 
+    @Override
     public FetchMode getEagerFetchMode() {
         return FetchMode.fromKernelConstant(_fetch.getEagerFetchMode());
     }
 
+    @Override
     public JDBCFetchPlanImpl setEagerFetchMode(FetchMode mode) {
         _fetch.setEagerFetchMode(mode.toKernelConstant());
         return this;
     }
 
+    @Override
     public JDBCFetchPlan setEagerFetchMode(int mode) {
         _fetch.setEagerFetchMode(mode);
         return this;
     }
 
+    @Override
     public FetchMode getSubclassFetchMode() {
         return FetchMode.fromKernelConstant(_fetch.getSubclassFetchMode());
     }
 
+    @Override
     public JDBCFetchPlanImpl setSubclassFetchMode(FetchMode mode) {
         _fetch.setSubclassFetchMode(mode.toKernelConstant());
         return this;
     }
 
+    @Override
     public JDBCFetchPlan setSubclassFetchMode(int mode) {
         _fetch.setSubclassFetchMode(mode);
         return this;
     }
 
+    @Override
     public ResultSetType getResultSetType() {
         return ResultSetType.fromKernelConstant(_fetch.getResultSetType());
     }
 
+    @Override
     public JDBCFetchPlanImpl setResultSetType(ResultSetType type) {
         _fetch.setResultSetType(type.toKernelConstant());
         return this;
     }
 
+    @Override
     public JDBCFetchPlan setResultSetType(int mode) {
         _fetch.setResultSetType(mode);
         return this;
     }
 
+    @Override
     public FetchDirection getFetchDirection() {
         return FetchDirection.fromKernelConstant(_fetch.getFetchDirection());
     }
 
+    @Override
     public JDBCFetchPlanImpl setFetchDirection(FetchDirection direction) {
         _fetch.setFetchDirection(direction.toKernelConstant());
         return this;
     }
 
+    @Override
     public JDBCFetchPlan setFetchDirection(int direction) {
         _fetch.setFetchDirection(direction);
         return this;
     }
 
+    @Override
     public LRSSizeAlgorithm getLRSSizeAlgorithm() {
         return LRSSizeAlgorithm.fromKernelConstant(_fetch.getLRSSize());
     }
 
+    @Override
     public JDBCFetchPlanImpl setLRSSizeAlgorithm(
             LRSSizeAlgorithm lrsSizeAlgorithm) {
         _fetch.setLRSSize(lrsSizeAlgorithm.toKernelConstant());
         return this;
     }
 
+    @Override
     public int getLRSSize() {
         return _fetch.getLRSSize();
     }
 
+    @Override
     public JDBCFetchPlan setLRSSize(int lrsSizeMode) {
         _fetch.setLRSSize(lrsSizeMode);
         return this;
     }
 
+    @Override
     public JoinSyntax getJoinSyntax() {
         return JoinSyntax.fromKernelConstant(_fetch.getJoinSyntax());
     }
 
+    @Override
     public JDBCFetchPlanImpl setJoinSyntax(JoinSyntax syntax) {
         _fetch.setJoinSyntax(syntax.toKernelConstant());
         return this;
     }
 
+    @Override
     public JDBCFetchPlan setJoinSyntax(int syntax) {
         _fetch.setJoinSyntax(syntax);
         return this;
     }
 
+    @Override
     public IsolationLevel getIsolation() {
         return IsolationLevel.fromConnectionConstant(_fetch.getIsolation());
     }
 
+    @Override
     public JDBCFetchPlan setIsolation(IsolationLevel level) {
         _fetch.setIsolation(level.getConnectionConstant());
         return this;

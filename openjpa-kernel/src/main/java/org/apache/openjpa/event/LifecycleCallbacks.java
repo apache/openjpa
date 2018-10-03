@@ -32,11 +32,11 @@ public interface LifecycleCallbacks
      * Return whether the given instance has a callback for the given
      * event type.
      */
-    public boolean hasCallback(Object obj, int eventType);
+    boolean hasCallback(Object obj, int eventType);
 
     /**
      * Invoke the callback for the given event type on the given instance.
      */
-    public void makeCallback(Object obj, Object related, int eventType)
+    void makeCallback(Object obj, Object related, int eventType)
         throws Exception;
 }

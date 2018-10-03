@@ -39,7 +39,7 @@ import org.apache.openjpa.lib.util.Localizer;
  *
  */
 public interface FillStrategy<T> {
-    static final Localizer _loc = Localizer.forPackage(FillStrategy.class);
+    Localizer _loc = Localizer.forPackage(FillStrategy.class);
 
     T fill(Object[] data, Class<?>[] types, String[] aliases);
 
@@ -57,6 +57,7 @@ public interface FillStrategy<T> {
             this.cls = arrayCls.getComponentType();
         }
 
+        @Override
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             Object array = java.lang.reflect.Array.newInstance(cls, values.length);
             System.arraycopy(values, 0, array, 0, values.length);
@@ -79,6 +80,7 @@ public interface FillStrategy<T> {
             putMethod = put;
         }
 
+        @Override
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             int i = 0;
             try {
@@ -139,6 +141,7 @@ public interface FillStrategy<T> {
             throw new RuntimeException(_loc.get("fill-ctor-none", cls, Arrays.toString(types)).getMessage());
         }
 
+        @Override
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             if (cons == null) {
                 cons = findConstructor(cls, types);
@@ -168,6 +171,7 @@ public interface FillStrategy<T> {
             this.cls = cls;
         }
 
+        @Override
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             int i = 0;
             try {
@@ -199,6 +203,7 @@ public interface FillStrategy<T> {
      * Populate an instance by simply assigning the 0-th element of the input values.
      */
     public static class Assign<T> implements FillStrategy<T> {
+        @Override
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             try {
                 return (T)values[0];
@@ -228,6 +233,7 @@ public interface FillStrategy<T> {
             this.isArray = keyType == int.class || keyType == Integer.class;
         }
 
+        @Override
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
             int i = 0;
             Object key = null;

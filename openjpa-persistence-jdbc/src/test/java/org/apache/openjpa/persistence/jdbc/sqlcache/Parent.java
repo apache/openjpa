@@ -97,7 +97,7 @@ public class Parent {
 		child.setName(name);
 		child.setParent(this);
 		if (children == null)
-			children = new ArrayList<Child>();
+			children = new ArrayList<>();
 		children.add(child);
 		return child;
 	}
@@ -113,7 +113,7 @@ public class Parent {
 	 */
 	public void add(Child child) {
 		if (children == null)
-			children = new ArrayList<Child>();
+			children = new ArrayList<>();
 		children.add(child);
 	}
 }

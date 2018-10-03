@@ -81,17 +81,17 @@ public interface BooleanRepresentation<REPRESENTATION_TYPE> {
     /**
      * Set the boolean value into the statement
      */
-    public void setBoolean(PreparedStatement stmnt, int columnIndex, boolean val) throws SQLException;
+    void setBoolean(PreparedStatement stmnt, int columnIndex, boolean val) throws SQLException;
 
     /**
      * Read the boolean from the given ResultSet
      */
-    public boolean getBoolean(ResultSet rs, int columnIndex) throws SQLException;
+    boolean getBoolean(ResultSet rs, int columnIndex) throws SQLException;
 
 
     /**
      * @return return the representation for {@code true} and {@code false}
      */
-    public REPRESENTATION_TYPE getRepresentation(boolean bool);
+    REPRESENTATION_TYPE getRepresentation(boolean bool);
 
 }

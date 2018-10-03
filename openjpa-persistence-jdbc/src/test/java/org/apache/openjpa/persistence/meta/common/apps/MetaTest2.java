@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.meta.common.apps;
 
 import java.util.Collection;
 import java.util.Map;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;

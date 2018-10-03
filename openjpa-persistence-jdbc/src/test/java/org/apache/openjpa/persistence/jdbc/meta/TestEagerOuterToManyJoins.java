@@ -28,16 +28,19 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.FetchPlan;
-import org.apache.openjpa.persistence.OpenJPAQuery;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC2;
+import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC;
 
 
 public class TestEagerOuterToManyJoins
@@ -54,6 +57,7 @@ public class TestEagerOuterToManyJoins
         return !dict.supportsSubselect;
     }
 
+    @Override
     public void setUp() {
 
        deleteAll(HelperPC.class);

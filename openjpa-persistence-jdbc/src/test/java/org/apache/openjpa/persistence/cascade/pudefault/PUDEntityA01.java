@@ -53,8 +53,8 @@ public class PUDEntityA01 {
     private PUDEntityB o2o;
 
     public PUDEntityA01() {
-        colM2M = new ArrayList<PUDEntityB>();
-        colO2M = new ArrayList<PUDEntityB>();
+        colM2M = new ArrayList<>();
+        colO2M = new ArrayList<>();
     }
 
     public int getId() {

@@ -34,8 +34,6 @@ import javax.persistence.Query;
 import javax.persistence.QueryTimeoutException;
 import javax.persistence.TypedQuery;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -46,6 +44,8 @@ import org.apache.openjpa.persistence.LockTimeoutException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.util.OpenJPAException;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Test Pessimistic Lock and exception behavior against EntityManager and Query
@@ -61,6 +61,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         return "locking-test";
     }
 
+    @Override
     public void setUp() {
         // Disable tests for any DB that has supportsQueryTimeout==false, like Postgres
         OpenJPAEntityManagerFactorySPI tempEMF = emf;
@@ -134,7 +135,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
                 || employees.get(0).getFirstName().equals("first.2"));
 
         em2.getTransaction().begin();
-        Map<String, Object> hints = new HashMap<String, Object>();
+        Map<String, Object> hints = new HashMap<>();
         hints.put("javax.persistence.lock.timeout", lockWaitTime);
         // find Employee(2) with a lock, should block and expected a
         // PessimisticLockException
@@ -163,7 +164,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
                 || depts.get(0).getName().equals("D20"));
 
         em2.getTransaction().begin();
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("javax.persistence.lock.timeout", lockWaitTime);
         // find Employee(2) with a lock, no block since only department was
         // locked
@@ -200,7 +201,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         assertEquals("Test Employee first name = 'first.2'", q.get(0).getFirstName(), "first.2");
 
         em2.getTransaction().begin();
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("javax.persistence.lock.timeout", lockWaitTime);
         // find Employee(2) with a lock, should block and expected a
         // PessimisticLockException
@@ -259,7 +260,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         EntityManager em2 = emf.createEntityManager();
         try {
             em2.getTransaction().begin();
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
             map.put("javax.persistence.lock.timeout", lockWaitTime);
             // Lock Emplyee(1), no department should be locked
             em2.find(Employee.class, 1, LockModeType.PESSIMISTIC_READ, map);
@@ -285,7 +286,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
 
         em2.getTransaction().begin();
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("javax.persistence.lock.timeout", lockWaitTime);
         // Lock Emplyee(2), no department should be locked
         em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
@@ -318,7 +319,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
         em2.getTransaction().begin();
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("javax.persistence.lock.timeout", lockWaitTime);
         // Lock Emplyee(1), no department should be locked
         em2.find(Employee.class, 1, LockModeType.PESSIMISTIC_READ, map);
@@ -396,6 +397,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         em.getTransaction().commit();
     }
 
+    @Override
     protected Log getLog() {
         return emf.getConfiguration().getLog("Tests");
     }
@@ -452,7 +454,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
                 wait(70000);
             }
             getLog().trace("Main: done waiting");
-            Map<String,Object> props = new HashMap<String,Object>();
+            Map<String,Object> props = new HashMap<>();
             // This property does not have any effect on Derby for the locking
             // condition produced by this test.  Instead, Derby uses the
             // lock timeout value specified in the config (pom.xml).  On Informix,
@@ -543,6 +545,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             _monitor = monitor;
         }
 
+        @Override
         public Boolean call() throws Exception {
             try {
                 EntityManager em = emf.createEntityManager();

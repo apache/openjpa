@@ -21,10 +21,10 @@ package org.apache.openjpa.conf;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.util.CacheMap;
 
@@ -50,6 +50,7 @@ public class QueryCompilationCacheValue
         setClassName(ALIASES[1]);
     }
 
+    @Override
     public Object newInstance(String clsName, Class type,
         Configuration conf, boolean fatal) {
         // make sure map handles concurrency

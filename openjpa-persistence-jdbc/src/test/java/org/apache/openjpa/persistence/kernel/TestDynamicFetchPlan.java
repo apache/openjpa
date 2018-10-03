@@ -41,7 +41,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	private static final String JPQL = "select a from FetchA a";
 
-	public void setUp() {
+	@Override
+    public void setUp() {
         super.setUp(CLEAR_TABLES, FetchBase.class, FetchA.class, FetchB.class);
 		createData();
 	}

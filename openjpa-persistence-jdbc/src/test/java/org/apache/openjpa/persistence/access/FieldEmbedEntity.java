@@ -75,6 +75,7 @@ public class FieldEmbedEntity {
         epa = ep;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof FieldEmbedEntity) {
             FieldEmbedEntity ps = (FieldEmbedEntity)obj;

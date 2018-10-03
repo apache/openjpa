@@ -23,14 +23,15 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import org.apache.openjpa.persistence.jdbc.KeyColumn;
 import org.apache.openjpa.persistence.PersistentCollection;
 import org.apache.openjpa.persistence.PersistentMap;
+import org.apache.openjpa.persistence.jdbc.KeyColumn;
 
 /**
  * Used in testing; should be enhanced.

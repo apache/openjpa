@@ -34,6 +34,7 @@ public class XMLPropertySub extends XMLAbstractMappedSuperField {
         crtDate = date;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropertySub) {
             XMLPropertySub ps = (XMLPropertySub)obj;

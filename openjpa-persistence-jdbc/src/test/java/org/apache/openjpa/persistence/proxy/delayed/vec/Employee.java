@@ -46,30 +46,36 @@ public class Employee implements IEmployee, Serializable {
     @JoinColumn(name="DEPT_ID")
     private IDepartment dept;
 
+    @Override
     public void setEmpName(String empName) {
         this.empName = empName;
     }
 
+    @Override
     public String getEmpName() {
         return empName;
     }
 
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
 
+    @Override
     public int getId() {
         return id;
     }
 
 
+    @Override
     public void setDept(IDepartment dept) {
         this.dept = dept;
     }
 
 
+    @Override
     public IDepartment getDept() {
         return dept;
     }
@@ -79,6 +85,7 @@ public class Employee implements IEmployee, Serializable {
         return getId();
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Employee) {
             Employee e = (Employee)obj;

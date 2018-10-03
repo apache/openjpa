@@ -19,8 +19,8 @@
 package org.apache.openjpa.persistence.callbacks;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 public class MSCListenerEntity extends EntityListenerMappedSuperClass implements ListenerTestEntity {
@@ -29,6 +29,7 @@ public class MSCListenerEntity extends EntityListenerMappedSuperClass implements
 
     private int value;
 
+    @Override
     public long getId() {
         return id;
     }
@@ -37,10 +38,12 @@ public class MSCListenerEntity extends EntityListenerMappedSuperClass implements
         this.id = id;
     }
 
+    @Override
     public int getValue() {
         return value;
     }
 
+    @Override
     public void setValue(int value) {
         this.value = value;
     }

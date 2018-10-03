@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
-import javax.persistence.*;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="MED1_MBI")
@@ -55,6 +59,7 @@ public class MedicalHistory1 {
         this.name = name;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof MedicalHistory1)) return false;
@@ -68,6 +73,7 @@ public class MedicalHistory1 {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + name.hashCode();

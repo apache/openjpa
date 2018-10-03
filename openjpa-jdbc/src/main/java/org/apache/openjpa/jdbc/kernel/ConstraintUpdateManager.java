@@ -57,19 +57,23 @@ public class ConstraintUpdateManager
     private static final Localizer _loc = Localizer.forPackage
         (ConstraintUpdateManager.class);
 
+    @Override
     public boolean orderDirty() {
         return true;
     }
 
+    @Override
     protected PreparedStatementManager newPreparedStatementManager
         (JDBCStore store, Connection conn) {
         return new PreparedStatementManagerImpl(store, conn);
     }
 
+    @Override
     protected RowManager newRowManager() {
         return new RowManagerImpl(false);
     }
 
+    @Override
     protected Collection flush(RowManager rowMgr,
         PreparedStatementManager psMgr, Collection exceps) {
         RowManagerImpl rmimpl = (RowManagerImpl) rowMgr;

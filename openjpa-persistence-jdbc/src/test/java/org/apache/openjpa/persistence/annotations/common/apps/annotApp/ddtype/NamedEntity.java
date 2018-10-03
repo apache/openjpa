@@ -21,6 +21,6 @@ package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
 public interface NamedEntity
 {
-	public String getName();
+	String getName();
 
 }

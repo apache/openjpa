@@ -34,15 +34,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MappedSuperclassType;
-import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.Type;
-import javax.persistence.metamodel.StaticMetamodel;
 import javax.persistence.metamodel.PluralAttribute.CollectionType;
+import javax.persistence.metamodel.StaticMetamodel;
+import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -66,12 +66,12 @@ import org.apache.openjpa.util.InternalException;
  */
 public class MetamodelImpl implements Metamodel, Resolver {
     private final MetaDataRepository repos;
-    private Map<Class<?>, Type<?>> _basics = new HashMap<Class<?>, Type<?>>();
-    private Map<Class<?>, EntityType<?>> _entities = new HashMap<Class<?>, EntityType<?>>();
+    private Map<Class<?>, Type<?>> _basics = new HashMap<>();
+    private Map<Class<?>, EntityType<?>> _entities = new HashMap<>();
     private Set<EntityType<?>> _entitiesOnlySet = null;
-    private Map<Class<?>, EmbeddableType<?>> _embeddables = new HashMap<Class<?>, EmbeddableType<?>>();
-    private Map<Class<?>, MappedSuperclassType<?>> _mappedsupers = new HashMap<Class<?>, MappedSuperclassType<?>>();
-    private Map<Class<?>, Types.PseudoEntity<?>> _pseudos = new HashMap<Class<?>, Types.PseudoEntity<?>>();
+    private Map<Class<?>, EmbeddableType<?>> _embeddables = new HashMap<>();
+    private Map<Class<?>, MappedSuperclassType<?>> _mappedsupers = new HashMap<>();
+    private Map<Class<?>, Types.PseudoEntity<?>> _pseudos = new HashMap<>();
 
     private static Localizer _loc = Localizer.forPackage(MetamodelImpl.class);
 
@@ -113,6 +113,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      *  @return the metamodel embeddable type
      *  @throws IllegalArgumentException if not an embeddable class
      */
+    @Override
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
         return (EmbeddableType<X>)find(clazz, _embeddables, EMBEDDABLE, false);
     }
@@ -123,6 +124,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      *  @return the metamodel entity type
      *  @throws IllegalArgumentException if not an entity
      */
+    @Override
     public <X> EntityType<X> entity(Class<X> clazz) {
         return (EntityType<X>) find(clazz, _entities, ENTITY, false);
     }
@@ -136,7 +138,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      */
     private Collection<EntityType<?>> getEntityValuesOnly() {
         if (_entitiesOnlySet == null) {
-            _entitiesOnlySet = new HashSet<EntityType<?>>();
+            _entitiesOnlySet = new HashSet<>();
             for (Class<?> cls : _entities.keySet()) {
                 // if key indicates it is a embeddable, do not add to the _entitiesOnlySet.
                 if (!_embeddables.containsKey(cls)) {
@@ -151,6 +153,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      * Return the metamodel embeddable types.
      * @return the metamodel embeddable types
      */
+    @Override
     public Set<EmbeddableType<?>> getEmbeddables() {
         return unmodifiableSet(_embeddables.values());
     }
@@ -159,6 +162,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      * Return the metamodel entity types.
      * @return the metamodel entity types
      */
+    @Override
     public Set<EntityType<?>> getEntities() {
         return unmodifiableSet(getEntityValuesOnly());
     }
@@ -167,8 +171,9 @@ public class MetamodelImpl implements Metamodel, Resolver {
      *  Return the metamodel managed types.
      *  @return the metamodel managed types
      */
+    @Override
     public Set<ManagedType<?>> getManagedTypes() {
-        Set<ManagedType<?>> result = new HashSet<ManagedType<?>>();
+        Set<ManagedType<?>> result = new HashSet<>();
         result.addAll(getEntityValuesOnly());
         result.addAll(_embeddables.values());
         result.addAll(_mappedsupers.values());
@@ -182,6 +187,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      *  @return the metamodel managed type
      *  @throws IllegalArgumentException if not a managed class
      */
+    @Override
     public <X> ManagedType<X> managedType(Class<X> clazz) {
         if (_embeddables.containsKey(clazz))
             return (EmbeddableType<X>) _embeddables.get(clazz);
@@ -215,7 +221,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
                 _pseudos.put(cls, new Types.PseudoEntity(cls, this));
                 return pseudo;
             } else {
-                Type<X> basic = new Types.Basic<X>(cls);
+                Type<X> basic = new Types.Basic<>(cls);
                 _basics.put(cls, basic);
                 return basic;
             }
@@ -269,18 +275,18 @@ public class MetamodelImpl implements Metamodel, Resolver {
         }
         switch (actual) {
         case EMBEDDABLE:
-            Types.Embeddable<X> embedded = new Types.Embeddable<X>(meta, this);
+            Types.Embeddable<X> embedded = new Types.Embeddable<>(meta, this);
             _embeddables.put(cls, embedded);
             populate(embedded);
             // no break : embeddables are stored as both entity and embeddable containers
         case ENTITY:
-        	Types.Entity<X> entity = new Types.Entity<X>(meta, this);
+        	Types.Entity<X> entity = new Types.Entity<>(meta, this);
             _entities.put(cls, entity);
             _entitiesOnlySet = null;
             populate(entity);
             break;
         case MAPPED_SUPERCLASS:
-            Types.MappedSuper<X> mapped = new Types.MappedSuper<X>(meta, this);
+            Types.MappedSuper<X> mapped = new Types.MappedSuper<>(meta, this);
             _mappedsupers.put(cls, mapped);
             populate(mapped);
             break;
@@ -290,7 +296,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
     }
 
     public <T> Set<T> unmodifiableSet(Collection<T> coll) {
-        HashSet<T> result = new HashSet<T>();
+        HashSet<T> result = new HashSet<>();
         for (T t : coll)
             result.add(t);
         return result;
@@ -421,22 +427,27 @@ public class MetamodelImpl implements Metamodel, Resolver {
                     mField, owner).getMessage());
     }
 
+    @Override
     public Class classForName(String name, String[] imports) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public AggregateListener getAggregateListener(String tag) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public OpenJPAConfiguration getConfiguration() {
         return repos.getConfiguration();
     }
 
+    @Override
     public FilterListener getFilterListener(String tag) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public QueryContext getQueryContext() {
         throw new UnsupportedOperationException();
     }

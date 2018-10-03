@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
-import java.sql.ResultSet;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Set;
 
@@ -41,76 +41,76 @@ public interface JDBCFetchConfiguration
      * Return the eager fetch mode. Defaults to the
      * <code>openjpa.jdbc.EagerFetchMode</code> setting.
      */
-    public int getEagerFetchMode();
+    int getEagerFetchMode();
 
     /**
      * Set the eager fetch mode. Defaults to the
      * <code>openjpa.jdbc.EagerFetchMode</code> setting.
      */
-    public JDBCFetchConfiguration setEagerFetchMode(int mode);
+    JDBCFetchConfiguration setEagerFetchMode(int mode);
 
     /**
      * Return the subclass fetch mode. Defaults to the
      * <code>openjpa.jdbc.SubclassFetchMode</code> setting.
      */
-    public int getSubclassFetchMode();
+    int getSubclassFetchMode();
 
     /**
      * Return the effective subclass fetch mode for the given type.
      */
-    public int getSubclassFetchMode(ClassMapping cls);
+    int getSubclassFetchMode(ClassMapping cls);
 
     /**
      * Set the subclass fetch mode. Defaults to the
      * <code>openjpa.jdbc.SubclassFetchMode</code> setting.
      */
-    public JDBCFetchConfiguration setSubclassFetchMode(int mode);
+    JDBCFetchConfiguration setSubclassFetchMode(int mode);
 
     /**
      * The result set type to use as a constant from {@link ResultSet}.
      * Defaults to the <code>openjpa.jdbc.ResultSetType</code> setting.
      */
-    public int getResultSetType();
+    int getResultSetType();
 
     /**
      * The result set type to use as a constant from {@link ResultSet}.
      * Defaults to the <code>openjpa.jdbc.ResultSetType</code> setting.
      */
-    public JDBCFetchConfiguration setResultSetType(int type);
+    JDBCFetchConfiguration setResultSetType(int type);
 
     /**
      * The fetch direction to use as a constant from {@link ResultSet}.
      * Defaults to the <code>openjpa.jdbc.FetchDirection</code> setting.
      */
-    public int getFetchDirection();
+    int getFetchDirection();
 
     /**
      * The fetch direction to use as a constant from {@link ResultSet}.
      * Defaults to the <code>openjpa.jdbc.FetchDirection</code> setting.
      */
-    public JDBCFetchConfiguration setFetchDirection(int direction);
+    JDBCFetchConfiguration setFetchDirection(int direction);
 
     /**
      * The large result set size mode to use.
      * Defaults to the <code>openjpa.jdbc.LRSSize</code> setting.
      */
-    public int getLRSSize();
+    int getLRSSize();
 
     /**
      * The large result set size mode to use.
      * Defaults to the <code>openjpa.jdbc.LRSSize</code> setting.
      */
-    public JDBCFetchConfiguration setLRSSize(int lrsSize);
+    JDBCFetchConfiguration setLRSSize(int lrsSize);
 
     /**
      * The join syntax to use.
      */
-    public int getJoinSyntax();
+    int getJoinSyntax();
 
     /**
      * The join syntax to use.
      */
-    public JDBCFetchConfiguration setJoinSyntax(int syntax);
+    JDBCFetchConfiguration setJoinSyntax(int syntax);
 
     /**
      * Returns the names of the joins that this component will use
@@ -119,14 +119,14 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.4.0.0
      */
-    public Set<String> getJoins();
+    Set<String> getJoins();
 
     /**
      * Return true if the given fully-qualified join has been added.
      *
      * @since 0.4.0.0
      */
-    public boolean hasJoin(String field);
+    boolean hasJoin(String field);
 
     /**
      * Adds <code>field</code> to the set of fully-qualified field names to
@@ -135,7 +135,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.4.0.0
      */
-    public JDBCFetchConfiguration addJoin(String field);
+    JDBCFetchConfiguration addJoin(String field);
 
     /**
      * Adds <code>fields</code> to the set of fully-qualified field names to
@@ -144,7 +144,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.4.0.0
      */
-    public JDBCFetchConfiguration addJoins(Collection<String> fields);
+    JDBCFetchConfiguration addJoins(Collection<String> fields);
 
     /**
      * Removes <code>field</code> to the set of fully-qualified field names to
@@ -152,7 +152,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.4.0.0
      */
-    public JDBCFetchConfiguration removeJoin(String field);
+    JDBCFetchConfiguration removeJoin(String field);
 
     /**
      * Removes <code>fields</code> from the set of fully-qualified
@@ -160,14 +160,14 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.4.0.0
      */
-    public JDBCFetchConfiguration removeJoins(Collection<String> fields);
+    JDBCFetchConfiguration removeJoins(Collection<String> fields);
 
     /**
      * Clears the set of field names to join when loading data.
      *
      * @since 0.4.0.0
      */
-    public JDBCFetchConfiguration clearJoins();
+    JDBCFetchConfiguration clearJoins();
 
     /**
      * <p>The isolation level for queries issued to the database. This overrides
@@ -184,7 +184,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.9.7
      */
-    public int getIsolation();
+    int getIsolation();
 
     /**
      * <p>The isolation level for queries issued to the database. This overrides
@@ -201,12 +201,12 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.9.7
      */
-    public JDBCFetchConfiguration setIsolation(int level);
+    JDBCFetchConfiguration setIsolation(int level);
 
     /**
      * Convenience method to cast traversal to store-specific type.
      */
-    public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm);
+    JDBCFetchConfiguration traverseJDBC(FieldMetaData fm);
 
     /**
      * Returns the names of the inner fetch joins that this component will use
@@ -215,14 +215,14 @@ public interface JDBCFetchConfiguration
      *
      * @since 1.0.3
      */
-    public Set<String> getFetchInnerJoins();
+    Set<String> getFetchInnerJoins();
 
     /**
      * Return true if the given fully-qualified inner fetch join has been added.
      *
      * @since 1.0.3
      */
-    public boolean hasFetchInnerJoin(String field);
+    boolean hasFetchInnerJoin(String field);
 
     /**
      * Adds <code>field</code> to the set of fully-qualified field names to
@@ -231,7 +231,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 1.0.3
      */
-    public JDBCFetchConfiguration addFetchInnerJoin(String field);
+    JDBCFetchConfiguration addFetchInnerJoin(String field);
 
     /**
      * Adds <code>fields</code> to the set of fully-qualified field names to
@@ -240,7 +240,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 1.0.3
      */
-    public JDBCFetchConfiguration addFetchInnerJoins(Collection<String> fields);
+    JDBCFetchConfiguration addFetchInnerJoins(Collection<String> fields);
 
     /**
      * Affirms if foreign key for a relation field will be pre-fetched as part of the owning object irrespective of
@@ -250,7 +250,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 2.2.0
      */
-    public boolean getIgnoreDfgForFkSelect();
+    boolean getIgnoreDfgForFkSelect();
 
     /**
      * Affirms if foreign key for a relation field will be pre-fetched as part of the owning object irrespective of
@@ -260,5 +260,5 @@ public interface JDBCFetchConfiguration
      *
      * @since 2.2.0
      */
-    public void setIgnoreDfgForFkSelect(boolean b);
+    void setIgnoreDfgForFkSelect(boolean b);
 }

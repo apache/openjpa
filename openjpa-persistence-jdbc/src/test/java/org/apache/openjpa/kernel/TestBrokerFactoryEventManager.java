@@ -20,11 +20,12 @@ package org.apache.openjpa.kernel;
 
 import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
-import org.apache.openjpa.event.BrokerFactoryListener;
 import org.apache.openjpa.event.BrokerFactoryEvent;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.event.BrokerFactoryListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+
+import junit.framework.TestCase;
 
 public class TestBrokerFactoryEventManager
     extends TestCase {
@@ -45,6 +46,7 @@ public class TestBrokerFactoryEventManager
 
         boolean createEventReceived = false;
 
+        @Override
         public void eventFired(BrokerFactoryEvent event) {
             if (event.getEventType()
                 == BrokerFactoryEvent.BROKER_FACTORY_CREATED)

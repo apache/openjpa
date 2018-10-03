@@ -31,6 +31,7 @@ public class TestLocalCache
         super(test);
     }
 
+    @Override
     protected String[] getConfs() {
         return new String[]{
             "openjpa.DataCache", "true",
@@ -40,6 +41,7 @@ public class TestLocalCache
         };
     }
 
+    @Override
     protected String[] getConfs2() {
         return new String[]{
             "openjpa.DataCache", "true",

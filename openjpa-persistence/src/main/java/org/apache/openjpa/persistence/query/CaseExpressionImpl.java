@@ -23,7 +23,9 @@ import java.util.Date;
 import java.util.LinkedList;
 
 public class CaseExpressionImpl implements CaseExpression, Visitable {
-	private LinkedList<WhenClause> _whens = new LinkedList<WhenClause>();
+	
+    private static final long serialVersionUID = 1L;
+    private LinkedList<WhenClause> _whens = new LinkedList<>();
 	private final Object _caseOperand;
 
 	public CaseExpressionImpl() {
@@ -34,126 +36,148 @@ public class CaseExpressionImpl implements CaseExpression, Visitable {
 		_caseOperand = caseOperand;
 	}
 
-	public Expression elseCase(Expression arg) {
+	@Override
+    public Expression elseCase(Expression arg) {
 		return new ElseExpression(this, arg);
 	}
 
-	public Expression elseCase(String arg) {
+	@Override
+    public Expression elseCase(String arg) {
 		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
-	public Expression elseCase(Number arg) {
+	@Override
+    public Expression elseCase(Number arg) {
 		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
-	public Expression elseCase(Date arg) {
+	@Override
+    public Expression elseCase(Date arg) {
 		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
-	public Expression elseCase(Calendar arg) {
+	@Override
+    public Expression elseCase(Calendar arg) {
 		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
-	public Expression elseCase(Class arg) {
+	@Override
+    public Expression elseCase(Class arg) {
 		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
-	public Expression elseCase(Enum<?> arg) {
+	@Override
+    public Expression elseCase(Enum<?> arg) {
 		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
-	public CaseExpression then(Expression then) {
+	@Override
+    public CaseExpression then(Expression then) {
 		assertThenState();
 		_whens.getLast().setThen(then);
 		return this;
 	}
 
-	public CaseExpression then(Number then) {
+	@Override
+    public CaseExpression then(Number then) {
 		assertThenState();
 		_whens.getLast().setThen(then);
 		return this;
 	}
 
-	public CaseExpression then(String then) {
+	@Override
+    public CaseExpression then(String then) {
 		assertThenState();
 		_whens.getLast().setThen(then);
 		return this;
 	}
 
-	public CaseExpression then(Date then) {
+	@Override
+    public CaseExpression then(Date then) {
 		assertThenState();
 		_whens.getLast().setThen(then);
 		return this;
 	}
 
-	public CaseExpression then(Calendar then) {
+	@Override
+    public CaseExpression then(Calendar then) {
 		assertThenState();
 		_whens.getLast().setThen(then);
 		return this;
 	}
 
-	public CaseExpression then(Class then) {
+	@Override
+    public CaseExpression then(Class then) {
 		assertThenState();
 		_whens.getLast().setThen(then);
 		return this;
 	}
 
-	public CaseExpression then(Enum<?> then) {
+	@Override
+    public CaseExpression then(Enum<?> then) {
 		assertThenState();
 		_whens.getLast().setThen(then);
 		return this;
 	}
 
-	public CaseExpression when(Predicate when) {
+	@Override
+    public CaseExpression when(Predicate when) {
 		assertWhenState();
 		WhenClause clause = new WhenClause(when);
 		_whens.add(clause);
 		return this;
 	}
 
-	public CaseExpression when(Expression when) {
+	@Override
+    public CaseExpression when(Expression when) {
 		assertWhenState();
 		WhenClause clause = new WhenClause(when);
 		_whens.add(clause);
 		return this;
 	}
 
-	public CaseExpression when(Number when) {
+	@Override
+    public CaseExpression when(Number when) {
 		assertWhenState();
 		WhenClause clause = new WhenClause(when);
 		_whens.add(clause);
 		return this;
 	}
 
-	public CaseExpression when(String when) {
+	@Override
+    public CaseExpression when(String when) {
 		assertWhenState();
 		WhenClause clause = new WhenClause(when);
 		_whens.add(clause);
 		return this;
 	}
 
-	public CaseExpression when(Date when) {
+	@Override
+    public CaseExpression when(Date when) {
 		assertWhenState();
 		WhenClause clause = new WhenClause(when);
 		_whens.add(clause);
 		return this;
 	}
 
-	public CaseExpression when(Calendar when) {
+	@Override
+    public CaseExpression when(Calendar when) {
 		assertWhenState();
 		WhenClause clause = new WhenClause(when);
 		_whens.add(clause);
 		return this;
 	}
 
-	public CaseExpression when(Class when) {
+	@Override
+    public CaseExpression when(Class when) {
 		assertWhenState();
 		WhenClause clause = new WhenClause(when);
 		_whens.add(clause);
 		return this;
 	}
 
-	public CaseExpression when(Enum<?> when) {
+	@Override
+    public CaseExpression when(Enum<?> when) {
 		assertWhenState();
 		WhenClause clause = new WhenClause(when);
 		_whens.add(clause);
@@ -172,7 +196,8 @@ public class CaseExpressionImpl implements CaseExpression, Visitable {
             throw new IllegalStateException("then() can not be called now");
 	}
 
-	public String asExpression(AliasContext ctx) {
+	@Override
+    public String asExpression(AliasContext ctx) {
 		StringBuilder tmp = new StringBuilder("CASE ");
 		if (_caseOperand != null) {
 			tmp.append(toJPQL(ctx, _caseOperand));
@@ -183,15 +208,18 @@ public class CaseExpressionImpl implements CaseExpression, Visitable {
 		return tmp.toString();
 	}
 
-	public String asProjection(AliasContext ctx) {
+	@Override
+    public String asProjection(AliasContext ctx) {
 		return asExpression(ctx);
 	}
 
-	public String asJoinable(AliasContext ctx) {
+	@Override
+    public String asJoinable(AliasContext ctx) {
 		throw new UnsupportedOperationException();
 	}
 
-	public String getAliasHint(AliasContext ctx) {
+	@Override
+    public String getAliasHint(AliasContext ctx) {
 		throw new UnsupportedOperationException();
 	}
 

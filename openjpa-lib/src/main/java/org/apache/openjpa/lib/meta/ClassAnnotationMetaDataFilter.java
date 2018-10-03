@@ -56,6 +56,7 @@ public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
             _annos[i] = "L" + annos[i].getName().replace('.', '/') + ";";
     }
 
+    @Override
     public boolean matches(Resource rsrc) throws IOException {
         if (_annos.length == 0 || !rsrc.getName().endsWith(".class"))
             return false;

@@ -33,6 +33,9 @@ import javax.persistence.OrderBy;
 @Entity
 public class BidiParent implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue
     private long id;
@@ -41,7 +44,7 @@ public class BidiParent implements Serializable {
 
     @OneToMany(mappedBy="oneToManyParent")
     @OrderBy("name ASC")
-    private List<BidiChild> oneToManyChildren = new ArrayList<BidiChild>();
+    private List<BidiChild> oneToManyChildren = new ArrayList<>();
 
     @OneToOne(fetch=FetchType.LAZY, mappedBy="oneToOneParent")
     private BidiChild oneToOneChild;

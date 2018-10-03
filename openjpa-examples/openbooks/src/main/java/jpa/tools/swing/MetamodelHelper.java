@@ -88,7 +88,7 @@ public class MetamodelHelper {
 
 
     public static <T> List<Attribute<? super T,?>> getAttributes(EntityType<T> type) {
-        List<Attribute<? super T,?>> list = new ArrayList<Attribute<? super T,?>>(type.getAttributes());
+        List<Attribute<? super T,?>> list = new ArrayList<>(type.getAttributes());
         Collections.sort(list, new AttributeComparator());
         return list;
     }
@@ -110,7 +110,7 @@ public class MetamodelHelper {
 
     public static <T> Set<SingularAttribute<? super T, ?>> getIdAttributes(EntityType<T> type) {
         Set<SingularAttribute<? super T,?>> attrs = type.getSingularAttributes();
-        Set<SingularAttribute<? super T,?>> idAttrs = new HashSet<SingularAttribute<? super T,?>>();
+        Set<SingularAttribute<? super T,?>> idAttrs = new HashSet<>();
         for (SingularAttribute<? super T,?> attr : attrs) {
             if (attr.isId()) {
                 idAttrs.add(attr);
@@ -192,7 +192,7 @@ public class MetamodelHelper {
       default: return 5;
       }
     }
-    private static Map<Attribute<?,?>, Method> members = new HashMap<Attribute<?,?>, Method>();
+    private static Map<Attribute<?,?>, Method> members = new HashMap<>();
     private static Object[] EMPTY_ARGS = null;
     private static Class<?>[] EMPTY_CLASSES = null;
     /**

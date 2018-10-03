@@ -22,8 +22,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that you can find a concrete subclass record when passing in its
@@ -34,6 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestFindAbstractClass
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(AbstractBase.class, ConcreteSubclass.class, CLEAR_TABLES);
 

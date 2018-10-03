@@ -41,9 +41,8 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public class DelegatingJoinable
-    implements Joinable {
+public class DelegatingJoinable implements Joinable {
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage
         (DelegatingJoinable.class);
@@ -88,29 +87,35 @@ public class DelegatingJoinable
                 join.getColumns()[0].getFullDBIdentifier()));
     }
 
+    @Override
     public int getFieldIndex() {
         return _join.getFieldIndex();
     }
 
+    @Override
     public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
         JDBCStore store, Joins joins)
         throws SQLException {
         return _join.getPrimaryKeyValue(res, cols, fk, store, joins);
     }
 
+    @Override
     public Column[] getColumns() {
         return _cols;
     }
 
+    @Override
     public Object getJoinValue(Object val, Column col, JDBCStore store) {
         return _join.getJoinValue(val, translate(col), store);
     }
 
+    @Override
     public Object getJoinValue(OpenJPAStateManager sm, Column col,
         JDBCStore store) {
         return _join.getJoinValue(sm, translate(col), store);
     }
 
+    @Override
     public void setAutoAssignedValue(OpenJPAStateManager sm, JDBCStore store,
         Column col, Object autogen) {
         _join.setAutoAssignedValue(sm, store, translate(col), autogen);

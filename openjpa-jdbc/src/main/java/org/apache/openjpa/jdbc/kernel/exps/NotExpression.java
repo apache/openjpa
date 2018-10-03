@@ -33,6 +33,8 @@ import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 class NotExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Exp _exp;
 
     /**
@@ -42,6 +44,7 @@ class NotExpression
         _exp = exp;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         ExpState state = _exp.initialize(sel, ctx, contains);
         return new NotExpState(sel.or(state.joins, null), state);
@@ -61,6 +64,7 @@ class NotExpression
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         buf.append("NOT (");
@@ -68,11 +72,13 @@ class NotExpression
         buf.append(")");
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         _exp.selectColumns(sel, ctx, ((NotExpState) state).state, pks);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _exp.acceptVisit(visitor);

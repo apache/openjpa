@@ -38,7 +38,7 @@ public class Graph {
      * Map each node to list of edges from that node.
      * Using a LinkedHashMap to ensure order of iterator processing.
      */
-    private final Map<Object, Collection<Edge>> _nodes = new LinkedHashMap<Object, Collection<Edge>>();
+    private final Map<Object, Collection<Edge>> _nodes = new LinkedHashMap<>();
 
     /**
      * Clear the graph.
@@ -92,7 +92,7 @@ public class Graph {
      * Return all edges in the graph.
      */
     public Collection<Edge> getEdges() {
-        Collection<Edge> all = new HashSet<Edge>();
+        Collection<Edge> all = new HashSet<>();
         for (Collection<Edge> edges : _nodes.values()) {
         	if (edges != null)
         		all.addAll(edges);
@@ -116,7 +116,7 @@ public class Graph {
      */
     public Collection<Edge> getEdgesTo(Object node) {
     	Collection<Edge> edges = getEdges();
-    	Collection<Edge> to = new ArrayList<Edge>();
+    	Collection<Edge> to = new ArrayList<>();
     	for (Edge edge : edges) {
     		if (edge.isTo(node))
     			to.add(edge);
@@ -129,7 +129,7 @@ public class Graph {
      */
     public Collection<Edge> getEdges(Object from, Object to) {
         Collection<Edge> edges = getEdgesFrom(from);
-        Collection<Edge> matches = new ArrayList<Edge>(edges.size());
+        Collection<Edge> matches = new ArrayList<>(edges.size());
         for (Edge edge : edges) {
             if (edge.isTo(to))
                 matches.add(edge);
@@ -148,7 +148,7 @@ public class Graph {
 
         Collection<Edge> from = _nodes.get(edge.getFrom());
         if (from == null) {
-            from = new ArrayList<Edge>(3);
+            from = new ArrayList<>(3);
             _nodes.put(edge.getFrom(), from);
         }
         from.add(edge);
@@ -156,7 +156,7 @@ public class Graph {
         if (!edge.isDirected() && !edge.getFrom().equals(edge.getTo())) {
             Collection<Edge> to = _nodes.get(edge.getTo());
             if (to == null) {
-                to = new ArrayList<Edge>(3);
+                to = new ArrayList<>(3);
                 _nodes.put(edge.getTo(), to);
             }
             to.add(edge);

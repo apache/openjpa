@@ -20,9 +20,9 @@
 package org.apache.openjpa.persistence.inheritance.entities.testinterfaces;
 
 public interface RootEntity {
-    public Object fetchId();
-    public void updateId(Object obj);
+    Object fetchId();
+    void updateId(Object obj);
 
-    public String getRootEntityData();
-    public void setRootEntityData(String rootEntityData);
+    String getRootEntityData();
+    void setRootEntityData(String rootEntityData);
 }

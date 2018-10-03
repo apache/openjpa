@@ -21,7 +21,6 @@ package org.apache.openjpa.lib.util;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.ref.Reference;
 
 /**
  * Map in which the key, value, or both may be weak/soft references.
@@ -33,6 +32,8 @@ public class ReferenceHashMap
     extends org.apache.commons.collections4.map.ReferenceMap
     implements ReferenceMap, SizedMap {
 
+    
+    private static final long serialVersionUID = 1L;
     private int _maxSize = Integer.MAX_VALUE;
 
     public ReferenceHashMap(ReferenceStrength keyType, ReferenceStrength valueType) {
@@ -44,29 +45,36 @@ public class ReferenceHashMap
         super(keyType, valueType, capacity, loadFactor);
     }
 
+    @Override
     public int getMaxSize() {
         return _maxSize;
     }
 
+    @Override
     public void setMaxSize(int maxSize) {
         _maxSize = (maxSize < 0) ? Integer.MAX_VALUE : maxSize;
         if (_maxSize != Integer.MAX_VALUE)
             removeOverflow(_maxSize);
     }
 
+    @Override
     public boolean isFull() {
         return size() >= _maxSize;
     }
 
+    @Override
     public void overflowRemoved(Object key, Object value) {
     }
 
+    @Override
     public void valueExpired(Object key) {
     }
 
+    @Override
     public void keyExpired(Object value) {
     }
 
+    @Override
     public void removeExpired() {
         purge();
     }
@@ -82,6 +90,7 @@ public class ReferenceHashMap
         }
     }
 
+    @Override
     protected void addMapping(int hashIndex, int hashCode, Object key,
         Object value) {
         if (_maxSize != Integer.MAX_VALUE)
@@ -89,16 +98,19 @@ public class ReferenceHashMap
         super.addMapping(hashIndex, hashCode, key, value);
     }
 
+    @Override
     protected ReferenceEntry createEntry(HashEntry next, int hashCode, Object key,
         Object value) {
         return new AccessibleEntry(this, next, hashCode, key, value);
     }
 
+    @Override
     protected void doWriteObject(ObjectOutputStream out) throws IOException {
         out.writeInt(_maxSize);
         super.doWriteObject(out);
     }
 
+    @Override
     protected void doReadObject(ObjectInputStream in)
         throws ClassNotFoundException, IOException {
         _maxSize = in.readInt();

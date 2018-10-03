@@ -30,6 +30,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class BindVariableExpression
     extends Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final BoundVariable _var;
     private final Val _val;
 
@@ -66,6 +68,7 @@ class BindVariableExpression
         return (Collection) values;
     }
 
+    @Override
     protected boolean eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         // if the collection is empty no possible variable evals to true
@@ -75,6 +78,7 @@ class BindVariableExpression
         return true;
     }
 
+    @Override
     protected boolean eval(Collection candidates, StoreContext ctx,
         Object[] params) {
         if (candidates == null || candidates.isEmpty())
@@ -83,6 +87,7 @@ class BindVariableExpression
         return eval(obj, obj, ctx, params);
 	}
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _var.acceptVisit(visitor);

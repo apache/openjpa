@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -27,8 +28,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.SolidDBDictionary;
-import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 /**
  * <p>Tests grouping and having capabilities.</p>
@@ -40,6 +41,7 @@ public abstract class GroupingTestCase
 
     protected abstract void prepareQuery(Query q);
 
+    @Override
     public void setUp() {
         super.setUp(AllFieldTypes.class, CLEAR_TABLES,
             "openjpa.Compatibility", "JPQL=warn");

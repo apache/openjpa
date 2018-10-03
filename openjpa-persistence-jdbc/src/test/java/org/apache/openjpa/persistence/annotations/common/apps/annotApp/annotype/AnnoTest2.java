@@ -20,9 +20,27 @@ package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity
 @Table(name = "ANNOTEST2")
@@ -122,6 +140,8 @@ public class AnnoTest2 {
 
     public static class Oid implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public long pk1;
         public String pk2;
 
@@ -143,6 +163,7 @@ public class AnnoTest2 {
             }
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o == this)
                 return true;
@@ -156,10 +177,12 @@ public class AnnoTest2 {
             return pk2.equals(other.pk2);
         }
 
+        @Override
         public int hashCode() {
             return ((int) pk1) + (pk2 == null ? 0 : pk2.hashCode());
         }
 
+        @Override
         public String toString() {
             return pk1 + "," + (pk2 == null ? "null" : pk2);
         }

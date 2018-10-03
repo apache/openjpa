@@ -93,6 +93,7 @@ public class USAAddress
         this.zip = value;
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(super.toString())

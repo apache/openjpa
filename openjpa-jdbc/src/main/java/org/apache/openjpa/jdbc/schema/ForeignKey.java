@@ -40,9 +40,8 @@ import org.apache.openjpa.util.InvalidStateException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public class ForeignKey
-    extends Constraint {
+public class ForeignKey extends Constraint {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Logical foreign key; links columns, but does not perform any action
@@ -163,6 +162,7 @@ public class ForeignKey
      * @param table the local table of the foreign key
      * @deprecated
      */
+    @Deprecated
     public ForeignKey(String name, Table table) {
         super(name, table);
     }
@@ -171,6 +171,7 @@ public class ForeignKey
         super(name, table);
     }
 
+    @Override
     public boolean isLogical() {
         return _delAction == ACTION_NONE;
     }
@@ -235,6 +236,7 @@ public class ForeignKey
      * The name of the primary key table.
      * @deprecated
      */
+    @Deprecated
     public String getPrimaryKeyTableName() {
         return getPrimaryKeyTableIdentifier().getName();
     }
@@ -251,6 +253,7 @@ public class ForeignKey
      * key table name on foreign keys that have not already been joined.
      * @deprecated
      */
+    @Deprecated
     public void setPrimaryKeyTableName(String pkTableName) {
         setPrimaryKeyTableIdentifier(DBIdentifier.newTable(pkTableName));
     }
@@ -265,6 +268,7 @@ public class ForeignKey
      * The name of the primary key table's schema.
      * @deprecated
      */
+    @Deprecated
     public String getPrimaryKeySchemaName() {
         return getPrimaryKeySchemaIdentifier().getName();
     }
@@ -282,6 +286,7 @@ public class ForeignKey
      * joined.
      * @deprecated
      */
+    @Deprecated
     public void setPrimaryKeySchemaName(String pkSchemaName) {
         setPrimaryKeySchemaIdentifier(DBIdentifier.newSchema(pkSchemaName));
     }
@@ -296,6 +301,7 @@ public class ForeignKey
      * The name of the primary key column.
      * @deprecated
      */
+    @Deprecated
     public String getPrimaryKeyColumnName() {
         return getPrimaryKeyColumnIdentifier().getName();
     }
@@ -310,6 +316,7 @@ public class ForeignKey
      * joined.
      * @deprecated
      */
+    @Deprecated
     public void setPrimaryKeyColumnName(String pkColumnName) {
         setPrimaryKeyColumnIdentifier(DBIdentifier.newColumn(pkColumnName));
     }
@@ -785,6 +792,7 @@ public class ForeignKey
      * Return the name of the foreignkey constraint as defined in the database.
      * @deprecated
      */
+    @Deprecated
     public String loadNameFromDB(DBDictionary dbdict, Connection conn) {
         return loadIdentifierFromDB(dbdict, conn).getName();
     }
@@ -920,10 +928,12 @@ public class ForeignKey
             return _fk;
         }
 
+        @Override
         public int hashCode() {
             return getFk().getIdentifier() != null ? getFk().getIdentifier().hashCode() : getFk().hashCode();
         }
 
+        @Override
         public boolean equals(Object fkObj) {
             if (fkObj == this) {
                 return true;

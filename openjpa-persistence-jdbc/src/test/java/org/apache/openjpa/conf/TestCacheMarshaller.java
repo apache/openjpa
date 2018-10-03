@@ -26,6 +26,7 @@ public class TestCacheMarshaller
 
     private CacheMarshaller cm;
 
+    @Override
     public void setUp() {
         setUp(new Object[] { "openjpa.CacheMarshallers",
             "default(Id=" + getClass().getName() + ", ValidationPolicy="

@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.dbcs;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /*
@@ -30,6 +27,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestDBCS extends SQLListenerTestCase {
 
+    @Override
     public void setUp() {
         setUp(MyDBCSEntity.class);
     }

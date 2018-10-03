@@ -29,6 +29,9 @@ import java.util.Map;
 class InKeyExpression
     extends InExpression {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Supply the value to test and the constant to obtain
      * the parameters from.
@@ -40,6 +43,7 @@ class InKeyExpression
     /**
      * Return the collection to test for containment with.
      */
+    @Override
     protected Collection getCollection(ExpContext ctx, ExpState state) {
         Map map = (Map) getConstant().getValue(ctx, state);
         return (map == null) ? null : map.keySet();

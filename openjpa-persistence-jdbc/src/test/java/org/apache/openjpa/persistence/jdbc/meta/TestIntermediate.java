@@ -32,11 +32,8 @@ import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
 
 
 public class TestIntermediate
@@ -53,6 +50,7 @@ public class TestIntermediate
     public TestIntermediate() {
     }
 
+    @Override
     public void setUp() {
         RuntimeTest1 pc = new RuntimeTest1("pc", 1);
         RuntimeTest1 rel = new RuntimeTest1("rel", 2);

@@ -27,15 +27,16 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
+import java.util.Iterator;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;
 import org.apache.openjpa.persistence.Extent;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.jdbc.common.apps.MultiE;
+import org.apache.openjpa.persistence.jdbc.common.apps.MultiF;
 
 
 public class TestMetaDataValueIndicator
@@ -53,6 +54,7 @@ public class TestMetaDataValueIndicator
     public TestMetaDataValueIndicator() {
     }
 
+    @Override
     public void setUp() {
         // ### I hate that we have to do this
         Class c = MultiE.class;
@@ -70,6 +72,7 @@ public class TestMetaDataValueIndicator
             pm.getClassLoader(), true);
     }
 
+    @Override
     public void tearDown()
     throws Exception {
         if (pm.getTransaction().isActive())

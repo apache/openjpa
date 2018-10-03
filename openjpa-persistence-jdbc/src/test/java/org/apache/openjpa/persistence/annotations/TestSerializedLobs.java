@@ -18,13 +18,13 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Date;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
 
 
 /**
@@ -42,6 +42,7 @@ public class TestSerializedLobs extends AnnotationTestCase
 
     private static final Date DATE = new Date();
 
+    @Override
     public void setUp() {
         deleteAll(AnnoTest1.class);
     }

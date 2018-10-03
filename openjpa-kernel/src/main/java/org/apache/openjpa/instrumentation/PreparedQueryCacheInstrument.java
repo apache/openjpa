@@ -26,62 +26,62 @@ public interface PreparedQueryCacheInstrument {
     /**
      * Returns number of total exec requests since start.
      */
-    public long getTotalExecutionCount();
+    long getTotalExecutionCount();
 
     /**
      * Returns number of total exec requests since start.
      */
-    public long getTotalExecutionCount(String query);
+    long getTotalExecutionCount(String query);
 
     /**
      * Returns number of total execution requests since last reset
      */
-    public long getExecutionCount();
+    long getExecutionCount();
 
     /**
      * Returns number of total execution requests since last reset
      */
-    public long getExecutionCount(String query);
+    long getExecutionCount(String query);
 
     /**
      * Returns number of total read requests that have been found in cache since
      * last reset.
      */
-    public long getHitCount();
+    long getHitCount();
 
     /**
      * Returns number of total read requests that have been found in cache since
      * last reset.
      */
-    public long getHitCount(String query);
+    long getHitCount(String query);
 
     /**
      * Returns number of total read requests that has been found since start.
      */
-    public long getTotalHitCount();
+    long getTotalHitCount();
 
     /**
      * Returns number of total read requests that has been found since start.
      */
-    public long getTotalHitCount(String query);
+    long getTotalHitCount(String query);
 
     /**
      * Resets cache statistics
      */
-    public void reset();
+    void reset();
 
     /**
      * Returns date since cache statistics collection were last reset.
      */
-    public Date sinceDate();
+    Date sinceDate();
 
     /**
      * Returns date cache statistics collection started.
      */
-    public Date startDate();
+    Date startDate();
 
     /**
      * Returns all queries currently tracked in the cache.
      */
-    public Set<String> queries();
+    Set<String> queries();
 }

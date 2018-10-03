@@ -23,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 /**
  * Displays color codes of each attribute type.
@@ -30,8 +31,8 @@ import javax.swing.JPanel;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class AttributeLegendView extends JPanel {
+    private static final long serialVersionUID = 1L;
 
     public AttributeLegendView() {
         super(true);
@@ -51,7 +52,7 @@ public class AttributeLegendView extends JPanel {
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
                 bimage.setRGB(i, j, c.getRGB());
-        JLabel label = new JLabel(text, new ImageIcon(bimage), JLabel.LEADING);
+        JLabel label = new JLabel(text, new ImageIcon(bimage), SwingConstants.LEADING);
         return label;
     }
 

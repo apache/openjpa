@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestDerivedIdentity  extends SQLListenerTestCase {
 
+    @Override
     public void setUp() {
         setUp(EBigDecimalID.class, EDBigDecimalID.class,
             EBigIntegerID.class, EDBigIntegerID.class,

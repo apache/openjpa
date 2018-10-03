@@ -70,6 +70,7 @@ public class PointbaseDictionary
         reservedWordSet.add("NAME");
     }
 
+    @Override
     public int getPreferredType(int type) {
         switch (type) {
             case Types.LONGVARCHAR:
@@ -107,6 +108,7 @@ public class PointbaseDictionary
             getFullIdentifier(index.getTable(), false), index.getIdentifier()));
     }
 
+    @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
         FilterValue length) {
         // SUBSTRING in Pointbase is of the form:
@@ -122,6 +124,7 @@ public class PointbaseDictionary
         buf.append(")");
     }
 
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("(POSITION(");

@@ -34,6 +34,8 @@ public class Lit
     extends Const
     implements Literal {
 
+    
+    private static final long serialVersionUID = 1L;
     private Object _val;
     private int _ptype;
     private boolean _isRaw;
@@ -50,28 +52,34 @@ public class Lit
             _isRaw = true;
     }
 
+    @Override
     public Class getType() {
         if (_isRaw && _rawVal != null)
             return Raw.class;
         return (_val == null) ? Object.class : _val.getClass();
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _val = Filters.convert(_val, type);
     }
 
+    @Override
     public int getParseType() {
         return _ptype;
     }
 
+    @Override
     public Object getValue() {
         return _val;
     }
 
+    @Override
     public void setValue(Object val) {
         _val = val;
     }
 
+    @Override
     public Object getValue(Object[] params) {
         return getValue();
     }
@@ -88,6 +96,7 @@ public class Lit
         return _rawVal;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         return new LitExpState();
     }
@@ -102,6 +111,7 @@ public class Lit
         public int otherLength;
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
@@ -113,6 +123,7 @@ public class Lit
             lstate.sqlValue = _val;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         LitExpState lstate = (LitExpState) state;

@@ -32,6 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestJoinVersionField extends SingleEMFTestCase {
 
+    @Override
     public void setUp(){
         setUp(CLEAR_TABLES, Author.class,Document.class);
         createTestData();

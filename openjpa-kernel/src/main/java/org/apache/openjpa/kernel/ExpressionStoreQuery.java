@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;
@@ -86,6 +86,9 @@ import org.apache.openjpa.util.UserException;
 public class ExpressionStoreQuery
     extends AbstractStoreQuery {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (ExpressionStoreQuery.class);
 
@@ -109,22 +112,27 @@ public class ExpressionStoreQuery
      */
     public Resolver getResolver() {
         return new Resolver() {
+            @Override
             public Class classForName(String name, String[] imports) {
                 return ctx.classForName(name, imports);
             }
 
+            @Override
             public FilterListener getFilterListener(String tag) {
                 return ctx.getFilterListener(tag);
             }
 
+            @Override
             public AggregateListener getAggregateListener(String tag) {
                 return ctx.getAggregateListener(tag);
             }
 
+            @Override
             public OpenJPAConfiguration getConfiguration() {
                 return ctx.getStoreContext().getConfiguration();
             }
 
+            @Override
             public QueryContext getQueryContext() {
                 return ctx;
             }
@@ -136,11 +144,13 @@ public class ExpressionStoreQuery
      * The facade should call this method twice: once with the query string,
      * and again with the parsed state.
      */
+    @Override
     public boolean setQuery(Object query) {
         _parsed = query;
         return true;
     }
 
+    @Override
     public FilterListener getFilterListener(String tag) {
         for (int i = 0; i < _listeners.length; i++)
             if (_listeners[i].getTag().equals(tag))
@@ -148,33 +158,40 @@ public class ExpressionStoreQuery
         return null;
     }
 
+    @Override
     public Object newCompilation() {
         if (_parsed != null)
             return _parsed;
         return _parser.parse(ctx.getQueryString(), this);
     }
 
+    @Override
     public Object getCompilation() {
         return _parsed;
     }
 
+    @Override
     public void populateFromCompilation(Object comp) {
         _parser.populate(comp, this);
     }
 
+    @Override
     public void invalidateCompilation() {
         _parsed = null;
     }
 
+    @Override
     public boolean supportsInMemoryExecution() {
         return true;
     }
 
+    @Override
     public Executor newInMemoryExecutor(ClassMetaData meta, boolean subs) {
         return new InMemoryExecutor(this, meta, subs, _parser,
         		ctx.getCompilation(), new InMemoryExpressionFactory());
     }
 
+    @Override
     public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
         return new DataStoreExecutor(this, meta, subs, _parser,
             ctx.getCompilation());
@@ -330,12 +347,14 @@ public class ExpressionStoreQuery
             }
         }
 
+        @Override
         public final void validate(StoreQuery q) {
             QueryExpressions exps = assertQueryExpression();
             ValidateGroupingExpressionVisitor.validate(q.getContext(), exps);
         }
 
 
+        @Override
         public void getRange(StoreQuery q, Object[] params, Range range) {
             QueryExpressions exps = assertQueryExpression();
             if (exps.range.length == 0)
@@ -360,46 +379,57 @@ public class ExpressionStoreQuery
                 q.getContext().getQueryString()));
         }
 
+        @Override
         public final Class<?> getResultClass(StoreQuery q) {
             return assertQueryExpression().resultClass;
         }
 
+        @Override
         public final ResultShape<?> getResultShape(StoreQuery q) {
             return assertQueryExpression().shape;
         }
 
+        @Override
         public final boolean[] getAscending(StoreQuery q) {
             return assertQueryExpression().ascending;
         }
 
+        @Override
         public final String getAlias(StoreQuery q) {
             return assertQueryExpression().alias;
         }
 
+        @Override
         public final String[] getProjectionAliases(StoreQuery q) {
             return assertQueryExpression().projectionAliases;
         }
 
+        @Override
         public Class<?>[] getProjectionTypes(StoreQuery q) {
             return null;
         }
 
+        @Override
         public final int getOperation(StoreQuery q) {
             return assertQueryExpression().operation;
         }
 
+        @Override
         public final boolean isAggregate(StoreQuery q) {
             return assertQueryExpression().isAggregate();
         }
 
+        @Override
         public final boolean isDistinct(StoreQuery q) {
             return assertQueryExpression().isDistinct();
         }
 
+        @Override
         public final boolean hasGrouping(StoreQuery q) {
             return assertQueryExpression().grouping.length > 0;
         }
 
+        @Override
         public final OrderedMap<Object,Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return assertQueryExpression().parameterTypes;
         }
@@ -407,6 +437,7 @@ public class ExpressionStoreQuery
         /**
          * Creates a Object[] from the values of the given user parameters.
          */
+        @Override
         public Object[] toParameterArray(StoreQuery q, Map<?,?> userParams) {
             if (userParams == null || userParams.isEmpty())
                 return StoreQuery.EMPTY_OBJECTS;
@@ -469,10 +500,12 @@ public class ExpressionStoreQuery
             }
         }
 
+        @Override
         public final Map getUpdates(StoreQuery q) {
             return assertQueryExpression().updates;
         }
 
+        @Override
         public final ClassMetaData[] getAccessPathMetaDatas(StoreQuery q) {
             QueryExpressions[] exps = getQueryExpressions();
             if (exps.length == 1)
@@ -488,6 +521,7 @@ public class ExpressionStoreQuery
                 (new ClassMetaData[metas.size()]);
         }
 
+        @Override
         public boolean isPacking(StoreQuery q) {
             return false;
         }
@@ -548,6 +582,7 @@ public class ExpressionStoreQuery
                 _ctx = ctx;
             }
 
+            @Override
             public void enter(Value val) {
                 if (_grouping) {
                     if (val instanceof Path) {
@@ -566,6 +601,7 @@ public class ExpressionStoreQuery
                 }
             }
 
+            @Override
             public void exit(Value val) {
                 if (val == _agg)
                     _agg = null;
@@ -580,6 +616,8 @@ public class ExpressionStoreQuery
         extends AbstractExpressionExecutor
         implements Executor, Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         private final ClassMetaData _meta;
         private final boolean _subs;
         private final InMemoryExpressionFactory _factory;
@@ -612,10 +650,12 @@ public class ExpressionStoreQuery
             }
         }
 
+        @Override
         public QueryExpressions[] getQueryExpressions() {
             return _exps;
         }
 
+        @Override
         public ResultObjectProvider executeQuery(StoreQuery q,
             Object[] params, Range range) {
             // execute in memory for candidate collection;
@@ -673,12 +713,14 @@ public class ExpressionStoreQuery
             return rop;
         }
 
+        @Override
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
             Range range) {
             // in memory queries have no datastore actions to perform
             return StoreQuery.EMPTY_STRINGS;
         }
 
+        @Override
         public Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int orderIndex) {
             // if this is a projection, then we have to order on something
@@ -700,6 +742,7 @@ public class ExpressionStoreQuery
                 getStoreContext(), params);
         }
 
+        @Override
         public Class[] getProjectionTypes(StoreQuery q) {
             return _projTypes;
         }
@@ -716,6 +759,7 @@ public class ExpressionStoreQuery
                 _ctx = ctx;
             }
 
+            @Override
             public void enter(Value val) {
                 if (!val.isVariable())
                     return;
@@ -735,6 +779,8 @@ public class ExpressionStoreQuery
         extends AbstractExpressionExecutor
         implements Executor, Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         private ClassMetaData _meta;
         private ClassMetaData[] _metas;
         private boolean _subs;
@@ -773,10 +819,12 @@ public class ExpressionStoreQuery
             }
         }
 
+        @Override
         public QueryExpressions[] getQueryExpressions() {
             return _exps;
         }
 
+        @Override
         public ResultObjectProvider executeQuery(StoreQuery q,
             Object[] params, Range range) {
             range.lrs &= !isAggregate(q) && !hasGrouping(q);
@@ -784,6 +832,7 @@ public class ExpressionStoreQuery
                 _subs, _facts, _exps, params, range);
         }
 
+        @Override
         public Number executeDelete(StoreQuery q, Object[] params) {
             try {
                 Number num =
@@ -801,6 +850,7 @@ public class ExpressionStoreQuery
             }
         }
 
+        @Override
         public Number executeUpdate(StoreQuery q, Object[] params) {
             try {
                 Number num =
@@ -818,12 +868,14 @@ public class ExpressionStoreQuery
             }
         }
 
+        @Override
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
             Range range) {
             return ((ExpressionStoreQuery) q).getDataStoreActions(_meta,
                 _metas, _subs, _facts, _exps, params, range);
         }
 
+        @Override
         public Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int orderIndex) {
             // if this is a projection, then we have to order on something
@@ -856,6 +908,7 @@ public class ExpressionStoreQuery
                 q.getContext().getStoreContext(), params);
         }
 
+        @Override
         public Class[] getProjectionTypes(StoreQuery q) {
             return _projTypes;
 		}

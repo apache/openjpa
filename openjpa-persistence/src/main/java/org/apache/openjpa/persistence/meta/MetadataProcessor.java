@@ -21,6 +21,11 @@ package org.apache.openjpa.persistence.meta;
 import java.util.List;
 import java.util.Set;
 
+import javax.lang.model.element.TypeElement;
+
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+
 /**
  * Collection of generic utility functions for extracting persistence related
  * metadata from user specified metadata available in various source
@@ -50,7 +55,7 @@ public interface MetadataProcessor<T,M> {
 	 * @return an integer denoting the type of access. The integer value
 	 * corresponds to {@linkplain ClassMetaData#getAccessType()}.
 	 */
-	public int determineTypeAccess(T t);
+	int determineTypeAccess(T t);
 
 	/**
 	 * Determine the access type of the given member.
@@ -58,26 +63,26 @@ public interface MetadataProcessor<T,M> {
 	 * @return an integer denoting the type of access. The integer value
 	 * corresponds to {@linkplain FieldMetaData#getAccessType()}.
 	 */
-	public int determineMemberAccess(M m);
+	int determineMemberAccess(M m);
 
 	/**
 	 * Get the persistent members of the given type.
 	 *
 	 */
-	public Set<M> getPersistentMembers(T t);
+	Set<M> getPersistentMembers(T t);
 
 	/**
 	 * Gets the violations, if any.
 	 *
 	 * @return null or empty list if no exceptions.
 	 */
-	public List<Exception> validateAccess(T t);
+	List<Exception> validateAccess(T t);
 
 	/**
      * Affirms if the members of given type are using both field and property
 	 * based access.
 	 */
-	public boolean isMixedAccess(T t);
+	boolean isMixedAccess(T t);
 
-	public T getPersistentSupertype(T t);
+	T getPersistentSupertype(T t);
 }

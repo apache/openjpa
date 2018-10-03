@@ -34,6 +34,7 @@ public class TestQueryLock extends BaseQueryTest {
         super(test);
     }
 
+    @Override
     public void setUp() {
         deleteAll(Entity1.class);
     }

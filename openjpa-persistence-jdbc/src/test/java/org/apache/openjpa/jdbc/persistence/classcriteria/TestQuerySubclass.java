@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.persistence.classcriteria;
 
 import java.util.Collection;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -26,6 +27,7 @@ public class TestQuerySubclass extends SingleEMFTestCase {
 
     private OpenJPAEntityManager em;
 
+    @Override
     public void setUp() {
         setUp("openjpa.Compatibility",
             "superclassDiscriminatorStrategyByDefault=true", CLEAR_TABLES,

@@ -25,7 +25,9 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class LikeExpression extends BinaryExpressionPredicate {
-	private final Object  _echar;
+	
+    private static final long serialVersionUID = 1L;
+    private final Object  _echar;
 	private final boolean _escaped;
 
 	public LikeExpression(Expression e, Expression pattern, Object echar) {

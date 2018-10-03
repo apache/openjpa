@@ -27,12 +27,17 @@ package org.apache.openjpa.meta;
 public class MetaDataInheritanceComparator
     extends InheritanceComparator {
 
+    
+    private static final long serialVersionUID = 1L;
+
+    @Override
     protected Class toClass(Object elem) {
         if (elem == null)
             return null;
         return ((ClassMetaData) elem).getDescribedType();
     }
 
+    @Override
     public int compare(Object o1, Object o2) {
         if (o1 == o2)
             return 0;

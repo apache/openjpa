@@ -29,9 +29,9 @@ public class EntityA {
 
     private String secName;
 
-    private Set<String> delimSet = new HashSet<String>();
+    private Set<String> delimSet = new HashSet<>();
     private Map<String, String> delimMap =
-        new HashMap<String, String>();
+        new HashMap<>();
 
     public EntityA(){
     }

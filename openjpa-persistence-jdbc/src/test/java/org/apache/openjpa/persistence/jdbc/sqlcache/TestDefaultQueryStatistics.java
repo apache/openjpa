@@ -38,13 +38,14 @@ public class TestDefaultQueryStatistics extends SingleEMFTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        statistics = new QueryStatistics.Default<String>();
+        statistics = new QueryStatistics.Default<>();
     }
 
     public void testThreadSafety() throws Exception{
         final QueryStatistics<String> finalStats = statistics;
 
         Runnable runner = new Runnable() {
+            @Override
             public void run() {
                 for (int i = 0; i < 10000; i++) {
                     finalStats.recordExecution("query " + Thread.currentThread().getId() + " " + i);
@@ -52,7 +53,7 @@ public class TestDefaultQueryStatistics extends SingleEMFTestCase {
             }
         };
 
-        List<Thread> threads = new ArrayList<Thread>();
+        List<Thread> threads = new ArrayList<>();
         for(int i = 0;i<10;i++){
             threads.add(new Thread(runner));
         }

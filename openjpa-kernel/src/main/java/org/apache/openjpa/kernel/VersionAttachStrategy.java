@@ -50,6 +50,7 @@ class VersionAttachStrategy
     private static final Localizer _loc = Localizer.forPackage
         (VersionAttachStrategy.class);
 
+    @Override
     protected Object getDetachedObjectId(AttachManager manager,
         Object toAttach) {
         Broker broker = manager.getBroker();
@@ -62,12 +63,14 @@ class VersionAttachStrategy
             meta);
     }
 
+    @Override
     protected void provideField(Object toAttach, StateManagerImpl sm,
         int field) {
         sm.provideField(ImplHelper.toPersistenceCapable(toAttach,
             sm.getContext().getConfiguration()), this, field);
     }
 
+    @Override
     public Object attach(AttachManager manager, Object toAttach,
         ClassMetaData meta, PersistenceCapable into, OpenJPAStateManager owner,
         ValueMetaData ownerMeta, boolean explicit) {

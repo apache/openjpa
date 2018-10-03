@@ -25,6 +25,7 @@ import javax.persistence.Query;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestSubQuery extends SingleEMFTestCase {
+    @Override
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, MaxQueryEntity.class, MaxQueryMapEntity.class);
         populate();

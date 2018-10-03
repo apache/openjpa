@@ -18,12 +18,10 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import java.util.*;
+import java.util.List;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.OrderByEntity;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
@@ -42,6 +40,7 @@ public class TestEntityOrderBy extends AnnotationTestCase
 
 //    private ClassMetaData _meta;
 
+    @Override
     public void setUp()
     {
 //        _meta = ((OpenJPAConfiguration) getConfiguration()).

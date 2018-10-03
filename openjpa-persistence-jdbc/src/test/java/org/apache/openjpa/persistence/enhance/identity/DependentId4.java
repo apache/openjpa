@@ -22,6 +22,7 @@ public class DependentId4 {
     public long id;
     public long parent;
 
+    @Override
     public boolean equals(Object o) {
     	if (!(o instanceof DependentId4)) return false;
     	if (id != ((DependentId4)o).id) return false;
@@ -29,6 +30,7 @@ public class DependentId4 {
        	return true;
     }
 
+    @Override
     public int hashCode() {
     	return (int) (id + 31 * parent);
     }

@@ -34,8 +34,8 @@ import javax.swing.JButton;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class RoundButton extends JButton {
+    private static final long serialVersionUID = 1L;
     protected Shape shape, base;
 
     public RoundButton() {

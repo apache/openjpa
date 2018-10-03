@@ -26,7 +26,9 @@ package org.apache.openjpa.persistence.query;
  */
 class BinaryExpressionPredicate extends AbstractVisitable
     implements Predicate, Visitable {
-	protected final Expression _e1;
+	
+    private static final long serialVersionUID = 1L;
+    protected final Expression _e1;
 	protected final Expression _e2;
 	protected final BinaryConditionalOperator   _op;
 	private final BinaryConditionalOperator   _nop;
@@ -52,21 +54,25 @@ class BinaryExpressionPredicate extends AbstractVisitable
 		return _op;
 	}
 
-	public Predicate and(Predicate predicate) {
+	@Override
+    public Predicate and(Predicate predicate) {
 		return new AndPredicate(this, predicate);
 	}
 
-	public Predicate or(Predicate predicate) {
+	@Override
+    public Predicate or(Predicate predicate) {
 		return new OrPredicate(this, predicate);
 	}
 
-	public Predicate not() {
+	@Override
+    public Predicate not() {
 		if (  _nop == null)
             throw new UnsupportedOperationException(this.toString());
 		return new BinaryExpressionPredicate(_e1, _nop, _op, _e2);
 	}
 
-	public String asExpression(AliasContext ctx) {
+	@Override
+    public String asExpression(AliasContext ctx) {
 		return asExpression((Visitable)_e1, ctx)
 		     + SPACE + _op + SPACE
 		     + asExpression((Visitable)_e2, ctx);

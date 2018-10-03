@@ -43,15 +43,20 @@ import org.apache.openjpa.util.MetaDataException;
 public class SubclassJoinDiscriminatorStrategy
     extends AbstractDiscriminatorStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final String ALIAS = "subclass-join";
 
     private static final Localizer _loc = Localizer.forPackage
         (SubclassJoinDiscriminatorStrategy.class);
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     public void map(boolean adapt) {
         ClassMapping cls = disc.getClassMapping();
         if (cls.getJoinablePCSuperclassMapping() != null
@@ -67,6 +72,7 @@ public class SubclassJoinDiscriminatorStrategy
             throw new MetaDataException(_loc.get("outer-join-support", cls));
     }
 
+    @Override
     public boolean select(Select sel, ClassMapping mapping) {
         if (isFinal)
             return false;
@@ -103,6 +109,7 @@ public class SubclassJoinDiscriminatorStrategy
         return seld;
     }
 
+    @Override
     public Class getClass(JDBCStore store, ClassMapping base, Result res)
         throws SQLException, ClassNotFoundException {
         if (isFinal)
@@ -133,6 +140,7 @@ public class SubclassJoinDiscriminatorStrategy
         return derived;
     }
 
+    @Override
     public boolean hasClassConditions(ClassMapping base, boolean subclasses) {
         if (isFinal || subclasses)
             return false;
@@ -142,6 +150,7 @@ public class SubclassJoinDiscriminatorStrategy
         return true;
     }
 
+    @Override
     public SQLBuffer getClassConditions(Select sel, Joins joins,
         ClassMapping base, boolean subclasses) {
         // add conditions making sure no subclass tables have records for

@@ -41,6 +41,7 @@ public class TestGraph
     private Edge _edge3 = new Edge(_node1, _node3, false);
     private Edge _edge4 = new Edge(_node2, _node2, false);
 
+    @Override
     public void setUp() {
         _graph.addNode(_node1);
         _graph.addNode(_node2);

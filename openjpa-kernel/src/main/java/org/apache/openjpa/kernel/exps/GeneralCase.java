@@ -30,6 +30,9 @@ import org.apache.openjpa.lib.util.Localizer;
 class GeneralCase
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage(
         GeneralCase.class);
 
@@ -41,6 +44,7 @@ class GeneralCase
         _val = val;
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig, StoreContext ctx,
         Object[] params) {
         for (int i = 0; i < _exp.length; i++) {
@@ -72,6 +76,7 @@ class GeneralCase
         return _val.eval(candidate, null, ctx, params);
     }
 
+    @Override
     public Class getType() {
         Class c1 = _val.getType();
         for (int i = 0; i < _exp.length; i++) {
@@ -81,9 +86,11 @@ class GeneralCase
         return c1;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         for (int i = 0; i < _exp.length; i++)

@@ -46,9 +46,12 @@ import org.apache.openjpa.meta.JavaTypes;
  */
 public class LobFieldStrategy extends AbstractFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     private int fieldType;
     private boolean isBlob;
 
+    @Override
     public void map(boolean adapt) {
         assertNotMappedBy();
         field.mapJoin(adapt, false);
@@ -79,16 +82,19 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         field.mapPrimaryKey(adapt);
     }
 
+    @Override
     public Boolean isCustomInsert(OpenJPAStateManager sm, JDBCStore store) {
         return null;
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Select sel = createSelect(sm, store);
         store.getDBDictionary().deleteStream(store, sel);
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Object ob = toDataStoreValue(sm.fetchObjectField
@@ -106,6 +112,7 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         }
     }
 
+    @Override
     public void customInsert(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         Object ob = toDataStoreValue(sm.fetchObjectField
@@ -124,10 +131,12 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         }
     }
 
+    @Override
     public Boolean isCustomUpdate(OpenJPAStateManager sm, JDBCStore store) {
         return null;
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Object ob = toDataStoreValue(sm.fetchObjectField
@@ -145,6 +154,7 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         }
     }
 
+    @Override
     public void customUpdate(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         Object ob = toDataStoreValue(sm.fetchObjectField
@@ -163,6 +173,7 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         }
     }
 
+    @Override
     public int supportsSelect(Select sel, int type, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch) {
         if (type == Select.TYPE_JOINLESS && sel.isSelected(field.getTable()))
@@ -170,12 +181,14 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         return 0;
     }
 
+    @Override
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode) {
         sel.select(field.getColumns()[0], field.join(sel));
         return 1;
     }
 
+    @Override
     public void load(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res) throws SQLException {
         Column col = field.getColumns()[0];
@@ -188,11 +201,13 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         }
     }
 
+    @Override
     protected void assertNotMappedBy() {
         if (field != null && field.getMappedBy() != null)
             throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setFieldMapping(FieldMapping owner) {
         field = owner;
         if (owner.getElementMapping().getMappingRepository().getDBDictionary()

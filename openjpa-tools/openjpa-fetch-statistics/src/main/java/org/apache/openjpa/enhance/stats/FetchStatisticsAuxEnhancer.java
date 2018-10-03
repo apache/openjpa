@@ -20,10 +20,10 @@ package org.apache.openjpa.enhance.stats;
 
 import java.util.Locale;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCEnhancer.AuxiliaryEnhancer;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -41,10 +41,12 @@ public class FetchStatisticsAuxEnhancer implements AuxiliaryEnhancer {
     private final String IGNORE_METHODS_REGEX = "(pc(.)*GenericContext)?(pc(.)*StateManager)?"
         + "(pc(.)*DetachedState)?(pc(.)*EnhancementContractVersion)?(pc(.)*ManagedFieldCount)?(pc(.)*GetVersion)?";
 
+    @Override
     public void run(BCClass bcc, ClassMetaData cmd) {
         addEnhancement(bcc, cmd);
     };
 
+    @Override
     public boolean skipEnhance(BCMethod arg0) {
         return false;
     };

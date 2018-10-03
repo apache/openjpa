@@ -79,6 +79,7 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
         super.tearDown();
     }
 
+    @Override
     protected OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         return emf;
     }
@@ -87,6 +88,7 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
         CriteriaTest.emf = emf;
     }
 
+    @Override
     protected SQLAuditor getAuditor() {
         return auditor;
     }
@@ -103,6 +105,7 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
         this.cb = cb;
     }
 
+    @Override
     protected EntityManager getEntityManager() {
         return em;
     }

@@ -20,11 +20,12 @@ package org.apache.openjpa.persistence.callbacks;
 
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMessageListeners extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(DROP_TABLES);
     }

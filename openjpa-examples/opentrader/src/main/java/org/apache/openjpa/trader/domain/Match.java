@@ -28,8 +28,8 @@ import java.io.Serializable;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class Match implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Ask ask;
     private Bid bid;
 

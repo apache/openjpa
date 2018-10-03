@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.jdbc.version.model.TimestampVersion;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestVersionColumn extends SQLListenerTestCase {
+    @Override
     public void setUp() {
         super.setUp(IntVersion.class, TimestampVersion.class, ShortVersion.class);
     }

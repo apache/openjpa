@@ -18,7 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex0;
 
-import javax.persistence.*;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="T6E3")

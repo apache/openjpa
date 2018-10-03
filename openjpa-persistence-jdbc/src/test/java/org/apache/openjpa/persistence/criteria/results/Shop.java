@@ -19,13 +19,13 @@
 
 package org.apache.openjpa.persistence.criteria.results;
 
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import java.util.Set;
 
 @Entity
 @Table(name="CRIT_RES_SHOP")

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -30,6 +31,8 @@ import javax.persistence.Table;
 public class AttachA
     implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private String astr;
     private int aint;
     private double adbl;

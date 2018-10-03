@@ -46,7 +46,7 @@ public interface DataCache
     /**
      * The name of the default data cache: <code>default</code>
      */
-    public static final String NAME_DEFAULT = "default";
+    String NAME_DEFAULT = "default";
 
     /**
      * Returns a string name that can be used by end-user-visible
@@ -54,20 +54,20 @@ public interface DataCache
      *
      * @since 0.2.5.0
      */
-    public String getName();
+    String getName();
 
     /**
      * Sets a string name to be used to identify this cache to end-user needs.
      *
      * @since 0.2.5.0
      */
-    public void setName(String name);
+    void setName(String name);
 
     /**
      * Initialize any resources associated with the given
      * {@link DataCacheManager}.
      */
-    public void initialize(DataCacheManager manager);
+    void initialize(DataCacheManager manager);
 
     /**
      * Perform a batch update of the cache. Add all {@link DataCachePCData}
@@ -100,7 +100,7 @@ public interface DataCache
      * @param deletes A collection of object IDs that have been deleted
      * and must therefore be dropped from the cache.
      */
-    public void commit(Collection<DataCachePCData> additions, Collection<DataCachePCData> newUpdates,
+    void commit(Collection<DataCachePCData> additions, Collection<DataCachePCData> newUpdates,
         Collection<DataCachePCData> existingUpdates, Collection<Object> deletes);
 
     /**
@@ -108,12 +108,12 @@ public interface DataCache
      * corresponding to <code>oid</code>; otherwise returns
      * <code>false</code>.
      */
-    public boolean contains(Object oid);
+    boolean contains(Object oid);
 
     /**
      * Returns the indexes of the oids in this cache.
      */
-    public BitSet containsAll(Collection<Object> oids);
+    BitSet containsAll(Collection<Object> oids);
 
     /**
      * Return the cached object for the given oid. Modifying the returned
@@ -122,7 +122,7 @@ public interface DataCache
      *
      * @return the object matching the given oid, or null if none
      */
-    public DataCachePCData get(Object oid);
+    DataCachePCData get(Object oid);
 
     /**
      * Set the cached value for the given instance. This does <em>not</em>
@@ -134,7 +134,7 @@ public interface DataCache
      * the value was not previously cached. See {@link Map#put}
      * for more information.
      */
-    public DataCachePCData put(DataCachePCData value);
+    DataCachePCData put(DataCachePCData value);
 
     /**
      * Update the cached value for the given instance. This does
@@ -147,7 +147,7 @@ public interface DataCache
      * invoked instead of invoking {@link #put}. The DataCache implementation
      * can then make optimizations based on how its {@link #get} method works.
      */
-    public void update(DataCachePCData value);
+    void update(DataCachePCData value);
 
     /**
      * Remove the value stored under the given oid. This does
@@ -160,7 +160,7 @@ public interface DataCache
      * the oid was not previously cached. See {@link Map#remove}
      * for more information.
      */
-    public DataCachePCData remove(Object oid);
+    DataCachePCData remove(Object oid);
 
     /**
      * Remove the values stored under the given oids.
@@ -168,12 +168,12 @@ public interface DataCache
      * @return the indexes of the removed oids
      * @see #remove
      */
-    public BitSet removeAll(Collection<Object> oids);
+    BitSet removeAll(Collection<Object> oids);
 
     /**
      * Evict all values of a specified type.
      */
-    public void removeAll(Class<?> cls, boolean subclasses);
+    void removeAll(Class<?> cls, boolean subclasses);
 
     /**
      * Remove all data from this cache. This does <em>not</em> result
@@ -181,7 +181,7 @@ public interface DataCache
      * for clearing the cache. Meaningful changes to the state of the
      * cache should be made via the {@link #commit} method.
      */
-    public void clear();
+    @Override void clear();
 
     /**
      * Pin the value stored under <code>oid</code> into the cache.
@@ -192,7 +192,7 @@ public interface DataCache
      * @return <code>true</code> if <code>oid</code>'s value was
      * pinned into the cache; <code>false</code> if the oid is not in the cache.
      */
-    public boolean pin(Object oid);
+    boolean pin(Object oid);
 
     /**
      * Pin all oids to the cache.
@@ -200,13 +200,13 @@ public interface DataCache
      * @return the indexes of the pinned oids
      * @see #pin
      */
-    public BitSet pinAll(Collection<Object> oids);
+    BitSet pinAll(Collection<Object> oids);
 
     /**
      * Pin all oids for the given type.
      * @param subs Whether to include subclasses.
      */
-    public void pinAll(Class<?> cls, boolean subs);
+    void pinAll(Class<?> cls, boolean subs);
 
     /**
      * Unpin the value stored under <code>oid</code> from the cache.
@@ -218,7 +218,7 @@ public interface DataCache
      * unpinned from the cache; <code>false</code> if the
      * oid is not in the cache.
      */
-    public boolean unpin(Object oid);
+    boolean unpin(Object oid);
 
     /**
      * Unpin all oids from the cache.
@@ -226,42 +226,42 @@ public interface DataCache
      * @return the indexes of the unpinned oids
      * @see #unpin
      */
-    public BitSet unpinAll(Collection<Object> oids);
+    BitSet unpinAll(Collection<Object> oids);
 
     /**
      * Unpin all oids associaed with the given type from the cache.
      * @param subs Whether to include subclasses.
      */
-    public void unpinAll(Class<?> cls, boolean subs);
+    void unpinAll(Class<?> cls, boolean subs);
 
     /**
      * Obtain a write lock on the cache.
      */
-    public void writeLock();
+    void writeLock();
 
     /**
      * Release the write lock on the cache.
      */
-    public void writeUnlock();
+    void writeUnlock();
 
     /**
      * Add a new expiration event listener to this cache.
      *
      * @since 0.2.5.0
      */
-    public void addExpirationListener(ExpirationListener listen);
+    void addExpirationListener(ExpirationListener listen);
 
     /**
      * Remove an expiration event listener from this cache.
      *
      * @since 0.2.5.0
      */
-    public boolean removeExpirationListener(ExpirationListener listen);
+    boolean removeExpirationListener(ExpirationListener listen);
 
     /**
      * Free the resources used by this cache.
 	 */
-	public void close ();
+	@Override void close ();
 
     /**
 	 * Gets objects from the caches for a given list of keys.
@@ -270,7 +270,7 @@ public interface DataCache
 	 * the returned map still contains the key with a null value.
 	 *
      */
-    public Map<Object,DataCachePCData> getAll(List<Object> keys);
+    Map<Object,DataCachePCData> getAll(List<Object> keys);
 
     /**
      * Gets the named partition. Note that a partition itself is another cache.
@@ -282,7 +282,7 @@ public interface DataCache
      * @return a partition of the given name. Or null, if either no such partition exists or can not be created.
      * @since 2.0.0
      */
-    public DataCache getPartition(String name, boolean create);
+    DataCache getPartition(String name, boolean create);
 
     /**
      * Gets the name of the known partitions.
@@ -291,22 +291,22 @@ public interface DataCache
      *
      * @since 2.0.0
      */
-    public Set<String> getPartitionNames();
+    Set<String> getPartitionNames();
 
     /**
      * Affirms if this cache maintains partitions.
      *
      * @since 2.0.0
      */
-    public boolean isPartitioned();
+    boolean isPartitioned();
 
     /**
      * Returns number of read/write request and cache hit ratio data.
      */
-    public CacheStatistics getStatistics();
+    CacheStatistics getStatistics();
 
     /**
      * Returns whether the the cache needs to be updated when bulk updates as executed. Defaults to true.
      */
-    public boolean getEvictOnBulkUpdate();
+    boolean getEvictOnBulkUpdate();
 }

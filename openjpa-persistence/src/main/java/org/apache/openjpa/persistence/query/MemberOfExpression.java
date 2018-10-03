@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class MemberOfExpression extends BinaryExpressionPredicate {
-	public MemberOfExpression(Expression op, Expression op2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public MemberOfExpression(Expression op, Expression op2) {
 		super(op, BinaryConditionalOperator.MEMBER,
 			BinaryConditionalOperator.MEMBER_NOT, op2);
 	}

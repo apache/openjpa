@@ -46,6 +46,7 @@ public class TestDataCacheStoreManager extends SingleEMFTestCase {
     private DataCacheManager dcm;
     private OpenJPAStateManager sm;
 
+    @Override
     public void setUp() {
         super.setUp(p);
 
@@ -65,6 +66,7 @@ public class TestDataCacheStoreManager extends SingleEMFTestCase {
         sm = (OpenJPAStateManager) ((PersistenceCapable) p).pcGetStateManager();
     }
 
+    @Override
     public void tearDown() throws Exception {
         dcm.startCaching(CachedEntityStatistics.class.getName());
         em.close();

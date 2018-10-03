@@ -34,6 +34,8 @@ import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 class NotContainsExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Exp _exp;
 
     /**
@@ -43,6 +45,7 @@ class NotContainsExpression
         _exp = exp;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         return new NotContainsExpState(contains);
     }
@@ -60,6 +63,7 @@ class NotContainsExpression
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         DBDictionary dict = ctx.store.getDBDictionary();
@@ -84,6 +88,7 @@ class NotContainsExpression
         buf.appendCount(sub, ctx.fetch);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         ExpState estate = _exp.initialize(sel, ctx, ((NotContainsExpState)
@@ -91,6 +96,7 @@ class NotContainsExpression
         _exp.selectColumns(sel, ctx, estate, true);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _exp.acceptVisit(visitor);

@@ -37,23 +37,23 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
  */
 public interface Embeddable {
 
-    public static final Object UNSUPPORTED = new Object();
+    Object UNSUPPORTED = new Object();
 
     /**
      * Return the columns used by this strategy.
      */
-    public Column[] getColumns();
+    Column[] getColumns();
 
     /**
      * Return column I/O information for this mapping.
      */
-    public ColumnIO getColumnIO();
+    ColumnIO getColumnIO();
 
     /**
      * Return the arguments needed to extract datastore values via
      * {@link Result#getObject} for each column.
      */
-    public Object[] getResultArguments();
+    Object[] getResultArguments();
 
     /**
      * Convert the given Java value to its datastore equivalent. If this
@@ -61,7 +61,7 @@ public interface Embeddable {
      * element per column. For relation id columns, return the state manager
      * the column depends on.
      */
-    public Object toEmbeddedDataStoreValue(Object val, JDBCStore store);
+    Object toEmbeddedDataStoreValue(Object val, JDBCStore store);
 
     /**
      * Convert the given datastore value to its Java equivalent.
@@ -71,7 +71,7 @@ public interface Embeddable {
      * cases {@link #loadEmbedded} will be used instead. Return
      * {@link #UNSUPPORTED} if this mapping cannot support this method.
      */
-    public Object toEmbeddedObjectValue(Object val);
+    Object toEmbeddedObjectValue(Object val);
 
     /**
      * Load this strategy's field by transforming the given datastore value.
@@ -79,7 +79,7 @@ public interface Embeddable {
      * value will be an object array of the corresponding length. The value
      * does not have to be loaded immediately; it may be stored as impl data.
      */
-    public void loadEmbedded(OpenJPAStateManager sm, JDBCStore store,
+    void loadEmbedded(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Object val)
         throws SQLException;
 }

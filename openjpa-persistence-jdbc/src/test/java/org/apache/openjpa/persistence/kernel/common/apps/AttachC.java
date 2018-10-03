@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -39,6 +40,8 @@ import org.apache.openjpa.persistence.FetchGroups;
 public class AttachC
     extends AttachB {
 
+    
+    private static final long serialVersionUID = 1L;
     private String cstr;
     private int cint;
     private double cdbl;

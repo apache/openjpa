@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.common.apps;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +38,8 @@ import javax.persistence.Table;
 @Table(name="MPTZZV")
 public class Shirt extends Textile implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     @Column(name="ID_SZE", length=1)
     private String szeId;
 
@@ -49,7 +52,7 @@ public class Shirt extends Textile implements Serializable {
     }
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="shirt", fetch=FetchType.EAGER, orphanRemoval=true)
-    Collection<Part> parts = new ArrayList<Part>();
+    Collection<Part> parts = new ArrayList<>();
 
 
     public Collection<Part> getParts() {

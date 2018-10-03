@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel;
 
 import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -36,6 +37,7 @@ public class TestEJBNoPersistentFields extends AbstractTestCase {
         super(test, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() throws Exception {
         deleteAll(Nholder.class);
     }
@@ -59,10 +61,10 @@ public class TestEJBNoPersistentFields extends AbstractTestCase {
         endEm(em);
     }
 
-    @SuppressWarnings("serial")
     @Entity
     @Table(name = "nholder2")
     public static class Nholder implements Serializable {
+        private static final long serialVersionUID = 1L;
 
         @Id
         private int idkey;
@@ -95,11 +97,10 @@ public class TestEJBNoPersistentFields extends AbstractTestCase {
         }
     }
 
-    @SuppressWarnings("serial")
     @Entity
     @Table(name = "npfp")
     public static class NoPersistentFieldsPC implements Serializable {
-
+        private static final long serialVersionUID = 1L;
         public transient int blankInt;
         public transient String blankString;
     }

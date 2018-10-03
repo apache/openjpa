@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEnumXmlTypeMapping extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(Authority.class, DROP_TABLES);
     }

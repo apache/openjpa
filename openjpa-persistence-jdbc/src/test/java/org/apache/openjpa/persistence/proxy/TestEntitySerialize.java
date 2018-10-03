@@ -42,6 +42,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestEntitySerialize extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(DROP_TABLES, Address.class, Annuity.class, AnnuityHolder.class, AnnuityPersistebleObject.class,
             Contact.class, EquityAnnuity.class, FixedAnnuity.class, Payor.class, Payout.class, Person.class,

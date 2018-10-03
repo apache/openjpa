@@ -32,8 +32,8 @@ import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.XMLMetaData;
-import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.InternalException;
 
 /**
  * A field traversal starting with a constant filter parameter.
@@ -44,6 +44,8 @@ class ConstPath
     extends Const
     implements JDBCPath {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Const _constant;
     private final LinkedList _actions = new LinkedList();
 
@@ -54,6 +56,7 @@ class ConstPath
         _constant = constant;
     }
 
+    @Override
     public Class getType() {
         if (_actions.isEmpty()) {
             ClassMetaData meta = getMetaData();
@@ -69,17 +72,21 @@ class ConstPath
         return fmd.getDeclaredType();
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _actions.add(type);
     }
 
+    @Override
     public void get(FieldMetaData field, boolean nullTraversal) {
         _actions.add(field);
     }
 
+    @Override
     public void getKey() {
     }
 
+    @Override
     public FieldMetaData last() {
         ListIterator itr = _actions.listIterator(_actions.size());
         Object prev;
@@ -91,22 +98,27 @@ class ConstPath
         return null;
     }
 
+    @Override
     public Object getValue(Object[] params) {
         throw new InternalException();
     }
 
+    @Override
     public Object getValue(ExpContext ctx, ExpState state) {
         return ((ConstPathExpState) state).value;
     }
 
+    @Override
     public Object getSQLValue(Select sel, ExpContext ctx, ExpState state) {
         return ((ConstPathExpState) state).sqlValue;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         return new ConstPathExpState(_constant.initialize(sel, ctx, 0));
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
@@ -177,6 +189,7 @@ class ConstPath
             cstate.sqlValue = cstate.value;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         ConstPathExpState cstate = (ConstPathExpState) state;
@@ -187,6 +200,7 @@ class ConstPath
             sql.appendValue(cstate.sqlValue, cstate.getColumn(index));
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _constant.acceptVisit(visitor);
@@ -209,26 +223,33 @@ class ConstPath
         }
     }
 
+    @Override
     public void get(FieldMetaData fmd, XMLMetaData meta) {
     }
 
+    @Override
     public void get(XMLMetaData meta, String name) {
     }
 
+    @Override
     public XMLMetaData getXmlMapping() {
         return null;
     }
 
+    @Override
     public void setSchemaAlias(String schemaAlias) {
     }
 
+    @Override
     public String getSchemaAlias() {
         return null;
     }
 
+    @Override
     public void setSubqueryContext(Context conext, String correlationVar) {
     }
 
+    @Override
     public String getCorrelationVar() {
         return null;
     }

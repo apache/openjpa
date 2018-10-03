@@ -55,6 +55,7 @@ public class ParentId implements java.io.Serializable {
         this.addrId = addrId;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
@@ -72,6 +73,7 @@ public class ParentId implements java.io.Serializable {
         return false;
     }
 
+    @Override
     public int hashCode() {
         if (hashcode == null) {
             String hashStr = this.id + ":" + this.name + ":" + this.addrId;

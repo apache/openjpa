@@ -54,7 +54,7 @@ public class EmbeddingOwnerEntity {
 
 	public void addMember(EmbeddedEntity member) {
 		if (members == null)
-			members = new ArrayList<EmbeddedEntity>();
+			members = new ArrayList<>();
 		this.members.add(member);
 	}
 

@@ -26,23 +26,25 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import javax.persistence.ElementCollection;
-import javax.persistence.CollectionTable;
-import javax.persistence.Table;
 
 @Entity
 @Table(name="TBL3A")
 public class EntityA_Coll_String implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     Integer id;
 
@@ -55,19 +57,19 @@ public class EntityA_Coll_String implements Serializable {
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(name="NickNames_Tbl")
     @Column(name="nicknames1", length=20)
-    protected Set<String> nickNames = new HashSet<String>();
+    protected Set<String> nickNames = new HashSet<>();
 
     @ElementCollection
     @Enumerated(EnumType.ORDINAL)
-    protected List<CreditRating> cr = new ArrayList<CreditRating>();
+    protected List<CreditRating> cr = new ArrayList<>();
 
     @ElementCollection
     @Temporal(TemporalType.DATE)
-    protected List<Timestamp> ts = new ArrayList<Timestamp>();
+    protected List<Timestamp> ts = new ArrayList<>();
 
     @ElementCollection
     @Lob
-    protected List<String> lobs = new ArrayList<String>();
+    protected List<String> lobs = new ArrayList<>();
 
     public int getAge() {
         return age;

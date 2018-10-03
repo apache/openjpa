@@ -41,6 +41,7 @@ public class TestSequence extends SingleEMFTestCase {
     private String multiThreadExecuting = null;
     private static final int NUMBER_ENTITIES = 5000;
 
+    @Override
     public void setUp() {
         setUp(EntityPerson.class, EntityEmployee.class, CLEAR_TABLES,
             "openjpa.Multithreaded", "true");
@@ -328,6 +329,7 @@ public class TestSequence extends SingleEMFTestCase {
 
             mttest("reflection invocation: (" + method + ")", serialCount,
                 threads, iterations, new VolatileRunnable() {
+                    @Override
                     public void run() throws Exception {
                         meth.invoke(thiz, args);
                     }
@@ -378,6 +380,7 @@ public class TestSequence extends SingleEMFTestCase {
 
             runners[i - 1] = new Thread(title + " [" + i + " of " + threads
                 + "]") {
+                @Override
                 public void run() {
                     // do our best to have all threads start at the exact
                     // same time. This is imperfect, but the closer we
@@ -448,9 +451,9 @@ public class TestSequence extends SingleEMFTestCase {
     /**
      * A Runnable that can throw an Exception: used to test cases.
      */
-    public static interface VolatileRunnable {
+    public interface VolatileRunnable {
 
-        public void run() throws Exception;
+        void run() throws Exception;
     }
 
     /**
@@ -477,14 +480,17 @@ public class TestSequence extends SingleEMFTestCase {
                 _nested = nested;
         }
 
+        @Override
         public void printStackTrace() {
             printStackTrace(System.out);
         }
 
+        @Override
         public void printStackTrace(PrintStream out) {
             printStackTrace(new PrintWriter(out));
         }
 
+        @Override
         public void printStackTrace(PrintWriter out) {
             super.printStackTrace(out);
             for (int i = 0; i < _nested.length; i++) {

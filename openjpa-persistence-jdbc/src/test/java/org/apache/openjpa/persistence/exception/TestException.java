@@ -44,7 +44,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestException extends SingleEMFTestCase {
 	private static long ID_COUNTER = System.currentTimeMillis();
 
-	public void setUp() {
+	@Override
+    public void setUp() {
         super.setUp(PObject.class, CLEAR_TABLES);
     }
 
@@ -204,7 +205,8 @@ public class TestException extends SingleEMFTestCase {
      * Otherwise fails assertion and prints the given throwable and its nested
 	 * exception on the console.
 	 */
-	public void assertException(Throwable t, Class expectedType) {
+	@Override
+    public void assertException(Throwable t, Class expectedType) {
 		if (!isExpectedException(t, expectedType)) {
 		    getLog().error("TestException.assertException() - unexpected exception type", t);
 			//t.printStackTrace();

@@ -36,42 +36,52 @@ class ClearFieldManager
     protected ClearFieldManager() {
     }
 
+    @Override
     public boolean fetchBooleanField(int field) {
         return false;
     }
 
+    @Override
     public byte fetchByteField(int field) {
         return 0;
     }
 
+    @Override
     public char fetchCharField(int field) {
         return 0;
     }
 
+    @Override
     public double fetchDoubleField(int field) {
         return 0D;
     }
 
+    @Override
     public float fetchFloatField(int field) {
         return 0F;
     }
 
+    @Override
     public int fetchIntField(int field) {
         return 0;
     }
 
+    @Override
     public long fetchLongField(int field) {
         return 0L;
     }
 
+    @Override
     public Object fetchObjectField(int field) {
         return null;
     }
 
+    @Override
     public short fetchShortField(int field) {
         return 0;
     }
 
+    @Override
     public String fetchStringField(int field) {
         return null;
     }

@@ -28,12 +28,11 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
-import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
-
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
 
 public class TestStateManagerImplData extends BaseKernelTest {
 
@@ -53,6 +52,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
         super(test);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class);
     }

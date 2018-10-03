@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
 
 /**
  * Entity used to test MappedSuperClass which does not have IdClass.
@@ -57,6 +61,7 @@ public class SituationDA extends CashBaseEntity {
         }
 
 
+        @Override
         public boolean equals(Object other){
             if (other instanceof SituationId) {
                 final SituationId otherId = (SituationId)other;
@@ -66,6 +71,7 @@ public class SituationDA extends CashBaseEntity {
                 return false;
         }
 
+        @Override
         public int hashCode() {
             return super.hashCode();
         }

@@ -20,12 +20,14 @@ package org.apache.openjpa.persistence.compat;
 
 import java.util.Iterator;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * <b>Compatible testcases</b> are used to test various backwards compatibility scenarios between JPA 2.0 and JPA 1.2
@@ -42,6 +44,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDupNamedQuery extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(SimpleEntity.class, SimpleEntity2.class, CLEAR_TABLES);
 

@@ -20,12 +20,16 @@ package org.apache.openjpa.meta;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 @Entity
 public class Person implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     @Id
     private String name;

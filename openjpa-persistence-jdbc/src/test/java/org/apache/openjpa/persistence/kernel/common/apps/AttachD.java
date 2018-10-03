@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -37,7 +38,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.apache.openjpa.persistence.jdbc.KeyColumn;
 import org.apache.openjpa.persistence.FetchAttribute;
 import org.apache.openjpa.persistence.FetchGroup;
 import org.apache.openjpa.persistence.FetchGroups;
@@ -56,6 +56,9 @@ import org.apache.openjpa.persistence.jdbc.KeyColumn;
     })
 @Table(name="K_ATTACHD")
 public class AttachD implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -85,7 +88,7 @@ public class AttachD implements Serializable {
     @PersistentMap(elementCascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @KeyColumn(name = "intmap")
     private TreeMap<BigInteger, AttachF> bigIntegerPCMap =
-        new TreeMap<BigInteger, AttachF>();
+        new TreeMap<>();
 
     @Embedded
     private AttachE embeddedE;

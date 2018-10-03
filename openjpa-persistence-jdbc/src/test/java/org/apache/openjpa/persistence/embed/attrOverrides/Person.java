@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.embed.attrOverrides;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -36,12 +37,12 @@ public class Person {
 
     @ElementCollection
     @OrderBy("zipcode.zip, zipcode.plusFour")
-    protected List<Address> residences = new ArrayList<Address>();
+    protected List<Address> residences = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name="PSN_nickNames")
     @OrderBy("DESC")
-    private List<String> nickNames = new ArrayList<String>();
+    private List<String> nickNames = new ArrayList<>();
 
     public List<String> getNickNames() {
         return nickNames;

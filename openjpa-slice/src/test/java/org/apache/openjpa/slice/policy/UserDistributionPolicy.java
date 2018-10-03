@@ -21,7 +21,6 @@ package org.apache.openjpa.slice.policy;
 import java.util.List;
 
 import org.apache.openjpa.slice.DistributionPolicy;
-
 import org.apache.openjpa.slice.PObject;
 import org.apache.openjpa.slice.Person;
 
@@ -45,6 +44,7 @@ public class UserDistributionPolicy implements DistributionPolicy {
 	 * the same slice as its owner Person.
 	 *
 	 */
+    @Override
     public String distribute(Object pc, List<String> slices, Object context) {
 		assertValidSlices(slices);
 		if (pc instanceof PObject)

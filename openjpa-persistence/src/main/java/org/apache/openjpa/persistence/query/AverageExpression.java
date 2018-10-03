@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class AverageExpression extends UnaryOperatorExpression {
-	public AverageExpression(ExpressionImpl op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public AverageExpression(ExpressionImpl op) {
 		super(op, UnaryFunctionalOperator.AVG);
 	}
 }

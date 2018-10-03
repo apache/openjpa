@@ -24,15 +24,14 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
-
-import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.query.common.apps.RuntimeTest2;
-import org.apache.openjpa.persistence.query.common.apps.RuntimeTest3;
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.FetchMode;
 import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
+import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.query.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.query.common.apps.RuntimeTest3;
 
 /**
  * Test that ResultList objects behaver correctly.
@@ -45,6 +44,7 @@ public class TestQueryResults extends BaseQueryTest {
         super(test);
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
 

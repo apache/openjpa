@@ -38,10 +38,12 @@ public class TemporaryClassLoader extends ClassLoader {
         super(parent);
     }
 
+    @Override
     public Class loadClass(String name) throws ClassNotFoundException {
         return loadClass(name, false);
     }
 
+    @Override
     protected Class loadClass(String name, boolean resolve)
         throws ClassNotFoundException {
         // see if we've already loaded it

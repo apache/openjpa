@@ -18,9 +18,22 @@
  */
 package org.apache.openjpa.persistence.models.library;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name="LIBBOOK")
@@ -57,7 +70,7 @@ public class Book {
             throw new IllegalArgumentException("Title cannot be empty or null");
 
         this.title = title;
-        subjects = new HashSet<Subject>();
+        subjects = new HashSet<>();
     }
 
     public String getTitle() {
@@ -111,14 +124,16 @@ public class Book {
     public List<Subject> getSubjects() {
         if (subjects == null)
             return null;
-        return new ArrayList<Subject>(subjects);
+        return new ArrayList<>(subjects);
     }
 
+    @Override
     public String toString() {
         return "book [" + oid + "] \"" + title + "\""
                 + ((dueDate == null) ? "" : (" due back: " + dueDate));
     }
 
+    @Override
     public int hashCode() {
         return oid;
     }
@@ -126,6 +141,7 @@ public class Book {
     /**
      * Uses the object's persistent identity value to determine equivalence.
      */
+    @Override
     public boolean equals(Object other) {
         // standard fare
         if (other == this)

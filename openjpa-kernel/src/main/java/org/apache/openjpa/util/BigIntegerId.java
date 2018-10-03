@@ -27,6 +27,8 @@ import java.math.BigInteger;
 public class BigIntegerId
     extends OpenJPAId {
 
+    
+    private static final long serialVersionUID = 1L;
     private final BigInteger key;
 
     public BigIntegerId(Class cls, String key) {
@@ -47,10 +49,12 @@ public class BigIntegerId
         return key;
     }
 
+    @Override
     public Object getIdObject() {
         return key;
     }
 
+    @Override
     public String toString() {
         if (key == null) {
             return "NULL";
@@ -58,6 +62,7 @@ public class BigIntegerId
         return key.toString();
     }
 
+    @Override
     protected int idHash() {
         if (key != null) {
             return key.hashCode();
@@ -65,6 +70,7 @@ public class BigIntegerId
         return 0;
     }
 
+    @Override
     protected boolean idEquals(OpenJPAId other) {
         if ((key == null) ||
              (!BigIntegerId.class.isAssignableFrom(other.getClass()))) {

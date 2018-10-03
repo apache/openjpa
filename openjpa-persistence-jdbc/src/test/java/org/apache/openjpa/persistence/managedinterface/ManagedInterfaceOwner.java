@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.persistence.managedinterface;
 
-import javax.persistence.OneToOne;
-import javax.persistence.Id;
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.CascadeType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 @Entity
 public class ManagedInterfaceOwner {

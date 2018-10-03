@@ -29,11 +29,11 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.InstanceCallbacksTest;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-import junit.framework.AssertionFailedError;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import junit.framework.AssertionFailedError;
 
 public class TestInstanceCallbacks extends BaseKernelTest {
 
@@ -54,6 +54,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
     public TestInstanceCallbacks() {
     }
 
+    @Override
     public void setUp() throws Exception {
         deleteAll(InstanceCallbacksTest.class);
         deleteAll(RuntimeTest1.class);
@@ -72,6 +73,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
             (InstanceCallbacksTest) _pm.find(InstanceCallbacksTest.class, id);
     }
 
+    @Override
     public void tearDown() throws Exception {
         rollbackTx(_pm);
         endEm(_pm);

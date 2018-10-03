@@ -36,17 +36,20 @@ public class MapElementPCChild
         return this.elementDataChild;
     }
 
+    @Override
     public int hashCode() {
         return (super.hashCode() + elementDataChild.hashCode())
             % Integer.MAX_VALUE;
     }
 
+    @Override
     public boolean equals(Object other) {
         return super.equals(other) &&
             ((MapElementPCChild) other)
                 .elementDataChild.equals(elementDataChild);
     }
 
+    @Override
     public String toString() {
         return super.toString() + "::" + elementDataChild;
     }

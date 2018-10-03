@@ -21,6 +21,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestUnenhancedCompoundPKSubclass extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(UnenhancedCompoundPKFieldAccessSuperclass.class,
             UnenhancedCompoundPKFieldAccessSubclass.class, CLEAR_TABLES);

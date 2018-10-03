@@ -24,21 +24,26 @@ public class TestValue extends TestCase {
 
     private static class SimpleValue extends Value {
 
+        @Override
         protected String getInternalString() {
             return null;
         }
 
+        @Override
         public Class getValueType() {
             return null;
         }
 
+        @Override
         protected void setInternalObject(Object obj) {
 
         }
 
+        @Override
         protected void setInternalString(String str) {
         }
 
+        @Override
         public Object get() {
             return null;
         }

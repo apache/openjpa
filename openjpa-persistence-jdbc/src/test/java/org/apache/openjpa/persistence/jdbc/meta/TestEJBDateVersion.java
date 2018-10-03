@@ -31,7 +31,8 @@ public class TestEJBDateVersion
 		super(name);
 	}
 
-	public void setUp() throws Exception
+	@Override
+    public void setUp() throws Exception
 	{
 		deleteAll(DateVersion.class);
 
@@ -61,12 +62,14 @@ public class TestEJBDateVersion
 	pc1.setString ("pc-2-1");
 	pc2.setString ("pc-2-2");
 
-	// some DBs do not distinguish dates unless there is 1 sec diff
-	Thread.currentThread ().sleep (1 * 1000);
+	Thread.currentThread ();
+    // some DBs do not distinguish dates unless there is 1 sec diff
+	Thread.sleep (1 * 1000);
 	endTx(pm1);
 	try
 	{
-		Thread.currentThread ().sleep (1 * 1000);
+		Thread.currentThread ();
+        Thread.sleep (1 * 1000);
 		endTx(pm2);
 		fail ("Should have caused OL exception.");
 	}
@@ -90,11 +93,13 @@ public class TestEJBDateVersion
 	startTx(pm2);
 	pc2.setString ("pc-string-5-2");
 
-	Thread.currentThread ().sleep (1 * 1000);
+	Thread.currentThread ();
+    Thread.sleep (1 * 1000);
 	endTx(pm1);
 	try
 	{
-		Thread.currentThread ().sleep (1 * 1000);
+		Thread.currentThread ();
+        Thread.sleep (1 * 1000);
 		endTx(pm2);
 		fail ("Should have caused OL exception2.");
 	}

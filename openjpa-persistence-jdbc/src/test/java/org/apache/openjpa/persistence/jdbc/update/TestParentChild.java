@@ -101,7 +101,8 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
         getHelper().addOption(Key_PersistOrder, PersistOrder.values(), true);
 	}
 
-	public void setUp() {
+	@Override
+    public void setUp() {
         // The options can also be added in setup() as well but then
         // coutTestCase() will only record test methods and not multiply them
         // with number of configuration combinations the same tests will run.

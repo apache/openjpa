@@ -50,14 +50,17 @@ public class SimpleResultList extends AbstractNonSequentialResultList {
         }
     }
 
+    @Override
     public boolean isProviderOpen() {
         return !_closed;
     }
 
+    @Override
     public boolean isClosed() {
         return _closed;
     }
 
+    @Override
     public void close() {
         if (!_closed) {
             _closed = true;
@@ -68,6 +71,7 @@ public class SimpleResultList extends AbstractNonSequentialResultList {
         }
     }
 
+    @Override
     public Object getInternal(int index) {
         try {
             if (!_rop.absolute(index))
@@ -83,6 +87,7 @@ public class SimpleResultList extends AbstractNonSequentialResultList {
         }
     }
 
+    @Override
     public int size() {
         assertOpen();
         if (_size != -1)

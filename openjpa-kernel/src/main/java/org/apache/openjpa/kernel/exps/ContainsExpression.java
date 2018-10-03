@@ -31,6 +31,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class ContainsExpression
     extends Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val1;
     private final Val _val2;
 
@@ -45,6 +47,7 @@ class ContainsExpression
         _val2 = val2;
     }
 
+    @Override
     protected boolean eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object obj = _val1.eval(candidate, orig, ctx, params);
@@ -53,6 +56,7 @@ class ContainsExpression
             && coll.contains(_val2.eval(candidate, orig, ctx, params));
     }
 
+    @Override
     protected boolean eval(Collection candidates, StoreContext ctx,
         Object[] params) {
         Collection coll = _val1.eval(candidates, null, ctx, params);
@@ -76,6 +80,7 @@ class ContainsExpression
             (Collection) obj : Collections.singleton(obj);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val1.acceptVisit(visitor);

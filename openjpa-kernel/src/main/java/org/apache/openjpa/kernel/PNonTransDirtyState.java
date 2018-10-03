@@ -26,48 +26,56 @@ package org.apache.openjpa.kernel;
  *
  * @author Steve Kim
  */
-@SuppressWarnings("serial")
-class PNonTransDirtyState
-    extends PCState {
+class PNonTransDirtyState extends PCState {
+    private static final long serialVersionUID = 1L;
 
     @Override
     void initialize(StateManagerImpl context, PCState previous) {
         context.saveFields(false);
     }
 
+    @Override
     PCState delete(StateManagerImpl context) {
         context.preDelete();
         return PNONTRANSDELETED;
     }
 
+    @Override
     PCState transactional(StateManagerImpl context) {
         return PDIRTY;
     }
 
+    @Override
     PCState release(StateManagerImpl context) {
         return error("dirty", context);
     }
 
+    @Override
     PCState evict(StateManagerImpl context) {
         return HOLLOW;
     }
 
+    @Override
     PCState afterNontransactionalRefresh() {
         return PNONTRANS;
     }
 
+    @Override
     boolean isPendingTransactional() {
         return true;
     }
 
+    @Override
     boolean isPersistent() {
         return true;
     }
 
+    @Override
     boolean isDirty() {
         return true;
     }
 
+    @Override
     public String toString() {
         return "Persistent-Notransactional-Dirty";
     }

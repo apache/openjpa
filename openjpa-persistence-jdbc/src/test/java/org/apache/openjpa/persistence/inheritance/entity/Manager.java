@@ -42,6 +42,7 @@ public class Manager extends FTEmployee {
         return managesList;
     }
 
+    @Override
     public String toString() {
         String str = super.toString();
         return "Manager " + str;

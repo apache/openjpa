@@ -42,6 +42,7 @@ public class XmlCacheableEntity implements CacheEntity {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
@@ -54,10 +55,12 @@ public class XmlCacheableEntity implements CacheEntity {
         this.version = version;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }

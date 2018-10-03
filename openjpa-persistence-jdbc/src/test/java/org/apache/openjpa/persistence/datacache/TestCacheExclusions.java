@@ -72,6 +72,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         em.close();
     }
 
+    @Override
     public void tearDown() throws Exception {
         if (emf != null) {
             EntityManager em = emf.createEntityManager();
@@ -205,7 +206,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             dataCacheSettings.append(excludes);
             dataCacheSettings.append(")");
         }
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("openjpa.DataCache", dataCacheSettings.toString());
         props.put("openjpa.RemoteCommitProvider", "sjvm");
         props.put("openjpa.MetaDataFactory", "jpa(Types="

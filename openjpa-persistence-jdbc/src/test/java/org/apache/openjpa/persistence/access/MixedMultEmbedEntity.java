@@ -96,6 +96,7 @@ public class MixedMultEmbedEntity {
         efa = ef;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof MixedMultEmbedEntity) {
             MixedMultEmbedEntity ps = (MixedMultEmbedEntity)obj;

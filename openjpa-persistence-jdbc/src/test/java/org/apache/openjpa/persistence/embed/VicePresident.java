@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="VP_EMB")

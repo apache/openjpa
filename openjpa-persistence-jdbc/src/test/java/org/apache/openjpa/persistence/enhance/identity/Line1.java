@@ -47,6 +47,9 @@ import org.apache.openjpa.persistence.jdbc.VersionColumn;
 @Table(name="DI_LINE1")
 @VersionColumn
 public class Line1 implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @EmbeddedId
     @AttributeOverride(name="lineNum", column=@Column(name="LINE_NUM"))
     private LineId1 lid;

@@ -34,6 +34,7 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     EntityManager em;
     private static final String CACHE_NAME = "QueryCacheName";
+    @Override
     public void setUp() {
         super.setUp(
             DROP_TABLES,

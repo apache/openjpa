@@ -51,7 +51,7 @@ public class MultiClassLoader extends ClassLoader {
         AccessController.doPrivileged(
             J2DoPrivHelper.getSystemClassLoaderAction());
 
-    private List<ClassLoader> _loaders = new ArrayList<ClassLoader>(5);
+    private List<ClassLoader> _loaders = new ArrayList<>(5);
 
     /**
      * Constructor; initializes the loader with an empty list of delegates.
@@ -207,6 +207,7 @@ public class MultiClassLoader extends ClassLoader {
         return _loaders.isEmpty();
     }
 
+    @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         ClassLoader loader;
         for (Iterator<ClassLoader> itr = _loaders.iterator(); itr.hasNext();) {
@@ -222,6 +223,7 @@ public class MultiClassLoader extends ClassLoader {
         throw new ClassNotFoundException(name);
     }
 
+    @Override
     protected URL findResource(String name) {
         ClassLoader loader;
         URL rsrc;
@@ -242,11 +244,12 @@ public class MultiClassLoader extends ClassLoader {
         return null;
     }
 
+    @Override
     protected Enumeration<URL> findResources(String name) throws IOException {
         ClassLoader loader;
         Enumeration<URL> rsrcs;
         URL rsrc;
-        Vector<URL> all = new Vector<URL>();
+        Vector<URL> all = new Vector<>();
         for (Iterator<ClassLoader> itr = _loaders.iterator(); itr.hasNext();) {
             loader = itr.next();
             if (loader == THREAD_LOADER)
@@ -271,6 +274,7 @@ public class MultiClassLoader extends ClassLoader {
         return all.elements();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -279,6 +283,7 @@ public class MultiClassLoader extends ClassLoader {
         return ((MultiClassLoader) other)._loaders.equals(_loaders);
     }
 
+    @Override
     public int hashCode() {
         return _loaders.hashCode();
     }

@@ -32,6 +32,7 @@ public class Raw {
         this.sql = sql;
     }
 
+    @Override
     public String toString() {
         return sql;
     }

@@ -41,13 +41,16 @@ import java.util.Set;
 public class EntityA_Coll_StringXml implements Serializable {
     // contains a collection of basic types
 
+    
+    private static final long serialVersionUID = 1L;
+
     Integer id;
 
     String name;
 
     int age;
 
-    protected Set<String> nickNames = new HashSet<String>();
+    protected Set<String> nickNames = new HashSet<>();
 
     public int getAge() {
         return age;

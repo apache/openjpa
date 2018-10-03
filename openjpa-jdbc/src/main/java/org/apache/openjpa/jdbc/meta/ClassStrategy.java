@@ -42,7 +42,7 @@ public interface ClassStrategy
      * Set the class mapping using this strategy. This will be called before
      * use.
      */
-    public void setClassMapping(ClassMapping owner);
+    void setClassMapping(ClassMapping owner);
 
     /**
      * Return true if the this class' primary key columns correspond to the
@@ -60,7 +60,7 @@ public interface ClassStrategy
      * base class primary key column; if false the primary key
      * must only match a subset of the base class primary key columns
      */
-    public boolean isPrimaryKeyObjectId(boolean hasAll);
+    boolean isPrimaryKeyObjectId(boolean hasAll);
 
     /**
      * Join the mapping and its superclass.
@@ -68,21 +68,21 @@ public interface ClassStrategy
      * @param toThis if false, inner join to the superclass table; if
      * true, outer join from the superclass table to this table
      */
-    public Joins joinSuperclass(Joins joins, boolean toThis);
+    Joins joinSuperclass(Joins joins, boolean toThis);
 
     /**
      * Return true if this strategy can perform the given select from
      * the given <code>base</code> mapping.
      * The given state manager may be null if selecting multiple instances.
      */
-    public boolean supportsEagerSelect(Select sel, OpenJPAStateManager sm,
+    boolean supportsEagerSelect(Select sel, OpenJPAStateManager sm,
         JDBCStore store, ClassMapping base, JDBCFetchConfiguration fetch);
 
     /**
      * Implement this method to customize obtaining a result containing all
      * instances of this class. Return null for standard loading.
      */
-    public ResultObjectProvider customLoad(JDBCStore store, boolean subclasses,
+    ResultObjectProvider customLoad(JDBCStore store, boolean subclasses,
         JDBCFetchConfiguration fetch, long startIdx, long endIdx)
         throws SQLException;
 
@@ -100,7 +100,7 @@ public interface ClassStrategy
      * subclasses); initialization looks like this: <code>
      * sm.initialize (pcClass, state)</code>
      */
-    public boolean customLoad(OpenJPAStateManager sm, JDBCStore store,
+    boolean customLoad(OpenJPAStateManager sm, JDBCStore store,
         PCState state, JDBCFetchConfiguration fetch)
         throws SQLException, ClassNotFoundException;
 
@@ -109,7 +109,7 @@ public interface ClassStrategy
      * into an instance. Return true if this mapping handles the
      * load; false if normal loading should proceed after calling this method.
      */
-    public boolean customLoad(OpenJPAStateManager sm, JDBCStore store,
+    boolean customLoad(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result result)
         throws SQLException;
 }

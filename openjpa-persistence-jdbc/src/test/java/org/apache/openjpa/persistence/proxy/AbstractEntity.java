@@ -38,7 +38,7 @@ public abstract class AbstractEntity {
     int version;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private Set<ConcreteEntity> items = new LinkedHashSet<ConcreteEntity>();
+    private Set<ConcreteEntity> items = new LinkedHashSet<>();
 
     public int getId() {
         return id;
@@ -50,7 +50,7 @@ public abstract class AbstractEntity {
 
     public void addItem(ConcreteEntity ce) {
         if (items == null)
-            items = new LinkedHashSet<ConcreteEntity>();
+            items = new LinkedHashSet<>();
         items.add(ce);
     }
 }

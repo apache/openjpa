@@ -32,6 +32,8 @@ import org.apache.openjpa.lib.identifier.Identifier;
  */
 public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, Cloneable, Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private DBIdentifier _schemaName = DBIdentifier.NULL;  // The schema name
     // The table name if the object (column, constraint) is qualified by a table name
     private DBIdentifier _objectTableName = DBIdentifier.NULL;
@@ -102,7 +104,7 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
     public static DBIdentifier[] splitPath(DBIdentifier sName) {
         if (sName instanceof QualifiedDBIdentifier && sName.getType() != DBIdentifierType.SCHEMA) {
             QualifiedDBIdentifier path = (QualifiedDBIdentifier)sName;
-            List<DBIdentifier> names = new ArrayList<DBIdentifier>();
+            List<DBIdentifier> names = new ArrayList<>();
 
             if (!DBIdentifier.isNull(path.getSchemaName())) {
                 names.add(path.getSchemaName().clone());
@@ -181,6 +183,7 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
     /**
      * Equality operator.
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -229,6 +232,7 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
     /**
      * Returns a fully qualified name as a string.
      */
+    @Override
     public String toString() {
         return getName();
     }
@@ -236,6 +240,7 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
     /**
      * Returns the fully qualified name as a string
      */
+    @Override
     public String getName() {
         // If no schema or object or table qualifier, return the base name
         if (DBIdentifier.isEmpty(_schemaName) && DBIdentifier.isEmpty(_objectTableName)) {
@@ -264,6 +269,7 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
      * Set the name of this qualified identifier.  Splits the string into
      * multiple components.  This method assumes the type does not change.
      */
+    @Override
     public void setName(String name) {
         // Split apart name into components
         DBIdentifier[] sNames = DBIdentifier.split(getType(), name);
@@ -282,6 +288,7 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
      * Returns the length of the qualified identifier, including delimiters
      * and name separators.
      */
+    @Override
     public int length() {
         String name = getName();
         if (name == null) {
@@ -293,6 +300,7 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
     /**
      * Compares this identifier with another identifier.
      */
+    @Override
     public int compareTo(Identifier o) {
         if (o instanceof DBIdentifier) {
             if (o == null || o == DBIdentifier.NULL)
@@ -338,6 +346,7 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
     /**
      * Creates a clone of this identifier.
      */
+    @Override
     public QualifiedDBIdentifier clone() {
         QualifiedDBIdentifier sPath = new QualifiedDBIdentifier();
         sPath.setObjectTableName(getObjectTableName().clone());

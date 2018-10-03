@@ -47,12 +47,14 @@ public class TestDelayedTreeSetProxy extends DelayedProxyCollectionsTestCase {
         Account.class
     };
 
+    @Override
     public void setUp() {
         super.setUp(_pcList);
     }
 
+    @Override
     public void setUp(Object... props){
-        List<Object> parms = new ArrayList<Object>();
+        List<Object> parms = new ArrayList<>();
         // Add package-specific types
         parms.addAll(Arrays.asList(_pcList));
         // Add properties from super
@@ -60,29 +62,35 @@ public class TestDelayedTreeSetProxy extends DelayedProxyCollectionsTestCase {
         super.setUp(parms.toArray());
     }
 
+    @Override
     public IUserIdentity findUserIdentity(EntityManager em, int id) {
         return em.find(UserIdentity.class, id);
     }
 
+    @Override
     public IDepartment findDepartment(EntityManager em, int id) {
         return em.find(Department.class, id);
     }
 
+    @Override
     public IUserIdentity createUserIdentity() {
         UserIdentity ui = new UserIdentity();
         return ui;
     }
 
+    @Override
     public IAccount createAccount(String name, IUserIdentity ui) {
         IAccount acct = new Account(name, ui);
         return acct;
     }
 
+    @Override
     public IDepartment createDepartment() {
         Department d = new Department();
         return d;
     }
 
+    @Override
     public IMember createMember(String name) {
         Member m = new Member();
         m.setName(name);
@@ -97,32 +105,32 @@ public class TestDelayedTreeSetProxy extends DelayedProxyCollectionsTestCase {
 
     @Override
     public Collection<IEmployee> createEmployees() {
-        return new TreeSet<IEmployee>();
+        return new TreeSet<>();
     }
 
     @Override
     public Collection<Product> createProducts() {
-        return new TreeSet<Product>();
+        return new TreeSet<>();
     }
 
     @Override
     public Collection<Award> createAwards() {
-        return new TreeSet<Award>();
+        return new TreeSet<>();
     }
 
     @Override
     public Collection<Location> createLocations() {
-        return new TreeSet<Location>();
+        return new TreeSet<>();
     }
 
     @Override
     public Collection<Certification> createCertifications() {
-        return new TreeSet<Certification>();
+        return new TreeSet<>();
     }
 
     @Override
     public Collection<IAccount> createAccounts() {
-        return new TreeSet<IAccount>();
+        return new TreeSet<>();
     }
 
     @Override

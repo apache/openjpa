@@ -37,10 +37,12 @@ public class UncacheableEntity implements CacheEntity {
 
     private String name;
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -49,6 +51,7 @@ public class UncacheableEntity implements CacheEntity {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

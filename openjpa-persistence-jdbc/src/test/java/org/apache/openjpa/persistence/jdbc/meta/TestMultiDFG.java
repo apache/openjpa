@@ -31,11 +31,8 @@ import javax.persistence.EntityTransaction;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.MultiB;
 
 
 public class TestMultiDFG
@@ -51,6 +48,7 @@ public class TestMultiDFG
     public TestMultiDFG() {
     }
 
+    @Override
     public void setUp() {
 
        deleteAll(MultiB.class);

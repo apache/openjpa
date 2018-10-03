@@ -20,8 +20,9 @@ package org.apache.openjpa.persistence.identity;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that entities can use floating point ids.
@@ -31,6 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestFloatingPointIds
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(FloatIdEntity.class, DoubleObjIdEntity.class);
     }

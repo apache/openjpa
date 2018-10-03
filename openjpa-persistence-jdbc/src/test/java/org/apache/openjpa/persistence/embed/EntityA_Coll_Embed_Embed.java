@@ -24,16 +24,18 @@ import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import javax.persistence.ElementCollection;
-
 @Entity
 @Table(name="TBL1A")
 public class EntityA_Coll_Embed_Embed implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     Integer id;
 
@@ -44,7 +46,7 @@ public class EntityA_Coll_Embed_Embed implements Serializable {
     int age;
 
     @ElementCollection
-    protected List<Embed_Embed> embeds = new ArrayList<Embed_Embed>();
+    protected List<Embed_Embed> embeds = new ArrayList<>();
 
     public int getAge() {
         return age;

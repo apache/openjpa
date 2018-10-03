@@ -25,16 +25,21 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
+
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
 import org.apache.openjpa.persistence.proxy.entities.Address;
+import org.apache.openjpa.persistence.proxy.entities.Annuity;
+import org.apache.openjpa.persistence.proxy.entities.AnnuityHolder;
 import org.apache.openjpa.persistence.proxy.entities.AnnuityHolderCategory;
 import org.apache.openjpa.persistence.proxy.entities.AnnuityPersistebleObject;
+import org.apache.openjpa.persistence.proxy.entities.AnnuityType;
+import org.apache.openjpa.persistence.proxy.entities.Contact;
 import org.apache.openjpa.persistence.proxy.entities.ContactType;
+import org.apache.openjpa.persistence.proxy.entities.EquityAnnuity;
+import org.apache.openjpa.persistence.proxy.entities.FixedAnnuity;
 import org.apache.openjpa.persistence.proxy.entities.IAnnuity;
 import org.apache.openjpa.persistence.proxy.entities.IAnnuityHolder;
 import org.apache.openjpa.persistence.proxy.entities.IContact;
@@ -43,17 +48,12 @@ import org.apache.openjpa.persistence.proxy.entities.IFixedAnnuity;
 import org.apache.openjpa.persistence.proxy.entities.IPayor;
 import org.apache.openjpa.persistence.proxy.entities.IPayout;
 import org.apache.openjpa.persistence.proxy.entities.IRider;
-import org.apache.openjpa.persistence.proxy.entities.Person;
-import org.apache.openjpa.persistence.proxy.entities.RiderType;
-import org.apache.openjpa.persistence.proxy.entities.Annuity;
-import org.apache.openjpa.persistence.proxy.entities.AnnuityHolder;
-import org.apache.openjpa.persistence.proxy.entities.Contact;
-import org.apache.openjpa.persistence.proxy.entities.EquityAnnuity;
-import org.apache.openjpa.persistence.proxy.entities.FixedAnnuity;
 import org.apache.openjpa.persistence.proxy.entities.Payor;
 import org.apache.openjpa.persistence.proxy.entities.Payout;
+import org.apache.openjpa.persistence.proxy.entities.Person;
 import org.apache.openjpa.persistence.proxy.entities.Rider;
-import org.apache.openjpa.persistence.proxy.entities.AnnuityType;
+import org.apache.openjpa.persistence.proxy.entities.RiderType;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 
 /*
@@ -65,6 +65,7 @@ import org.apache.openjpa.persistence.proxy.entities.AnnuityType;
  */
 public class TestDetachMerge extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(DROP_TABLES, Address.class, Annuity.class, AnnuityHolder.class, AnnuityPersistebleObject.class,
             Contact.class, EquityAnnuity.class, FixedAnnuity.class, Payor.class, Payout.class,

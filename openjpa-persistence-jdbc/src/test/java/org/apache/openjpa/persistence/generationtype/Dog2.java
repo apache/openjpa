@@ -18,14 +18,22 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
-import javax.persistence.*;
-import java.io.*;
+import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity(name = "Dog2")
 @Table(name = "DOGAUTO", schema = "SCHEMA2")
 public class Dog2 implements Serializable
 
 {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id2;

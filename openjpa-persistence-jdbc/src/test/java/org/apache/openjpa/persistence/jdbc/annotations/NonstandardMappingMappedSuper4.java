@@ -21,10 +21,11 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 
 import java.awt.Point;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
+import org.apache.openjpa.persistence.Persistent;
+import org.apache.openjpa.persistence.jdbc.Strategy;
 
 @MappedSuperclass
 public abstract class NonstandardMappingMappedSuper4 {

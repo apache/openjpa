@@ -18,8 +18,13 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 @Embeddable
 public class ContactInfo {
@@ -28,7 +33,7 @@ public class ContactInfo {
 
 	// Bidirectional
 	@ManyToMany
-    List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+    List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
     @Embedded
     EmergencyContactInfo ecInfo;

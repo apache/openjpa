@@ -21,15 +21,16 @@ package org.apache.openjpa.persistence.simple;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Set;
+
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 
@@ -71,7 +72,7 @@ public class AllFieldTypes {
     private Serializable serializableField;
 
     // Additional types
-    private Set<String> setOfStrings = new HashSet<String>();
+    private Set<String> setOfStrings = new HashSet<>();
     private String[] arrayOfStrings;
 
     @PersistentCollection
@@ -81,7 +82,7 @@ public class AllFieldTypes {
     @OneToOne
     private AllFieldTypes selfOneOne;
     @OneToMany
-    private List<AllFieldTypes> selfOneMany = new ArrayList<AllFieldTypes>();
+    private List<AllFieldTypes> selfOneMany = new ArrayList<>();
 
     public void setShortField(short shortField) {
         this.shortField = shortField;

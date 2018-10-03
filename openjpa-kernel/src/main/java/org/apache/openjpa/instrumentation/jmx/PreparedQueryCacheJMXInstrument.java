@@ -65,6 +65,7 @@ public class PreparedQueryCacheJMXInstrument extends AbstractPreparedQueryCacheI
         setContextRef(Integer.toString(System.identityHashCode(getContext())));
     }
 
+    @Override
     public ObjectName getObjectName() {
         if (_objName != null) {
             return _objName;
@@ -78,10 +79,12 @@ public class PreparedQueryCacheJMXInstrument extends AbstractPreparedQueryCacheI
         }
     }
 
+    @Override
     public void start() {
         getProvider().startInstrument(this);
     }
 
+    @Override
     public void stop() {
         getProvider().stopInstrument(this);
     }

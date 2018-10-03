@@ -34,6 +34,7 @@ public class StringValue extends Value {
         super(prop);
     }
 
+    @Override
     public Class<String> getValueType() {
         return String.class;
     }
@@ -41,6 +42,7 @@ public class StringValue extends Value {
     /**
      * The internal value.
      */
+    @Override
     public String get() {
         return value;
     }
@@ -56,14 +58,17 @@ public class StringValue extends Value {
             valueChanged();
     }
 
+    @Override
     protected String getInternalString() {
         return get();
     }
 
+    @Override
     protected void setInternalString(String val) {
         set(val);
     }
 
+    @Override
     protected void setInternalObject(Object obj) {
         if (obj instanceof String) {
             set((String) obj);

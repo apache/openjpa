@@ -50,6 +50,7 @@ public class XMLPropAccess {
         return strField;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropAccess) {
             XMLPropAccess pa = (XMLPropAccess)obj;

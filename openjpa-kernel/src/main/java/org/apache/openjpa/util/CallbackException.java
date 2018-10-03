@@ -29,6 +29,9 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class CallbackException
     extends UserException {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public CallbackException(Message msg) {
         super(msg);
     }
@@ -37,6 +40,7 @@ public class CallbackException
         super(cause);
     }
 
+    @Override
     public int getSubtype() {
         return CALLBACK;
     }

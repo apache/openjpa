@@ -34,6 +34,7 @@ public class SuffixMetaDataFilter implements MetaDataFilter {
         _suffix = suffix;
     }
 
+    @Override
     public boolean matches(Resource rsrc) {
         String name = rsrc.getName();
         return name != null && name.endsWith(_suffix);

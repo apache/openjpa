@@ -38,11 +38,13 @@ public class Payout extends AnnuityPersistebleObject implements IPayout {
 	private Calendar endDate;
 	private IAnnuity annuity;
 
-	@Column(name="TAXABLE_AMOUNT")
+	@Override
+    @Column(name="TAXABLE_AMOUNT")
 	public BigDecimal getTaxableAmount() {
 		return this.taxableAmount;
 	}
-	public void setTaxableAmount(BigDecimal payoutTaxableAmt) {
+	@Override
+    public void setTaxableAmount(BigDecimal payoutTaxableAmt) {
 		this.taxableAmount = payoutTaxableAmt;
 		if (payoutTaxableAmt != null) {
 			DecimalFormat df = new DecimalFormat("#.##");
@@ -50,30 +52,36 @@ public class Payout extends AnnuityPersistebleObject implements IPayout {
 		}
 
 	}
-	@Column(name="START_DATE")
+	@Override
+    @Column(name="START_DATE")
 	public Calendar getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(Calendar startDate) {
+	@Override
+    public void setStartDate(Calendar startDate) {
 		this.startDate = startDate;
 	}
 
-	@Column(name="END_DATE")
+	@Override
+    @Column(name="END_DATE")
 	public Calendar getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Calendar payoutEndDate) {
+	@Override
+    public void setEndDate(Calendar payoutEndDate) {
 		this.endDate = payoutEndDate;
 	}
 
-	@ManyToOne(targetEntity=Annuity.class,
+	@Override
+    @ManyToOne(targetEntity=Annuity.class,
 			fetch=FetchType.EAGER)
 	@JoinColumn(name="FK_ANNUITY_ID")
 	public IAnnuity getAnnuity() {
 		return this.annuity;
 	}
-	public void setAnnuity(IAnnuity annuity) {
+	@Override
+    public void setAnnuity(IAnnuity annuity) {
 		this.annuity = annuity;
 
 	}

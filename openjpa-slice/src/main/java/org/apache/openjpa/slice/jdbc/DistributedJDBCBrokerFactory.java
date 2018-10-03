@@ -42,10 +42,10 @@ import org.apache.openjpa.slice.Slice;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
     implements DistributedBrokerFactory {
-	private static final Localizer _loc = Localizer.forPackage(DistributedJDBCBrokerFactory.class);
+    private static final long serialVersionUID = 1L;
+    private static final Localizer _loc = Localizer.forPackage(DistributedJDBCBrokerFactory.class);
 
 	/**
      * Factory method for constructing a factory from properties. Invoked from
@@ -97,7 +97,8 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	    return (DistributedJDBCConfiguration)super.getConfiguration();
 	}
 
-	public Slice addSlice(String name, Map properties) {
+	@Override
+    public Slice addSlice(String name, Map properties) {
 	    Slice slice = ((DistributedJDBCConfigurationImpl)getConfiguration()).addSlice(name, properties);
         ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
         synchronizeMappings(loader, (JDBCConfiguration)slice.getConfiguration());
@@ -118,6 +119,7 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
         return new DistributedBrokerImpl();
     }
 
+    @Override
     protected void synchronizeMappings(ClassLoader loader) {
         List<Slice> slices = getConfiguration().getSlices(Slice.Status.ACTIVE);
         for (Slice slice : slices) {

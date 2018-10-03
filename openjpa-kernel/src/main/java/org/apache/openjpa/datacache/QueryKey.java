@@ -32,11 +32,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import java.util.Objects;
 
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.kernel.Query;
@@ -62,21 +61,21 @@ public class QueryKey
     // initialize the set of unmodifiable classes. This allows us
     // to avoid cloning collections that are not modifiable,
     // provided that they do not contain mutable objects.
-    private static Collection<Class<?>> s_unmod = new HashSet<Class<?>>();
+    private static Collection<Class<?>> s_unmod = new HashSet<>();
 
     static {
         // handle the set types; jdk uses different classes for collection,
         // set, and sorted set
-        TreeSet<Object> s = new TreeSet<Object>();
+        TreeSet<Object> s = new TreeSet<>();
         s_unmod.add(Collections.unmodifiableCollection(s).getClass());
         s_unmod.add(Collections.unmodifiableSet(s).getClass());
         s_unmod.add(Collections.unmodifiableSortedSet(s).getClass());
 
         // handle the list types; jdk uses different classes for standard
         // and random access lists
-        List<Object> l = new LinkedList<Object>();
+        List<Object> l = new LinkedList<>();
         s_unmod.add(Collections.unmodifiableList(l).getClass());
-        l = new ArrayList<Object>(0);
+        l = new ArrayList<>(0);
         s_unmod.add(Collections.unmodifiableList(l).getClass());
 
         // handle the constant types
@@ -149,7 +148,7 @@ public class QueryKey
         Class<?> candidate, boolean subs, long startIdx, long endIdx, Object parsed) {
         QueryKey key = createKey(q, packed, candidate, subs, startIdx, endIdx, parsed);
         if (key != null && (args == null || args.isEmpty() ||
-            setParams(key, q.getStoreContext(), new HashMap<Object,Object>(args))))
+            setParams(key, q.getStoreContext(), new HashMap<>(args))))
             return key;
         return null;
     }
@@ -194,7 +193,7 @@ public class QueryKey
         if (metas.length == 0)
             return null;
 
-        Set<String> accessPathClassNames = new HashSet<String>((int) (metas.length * 1.33 + 1));
+        Set<String> accessPathClassNames = new HashSet<>((int) (metas.length * 1.33 + 1));
         ClassMetaData meta;
         for (int i = 0; i < metas.length; i++) {
             // since the class change framework deals with least-derived types,
@@ -268,7 +267,7 @@ public class QueryKey
         // parameter list into a map, using the query's parameter
         // declaration to determine ordering etc.
         Map<Object,Class<?>> types = q.getOrderedParameterTypes();
-        Map<Object,Object> map = new HashMap<Object,Object>((int) (types.size() * 1.33 + 1));
+        Map<Object,Object> map = new HashMap<>((int) (types.size() * 1.33 + 1));
         int idx = 0;
         for (Iterator<Object> iter = types.keySet().iterator(); iter.hasNext(); idx++)
             map.put(iter.next(), args[idx]);
@@ -319,11 +318,11 @@ public class QueryKey
                         // copy the collection
                         Collection<Object> copy;
                         if (c instanceof SortedSet)
-                            copy = new TreeSet<Object>();
+                            copy = new TreeSet<>();
                         else if (c instanceof Set)
-                            copy = new HashSet<Object>();
+                            copy = new HashSet<>();
                         else
-                            copy = new ArrayList<Object>(c.size());
+                            copy = new ArrayList<>(c.size());
 
                         if (contentsAreDates) {
                             // must go through by hand and do the
@@ -395,6 +394,7 @@ public class QueryKey
      * created for queries that specify a candidate collection are
      * always not equal.
      */
+    @Override
     public boolean equals(Object ob) {
         if (this == ob)
             return true;
@@ -416,6 +416,7 @@ public class QueryKey
      * Define a hashing algorithm corresponding to the {@link #equals}
      * method defined above.
      */
+    @Override
     public int hashCode() {
         int code = 37 * 17 + _candidateClassName.hashCode();
         if (_query != null)
@@ -425,6 +426,7 @@ public class QueryKey
         return code;
     }
 
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder(1024);
         buf.append(super.toString()).
@@ -441,6 +443,7 @@ public class QueryKey
 
     // ---------- Externalizable implementation ----------
 
+    @Override
     public void writeExternal(ObjectOutput out)
         throws IOException {
         out.writeObject(_candidateClassName);
@@ -454,6 +457,7 @@ public class QueryKey
         out.writeInt(_timeout);
     }
 
+    @Override
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         _candidateClassName = (String) in.readObject();

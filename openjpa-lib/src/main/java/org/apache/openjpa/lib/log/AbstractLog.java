@@ -43,66 +43,81 @@ public abstract class AbstractLog implements Log {
      */
     protected abstract void log(short level, String message, Throwable t);
 
+    @Override
     public boolean isTraceEnabled() {
         return isEnabled(TRACE);
     }
 
+    @Override
     public boolean isInfoEnabled() {
         return isEnabled(INFO);
     }
 
+    @Override
     public boolean isWarnEnabled() {
         return isEnabled(WARN);
     }
 
+    @Override
     public boolean isErrorEnabled() {
         return isEnabled(ERROR);
     }
 
+    @Override
     public boolean isFatalEnabled() {
         return isEnabled(FATAL);
     }
 
+    @Override
     public void trace(Object message) {
         trace(message, throwableParam(message, null));
     }
 
+    @Override
     public void trace(Object message, Throwable t) {
         if (isTraceEnabled())
             log(TRACE, toString(message), throwableParam(message, t));
     }
 
+    @Override
     public void info(Object message) {
         info(message, throwableParam(message, null));
     }
 
+    @Override
     public void info(Object message, Throwable t) {
         if (isInfoEnabled())
             log(INFO, toString(message), throwableParam(message, t));
     }
 
+    @Override
     public void warn(Object message) {
         warn(message, throwableParam(message, null));
     }
 
+    @Override
     public void warn(Object message, Throwable t) {
         if (isWarnEnabled())
             log(WARN, toString(message), throwableParam(message, t));
     }
 
+    @Override
     public void error(Object message) {
         error(message, throwableParam(message, null));
     }
 
+    @Override
     public void error(Object message, Throwable t) {
         if (isErrorEnabled())
             log(ERROR, toString(message), throwableParam(message, t));
     }
 
+    @Override
     public void fatal(Object message) {
         fatal(message, throwableParam(message, null));
     }
 
+    @Override
     public void fatal(Object message, Throwable t) {
         if (isFatalEnabled())
             log(FATAL, toString(message), throwableParam(message, t));

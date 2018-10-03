@@ -41,14 +41,17 @@ public class Attendance {
             this.course = courseId;
         }
 
+        @Override
         public String toString() {
             return student + ":" + course;
         }
 
+        @Override
         public int hashCode() {
             return (17 + student) * 37 + course;
         }
 
+        @Override
         public boolean equals(Object other) {
             return this == other
                 || other instanceof AttendanceId

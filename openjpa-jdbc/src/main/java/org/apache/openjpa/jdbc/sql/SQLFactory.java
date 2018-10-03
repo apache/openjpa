@@ -28,19 +28,19 @@ public interface SQLFactory {
     /**
      * Select factory.
      */
-    public Select newSelect();
+    Select newSelect();
 
     /**
      * Union factory.
      *
      * @param selects the number of selects in the union
      */
-    public Union newUnion(int selects);
+    Union newUnion(int selects);
 
     /**
      * Union factory.
      *
      * @param selects the members of the union
      */
-    public Union newUnion(Select[] selects);
+    Union newUnion(Select[] selects);
 }

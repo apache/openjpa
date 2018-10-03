@@ -63,7 +63,7 @@ public class Book extends Merchandise {
 
     public void addAuthor(Author a) {
         if (authors == null)
-            authors = new HashSet<Author>();
+            authors = new HashSet<>();
         if (authors.add(a)) {
             a.addBook(this);
         }

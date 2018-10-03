@@ -20,8 +20,9 @@ package org.apache.openjpa.persistence.inheritance;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that sibling classes with a shared id value declared in their
@@ -32,6 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSharedMappedSuperclassIdValue
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, NoGenMappedSuperclassBase.class,
                 NoGenMappedSuperclassL2.class, NoGenEntityL3.class,

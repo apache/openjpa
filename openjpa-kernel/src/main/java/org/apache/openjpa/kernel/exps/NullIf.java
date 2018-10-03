@@ -29,6 +29,8 @@ import org.apache.openjpa.kernel.StoreContext;
 public class NullIf
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val1;
     private final Val _val2;
 
@@ -87,13 +89,16 @@ public class NullIf
         return _val2;
     }
 
+    @Override
     public Class getType() {
         return _val1.getType();
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val1.acceptVisit(visitor);

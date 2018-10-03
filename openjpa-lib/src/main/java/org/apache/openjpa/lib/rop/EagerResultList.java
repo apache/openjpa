@@ -27,6 +27,9 @@ import java.util.ArrayList;
  */
 public class EagerResultList extends ListResultList implements ResultList {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public EagerResultList(ResultObjectProvider rop) {
         super(new ArrayList());
         try {

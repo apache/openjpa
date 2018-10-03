@@ -60,6 +60,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         _configRef = cref;
     }
 
+    @Override
     public long getHitCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -67,6 +68,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public long getReadCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -74,6 +76,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public long getTotalHitCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -81,6 +84,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public long getTotalReadCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -88,6 +92,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public long getTotalWriteCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -95,6 +100,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public long getWriteCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -102,12 +108,14 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public void reset() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
             stats.reset();
     }
 
+    @Override
     public Date sinceDate() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -115,6 +123,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return null;
     }
 
+    @Override
     public Date startDate() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -130,6 +139,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return _configRef;
     }
 
+    @Override
     public String getCacheName() {
         if (_dc != null)
             return _dc.getName();
@@ -143,6 +153,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return null;
     }
 
+    @Override
     public long getWriteCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -150,6 +161,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public long getTotalWriteCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -157,6 +169,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public long getTotalReadCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -164,6 +177,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public long getTotalHitCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -171,6 +185,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public long getReadCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -178,6 +193,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public long getHitCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -185,10 +201,12 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         return NO_STATS;
     }
 
+    @Override
     public InstrumentationLevel getLevel() {
         return InstrumentationLevel.FACTORY;
     }
 
+    @Override
     public void cache(String className, boolean enable) {
         if (enable) {
             _dcm.startCaching(className);
@@ -197,9 +215,11 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         }
     }
 
+    @Override
     public Map<String, Boolean> listKnownTypes() {
         return _dcm.listKnownTypes();
     }
+    @Override
     public void collectStatistics(boolean enable) {
         CacheStatisticsSPI stats = (CacheStatisticsSPI) _dc.getStatistics();
         if (enable) {
@@ -209,14 +229,17 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         }
     }
 
+    @Override
     public Boolean getStatisticsEnabled() {
         CacheStatisticsSPI stats = (CacheStatisticsSPI) _dc.getStatistics();
         return stats.isEnabled();
     }
 
+    @Override
     public Map<String, long[]> getCacheStatistics() {
         return _dc.getStatistics().toMap();
     }
+    @Override
     public void clear() {
         _dc.clear();
     }

@@ -19,9 +19,13 @@
 package org.apache.openjpa.persistence.jpql.expressions;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.common.apps.*;
+import org.apache.openjpa.persistence.common.apps.Address;
+import org.apache.openjpa.persistence.common.apps.CompUser;
+import org.apache.openjpa.persistence.common.apps.FemaleUser;
+import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestEJBQLCondExpression extends AbstractTestCase {
@@ -32,6 +36,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         super(name, "jpqlclausescactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(CompUser.class);
         EntityManager em = currentEntityManager();

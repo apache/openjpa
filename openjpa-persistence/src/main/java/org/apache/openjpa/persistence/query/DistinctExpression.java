@@ -26,7 +26,10 @@ package org.apache.openjpa.persistence.query;
  */
 public class DistinctExpression extends UnaryOperatorExpression {
 
-	public DistinctExpression(Expression expr) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public DistinctExpression(Expression expr) {
 		super(expr, UnaryFunctionalOperator.DISTINCT);
 	}
 

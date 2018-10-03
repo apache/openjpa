@@ -27,9 +27,8 @@ import org.apache.openjpa.meta.MetaDataModes;
  * @author Abe White
  * @since 0.4.0
  */
-@SuppressWarnings("serial")
-public class MappingStrategyInstaller
-    extends StrategyInstaller {
+public class MappingStrategyInstaller extends StrategyInstaller {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructor; supply configuration.
@@ -38,10 +37,12 @@ public class MappingStrategyInstaller
         super(repos);
     }
 
+    @Override
     public boolean isAdapting() {
         return true;
     }
 
+    @Override
     public void installStrategy(ClassMapping cls) {
         ClassStrategy strat = repos.namedStrategy(cls);
         if (strat == null)
@@ -50,6 +51,7 @@ public class MappingStrategyInstaller
         cls.setSourceMode(MetaDataModes.MODE_MAPPING, true);
     }
 
+    @Override
     public void installStrategy(FieldMapping field) {
         FieldStrategy strategy = repos.namedStrategy(field, true);
         if (strategy == null)
@@ -57,6 +59,7 @@ public class MappingStrategyInstaller
         field.setStrategy(strategy, Boolean.TRUE);
     }
 
+    @Override
     public void installStrategy(Version version) {
         VersionStrategy strat = repos.namedStrategy(version);
         if (strat == null)
@@ -64,6 +67,7 @@ public class MappingStrategyInstaller
         version.setStrategy(strat, Boolean.TRUE);
     }
 
+    @Override
     public void installStrategy(Discriminator discrim) {
         DiscriminatorStrategy strat = repos.namedStrategy(discrim);
         if (strat == null)

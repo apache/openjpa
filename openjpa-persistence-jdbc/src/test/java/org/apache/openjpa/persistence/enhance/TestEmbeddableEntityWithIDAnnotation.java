@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestEmbeddableEntityWithIDAnnotation extends SQLListenerTestCase{
 
+    @Override
     public void setUp() {
         setUp(EmbeddableEntityWithIDAnnotation.class, IDOwningClassTestEntity.class, CLEAR_TABLES);
     }

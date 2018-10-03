@@ -27,6 +27,7 @@ import javax.persistence.LockModeType;
  */
 public class TestMixedLockManagerRefreshPermutation
     extends SequencedActionsTest {
+    @Override
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"

@@ -16,9 +16,9 @@
  */
 package org.apache.openjpa.integration.daytrader;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.io.IOException;
 
 /**
  * TradeScenarioServlet emulates a population of web users by generating a specific Trade operation
@@ -203,15 +203,15 @@ public class TradeScenario {
 							}
 						}
 						if (foundHoldingToSell) break;
-						tAction.log.warn("TradeScenario: No holdings sold for userID=" + userID +
+						TradeJPADirect.log.warn("TradeScenario: No holdings sold for userID=" + userID +
 						    ", holdings=" + numHoldings);
 					} else {
-                        tAction.log.warn("TradeScenario: No holdings to sell for userID=" + userID);
+                        TradeJPADirect.log.warn("TradeScenario: No holdings to sell for userID=" + userID);
 					}
 					// At this point: A TradeScenario Sell was requested with No Stocks in Portfolio
 					// This can happen when a new registered user happens to request a sell before a buy
 					// In this case, fall through and perform a buy instead
-                    tAction.log.warn("TradeScenario: No holdings sold - switching to buy -- userID=" + userID);
+                    TradeJPADirect.log.warn("TradeScenario: No holdings sold - switching to buy -- userID=" + userID);
 
 					/* Trade 2.037: Added sell_deficit counter to maintain correct buy/sell mix.
 					 * When a users portfolio is reduced to 0 holdings, a buy is requested instead of a sell.
@@ -236,14 +236,14 @@ public class TradeScenario {
 	}
 
     private void log(StringBuilder sb, String msg) {
-        if (tAction.log != null && tAction.log.isTraceEnabled()) {
+        if (TradeJPADirect.log != null && TradeJPADirect.log.isTraceEnabled()) {
             sb.append(msg);
             sb.append(System.getProperty("line.separator"));
         }
     }
 
     private void log(StringBuilder sb, String msg, Object obj) {
-        if (tAction.log != null && tAction.log.isTraceEnabled()) {
+        if (TradeJPADirect.log != null && TradeJPADirect.log.isTraceEnabled()) {
             sb.append(msg);
             sb.append(" = ");
             sb.append(obj);

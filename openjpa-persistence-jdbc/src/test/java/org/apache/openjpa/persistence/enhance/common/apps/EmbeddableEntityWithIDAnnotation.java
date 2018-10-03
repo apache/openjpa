@@ -23,10 +23,7 @@ package org.apache.openjpa.persistence.enhance.common.apps;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 
 /**
  * BillingNoteId entity. @author MyEclipse Persistence Tools
@@ -75,6 +72,7 @@ public class EmbeddableEntityWithIDAnnotation implements java.io.Serializable
         this.seqNo = seqNo;
     }
 
+    @Override
     public boolean equals( Object other )
     {
         if ( ( this == other ) )
@@ -93,6 +91,7 @@ public class EmbeddableEntityWithIDAnnotation implements java.io.Serializable
                 		&& this.getSeqNo( ).equals( castOther.getSeqNo( ) ) ) );
     }
 
+    @Override
     public int hashCode()
     {
         int result = 17;

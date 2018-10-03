@@ -90,11 +90,13 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataModes;
+import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.NoneMetaDataFactory;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
 import serp.bytecode.Project;
@@ -221,7 +223,7 @@ public class ReverseMappingTool
      */
     public ReverseMappingTool(JDBCConfiguration conf) {
         _conf = conf;
-        _log = conf.getLog(JDBCConfiguration.LOG_METADATA);
+        _log = conf.getLog(OpenJPAConfiguration.LOG_METADATA);
     }
 
     /**
@@ -609,7 +611,7 @@ public class ReverseMappingTool
             _repos.setMetaDataFactory(NoneMetaDataFactory.getInstance());
             _repos.setMappingDefaults(NoneMappingDefaults.getInstance());
             _repos.setResolve(MODE_NONE);
-            _repos.setValidate(_repos.VALIDATE_NONE);
+            _repos.setValidate(MetaDataRepository.VALIDATE_NONE);
         }
         return _repos;
     }
@@ -717,13 +719,13 @@ public class ReverseMappingTool
             // it might have to switch to std application identity if pk field
             // not compatible
             if (cls.getPCSuperclass() == null
-                && cls.getIdentityType() == ClassMapping.ID_APPLICATION) {
+                && cls.getIdentityType() == ClassMetaData.ID_APPLICATION) {
                 if (cls.getPrimaryKeyFields().length == 0)
                     throw new MetaDataException(_loc.get("no-pk-fields", cls));
                 if (cls.getObjectIdType() == null
                     || (cls.isOpenJPAIdentity() && !isBuiltinIdentity(cls)))
                     setObjectIdType(cls);
-            } else if (cls.getIdentityType() == ClassMapping.ID_DATASTORE)
+            } else if (cls.getIdentityType() == ClassMetaData.ID_DATASTORE)
                 cls.getPrimaryKeyColumns()[0].setJavaType(JavaTypes.LONG);
 
             // set java types for simple fields;
@@ -977,7 +979,7 @@ public class ReverseMappingTool
      */
     private ApplicationIdTool newApplicationIdTool(ClassMapping mapping) {
         ApplicationIdTool tool;
-        if (mapping.getIdentityType() == ClassMapping.ID_APPLICATION
+        if (mapping.getIdentityType() == ClassMetaData.ID_APPLICATION
             && !mapping.isOpenJPAIdentity()
             && mapping.getPCSuperclass() == null) {
             tool = new ApplicationIdTool(_conf, mapping.getDescribedType(),
@@ -1210,7 +1212,7 @@ public class ReverseMappingTool
         if (pks.length == 1 && _datastore
             && pks[0].isCompatible(Types.BIGINT, null, 0, 0)) {
             cls.setObjectIdType(null, false);
-            cls.setIdentityType(ClassMapping.ID_DATASTORE);
+            cls.setIdentityType(ClassMetaData.ID_DATASTORE);
         } else if (pks.length == 1 && _builtin)
             cls.setObjectIdType(null, false);
         cls.setStrategy(new FullClassStrategy(), null);
@@ -1347,7 +1349,7 @@ public class ReverseMappingTool
         Column[] cols = table.getColumns();
         for (int i = 0; i < cols.length; i++) {
             pkcol = pk != null && pk.containsColumn(cols[i]);
-            if (pkcol && cls.getIdentityType() == ClassMapping.ID_DATASTORE)
+            if (pkcol && cls.getIdentityType() == ClassMetaData.ID_DATASTORE)
                 continue;
             if ((cls.getPCSuperclass() == null && pkcol)
                 || !isForeignKeyColumn(cols[i]))
@@ -1403,13 +1405,13 @@ public class ReverseMappingTool
             field2.setMappedBy(field1.getName());
         if (unq) {
             field2.setForeignKey(fk);
-            field2.setJoinDirection(field2.JOIN_INVERSE);
+            field2.setJoinDirection(ValueMapping.JOIN_INVERSE);
             field2.setStrategy(new RelationFieldStrategy(), null);
         } else {
             ValueMapping vm = field2.getElementMapping();
             vm.setDeclaredType(cls.getDescribedType());
             vm.setForeignKey(fk);
-            vm.setJoinDirection(vm.JOIN_EXPECTED_INVERSE);
+            vm.setJoinDirection(ValueMapping.JOIN_EXPECTED_INVERSE);
             field2.setStrategy(new RelationCollectionInverseKeyFieldStrategy(),
                 null);
         }
@@ -1432,7 +1434,7 @@ public class ReverseMappingTool
         field.setColumns(new Column[]{ col });
         addConstraints(field);
         if (col.isPrimaryKey()
-            && cls.getIdentityType() != ClassMapping.ID_DATASTORE)
+            && cls.getIdentityType() != ClassMetaData.ID_DATASTORE)
             field.setPrimaryKey(true);
 
         FieldStrategy strat;
@@ -1730,6 +1732,7 @@ public class ReverseMappingTool
     /**
      * Return a new tool with the same settings as this one. Used in workbench.
      */
+    @Override
     public Object clone() {
         ReverseMappingTool tool = new ReverseMappingTool(_conf);
         tool.setSchemaGroup(getSchemaGroup());
@@ -1857,6 +1860,7 @@ public class ReverseMappingTool
         final String[] arguments = opts.setFromCmdLine(args);
         boolean ret = Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts) throws Exception {
                 JDBCConfiguration conf = new JDBCConfigurationImpl();
                 try {
@@ -2115,18 +2119,24 @@ public class ReverseMappingTool
     private class ReverseStrategyInstaller
         extends StrategyInstaller {
 
+        
+        private static final long serialVersionUID = 1L;
+
         public ReverseStrategyInstaller(MappingRepository repos) {
             super(repos);
         }
 
+        @Override
         public void installStrategy(ClassMapping cls) {
             throw new InternalException();
         }
 
+        @Override
         public void installStrategy(FieldMapping field) {
             throw new InternalException();
         }
 
+        @Override
         public void installStrategy(Version version) {
             ClassMapping cls = version.getClassMapping();
             if (cls.getPCSuperclass() != null)
@@ -2140,6 +2150,7 @@ public class ReverseMappingTool
                     null);
         }
 
+        @Override
         public void installStrategy(Discriminator discrim) {
             ClassMapping cls = discrim.getClassMapping();
             if (cls.getPCSuperclass() != null) {
@@ -2196,6 +2207,7 @@ public class ReverseMappingTool
          * If there is an inner application identity class, then
          * add it to the bottom of the class code.
          */
+        @Override
         protected void closeClassBrace(CodeFormat code) {
             if (_appid != null) {
                 code.afterSection();
@@ -2210,6 +2222,7 @@ public class ReverseMappingTool
          * Add the list of imports for any inner app id classes
          *
          */
+        @Override
         public Set getImportPackages() {
             Set pkgs = super.getImportPackages();
             if (_appid != null)
@@ -2217,28 +2230,33 @@ public class ReverseMappingTool
             return pkgs;
         }
 
+        @Override
         protected String getClassCode() {
             return (_custom == null) ? null : _custom.getClassCode(_mapping);
         }
 
+        @Override
         protected String getInitialValue(FieldMetaData field) {
             if (_custom == null)
                 return null;
             return _custom.getInitialValue((FieldMapping) field);
         }
 
+        @Override
         protected String getDeclaration(FieldMetaData field) {
             if (_custom == null)
                 return null;
             return _custom.getDeclaration((FieldMapping) field);
         }
 
+        @Override
         protected String getFieldCode(FieldMetaData field) {
             if (_custom == null)
                 return null;
             return _custom.getFieldCode((FieldMapping) field);
         }
 
+        @Override
         protected boolean useGenericCollections() {
             return _useGenericColl;
         }
@@ -2252,20 +2270,24 @@ public class ReverseMappingTool
             super (mapping, aid);
         }
 
+        @Override
         public Set getImportPackages() {
             Set pkgs = super.getImportPackages();
             pkgs.add("javax.persistence");
             return pkgs;
         }
 
+        @Override
         protected List getClassAnnotations() {
             return getAnnotationsForMeta(_mapping);
         }
 
+        @Override
         protected List getFieldAnnotations(FieldMetaData field) {
             return getAnnotationsForMeta(field);
         }
 
+        @Override
         protected boolean usePropertyBasedAccess () {
             return ACCESS_TYPE_PROPERTY.equals(_accessType);
         }

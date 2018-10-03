@@ -18,26 +18,23 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.meta.MappingTool;
-import org.apache.openjpa.jdbc.schema.Schema;
-import org.apache.openjpa.jdbc.schema.SchemaGroup;
-import org.apache.openjpa.jdbc.schema.SchemaTool;
-import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.jdbc.common.apps.InvertA;
-import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
+import static org.apache.openjpa.jdbc.identifier.DBIdentifier.newTable;
+import static org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier.getPath;
 
 import java.io.File;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.openjpa.jdbc.identifier.DBIdentifier.newSchema;
-import static org.apache.openjpa.jdbc.identifier.DBIdentifier.newTable;
-import static org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier.getPath;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.meta.MappingTool;
+import org.apache.openjpa.jdbc.schema.SchemaGroup;
+import org.apache.openjpa.jdbc.schema.SchemaTool;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.jdbc.common.apps.InvertA;
+import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
 
 /**
  * @author Roberto Cortez
@@ -89,7 +86,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     // TODO - Add validation when source uses script but no script is provided?.
 
     public void testSchemaGenMetadataDrop() throws Exception {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "drop");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
@@ -101,7 +98,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     public void testSchemaGenMetadataCreate() throws Exception {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "create");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
@@ -113,7 +110,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     public void testSchemaGenMetadataDropAndCreate() throws Exception {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "drop-and-create");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
@@ -127,7 +124,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     public void testSchemaGenScriptDrop() throws Exception {
         testSchemaGenMetadataCreate();
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "drop");
         properties.put("javax.persistence.schema-generation.drop-source", "script");
         properties.put("javax.persistence.schema-generation.drop-script-source",
@@ -144,7 +141,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     public void testSchemaGenScriptCreate() throws Exception {
         testSchemaGenMetadataDrop();
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "create");
         properties.put("javax.persistence.schema-generation.create-source", "script");
         properties.put("javax.persistence.schema-generation.create-script-source",
@@ -161,7 +158,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     public void testSchemaGenScriptDropAndCreate() throws Exception {
         testSchemaGenMetadataCreate();
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "drop-and-create");
         properties.put("javax.persistence.schema-generation.drop-source", "script");
         properties.put("javax.persistence.schema-generation.drop-script-source",
@@ -189,7 +186,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
             schemaTool.run();
         } catch (SQLException e) {}
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "drop-and-create");
         properties.put("javax.persistence.schema-generation.drop-source", "metadata-then-script");
         properties.put("javax.persistence.schema-generation.drop-script-source",
@@ -220,7 +217,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
             schemaTool.run();
         } catch (SQLException e) {}
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "create");
         properties.put("javax.persistence.schema-generation.create-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/create-after-metadata.sql");
@@ -232,7 +229,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     public void testSchemaGenNoCreateSourceAndCreateScriptSourceSpecified() throws Exception {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "create");
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
@@ -246,7 +243,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     public void testSchemaGenNoDropSourceSpecifiedAndDropScriptSourceSpecified() throws Exception {
         testSchemaGenMetadataCreate();
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "drop");;
         properties.put("javax.persistence.schema-generation.drop-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/drop.sql");
@@ -262,7 +259,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     public void testSchemaGenScriptLoad() throws Exception {
         testSchemaGenMetadataDropAndCreate();
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.sql-load-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/load.sql");
 
@@ -284,7 +281,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     public void testSchemaGenOutputScriptCreate() throws Exception {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "create");
         properties.put("javax.persistence.schema-generation.scripts.create-target",
                        "target/create-db-output.sql");
@@ -297,7 +294,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     public void testSchemaGenOutputScriptDrop() throws Exception {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "drop");
         properties.put("javax.persistence.schema-generation.scripts.drop-target",
                        "target/drop-db-output.sql");
@@ -310,7 +307,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     public void testSchemaGenOutputScriptDropAndCreate() throws Exception {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "drop-and-create");
         properties.put("javax.persistence.schema-generation.scripts.create-target",
                        "target/create-db-output.sql");

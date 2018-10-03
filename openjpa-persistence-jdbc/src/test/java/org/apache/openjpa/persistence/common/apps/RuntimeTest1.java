@@ -18,8 +18,10 @@
  */
 package org.apache.openjpa.persistence.common.apps;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -126,7 +128,8 @@ public class RuntimeTest1 implements Serializable
 		this.selfOneMany = selfOneMany;
 	}
 
-	public String toString()
+	@Override
+    public String toString()
 	{
 		return "IntField: "+intField+", StringField: "+stringField+" .";
 	}

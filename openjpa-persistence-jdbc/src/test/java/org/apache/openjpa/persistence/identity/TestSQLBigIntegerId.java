@@ -20,10 +20,12 @@ package org.apache.openjpa.persistence.identity;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * @author <a href="mailto:mnachev@gmail.com">Miroslav Nachev</a>
@@ -31,6 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSQLBigIntegerId
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(SQLBigIntegerIdEntity.class, CLEAR_TABLES);
     }

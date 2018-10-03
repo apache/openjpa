@@ -26,6 +26,9 @@ import javax.persistence.OrderColumn;
 
 public class XMLOrderedNameEntity implements INameEntity, java.io.Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private int id;
 
     private String name;
@@ -43,22 +46,27 @@ public class XMLOrderedNameEntity implements INameEntity, java.io.Serializable {
         this.name = name;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String toString() {
         return "XMLOrderedNameEntity[" + id + "]=" + name;
     }
@@ -73,7 +81,7 @@ public class XMLOrderedNameEntity implements INameEntity, java.io.Serializable {
 
     public void addColumns(IColumnEntity column) {
         if( columns == null) {
-            columns = new ArrayList<IColumnEntity>();
+            columns = new ArrayList<>();
         }
         columns.add(column);
     }

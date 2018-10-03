@@ -32,27 +32,36 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 public abstract class AbstractValueHandler
     implements ValueHandler {
 
+    
+    private static final long serialVersionUID = 1L;
+
+    @Override
     public boolean isVersionable(ValueMapping vm) {
         return false;
     }
 
+    @Override
     public boolean objectValueRequiresLoad(ValueMapping vm) {
         return false;
     }
 
+    @Override
     public Object getResultArgument(ValueMapping vm) {
         return null;
     }
 
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         return val;
     }
 
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val) {
         return val;
     }
 
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch)
         throws SQLException {

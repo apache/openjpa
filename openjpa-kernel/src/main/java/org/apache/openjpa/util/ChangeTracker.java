@@ -33,37 +33,37 @@ public interface ChangeTracker {
      * Return true if this tracker has an up-to-date view of all the changes
      * to the container it is managing.
      */
-    public boolean isTracking();
+    boolean isTracking();
 
     /**
      * Reset the state of the change tracker, and turn change tracking back
      * on if it has been disabled.
      */
-    public void startTracking();
+    void startTracking();
 
     /**
      * Tell the tracker to stop tracking changes for its container.
      */
-    public void stopTracking();
+    void stopTracking();
 
     /**
      * Return the collection of values that need to be added to the managed
      * container.
      */
-    public Collection getAdded();
+    Collection getAdded();
 
     /**
      * Return the set of values that need to be removed from the managed
      * container.
      */
-    public Collection getRemoved();
+    Collection getRemoved();
 
     /**
      * Return the set of elements that have changed. In maps, this marks a
      * possible change in value for a key. In collections, this marks an
      * element that has been removed and re-added.
      */
-    public Collection getChanged();
+    Collection getChanged();
 
     /**
      * The next element sequence value for this proxy at load time.
@@ -74,7 +74,7 @@ public interface ChangeTracker {
      * proxy stops tracking changes. For ordered proxies, it is set to the
      * proxy's size when the proxy starts tracking changes again.
      */
-    public int getNextSequence();
+    int getNextSequence();
 
     /**
      * The maximum element sequence value for this proxy at load time.
@@ -85,5 +85,5 @@ public interface ChangeTracker {
      * proxy stops tracking changes. For ordered proxies, it is set to the
      * proxy's size when the proxy starts tracking changes again.
      */
-    public void setNextSequence (int seq);
+    void setNextSequence (int seq);
 }

@@ -35,6 +35,7 @@ public class MidClass extends BaseClass2 {
         return midClassName;
     }
 
+    @Override
     public String toString() {
         return super.toString() + ";midClassName=" + midClassName;
     }

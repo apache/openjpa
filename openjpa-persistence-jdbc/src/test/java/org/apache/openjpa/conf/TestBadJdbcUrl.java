@@ -25,10 +25,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.util.UserException;
+
+import junit.framework.TestCase;
 
 /**
  * Verifies appropriate exception is thrown when an incorrect protocol or

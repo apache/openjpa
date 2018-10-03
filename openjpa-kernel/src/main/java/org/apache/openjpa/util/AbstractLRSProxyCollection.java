@@ -73,6 +73,7 @@ public abstract class AbstractLRSProxyCollection
         _ct.setAutoOff(false);
     }
 
+    @Override
     public void setOwner(OpenJPAStateManager sm, int field) {
         // can't transfer ownership of an lrs proxy
         if (sm != null && _origOwner != null
@@ -91,23 +92,28 @@ public abstract class AbstractLRSProxyCollection
         }
     }
 
+    @Override
     public OpenJPAStateManager getOwner() {
         return _sm;
     }
 
+    @Override
     public int getOwnerField() {
         return _field;
     }
 
+    @Override
     public ChangeTracker getChangeTracker() {
         return this;
     }
 
+    @Override
     public Object copy(Object orig) {
         // used to store fields for rollback; we don't store lrs fields
         return null;
     }
 
+    @Override
     public boolean add(Object o) {
         Proxies.assertAllowedType(o, _elementType);
         Proxies.dirty(this, false);
@@ -115,6 +121,7 @@ public abstract class AbstractLRSProxyCollection
         return true;
     }
 
+    @Override
     public boolean addAll(Collection all) {
         Proxies.dirty(this, false);
         boolean added = false;
@@ -128,6 +135,7 @@ public abstract class AbstractLRSProxyCollection
         return added;
     }
 
+    @Override
     public boolean remove(Object o) {
         if (!contains(o))
             return false;
@@ -137,6 +145,7 @@ public abstract class AbstractLRSProxyCollection
         return true;
     }
 
+    @Override
     public boolean removeAll(Collection all) {
         Proxies.dirty(this, false);
         boolean removed = false;
@@ -152,6 +161,7 @@ public abstract class AbstractLRSProxyCollection
         return removed;
     }
 
+    @Override
     public boolean retainAll(Collection all) {
         if (all.isEmpty()) {
             clear();
@@ -177,6 +187,7 @@ public abstract class AbstractLRSProxyCollection
         }
     }
 
+    @Override
     public void clear() {
         Proxies.dirty(this, false);
         Itr itr = (Itr) iterator();
@@ -193,6 +204,7 @@ public abstract class AbstractLRSProxyCollection
         }
     }
 
+    @Override
     public boolean contains(Object o) {
         if (_elementType != null && !_elementType.isInstance(o))
             return false;
@@ -205,6 +217,7 @@ public abstract class AbstractLRSProxyCollection
         return true;
     }
 
+    @Override
     public boolean containsAll(Collection all) {
         for (Iterator itr = all.iterator(); itr.hasNext();)
             if (!contains(itr.next()))
@@ -212,10 +225,12 @@ public abstract class AbstractLRSProxyCollection
         return true;
     }
 
+    @Override
     public Object[] toArray() {
         return asList().toArray();
     }
 
+    @Override
     public Object[] toArray(Object[] a) {
         return asList().toArray(a);
     }
@@ -232,6 +247,7 @@ public abstract class AbstractLRSProxyCollection
         }
     }
 
+    @Override
     public int size() {
         if (_count == -1)
             _count = count();
@@ -240,10 +256,12 @@ public abstract class AbstractLRSProxyCollection
         return _count + _ct.getAdded().size() - _ct.getRemoved().size();
     }
 
+    @Override
     public boolean isEmpty() {
         return size() == 0;
     }
 
+    @Override
     public Iterator iterator() {
         _iterated = true;
 
@@ -299,6 +317,7 @@ public abstract class AbstractLRSProxyCollection
     // Predicate Implementation
     ////////////////////////////
 
+    @Override
     public boolean evaluate(Object o) {
         return !_ct.getRemoved().contains(o);
     }
@@ -307,15 +326,18 @@ public abstract class AbstractLRSProxyCollection
     // CollectionChangeTracker Implementation
     //////////////////////////////////////////
 
+    @Override
     public boolean isTracking() {
         return _ct.isTracking();
     }
 
+    @Override
     public void startTracking() {
         _ct.startTracking();
         reset();
     }
 
+    @Override
     public void stopTracking() {
         _ct.stopTracking();
         reset();
@@ -326,30 +348,37 @@ public abstract class AbstractLRSProxyCollection
             _count = -1;
     }
 
+    @Override
     public Collection getAdded() {
         return _ct.getAdded();
     }
 
+    @Override
     public Collection getRemoved() {
         return _ct.getRemoved();
     }
 
+    @Override
     public Collection getChanged() {
         return _ct.getChanged();
     }
 
+    @Override
     public void added(Object val) {
         _ct.added(val);
     }
 
+    @Override
     public void removed(Object val) {
         _ct.removed(val);
     }
 
+    @Override
     public int getNextSequence() {
         return _ct.getNextSequence();
     }
 
+    @Override
     public void setNextSequence(int seq) {
         _ct.setNextSequence(seq);
     }
@@ -372,6 +401,7 @@ public abstract class AbstractLRSProxyCollection
             _itr = itr;
         }
 
+        @Override
         public boolean hasNext() {
             if (_state == CLOSED)
                 return false;
@@ -385,6 +415,7 @@ public abstract class AbstractLRSProxyCollection
             return true;
         }
 
+        @Override
         public Object next() {
             if (_state != OPEN)
                 throw new NoSuchElementException();
@@ -392,6 +423,7 @@ public abstract class AbstractLRSProxyCollection
             return _last;
         }
 
+        @Override
         public void remove() {
             if (_state == CLOSED || _last == null)
                 throw new NoSuchElementException();
@@ -401,6 +433,7 @@ public abstract class AbstractLRSProxyCollection
             _last = null;
         }
 
+        @Override
         public void close() {
             free();
             _state = CLOSED;
@@ -418,6 +451,7 @@ public abstract class AbstractLRSProxyCollection
             }
         }
 
+        @Override
         protected void finalize() {
             close();
 		}

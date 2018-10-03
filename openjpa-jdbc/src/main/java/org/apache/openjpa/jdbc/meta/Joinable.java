@@ -48,7 +48,7 @@ public interface Joinable
     /**
      * Return the field index of this joinable, or -1 if not a field.
      */
-    public int getFieldIndex();
+    int getFieldIndex();
 
     /**
      * Return the value for this joinable from the given result, using the
@@ -56,14 +56,14 @@ public interface Joinable
      * key's columns by translating the given columns through
      * {@link ForeignKey#getColumn}.
      */
-    public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
+    Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
         JDBCStore store, Joins joins)
         throws SQLException;
 
     /**
      * The columns managed by this joinable.
      */
-    public Column[] getColumns();
+    Column[] getColumns();
 
     /**
      * Return the join value of the given column.
@@ -71,7 +71,7 @@ public interface Joinable
      * @param val the value of the field for this joinable
      * @param col the column of this joinable whose value to return
      */
-    public Object getJoinValue(Object val, Column col, JDBCStore store);
+    Object getJoinValue(Object val, Column col, JDBCStore store);
 
     /**
      * Return the join value of the given column.
@@ -79,13 +79,13 @@ public interface Joinable
      * @param sm the instance from which to get the value
      * @param col the column whose value to return
      */
-    public Object getJoinValue(OpenJPAStateManager sm, Column col,
+    Object getJoinValue(OpenJPAStateManager sm, Column col,
         JDBCStore store);
 
     /**
      * Use the given auto-assigned value to set this join value's field
      * on the given instance.
      */
-    public void setAutoAssignedValue(OpenJPAStateManager sm, JDBCStore store,
+    void setAutoAssignedValue(OpenJPAStateManager sm, JDBCStore store,
         Column col, Object autogen);
 }

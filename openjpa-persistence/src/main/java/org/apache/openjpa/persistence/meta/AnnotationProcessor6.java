@@ -107,7 +107,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     private MetaDataFactory factory;
     private int generatedSourceVersion = 6;
     private CompileTimeLogger logger;
-    private List<String> header = new ArrayList<String>();
+    private List<String> header = new ArrayList<>();
     private boolean active;
     private static Localizer _loc =  Localizer.forPackage(AnnotationProcessor6.class);
     private SourceVersion supportedSourceVersion;

@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.lib.graph;
 
-import org.apache.openjpa.lib.util.Localizer;
-
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +28,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * <p>Performs a depth-first analysis of a given {@link Graph}, caching
@@ -47,7 +47,7 @@ public class DepthFirstAnalysis {
         (DepthFirstAnalysis.class);
 
     private final Graph _graph;
-    private final Map<Object, NodeInfo> _nodeInfo = new HashMap<Object, NodeInfo>();
+    private final Map<Object, NodeInfo> _nodeInfo = new HashMap<>();
     private Comparator<Object> _comp;
 
     /**
@@ -101,7 +101,7 @@ public class DepthFirstAnalysis {
                 childTime = otherInfo.finished;
                 edge.setType(Edge.TYPE_FORWARD);
                 // find the cycle including this edge
-                List<Edge> cycle = new LinkedList<Edge>();
+                List<Edge> cycle = new LinkedList<>();
                 cycle.add(edge);
                 if (cycleForForwardEdge(graph, other, node, cycle)) {
                     edge.setCycle(cycle);
@@ -151,7 +151,7 @@ public class DepthFirstAnalysis {
             for (Edge edge : _graph.getEdgesFrom(node)) {
                 if (edge.getType() == type) {
                     if (typed == null)
-                        typed = new ArrayList<Edge>();
+                        typed = new ArrayList<>();
                     typed.add(edge);
                 }
             }
@@ -183,7 +183,7 @@ public class DepthFirstAnalysis {
      */
     private List<Edge> buildCycle(Edge backEdge, List<Edge> path, int pos) {
         int length = path != null ? path.size() - pos : 0;
-        List<Edge> cycle = new ArrayList<Edge>(length + 1);
+        List<Edge> cycle = new ArrayList<>(length + 1);
         cycle.add(0, backEdge);
         for (int i = 0; i < length; i++) {
             cycle.add(i + 1, path.get(pos + i));
@@ -308,6 +308,7 @@ public class DepthFirstAnalysis {
             _subComp = subComp;
         }
 
+        @Override
         public int compare(Map.Entry<Object,NodeInfo> e1, Map.Entry<Object,NodeInfo> e2) {
             NodeInfo n1 = e1.getValue();
             NodeInfo n2 = e2.getValue();
@@ -332,10 +333,12 @@ public class DepthFirstAnalysis {
             _entries = entries;
         }
 
+        @Override
         public Object get(int idx) {
             return _entries[idx].getKey();
         }
 
+        @Override
         public int size() {
             return _entries.length;
 		}

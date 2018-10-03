@@ -47,6 +47,8 @@ import org.apache.openjpa.util.UnsupportedException;
 public class SelectConstructor
     implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     private boolean _extent = false;
     private Select _subselect = null;
     private static final Localizer _loc = Localizer.forPackage(SelectConstructor.class);
@@ -77,7 +79,7 @@ public class SelectConstructor
         Select sel;
         if (_extent) {
             sel = ctx.store.getSQLFactory().newSelect();
-            sel.setAutoDistinct((exps.distinct & exps.DISTINCT_AUTO) != 0);
+            sel.setAutoDistinct((exps.distinct & QueryExpressions.DISTINCT_AUTO) != 0);
             return sel;
         }
 
@@ -96,7 +98,7 @@ public class SelectConstructor
             && exps.ordering.length == 0
             && (sel.getJoins() == null || sel.getJoins().isEmpty())) {
             _extent = true;
-            sel.setAutoDistinct((exps.distinct & exps.DISTINCT_AUTO) != 0);
+            sel.setAutoDistinct((exps.distinct & QueryExpressions.DISTINCT_AUTO) != 0);
             return sel;
         }
 
@@ -141,7 +143,7 @@ public class SelectConstructor
         Select subselect = JDBCStoreQuery.getThreadLocalSelect(_subselect);
         Select sel = parent != null ? subselect
             : ctx.store.getSQLFactory().newSelect();
-        sel.setAutoDistinct((exps.distinct & exps.DISTINCT_AUTO) != 0);
+        sel.setAutoDistinct((exps.distinct & QueryExpressions.DISTINCT_AUTO) != 0);
         sel.setJoinSyntax(ctx.fetch.getJoinSyntax());
         sel.setParent(parent, alias);
 
@@ -172,12 +174,12 @@ public class SelectConstructor
         initialize(sel, ctx, exps, state);
 
         if (!sel.getAutoDistinct()) {
-            if ((exps.distinct & exps.DISTINCT_TRUE) != 0)
+            if ((exps.distinct & QueryExpressions.DISTINCT_TRUE) != 0)
                 sel.setDistinct(true);
-            else if ((exps.distinct & exps.DISTINCT_FALSE) != 0)
+            else if ((exps.distinct & QueryExpressions.DISTINCT_FALSE) != 0)
                 sel.setDistinct(false);
         } else if (exps.projections.length > 0) {
-            if (!sel.isDistinct() && (exps.distinct & exps.DISTINCT_TRUE) != 0){
+            if (!sel.isDistinct() && (exps.distinct & QueryExpressions.DISTINCT_TRUE) != 0){
                 // if the select is not distinct but the query is, force
                 // the select to be distinct
                 sel.setDistinct(true);
@@ -193,7 +195,7 @@ public class SelectConstructor
                 boolean candidate = ProjectionExpressionVisitor.
                     hasCandidateProjections(exps.projections);
                 if (agg || (candidate
-                    && (exps.distinct & exps.DISTINCT_TRUE) == 0)) {
+                    && (exps.distinct & QueryExpressions.DISTINCT_TRUE) == 0)) {
                     DBDictionary dict = ctx.store.getDBDictionary();
                     dict.assertSupport(dict.supportsSubselect,
                         "SupportsSubselect");
@@ -202,14 +204,14 @@ public class SelectConstructor
                     sel = ctx.store.getSQLFactory().newSelect();
                     sel.setParent(parent, alias);
                     sel.setDistinct(agg
-                        && (exps.distinct & exps.DISTINCT_TRUE) != 0);
+                        && (exps.distinct & QueryExpressions.DISTINCT_TRUE) != 0);
                     sel.setFromSelect(inner);
 
                 // auto-distincting happens to get unique candidate instances
                 // back; don't auto-distinct if the user isn't selecting
                 // candidate data
                 } else if (!candidate
-                    && (exps.distinct & exps.DISTINCT_TRUE) == 0)
+                    && (exps.distinct & QueryExpressions.DISTINCT_TRUE) == 0)
                     sel.setDistinct(false);
             }
         }
@@ -415,6 +417,7 @@ public class SelectConstructor
             return false;
         }
 
+        @Override
         public void enter(Value val) {
             if (!_candidate) {
                 _candidate = (_level == 0 && val instanceof Constant)
@@ -424,6 +427,7 @@ public class SelectConstructor
             _level++;
         }
 
+        @Override
         public void exit(Value val) {
             _level--;
         }

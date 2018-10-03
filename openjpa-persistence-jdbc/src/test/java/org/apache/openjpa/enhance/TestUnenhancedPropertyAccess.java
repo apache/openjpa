@@ -21,22 +21,27 @@ package org.apache.openjpa.enhance;
 public class TestUnenhancedPropertyAccess
     extends AbstractUnenhancedClassTest {
 
+    @Override
     protected Class<? extends UnenhancedType> getUnenhancedClass() {
         return UnenhancedPropertyAccess.class;
     }
 
+    @Override
     protected UnenhancedType newUnenhancedInstance() {
         return new UnenhancedPropertyAccess();
     }
 
+    @Override
     protected Class<? extends UnenhancedSubtype> getUnenhancedSubclass() {
         return UnenhancedPropertyAccessSubclass.class;
     }
 
+    @Override
     protected UnenhancedSubtype newUnenhancedSubclassInstance() {
         return new UnenhancedPropertyAccessSubclass();
     }
 
+    @Override
     protected boolean isFieldAccessTest() {
         return false;
     }

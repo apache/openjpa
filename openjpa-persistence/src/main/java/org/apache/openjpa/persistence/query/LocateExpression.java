@@ -28,7 +28,9 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class LocateExpression extends BinaryOperatorExpression  {
-	private final Expression _start;
+	
+    private static final long serialVersionUID = 1L;
+    private final Expression _start;
 
 	public LocateExpression(Expression key, String str, int start) {
         super(key, BinaryFunctionalOperator.LOCATE,
@@ -52,7 +54,8 @@ public class LocateExpression extends BinaryOperatorExpression  {
 		_start = start;
 	}
 
-	public String asExpression(AliasContext ctx) {
+	@Override
+    public String asExpression(AliasContext ctx) {
         String start = _start == null ? EMPTY : COMMA +
                 ((Visitable)_start).asExpression(ctx);
 		return new StringBuilder(_op.toString())

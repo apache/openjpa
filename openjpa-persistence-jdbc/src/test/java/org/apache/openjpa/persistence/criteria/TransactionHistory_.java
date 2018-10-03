@@ -24,6 +24,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.sql.Timestamp;
+
 import javax.persistence.metamodel.SingularAttribute;
 
 @javax.persistence.metamodel.StaticMetamodel

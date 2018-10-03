@@ -18,13 +18,12 @@
  */
 package org.apache.openjpa.jdbc.identifier;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.NameSet;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
-
-import static org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 
 /**
  * An interface for DB identifier utility-style operations.  This interface
@@ -34,10 +33,10 @@ import static org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 public interface DBIdentifierUtil extends IdentifierUtil {
 
     // Legacy values for naming operations
-    public static final int ANY = 0;
-    public static final int TABLE = 1;
-    public static final int SEQUENCE = 2;
-    public static final int COLUMN = 3;
+    int ANY = 0;
+    int TABLE = 1;
+    int SEQUENCE = 2;
+    int COLUMN = 3;
 
     /**
      * Shortens the given name to the given maximum length, then checks that
@@ -51,7 +50,7 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * Note: If the name is delimited, make sure the ending delimiter is
      * not stripped off.
      */
-    public DBIdentifier makeIdentifierValid(DBIdentifier sname, NameSet set, int maxLen,
+    DBIdentifier makeIdentifierValid(DBIdentifier sname, NameSet set, int maxLen,
         boolean checkForUniqueness);
 
     /**
@@ -66,7 +65,7 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * Note: If the name is delimited, make sure the ending delimiter is
      * not stripped off.
      */
-    public DBIdentifier makeNameValid(String name, NameSet set, int maxLen,
+    DBIdentifier makeNameValid(String name, NameSet set, int maxLen,
         int nameType, boolean checkForUniqueness);
 
     /**
@@ -77,7 +76,7 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param maxLen
      * @param checkForUniqueness
      */
-    public DBIdentifier getValidColumnIdentifier(DBIdentifier name, Table table, int maxLen,
+    DBIdentifier getValidColumnIdentifier(DBIdentifier name, Table table, int maxLen,
         boolean checkForUniqueness);
 
     /**
@@ -88,7 +87,7 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param maxLen
      * @param checkForUniqueness
      */
-    public DBIdentifier getValidIndexIdentifier(DBIdentifier name, Table table, int maxLen);
+    DBIdentifier getValidIndexIdentifier(DBIdentifier name, Table table, int maxLen);
 
     /**
      * Returns a valid index identifier, based upon the configuration and
@@ -98,7 +97,7 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param maxLen
      * @param checkForUniqueness
      */
-    public DBIdentifier getValidSequenceIdentifier(DBIdentifier name, Schema schema, int maxLen);
+    DBIdentifier getValidSequenceIdentifier(DBIdentifier name, Schema schema, int maxLen);
 
     /**
      * Returns a valid table identifier, based upon the configuration and provided
@@ -107,7 +106,7 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param schema
      * @param maxLen
      */
-    public DBIdentifier getValidTableIdentifier(DBIdentifier name, Schema schema, int maxLen);
+    DBIdentifier getValidTableIdentifier(DBIdentifier name, Schema schema, int maxLen);
 
     /**
      * Returns a valid unique constraint identifier, based upon the configuration and
@@ -116,7 +115,7 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param table
      * @param maxLen
      */
-    public DBIdentifier getValidUniqueIdentifier(DBIdentifier name, Table table, int maxLen);
+    DBIdentifier getValidUniqueIdentifier(DBIdentifier name, Table table, int maxLen);
 
     /**
      * Returns a valid foreign key identifier, based upon the configuration and
@@ -126,13 +125,13 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param toTable
      * @param maxLen
      */
-    public DBIdentifier getValidForeignKeyIdentifier(DBIdentifier name, Table table, Table toTable, int maxLen);
+    DBIdentifier getValidForeignKeyIdentifier(DBIdentifier name, Table table, Table toTable, int maxLen);
 
     /**
      * Converts the specified identifier to a format required by the database.
      * @param name
      */
-    public String toDBName(DBIdentifier name);
+    String toDBName(DBIdentifier name);
 
     /**
      * Converts the specified identifier to a format required by the database,
@@ -140,58 +139,58 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param name
      * @param delimit
      */
-    public String toDBName(DBIdentifier name, boolean delimit);
+    String toDBName(DBIdentifier name, boolean delimit);
 
     /**
      * Converts the specified string to a format required by the database.
      * @param name
      */
-    public String toDBName(String name);
+    String toDBName(String name);
 
     /**
      * Converts the specified string to a format required by the database,
      * optionally delimiting the name.
      * @param name
      */
-    public String toDBName(String name, boolean delimit);
+    String toDBName(String name, boolean delimit);
 
     /**
      * Converts the name returned by the database to an identifier of the
      * specified type.
      * @param name
      */
-    public DBIdentifier fromDBName(String name, DBIdentifierType id);
+    DBIdentifier fromDBName(String name, DBIdentifierType id);
 
     /**
      * Appends multiple columns names together into comma delimited string.
      * @param columns
      */
-    public String appendColumns(Column[] columns);
+    String appendColumns(Column[] columns);
 
     /**
      * Converts the name of the specified delimiter to the appropriate
      * case as defined by the configuration.
      * @param columns
      */
-    public DBIdentifier convertSchemaCase(DBIdentifier schema);
+    DBIdentifier convertSchemaCase(DBIdentifier schema);
 
     /**
      * Appends multiple names together using the appropriate name delimiter.
      * @param resultId
      * @param names
      */
-    public DBIdentifier append(DBIdentifierType resultId, DBIdentifier...names);
+    DBIdentifier append(DBIdentifierType resultId, DBIdentifier...names);
 
     /**
      * Returns a generated key sequence identifier for the column.
      * @param col
      * @param maxLen
      */
-    public DBIdentifier getGeneratedKeySequenceName(Column col, int maxLen);
+    DBIdentifier getGeneratedKeySequenceName(Column col, int maxLen);
 
     /**
      * Converts a provided alias to a format specified in the configuration.
      * @param alias
      */
-    public String convertAlias(String alias);
+    String convertAlias(String alias);
 }

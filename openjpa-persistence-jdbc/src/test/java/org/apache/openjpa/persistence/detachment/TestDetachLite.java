@@ -35,6 +35,7 @@ public class TestDetachLite extends TestDetach {
         new Object[] { "openjpa.DetachState", "loaded(LiteAutoDetach=true)", DMCustomer.class,
             DMCustomerInventory.class, DMItem.class, CLEAR_TABLES };
 
+    @Override
     public void setUp() {
         super.setUp(props);
 

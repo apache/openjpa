@@ -19,10 +19,12 @@
 package org.apache.openjpa.persistence.identity;
 
 import java.sql.Date;
+
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that entities can use SQL dates as identity values.
@@ -32,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSQLDateId
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(SQLDateIdEntity.class);
     }

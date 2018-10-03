@@ -36,6 +36,7 @@ public class TestPojoWithoutAnnotationsCannotBePersisted
         super(name, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(new Object[] {});
         pojo = new UnAnnotPojo();

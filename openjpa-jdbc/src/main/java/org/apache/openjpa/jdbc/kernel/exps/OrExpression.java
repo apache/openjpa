@@ -34,6 +34,8 @@ import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 class OrExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Exp _exp1;
     private final Exp _exp2;
 
@@ -45,6 +47,7 @@ class OrExpression
         _exp2 = exp2;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         // when OR'ing expressions each expression gets its own copy of the
         // contains counts, cause it's OK for each to use the same aliases
@@ -71,6 +74,7 @@ class OrExpression
         return ret;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -87,6 +91,7 @@ class OrExpression
         sel.append(buf, bstate.joins);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -94,6 +99,7 @@ class OrExpression
         _exp2.selectColumns(sel, ctx, bstate.state2, pks);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _exp1.acceptVisit(visitor);

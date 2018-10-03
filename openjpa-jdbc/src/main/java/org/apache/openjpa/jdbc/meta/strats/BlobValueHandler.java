@@ -32,6 +32,8 @@ import org.apache.openjpa.meta.JavaTypes;
 public class BlobValueHandler
     extends AbstractValueHandler {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final BlobValueHandler _instance = new BlobValueHandler();
 
     /**
@@ -44,6 +46,8 @@ public class BlobValueHandler
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
         DBDictionary dict = vm.getMappingRepository().getDBDictionary();

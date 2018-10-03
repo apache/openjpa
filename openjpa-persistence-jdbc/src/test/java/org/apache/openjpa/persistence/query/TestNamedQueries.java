@@ -30,15 +30,12 @@ import java.util.Collection;
 
 import javax.persistence.TypedQuery;
 
-
-
-import org.apache.openjpa.persistence.query.common.apps.EntityInterface;
-import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
-
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.query.common.apps.EntityInterface;
+import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
 
 public class TestNamedQueries extends BaseQueryTest {
 
@@ -50,6 +47,7 @@ public class TestNamedQueries extends BaseQueryTest {
         super(test);
     }
 
+    @Override
     public void setUp() {
         deleteAll(QueryTest1.class);
 

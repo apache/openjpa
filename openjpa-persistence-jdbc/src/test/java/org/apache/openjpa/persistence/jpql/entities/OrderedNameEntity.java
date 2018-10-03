@@ -29,6 +29,9 @@ import javax.persistence.OrderColumn;
 @Entity
 public class OrderedNameEntity implements IColumnEntity, java.io.Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     private int id;
 
@@ -47,41 +50,50 @@ public class OrderedNameEntity implements IColumnEntity, java.io.Serializable {
         this.name = name;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String toString() {
         return "OrderedNameEntity[" + id + "]=" + name;
     }
 
+    @Override
     public List<IOrderedEntity> getEntities() {
         return entities;
     }
 
+    @Override
     public void setEntities(List<IOrderedEntity> entities) {
         this.entities = entities;
     }
 
+    @Override
     public void addEntity(IOrderedEntity entity) {
         if( entities == null) {
-            entities = new ArrayList<IOrderedEntity>();
+            entities = new ArrayList<>();
         }
         entities.add(entity);
     }
 
+    @Override
     public IOrderedEntity removeEntity(IOrderedEntity entity) {
         IOrderedEntity rtnVal = null;
         if( entities != null) {

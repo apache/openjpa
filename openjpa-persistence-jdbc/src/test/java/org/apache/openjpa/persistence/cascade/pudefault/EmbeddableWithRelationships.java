@@ -42,8 +42,8 @@ public class EmbeddableWithRelationships {
     private PUDEntityB o2o;
 
     public EmbeddableWithRelationships() {
-        colM2M = new ArrayList<PUDEntityB>();
-        colO2M = new ArrayList<PUDEntityB>();
+        colM2M = new ArrayList<>();
+        colO2M = new ArrayList<>();
     }
 
     public Collection<PUDEntityB> getColM2M() {

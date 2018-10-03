@@ -42,12 +42,14 @@ public class PartyId implements Serializable{
         return this.id;
     }
 
+    @Override
     public boolean equals(Object o) {
         return (o instanceof PartyId) &&
             partyName.equals(((PartyId)o).getPartyName()) &&
             id == (((PartyId)o).getId());
     }
 
+    @Override
     public int hashCode() {
         return partyName.hashCode() + id;
     }

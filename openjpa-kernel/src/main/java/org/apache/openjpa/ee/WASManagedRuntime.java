@@ -78,6 +78,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
      * Gets an extendedJTATransaction from JNDI and creates a transaction
      * wrapper
      */
+    @Override
     public javax.transaction.TransactionManager getTransactionManager()
         throws Exception {
         return new WASTransaction();
@@ -99,6 +100,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
     class WASTransaction implements javax.transaction.TransactionManager,
         javax.transaction.Transaction {
 
+        @Override
         public int getStatus() throws SystemException {
             int rval;
             try {
@@ -121,6 +123,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          *
          * @return A WebSphere transaction wrapper.
          */
+        @Override
         public Transaction getTransaction() throws SystemException {
             return this;
         }
@@ -129,6 +132,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          * Register for synchronization with a WebSphere managed transaction via
          * the extendedJTATransaction interface.
          */
+        @Override
         public void registerSynchronization(Synchronization arg0)
             throws IllegalStateException, RollbackException, SystemException {
             if (_extendedTransaction != null) {
@@ -164,6 +168,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          * Unimplemented, WAS does not provide this level of control. Throws an
          * IllegalStateException
          */
+        @Override
         public void begin() throws NotSupportedException, SystemException {
             throw new InvalidStateException(_loc.get("was-unsupported-op",
                 "begin"));
@@ -173,6 +178,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          * Unimplemented, WAS does not provide this level of control. Throws an
          * IllegalStateException
          */
+        @Override
         public void commit() throws HeuristicMixedException,
             HeuristicRollbackException, IllegalStateException,
             RollbackException, SecurityException, SystemException {
@@ -184,6 +190,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          * Unimplemented, WAS does not provide this level of control. Throws an
          * IllegalStateException
          */
+        @Override
         public void resume(Transaction arg0) throws IllegalStateException,
             InvalidTransactionException, SystemException {
             throw new InvalidStateException(_loc.get("was-unsupported-op",
@@ -196,6 +203,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          * some error paths, throwing another exception may result in the
          * original exception being lost.
          */
+        @Override
         public void rollback() throws IllegalStateException, SecurityException,
             SystemException {
             if (_log.isTraceEnabled()) {
@@ -209,6 +217,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          * in some error paths, throwing another exception may result in the
          * original exception being lost.
          */
+        @Override
         public void setRollbackOnly() throws IllegalStateException,
             SystemException {
             if (_log.isTraceEnabled()) {
@@ -220,6 +229,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          * Unimplemented, WAS does not provide this level of control. Throws an
          * IllegalStateException
          */
+        @Override
         public void setTransactionTimeout(int arg0) throws SystemException {
             throw new InvalidStateException(_loc.get("was-unsupported-op",
                 "setTransactionTimeout"));
@@ -229,6 +239,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          * Unimplemented, WAS does not provide this level of control. Throws an
          * IllegalStateException
          */
+        @Override
         public Transaction suspend() throws SystemException {
             throw new InvalidStateException(_loc.get("was-unsupported-op",
                 "suspend"));
@@ -238,6 +249,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          * Unimplemented, WAS does not provide this level of control. Throws an
          * IllegalStateException
          */
+        @Override
         public boolean delistResource(XAResource arg0, int arg1)
             throws IllegalStateException, SystemException {
             throw new InvalidStateException(_loc.get("was-unsupported-op",
@@ -248,6 +260,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
          * Unimplemented, WAS does not provide this level of control. Throws an
          * IllegalStateException
          */
+        @Override
         public boolean enlistResource(XAResource arg0)
             throws IllegalStateException, RollbackException, SystemException {
             throw new InvalidStateException(_loc.get("was-unsupported-op",
@@ -311,6 +324,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
      * Caches a copy of the configuration. The configuration is used to obtain
      * the logger and classloader.
      */
+    @Override
     public void setConfiguration(Configuration conf) {
         _conf = (OpenJPAConfiguration) conf;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
@@ -319,6 +333,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
     /**
      * EndConfiguration stub.
      */
+    @Override
     public void endConfiguration() {
         try {
             Context ctx = new InitialContext();
@@ -348,6 +363,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
     /**
      * StartConfiguration stub.
      */
+    @Override
     public void startConfiguration() {
         // Nothing to do
     }
@@ -385,12 +401,14 @@ public class WASManagedRuntime extends AbstractManagedRuntime
         AsmAdaptor.write(bcClass);
     }
 
+    @Override
     public void setRollbackOnly(Throwable cause)
         throws Exception {
         // there is no generic support for setting the rollback cause
         getTransactionManager().getTransaction().setRollbackOnly();
     }
 
+    @Override
     public Throwable getRollbackCause()
         throws Exception {
         // there is no generic support for setting the rollback cause

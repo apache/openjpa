@@ -152,7 +152,7 @@ public class MappingTool
      */
     public MappingTool(JDBCConfiguration conf, String action, boolean meta, ClassLoader loader) {
         _conf = conf;
-        _log = conf.getLog(JDBCConfiguration.LOG_METADATA);
+        _log = conf.getLog(OpenJPAConfiguration.LOG_METADATA);
         _meta = meta;
 
         if (action == null)
@@ -593,7 +593,7 @@ public class MappingTool
             // if we're outputting to stream, set all metas to same file so
             // they get placed in single string
             if (_mappingWriter != null) {
-                output = new HashMap<File, String>();
+                output = new HashMap<>();
                 File tmp = new File("openjpatmp");
                 for (int i = 0; i < mappings.length; i++) {
                     mappings[i].setSource(tmp, SourceTracker.SRC_OTHER, "openjpatmp");
@@ -677,7 +677,7 @@ public class MappingTool
             seq = smd.getInstance(null);
         else if (mapping.getIdentityStrategy() == ValueStrategies.NATIVE
             || (mapping.getIdentityStrategy() == ValueStrategies.NONE
-            && mapping.getIdentityType() == ClassMapping.ID_DATASTORE))
+            && mapping.getIdentityType() == ClassMetaData.ID_DATASTORE))
             seq = _conf.getSequenceInstance();
 
         if (seq instanceof JDBCSeq)
@@ -847,7 +847,7 @@ public class MappingTool
             return;
 
         if (_dropCls == null)
-            _dropCls = new HashSet<Class<?>>();
+            _dropCls = new HashSet<>();
         _dropCls.add(cls);
         if (!contains(_schemaActions,SchemaTool.ACTION_DROP))
             return;
@@ -863,7 +863,7 @@ public class MappingTool
         if (mapping != null) {
             _flushSchema = true;
             if (_dropMap == null)
-                _dropMap = new HashSet<ClassMapping>();
+                _dropMap = new HashSet<>();
             _dropMap.add(mapping);
         } else
             _log.warn(_loc.get("no-drop-meta", cls));
@@ -997,6 +997,7 @@ public class MappingTool
         final String[] args = opts.setFromCmdLine(arguments);
         boolean ret = Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts) throws IOException, SQLException {
                 JDBCConfiguration conf = new JDBCConfigurationImpl();
                 try {
@@ -1095,7 +1096,7 @@ public class MappingTool
             classes = conf.getMappingRepositoryInstance().
                 loadPersistentTypes(true, loader);
         } else {
-            classes = new HashSet<Class<?>>();
+            classes = new HashSet<>();
             ClassArgParser classParser = conf.getMetaDataRepositoryInstance().
                 getMetaDataFactory().newClassArgParser();
             classParser.setClassLoader(loader);
@@ -1211,19 +1212,19 @@ public class MappingTool
     /**
      * Helper used to import and export mapping data.
      */
-    public static interface ImportExport {
+    public interface ImportExport {
 
         /**
          * Import mappings for the given classes based on the given arguments.
          */
-        public boolean importMappings(JDBCConfiguration conf, Class<?>[] act,
+        boolean importMappings(JDBCConfiguration conf, Class<?>[] act,
             String[] args, boolean meta, Log log, ClassLoader loader)
             throws IOException;
 
         /**
          * Export mappings for the given classes based on the given arguments.
          */
-        public boolean exportMappings(JDBCConfiguration conf, Class<?>[] act,
+        boolean exportMappings(JDBCConfiguration conf, Class<?>[] act,
             boolean meta, Log log, Writer writer)
             throws IOException;
     }

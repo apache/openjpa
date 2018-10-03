@@ -29,6 +29,9 @@ import java.util.Iterator;
 class Min
     extends AggregateVal {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the value to minimize.
      */
@@ -36,10 +39,12 @@ class Min
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         return c;
     }
 
+    @Override
     protected Object operate(Collection os, Class c) {
         Comparable min = null;
         Comparable cur;

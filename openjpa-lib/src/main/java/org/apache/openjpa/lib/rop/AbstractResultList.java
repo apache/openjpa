@@ -28,13 +28,15 @@ import org.apache.openjpa.lib.util.Localizer;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public abstract class AbstractResultList<E> implements ResultList<E> {
+    private static final long serialVersionUID = 1L;
+
     private transient Object _userObject;
 
     private static final Localizer _loc = Localizer.forPackage
         (AbstractResultList.class);
 
+    @Override
     public void add(int index, Object element) {
         throw readOnly();
     }
@@ -44,38 +46,47 @@ public abstract class AbstractResultList<E> implements ResultList<E> {
             .getMessage());
     }
 
+    @Override
     public boolean add(Object o) {
         throw readOnly();
     }
 
+    @Override
     public boolean addAll(Collection<? extends E> c) {
         throw readOnly();
     }
 
+    @Override
     public boolean addAll(int index, Collection<? extends E> c) {
         throw readOnly();
     }
 
+    @Override
     public E remove(int index) {
         throw readOnly();
     }
 
+    @Override
     public boolean remove(Object o) {
         throw readOnly();
     }
 
+    @Override
     public boolean removeAll(Collection<?> c) {
         throw readOnly();
     }
 
+    @Override
     public boolean retainAll(Collection<?> c) {
         throw readOnly();
     }
 
+    @Override
     public E set(int index, Object element) {
         throw readOnly();
     }
 
+    @Override
     public void clear() {
         throw readOnly();
     }
@@ -85,10 +96,12 @@ public abstract class AbstractResultList<E> implements ResultList<E> {
             throw new NoSuchElementException(_loc.get("closed").getMessage());
     }
 
+    @Override
     public final Object getUserObject() {
         return _userObject;
     }
 
+    @Override
     public final void setUserObject(Object opaque) {
         _userObject = opaque;
     }

@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.common.apps;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -29,6 +30,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name="MPTZZS")
 public class Part implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     @Column(name="NA_PT", length=20)
     private String partName;

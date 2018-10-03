@@ -124,7 +124,7 @@ public class QueryResultMapping
     public void addColumnResult(Object id) {
         _cols = null;
         if (_colList == null) {
-            _colList = new ArrayList<Object>();
+            _colList = new ArrayList<>();
         }
         _colList.add(id);
     }
@@ -153,7 +153,7 @@ public class QueryResultMapping
         _pcs = null;
         PCResult pc = new PCResult(candidate);
         if (_pcList == null) {
-            _pcList = new ArrayList<PCResult>();
+            _pcList = new ArrayList<>();
         }
         _pcList.add(pc);
         return pc;
@@ -187,6 +187,7 @@ public class QueryResultMapping
         _idx = idx;
     }
 
+    @Override
     public String toString() {
         return _name;
     }
@@ -195,10 +196,12 @@ public class QueryResultMapping
     // Commentable
     ///////////////
 
+    @Override
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
 
+    @Override
     public void setComments(String[] comments) {
         _comments = comments;
     }
@@ -207,14 +210,17 @@ public class QueryResultMapping
     // SourceTracker implementation
     ////////////////////////////////
 
+    @Override
     public File getSourceFile() {
         return _file;
     }
 
+    @Override
     public Object getSourceScope() {
         return _scope;
     }
 
+    @Override
     public int getSourceType() {
         return _srcType;
     }
@@ -225,10 +231,12 @@ public class QueryResultMapping
         _srcType = srcType;
     }
 
+    @Override
     public String getResourceName() {
         return (_class == null) ? _name : _class.getName() + ":" + _name;
     }
 
+    @Override
     public int getLineNumber() {
         return _lineNum;
     }
@@ -237,6 +245,7 @@ public class QueryResultMapping
         _lineNum = lineNum;
     }
 
+    @Override
     public int getColNumber() {
         return _colNum;
     }
@@ -318,7 +327,7 @@ public class QueryResultMapping
             _eager = null;
             _fetchInfo = null;
             if (_rawMappings == null) {
-                _rawMappings = new HashMap<String, Object>();
+                _rawMappings = new HashMap<>();
             }
             _rawMappings.put(path, id);
         }
@@ -395,7 +404,7 @@ public class QueryResultMapping
                 return;
             }
 
-            _mappings = new HashMap<List<MetaDataContext>, ColumnMap>();
+            _mappings = new HashMap<>();
             _fetchInfo = new FetchInfo(getCandidateTypeMapping());
 
             for(Map.Entry<String, Object>  entry : _rawMappings.entrySet()) {
@@ -409,7 +418,7 @@ public class QueryResultMapping
         private void resolveMapping(String path, Object id) {
             // build up path to second-to-last token
             String[] tokens = StringUtil.split(path, ".", 0);
-            List<MetaDataContext> rpath = new ArrayList<MetaDataContext>(tokens.length);
+            List<MetaDataContext> rpath = new ArrayList<>(tokens.length);
             ClassMapping candidate = getCandidateTypeMapping();
             FieldMapping fm = null;
             for (int i = 0; i < tokens.length - 1; i++) {
@@ -457,7 +466,7 @@ public class QueryResultMapping
                     // otherwise, record that we have an eager result
                     Column fkCol = fm.getForeignKey().getColumn(col);
                     if (fkCol != null)
-                        addComplexColumnMapping(fm, new ArrayList<MetaDataContext>(rpath),
+                        addComplexColumnMapping(fm, new ArrayList<>(rpath),
                             fkCol, id);
                     else {
                         recordEager(candidate, rpath, fm);
@@ -512,12 +521,12 @@ public class QueryResultMapping
                 _fetchInfo.excludes.clear(fm.getIndex());
             } else {
                 // record at previous path
-                List<MetaDataContext> copy = new ArrayList<MetaDataContext>(path.size() - 1);
+                List<MetaDataContext> copy = new ArrayList<>(path.size() - 1);
                 for (int i = 0; i < copy.size(); i++)
                     copy.add(path.get(i));
 
                 if (_eager == null)
-                    _eager = new HashMap<List<MetaDataContext>, FetchInfo>();
+                    _eager = new HashMap<>();
                 FetchInfo info = _eager.get(copy);
                 if (info == null) {
                     info = new FetchInfo(candidate);
@@ -537,11 +546,11 @@ public class QueryResultMapping
                 _fetchInfo.excludes.clear(fm.getIndex());
             else {
                 if (_eager == null)
-                    _eager = new HashMap<List<MetaDataContext>, FetchInfo>();
+                    _eager = new HashMap<>();
                 FetchInfo info = _eager.get(path);
                 if (info == null) {
                     info = new FetchInfo(candidate);
-                    _eager.put(new ArrayList<MetaDataContext>(path), info);
+                    _eager.put(new ArrayList<>(path), info);
                 }
                 info.excludes.clear(fm.getIndex());
             }
@@ -549,7 +558,7 @@ public class QueryResultMapping
 
         public void addConstructorParam(final String name) {
             if (_constructorParams == null) {
-                _constructorParams = new ArrayList<String>();
+                _constructorParams = new ArrayList<>();
             }
             _constructorParams.add(name);
         }
@@ -583,13 +592,13 @@ public class QueryResultMapping
     /**
      * Mapping of columns to result ids.
      */
-    private static interface ColumnMap {
+    private interface ColumnMap {
 
         /**
          * Return the result id for the given column, or the given colum
          * if none.
          */
-        public Object map(Column col);
+        Object map(Column col);
     }
 
     /**
@@ -604,10 +613,12 @@ public class QueryResultMapping
             _id = id;
         }
 
+        @Override
         public Object map(Column col) {
             return _id;
         }
 
+        @Override
         public String toString() {
             return _id.toString();
         }
@@ -628,6 +639,7 @@ public class QueryResultMapping
             _ids = new Object[cols.length];
         }
 
+        @Override
         public Object map(Column col) {
             int idx = _cols.indexOf(col);
             return (idx == -1) ? col : _ids[idx];
@@ -639,6 +651,7 @@ public class QueryResultMapping
                 _ids[idx] = id;
         }
 
+        @Override
         public String toString() {
             return _cols + "=" + Arrays.asList(_ids);
         }

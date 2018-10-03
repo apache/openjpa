@@ -27,14 +27,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
-
-import org.apache.openjpa.persistence.OpenJPAQuery;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.common.apps.StateImagePC2;
+import org.apache.openjpa.persistence.jdbc.common.apps.StateImagePC3;
 
 
 public class TestStateImage
@@ -49,6 +47,7 @@ public class TestStateImage
     }
 
 
+    @Override
     public void setUpTestCase() {
        deleteAll(StateImagePC2.class);
        deleteAll(StateImagePC3.class);

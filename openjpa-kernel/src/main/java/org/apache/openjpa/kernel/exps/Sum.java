@@ -31,6 +31,9 @@ import org.apache.openjpa.kernel.Filters;
 class Sum
     extends AggregateVal {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the value to sum.
      */
@@ -38,6 +41,7 @@ class Sum
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         Class wrap = Filters.wrap(c);
         if (wrap == Integer.class
@@ -47,6 +51,7 @@ class Sum
         return c;
     }
 
+    @Override
     protected Object operate(Collection os, Class c) {
         if (os.isEmpty())
             return null;

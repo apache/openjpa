@@ -22,13 +22,13 @@ import java.util.Iterator;
 
 import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.relations.entity.LrsEntityA;
 import org.apache.openjpa.persistence.relations.entity.LrsEntityB;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test LRS relations.
@@ -40,6 +40,7 @@ public class TestLRS
 
     private long id;
 
+    @Override
     public void setUp() {
         setUp(LrsEntityA.class, LrsEntityB.class, LRSEntity.class, BasicEntity.class, CLEAR_TABLES,
             "openjpa.Compatibility", "default(copyOnDetach=true," +

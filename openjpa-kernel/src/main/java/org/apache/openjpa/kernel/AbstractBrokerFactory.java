@@ -41,7 +41,6 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.commons.collections4.set.MapBackedSet;
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -61,6 +60,7 @@ import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -76,9 +76,8 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public abstract class AbstractBrokerFactory
-    implements BrokerFactory {
+public abstract class AbstractBrokerFactory implements BrokerFactory {
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage(AbstractBrokerFactory.class);
 
@@ -98,7 +97,7 @@ public abstract class AbstractBrokerFactory
 
     // maps global transactions to associated brokers
     private transient ConcurrentHashMap<Object,Collection<Broker>>
-        _transactional = new ConcurrentHashMap<Object,Collection<Broker>>();
+        _transactional = new ConcurrentHashMap<>();
 
     // weak-ref tracking of open brokers
     private transient Set<Broker> _brokers;
@@ -147,7 +146,7 @@ public abstract class AbstractBrokerFactory
      * if none. The key must be of the form created by {@link #getPoolKey}.
      */
     public static AbstractBrokerFactory getPooledFactoryForKey(Object key) {
-        return (AbstractBrokerFactory) _pool.get(key);
+        return _pool.get(key);
     }
 
     /**
@@ -162,10 +161,12 @@ public abstract class AbstractBrokerFactory
     /**
      * Return the configuration for this factory.
      */
+    @Override
     public OpenJPAConfiguration getConfiguration() {
         return _conf;
     }
 
+    @Override
     public Broker newBroker() {
         return newBroker(_conf.getConnectionUserName(), _conf.getConnectionPassword());
     }
@@ -182,10 +183,12 @@ public abstract class AbstractBrokerFactory
         return newBroker(user, pass, managed, connRetainMode, true);
     }
 
+    @Override
     public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting) {
         return newBroker(user, pass, managed, connRetainMode, findExisting, "", "");
     }
 
+    @Override
     public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting,
         String cf1Name, String cf2Name) {
         try {
@@ -276,14 +279,14 @@ public abstract class AbstractBrokerFactory
         // cache persistent type names if not already
         ClassLoader loader = _conf.getClassResolverInstance().
             getClassLoader(getClass(), envLoader);
-        Collection<Class<?>> toRedefine = new ArrayList<Class<?>>();
+        Collection<Class<?>> toRedefine = new ArrayList<>();
         if (!_persistentTypesLoaded) {
             Collection<Class<?>> clss = _conf.getMetaDataRepositoryInstance().
                 loadPersistentTypes(false, loader, _conf.isInitializeEagerly());
             if (clss.isEmpty())
                 _pcClassNames = Collections.emptyList();
             else {
-                Collection<String> c = new ArrayList<String>(clss.size());
+                Collection<String> c = new ArrayList<>(clss.size());
                 for (Iterator<Class<?>> itr = clss.iterator(); itr.hasNext();) {
                     Class<?> cls = itr.next();
                     c.add(cls.getName());
@@ -318,18 +321,20 @@ public abstract class AbstractBrokerFactory
             && !PersistenceCapable.class.isAssignableFrom(cls);
     }
 
+    @Override
     public void addLifecycleListener(Object listener, Class<?>[] classes) {
         lock();
         try {
             assertOpen();
             if (_lifecycleListeners == null)
-                _lifecycleListeners = new HashMap<Object, Class<?>[]>(7);
+                _lifecycleListeners = new HashMap<>(7);
             _lifecycleListeners.put(listener, classes);
         } finally {
             unlock();
         }
     }
 
+    @Override
     public void removeLifecycleListener(Object listener) {
         lock();
         try {
@@ -341,18 +346,20 @@ public abstract class AbstractBrokerFactory
         }
     }
 
+    @Override
     public void addTransactionListener(Object listener) {
         lock();
         try {
             assertOpen();
             if (_transactionListeners == null)
-                _transactionListeners = new LinkedList<Object>();
+                _transactionListeners = new LinkedList<>();
             _transactionListeners.add(listener);
         } finally {
             unlock();
         }
     }
 
+    @Override
     public void removeTransactionListener(Object listener) {
         lock();
         try {
@@ -367,10 +374,12 @@ public abstract class AbstractBrokerFactory
     /**
      * Returns true if this broker factory is closed.
      */
+    @Override
     public boolean isClosed() {
         return _closed;
     }
 
+    @Override
     public void close() {
         lock();
 
@@ -412,6 +421,7 @@ public abstract class AbstractBrokerFactory
      * property listing the runtime platform, such as:
      * <code>OpenJPA JDBC Edition: Oracle Database</code>
      */
+    @Override
     public Map<String,Object> getProperties() {
         // required props are VendorName and VersionNumber
         Map<String,Object> props = _conf.toProperties(true);
@@ -421,10 +431,12 @@ public abstract class AbstractBrokerFactory
         return props;
     }
 
+    @Override
     public Set<String> getSupportedProperties() {
         return _conf.getPropertyKeys();
     }
 
+    @Override
     public Object getUserObject(Object key) {
         lock();
         try {
@@ -435,6 +447,7 @@ public abstract class AbstractBrokerFactory
         }
     }
 
+    @Override
     public Object putUserObject(Object key, Object val) {
         lock();
         try {
@@ -443,17 +456,19 @@ public abstract class AbstractBrokerFactory
                 return (_userObjects == null) ? null : _userObjects.remove(key);
 
             if (_userObjects == null)
-                _userObjects = new HashMap<Object,Object>();
+                _userObjects = new HashMap<>();
             return _userObjects.put(key, val);
         } finally {
             unlock();
         }
     }
 
+    @Override
     public void lock() {
         _lock.lock();
     }
 
+    @Override
     public void unlock() {
         _lock.unlock();
     }
@@ -469,7 +484,7 @@ public abstract class AbstractBrokerFactory
             return factory;
 
         // reset these transient fields to empty values
-        _transactional = new ConcurrentHashMap<Object,Collection<Broker>>();
+        _transactional = new ConcurrentHashMap<>();
         _brokers = newBrokerSet();
 
         // turn off logging while de-serializing BrokerFactory
@@ -492,7 +507,7 @@ public abstract class AbstractBrokerFactory
         if (FinalizingBrokerImpl.class.isAssignableFrom(bv.getTemplateBrokerType(_conf))) {
             return MapBackedSet.mapBackedSet(new ConcurrentHashMap(), new Object() { });
         } else {
-            return new ConcurrentReferenceHashSet<Broker>(ReferenceStrength.WEAK);
+            return new ConcurrentReferenceHashSet<>(ReferenceStrength.WEAK);
         }
     }
 
@@ -679,6 +694,7 @@ public abstract class AbstractBrokerFactory
      * Throw an exception if the factory is closed.  The exact message and
      * content of the exception varies whether TRACE is enabled or not.
      */
+    @Override
     public void assertOpen() {
         if (_closed) {
             if (_closedException == null)  // TRACE not enabled
@@ -704,7 +720,7 @@ public abstract class AbstractBrokerFactory
         if (_transactional.isEmpty())
             return;
 
-        excs = new ArrayList<Throwable>(_transactional.size());
+        excs = new ArrayList<>(_transactional.size());
         for (Collection<Broker> brokers : _transactional.values()) {
             for (Broker broker : brokers) {
                 excs.add(new InvalidStateException(_loc.get("active")).setFailedObject(broker));
@@ -713,7 +729,7 @@ public abstract class AbstractBrokerFactory
 
         if (!excs.isEmpty())
             throw new InvalidStateException(_loc.get("nested-exceps")).
-                setNestedThrowables((Throwable[]) excs.toArray(new Throwable[excs.size()]));
+                setNestedThrowables(excs.toArray(new Throwable[excs.size()]));
     }
 
     /**
@@ -752,7 +768,7 @@ public abstract class AbstractBrokerFactory
             Collection<Broker> brokers = _transactional.get(txKey);
 
             if (brokers == null) {
-                brokers = new ArrayList<Broker>(2);
+                brokers = new ArrayList<>(2);
                 _transactional.put(txKey, brokers);
                 trans.registerSynchronization(new RemoveTransactionSync(txKey));
             }
@@ -817,9 +833,11 @@ public abstract class AbstractBrokerFactory
             _trans = trans;
         }
 
+        @Override
         public void beforeCompletion() {
         }
 
+        @Override
         public void afterCompletion(int status) {
             _transactional.remove (_trans);
 		}
@@ -830,7 +848,7 @@ public abstract class AbstractBrokerFactory
      */
     private Collection<ClassLoader> getPcClassLoaders() {
        if (_pcClassLoaders == null)
-         _pcClassLoaders = new ConcurrentReferenceHashSet<ClassLoader>(ReferenceStrength.WEAK);
+         _pcClassLoaders = new ConcurrentReferenceHashSet<>(ReferenceStrength.WEAK);
 
        return _pcClassLoaders;
     }
@@ -865,6 +883,7 @@ public abstract class AbstractBrokerFactory
     /**
      * This method is invoked AFTER a BrokerFactory has been instantiated.
      */
+    @Override
     public void postCreationCallback() {
     	Auditor auditor = _conf.getAuditorInstance();
     	if (auditor != null) {
@@ -882,10 +901,10 @@ public abstract class AbstractBrokerFactory
             // preloading.
             MetaDataRepository mdr = _conf.getMetaDataRepositoryInstance();
             mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
-            mdr.setResolve(MetaDataRepository.MODE_MAPPING_INIT, true);
+            mdr.setResolve(MetaDataModes.MODE_MAPPING_INIT, true);
 
             // Load persistent classes and hook in subclasser
-            loadPersistentTypes((ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
+            loadPersistentTypes(AccessController.doPrivileged(J2DoPrivHelper
                 .getContextClassLoaderAction()));
             mdr.preload();
         }

@@ -55,6 +55,7 @@ public abstract class AbstractPCResultObjectProvider
         return ctx;
     }
 
+    @Override
     public void initialize(OpenJPAStateManager sm, PCState state,
         FetchConfiguration fetch)
         throws Exception {
@@ -62,6 +63,7 @@ public abstract class AbstractPCResultObjectProvider
         load(sm, fetch);
     }
 
+    @Override
     public Object getResultObject()
         throws Exception {
         Class type = getPCType();
@@ -103,6 +105,7 @@ public abstract class AbstractPCResultObjectProvider
     /**
      * Override if desired. Does nothing by default.
      */
+    @Override
     public void open()
         throws Exception {
     }
@@ -112,6 +115,7 @@ public abstract class AbstractPCResultObjectProvider
      *
      * @see ResultObjectProvider#supportsRandomAccess
      */
+    @Override
     public boolean supportsRandomAccess() {
         return false;
     }
@@ -121,6 +125,7 @@ public abstract class AbstractPCResultObjectProvider
      *
      * @see ResultObjectProvider#next
      */
+    @Override
     public abstract boolean next()
         throws Exception;
 
@@ -129,6 +134,7 @@ public abstract class AbstractPCResultObjectProvider
      *
      * @see ResultObjectProvider#absolute
      */
+    @Override
     public boolean absolute(int pos)
         throws Exception {
         throw new UnsupportedOperationException();
@@ -139,6 +145,7 @@ public abstract class AbstractPCResultObjectProvider
      *
      * @see ResultObjectProvider#size
      */
+    @Override
     public int size()
         throws Exception {
         return Integer.MAX_VALUE;
@@ -149,6 +156,7 @@ public abstract class AbstractPCResultObjectProvider
      *
      * @see ResultObjectProvider#reset
      */
+    @Override
     public void reset()
         throws Exception {
         throw new UnsupportedOperationException();
@@ -159,6 +167,7 @@ public abstract class AbstractPCResultObjectProvider
      *
      * @see ResultObjectProvider#close
      */
+    @Override
     public void close()
         throws Exception {
     }
@@ -166,6 +175,7 @@ public abstract class AbstractPCResultObjectProvider
     /**
      * Throws a {@link StoreException} by default.
      */
+    @Override
     public void handleCheckedException(Exception e) {
         throw new StoreException (e);
 	}

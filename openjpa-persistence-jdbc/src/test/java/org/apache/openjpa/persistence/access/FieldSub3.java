@@ -50,6 +50,7 @@ public class FieldSub3 extends SuperPropertyEntity {
         crtDate = date;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof FieldSub3) {
             FieldSub3 ps = (FieldSub3)obj;

@@ -76,6 +76,7 @@ public class Office {
         this.name = name;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Office)) return false;
         Office other = (Office) o;
@@ -85,6 +86,7 @@ public class Office {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + name.hashCode();

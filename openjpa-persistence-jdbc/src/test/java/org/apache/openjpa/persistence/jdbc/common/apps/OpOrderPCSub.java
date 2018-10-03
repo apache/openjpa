@@ -30,6 +30,7 @@ public class OpOrderPCSub
 	@Id
     private String sub;
 
+    @Override
     public String getSub() {
         return sub;
     }

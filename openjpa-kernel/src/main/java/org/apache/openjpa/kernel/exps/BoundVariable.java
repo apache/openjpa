@@ -31,6 +31,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class BoundVariable
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private Class _type = null;
     private Object _val = null;
 
@@ -54,14 +56,17 @@ class BoundVariable
         return true;
     }
 
+    @Override
     public boolean isVariable() {
         return true;
     }
 
+    @Override
     public Class getType() {
         return _type;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _type = type;
     }
@@ -77,6 +82,7 @@ class BoundVariable
         _type = type;
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return _val;

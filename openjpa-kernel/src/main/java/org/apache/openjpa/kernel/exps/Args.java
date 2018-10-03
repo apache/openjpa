@@ -32,7 +32,9 @@ class Args
     extends Val
     implements Arguments {
 
-    private final List<Value> _args = new ArrayList<Value>(3);
+    
+    private static final long serialVersionUID = 1L;
+    private final List<Value> _args = new ArrayList<>(3);
 
     /**
      * Constructor. Supply values being combined.
@@ -54,10 +56,12 @@ class Args
         }
     }
 
+    @Override
     public Value[] getValues() {
         return _args.toArray(new Value[_args.size()]);
     }
 
+    @Override
     public Class getType() {
         return Object[].class;
     }
@@ -69,9 +73,11 @@ class Args
         return c;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object[] vals = new Object[_args.size()];
@@ -80,6 +86,7 @@ class Args
         return vals;
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         for (int i = 0; i < _args.size(); i++)

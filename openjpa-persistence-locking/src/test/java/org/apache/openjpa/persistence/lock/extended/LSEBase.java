@@ -86,6 +86,7 @@ public class LSEBase implements Externalizable {
         return version;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + '@'
             + Integer.toHexString(System.identityHashCode(this)) + "[id="
@@ -93,6 +94,7 @@ public class LSEBase implements Externalizable {
             + ", last=" + getLastName();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
         ClassNotFoundException {
         id = in.readInt();
@@ -101,6 +103,7 @@ public class LSEBase implements Externalizable {
         lastName = (String) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(id);
         out.writeInt(version);

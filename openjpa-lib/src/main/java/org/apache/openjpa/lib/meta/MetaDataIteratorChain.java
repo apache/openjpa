@@ -46,7 +46,7 @@ public class MetaDataIteratorChain implements MetaDataIterator {
      * Combine two iterators.
      */
     public MetaDataIteratorChain(MetaDataIterator itr1, MetaDataIterator itr2) {
-        _itrs = new ArrayList<MetaDataIterator>(2);
+        _itrs = new ArrayList<>(2);
         _itrs.add(itr1);
         _itrs.add(itr2);
     }
@@ -58,10 +58,11 @@ public class MetaDataIteratorChain implements MetaDataIterator {
         if (_cur != -1)
             throw new IllegalStateException();
         if (_itrs == null)
-            _itrs = new ArrayList<MetaDataIterator>(4);
+            _itrs = new ArrayList<>(4);
         _itrs.add(itr);
     }
 
+    @Override
     public boolean hasNext() throws IOException {
         if (_itrs == null)
             return false;
@@ -80,24 +81,28 @@ public class MetaDataIteratorChain implements MetaDataIterator {
         return false;
     }
 
+    @Override
     public Object next() throws IOException {
         if (!hasNext())
             throw new NoSuchElementException();
         return _itr.next();
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         if (_itr == null)
             throw new IllegalStateException();
         return _itr.getInputStream();
     }
 
+    @Override
     public File getFile() throws IOException {
         if (_itr == null)
             throw new IllegalStateException();
         return _itr.getFile();
     }
 
+    @Override
     public void close() {
         if (_itrs != null) {
             for(MetaDataIterator mdi: _itrs) {

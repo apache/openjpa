@@ -20,10 +20,6 @@ package org.apache.openjpa.persistence.enhance;
 
 import javax.persistence.Persistence;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.apache.openjpa.persistence.annotations.TestAnnotationBasics;
 import org.apache.openjpa.persistence.annotations.TestEmbeddedId;
 import org.apache.openjpa.persistence.annotations.TestEnumerated;
@@ -112,6 +108,10 @@ import org.apache.openjpa.persistence.simple.
 import org.apache.openjpa.persistence.spring.TestLibService;
 import org.apache.openjpa.persistence.xml.TestSimpleXmlEntity;
 import org.apache.openjpa.persistence.xml.TestXmlOverrideEntity;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
  * TODO: this should be refactored to a @RunWith or similar...

@@ -20,7 +20,12 @@ package org.apache.openjpa.persistence.compat;
 
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 /**
  * This is the non-default uni-directional one-to-many mapping.
@@ -63,10 +68,12 @@ public class Uni_1ToM_FK {
         this.entityCs = entityCs;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Uni_1ToM_FK)) return false;
         Uni_1ToM_FK b = (Uni_1ToM_FK)o;

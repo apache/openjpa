@@ -31,6 +31,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
 
     public int ID = 1;
 
+    @Override
     public void setUp() {
         setUp(Embed.class,
             Embed_Embed.class,
@@ -58,7 +59,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
         em.getTransaction().begin();
         String query = "select address from Address address" +
             " where address.streetAddress = '555 Bailey Ave'";
-        List<Address> list = (List<Address>) em.createQuery(query).getResultList();
+        List<Address> list = em.createQuery(query).getResultList();
         Address a1 = list.get(0);
 
         assertEquals(a1.getGeocode().getLatitude(),1.0f);
@@ -149,9 +150,6 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
         return embed;
     }
 
-    /*
-     *
-     */
     public void testBulkUpdateEmbeddedField() {
         EntityManager em = emf.createEntityManager();
         String update = "UPDATE EntityA_Embed_Embed a set a.embed.embed.intVal1 = ?1," +

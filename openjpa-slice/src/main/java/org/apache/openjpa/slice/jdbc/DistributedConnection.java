@@ -60,22 +60,26 @@ public class DistributedConnection implements Connection {
 		return real.contains(c);
 	}
 
-	public void clearWarnings() throws SQLException {
+	@Override
+    public void clearWarnings() throws SQLException {
 		for (Connection c : real)
 			c.clearWarnings();
 	}
 
-	public void close() throws SQLException {
+	@Override
+    public void close() throws SQLException {
 		for (Connection c : real)
 			c.close();
 	}
 
-	public void commit() throws SQLException {
+	@Override
+    public void commit() throws SQLException {
 		for (Connection c : real)
 			c.commit();
 	}
 
-	public Statement createStatement() throws SQLException {
+	@Override
+    public Statement createStatement() throws SQLException {
 		DistributedStatement ret = new DistributedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.createStatement());
@@ -83,6 +87,7 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
+    @Override
     public Statement createStatement(int arg0, int arg1) throws SQLException {
 		DistributedStatement ret = new DistributedStatement(this);
 		for (Connection c : real) {
@@ -91,7 +96,8 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
-	public Statement createStatement(int arg0, int arg1, int arg2)
+	@Override
+    public Statement createStatement(int arg0, int arg1, int arg2)
 			throws SQLException {
 		DistributedStatement ret = new DistributedStatement(this);
 		for (Connection c : real) {
@@ -100,35 +106,43 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
-	public boolean getAutoCommit() throws SQLException {
+	@Override
+    public boolean getAutoCommit() throws SQLException {
 		return master.getAutoCommit();
 	}
 
-	public String getCatalog() throws SQLException {
+	@Override
+    public String getCatalog() throws SQLException {
 		return master.getCatalog();
 	}
 
-	public int getHoldability() throws SQLException {
+	@Override
+    public int getHoldability() throws SQLException {
 		return master.getHoldability();
 	}
 
-	public DatabaseMetaData getMetaData() throws SQLException {
+	@Override
+    public DatabaseMetaData getMetaData() throws SQLException {
 		return master.getMetaData();
 	}
 
-	public int getTransactionIsolation() throws SQLException {
+	@Override
+    public int getTransactionIsolation() throws SQLException {
 		return master.getTransactionIsolation();
 	}
 
-	public Map<String, Class<?>> getTypeMap() throws SQLException {
+	@Override
+    public Map<String, Class<?>> getTypeMap() throws SQLException {
 		return master.getTypeMap();
 	}
 
-	public SQLWarning getWarnings() throws SQLException {
+	@Override
+    public SQLWarning getWarnings() throws SQLException {
 		return master.getWarnings();
 	}
 
-	public boolean isClosed() throws SQLException {
+	@Override
+    public boolean isClosed() throws SQLException {
 		boolean ret = true;
 		for (Connection c : real) {
 			ret &= c.isClosed();
@@ -136,7 +150,8 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
-	public boolean isReadOnly() throws SQLException {
+	@Override
+    public boolean isReadOnly() throws SQLException {
 		boolean ret = true;
 		for (Connection c : real) {
 			ret &= c.isReadOnly();
@@ -144,24 +159,29 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
-	public String nativeSQL(String arg0) throws SQLException {
+	@Override
+    public String nativeSQL(String arg0) throws SQLException {
 		return master.nativeSQL(arg0);
 	}
 
-	public CallableStatement prepareCall(String arg0) throws SQLException {
+	@Override
+    public CallableStatement prepareCall(String arg0) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 
-	public CallableStatement prepareCall(String arg0, int arg1, int arg2)
+	@Override
+    public CallableStatement prepareCall(String arg0, int arg1, int arg2)
 			throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 
-	public CallableStatement prepareCall(String arg0, int arg1, int arg2,
+	@Override
+    public CallableStatement prepareCall(String arg0, int arg1, int arg2,
 			int arg3) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 
+    @Override
     public PreparedStatement prepareStatement(String arg0) throws SQLException {
 		// TODO: Big hack
         if (arg0.indexOf("OPENJPA_SEQUENCE_TABLE") != -1) {
@@ -174,7 +194,8 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
-	public PreparedStatement prepareStatement(String arg0, int arg1)
+	@Override
+    public PreparedStatement prepareStatement(String arg0, int arg1)
 			throws SQLException {
 		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
 		for (Connection c : real) {
@@ -183,7 +204,8 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
-	public PreparedStatement prepareStatement(String arg0, int[] arg1)
+	@Override
+    public PreparedStatement prepareStatement(String arg0, int[] arg1)
 			throws SQLException {
 		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
 		for (Connection c : real) {
@@ -192,7 +214,8 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
-	public PreparedStatement prepareStatement(String arg0, String[] arg1)
+	@Override
+    public PreparedStatement prepareStatement(String arg0, String[] arg1)
 			throws SQLException {
 		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
 		for (Connection c : real) {
@@ -201,6 +224,7 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
+    @Override
     public PreparedStatement prepareStatement(String arg0, int arg1, int arg2)
 			throws SQLException {
 		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
@@ -210,6 +234,7 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
+    @Override
     public PreparedStatement prepareStatement(String arg0, int arg1, int arg2,
 			int arg3) throws SQLException {
 		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
@@ -219,55 +244,66 @@ public class DistributedConnection implements Connection {
 		return ret;
 	}
 
-	public void releaseSavepoint(Savepoint arg0) throws SQLException {
+	@Override
+    public void releaseSavepoint(Savepoint arg0) throws SQLException {
 		for (Connection c : real)
 			c.releaseSavepoint(arg0);
 	}
 
-	public void rollback() throws SQLException {
+	@Override
+    public void rollback() throws SQLException {
 		for (Connection c : real)
 			c.rollback();
 	}
 
-	public void rollback(Savepoint arg0) throws SQLException {
+	@Override
+    public void rollback(Savepoint arg0) throws SQLException {
 		for (Connection c : real)
 			c.rollback(arg0);
 	}
 
-	public void setAutoCommit(boolean arg0) throws SQLException {
+	@Override
+    public void setAutoCommit(boolean arg0) throws SQLException {
 		for (Connection c : real)
 			c.setAutoCommit(arg0);
 	}
 
-	public void setCatalog(String arg0) throws SQLException {
+	@Override
+    public void setCatalog(String arg0) throws SQLException {
 		for (Connection c : real)
 			c.setCatalog(arg0);
 	}
 
-	public void setHoldability(int arg0) throws SQLException {
+	@Override
+    public void setHoldability(int arg0) throws SQLException {
 		for (Connection c : real)
 			c.setHoldability(arg0);
 	}
 
-	public void setReadOnly(boolean arg0) throws SQLException {
+	@Override
+    public void setReadOnly(boolean arg0) throws SQLException {
 		for (Connection c : real)
 			c.setReadOnly(arg0);
 	}
 
-	public Savepoint setSavepoint() throws SQLException {
+	@Override
+    public Savepoint setSavepoint() throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 
-	public Savepoint setSavepoint(String arg0) throws SQLException {
+	@Override
+    public Savepoint setSavepoint(String arg0) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 
-	public void setTransactionIsolation(int arg0) throws SQLException {
+	@Override
+    public void setTransactionIsolation(int arg0) throws SQLException {
 		for (Connection c : real)
 			c.setTransactionIsolation(arg0);
 	}
 
-	public void setTypeMap(Map<String, Class<?>> arg0) throws SQLException {
+	@Override
+    public void setTypeMap(Map<String, Class<?>> arg0) throws SQLException {
 		for (Connection c : real)
 			c.setTypeMap(arg0);
 	}
@@ -340,22 +376,27 @@ public class DistributedConnection implements Connection {
 
     // Java 7 methods follow
 
+    @Override
     public void abort(Executor executor) throws SQLException {
     	throw new UnsupportedOperationException();
     }
 
+    @Override
     public int getNetworkTimeout() throws SQLException{
     	throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException{
     	throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getSchema() throws SQLException {
     	throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setSchema(String schema)throws SQLException {
     	throw new UnsupportedOperationException();
     }

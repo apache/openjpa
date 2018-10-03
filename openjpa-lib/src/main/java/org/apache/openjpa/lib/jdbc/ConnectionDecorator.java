@@ -32,5 +32,5 @@ public interface ConnectionDecorator {
     /**
      * Decorate the given connection if desired.
      */
-    public Connection decorate(Connection conn) throws SQLException;
+    Connection decorate(Connection conn) throws SQLException;
 }

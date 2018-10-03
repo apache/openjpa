@@ -38,6 +38,8 @@ import org.apache.openjpa.meta.XMLMetaData;
 class EndsWithExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val1;
     private final Val _val2;
 
@@ -49,12 +51,14 @@ class EndsWithExpression
         _val2 = val2;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         ExpState s1 = _val1.initialize(sel, ctx, 0);
         ExpState s2 = _val2.initialize(sel, ctx, 0);
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -105,6 +109,7 @@ class EndsWithExpression
         sel.append(buf, state.joins);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -112,6 +117,7 @@ class EndsWithExpression
         _val2.selectColumns(sel, ctx, bstate.state2, true);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val1.acceptVisit(visitor);
@@ -140,18 +146,22 @@ class EndsWithExpression
             _post = post;
         }
 
+        @Override
         public Class getType() {
             return int.class;
         }
 
+        @Override
         public int length() {
             return 1;
         }
 
+        @Override
         public void appendTo(SQLBuffer buf) {
             appendTo(buf, 0);
         }
 
+        @Override
         public void appendTo(SQLBuffer buf, int index) {
             buf.append(_pre);
             _val1.appendTo(_sel, _ctx, _state.state1, buf, index);
@@ -160,50 +170,62 @@ class EndsWithExpression
             buf.append(_post);
         }
 
+        @Override
         public String getColumnAlias(Column col) {
             return _sel.getColumnAlias(col, _state.joins);
         }
 
+        @Override
         public String getColumnAlias(String col, Table table) {
             return _sel.getColumnAlias(col, table, _state.joins);
         }
 
+        @Override
         public Object toDataStoreValue(Object val) {
             return val;
         }
 
+        @Override
         public boolean isConstant() {
             return false;
         }
 
+        @Override
         public Object getValue() {
             return null;
         }
 
+        @Override
         public Object getSQLValue() {
             return null;
         }
 
+        @Override
         public boolean isPath() {
             return false;
         }
 
+        @Override
         public ClassMapping getClassMapping() {
             return null;
         }
 
+        @Override
         public FieldMapping getFieldMapping() {
             return null;
         }
 
+        @Override
         public PCPath getXPath() {
             return null;
         }
 
+        @Override
         public XMLMetaData getXmlMapping() {
             return null;
         }
 
+        @Override
         public boolean requiresCast() {
             return false;
         }

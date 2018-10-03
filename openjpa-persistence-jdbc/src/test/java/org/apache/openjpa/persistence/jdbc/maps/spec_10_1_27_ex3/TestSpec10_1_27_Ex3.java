@@ -28,16 +28,16 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
+import junit.framework.Assert;
+
 public class TestSpec10_1_27_Ex3 extends SQLListenerTestCase {
     public int numCompany = 2;
     public int numDivisionsPerCo = 2;
-    public List<String> namedQueries = new ArrayList<String>();
+    public List<String> namedQueries = new ArrayList<>();
 
     public int compId = 1;
     public int divId = 1;
@@ -46,6 +46,7 @@ public class TestSpec10_1_27_Ex3 extends SQLListenerTestCase {
     public int newVpId = 100;
     public List rsAllCompany = null;
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Company.class,

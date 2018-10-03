@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence.models.company;
 
 public interface IPartTimeEmployee extends IEmployee {
 
-    public void setWage(float wage);
-    public float getWage();
+    void setWage(float wage);
+    float getWage();
 
-    public void setWeeklyHours(int weeklyHours);
-    public int getWeeklyHours();
+    void setWeeklyHours(int weeklyHours);
+    int getWeeklyHours();
 }

@@ -40,6 +40,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	private static int    NUM_PAGES    = 3;
 	private static int    NUM_LINES    = 20;
 
+    @Override
     public void setUp() throws Exception {
         setSupportedDatabases(org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
             org.apache.openjpa.jdbc.sql.DB2Dictionary.class,
@@ -280,6 +281,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
                 + toString(Arrays.asList(keys)));
     }
 
+    @Override
     public String toString(List<String> list) {
         StringBuffer buf = new StringBuffer();
         for (String s : list)

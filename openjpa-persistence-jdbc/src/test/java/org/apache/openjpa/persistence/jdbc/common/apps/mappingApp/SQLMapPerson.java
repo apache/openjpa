@@ -20,7 +20,14 @@ package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ColumnResult;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.Table;
 
 /**
  * @author ppoddar
@@ -36,7 +43,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "SQLMAP_PERSON")
 public class SQLMapPerson implements Serializable {
-	private String name;
+	
+    private static final long serialVersionUID = 1L;
+    private String name;
 	private SQLMapAddress address;
 	private SQLMapPerson partner;
 

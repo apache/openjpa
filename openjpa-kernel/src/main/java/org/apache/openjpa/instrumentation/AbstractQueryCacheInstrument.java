@@ -76,6 +76,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return _qc.getStatistics();
     }
 
+    @Override
     public long getExecutionCount() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
@@ -83,6 +84,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
+    @Override
     public long getExecutionCount(String queryKey) {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null) {
@@ -92,6 +94,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
+    @Override
     public long getTotalExecutionCount() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
@@ -99,6 +102,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
+    @Override
     public long getTotalExecutionCount(String queryKey) {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null) {
@@ -108,6 +112,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
+    @Override
     public long getHitCount() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
@@ -115,6 +120,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
+    @Override
     public long getHitCount(String queryKey) {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null) {
@@ -124,6 +130,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
+    @Override
     public long getTotalHitCount() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
@@ -131,6 +138,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
+    @Override
     public long getTotalHitCount(String queryKey) {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null) {
@@ -140,12 +148,14 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
+    @Override
     public void reset() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
             stats.reset();
     }
 
+    @Override
     public Date sinceDate() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
@@ -153,6 +163,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return null;
     }
 
+    @Override
     public Date startDate() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
@@ -163,6 +174,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
     /**
      * Returns number of total evictions since last reset
      */
+    @Override
     public long getEvictionCount() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
@@ -173,6 +185,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
     /**
      * Returns number of total eviction requests since start.
      */
+    @Override
     public long getTotalEvictionCount() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null)
@@ -183,10 +196,11 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
     /**
      * Returns all query keys currently tracked in the cache.
      */
+    @Override
     public Set<String> queryKeys() {
         QueryStatistics<QueryKey> stats = getStatistics();
         if (stats != null) {
-            Set<String> keys = new HashSet<String>();
+            Set<String> keys = new HashSet<>();
             for (QueryKey qk : stats.keys()) {
                 keys.add(qk.toString());
             }
@@ -205,6 +219,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return null;
     }
 
+    @Override
     public long count() {
         if (_qc == null) {
             return NO_STATS;
@@ -216,6 +231,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
+    @Override
     public InstrumentationLevel getLevel() {
         return InstrumentationLevel.FACTORY;
     }

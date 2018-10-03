@@ -47,6 +47,7 @@ public class MappedSuper {
         return name;
     }
 
+    @Override
     public String toString() {
         return "Id=" + id +
                ";Name=" + name;

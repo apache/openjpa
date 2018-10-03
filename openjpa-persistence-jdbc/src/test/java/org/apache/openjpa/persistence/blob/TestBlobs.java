@@ -36,6 +36,7 @@ public class TestBlobs extends SingleEMFTestCase {
 
     QueryBuilder qb = null;
 
+    @Override
     public void setUp() {
         super.setUp(BlobEntity.class, RETAIN_DATA);
         cleanup();

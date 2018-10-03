@@ -42,7 +42,7 @@ import org.apache.openjpa.persistence.test.ContainerEMFTest;
 public class TestContainerSpecCompatibilityOptions
     extends ContainerEMFTest {
 
-    protected List<String> sql = new ArrayList<String>();
+    protected List<String> sql = new ArrayList<>();
     protected int sqlCount;
 
     @Override
@@ -108,7 +108,7 @@ public class TestContainerSpecCompatibilityOptions
      * a mapped superclass.
      */
     public void testMappedSuperClass() {
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        List<Class<?>> types = new ArrayList<>();
         types.add(EntityA.class);
         types.add(EntityB.class);
         types.add(MappedSuper.class);
@@ -173,7 +173,7 @@ public class TestContainerSpecCompatibilityOptions
      *
      */
     public void testOneToManyRelation() {
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        List<Class<?>> types = new ArrayList<>();
         types.add(EntityC.class);
         types.add(EntityC_B1MFK.class);
         types.add(EntityC_B1MJT.class);
@@ -212,7 +212,7 @@ public class TestContainerSpecCompatibilityOptions
         //create
         Uni_1ToM_FK u = new Uni_1ToM_FK();
         u.setName("u");
-        List<EntityC_U1MFK> cs = new ArrayList<EntityC_U1MFK>();
+        List<EntityC_U1MFK> cs = new ArrayList<>();
         EntityC_U1MFK c = new EntityC_U1MFK();
         c.setName("c");
         cs.add(c);
@@ -238,7 +238,7 @@ public class TestContainerSpecCompatibilityOptions
 
         Uni_1ToM_FK u2 = new Uni_1ToM_FK();
         u2.setName("u2");
-        List<EntityC_U1MFK> cs2 = new ArrayList<EntityC_U1MFK>();
+        List<EntityC_U1MFK> cs2 = new ArrayList<>();
         cs2.add(c2);
         u2.setEntityCs(cs2);
         em.persist(u2);
@@ -267,7 +267,7 @@ public class TestContainerSpecCompatibilityOptions
     public void crudUni1MJT(EntityManager em) {
         Uni_1ToM_JT u = new Uni_1ToM_JT();
         u.setName("u");
-        List<EntityC> cs = new ArrayList<EntityC>();
+        List<EntityC> cs = new ArrayList<>();
         EntityC c = new EntityC();
         c.setName("c");
         cs.add(c);
@@ -310,7 +310,7 @@ public class TestContainerSpecCompatibilityOptions
     public void crudBi1MFK(EntityManager em) {
         Bi_1ToM_FK b = new Bi_1ToM_FK();
         b.setName("b");
-        List<EntityC_B1MFK> cs = new ArrayList<EntityC_B1MFK>();
+        List<EntityC_B1MFK> cs = new ArrayList<>();
         EntityC_B1MFK c = new EntityC_B1MFK();
         c.setName("c");
         c.setBi1mfk(b);
@@ -354,7 +354,7 @@ public class TestContainerSpecCompatibilityOptions
     public void crudBi1MJT(EntityManager em) {
         Bi_1ToM_JT b = new Bi_1ToM_JT();
         b.setName("b");
-        List<EntityC_B1MJT> cs = new ArrayList<EntityC_B1MJT>();
+        List<EntityC_B1MJT> cs = new ArrayList<>();
         EntityC_B1MJT c = new EntityC_B1MJT();
         c.setName("c");
         c.setBi1mjt(b);
@@ -402,7 +402,7 @@ public class TestContainerSpecCompatibilityOptions
     }
 
     public void testOneToManyMapRelation() {
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        List<Class<?>> types = new ArrayList<>();
         types.add(EntityC_U1M_Map_FK.class);
         types.add(Uni_1ToM_Map_FK.class);
         types.add(EntityC_B1M_Map_JT.class);
@@ -440,7 +440,7 @@ public class TestContainerSpecCompatibilityOptions
         //create
         Uni_1ToM_Map_FK u = new Uni_1ToM_Map_FK();
         u.setName("u");
-        Map<String, EntityC_U1M_Map_FK> cs = new HashMap<String, EntityC_U1M_Map_FK>();
+        Map<String, EntityC_U1M_Map_FK> cs = new HashMap<>();
         EntityC_U1M_Map_FK c1 = new EntityC_U1M_Map_FK();
         c1.setName("c1");
         cs.put(c1.getName(), c1);
@@ -472,7 +472,7 @@ public class TestContainerSpecCompatibilityOptions
 
         Uni_1ToM_Map_FK u2 = new Uni_1ToM_Map_FK();
         u2.setName("u2");
-        Map<String, EntityC_U1M_Map_FK> cs2 = new HashMap<String, EntityC_U1M_Map_FK>();
+        Map<String, EntityC_U1M_Map_FK> cs2 = new HashMap<>();
         cs2.put(c4.getName(), c4);
         u2.setEntityCs(cs2);
         em.persist(u2);
@@ -499,7 +499,7 @@ public class TestContainerSpecCompatibilityOptions
     public void crudBi1MMapJT(EntityManager em) {
         Bi_1ToM_Map_JT b = new Bi_1ToM_Map_JT();
         b.setName("b");
-        Map<String, EntityC_B1M_Map_JT> cs = new HashMap<String, EntityC_B1M_Map_JT>();
+        Map<String, EntityC_B1M_Map_JT> cs = new HashMap<>();
         EntityC_B1M_Map_JT c = new EntityC_B1M_Map_JT();
         c.setName("c");
         c.setBi1mjt(b);
@@ -549,7 +549,7 @@ public class TestContainerSpecCompatibilityOptions
         //create
         Uni_1ToM_Map_RelKey_FK u = new Uni_1ToM_Map_RelKey_FK();
         u.setName("u");
-        Map<EntityC, EntityC_U1M_Map_RelKey_FK> cs = new HashMap<EntityC, EntityC_U1M_Map_RelKey_FK>();
+        Map<EntityC, EntityC_U1M_Map_RelKey_FK> cs = new HashMap<>();
         EntityC_U1M_Map_RelKey_FK c1 = new EntityC_U1M_Map_RelKey_FK();
         c1.setName("c1");
         EntityC cKey1 = new EntityC();
@@ -589,7 +589,7 @@ public class TestContainerSpecCompatibilityOptions
 
         Uni_1ToM_Map_RelKey_FK u2 = new Uni_1ToM_Map_RelKey_FK();
         u2.setName("u2");
-        Map<EntityC, EntityC_U1M_Map_RelKey_FK> cs2 = new HashMap<EntityC, EntityC_U1M_Map_RelKey_FK>();
+        Map<EntityC, EntityC_U1M_Map_RelKey_FK> cs2 = new HashMap<>();
         cs2.put(cKey1, c4);
         u2.setEntityCs(cs2);
         em.persist(u2);
@@ -616,7 +616,7 @@ public class TestContainerSpecCompatibilityOptions
     public void crudBi1MMapRelKeyJT(EntityManager em) {
         Bi_1ToM_Map_RelKey_JT b = new Bi_1ToM_Map_RelKey_JT();
         b.setName("b");
-        Map<EntityC, EntityC_B1M_Map_RelKey_JT> cs = new HashMap<EntityC, EntityC_B1M_Map_RelKey_JT>();
+        Map<EntityC, EntityC_B1M_Map_RelKey_JT> cs = new HashMap<>();
         EntityC_B1M_Map_RelKey_JT c = new EntityC_B1M_Map_RelKey_JT();
         c.setName("c");
         c.setBi1mjt(b);
@@ -669,7 +669,7 @@ public class TestContainerSpecCompatibilityOptions
     }
 
     public void testUniManyToOneUsingJoinTable() {
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        List<Class<?>> types = new ArrayList<>();
         types.add(EntityC.class);
         types.add(Uni_MTo1_JT.class);
         OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types);
@@ -741,7 +741,7 @@ public class TestContainerSpecCompatibilityOptions
     }
 
     public void testOneToOneUsingJoinTable() {
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        List<Class<?>> types = new ArrayList<>();
         types.add(EntityC_B11JT.class);
         types.add(EntityC_U11JT.class);
         types.add(Bi_1To1_JT.class);
@@ -864,7 +864,7 @@ public class TestContainerSpecCompatibilityOptions
     }
 
     private OpenJPAEntityManagerFactorySPI createEMF2_0(List<Class<?>> types) {
-        Map<String,Object> map = new HashMap<String,Object>();
+        Map<String,Object> map = new HashMap<>();
         map.put("openjpa.jdbc.JDBCListeners",
                 new JDBCListener[] {
                     this.new Listener()

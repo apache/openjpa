@@ -42,26 +42,26 @@ public interface ResultList<E> extends List<E>, Serializable, Closeable {
     /**
      * Returns true if the provider backing this list is open.
      */
-    public boolean isProviderOpen();
+    boolean isProviderOpen();
 
     /**
      * Get the opaque user object attached to this receiver.
      */
-    public Object getUserObject();
+    Object getUserObject();
 
     /**
      * Set the opaque user object to this receiver.
      */
-    public void   setUserObject(Object opaque);
+    void   setUserObject(Object opaque);
 
     /**
      * Close the list.
      */
-    public void close();
+    @Override void close();
 
     /**
      * Returns true if the list has been closed.
      */
-    public boolean isClosed();
+    boolean isClosed();
 }
 

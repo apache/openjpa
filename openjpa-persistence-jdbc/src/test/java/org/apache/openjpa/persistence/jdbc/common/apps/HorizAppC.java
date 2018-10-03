@@ -21,13 +21,13 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 public interface HorizAppC
     extends HorizAppA {
 
-    public void setStringC(String stringC);
+    void setStringC(String stringC);
 
-    public String getStringC();
+    String getStringC();
 
-    public void setIntC(int intC);
+    void setIntC(int intC);
 
-    public int getIntC();
+    int getIntC();
 }
 
 

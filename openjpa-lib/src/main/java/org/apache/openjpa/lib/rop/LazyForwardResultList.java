@@ -55,14 +55,17 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         }
     }
 
+    @Override
     public boolean isProviderOpen() {
         return _state == OPEN;
     }
 
+    @Override
     public boolean isClosed() {
         return _state == CLOSED;
     }
 
+    @Override
     public void close() {
         if (_state != CLOSED) {
             free();
@@ -70,6 +73,7 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         }
     }
 
+    @Override
     public Object get(int index) {
         assertOpen();
 
@@ -82,10 +86,12 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         return super.get(index);
     }
 
+    @Override
     protected ListIterator itr(int index) {
         return (_state != OPEN) ? _list.listIterator(index) : new Itr(index);
     }
 
+    @Override
     public int size() {
         assertOpen();
         if (_size != -1)
@@ -141,16 +147,19 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         return _list;
     }
 
+    @Override
     public int hashCode() {
         // superclass tries to traverses entire list for hashcode
         return System.identityHashCode(this);
     }
 
+    @Override
     public boolean equals(Object other) {
         // superclass tries to traverse entire list for equality
         return other == this;
     }
 
+    @Override
     public List subList(int fromIndex, int toIndex) {
         assertOpen();
         return _list.subList(fromIndex, toIndex);
@@ -166,14 +175,17 @@ public class LazyForwardResultList extends AbstractSequentialResultList
                 next();
         }
 
+        @Override
         public int nextIndex() {
             return _idx;
         }
 
+        @Override
         public int previousIndex() {
             return _idx - 1;
         }
 
+        @Override
         public boolean hasNext() {
             if (_list.size() > _idx)
                 return true;
@@ -182,16 +194,19 @@ public class LazyForwardResultList extends AbstractSequentialResultList
             return addNext();
         }
 
+        @Override
         public boolean hasPrevious() {
             return _idx > 0;
         }
 
+        @Override
         public Object previous() {
             if (_idx == 0)
                 throw new NoSuchElementException();
             return _list.get(--_idx);
         }
 
+        @Override
         public Object next() {
             if (!hasNext())
                 throw new NoSuchElementException();

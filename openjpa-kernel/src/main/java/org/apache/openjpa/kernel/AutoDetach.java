@@ -26,29 +26,29 @@ public interface AutoDetach {
     /**
      * Detach context on close.
      */
-    public static final int DETACH_CLOSE = 2 << 0;
+    int DETACH_CLOSE = 2 << 0;
 
     /**
      * Detach context on transaction commit.
      */
-    public static final int DETACH_COMMIT = 2 << 1;
+    int DETACH_COMMIT = 2 << 1;
 
     /**
      * Detach context on any nontransctional read, such that each
      * nontransactional operation uses a new persistence context in essence.
      */
-    public static final int DETACH_NONTXREAD = 2 << 2;
+    int DETACH_NONTXREAD = 2 << 2;
 
     /**
      * Detach context on failed transaction commit / rollback.
      */
-    public static final int DETACH_ROLLBACK = 2 << 3;
+    int DETACH_ROLLBACK = 2 << 3;
 
     /**
      * Do not detach at all. Skips proxying second-class containers.
      */
-    public static final int DETACH_NONE = 2 << 4;
+    int DETACH_NONE = 2 << 4;
 
-    public static final String[] names = {"CLOSE", "COMMIT", "NONTXREAD", "ROLLBACK", "NONE"};
-    public static final int[] values = {DETACH_CLOSE, DETACH_COMMIT, DETACH_NONTXREAD, DETACH_ROLLBACK, DETACH_NONE};
+    String[] names = {"CLOSE", "COMMIT", "NONTXREAD", "ROLLBACK", "NONE"};
+    int[] values = {DETACH_CLOSE, DETACH_COMMIT, DETACH_NONTXREAD, DETACH_ROLLBACK, DETACH_NONE};
 }

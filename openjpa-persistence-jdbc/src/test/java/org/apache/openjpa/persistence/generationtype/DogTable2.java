@@ -18,14 +18,23 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
-import java.io.*;
-import javax.persistence.*;
+import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 
 @Entity(name = "DogTable2")
 @Table(name = "DOGTABLES", schema = "SCHEMA2")
 public class DogTable2 implements Serializable
 
 {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     @TableGenerator(name = "Dog_Gen2", table = "ID_Gen2",
             pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL",

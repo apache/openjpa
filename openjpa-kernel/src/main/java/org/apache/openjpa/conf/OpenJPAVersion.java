@@ -103,6 +103,7 @@ public class OpenJPAVersion {
         // STOP - ALLOW PRINT STATEMENTS
     }
 
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder(80 * 40);
         appendOpenJPABanner(buf);

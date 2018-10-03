@@ -37,11 +37,11 @@ import org.apache.openjpa.meta.ValueMetaData;
  *
  * @author Patrick Linskey
  */
-@SuppressWarnings("serial")
 public class DataCachePCDataImpl
     extends PCDataImpl
     implements DataCachePCData {
 
+    private static final long serialVersionUID = 1L;
     private final long _exp;
 
     public DataCachePCDataImpl(Object oid, ClassMetaData meta) {
@@ -61,70 +61,87 @@ public class DataCachePCDataImpl
             _exp = -1;
     }
 
+    @Override
     public boolean isTimedOut() {
         return _exp != -1 && _exp < System.currentTimeMillis();
     }
 
+    @Override
     public long getTimeOut() {
         return _exp;
     }
 
+    @Override
     public synchronized Object getData(int index) {
         return super.getData(index);
     }
 
+    @Override
     public synchronized void setData(int index, Object val) {
         super.setData(index, val);
     }
 
+    @Override
     public synchronized void clearData(int index) {
         super.clearData(index);
     }
 
+    @Override
     public synchronized Object getImplData() {
         return super.getImplData();
     }
 
+    @Override
     public synchronized void setImplData(Object val) {
         super.setImplData(val);
     }
 
+    @Override
     public synchronized Object getImplData(int index) {
         return super.getImplData(index);
     }
 
+    @Override
     public synchronized void setImplData(int index, Object val) {
         super.setImplData(index, val);
     }
 
+    @Override
     public synchronized Object getIntermediate(int index) {
         return super.getIntermediate(index);
     }
 
+    @Override
     public synchronized void setIntermediate(int index, Object val) {
         super.setIntermediate(index, val);
     }
 
+    @Override
     public synchronized boolean isLoaded(int index) {
         return super.isLoaded(index);
     }
 
+    @Override
     public synchronized void setLoaded(int index, boolean loaded) {
         super.setLoaded(index, loaded);
     }
 
+    @Override
     public synchronized Object getVersion() {
         return super.getVersion();
     }
 
+    @Override
     public synchronized void setVersion(Object version) {
         super.setVersion(version);
     }
 
+    @Override
     public synchronized void store(OpenJPAStateManager sm) {
         super.store(sm);
     }
 
+    @Override
     public synchronized void store(OpenJPAStateManager sm, BitSet fields) {
         super.store(sm, fields);
     }
@@ -134,6 +151,7 @@ public class DataCachePCDataImpl
      * Special process of checking if the cached collection data is out of
      * order.
      */
+    @Override
     protected void storeField(OpenJPAStateManager sm, FieldMetaData fmd) {
         if (fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return;
@@ -187,6 +205,7 @@ public class DataCachePCDataImpl
         }
     }
 
+    @Override
     protected Object toData(FieldMetaData fmd, Object val, StoreContext ctx) {
         // avoid caching large result set fields
         if (fmd.isLRS() || fmd.isStream())
@@ -194,6 +213,7 @@ public class DataCachePCDataImpl
         return super.toData(fmd, val, ctx);
     }
 
+    @Override
     protected Object toNestedData(ValueMetaData vmd, Object val,
         StoreContext ctx) {
         if (val == null)
@@ -210,6 +230,7 @@ public class DataCachePCDataImpl
         }
     }
 
+    @Override
     public AbstractPCData newEmbeddedPCData(OpenJPAStateManager sm) {
         return new DataCachePCDataImpl(sm.getId(), sm.getMetaData(), getCache());
     }

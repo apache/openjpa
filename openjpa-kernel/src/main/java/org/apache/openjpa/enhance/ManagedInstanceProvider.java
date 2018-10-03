@@ -24,5 +24,5 @@ package org.apache.openjpa.enhance;
  * @since 1.0.0
  */
 public interface ManagedInstanceProvider {
-    public Object getManagedInstance();
+    Object getManagedInstance();
 }

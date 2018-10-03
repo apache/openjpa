@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel;
 
 import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -37,6 +38,7 @@ public class TestEJBLobs extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(Inner.class, Inner2.class);
 
@@ -156,11 +158,10 @@ public class TestEJBLobs extends AbstractTestCase {
         }
     }
 
-    @SuppressWarnings("serial")
     @Entity
     @Table(name="Inner2")
     public static class Inner2 implements Serializable {
-
+        private static final long serialVersionUID = 1L;
         @Id
         public String string = null;
 

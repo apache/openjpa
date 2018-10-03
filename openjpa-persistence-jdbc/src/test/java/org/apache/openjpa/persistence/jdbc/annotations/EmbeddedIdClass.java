@@ -19,7 +19,9 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.GeneratedValue;
 
 @Embeddable
 public class EmbeddedIdClass {
@@ -58,14 +60,17 @@ public class EmbeddedIdClass {
         this.pk3 = pk3;
     }
 
+    @Override
     public String toString() {
         return pk1 + ":" + pk2 + ":" + pk3;
     }
 
+    @Override
     public int hashCode() {
         return (int) ((pk1 ^ pk2 ^ pk3) % Integer.MAX_VALUE);
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;

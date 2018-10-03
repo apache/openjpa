@@ -61,6 +61,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         return emf;
     }
 
+    @Override
     public void setUp() {
         expectedFailedObject = null;
         expectedFailedObjectOracle = null;

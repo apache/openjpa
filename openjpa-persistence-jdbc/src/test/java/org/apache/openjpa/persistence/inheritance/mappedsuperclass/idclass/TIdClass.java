@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence.inheritance.mappedsuperclass.idclass;
 import java.io.Serializable;
 
 public class TIdClass implements Serializable {
-	private int id;
+	
+    private static final long serialVersionUID = 1L;
+    private int id;
 
 	public int getId() {
 		return id;
@@ -31,11 +33,13 @@ public class TIdClass implements Serializable {
 		this.id = id;
 	}
 
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		return super.equals(obj);
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return super.hashCode();
 	}
 }

@@ -44,7 +44,7 @@ public class TestSuppressBatchOLE extends SingleEMFTestCase {
         OpenJPAEntityManagerSPI em2 = emf.createEntityManager();
 
         em1.getTransaction().begin();
-        List<EntityA> entities = new ArrayList<EntityA>();
+        List<EntityA> entities = new ArrayList<>();
         for (int i = 0; i < 25; i++) {
             EntityA a = createEntity();
             entities.add(a);

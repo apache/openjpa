@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.persistence.xml;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+
+import junit.framework.TestCase;
 
 public class TestSchemaVersionValidation extends TestCase {
 

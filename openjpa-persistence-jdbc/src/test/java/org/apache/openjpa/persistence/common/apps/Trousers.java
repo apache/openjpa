@@ -18,16 +18,18 @@
  */
 package org.apache.openjpa.persistence.common.apps;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
-import java.io.Serializable;
 
 @Entity
 @Table(name="MPTZZU")
 public class Trousers extends Textile implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     @Column(name="NU_LNH", length=4)
     private Integer lnhNumber;
 

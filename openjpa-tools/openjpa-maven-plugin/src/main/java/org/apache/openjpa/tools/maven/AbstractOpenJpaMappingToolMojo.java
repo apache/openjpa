@@ -68,6 +68,7 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
      *
      * @see org.apache.maven.plugin.Mojo#execute()
      */
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skipMojo()) {
             return;
@@ -101,6 +102,7 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
 
         boolean ok = Configurations.runAgainstAllAnchors(opts,
                 new Configurations.Runnable() {
+                    @Override
                     public boolean run(Options opts) throws IOException, SQLException {
                         JDBCConfiguration conf = new JDBCConfigurationImpl();
                         try {

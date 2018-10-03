@@ -47,18 +47,18 @@ public interface OpenJPAStateManager
     /**
      * A user is setting the field.
      */
-    public static final int SET_USER = 0;
+    int SET_USER = 0;
 
     /**
      * The remote broker framework is setting the field on the server.
      */
-    public static final int SET_REMOTE = 1;
+    int SET_REMOTE = 1;
 
     /**
      * The field is being attached by a detached state manager; the value is
      * from the detached instance.
      */
-    public static final int SET_ATTACH = 2;
+    int SET_ATTACH = 2;
 
     /**
      * Initialize the state manager with a new instance of the given
@@ -71,86 +71,86 @@ public interface OpenJPAStateManager
      * @param state the initial state to which to set the instance
      * @since 0.3.1.2
      */
-    public void initialize(Class forType, PCState state);
+    void initialize(Class forType, PCState state);
 
     /**
      * Load fetch group fields.
      */
-    public void load(FetchConfiguration fetch);
+    void load(FetchConfiguration fetch);
 
     /**
      * Return the managed instance.
      */
-    public Object getManagedInstance();
+    Object getManagedInstance();
 
     /**
      * Return the {@link PersistenceCapable} instance that provides access to
      * the instance managed by this state manager. May be a proxy around
      * the actual managed instance.
      */
-    public PersistenceCapable getPersistenceCapable();
+    PersistenceCapable getPersistenceCapable();
 
     /**
      * Get the metadata for this instance.
      */
-    public ClassMetaData getMetaData();
+    ClassMetaData getMetaData();
 
     /**
      * Return the owning state if this is an embedded instance.
      */
-    public OpenJPAStateManager getOwner();
+    OpenJPAStateManager getOwner();
 
     /**
      * Return the owning value's field index
      *
      * @since 1.1.0
      */
-    public int getOwnerIndex();
+    int getOwnerIndex();
 
     /**
      * Return true if this instance has an owner, meaning it is an embedded
      * value.
      */
-    public boolean isEmbedded();
+    boolean isEmbedded();
 
     /**
      * Return whether this object has been flushed to the datastore in this
      * transaction.
      */
-    public boolean isFlushed();
+    boolean isFlushed();
 
     /**
      * Return whether this object has been flushed, then dirtied again.
      */
-    public boolean isFlushedDirty();
+    boolean isFlushedDirty();
 
     /**
      * Return whether this object is provisionally persistent.
      */
-    public boolean isProvisional();
+    boolean isProvisional();
 
     /**
      * Return a read-only mask of the indexes of all loaded fields.
      */
-    public BitSet getLoaded();
+    BitSet getLoaded();
 
     /**
      * Return a read-only mask of the indexes of all dirty fields.
      */
-    public BitSet getDirty();
+    BitSet getDirty();
 
     /**
      * Return a read-only mask of the indexes of all fields that have been
      * flushed since they were last changed.
      */
-    public BitSet getFlushed();
+    BitSet getFlushed();
 
     /**
      * Return a mutable mask of the unloaded fields that need loading based
      * on the given fetch configuration. Pass in null to retrieve all
      * unloaded fields.
      */
-    public BitSet getUnloaded(FetchConfiguration fetch);
+    BitSet getUnloaded(FetchConfiguration fetch);
 
     /**
      * Create a new hollow proxy instance for the given field. In cases where
@@ -163,7 +163,7 @@ public interface OpenJPAStateManager
      * state is initialized. Calling {@link #storeField} or {@link #store}
      * will set the proxy's owner automatically.
      */
-    public Object newProxy(int field);
+    Object newProxy(int field);
 
     /**
      * Create a new hollow proxy instance for the given field. This method
@@ -172,22 +172,22 @@ public interface OpenJPAStateManager
      *
      * @see #newProxy
      */
-    public Object newFieldProxy(int field);
+    Object newFieldProxy(int field);
 
     /**
      * Return true if the given field has a default value.
      */
-    public boolean isDefaultValue(int field);
+    boolean isDefaultValue(int field);
 
     /**
      * Return the managing context.
      */
-    public StoreContext getContext();
+    StoreContext getContext();
 
     /**
      * Return the state that this object is in.
      */
-    public PCState getPCState();
+    PCState getPCState();
 
     /**
      * Return the identifier for this state manager. This may return a
@@ -195,14 +195,14 @@ public interface OpenJPAStateManager
      * assigned an object id, or for non-persistent or embedded instances.
      * For all other instances this method is the same as {@link #getObjectId}.
      */
-    public Object getId();
+    Object getId();
 
     /**
      * Return the instance's object id. This method will return null if no
      * oid has been assigned. Oids are assigned to newly-persisted instances
      * when the user first asks for it, or on flush.
      */
-    public Object getObjectId();
+    Object getObjectId();
 
     /**
      * Set the object id for the managed instance. Some back ends may not be
@@ -211,7 +211,7 @@ public interface OpenJPAStateManager
      * application identity objects through the <code>storeXXXField</code>
      * methods will automatically change the oid.
      */
-    public void setObjectId(Object oid);
+    void setObjectId(Object oid);
 
     /**
      * Ask the store manager to assign a permanent oid to this new instance.
@@ -220,24 +220,24 @@ public interface OpenJPAStateManager
      * false, the oid may be left unassigned
      * @return true if an oid assigned, false otherwise
      */
-    public boolean assignObjectId(boolean flush);
+    boolean assignObjectId(boolean flush);
 
     /**
      * The lock object set for this instance. This object is generally
      * managed by the system lock manager.
      */
-    public Object getLock();
+    Object getLock();
 
     /**
      * The lock object set for this instance. This object is generally
      * managed by the system lock manager.
      */
-    public void setLock(Object lock);
+    void setLock(Object lock);
 
     /**
      * Return the current version indicator for this instance.
      */
-    public Object getVersion();
+    @Override Object getVersion();
 
     /**
      * Set the version indicator for this instance, as loaded from the
@@ -247,31 +247,31 @@ public interface OpenJPAStateManager
      * require vendor-specific classes, because they are transferred to
      * detached objects.
      */
-    public void setVersion(Object version);
+    void setVersion(Object version);
 
     /**
      * Set the next version indicator in the datastore pending a successful
      * flush. The {@link StoreManager} uses this method during flush.
      */
-    public void setNextVersion(Object version);
+    void setNextVersion(Object version);
 
     /**
      * Returns true if this state needs to issue a version update, possibly
      * as a result of being locked.
      */
-    public boolean isVersionUpdateRequired();
+    boolean isVersionUpdateRequired();
 
     /**
      * Returns true if this state needs to issue a version check at flush time.
      */
-    public boolean isVersionCheckRequired();
+    boolean isVersionCheckRequired();
 
     /**
      * An object that concrete back ends can associate with each instance.
      * This object is not used or modified in any way by the generic
      * persistence layer.
      */
-    public Object getImplData();
+    Object getImplData();
 
     /**
      * An object that concrete back ends can associate with each instance.
@@ -282,19 +282,19 @@ public interface OpenJPAStateManager
      * in different contexts if L2 caching is enabled
      * @return the previous impl data value, if any
      */
-    public Object setImplData(Object data, boolean cacheable);
+    Object setImplData(Object data, boolean cacheable);
 
     /**
      * Whether the instance-level impl data can be shared among instances
      * in different contexts if L2 caching is enabled.
      */
-    public boolean isImplDataCacheable();
+    boolean isImplDataCacheable();
 
     /**
      * Field-level impl data. Field-level data only applies to loaded fields,
      * and is cleared when the field is cleared.
      */
-    public Object getImplData(int field);
+    Object getImplData(int field);
 
     /**
      * Field-level impl data. Field-level data only applies to loaded fields,
@@ -304,13 +304,13 @@ public interface OpenJPAStateManager
      *
      * @return the previous impl data value, if any
      */
-    public Object setImplData(int field, Object data);
+    Object setImplData(int field, Object data);
 
     /**
      * Whether the field's impl data is loaded and can be shared among
      * instances in different contexts if L2 caching is enabled.
      */
-    public boolean isImplDataCacheable(int field);
+    boolean isImplDataCacheable(int field);
 
     /**
      * Use intermediate field data to store intermediate information that
@@ -319,7 +319,7 @@ public interface OpenJPAStateManager
      * This data should be cacheable; the datastore cache will attempt to
      * cache it if the field value is not available.
      */
-    public Object getIntermediate(int field);
+    Object getIntermediate(int field);
 
     /**
      * Use intermediate field data to store intermediate information that
@@ -328,64 +328,64 @@ public interface OpenJPAStateManager
      * This data should be cacheable; the datastore cache will attempt to
      * cache it if the field value is not available.
      */
-    public void setIntermediate(int field, Object value);
+    void setIntermediate(int field, Object value);
 
     /**
      * Return the external value of the given field.
      */
-    public boolean fetchBoolean(int field);
+    boolean fetchBoolean(int field);
 
     /**
      * Return the external value of the given field.
      */
-    public byte fetchByte(int field);
+    byte fetchByte(int field);
 
     /**
      * Return the external value of the given field.
      */
-    public char fetchChar(int field);
+    char fetchChar(int field);
 
     /**
      * Return the external value of the given field.
      */
-    public double fetchDouble(int field);
+    double fetchDouble(int field);
 
     /**
      * Return the external value of the given field.
      */
-    public float fetchFloat(int field);
+    float fetchFloat(int field);
 
     /**
      * Return the external value of the given field.
      */
-    public int fetchInt(int field);
+    int fetchInt(int field);
 
     /**
      * Return the external value of the given field.
      */
-    public long fetchLong(int field);
+    long fetchLong(int field);
 
     /**
      * Return the external value of the given field.
      */
-    public Object fetchObject(int field);
+    Object fetchObject(int field);
 
     /**
      * Return the external value of the given field.
      */
-    public short fetchShort(int field);
+    short fetchShort(int field);
 
     /**
      * Return the external value of the given field.
      */
-    public String fetchString(int field);
+    String fetchString(int field);
 
     /**
      * Return the externalized value of the field with the given index as an
      * object. If there is no externalizer, this is equivalent to
      * {@link #fetchField}.
      */
-    public Object fetch(int field);
+    Object fetch(int field);
 
     /**
      * Return the value of the field with the given index as an object.
@@ -393,7 +393,7 @@ public interface OpenJPAStateManager
      * @param transitions if true, this method will cause state transitions
      * to occur as if the field were accessed normally
      */
-    public Object fetchField(int field, boolean transitions);
+    Object fetchField(int field, boolean transitions);
 
     /**
      * Return the value of the field at the specified index as of the
@@ -401,79 +401,79 @@ public interface OpenJPAStateManager
      *
      * @since 0.3.1.1
      */
-    public Object fetchInitialField(int field);
+    Object fetchInitialField(int field);
 
     /**
      * Set the given external value back into the given field.
      */
-    public void storeBoolean(int field, boolean externalVal);
+    void storeBoolean(int field, boolean externalVal);
 
     /**
      * Set the given external value back into the given field.
      */
-    public void storeByte(int field, byte externalVal);
+    void storeByte(int field, byte externalVal);
 
     /**
      * Set the given external value back into the given field.
      */
-    public void storeChar(int field, char externalVal);
+    void storeChar(int field, char externalVal);
 
     /**
      * Set the given external value back into the given field.
      */
-    public void storeDouble(int field, double externalVal);
+    void storeDouble(int field, double externalVal);
 
     /**
      * Set the given external value back into the given field.
      */
-    public void storeFloat(int field, float externalVal);
+    void storeFloat(int field, float externalVal);
 
     /**
      * Set the given external value back into the given field.
      */
-    public void storeInt(int field, int externalVal);
+    void storeInt(int field, int externalVal);
 
     /**
      * Set the given external value back into the given field.
      */
-    public void storeLong(int field, long externalVal);
+    void storeLong(int field, long externalVal);
 
     /**
      * Set the given external value back into the given field.
      */
-    public void storeObject(int field, Object externalVal);
+    void storeObject(int field, Object externalVal);
 
     /**
      * Set the given external value back into the given field.
      */
-    public void storeShort(int field, short externalVal);
+    void storeShort(int field, short externalVal);
 
     /**
      * Set the given external value back into the given field.
      */
-    public void storeString(int field, String externalVal);
+    void storeString(int field, String externalVal);
 
     /**
      * Set the value of the field with the given index as from the external
      * object value. If there is no externalizer, this is equivalent to
      * {@link #storeField}.
      */
-    public void store(int field, Object value);
+    void store(int field, Object value);
 
     /**
      * Set the value of the field with the given index as an object.
      */
-    public void storeField(int field, Object value);
+    void storeField(int field, Object value);
 
     /**
      * Mark the given field as dirty.
      */
-    public void dirty(int field);
+    void dirty(int field);
 
     /**
      * Notification that an element has been removed from the given field.
      */
-    public void removed(int field, Object removed, boolean key);
+    void removed(int field, Object removed, boolean key);
 
     /**
      * Prepare the instance for refresh
@@ -483,7 +483,7 @@ public interface OpenJPAStateManager
      * @return true if the object needs a refresh, false otherwise
      * @see Broker#refresh
      */
-    public boolean beforeRefresh(boolean refreshAll);
+    boolean beforeRefresh(boolean refreshAll);
 
     /**
      * Set the given field to the given value. Make the field dirty as
@@ -496,7 +496,7 @@ public interface OpenJPAStateManager
      *
      * @since 0.3.1
      */
-    public void setRemote (int field, Object value);
+    void setRemote (int field, Object value);
 
     /**
      * Some field types (collection proxies) support delayed loading.  Delayed loading
@@ -505,7 +505,7 @@ public interface OpenJPAStateManager
      *
      * @return true if the field is setup for delayed access
      */
-    public boolean isDelayed(int field);
+    boolean isDelayed(int field);
 
     /**
      * Some field types (collection proxies) support delayed loading.  Delayed loading
@@ -513,17 +513,17 @@ public interface OpenJPAStateManager
      * returned without actually loading it.
      *
      */
-    public void setDelayed(int field, boolean delay);
+    void setDelayed(int field, boolean delay);
 
     /**
      * If a field was marked delayed in a previous load operation this method can be
      * used to load the field.
      */
-    public void loadDelayedField(int field);
+    void loadDelayedField(int field);
 
     /**
      * Fetch an object field by index.
      */
-    public Object fetchObjectField(int field);
+    @Override Object fetchObjectField(int field);
 }
 

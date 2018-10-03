@@ -40,7 +40,7 @@ import org.apache.openjpa.lib.jdbc.DecoratingDataSource;
  */
 public class DistributedDataSource extends DecoratingDataSource implements
 		Iterable<DataSource> {
-	private List<DataSource> real = new ArrayList<DataSource>();
+	private List<DataSource> real = new ArrayList<>();
 	private DataSource master;
 
 	public DistributedDataSource(List<DataSource> dataSources) {
@@ -73,42 +73,50 @@ public class DistributedDataSource extends DecoratingDataSource implements
 		return ds.getConnection(user, pwd);
 	}
 
-	public Iterator<DataSource> iterator() {
+	@Override
+    public Iterator<DataSource> iterator() {
 		return real.iterator();
 	}
 
-	public Connection getConnection() throws SQLException {
-		List<Connection> c = new ArrayList<Connection>();
+	@Override
+    public Connection getConnection() throws SQLException {
+		List<Connection> c = new ArrayList<>();
 		for (DataSource ds : real)
 			c.add(ds.getConnection());
 		return new DistributedConnection(c);
 	}
 
-	public Connection getConnection(String username, String password)
+	@Override
+    public Connection getConnection(String username, String password)
 			throws SQLException {
-		List<Connection> c = new ArrayList<Connection>();
+		List<Connection> c = new ArrayList<>();
 		for (DataSource ds : real)
 			c.add(ds.getConnection(username, password));
 		return new DistributedConnection(c);
 	}
 
-	public PrintWriter getLogWriter() throws SQLException {
+	@Override
+    public PrintWriter getLogWriter() throws SQLException {
 		return master.getLogWriter();
 	}
 
-	public int getLoginTimeout() throws SQLException {
+	@Override
+    public int getLoginTimeout() throws SQLException {
 		return master.getLoginTimeout();
 	}
 
-	public void setLogWriter(PrintWriter out) throws SQLException {
+	@Override
+    public void setLogWriter(PrintWriter out) throws SQLException {
 		for (DataSource ds:real)
 			ds.setLogWriter(out);
 	}
 
-	public void setLoginTimeout(int seconds) throws SQLException {
+	@Override
+    public void setLoginTimeout(int seconds) throws SQLException {
 		for (DataSource ds:real)
 			ds.setLoginTimeout(seconds);
 	}
+    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }

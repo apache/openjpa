@@ -23,10 +23,12 @@ import org.apache.openjpa.persistence.query.ManyOneEntity;
 public class TestInstanceGraphBrokerSerialization
     extends AbstractBrokerSerializationTest<ManyOneEntity> {
 
+    @Override
     protected Class<ManyOneEntity> getManagedType() {
         return ManyOneEntity.class;
     }
 
+    @Override
     protected ManyOneEntity newManagedInstance() {
         ManyOneEntity e = new ManyOneEntity();
         e.setName("foo");
@@ -36,10 +38,12 @@ public class TestInstanceGraphBrokerSerialization
         return e;
     }
 
+    @Override
     protected void modifyInstance(ManyOneEntity e) {
         e.getRel().setName("modified");
     }
 
+    @Override
     protected Object getModifiedValue(ManyOneEntity e) {
         return e.getRel().getName();
     }

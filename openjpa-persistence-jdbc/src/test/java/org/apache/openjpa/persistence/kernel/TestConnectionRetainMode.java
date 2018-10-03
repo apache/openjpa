@@ -30,9 +30,6 @@ package org.apache.openjpa.persistence.kernel;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 

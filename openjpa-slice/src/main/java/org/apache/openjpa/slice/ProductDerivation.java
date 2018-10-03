@@ -50,19 +50,23 @@ public class ProductDerivation extends AbstractProductDerivation implements
      */
     public static final String HINT_TARGET  = "openjpa.hint.slice.Target";
 
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public void putBrokerFactoryAliases(Map m) {
 		m.put("slice", DistributedJDBCBrokerFactory.class.getName());
 	}
 
-	public String getConfigurationPrefix() {
+	@Override
+    public String getConfigurationPrefix() {
 		return PREFIX_SLICE;
 	}
 
-	public int getType() {
+	@Override
+    public int getType() {
 		return TYPE_STORE;
 	}
 
+    @Override
     public Set<String> getSupportedQueryHints() {
         return Collections.singleton(HINT_TARGET);
     }

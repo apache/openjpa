@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
@@ -38,6 +37,7 @@ import org.apache.openjpa.kernel.FinderQuery;
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Implementation of FinderCache for JDBC.
@@ -61,9 +61,9 @@ public class FinderCacheImpl
     private boolean _enableStats = false;
 
     public FinderCacheImpl() {
-        _delegate = new HashMap<ClassMapping, FinderQuery<ClassMapping, SelectExecutor, Result>>();
-        _uncachables = new HashMap<String, String>();
-        _stats = new QueryStatistics.None<ClassMapping>();
+        _delegate = new HashMap<>();
+        _uncachables = new HashMap<>();
+        _stats = new QueryStatistics.None<>();
     }
 
     /**
@@ -71,10 +71,11 @@ public class FinderCacheImpl
      *
      * @return a map of the query string with class names as key.
      */
+    @Override
     public Map<String, String> getMapView() {
         lock();
         try {
-            Map<String, String> view = new TreeMap<String, String>();
+            Map<String, String> view = new TreeMap<>();
             for (ClassMapping mapping : _delegate.keySet()) {
                 view.put(mapping.getDescribedType().getName(),
                     _delegate.get(mapping).getQueryString());
@@ -88,6 +89,7 @@ public class FinderCacheImpl
     /**
      * Gets basic statistics of execution and hit count of finder queries.
      */
+    @Override
     public QueryStatistics<ClassMapping> getStatistics() {
         return _stats;
     }
@@ -102,6 +104,7 @@ public class FinderCacheImpl
      * null.
      *
      */
+    @Override
     public FinderQuery<ClassMapping,SelectExecutor,Result>
         get(ClassMapping mapping, FetchConfiguration fetch) {
         if (fetch.getReadLockLevel() != 0) {
@@ -142,6 +145,7 @@ public class FinderCacheImpl
      * @param select the finder query
      * @param fetch may contain hints to control cache operation
      */
+    @Override
     public FinderQuery<ClassMapping, SelectExecutor, Result> cache
        (ClassMapping mapping, SelectExecutor select, FetchConfiguration fetch) {
         lock();
@@ -187,6 +191,7 @@ public class FinderCacheImpl
     /**
      * Affirms if the given mapping is excluded from being cached.
      */
+    @Override
     public boolean isExcluded(ClassMapping mapping) {
         return mapping != null && isExcluded(mapping.getDescribedType().getName());
     }
@@ -205,11 +210,12 @@ public class FinderCacheImpl
      * Adds a pattern for exclusion. Any cached finder whose class name
      * matches the given pattern will be marked invalidated as a side-effect.
      */
+    @Override
     public void addExclusionPattern(String pattern) {
         lock();
         try {
             if (_exclusionPatterns == null)
-                _exclusionPatterns = new ArrayList<String>();
+                _exclusionPatterns = new ArrayList<>();
             _exclusionPatterns.add(pattern);
             Collection<ClassMapping> invalidMappings = getMatchedKeys(pattern,
                     _delegate.keySet());
@@ -224,6 +230,7 @@ public class FinderCacheImpl
      * cachable due to the given pattern will now be removed from the list of
      * uncachables as a side-effect.
      */
+    @Override
     public void removeExclusionPattern(String pattern) {
         lock();
         try {
@@ -255,7 +262,7 @@ public class FinderCacheImpl
      * Gets the elements of the given set that match the given pattern.
      */
     private Collection<ClassMapping> getMatchedKeys(String pattern, Set<ClassMapping> set) {
-        List<ClassMapping> result = new ArrayList<ClassMapping>();
+        List<ClassMapping> result = new ArrayList<>();
         for (ClassMapping entry : set) {
             if (matches(pattern, entry)) {
                 result.add(entry);
@@ -268,7 +275,7 @@ public class FinderCacheImpl
      * Gets the elements of the given list which match the given pattern.
      */
     private Collection<String> getMatchedKeys(String pattern, Collection<String> coll) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String key : coll) {
             if (matches(pattern, key)) {
                 result.add(key);
@@ -286,6 +293,7 @@ public class FinderCacheImpl
           || target.matches(pattern));
     }
 
+    @Override
     public boolean invalidate(ClassMapping mapping) {
         lock();
         try {
@@ -295,6 +303,7 @@ public class FinderCacheImpl
         }
     }
 
+    @Override
     public FinderQuery<ClassMapping, SelectExecutor, Result> markUncachable(ClassMapping mapping) {
         return markUncachable(mapping.getDescribedType().getName());
     }
@@ -342,7 +351,7 @@ public class FinderCacheImpl
             if (StringUtil.isEmpty(excludes))
                 return;
             if (_exclusionPatterns == null)
-                _exclusionPatterns = new ArrayList<String>();
+                _exclusionPatterns = new ArrayList<>();
             String[] patterns = excludes.split(PATTERN_SEPARATOR);
             for (String pattern : patterns)
                 addExclusionPattern(pattern);
@@ -351,6 +360,7 @@ public class FinderCacheImpl
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<String> getExcludes() {
         return (List<String>)_exclusionPatterns == null
@@ -378,7 +388,7 @@ public class FinderCacheImpl
     public void setEnableStats(boolean b) {
         _enableStats = b;
         if (_enableStats) {
-            _stats = new QueryStatistics.Default<ClassMapping>();
+            _stats = new QueryStatistics.Default<>();
         }
     }
 
@@ -388,12 +398,15 @@ public class FinderCacheImpl
     // ----------------------------------------------------
     //  Configuration contract
     // ----------------------------------------------------
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
     }
 
+    @Override
     public void endConfiguration() {
     }
 }

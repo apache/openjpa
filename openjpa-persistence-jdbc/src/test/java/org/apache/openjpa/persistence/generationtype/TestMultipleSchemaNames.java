@@ -43,6 +43,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         // Need to skip tests on some databases.
         // See createSchemas() comment at the bottom

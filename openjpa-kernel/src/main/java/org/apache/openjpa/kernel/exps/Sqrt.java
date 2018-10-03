@@ -26,6 +26,9 @@ package org.apache.openjpa.kernel.exps;
 class Sqrt
     extends UnaryMathVal {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the number whose square root to calculate.
      */
@@ -33,10 +36,12 @@ class Sqrt
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         return double.class;
     }
 
+    @Override
     protected Object operate(Object o, Class c) {
         return Double.valueOf(Math.sqrt(((Number) o).doubleValue()));
     }

@@ -26,9 +26,8 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class TransientState
-    extends PCState {
+class TransientState extends PCState {
+    private static final long serialVersionUID = 1L;
 
     @Override
     void initialize(StateManagerImpl context, PCState previous) {
@@ -39,6 +38,7 @@ class TransientState
             context, BrokerImpl.STATUS_TRANSIENT);
     }
 
+    @Override
     public String toString() {
         return "Transient";
     }

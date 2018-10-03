@@ -29,11 +29,11 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaBuilder.Trimspec;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.criteria.CriteriaBuilder.Trimspec;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Literal;
@@ -165,7 +165,7 @@ class Expressions {
       * whose mutation do not impact the original list.
       */
      static <X> List<X> returnCopy(List<X> list) {
-         return list == null ? new ArrayList<X>() : new CopyOnWriteArrayList<X>(list);
+         return list == null ? new ArrayList<>() : new CopyOnWriteArrayList<>(list);
      }
 
      /**
@@ -173,7 +173,7 @@ class Expressions {
       * whose mutation do not impact the original list.
       */
      static <X> Set<X> returnCopy(Set<X> set) {
-         return set == null ? new HashSet<X>() : new CopyOnWriteArraySet<X>(set);
+         return set == null ? new HashSet<>() : new CopyOnWriteArraySet<>(set);
      }
 
      static org.apache.openjpa.kernel.exps.Expression and(ExpressionFactory factory,
@@ -202,6 +202,7 @@ class Expressions {
             this((Class<X>)e.getJavaType(), e);
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, e);
         }
@@ -225,6 +226,7 @@ class Expressions {
             e2 = (ExpressionImpl<?>)y;
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, e1, e2);
         }
@@ -250,6 +252,7 @@ class Expressions {
             }
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, args);
         }
@@ -270,6 +273,7 @@ class Expressions {
             e2 = (ExpressionImpl<?>)y;
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, e1, e2);
         }
@@ -288,6 +292,7 @@ class Expressions {
             return value;
         }
 
+        @Override
         public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "ABS", OPEN_BRACE, e, CLOSE_BRACE);
         }
@@ -348,6 +353,7 @@ class Expressions {
             return value;
         }
 
+        @Override
         public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "SQRT", OPEN_BRACE, e, CLOSE_BRACE);
         }
@@ -365,6 +371,7 @@ class Expressions {
             return value;
         }
 
+        @Override
         public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "MAX", OPEN_BRACE, e, CLOSE_BRACE);
         }
@@ -382,6 +389,7 @@ class Expressions {
             return value;
         }
 
+        @Override
         public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "MIN", OPEN_BRACE, e, CLOSE_BRACE);
         }
@@ -409,6 +417,7 @@ class Expressions {
             return result;
         }
 
+        @Override
         public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "SIZE", OPEN_BRACE, e, CLOSE_BRACE);
         }
@@ -430,6 +439,7 @@ class Expressions {
                 new Expressions.ListArgument(resultType, args).toValue(factory, q));
         }
 
+        @Override
         public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, functionName, OPEN_BRACE, Expressions.asValue(q, args, COMMA), CLOSE_BRACE);
         }
@@ -474,11 +484,11 @@ class Expressions {
         }
 
         public Concat(Expression<String> x, String y) {
-            this(x, new Constant<String>(y));
+            this(x, new Constant<>(y));
         }
 
         public Concat(String x, Expression<String> y) {
-            this(new Constant<String>(x), y);
+            this(new Constant<>(x), y);
         }
 
         @Override
@@ -513,11 +523,11 @@ class Expressions {
         }
 
         public Substring(Expression<String> s, Integer from) {
-            this(s, new Constant<Integer>(from), null);
+            this(s, new Constant<>(from), null);
         }
 
         public Substring(Expression<String> s, Integer from, Integer len) {
-            this(s, new Constant<Integer>(from), new Constant<Integer>(len));
+            this(s, new Constant<>(from), new Constant<>(len));
         }
 
         @Override
@@ -528,6 +538,7 @@ class Expressions {
                 len == null ? null : len.toValue(factory, q));
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, from, len);
@@ -556,15 +567,15 @@ class Expressions {
          }
 
         public Locate(Expression<String> path, String pattern) {
-            this(path, new Constant<String>(pattern), null);
+            this(path, new Constant<>(pattern), null);
         }
 
         public Locate(String path, Expression<String> pattern) {
-            this(new Constant<String>(path), pattern, null);
+            this(new Constant<>(path), pattern, null);
         }
 
         public Locate(Expression<String> path, String pattern, int from) {
-            this(path, new Constant<String>(pattern), new Constant<Integer>(from));
+            this(path, new Constant<>(pattern), new Constant<>(from));
         }
 
         @Override
@@ -578,6 +589,7 @@ class Expressions {
                     : factory.newArgumentList(locatePath, locateFromIndex));
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, pattern, from, path);
         }
@@ -589,7 +601,7 @@ class Expressions {
     }
 
     public static class Trim extends BinarayFunctionalExpression<String> {
-        static Expression<Character> defaultTrim = new Constant<Character>(Character.class, Character.valueOf(' '));
+        static Expression<Character> defaultTrim = new Constant<>(Character.class, Character.valueOf(' '));
         static Trimspec defaultSpec = Trimspec.BOTH;
         private Trimspec ts;
 
@@ -607,11 +619,11 @@ class Expressions {
         }
 
         public Trim(Expression<String> x, Character t) {
-            this(x, new Constant<Character>(Character.class, t), defaultSpec);
+            this(x, new Constant<>(Character.class, t), defaultSpec);
         }
 
         public Trim(Expression<String> x, Character t, Trimspec ts) {
-            this(x, new Constant<Character>(Character.class, t), ts);
+            this(x, new Constant<>(Character.class, t), ts);
         }
 
         public Trim(Expression<String> x, Trimspec ts) {
@@ -629,7 +641,7 @@ class Expressions {
                 }
             }
             Character t = (Character)((Constant<Character>)e2).arg;
-            Constant<String> e2 = new Constant<String>(String.class, t.toString());
+            Constant<String> e2 = new Constant<>(String.class, t.toString());
             return factory.trim(
                 Expressions.toValue(e1, factory, q),
                 Expressions.toValue(e2, factory, q), spec);
@@ -651,11 +663,11 @@ class Expressions {
         }
 
         public Sum(Expression<? extends Number> x, Number y) {
-            this(x, new Constant<Number>(Number.class, y));
+            this(x, new Constant<>(Number.class, y));
         }
 
         public Sum(Number x, Expression<? extends Number> y) {
-            this(new Constant<Number>(Number.class, x), y);
+            this(new Constant<>(Number.class, x), y);
         }
 
         @Override
@@ -683,11 +695,11 @@ class Expressions {
         }
 
         public Product(Expression<? extends Number> x, Number y) {
-            this(x, new Constant<Number>(Number.class, y));
+            this(x, new Constant<>(Number.class, y));
         }
 
         public Product(Number x, Expression<? extends Number> y) {
-            this(new Constant<Number>(Number.class, x), y);
+            this(new Constant<>(Number.class, x), y);
         }
 
         @Override
@@ -709,11 +721,11 @@ class Expressions {
         }
 
         public Diff(Expression<? extends Number> x, Number y) {
-            this(x, new Constant<Number>(Number.class, y));
+            this(x, new Constant<>(Number.class, y));
         }
 
         public Diff(Number x, Expression<? extends Number> y) {
-            this(new Constant<Number>(Number.class, x), y);
+            this(new Constant<>(Number.class, x), y);
         }
 
         @Override
@@ -738,11 +750,11 @@ class Expressions {
         }
 
         public Quotient(Expression<? extends Number> x, Number y) {
-            this(x, new Constant<Number>(y));
+            this(x, new Constant<>(y));
         }
 
         public Quotient(Number x, Expression<? extends Number> y) {
-            this(new Constant<Number>(x), y);
+            this(new Constant<>(x), y);
         }
 
         @Override
@@ -765,10 +777,10 @@ class Expressions {
             super(Integer.class, x,y);
         }
         public  Mod(Expression<Integer> x, Integer y) {
-            this(x,new Constant<Integer>(Integer.class, y));
+            this(x,new Constant<>(Integer.class, y));
         }
         public  Mod(Integer x, Expression<Integer> y) {
-            this(new Constant<Integer>(Integer.class, x),y);
+            this(new Constant<>(Integer.class, x),y);
         }
 
         @Override
@@ -1016,7 +1028,7 @@ class Expressions {
         }
 
         public Between(Expression<? extends Y> v, Y x, Y y) {
-            this(v, new Constant<Y>(x), new Constant<Y>(y));
+            this(v, new Constant<>(x), new Constant<>(y));
         }
 
         @Override
@@ -1069,10 +1081,12 @@ class Expressions {
             return factory.newLiteral(value, literalType);
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, arg instanceof Expression ? ((Expression)arg) : null);
         }
 
+        @Override
         public StringBuilder asValue(AliasContext q) {
             if (arg == null)
                 return new StringBuilder("NULL");
@@ -1119,6 +1133,7 @@ class Expressions {
             return factory.isEmpty(val);
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, collection);
@@ -1154,6 +1169,7 @@ class Expressions {
             return factory.not(factory.isEmpty(val));
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, collection);
@@ -1196,7 +1212,7 @@ class Expressions {
         }
 
         public IsMember(E element, Expression<?> collection) {
-            this(new Constant<E>(element), collection);
+            this(new Constant<>(element), collection);
         }
 
         @Override
@@ -1208,6 +1224,7 @@ class Expressions {
             return contains;
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, collection, element);
@@ -1235,7 +1252,7 @@ class Expressions {
         }
 
         public Like(Expression<String> x, Expression<String> pat, char esc) {
-            this(x, pat, new Constant<Character>(Character.class, esc));
+            this(x, pat, new Constant<>(Character.class, esc));
         }
 
         public Like(Expression<String> x, Expression<String> pattern) {
@@ -1243,16 +1260,16 @@ class Expressions {
         }
 
         public Like(Expression<String> x, String pattern) {
-            this(x, new Constant<String>(pattern), null);
+            this(x, new Constant<>(pattern), null);
         }
 
         public Like(Expression<String> x, String pat,
             Expression<Character> esc) {
-            this(x, new Constant<String>(pat), esc);
+            this(x, new Constant<>(pat), esc);
         }
 
         public Like(Expression<String> x, String pat,  Character esc) {
-            this(x, new Constant<String>(pat), new Constant<Character>(esc));
+            this(x, new Constant<>(pat), new Constant<>(esc));
         }
 
         @Override
@@ -1268,6 +1285,7 @@ class Expressions {
                 MATCH_SINGLECHAR, MATCH_MULTICHAR, escapeStr);
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, str, pattern, escapeChar);
         }
@@ -1279,17 +1297,19 @@ class Expressions {
     }
 
     public static class Coalesce<T> extends ExpressionImpl<T> implements CriteriaBuilder.Coalesce<T> {
-        private final List<Expression<? extends T>> values = new ArrayList<Expression<? extends T>>();
+        private final List<Expression<? extends T>> values = new ArrayList<>();
 
         public Coalesce(Class<T> cls) {
             super(cls);
         }
 
+        @Override
         public Coalesce<T> value(T value) {
-            values.add(new Constant<T>(value));
+            values.add(new Constant<>(value));
             return this;
         }
 
+        @Override
         public Coalesce<T> value(Expression<? extends T> value) {
             values.add(value);
             return this;
@@ -1304,6 +1324,7 @@ class Expressions {
             return factory.coalesceExpression(vs);
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, values.toArray(new ExpressionImpl[values.size()]));
         }
@@ -1326,7 +1347,7 @@ class Expressions {
         }
 
         public Nullif(Expression<T> x, T y) {
-            this(x, new Constant<T>(y));
+            this(x, new Constant<>(y));
         }
 
         @Override
@@ -1336,6 +1357,7 @@ class Expressions {
             return factory.nullIfExpression(value1, value2);
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, val1, val2);
         }
@@ -1366,6 +1388,7 @@ class Expressions {
                 factory.getNull());
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, e);
@@ -1397,6 +1420,7 @@ class Expressions {
                 factory.getNull());
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, e);
@@ -1416,15 +1440,18 @@ class Expressions {
             this.e = (ExpressionImpl<T>)e;
         }
 
+        @Override
         public Expression<T> getExpression() {
             return e;
         }
 
+        @Override
         public In<T> value(T value) {
             add(new Expressions.Equal(e,value));
             return this;
         }
 
+        @Override
         public In<T> value(Expression<? extends T> value) {
             add(new Expressions.Equal(e,value));
             return this;
@@ -1432,7 +1459,7 @@ class Expressions {
 
         @Override
         public PredicateImpl not() {
-            In<T> notIn = new In<T>(e);
+            In<T> notIn = new In<>(e);
             notIn.markNegated();
             for (Predicate e : _exps) {
                 notIn.add(e);
@@ -1499,6 +1526,7 @@ class Expressions {
             return factory.and(inExpr, notNull.toKernelExpression(factory, q));
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, this, e);
@@ -1515,31 +1543,35 @@ class Expressions {
     }
 
     public static class Case<T> extends ExpressionImpl<T> implements CriteriaBuilder.Case<T> {
-        private final List<Expression<? extends T>> thens = new ArrayList<Expression<? extends T>>();
-        private final List<Expression<Boolean>> whens = new ArrayList<Expression<Boolean>>();
+        private final List<Expression<? extends T>> thens = new ArrayList<>();
+        private final List<Expression<Boolean>> whens = new ArrayList<>();
         private Expression<? extends T> otherwise;
 
         public Case(Class<T> cls) {
             super(cls);
         }
 
+        @Override
         public Case<T> when(Expression<Boolean> when, Expression<? extends T> then) {
             whens.add(when);
             thens.add(then);
             return this;
         }
 
+        @Override
         public Case<T> when(Expression<Boolean> when, T then) {
-            return when(when, new Expressions.Constant<T>(then));
+            return when(when, new Expressions.Constant<>(then));
         }
 
+        @Override
         public Case<T> otherwise(Expression<? extends T> otherwise) {
             this.otherwise = otherwise;
             return this;
         }
 
+        @Override
         public Case<T> otherwise(T otherwise) {
-            return otherwise(new Expressions.Constant<T>(otherwise));
+            return otherwise(new Expressions.Constant<>(otherwise));
         }
 
         @Override
@@ -1557,6 +1589,7 @@ class Expressions {
             return factory.generalCaseExpression(exps, other);
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             visitor.enter(this);
             for (int i = 0; i < whens.size(); i++) {
@@ -1580,8 +1613,8 @@ class Expressions {
     }
 
     public static class SimpleCase<C,R> extends ExpressionImpl<R> implements CriteriaBuilder.SimpleCase<C,R> {
-        private final List<Expression<? extends R>> thens = new ArrayList<Expression<? extends R>>();
-        private final List<Expression<C>> whens = new ArrayList<Expression<C>>();
+        private final List<Expression<? extends R>> thens = new ArrayList<>();
+        private final List<Expression<C>> whens = new ArrayList<>();
         private Expression<? extends R> otherwise;
         private Expression<C> caseOperand;
 
@@ -1594,6 +1627,7 @@ class Expressions {
             this.caseOperand = expr;
         }
 
+        @Override
         public Expression<C> getExpression() {
             return caseOperand;
         }
@@ -1604,21 +1638,25 @@ class Expressions {
             return this;
         }
 
+        @Override
         public SimpleCase<C,R> when(C when, Expression<? extends R> then) {
-            return when(new Constant<C>(when), then);
+            return when(new Constant<>(when), then);
         }
 
+        @Override
         public SimpleCase<C,R> when(C when, R then) {
-            return when(when, new Expressions.Constant<R>(then));
+            return when(when, new Expressions.Constant<>(then));
         }
 
+        @Override
         public SimpleCase<C,R> otherwise(Expression<? extends R> otherwise) {
             this.otherwise = otherwise;
             return this;
         }
 
+        @Override
         public SimpleCase<C,R> otherwise(R otherwise) {
-            return otherwise(new Expressions.Constant<R>(otherwise));
+            return otherwise(new Expressions.Constant<>(otherwise));
         }
 
         @Override
@@ -1636,6 +1674,7 @@ class Expressions {
             return factory.simpleCaseExpression(caseOperandExpr, exps, other);
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             visitor.enter(this);
             Expressions.visitChildren(visitor, caseOperand);
@@ -1715,6 +1754,7 @@ class Expressions {
             e = (SubqueryImpl<X>)x;
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, e);
         }
@@ -1728,6 +1768,7 @@ class Expressions {
             e = (SubqueryImpl<X>)x;
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, e);
         }
@@ -1797,6 +1838,7 @@ class Expressions {
             return factory.not(e.toKernelExpression(factory, q));
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, e);
         }
@@ -1821,6 +1863,7 @@ class Expressions {
             return e;
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, actual);
         }
@@ -1855,6 +1898,7 @@ class Expressions {
             return e;
         }
 
+        @Override
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, _args);
         }

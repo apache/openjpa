@@ -23,6 +23,8 @@ import javax.persistence.Entity;
 @Entity
 public class Employee extends Person {
 
+    
+    private static final long serialVersionUID = 1L;
     private float salary;
 
     public float getSalary() {

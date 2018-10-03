@@ -19,7 +19,8 @@
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class Zipcode {
@@ -44,7 +45,8 @@ public class Zipcode {
 		this.plusFour = plusFour;
 	}
 
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (o == this) return true;
 		if (!(o instanceof Zipcode)) return false;
 		Zipcode z = (Zipcode) o;
@@ -53,7 +55,8 @@ public class Zipcode {
 		return true;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		int ret = 0;
 		ret = ret + 31 * zip.hashCode();
 		ret = ret + 31 * plusFour.hashCode();

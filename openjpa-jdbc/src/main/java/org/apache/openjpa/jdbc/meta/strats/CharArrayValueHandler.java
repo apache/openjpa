@@ -33,6 +33,8 @@ import org.apache.openjpa.meta.JavaTypes;
 public class CharArrayValueHandler
     extends AbstractValueHandler {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final CharArrayValueHandler _instance =
         new CharArrayValueHandler();
 
@@ -46,6 +48,8 @@ public class CharArrayValueHandler
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
         DBDictionary dict = vm.getMappingRepository().getDBDictionary();
@@ -61,12 +65,14 @@ public class CharArrayValueHandler
         return new Column[]{ col };
     }
 
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         return (val == null) ? null
             : String.valueOf(PrimitiveWrapperArrays.toCharArray(val));
     }
 
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val) {
         if (val == null)
             return null;

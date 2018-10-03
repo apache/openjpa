@@ -18,13 +18,14 @@
  */
 package org.apache.openjpa.persistence.fields;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
-
-import static javax.persistence.GenerationType.IDENTITY;
+import javax.persistence.Id;
 
 @Entity
 public class ByteArrayHolder implements Serializable {

@@ -33,6 +33,8 @@ import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 class InSubQExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private final SubQ _sub;
 
@@ -44,6 +46,7 @@ class InSubQExpression
         _sub = sub;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         ExpState subqState = _sub.initialize(sel, ctx, 0);
         ExpState valueState = _val.initialize(sel, ctx, 0);
@@ -67,6 +70,7 @@ class InSubQExpression
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         InSubQExpState istate = (InSubQExpState) state;
@@ -77,6 +81,7 @@ class InSubQExpression
         _sub.appendTo(sel, ctx, istate.valueState, buf, 0);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         InSubQExpState istate = (InSubQExpState) state;
@@ -84,6 +89,7 @@ class InSubQExpression
         _val.selectColumns(sel, ctx, istate.valueState, true);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

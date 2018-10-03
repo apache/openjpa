@@ -35,6 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestProviderUtil extends SingleEMFTestCase{
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES, EagerEntity.class, LazyEmbed.class,
             LazyEntity.class, EagerEmbed.class, EagerEmbedRel.class,
@@ -233,7 +234,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
     }
 
     private List<EagerEmbed> createEagerEmbedColl() {
-        ArrayList<EagerEmbed> al = new ArrayList<EagerEmbed>();
+        ArrayList<EagerEmbed> al = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             al.add(createEagerEmbed());
         }
@@ -249,13 +250,13 @@ public class TestProviderUtil extends SingleEMFTestCase{
 
     private EagerEmbedRel createEagerEmbedRel(boolean createRels) {
         EagerEmbedRel emb = new EagerEmbedRel();
-        Set<EagerEntity> ee = new HashSet<EagerEntity>();
+        Set<EagerEntity> ee = new HashSet<>();
         if (createRels) {
             ee.add(createEagerEntity(false));
             ee.add(createEagerEntity(false));
             ee.add(createEagerEntity(false));
         }
-        Set<Integer> ints = new HashSet<Integer>();
+        Set<Integer> ints = new HashSet<>();
         for (int i = 0; i < 12; i++) {
             ints.add(new Integer(i));
         }
@@ -283,7 +284,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
     }
 
     private List<LazyEmbed> createLazyEmbedColl() {
-        ArrayList<LazyEmbed> al = new ArrayList<LazyEmbed>();
+        ArrayList<LazyEmbed> al = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             al.add(createLazyEmbed());
         }

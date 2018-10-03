@@ -22,22 +22,18 @@ import javax.validation.constraints.NotNull;
 
 public interface IAddress {
 
-    @NotNull
-    public String getStreetAddress();
-    public void setStreetAddress(String streetAddress);
+    @NotNull String getStreetAddress();
+    void setStreetAddress(String streetAddress);
 
-    @NotNull
-    public String getCity();
-    public void setCity(String city);
+    @NotNull String getCity();
+    void setCity(String city);
 
-    @NotNull
-    public String getState();
-    public void setState(String state);
+    @NotNull String getState();
+    void setState(String state);
 
-    @NotNull
-    public String getPostalCode();
-    public void setPostalCode(String postalCode);
+    @NotNull String getPostalCode();
+    void setPostalCode(String postalCode);
 
-    public String getPhoneNumber();
-    public void setPhoneNumber(String phoneNumber);
+    String getPhoneNumber();
+    void setPhoneNumber(String phoneNumber);
 }

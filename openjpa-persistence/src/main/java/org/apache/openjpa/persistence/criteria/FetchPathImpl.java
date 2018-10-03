@@ -52,6 +52,7 @@ class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
         this.joinType = type;
     }
 
+    @Override
     public JoinType getJoinType() {
         return joinType;
     }
@@ -60,41 +61,50 @@ class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
      * Return the metamodel attribute corresponding to the fetch join.
      * @return metamodel attribute for the join
      */
+    @Override
     public Attribute<Z, X> getAttribute() {
         return (Attribute<Z, X>)_member;
     }
 
+    @Override
     public FetchParent<?, Z> getParent() {
         return (FetchParent<?, Z>)_parent;
     }
 
+    @Override
     public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc) {
         return addFetch((Members.Member<? super X,Y>)assoc, JoinType.INNER);
     }
 
+    @Override
     public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc) {
         return addFetch((Members.Member<? super X,Y>)assoc, JoinType.INNER);
     }
 
+    @Override
     public <X,Y> Fetch<X, Y> fetch(String assocName) {
         return fetch(assocName, JoinType.INNER);
     }
 
+    @Override
     public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt) {
         return addFetch((Members.Member<? super X,Y>)assoc, jt);
     }
 
+    @Override
     public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc, JoinType jt) {
         return addFetch((Members.Member<? super X,Y>)assoc, jt);
     }
 
+    @Override
     public <X,Y> Fetch<X, Y> fetch(String assocName, JoinType jt) {
         Attribute<? super X, ?> assoc = ((ManagedType<X>)_member.getType()).getAttribute(assocName);
         return addFetch((Members.Member<? super X,Y>)assoc, jt);
     }
 
+    @Override
     public Set<Fetch<X, ?>> getFetches() {
-        Set<Fetch<X,?>> result = new HashSet<Fetch<X,?>>();
+        Set<Fetch<X,?>> result = new HashSet<>();
         for (Fetch f : _fetches) {
             result.add(f);
         }
@@ -104,11 +114,12 @@ class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
     private <X,Y> Fetch<X,Y> addFetch(Members.Member<? super X, Y> member, JoinType jt) {
         Fetch<X,Y> fetch = new FetchPathImpl(this, member, jt);
         if (_fetches == null)
-            _fetches = new HashSet<Fetch<?,?>>();
+            _fetches = new HashSet<>();
         _fetches.add(fetch);
         return fetch;
     }
 
+    @Override
     public StringBuilder asValue(AliasContext q) {
         return super.asValue(q).insert(0, " " + joinType + " JOIN FETCH ");
     }

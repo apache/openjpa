@@ -40,15 +40,20 @@ import org.apache.openjpa.util.MetaDataException;
 public class MaxEmbeddedClobFieldStrategy
     extends MaxEmbeddedLobFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage
         (MaxEmbeddedClobFieldStrategy.class);
 
     private int _maxSize = 0;
 
+    @Override
     protected int getExpectedJavaType() {
         return JavaTypes.STRING;
     }
 
+    @Override
     protected void update(OpenJPAStateManager sm, Row row)
         throws SQLException {
         String s = (String) getValue(sm);
@@ -58,11 +63,13 @@ public class MaxEmbeddedClobFieldStrategy
             row.setString(field.getColumns()[0], s);
     }
 
+    @Override
     protected Boolean isCustom(OpenJPAStateManager sm, JDBCStore store) {
         String s = sm.fetchString(field.getIndex());
         return (s != null && s.length() > _maxSize) ? null : Boolean.FALSE;
     }
 
+    @Override
     protected void putData(OpenJPAStateManager sm, ResultSet rs,
         DBDictionary dict)
         throws SQLException {
@@ -70,17 +77,20 @@ public class MaxEmbeddedClobFieldStrategy
         dict.putString(clob, sm.fetchString(field.getIndex()));
     }
 
+    @Override
     public void map(boolean adapt) {
         if (field.getTypeCode() != JavaTypes.STRING)
             throw new MetaDataException(_loc.get("not-clobstring", field));
         super.map(adapt);
     }
 
+    @Override
     public void initialize() {
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         _maxSize = dict.maxEmbeddedClobSize;
     }
 
+    @Override
     protected Object getValue(OpenJPAStateManager sm) {
         String s = sm.fetchString(field.getIndex());
         if (s == null || (s.length() > _maxSize && !field.getColumns()[0].isNotNull())) {

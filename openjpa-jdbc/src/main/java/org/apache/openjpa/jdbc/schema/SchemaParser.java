@@ -37,7 +37,7 @@ public interface SchemaParser
      * multiple resources where a foreign key in one resource might refer
      * to a table in another.
      */
-    public boolean getDelayConstraintResolve();
+    boolean getDelayConstraintResolve();
 
     /**
      * Delay resolution of foreign key constraints until
@@ -45,20 +45,20 @@ public interface SchemaParser
      * multiple resources where a foreign key in one resource might refer
      * to a table in another.
      */
-    public void setDelayConstraintResolve(boolean delay);
+    void setDelayConstraintResolve(boolean delay);
 
     /**
      * Return the current schema group.
      */
-    public SchemaGroup getSchemaGroup();
+    SchemaGroup getSchemaGroup();
 
     /**
      * Set the current schema group; this clears all state from the last group.
      */
-    public void setSchemaGroup(SchemaGroup group);
+    void setSchemaGroup(SchemaGroup group);
 
     /**
      * If this parser is in delayed resolve mode, resolve all constraints.
      */
-    public void resolveConstraints();
+    void resolveConstraints();
 }

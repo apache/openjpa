@@ -43,21 +43,26 @@ public class ListResultObjectProvider implements ResultObjectProvider {
         return _list;
     }
 
+    @Override
     public boolean supportsRandomAccess() {
         return true;
     }
 
+    @Override
     public void open() throws Exception {
     }
 
+    @Override
     public Object getResultObject() throws Exception {
         return _list.get(_idx);
     }
 
+    @Override
     public boolean next() throws Exception {
         return absolute(_idx + 1);
     }
 
+    @Override
     public boolean absolute(int pos) throws Exception {
         if (pos >= 0 && pos < _list.size()) {
             _idx = pos;
@@ -66,14 +71,17 @@ public class ListResultObjectProvider implements ResultObjectProvider {
         return false;
     }
 
+    @Override
     public int size() throws Exception {
         return _list.size();
     }
 
+    @Override
     public void reset() throws Exception {
         _idx = -1;
     }
 
+    @Override
     public void close() throws Exception {
         if (_list instanceof Closeable)
             try {
@@ -82,6 +90,7 @@ public class ListResultObjectProvider implements ResultObjectProvider {
             }
     }
 
+    @Override
     public void handleCheckedException(Exception e) {
         // shouldn't ever happen
         throw new RuntimeException(e);

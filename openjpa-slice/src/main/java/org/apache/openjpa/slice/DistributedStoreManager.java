@@ -43,6 +43,6 @@ public interface DistributedStoreManager extends StoreManager {
      * @return the store manager for the newly added slice.
      *
      */
-    public SliceStoreManager addSlice(Slice slice);
+    SliceStoreManager addSlice(Slice slice);
 
 }

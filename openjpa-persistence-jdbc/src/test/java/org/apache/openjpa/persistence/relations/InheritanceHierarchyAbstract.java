@@ -50,6 +50,9 @@ import org.apache.openjpa.persistence.FetchGroups;
 )
 public abstract class InheritanceHierarchyAbstract implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue
     private long id;

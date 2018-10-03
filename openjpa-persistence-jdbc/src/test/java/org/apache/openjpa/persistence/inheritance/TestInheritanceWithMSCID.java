@@ -31,6 +31,7 @@ import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestInheritanceWithMSCID extends SingleEMFTestCase {
+    @Override
     @SuppressWarnings("unchecked")
     public void setUp() {
         /*

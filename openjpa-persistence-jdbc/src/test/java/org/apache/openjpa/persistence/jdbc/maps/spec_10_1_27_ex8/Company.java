@@ -21,7 +21,10 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex8;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="S278Comp")
@@ -31,7 +34,7 @@ public class Company {
 
     @OneToMany(mappedBy="co")
     Map<FileName, VicePresident> orgs =
-        new HashMap<FileName, VicePresident>();
+        new HashMap<>();
 
     public int getId() {
         return id;

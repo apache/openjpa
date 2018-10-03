@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schemas;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 
 
@@ -33,6 +33,9 @@ import org.apache.openjpa.meta.JavaTypes;
  * @author Pinaki Poddar
  */
 public class MultiColumnVersionStrategy extends NumberVersionStrategy {
+
+    
+    private static final long serialVersionUID = 1L;
 
     public static final String ALIAS = "version-numbers";
 
@@ -67,14 +70,17 @@ public class MultiColumnVersionStrategy extends NumberVersionStrategy {
     	return _initials;
     }
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     protected int getJavaType() {
         return JavaTypes.ARRAY;
     }
 
+    @Override
     protected int getJavaType(int i) {
     	if (_javaTypes == null) {
             _javaTypes = new Integer[vers.getMappingInfo().getColumns().size()];
@@ -92,6 +98,7 @@ public class MultiColumnVersionStrategy extends NumberVersionStrategy {
     	return _javaTypes[i];
     }
 
+    @Override
     protected Object nextVersion(Object version) {
         if (version == null)
             return _initials;

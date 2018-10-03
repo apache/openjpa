@@ -53,26 +53,32 @@ public class Account implements IAccount, Comparable<Account> {
 
     private String name;
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setUserIdent(IUserIdentity userIdent) {
         this.userIdent = (UserIdentity)userIdent;
     }
 
+    @Override
     public IUserIdentity getUserIdent() {
         return userIdent;
     }

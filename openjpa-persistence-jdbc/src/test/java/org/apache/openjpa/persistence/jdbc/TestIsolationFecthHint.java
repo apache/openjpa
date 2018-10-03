@@ -30,7 +30,8 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestIsolationFecthHint extends SQLListenerTestCase{
 
-	public void setUp(){
+	@Override
+    public void setUp(){
 		setUp(AllFieldTypes.class, CLEAR_TABLES);
 
 	}

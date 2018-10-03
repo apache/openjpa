@@ -85,13 +85,14 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         } else {
             _model = null;
         }
-        _delegate = new CriteriaQueryImpl<T>(_model, this);
+        _delegate = new CriteriaQueryImpl<>(_model, this);
     }
 
     /**
      * Gets the parent query of this subquery.
      * Can be a query or another subquery.
      */
+    @Override
     public AbstractQuery<?> getParent() {
         return _parent;
     }
@@ -124,23 +125,28 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
             _parent : ((SubqueryImpl<?>)_parent).getInnermostParent());
     }
 
+    @Override
     public Subquery<T> select(Expression<T> expression) {
         _delegate.select(expression);
         return this;
     }
 
+    @Override
     public Expression<T> getSelection() {
         return (Expression<T>)_delegate.getSelection();
     }
 
+    @Override
     public <X> Root<X> from(EntityType<X> entity) {
         return _delegate.from(entity);
     }
 
+    @Override
     public <X> Root<X> from(Class<X> entityClass) {
         return _delegate.from(entityClass);
     }
 
+    @Override
     public Set<Root<?>> getRoots() {
         return _delegate.getRoots();
     }
@@ -149,72 +155,86 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return _delegate.getRoot(false);
     }
 
+    @Override
     public Subquery<T> where(Expression<Boolean> restriction) {
         _delegate.where(restriction);
         return this;
     }
 
+    @Override
     public Subquery<T> where(Predicate... restrictions) {
         _delegate.where(restrictions);
         return this;
     }
 
+    @Override
     public Subquery<T> groupBy(Expression<?>... grouping) {
         _delegate.groupBy(grouping);
         return this;
     }
 
+    @Override
     public Subquery<T> groupBy(List<Expression<?>> grouping) {
         _delegate.groupBy(grouping);
         return this;
     }
 
+    @Override
     public Subquery<T> having(Expression<Boolean> restriction) {
         _delegate.having(restriction);
         return this;
     }
 
+    @Override
     public Subquery<T> having(Predicate... restrictions) {
         _delegate.having(restrictions);
         return this;
     }
 
+    @Override
     public Subquery<T> distinct(boolean distinct) {
         _delegate.distinct(distinct);
         return this;
     }
 
+    @Override
     public List<Expression<?>> getGroupList() {
         return _delegate.getGroupList();
     }
 
+    @Override
     public Predicate getRestriction() {
         return _delegate.getRestriction();
     }
 
+    @Override
     public Predicate getGroupRestriction() {
         return _delegate.getGroupRestriction();
     }
 
+    @Override
     public boolean isDistinct() {
         return _delegate.isDistinct();
     }
 
+    @Override
     public <U> Subquery<U> subquery(Class<U> type) {
-        return new SubqueryImpl<U>(type, this);
+        return new SubqueryImpl<>(type, this);
     }
 
     /**
      * Correlate this subquery with the given root.
      */
+    @Override
     public <Y> Root<Y> correlate(Root<Y> root) {
         Types.Entity<Y> entity = (Types.Entity<Y>)root.getModel();
-        RootImpl<Y> corrRoot = new RootImpl<Y>(entity);
+        RootImpl<Y> corrRoot = new RootImpl<>(entity);
         corrRoot.setCorrelatedPath((RootImpl<Y>)root);
         _delegate.addRoot(corrRoot);
         return corrRoot;
     }
 
+    @Override
     public Set<Join<?,?>> getCorrelatedJoins() {
         return _corrJoins == null ? Collections.emptySet() : new CopyOnWriteArraySet(_corrJoins);
     }
@@ -222,11 +242,12 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     /**
      * Correlate this subquery with the given join.
      */
+    @Override
     public <X,Y> Join<X,Y> correlate(Join<X,Y> parentJoin) {
         Join<?,?> corrJoin = Joins.clone(parentJoin);
         ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
         if (_corrJoins == null)
-            _corrJoins = new ArrayList<Join<?,?>>();
+            _corrJoins = new ArrayList<>();
         _corrJoins.add(corrJoin);
         return (Join<X,Y>)corrJoin;
     }
@@ -238,38 +259,42 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return _corrJoins != null;
     }
 
+    @Override
     public <X,Y> CollectionJoin<X,Y> correlate(CollectionJoin<X,Y> parentJoin) {
         Join corrJoin = Joins.clone((Joins.Collection)parentJoin);
         ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
         if (_corrJoins == null)
-            _corrJoins = new ArrayList<Join<?,?>>();
+            _corrJoins = new ArrayList<>();
         _corrJoins.add(corrJoin);
         return (CollectionJoin<X,Y>)corrJoin;
     }
 
+    @Override
     public <X,Y> SetJoin<X,Y> correlate(SetJoin<X,Y> parentJoin) {
         Join corrJoin = Joins.clone((Joins.Set)parentJoin);
         ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
         if (_corrJoins == null)
-            _corrJoins = new ArrayList<Join<?,?>>();
+            _corrJoins = new ArrayList<>();
         _corrJoins.add(corrJoin);
         return (SetJoin<X,Y>)corrJoin;
     }
 
+    @Override
     public <X,Y> ListJoin<X,Y> correlate(ListJoin<X,Y> parentJoin) {
         Join corrJoin = Joins.clone((Joins.List)parentJoin);
         ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
         if (_corrJoins == null)
-            _corrJoins = new ArrayList<Join<?,?>>();
+            _corrJoins = new ArrayList<>();
         _corrJoins.add(corrJoin);
         return (ListJoin<X,Y>)corrJoin;
     }
 
+    @Override
     public <X,K,V> MapJoin<X,K,V> correlate(MapJoin<X,K,V> parentJoin) {
         Join corrJoin = Joins.clone((Joins.Map)parentJoin);
         ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
         if (_corrJoins == null)
-            _corrJoins = new ArrayList<Join<?,?>>();
+            _corrJoins = new ArrayList<>();
         _corrJoins.add(corrJoin);
         return (MapJoin<X,K,V>)corrJoin;
     }
@@ -358,16 +383,19 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     }
 
 
+    @Override
     public Class<T> getResultType() {
         return getJavaType();
     }
 
+    @Override
     public StringBuilder asValue(AliasContext q) {
         StringBuilder buffer = new StringBuilder();
         _delegate.render(buffer, _delegate.getRoots(), _corrJoins);
         return buffer;
     }
 
+    @Override
     public StringBuilder asVariable(AliasContext q) {
         return asValue(q);
     }

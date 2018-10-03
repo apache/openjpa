@@ -18,8 +18,14 @@
  */
 package org.apache.openjpa.persistence.models.company.fetchlazy;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+
+import org.apache.openjpa.persistence.models.company.ILineItem;
+import org.apache.openjpa.persistence.models.company.IProduct;
 
 @Entity(name="LAZ_LineItem")
 public class LineItem implements ILineItem {
@@ -34,19 +40,23 @@ public class LineItem implements ILineItem {
     @OneToOne(fetch=FetchType.LAZY)
     private Product product;
 
+    @Override
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
+    @Override
     public int getQuantity() {
         return this.quantity;
     }
 
 
+    @Override
     public void setProduct(IProduct product) {
         this.product = (Product) product;
     }
 
+    @Override
     public IProduct getProduct() {
         return this.product;
     }

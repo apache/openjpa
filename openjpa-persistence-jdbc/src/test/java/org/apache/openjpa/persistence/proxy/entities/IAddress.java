@@ -22,28 +22,28 @@ import java.io.Serializable;
 
 public interface IAddress extends Serializable {
 
-	public String getCity();
+	String getCity();
 
-	public void setCity(String city);
+	void setCity(String city);
 
-	public String getCountry();
+	String getCountry();
 
-	public void setCountry(String country);
+	void setCountry(String country);
 
-	public String getLine1();
+	String getLine1();
 
-	public void setLine1(String line1);
+	void setLine1(String line1);
 
-	public String getLine2();
+	String getLine2();
 
-	public void setLine2(String line2);
+	void setLine2(String line2);
 
-	public String getState();
+	String getState();
 
-	public void setState(String state);
+	void setState(String state);
 
-	public String getZipCode();
+	String getZipCode();
 
-	public void setZipCode(String zipCode);
+	void setZipCode(String zipCode);
 
 }

@@ -36,7 +36,8 @@ public abstract class CombinatorialPersistenceTestCase
 
 	protected static CombinatorialTestHelper helper;
 
-	public void setUp(Object...props) {
+	@Override
+    public void setUp(Object...props) {
 		super.setUp(getHelper().setCombinatorialOption(props));
 	}
 
@@ -47,9 +48,9 @@ public abstract class CombinatorialPersistenceTestCase
 
     @Override
     public void runBare() throws Throwable {
-    	Map<String, Throwable> errors = new HashMap<String, Throwable>();
+    	Map<String, Throwable> errors = new HashMap<>();
         Map<String, AssertionFailedError> failures =
-            new HashMap<String, AssertionFailedError>();
+            new HashMap<>();
     	do  {
     		try {
     			super.runBare();
@@ -94,6 +95,7 @@ public abstract class CombinatorialPersistenceTestCase
 		return helper;
     }
 
+    @Override
     public void assertSQL(String sqlExp) {
     	try {
     		super.assertSQL(sqlExp);

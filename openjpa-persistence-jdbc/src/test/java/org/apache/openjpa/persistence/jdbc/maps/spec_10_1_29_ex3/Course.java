@@ -46,6 +46,7 @@ public class Course {
         this.name = name;
     }
 
+    @Override
     public boolean equals(Object o) {
         Course c = (Course) o;
         if (c.name.equals(name) &&
@@ -54,6 +55,7 @@ public class Course {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + name.hashCode();

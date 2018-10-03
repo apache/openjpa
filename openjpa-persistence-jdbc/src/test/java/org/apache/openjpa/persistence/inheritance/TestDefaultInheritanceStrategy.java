@@ -35,6 +35,7 @@ import org.apache.openjpa.persistence.inheritance.entity.BaseClass3;
 import org.apache.openjpa.persistence.inheritance.entity.BaseClass4;
 import org.apache.openjpa.persistence.inheritance.entity.BaseClass5;
 import org.apache.openjpa.persistence.inheritance.entity.BaseClass6;
+import org.apache.openjpa.persistence.inheritance.entity.ImplClassA;
 import org.apache.openjpa.persistence.inheritance.entity.ManagedIface;
 import org.apache.openjpa.persistence.inheritance.entity.ManagedIface2;
 import org.apache.openjpa.persistence.inheritance.entity.MappedSuper;
@@ -46,7 +47,6 @@ import org.apache.openjpa.persistence.inheritance.entity.SubclassB;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassC;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassD;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassE;
-import org.apache.openjpa.persistence.inheritance.entity.ImplClassA;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassF;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassG;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassH;
@@ -68,6 +68,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestDefaultInheritanceStrategy
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(BaseClass.class, SubclassA.class, SubclassB.class,
             SubclassC.class, MappedSuper.class, SubclassD.class,

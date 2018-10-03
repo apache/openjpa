@@ -30,7 +30,7 @@ public class PersonalInfo {
     private String lastName;
 
     @ElementCollection
-    private Set<Phone> phones = new HashSet<Phone>();
+    private Set<Phone> phones = new HashSet<>();
 
     public String getFirstName() {
         return firstName;

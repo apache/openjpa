@@ -29,13 +29,12 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
-
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 
 public class TestIncrementalFlushesDeletes extends BaseKernelTest {
 
@@ -53,6 +52,7 @@ public class TestIncrementalFlushesDeletes extends BaseKernelTest {
     public TestIncrementalFlushesDeletes() {
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
@@ -63,6 +63,7 @@ public class TestIncrementalFlushesDeletes extends BaseKernelTest {
         oid = pm.getObjectId(a);
     }
 
+    @Override
     public void tearDown() throws Exception {
         endTx(pm);
 

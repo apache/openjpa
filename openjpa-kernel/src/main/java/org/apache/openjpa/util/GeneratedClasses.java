@@ -21,6 +21,7 @@ package org.apache.openjpa.util;
 import java.security.AccessController;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
 

@@ -32,6 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestDiscriminator
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class,
             CLEAR_TABLES);

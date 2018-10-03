@@ -216,6 +216,7 @@ public class Edge {
         _cycle = null;
     }
 
+    @Override
     public String toString() {
         return super.toString() + "[from=" + getFrom() + ";to=" + getTo()
             + ";directed=" + isDirected () + ";weight=" + getWeight () + "]";

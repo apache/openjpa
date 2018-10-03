@@ -19,9 +19,8 @@
 package org.apache.openjpa.persistence.relations;
 
 import java.util.List;
-import javax.persistence.EntityManager;
 
-import junit.textui.TestRunner;
+import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -29,6 +28,8 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that when both sides of a mapped-by relation are eager fetched,
@@ -44,6 +45,7 @@ public class TestEagerBidiSQL
     private long id1;
     private long id2;
 
+    @Override
     public void setUp() {
         setUp(BidiParent.class, BidiChild.class);
 

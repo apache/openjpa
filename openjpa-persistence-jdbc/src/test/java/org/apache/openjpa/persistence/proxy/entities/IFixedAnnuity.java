@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.proxy.entities;
 
 public interface IFixedAnnuity extends IAnnuity {
 
-	public Double getRate();
+	Double getRate();
 
-	public void setRate(Double rate);
+	void setRate(Double rate);
 
 }

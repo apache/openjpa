@@ -53,10 +53,12 @@ public class BasicSubclassInstance
         version = v;
     }
 
+    @Override
     public String getStringField() {
         return stringField;
     }
 
+    @Override
     public void setStringField(String str) {
         stringField = str;
     }

@@ -20,13 +20,13 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.jdbc.sql.Raw;
 
 /**
  * Compares two values.
@@ -36,6 +36,8 @@ import org.apache.openjpa.jdbc.sql.Raw;
 class CompareExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     public static final String LESS = "<";
     public static final String GREATER = ">";
     public static final String LESS_EQUAL = "<=";
@@ -57,12 +59,14 @@ class CompareExpression
         _op = op;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         ExpState s1 = _val1.initialize(sel, ctx, 0);
         ExpState s2 = _val2.initialize(sel, ctx, 0);
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -89,6 +93,7 @@ class CompareExpression
             sel.append(buf, state.joins);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -96,6 +101,7 @@ class CompareExpression
         _val2.selectColumns(sel, ctx, bstate.state2, true);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val1.acceptVisit(visitor);

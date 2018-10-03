@@ -75,6 +75,7 @@ public class PropEmbedEntity {
         efa = ef;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof PropEmbedEntity) {
             PropEmbedEntity ps = (PropEmbedEntity)obj;

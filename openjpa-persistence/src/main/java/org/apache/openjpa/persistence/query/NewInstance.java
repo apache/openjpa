@@ -29,7 +29,9 @@ import java.util.List;
  */
 public class NewInstance extends AbstractVisitable
 	implements SelectItem, Visitable {
-	private final Class _cls;
+	
+    private static final long serialVersionUID = 1L;
+    private final Class _cls;
 	private List<SelectItem> _args;
 	NewInstance(Class cls, SelectItem...args) {
 		_cls = cls;
@@ -38,16 +40,19 @@ public class NewInstance extends AbstractVisitable
 		}
 	}
 
-	public OrderByItem asc() {
+	@Override
+    public OrderByItem asc() {
 		throw new UnsupportedOperationException();
 	}
 
-	public OrderByItem desc() {
+	@Override
+    public OrderByItem desc() {
 		throw new UnsupportedOperationException();
 	}
 
 
-	public String asProjection(AliasContext ctx) {
+	@Override
+    public String asProjection(AliasContext ctx) {
             StringBuilder tmp = new StringBuilder("NEW ").append(_cls.getName())
 		    .append("(");
 		if (_args == null || _args.isEmpty())

@@ -26,7 +26,10 @@ package org.apache.openjpa.persistence.query;
  */
 public class RootPath extends AbstractDomainObject implements DomainObject {
 
-	public RootPath(QueryDefinitionImpl owner, Class cls) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public RootPath(QueryDefinitionImpl owner, Class cls) {
 		super(owner, null, PathOperator.ROOT, cls);
 	}
 
@@ -55,7 +58,8 @@ public class RootPath extends AbstractDomainObject implements DomainObject {
 		return ctx.getAlias(this);
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return getLastSegment().getSimpleName();
 	}
 }

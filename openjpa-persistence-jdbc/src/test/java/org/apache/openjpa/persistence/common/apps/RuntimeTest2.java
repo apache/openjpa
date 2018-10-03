@@ -54,7 +54,8 @@ public class RuntimeTest2 extends RuntimeTest1
 		this.intField2 = intField2;
 	}
 
-	public String toString()
+	@Override
+    public String toString()
 	{
         return "IntField: " + intField2
             + ", StringField: " + super.getStringField() + " .";

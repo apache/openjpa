@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.SeqValue;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -32,6 +31,7 @@ import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
@@ -45,6 +45,9 @@ import org.apache.openjpa.util.OpenJPAException;
 public class SequenceMetaData
     implements SourceTracker, MetaDataContext, Closeable, Commentable,
     Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     /**
      * Sequence name that means to use the system default sequence.
@@ -106,6 +109,7 @@ public class SequenceMetaData
     /**
      * The owning repository.
      */
+    @Override
     public MetaDataRepository getRepository() {
         return _repos;
     }
@@ -117,14 +121,17 @@ public class SequenceMetaData
         return _name;
     }
 
+    @Override
     public File getSourceFile() {
         return _source;
     }
 
+    @Override
     public Object getSourceScope() {
         return _scope;
     }
 
+    @Override
     public int getSourceType() {
         return _srcType;
     }
@@ -135,6 +142,7 @@ public class SequenceMetaData
         _srcType = srcType;
     }
 
+    @Override
     public int getLineNumber() {
         return _lineNum;
     }
@@ -143,6 +151,7 @@ public class SequenceMetaData
         _lineNum = lineNum;
     }
 
+    @Override
     public int getColNumber() {
         return _colNum;
     }
@@ -151,6 +160,7 @@ public class SequenceMetaData
         _colNum = colNum;
     }
 
+    @Override
     public String getResourceName() {
         return _name;
     }
@@ -405,6 +415,7 @@ public class SequenceMetaData
     /**
      * Close user sequence instance.
      */
+    @Override
     public void close() {
         if (_instance != null && !NAME_SYSTEM.equals(_name))
             try {
@@ -422,10 +433,12 @@ public class SequenceMetaData
     // Commentable
     ///////////////
 
+    @Override
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
 
+    @Override
     public void setComments(String[] comments) {
         _comments = comments;
     }
@@ -434,13 +447,13 @@ public class SequenceMetaData
      * Allow facades to supply adapters from a spec sequence type to the
      * OpenJPA sequence type.
      */
-    public static interface SequenceFactory
+    public interface SequenceFactory
         extends Serializable {
 
         /**
          * Transform the given class named in metadata into a sequence.
          */
-		public Seq toSequence (Class cls, String props)
+		Seq toSequence (Class cls, String props)
 			throws Exception;
 	}
 }

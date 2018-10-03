@@ -18,7 +18,12 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 
 @Entity
@@ -59,6 +64,7 @@ public class Employee {
         this.empType = empType;
     }
 
+    @Override
     public boolean equals(Object o) {
         Employee e = (Employee) o;
         PhoneNumber p = e.getPhoneNumber();

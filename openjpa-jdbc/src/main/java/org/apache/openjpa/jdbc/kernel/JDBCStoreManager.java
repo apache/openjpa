@@ -109,13 +109,15 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     private List<Statement> _stmnts = Collections.synchronizedList(new ArrayList<Statement>());
 
     // pool statements so that we can try to reuse rather than recreate
-    private List<CancelPreparedStatement> _cancelPreparedStatementsPool = new ArrayList<CancelPreparedStatement>();
-    private List<CancelStatement> _cancelStatementPool = new ArrayList<CancelStatement>();
+    private List<CancelPreparedStatement> _cancelPreparedStatementsPool = new ArrayList<>();
+    private List<CancelStatement> _cancelStatementPool = new ArrayList<>();
 
+    @Override
     public StoreContext getContext() {
         return _ctx;
     }
 
+    @Override
     public void setContext(StoreContext ctx) {
         setContext(ctx, (JDBCConfiguration) ctx.getConfiguration());
     }
@@ -153,32 +155,40 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return ds;
     }
 
+    @Override
     public JDBCConfiguration getConfiguration() {
         return _conf;
     }
 
+    @Override
     public DBDictionary getDBDictionary() {
         return _dict;
     }
 
+    @Override
     public SQLFactory getSQLFactory() {
         return _sql;
     }
 
+    @Override
     public JDBCLockManager getLockManager() {
         return _lm;
     }
 
+    @Override
     public JDBCFetchConfiguration getFetchConfiguration() {
         return (JDBCFetchConfiguration) _ctx.getFetchConfiguration();
     }
 
+    @Override
     public void beginOptimistic() {
     }
 
+    @Override
     public void rollbackOptimistic() {
     }
 
+    @Override
     public void begin() {
         _active = true;
         try {
@@ -191,6 +201,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         }
     }
 
+    @Override
     public void commit() {
         try {
             if (!_ctx.isManaged() || !_conf.isConnectionFactoryModeManaged())
@@ -206,6 +217,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         }
     }
 
+    @Override
     public void rollback() {
         // already rolled back ourselves?
         if (!_active)
@@ -223,20 +235,24 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         }
     }
 
+    @Override
     public void retainConnection() {
         connect(false);
         _conn.setRetain(true);
     }
 
+    @Override
     public void releaseConnection() {
         if (_conn != null)
             _conn.setRetain(false);
     }
 
+    @Override
     public Object getClientConnection() {
         return new ClientConnection(getConnection());
     }
 
+    @Override
     public Connection getConnection() {
         connect(true);
         return _conn;
@@ -246,6 +262,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return _ds;
     }
 
+    @Override
     public boolean exists(OpenJPAStateManager sm, Object context) {
         // add where conditions on base class to avoid joins if subclass
         // doesn't use oid as identifier
@@ -253,6 +270,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return exists(mapping, sm.getObjectId(), context);
     }
 
+    @Override
     public boolean isCached(List<Object> oids, BitSet edata) {
         // JDBCStoreManager doesn't store oids in memory.
         return false;
@@ -276,6 +294,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         }
     }
 
+    @Override
     public boolean syncVersion(OpenJPAStateManager sm, Object context) {
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
         try {
@@ -293,11 +312,13 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return -1;
     }
 
+    @Override
     public int compareVersion(OpenJPAStateManager state, Object v1, Object v2) {
         ClassMapping mapping = (ClassMapping) state.getMetaData();
         return mapping.getVersion().compareVersion(v1, v2);
     }
 
+    @Override
     public boolean initialize(OpenJPAStateManager sm, PCState state,
         FetchConfiguration fetch, Object context) {
         ConnectionInfo info = (ConnectionInfo) context;
@@ -538,7 +559,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             return fq.execute(sm, this, fetch);
         Select sel = _sql.newSelect();
         if (!select(sel, mapping, subs, sm, null, fetch,
-            JDBCFetchConfiguration.EAGER_JOIN, true, false))
+            EagerFetchModes.EAGER_JOIN, true, false))
             return null;
         sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
         sel.setExpectedResultCount(1, false);
@@ -562,13 +583,14 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             return fq.execute(sm, this, fetch);
         final JDBCStoreManager store = this;
         final int eager = Math.min(fetch.getEagerFetchMode(),
-            JDBCFetchConfiguration.EAGER_JOIN);
+            EagerFetchModes.EAGER_JOIN);
 
         Union union = _sql.newUnion(mappings.length);
         union.setExpectedResultCount(1, false);
         if (fetch.getSubclassFetchMode(mapping) != EagerFetchModes.EAGER_JOIN)
             union.abortUnion();
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int i) {
                 sel.select(mappings[i], Select.SUBS_ANY_JOINABLE, store, fetch,
                     eager);
@@ -613,6 +635,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         }
     }
 
+    @Override
     public boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object context) {
         JDBCFetchConfiguration jfetch = (JDBCFetchConfiguration) fetch;
@@ -713,15 +736,18 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                 fields.clear(i);
     }
 
+    @Override
     public Collection loadAll(Collection sms, PCState state, int load,
         FetchConfiguration fetch, Object context) {
         return ImplHelper.loadAll(sms, this, state, load, fetch, context);
     }
 
+    @Override
     public void beforeStateChange(OpenJPAStateManager sm, PCState fromState,
         PCState toState) {
     }
 
+    @Override
     public Collection flush(Collection sms) {
         try {
             if (_conn != null && _conn.getInnermostDelegate().isReadOnly())
@@ -731,6 +757,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return _conf.getUpdateManagerInstance().flush(sms, this);
     }
 
+    @Override
     public boolean cancelAll() {
         // note that this method does not lock the context, since
         // we want to allow a different thread to be able to cancel the
@@ -740,7 +767,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         synchronized (_stmnts) {
             if (_stmnts.isEmpty())
                 return false;
-            stmnts = new ArrayList<Statement>(_stmnts);
+            stmnts = new ArrayList<>(_stmnts);
         }
 
         try {
@@ -752,6 +779,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         }
     }
 
+    @Override
     public boolean assignObjectId(OpenJPAStateManager sm, boolean preFlush) {
         ClassMetaData meta = sm.getMetaData();
         if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION)
@@ -768,6 +796,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return true;
     }
 
+    @Override
     public boolean assignField(OpenJPAStateManager sm, int field,
         boolean preFlush) {
         FieldMetaData fmd = sm.getMetaData().getField(field);
@@ -778,29 +807,35 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return true;
     }
 
+    @Override
     public Class<?> getManagedType(Object oid) {
         if (oid instanceof Id)
             return ((Id) oid).getType();
         return null;
     }
 
+    @Override
     public Class<?> getDataStoreIdType(ClassMetaData meta) {
         return Id.class;
     }
 
+    @Override
     public Object copyDataStoreId(Object oid, ClassMetaData meta) {
         Id id = (Id) oid;
         return new Id(meta.getDescribedType(), id.getId(), id.hasSubclasses());
     }
 
+    @Override
     public Object newDataStoreId(Object val, ClassMetaData meta) {
         return Id.newInstance(meta.getDescribedType(), val);
     }
 
+    @Override
     public Id newDataStoreId(long id, ClassMapping mapping, boolean subs) {
         return new Id(mapping.getDescribedType(), id, subs);
     }
 
+    @Override
     public ResultObjectProvider executeExtent(ClassMetaData meta,
         final boolean subclasses, FetchConfiguration fetch) {
         ClassMapping mapping = (ClassMapping) meta;
@@ -861,6 +896,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             union.setLRS(true);
             final BitSet[] paged = new BitSet[mappings.length];
             union.select(new Union.Selector() {
+                @Override
                 public void select(Select sel, int idx) {
                     paged[idx] = selectExtent(sel, mappings[idx], jfetch,
                         subclasses);
@@ -888,14 +924,14 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         int subs = (subclasses) ? Select.SUBS_JOINABLE : Select.SUBS_NONE;
         // decide between paging and standard iteration
         BitSet paged = PagingResultObjectProvider.getPagedFields(sel, mapping,
-            this, fetch, JDBCFetchConfiguration.EAGER_PARALLEL,
+            this, fetch, EagerFetchModes.EAGER_PARALLEL,
             Long.MAX_VALUE);
         if (paged == null)
             sel.selectIdentifier(mapping, subs, this, fetch,
-                JDBCFetchConfiguration.EAGER_PARALLEL);
+                EagerFetchModes.EAGER_PARALLEL);
         else
             sel.selectIdentifier(mapping, subs, this, fetch,
-                JDBCFetchConfiguration.EAGER_JOIN);
+                EagerFetchModes.EAGER_JOIN);
         return paged;
     }
 
@@ -916,6 +952,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return null;
     }
 
+    @Override
     public StoreQuery newQuery(String language) {
         StoreQuery sq = newStoreQuery(language);
         if (sq == null || QueryLanguages.parserForLanguage(language) == null) {
@@ -930,10 +967,12 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return new QueryCacheStoreQuery(sq, queryCache);
     }
 
+    @Override
     public FetchConfiguration newFetchConfiguration() {
         return new JDBCFetchConfigurationImpl();
     }
 
+    @Override
     public Seq getDataStoreIdSequence(ClassMetaData meta) {
         if (meta.getIdentityStrategy() == ValueStrategies.NATIVE
             || meta.getIdentityStrategy() == ValueStrategies.NONE)
@@ -941,10 +980,12 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return null;
     }
 
+    @Override
     public Seq getValueSequence(FieldMetaData fmd) {
         return null;
     }
 
+    @Override
     public void close() {
         if (_conn != null)
             _conn.free();
@@ -981,6 +1022,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return new RefCountConnection(_ds.getConnection());
     }
 
+    @Override
     public Connection getNewConnection() {
         try {
             return _ds.getConnection();
@@ -992,6 +1034,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     /**
      * Find the object with the given oid.
      */
+    @Override
     public Object find(Object oid, ValueMapping vm,
         JDBCFetchConfiguration fetch) {
         if (oid == null)
@@ -1213,7 +1256,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     private FieldMapping createEagerSelects(Select sel, ClassMapping mapping,
         OpenJPAStateManager sm, BitSet fields, JDBCFetchConfiguration fetch,
         int eager) {
-        if (mapping == null || eager == JDBCFetchConfiguration.EAGER_NONE)
+        if (mapping == null || eager == EagerFetchModes.EAGER_NONE)
             return null;
 
         FieldMapping eagerToMany = createEagerSelects(sel,
@@ -1437,7 +1480,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         FieldMapping[] fms;
         boolean joined;
         boolean canJoin = _dict.joinSyntax != JoinSyntaxes.SYNTAX_TRADITIONAL
-            && fetch.getSubclassFetchMode(mapping) != fetch.EAGER_NONE;
+            && fetch.getSubclassFetchMode(mapping) != EagerFetchModes.EAGER_NONE;
         for (int i = 0; i < subMappings.length; i++) {
             if (!subMappings[i].supportsEagerSelect(sel, sm, this, mapping,
                 fetch))
@@ -1493,6 +1536,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
      * Makes sure all subclasses of the given type are loaded in the JVM.
      * This is usually done automatically.
      */
+    @Override
     public void loadSubclasses(ClassMapping mapping) {
         Discriminator dsc = mapping.getDiscriminator();
         if (dsc.getSubclassesLoaded())
@@ -1557,11 +1601,13 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             super(conn);
         }
 
+        @Override
         public void close() throws SQLException {
             _closed = true;
             super.close();
         }
 
+        @Override
         protected void finalize() throws SQLException {
             if (!_closed)
                 close();
@@ -1597,6 +1643,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             _refs++;
         }
 
+        @Override
         public void close() throws SQLException {
             // lock at broker level to avoid deadlocks
             _ctx.lock();
@@ -1628,11 +1675,13 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             _conn = null;
         }
 
+        @Override
         protected Statement createStatement(boolean wrap) throws SQLException {
             return getCancelStatement(super.createStatement(false),
                 RefCountConnection.this);
         }
 
+        @Override
         protected Statement createStatement(int rsType, int rsConcur,
             boolean wrap) throws SQLException {
             return getCancelStatement(super.createStatement(rsType, rsConcur,
@@ -1640,12 +1689,14 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
 
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
             return getCancelPreparedStatement(super.prepareStatement(sql,
                 false), RefCountConnection.this);
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql, int rsType,
             int rsConcur, boolean wrap) throws SQLException {
             return getCancelPreparedStatement(super.prepareStatement(sql,
@@ -1686,6 +1737,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             super(stmnt, conn);
         }
 
+        @Override
         public int executeUpdate(String sql) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1695,6 +1747,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         protected ResultSet executeQuery(String sql, boolean wrap)
             throws SQLException {
             beforeExecuteStatement(this);
@@ -1705,6 +1758,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public boolean execute(String sql) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1714,6 +1768,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public int executeUpdate(String sql, int i) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1723,6 +1778,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public int executeUpdate(String sql, int[] ia) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1732,6 +1788,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public int executeUpdate(String sql, String[] sa) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1741,6 +1798,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public boolean execute(String sql, int i) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1750,6 +1808,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public boolean execute(String sql, int[] ia) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1759,6 +1818,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public boolean execute(String sql, String[] sa) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1768,6 +1828,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public void close() throws SQLException {
         	super.close();
     		synchronized (_cancelStatementPool) {
@@ -1788,6 +1849,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             super(stmnt, conn);
         }
 
+        @Override
         public int executeUpdate() throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1797,6 +1859,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         protected ResultSet executeQuery(boolean wrap) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1806,6 +1869,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public int[] executeBatch() throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1815,6 +1879,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public boolean execute() throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1824,6 +1889,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public boolean execute(String s) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1833,6 +1899,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public int executeUpdate(String s) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1842,6 +1909,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public int executeUpdate(String s, int i) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1851,6 +1919,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public int executeUpdate(String s, int[] ia) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1860,6 +1929,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public int executeUpdate(String s, String[] sa) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1869,6 +1939,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public boolean execute(String s, int i) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1878,6 +1949,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public boolean execute(String s, int[] ia) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1887,6 +1959,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public boolean execute(String s, String[] sa) throws SQLException {
             beforeExecuteStatement(this);
             try {
@@ -1896,6 +1969,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
         }
 
+        @Override
         public void close() throws SQLException {
         	super.close();
     		synchronized (_cancelPreparedStatementsPool) {

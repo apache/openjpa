@@ -20,15 +20,15 @@ package org.apache.openjpa.persistence.proxy.delayed;
 
 public interface IEmployee {
 
-    public void setEmpName(String empName);
+    void setEmpName(String empName);
 
-    public String getEmpName();
+    String getEmpName();
 
-    public void setId(int id);
+    void setId(int id);
 
-    public int getId();
+    int getId();
 
-    public void setDept(IDepartment dept);
+    void setDept(IDepartment dept);
 
-    public IDepartment getDept();
+    IDepartment getDept();
 }

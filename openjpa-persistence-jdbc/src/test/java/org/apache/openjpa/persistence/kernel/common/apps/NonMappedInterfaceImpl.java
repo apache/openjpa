@@ -26,10 +26,12 @@ public class NonMappedInterfaceImpl
 
     private int mismatch;
 
+    @Override
     public int getIntField() {
         return mismatch;
     }
 
+    @Override
     public void setIntField(int i) {
         mismatch = i;
     }

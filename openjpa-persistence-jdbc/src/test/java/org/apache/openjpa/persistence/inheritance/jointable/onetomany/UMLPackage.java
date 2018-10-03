@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence.inheritance.jointable.onetomany;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 //@Inheritance(strategy = InheritanceType.JOINED)

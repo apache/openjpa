@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence;
 
 import java.util.Collection;
 import java.util.Map;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -204,6 +205,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static final String EM_KEY =
         "org.apache.openjpa.persistence.EntityManager";
 
@@ -211,6 +213,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static final String EMF_KEY =
         "org.apache.openjpa.persistence.EntityManagerFactory";
 
@@ -218,6 +221,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static OpenJPAEntityManagerFactory toEntityManagerFactory(
         org.apache.openjpa.kernel.BrokerFactory factory) {
         return JPAFacadeHelper.toEntityManagerFactory(factory);
@@ -227,6 +231,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static org.apache.openjpa.kernel.BrokerFactory toBrokerFactory(
         EntityManagerFactory factory) {
         return JPAFacadeHelper.toBrokerFactory(factory);
@@ -236,6 +241,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static OpenJPAEntityManager toEntityManager(
         org.apache.openjpa.kernel.Broker broker) {
         return JPAFacadeHelper.toEntityManager(broker);
@@ -245,6 +251,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static Broker toBroker(EntityManager em) {
         return JPAFacadeHelper.toBroker(em);
     }
@@ -253,6 +260,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static org.apache.openjpa.meta.ClassMetaData getMetaData(Object o) {
         return JPAFacadeHelper.getMetaData(o);
     }
@@ -261,6 +269,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static org.apache.openjpa.meta.ClassMetaData getMetaData(
         EntityManager em, Class cls) {
         return JPAFacadeHelper.getMetaData(em, cls);
@@ -270,6 +279,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static org.apache.openjpa.meta.ClassMetaData getMetaData(
         EntityManagerFactory factory, Class cls) {
         return JPAFacadeHelper.getMetaData(factory, cls);
@@ -279,6 +289,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static Object fromOpenJPAObjectId(Object oid) {
         return JPAFacadeHelper.fromOpenJPAObjectId(oid);
     }
@@ -287,6 +298,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static Object toOpenJPAObjectId(
         org.apache.openjpa.meta.ClassMetaData meta, Object oid) {
         return JPAFacadeHelper.toOpenJPAObjectId(meta, oid);
@@ -296,6 +308,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static Object[] toOpenJPAObjectIds(
         org.apache.openjpa.meta.ClassMetaData meta, Object... oids) {
         return JPAFacadeHelper.toOpenJPAObjectIds(meta, oids);
@@ -305,6 +318,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static Collection toOpenJPAObjectIds(
         org.apache.openjpa.meta.ClassMetaData meta, Collection oids) {
         return JPAFacadeHelper.toOpenJPAObjectIds(meta, oids);
@@ -314,6 +328,7 @@ public class OpenJPAPersistence {
      * @deprecated use {@link JPAFacadeHelper} instead. This method pierces
      * the published-API boundary, as does the JPAFacadeHelper utilization.
      */
+    @Deprecated
     public static Class fromOpenJPAObjectIdClass(Class oidClass) {
         return JPAFacadeHelper.fromOpenJPAObjectIdClass(oidClass);
     }

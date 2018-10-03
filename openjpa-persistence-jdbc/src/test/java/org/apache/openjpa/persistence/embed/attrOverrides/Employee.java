@@ -21,7 +21,20 @@ package org.apache.openjpa.persistence.embed.attrOverrides;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="EMP_ATTROVER")
@@ -71,7 +84,7 @@ public class Employee {
    		column=@Column(name="JOB_DESC")
    	)
    	@MapKeyColumn(name="JOB_KEY", length=20)
-    Map<String, JobInfo> jobInfos = new HashMap<String, JobInfo>();
+    Map<String, JobInfo> jobInfos = new HashMap<>();
 
     public int getEmpId() {
         return empId;

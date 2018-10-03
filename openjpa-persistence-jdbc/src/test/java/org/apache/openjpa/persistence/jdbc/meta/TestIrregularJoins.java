@@ -27,12 +27,18 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC2;
+import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC3;
+import org.apache.openjpa.persistence.jdbc.common.apps.NonPKJoinPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.NonPKJoinPC2;
+import org.apache.openjpa.persistence.jdbc.common.apps.NonPKJoinPC3;
+import org.apache.openjpa.persistence.jdbc.common.apps.PartialJoinPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.PartialJoinPC2;
+import org.apache.openjpa.persistence.jdbc.common.apps.PartialJoinPC3;
 
 
 public class TestIrregularJoins
@@ -53,6 +59,7 @@ public class TestIrregularJoins
     public TestIrregularJoins() {
     }
 
+    @Override
     public void setUp()
         throws Exception {
         // make sure these classes are registered since we're using metadata

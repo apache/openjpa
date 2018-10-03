@@ -29,13 +29,13 @@ public class EntityH {
 
     private String secName;
 
-    private Collection<EntityI> eIs = new HashSet<EntityI>();
+    private Collection<EntityI> eIs = new HashSet<>();
 
     private EntityI2 eI2;
 
-    Map<EntityI3,EntityI4> map = new HashMap<EntityI3,EntityI4>();
+    Map<EntityI3,EntityI4> map = new HashMap<>();
 
-    Map<EntityI4,EntityI3> map2 = new HashMap<EntityI4,EntityI3>();
+    Map<EntityI4,EntityI3> map2 = new HashMap<>();
 
     public EntityH() {}
 

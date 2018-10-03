@@ -18,15 +18,16 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
-import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Table;
 
 import junit.framework.TestCase;
 
 public class TestMappingDefaultsImpl extends TestCase {
 
+    @Override
     public void setUp() {
     }
 

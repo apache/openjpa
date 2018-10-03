@@ -62,6 +62,7 @@ public class Image {
         this.location = location;
     }
 
+    @Override
     public String toString() {
         return "[Image:id=" + id + ",filename=" + fileName + "," + location + ']';
     }

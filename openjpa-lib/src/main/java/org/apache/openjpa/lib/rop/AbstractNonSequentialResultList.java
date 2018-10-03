@@ -38,6 +38,8 @@ import java.util.Objects;
 public abstract class AbstractNonSequentialResultList
     extends AbstractResultList {
 
+    
+    private static final long serialVersionUID = 1L;
     protected static final Object PAST_END = new Object();
 
     /**
@@ -46,6 +48,7 @@ public abstract class AbstractNonSequentialResultList
      */
     protected abstract Object getInternal(int index);
 
+    @Override
     public boolean contains(Object o) {
         assertOpen();
         Object obj;
@@ -59,6 +62,7 @@ public abstract class AbstractNonSequentialResultList
         return false;
     }
 
+    @Override
     public boolean containsAll(Collection c) {
         assertOpen();
         for (Iterator itr = c.iterator(); itr.hasNext();)
@@ -67,6 +71,7 @@ public abstract class AbstractNonSequentialResultList
         return true;
     }
 
+    @Override
     public Object get(int index) {
         assertOpen();
         Object obj = getInternal(index);
@@ -75,6 +80,7 @@ public abstract class AbstractNonSequentialResultList
         return obj;
     }
 
+    @Override
     public int indexOf(Object o) {
         assertOpen();
         Object obj;
@@ -88,6 +94,7 @@ public abstract class AbstractNonSequentialResultList
         return -1;
     }
 
+    @Override
     public int lastIndexOf(Object o) {
         assertOpen();
         int index = -1;
@@ -102,23 +109,28 @@ public abstract class AbstractNonSequentialResultList
         return index;
     }
 
+    @Override
     public boolean isEmpty() {
         assertOpen();
         return getInternal(0) == PAST_END;
     }
 
+    @Override
     public Iterator iterator() {
         return listIterator();
     }
 
+    @Override
     public ListIterator listIterator() {
         return listIterator(0);
     }
 
+    @Override
     public ListIterator listIterator(int index) {
         return new ResultListIterator(new Itr(index), this);
     }
 
+    @Override
     public Object[] toArray() {
         assertOpen();
         ArrayList list = new ArrayList();
@@ -132,6 +144,7 @@ public abstract class AbstractNonSequentialResultList
         return list.toArray();
     }
 
+    @Override
     public Object[] toArray(Object[] a) {
         assertOpen();
         ArrayList list = new ArrayList();
@@ -145,6 +158,7 @@ public abstract class AbstractNonSequentialResultList
         return list.toArray(a);
     }
 
+    @Override
     public List subList(int fromIndex, int toIndex) {
         throw new UnsupportedOperationException();
     }
@@ -158,29 +172,35 @@ public abstract class AbstractNonSequentialResultList
             _idx = index;
         }
 
+        @Override
         public int nextIndex() {
             return _idx;
         }
 
+        @Override
         public int previousIndex() {
             return _idx - 1;
         }
 
+        @Override
         public boolean hasNext() {
             _next = getInternal(_idx);
             return _next != PAST_END;
         }
 
+        @Override
         public boolean hasPrevious() {
             return _idx > 0;
         }
 
+        @Override
         public Object previous() {
             if (_idx == 0)
                 throw new NoSuchElementException();
             return getInternal(--_idx);
         }
 
+        @Override
         public Object next() {
             if (!hasNext())
                 throw new NoSuchElementException();

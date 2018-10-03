@@ -28,6 +28,7 @@ import org.apache.openjpa.util.UserException;
 
 public class TestJPACache extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(CachedPerson.class, CachedManager.class, CachedEmployee.class, "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm");

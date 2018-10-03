@@ -29,9 +29,13 @@ package org.apache.openjpa.kernel;
 public class FinalizingBrokerImpl
     extends BrokerImpl {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Close on finalize.
      */
+    @Override
     protected void finalize()
         throws Throwable {
         super.finalize();

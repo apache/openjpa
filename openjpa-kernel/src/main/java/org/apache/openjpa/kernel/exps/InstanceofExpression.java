@@ -31,6 +31,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class InstanceofExpression
     extends Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private final Class _cls;
 
@@ -46,6 +48,7 @@ class InstanceofExpression
      * Evaluate the expression for the given context candidate and original
      * candidate.
      */
+    @Override
     protected boolean eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return _cls.isInstance(_val.eval(candidate, orig, ctx, params));
@@ -54,6 +57,7 @@ class InstanceofExpression
     /**
      * Evaluate the expression for the given group.
      */
+    @Override
     protected boolean eval(Collection candidates, StoreContext ctx,
         Object[] params) {
         Collection c = _val.eval(candidates, null, ctx, params);
@@ -61,6 +65,7 @@ class InstanceofExpression
         return _cls.isInstance(o);
 	}
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

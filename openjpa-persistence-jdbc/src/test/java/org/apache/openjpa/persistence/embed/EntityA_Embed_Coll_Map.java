@@ -31,6 +31,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name="EETMM")
 public class EntityA_Embed_Coll_Map implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     Integer id;
 

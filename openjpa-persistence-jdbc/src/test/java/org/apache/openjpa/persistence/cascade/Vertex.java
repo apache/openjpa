@@ -55,8 +55,8 @@ public class Vertex {
     private VertexType type;
 
     protected Vertex() {
-        this.incoming = new ArrayList<Edge>();
-        this.outgoing = new ArrayList<Edge>();
+        this.incoming = new ArrayList<>();
+        this.outgoing = new ArrayList<>();
     }
 
     public Vertex( VertexType type ) {

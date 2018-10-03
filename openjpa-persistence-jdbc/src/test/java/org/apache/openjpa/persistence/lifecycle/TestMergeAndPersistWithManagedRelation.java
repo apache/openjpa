@@ -29,6 +29,7 @@ public class TestMergeAndPersistWithManagedRelation
 
     private long childId;
 
+    @Override
     public void setUp() {
         setUp(BidiParent.class, BidiChild.class, CLEAR_TABLES);
 

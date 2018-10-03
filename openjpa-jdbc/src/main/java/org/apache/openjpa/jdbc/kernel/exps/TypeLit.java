@@ -35,6 +35,8 @@ public class TypeLit
     extends Const
     implements Literal {
 
+    
+    private static final long serialVersionUID = 1L;
     private Object _val;
     private int _ptype;
 
@@ -46,30 +48,37 @@ public class TypeLit
         _ptype = ptype;
     }
 
+    @Override
     public Class getType() {
         return (_val == null) ? Object.class : _val.getClass();
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _val = Filters.convert(_val, type);
     }
 
+    @Override
     public int getParseType() {
         return _ptype;
     }
 
+    @Override
     public Object getValue() {
         return _val;
     }
 
+    @Override
     public void setValue(Object val) {
         _val = val;
     }
 
+    @Override
     public Object getValue(Object[] params) {
         return getValue();
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         return new LitExpState();
     }
@@ -87,6 +96,7 @@ public class TypeLit
         public Object discValue = null;
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
@@ -99,6 +109,7 @@ public class TypeLit
             lstate.joins);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         LitExpState lstate = (LitExpState) state;

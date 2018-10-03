@@ -25,10 +25,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Cache;
+import javax.persistence.EntityGraph;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.Query;
+import javax.persistence.SynchronizationType;
 import javax.persistence.spi.LoadState;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
@@ -41,6 +45,8 @@ import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
@@ -55,10 +61,11 @@ import org.apache.openjpa.persistence.query.QueryBuilderImpl;
  *
  * @author Marc Prud'hommeaux
  */
-@SuppressWarnings("serial")
 public class EntityManagerFactoryImpl
     implements OpenJPAEntityManagerFactory, OpenJPAEntityManagerFactorySPI,
     Closeable, PersistenceUnitUtil {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage
         (EntityManagerFactoryImpl.class);
@@ -97,10 +104,12 @@ public class EntityManagerFactoryImpl
             PersistenceExceptions.TRANSLATOR);
     }
 
+    @Override
     public OpenJPAConfiguration getConfiguration() {
         return _factory.getConfiguration();
     }
 
+    @Override
     public Map<String,Object> getProperties() {
         Map<String,Object> props = _factory.getProperties();
         // convert to user readable values
@@ -108,14 +117,17 @@ public class EntityManagerFactoryImpl
         return props;
     }
 
+    @Override
     public Object putUserObject(Object key, Object val) {
         return _factory.putUserObject(key, val);
     }
 
+    @Override
     public Object getUserObject(Object key) {
         return _factory.getUserObject(key);
     }
 
+    @Override
     public StoreCache getStoreCache() {
         _factory.lock();
         try {
@@ -130,11 +142,13 @@ public class EntityManagerFactoryImpl
         }
     }
 
+    @Override
     public StoreCache getStoreCache(String cacheName) {
         return new StoreCacheImpl(this, _factory.getConfiguration().
             getDataCacheManagerInstance().getDataCache(cacheName, true));
     }
 
+    @Override
     public QueryResultCache getQueryResultCache() {
         _factory.lock();
         try {
@@ -148,6 +162,7 @@ public class EntityManagerFactoryImpl
         }
     }
 
+    @Override
     public OpenJPAEntityManagerSPI createEntityManager() {
         return createEntityManager((Map) null);
     }
@@ -170,6 +185,7 @@ public class EntityManagerFactoryImpl
      *
      * @return list of exceptions raised or empty list.
      */
+    @Override
     public OpenJPAEntityManagerSPI createEntityManager(SynchronizationType synchronizationType, Map props) {
         if (synchronizationType == null) {
             throw new NullPointerException("SynchronizationType must not be null");
@@ -270,22 +286,27 @@ public class EntityManagerFactoryImpl
         return new EntityManagerImpl(this, broker);
     }
 
+    @Override
     public void addLifecycleListener(Object listener, Class... classes) {
         _factory.addLifecycleListener(listener, classes);
     }
 
+    @Override
     public void removeLifecycleListener(Object listener) {
         _factory.removeLifecycleListener(listener);
     }
 
+    @Override
     public void addTransactionListener(Object listener) {
         _factory.addTransactionListener(listener);
     }
 
+    @Override
     public void removeTransactionListener(Object listener) {
         _factory.removeTransactionListener(listener);
     }
 
+    @Override
     public void close() {
         Log log = _factory.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
         if (log.isTraceEnabled()) {
@@ -294,14 +315,17 @@ public class EntityManagerFactoryImpl
         _factory.close();
     }
 
+    @Override
     public boolean isOpen() {
         return !_factory.isClosed();
     }
 
+    @Override
     public int hashCode() {
         return (_factory == null) ? 0 : _factory.hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -343,33 +367,39 @@ public class EntityManagerFactoryImpl
         }
 	}
 
+    @Override
     public Cache getCache() {
         _factory.assertOpen();
         return getStoreCache();
     }
 
+    @Override
     public OpenJPACriteriaBuilder getCriteriaBuilder() {
         return new CriteriaBuilderImpl().setMetaModel(getMetamodel());
     }
 
+    @Override
     public OpenJPAQueryBuilder getDynamicQueryBuilder() {
         return new QueryBuilderImpl(this);
     }
 
+    @Override
     public Set<String> getSupportedProperties() {
         return _factory.getSupportedProperties();
     }
 
+    @Override
     public MetamodelImpl getMetamodel() {
         if (_metaModel == null) {
             MetaDataRepository mdr = getConfiguration().getMetaDataRepositoryInstance();
             mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
-            mdr.setResolve(MetaDataRepository.MODE_MAPPING_INIT, true);
+            mdr.setResolve(MetaDataModes.MODE_MAPPING_INIT, true);
             _metaModel = new MetamodelImpl(mdr);
         }
         return _metaModel;
     }
 
+    @Override
     public PersistenceUnitUtil getPersistenceUnitUtil() {
         return this;
     }
@@ -400,14 +430,17 @@ public class EntityManagerFactoryImpl
      * Get the identifier for the specified entity.  If not managed by any
      * of the em's in this PU or not persistence capable, return null.
      */
+    @Override
     public Object getIdentifier(Object entity) {
         return OpenJPAPersistenceUtil.getIdentifier(this, entity);
     }
 
+    @Override
     public boolean isLoaded(Object entity) {
         return isLoaded(entity, null);
     }
 
+    @Override
     public boolean isLoaded(Object entity, String attribute) {
         if (entity == null) {
             return false;

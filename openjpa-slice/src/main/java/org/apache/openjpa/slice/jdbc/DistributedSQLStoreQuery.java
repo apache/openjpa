@@ -47,9 +47,9 @@ import org.apache.openjpa.util.StoreException;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 class DistributedSQLStoreQuery extends SQLStoreQuery {
-	private List<StoreQuery> _queries = new ArrayList<StoreQuery>();
+    private static final long serialVersionUID = 1L;
+    private List<StoreQuery> _queries = new ArrayList<>();
 
 	public DistributedSQLStoreQuery(JDBCStore store) {
 		super(store);
@@ -63,7 +63,8 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 		return (DistributedJDBCStoreManager) getStore();
 	}
 
-	public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
+	@Override
+    public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
 		boolean parallel = !getContext().getStoreContext().getBroker()
 			.getMultithreaded();
         ParallelExecutor ex = new ParallelExecutor(this, meta, parallel);
@@ -73,7 +74,8 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 		return ex;
 	}
 
-	public void setContext(QueryContext ctx) {
+	@Override
+    public void setContext(QueryContext ctx) {
 		super.setContext(ctx);
 		for (StoreQuery q : _queries)
 			q.setContext(ctx);
@@ -87,7 +89,7 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 	 */
 	public static class ParallelExecutor extends
 			SQLStoreQuery.SQLExecutor {
-		private List<Executor> executors = new ArrayList<Executor>();
+		private List<Executor> executors = new ArrayList<>();
 		private DistributedSQLStoreQuery owner = null;
 
         public ParallelExecutor(DistributedSQLStoreQuery dsq, ClassMetaData meta, boolean p) {
@@ -103,13 +105,14 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
          * Each child query must be executed with slice context and not the
 		 * given query context.
 		 */
-		public ResultObjectProvider executeQuery(StoreQuery q,
+		@Override
+        public ResultObjectProvider executeQuery(StoreQuery q,
 				final Object[] params, final Range range) {
 			List<Future<ResultObjectProvider>> futures =
-				new ArrayList<Future<ResultObjectProvider>>();
-            final List<Executor> usedExecutors = new ArrayList<Executor>();
+				new ArrayList<>();
+            final List<Executor> usedExecutors = new ArrayList<>();
 			final List<ResultObjectProvider> rops =
-				new ArrayList<ResultObjectProvider>();
+				new ArrayList<>();
 			List<SliceStoreManager> targets = findTargets();
 			QueryContext ctx = q.getContext();
 			boolean isReplicated = containsReplicated(ctx);
@@ -187,14 +190,15 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 			return false;
 		}
 
-		public Number executeDelete(StoreQuery q, Object[] params) {
+		@Override
+        public Number executeDelete(StoreQuery q, Object[] params) {
 			Iterator<StoreQuery> qs = owner._queries.iterator();
 			List<Future<Number>> futures = null;
 			int result = 0;
             ExecutorService threadPool = SliceThread.getPool();
 			for (Executor ex : executors) {
 				if (futures == null)
-                    futures = new ArrayList<Future<Number>>();
+                    futures = new ArrayList<>();
 				DeleteExecutor call = new DeleteExecutor();
 				call.executor = ex;
 				call.query = qs.next();
@@ -215,14 +219,15 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 			return result;
 		}
 
-		public Number executeUpdate(StoreQuery q, Object[] params) {
+		@Override
+        public Number executeUpdate(StoreQuery q, Object[] params) {
 			Iterator<StoreQuery> qs = owner._queries.iterator();
 			List<Future<Number>> futures = null;
 			int result = 0;
             ExecutorService threadPool = SliceThread.getPool();
 			for (Executor ex : executors) {
 				if (futures == null)
-                    futures = new ArrayList<Future<Number>>();
+                    futures = new ArrayList<>();
 				UpdateExecutor call = new UpdateExecutor();
 				call.executor = ex;
 				call.query = qs.next();
@@ -256,7 +261,8 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 		Object[] params;
 		Range range;
 
-		public ResultObjectProvider call() throws Exception {
+		@Override
+        public ResultObjectProvider call() throws Exception {
 			return executor.executeQuery(query, params, range);
 		}
 	}
@@ -266,7 +272,8 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 		Executor executor;
 		Object[] params;
 
-		public Number call() throws Exception {
+		@Override
+        public Number call() throws Exception {
 			return executor.executeDelete(query, params);
 		}
 	}
@@ -276,7 +283,8 @@ class DistributedSQLStoreQuery extends SQLStoreQuery {
 		Executor executor;
 		Object[] params;
 
-		public Number call() throws Exception {
+		@Override
+        public Number call() throws Exception {
 		    return executor.executeUpdate(query, params);
 		}
 	}

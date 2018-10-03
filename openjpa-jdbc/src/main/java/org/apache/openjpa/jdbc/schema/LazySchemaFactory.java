@@ -37,11 +37,11 @@ import org.apache.openjpa.lib.conf.Configuration;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class LazySchemaFactory
     extends SchemaGroup
     implements SchemaFactory, Configurable {
 
+    private static final long serialVersionUID = 1L;
     private transient JDBCConfiguration _conf = null;
     private transient Connection _conn = null;
     private transient DatabaseMetaData _meta = null;
@@ -75,10 +75,12 @@ public class LazySchemaFactory
         _indexes = idx;
     }
 
+    @Override
     public SchemaGroup readSchema() {
         return this;
     }
 
+    @Override
     public void storeSchema(SchemaGroup schema) {
         // nothing to do
     }
@@ -86,6 +88,8 @@ public class LazySchemaFactory
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Table findTable(String name) {
         if (name == null)
             return null;
@@ -98,6 +102,7 @@ public class LazySchemaFactory
         return findTable(QualifiedDBIdentifier.getPath(name));
     }
 
+    @Override
     public Table findTable(QualifiedDBIdentifier path) {
         if (path == null)
             return null;
@@ -113,18 +118,22 @@ public class LazySchemaFactory
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Sequence findSequence(String name) {
         if (name == null)
             return null;
         return findSequence(DBIdentifier.newSequence(name));
     }
 
+    @Override
     public Sequence findSequence(DBIdentifier name) {
         if (name == null)
             return null;
         return findSequence(QualifiedDBIdentifier.getPath(name));
     }
 
+    @Override
     public Sequence findSequence(QualifiedDBIdentifier name) {
         if (name == null)
             return null;
@@ -199,15 +208,18 @@ public class LazySchemaFactory
         }
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _conf = (JDBCConfiguration) conf;
         _gen = new SchemaGenerator(_conf);
         _gen.setSchemaGroup(this);
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
     }
 }

@@ -20,8 +20,8 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 import javax.persistence.PrePersist;
+import javax.persistence.Transient;
 
 @Entity
 public class UnenhancedInappropriateTransient {

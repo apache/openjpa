@@ -31,10 +31,8 @@ import org.apache.openjpa.meta.Order;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class JDBCValueOrder
-    implements JDBCOrder {
-
+class JDBCValueOrder implements JDBCOrder {
+    private static final long serialVersionUID = 1L;
     private final FieldMapping _fm;
     private final boolean _asc;
     private static final DBIdentifier SQL_ELEMENT = DBIdentifier.newColumn(Order.ELEMENT);
@@ -44,26 +42,32 @@ class JDBCValueOrder
         _asc = asc;
     }
 
+    @Override
     public String getName() {
         return Order.ELEMENT;
     }
 
+    @Override
     public DBIdentifier getIdentifier() {
         return SQL_ELEMENT;
     }
 
+    @Override
     public boolean isAscending() {
         return _asc;
     }
 
+    @Override
     public Comparator<?> getComparator() {
         return null;
     }
 
+    @Override
     public boolean isInRelation() {
         return _fm.getElement().getTypeMetaData() != null;
     }
 
+    @Override
     public void order(Select sel, ClassMapping elem, Joins joins) {
         if (elem != null)
             sel.orderBy(elem.getPrimaryKeyColumns(), _asc, joins, false);

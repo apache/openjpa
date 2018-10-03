@@ -17,10 +17,10 @@
 package org.apache.openjpa.integration.daytrader;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.ArrayList;
-import java.math.BigDecimal;
 
 import javax.persistence.EntityManagerFactory;
 

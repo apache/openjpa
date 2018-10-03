@@ -41,7 +41,7 @@ public class CascadingOneManyParent {
     @OneToMany(mappedBy="parent", cascade=CascadeType.ALL)
     @OrderBy("name ASC")
     private List<CascadingOneManyChild> children =
-        new ArrayList<CascadingOneManyChild>();
+        new ArrayList<>();
 
     @Version
     private Integer optLock;

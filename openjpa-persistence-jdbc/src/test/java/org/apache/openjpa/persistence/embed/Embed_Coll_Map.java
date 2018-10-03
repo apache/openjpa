@@ -31,7 +31,7 @@ public class Embed_Coll_Map {
     protected String name3;
 
     @ElementCollection
-    public Map<Integer, Integer> mapKeyInteger = new HashMap<Integer, Integer>();
+    public Map<Integer, Integer> mapKeyInteger = new HashMap<>();
 
     public String getName1() {
         return name1;

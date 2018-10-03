@@ -42,6 +42,7 @@ public abstract class AbstractManagedRuntime implements ManagedRuntime {
      * with the current thread's transaction.
      * @return the transaction key
      */
+    @Override
     public Object getTransactionKey() throws Exception, SystemException {
         return getTransactionManager().getTransaction();
     }
@@ -62,6 +63,7 @@ public abstract class AbstractManagedRuntime implements ManagedRuntime {
      *            if the current transaction can not be obtained, or an error
      *            occurs when suspending or resuming the transaction.
      */
+    @Override
     public void doNonTransactionalWork(Runnable runnable) throws
             NotSupportedException {
         TransactionManager tm = null;

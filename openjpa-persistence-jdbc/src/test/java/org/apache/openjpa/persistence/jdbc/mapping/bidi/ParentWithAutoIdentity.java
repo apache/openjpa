@@ -61,30 +61,36 @@ public class ParentWithAutoIdentity implements IParent {
     @ElementJoinColumn(name="FK_PARENT_AUTO_ID", referencedAttributeName="id")
 	private Set<Child> children;
 
-	public long getId() {
+	@Override
+    public long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	@Override
+    public void setId(long id) {
         throw new RuntimeException(getClass() + ".setId() is not to be " +
             "invoked directly. This class is using AUTO Generation Starategy");
 	}
 
-	public String getName() {
+	@Override
+    public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	@Override
+    public void setName(String name) {
 		this.name = name;
 	}
 
-	public Collection<Child> getChildren() {
+	@Override
+    public Collection<Child> getChildren() {
 		return children;
 	}
 
-	public void addChild(Child child) {
+	@Override
+    public void addChild(Child child) {
 		if (children == null)
-			children = new HashSet<Child>();
+			children = new HashSet<>();
 		children.add(child);
 	}
 

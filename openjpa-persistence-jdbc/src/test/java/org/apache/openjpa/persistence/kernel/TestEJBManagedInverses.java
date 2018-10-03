@@ -20,10 +20,9 @@ package org.apache.openjpa.persistence.kernel;
 
 import javax.persistence.EntityManager;
 
-
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.InverseA;
 import org.apache.openjpa.persistence.kernel.common.apps.InverseB;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestEJBManagedInverses extends AbstractTestCase {
 
@@ -31,6 +30,7 @@ public class TestEJBManagedInverses extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(InverseA.class, InverseB.class);
     }

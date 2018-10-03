@@ -179,6 +179,7 @@ public class TokenReplacedStream {
             return _replace;
         }
 
+        @Override
         public String toString() {
             return new String(chars) + ":" + _cursor;
         }

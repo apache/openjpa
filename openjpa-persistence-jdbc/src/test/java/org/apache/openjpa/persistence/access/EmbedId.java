@@ -45,10 +45,12 @@ public class EmbedId {
         code = c;
     }
 
+    @Override
     public int hashCode() {
         return super.hashCode();
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof EmbedId) {
             EmbedId eid = (EmbedId)obj;

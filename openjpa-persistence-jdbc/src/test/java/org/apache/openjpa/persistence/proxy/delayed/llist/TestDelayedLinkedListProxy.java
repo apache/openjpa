@@ -47,12 +47,14 @@ public class TestDelayedLinkedListProxy extends DelayedProxyCollectionsTestCase 
         Account.class
     };
 
+    @Override
     public void setUp() {
         super.setUp(_pcList);
     }
 
+    @Override
     public void setUp(Object... props){
-        List<Object> parms = new ArrayList<Object>();
+        List<Object> parms = new ArrayList<>();
         // Add package-specific types
         parms.addAll(Arrays.asList(_pcList));
         // Add properties from super
@@ -60,29 +62,35 @@ public class TestDelayedLinkedListProxy extends DelayedProxyCollectionsTestCase 
         super.setUp(parms.toArray());
     }
 
+    @Override
     public IUserIdentity findUserIdentity(EntityManager em, int id) {
         return em.find(UserIdentity.class, id);
     }
 
+    @Override
     public IDepartment findDepartment(EntityManager em, int id) {
         return em.find(Department.class, id);
     }
 
+    @Override
     public IUserIdentity createUserIdentity() {
         UserIdentity ui = new UserIdentity();
         return ui;
     }
 
+    @Override
     public IAccount createAccount(String name, IUserIdentity ui) {
         IAccount acct = new Account(name, ui);
         return acct;
     }
 
+    @Override
     public IDepartment createDepartment() {
         Department d = new Department();
         return d;
     }
 
+    @Override
     public IMember createMember(String name) {
         Member m = new Member();
         m.setName(name);
@@ -97,32 +105,32 @@ public class TestDelayedLinkedListProxy extends DelayedProxyCollectionsTestCase 
 
     @Override
     public Collection<IEmployee> createEmployees() {
-        return new LinkedList<IEmployee>();
+        return new LinkedList<>();
     }
 
     @Override
     public Collection<Product> createProducts() {
-        return new LinkedList<Product>();
+        return new LinkedList<>();
     }
 
     @Override
     public Collection<Award> createAwards() {
-        return new LinkedList<Award>();
+        return new LinkedList<>();
     }
 
     @Override
     public Collection<Location> createLocations() {
-        return new LinkedList<Location>();
+        return new LinkedList<>();
     }
 
     @Override
     public Collection<Certification> createCertifications() {
-        return new LinkedList<Certification>();
+        return new LinkedList<>();
     }
 
     @Override
     public Collection<IAccount> createAccounts() {
-        return new LinkedList<IAccount>();
+        return new LinkedList<>();
     }
 
     @Override

@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -48,11 +47,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class Localizer {
 
     // static cache of package+loc name to localizer mappings
-    private static final Map<String,Localizer> _localizers = new ConcurrentHashMap<String,Localizer>();
+    private static final Map<String,Localizer> _localizers = new ConcurrentHashMap<>();
 
     // list of resource providers to delegate to when locating resources
     private static final Collection<ResourceBundleProvider> _providers =
-        new CopyOnWriteArraySet<ResourceBundleProvider>
+        new CopyOnWriteArraySet<>
         (Arrays.asList(new ResourceBundleProvider[]{
             new SimpleResourceBundleProvider(),
             new StreamResourceBundleProvider(),
@@ -305,6 +304,7 @@ public class Localizer {
             return _pkg;
         }
 
+        @Override
         public String toString() {
             return getMessage();
         }

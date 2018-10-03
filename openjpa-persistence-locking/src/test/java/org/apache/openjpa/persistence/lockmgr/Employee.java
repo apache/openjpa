@@ -72,6 +72,7 @@ public class Employee implements Externalizable {
         this.department = department;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + '@'
             + Integer.toHexString(System.identityHashCode(this)) + "[id="
@@ -79,6 +80,7 @@ public class Employee implements Externalizable {
             + ", last=" + getLastName();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
         ClassNotFoundException {
         id = in.readInt();
@@ -86,6 +88,7 @@ public class Employee implements Externalizable {
         lastName = (String) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(id);
         out.writeObject(firstName);

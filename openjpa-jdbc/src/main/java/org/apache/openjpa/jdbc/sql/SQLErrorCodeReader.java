@@ -27,11 +27,10 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.xml.XMLFactory;
 import org.apache.openjpa.util.StoreException;
 import org.w3c.dom.Document;
@@ -51,7 +50,7 @@ public class SQLErrorCodeReader {
 	private Log log = null;
 	public static final String ERROR_CODE_DELIMITER = ",";
 	public static final Map<String, Integer> storeErrorTypes =
-		new HashMap<String, Integer>();
+		new HashMap<>();
 	static {
 		storeErrorTypes.put("lock", StoreException.LOCK);
         storeErrorTypes.put("object-exists", StoreException.OBJECT_EXISTS);
@@ -67,7 +66,7 @@ public class SQLErrorCodeReader {
 		Localizer.forPackage(SQLErrorCodeReader.class);
 
 	public List<String> getDictionaries(InputStream in) {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		DocumentBuilder builder = XMLFactory.getDOMParser(false, false);
 		try {
 			Document doc = builder.parse(in);

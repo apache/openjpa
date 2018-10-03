@@ -28,7 +28,10 @@ import java.util.Date;
  *
  */
 public class CurrentTimeExpression extends ExpressionImpl {
-	private static enum Now {
+	
+    private static final long serialVersionUID = 1L;
+
+    private static enum Now {
 		CURRENT_DATE,
 		CURRENT_TIME,
 		CURRENT_TIMESTAMP

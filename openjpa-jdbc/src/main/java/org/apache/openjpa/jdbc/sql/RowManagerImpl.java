@@ -65,7 +65,7 @@ public class RowManagerImpl
      * @param order whether to keep track of the order in which rows are added
      */
     public RowManagerImpl(boolean order) {
-        _primaryOrder = (order) ? new ArrayList<PrimaryRow>() : null;
+        _primaryOrder = (order) ? new ArrayList<>() : null;
     }
 
     /**
@@ -173,10 +173,12 @@ public class RowManagerImpl
 
     }
 
+    @Override
     public Row getSecondaryRow(Table table, int action) {
         return new SecondaryRow(table, action);
     }
 
+    @Override
     public void flushSecondaryRow(Row row)
         throws SQLException {
         if (!row.isValid())
@@ -185,19 +187,21 @@ public class RowManagerImpl
         SecondaryRow srow = (SecondaryRow) row;
         if (srow.getAction() == Row.ACTION_DELETE) {
             if (_secondaryDeletes == null)
-                _secondaryDeletes = new ArrayList<SecondaryRow>();
+                _secondaryDeletes = new ArrayList<>();
             _secondaryDeletes.add((SecondaryRow) srow.clone());
         } else {
             if (_secondaryUpdates == null)
-                _secondaryUpdates = new ArrayList<SecondaryRow>();
+                _secondaryUpdates = new ArrayList<>();
             _secondaryUpdates.add((SecondaryRow) srow.clone());
         }
     }
 
+    @Override
     public Row getAllRows(Table table, int action) {
         return new RowImpl(table, action);
     }
 
+    @Override
     public void flushAllRows(Row row) {
         if (!row.isValid())
             return;
@@ -205,12 +209,12 @@ public class RowManagerImpl
         switch (row.getAction()) {
             case Row.ACTION_UPDATE:
                 if (_allRowUpdates == null)
-                    _allRowUpdates = new ArrayList<Row>();
+                    _allRowUpdates = new ArrayList<>();
                 _allRowUpdates.add(row);
                 break;
             case Row.ACTION_DELETE:
                 if (_allRowDeletes == null)
-                    _allRowDeletes = new ArrayList<Row>();
+                    _allRowDeletes = new ArrayList<>();
                 _allRowDeletes.add(row);
                 break;
             default:
@@ -218,6 +222,7 @@ public class RowManagerImpl
         }
     }
 
+    @Override
     public Row getRow(Table table, int action, OpenJPAStateManager sm,
         boolean create) {
         if (sm == null)
@@ -231,15 +236,15 @@ public class RowManagerImpl
         Map<Key, PrimaryRow> map;
         if (action == Row.ACTION_DELETE) {
             if (_deletes == null && create)
-                _deletes = new LinkedHashMap<Key, PrimaryRow>();
+                _deletes = new LinkedHashMap<>();
             map = _deletes;
         } else if (action == Row.ACTION_INSERT) {
             if (_inserts == null && create)
-                _inserts = new LinkedHashMap<Key, PrimaryRow>();
+                _inserts = new LinkedHashMap<>();
             map = _inserts;
         } else {
             if (_updates == null && create)
-                _updates = new LinkedHashMap<Key, PrimaryRow>();
+                _updates = new LinkedHashMap<>();
             map = _updates;
         }
         if (map == null)
@@ -278,10 +283,12 @@ public class RowManagerImpl
             this.sm = sm;
         }
 
+        @Override
         public int hashCode() {
             return ((table == null) ? 0  : table.hashCode()) + ((sm == null) ? 0  : sm.hashCode()) % Integer.MAX_VALUE;
         }
 
+        @Override
         public boolean equals(Object other) {
             if (other == null)
                 return false;

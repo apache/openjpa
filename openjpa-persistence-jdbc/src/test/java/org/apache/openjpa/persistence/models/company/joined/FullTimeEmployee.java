@@ -18,8 +18,12 @@
  */
 package org.apache.openjpa.persistence.models.company.joined;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.models.company.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+
+import org.apache.openjpa.persistence.models.company.IFullTimeEmployee;
 
 @Entity(name="JI_FullTimeEmployee")
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -28,10 +32,12 @@ public class FullTimeEmployee extends Employee
     @Basic
     private float salary;
 
+    @Override
     public void setSalary(float salary) {
         this.salary = salary;
     }
 
+    @Override
     public float getSalary() {
         return this.salary;
     }

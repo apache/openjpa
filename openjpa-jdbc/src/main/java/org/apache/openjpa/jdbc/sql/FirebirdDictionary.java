@@ -39,7 +39,7 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.util.StoreException;
+import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.UnsupportedException;
 
 /**
@@ -289,6 +289,7 @@ public class FirebirdDictionary
             getTableNameForMetadata(DBIdentifier.newTable(tableName));
     }
 
+    @Override
     protected String getTableNameForMetadata(DBIdentifier tableName) {
         if (DBIdentifier.isNull(tableName)) {
             return IdentifierUtil.PERCENT;
@@ -495,6 +496,6 @@ public class FirebirdDictionary
             if (states.getValue().contains(errorState))
                 return states.getKey();
         }
-        return StoreException.GENERAL;
+        return ExceptionInfo.GENERAL;
     }
 }

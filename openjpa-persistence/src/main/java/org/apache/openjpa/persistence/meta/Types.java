@@ -57,10 +57,12 @@ public class Types {
             this.cls = cls;
         }
 
+        @Override
         public final Class<X> getJavaType() {
             return cls;
         }
 
+        @Override
         public String toString() {
             return cls.getName();
         }
@@ -79,6 +81,7 @@ public class Types {
             super(cls);
         }
 
+        @Override
         public PersistenceType getPersistenceType() {
             return PersistenceType.BASIC;
         }
@@ -103,6 +106,7 @@ public class Types {
          *  @return boolean indicating whether or not the identifiable
          *          type has a version attribute
          */
+        @Override
         public boolean hasVersionAttribute() {
             return meta.getVersionField() != null;
         }
@@ -114,6 +118,7 @@ public class Types {
          *  or mapped superclass.
          *  @return super type of identifiable type or null if no such super type
          */
+        @Override
         public IdentifiableType<? super X> getSupertype() {
             ClassMetaData superMeta = meta.getPCSuperclassMetaData();
             if (superMeta == null)
@@ -133,6 +138,7 @@ public class Types {
          *  @return boolean indicating whether or not the identifiable
          *          type represents its persistent identity via a single identifier attribute.
          */
+        @Override
         public boolean hasSingleIdAttribute() {
             return meta.getPrimaryKeyFields().length == 1;
         }
@@ -141,6 +147,7 @@ public class Types {
          *  Return the type that represents the type of the id.
          *  @return type of identifier
          */
+        @Override
         public Type<?> getIdType() {
             Class<?> idType = hasSingleIdAttribute()
                      ? meta.getPrimaryKeyFields()[0].getDeclaredType() : meta.getObjectIdType();
@@ -161,6 +168,7 @@ public class Types {
             super(meta, model);
         }
 
+        @Override
         public PersistenceType getPersistenceType() {
             return PersistenceType.EMBEDDABLE;
         }
@@ -180,6 +188,7 @@ public class Types {
             super(meta, model);
         }
 
+        @Override
         public PersistenceType getPersistenceType() {
             return PersistenceType.MAPPED_SUPERCLASS;
         }
@@ -200,10 +209,12 @@ public class Types {
             super(meta, model);
         }
 
+        @Override
         public PersistenceType getPersistenceType() {
             return PersistenceType.ENTITY;
         }
 
+        @Override
         public String getName() {
         	return meta.getTypeAlias();
         }
@@ -211,6 +222,7 @@ public class Types {
          *  Return the bindable type of the represented object.
          *  @return bindable type
          */
+        @Override
         public BindableType getBindableType() {
             return BindableType.ENTITY_TYPE;
         }
@@ -223,6 +235,7 @@ public class Types {
          * represented entity or attribute is returned.
          * @return Java type
          */
+        @Override
         public Class<X> getBindableJavaType() {
             return getJavaType();
         }
@@ -238,6 +251,7 @@ public class Types {
             super(cls, model);
         }
 
+        @Override
         public javax.persistence.metamodel.Type.PersistenceType getPersistenceType() {
             return PersistenceType.ENTITY;
         }

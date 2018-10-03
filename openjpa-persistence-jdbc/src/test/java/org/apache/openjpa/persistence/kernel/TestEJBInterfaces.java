@@ -20,12 +20,11 @@ package org.apache.openjpa.persistence.kernel;
 
 import javax.persistence.EntityManager;
 
-
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.InterfaceHolder;
 import org.apache.openjpa.persistence.kernel.common.apps.InterfaceTestImpl1;
 import org.apache.openjpa.persistence.kernel.common.apps.InterfaceTestImpl2;
 import org.apache.openjpa.persistence.kernel.common.apps.InterfaceTestImpl3;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 /**
  * Test for persistent interfaces.

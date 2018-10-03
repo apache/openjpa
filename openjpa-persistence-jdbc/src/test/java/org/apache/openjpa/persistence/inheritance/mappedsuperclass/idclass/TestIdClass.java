@@ -24,7 +24,8 @@ import javax.persistence.Query;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestIdClass extends SingleEMFTestCase {
-	 public void setUp() {
+	 @Override
+    public void setUp() {
 	        setUp(IdClassTestMSC.class, IdClassEntity.class);
 	 }
 

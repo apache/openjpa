@@ -20,20 +20,21 @@ package org.apache.openjpa.persistence.jdbc;
 
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.apache.openjpa.persistence.simple.AllFieldTypes;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.DB2Dictionary;
-import org.apache.openjpa.jdbc.sql.HSQLDictionary;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.simple.AllFieldTypes;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestOptimizeForClause
     extends SQLListenerTestCase {
 
+    @Override
     public void setUp() {
         setUp(AllFieldTypes.class);
     }
@@ -99,7 +100,7 @@ public class TestOptimizeForClause
                         ("select o from AllFieldTypes o where o.intField " +
                          "= :p"));
                     q.setParameter("p", 0);
-                    q.setHint(q.HINT_RESULT_COUNT, new Integer(8));
+                    q.setHint(OpenJPAQuery.HINT_RESULT_COUNT, new Integer(8));
                     q.getResultList();
                }
                if (dict instanceof DB2Dictionary) {

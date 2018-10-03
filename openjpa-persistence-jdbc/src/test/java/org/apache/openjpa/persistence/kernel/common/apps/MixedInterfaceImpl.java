@@ -25,10 +25,12 @@ public class MixedInterfaceImpl implements MixedInterface {
 
     private int intField;
 
+    @Override
     public int getIntField() {
         return intField;
     }
 
+    @Override
     public void setIntField(int i) {
         intField = i;
     }

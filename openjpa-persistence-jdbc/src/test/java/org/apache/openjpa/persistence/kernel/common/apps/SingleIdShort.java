@@ -30,10 +30,12 @@ public class SingleIdShort implements SingleId {
     private short pk;
     private String str;
 
+    @Override
     public boolean correctIdClass(Class c) {
         return ShortId.class.equals(c);
     }
 
+    @Override
     public String getPkString() {
         return pk + "";
     }
@@ -46,10 +48,12 @@ public class SingleIdShort implements SingleId {
         pk = i;
     }
 
+    @Override
     public String getString() {
         return str;
     }
 
+    @Override
     public void setString(String s) {
         str = s;
     }

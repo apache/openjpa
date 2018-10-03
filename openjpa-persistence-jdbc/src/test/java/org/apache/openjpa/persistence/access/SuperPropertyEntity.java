@@ -64,6 +64,7 @@ public class SuperPropertyEntity {
         return name;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof SuperPropertyEntity) {
             SuperPropertyEntity sfe = (SuperPropertyEntity)obj;

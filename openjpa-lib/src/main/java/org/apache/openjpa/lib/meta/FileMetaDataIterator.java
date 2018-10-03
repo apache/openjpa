@@ -68,7 +68,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
         if (dir == null)
             _itr = null;
         else {
-            Collection<File> metas = new ArrayList<File>();
+            Collection<File> metas = new ArrayList<>();
             FileResource rsrc = (filter == null) ? null : new FileResource();
             scan(dir, filter, rsrc, metas, 0);
             _itr = metas.iterator();
@@ -103,10 +103,12 @@ public class FileMetaDataIterator implements MetaDataIterator {
         return scanned;
     }
 
+    @Override
     public boolean hasNext() {
         return _itr != null && _itr.hasNext();
     }
 
+    @Override
     public URL next() throws IOException {
         if (_itr == null)
             throw new NoSuchElementException();
@@ -122,6 +124,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
         }
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         if (_file == null)
             throw new IllegalStateException();
@@ -135,12 +138,14 @@ public class FileMetaDataIterator implements MetaDataIterator {
         }
     }
 
+    @Override
     public File getFile() {
         if (_file == null)
             throw new IllegalStateException();
         return _file;
     }
 
+    @Override
     public void close() {
     }
 
@@ -152,10 +157,12 @@ public class FileMetaDataIterator implements MetaDataIterator {
             _file = file;
         }
 
+        @Override
         public String getName() {
             return _file.getName();
         }
 
+        @Override
         public byte[] getContent() throws IOException {
             long len = (AccessController.doPrivileged(
                 J2DoPrivHelper.lengthAction(_file))).longValue();

@@ -18,17 +18,19 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.simple.NamedEntity;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.Tuple;
 
+import org.apache.openjpa.persistence.simple.NamedEntity;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
+
 public class TupleQueryTest
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(NamedEntity.class);
 

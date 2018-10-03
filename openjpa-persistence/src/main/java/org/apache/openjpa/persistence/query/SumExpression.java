@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class SumExpression extends UnaryOperatorExpression  {
-	public SumExpression(Expression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public SumExpression(Expression op) {
 		super(op, UnaryFunctionalOperator.SUM);
 	}
 }

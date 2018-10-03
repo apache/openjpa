@@ -35,6 +35,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 public class MapEntry
     extends AbstractVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _key;
     private final Val _val;
     private ClassMetaData _meta = null;
@@ -64,29 +66,35 @@ public class MapEntry
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         _val.calculateValue(sel, ctx, state, other, otherState);
         _key.calculateValue(sel, ctx, state, other, otherState);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         ExpState val = _val.initialize(sel, ctx, flags);
         ExpState key = _key.initialize(sel, ctx, flags);
         return new EntryExpState(key, val);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         EntryExpState estate = (EntryExpState) state;
@@ -97,15 +105,18 @@ public class MapEntry
         return new Entry(key, val);
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state, boolean asc)
     {
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state, boolean pks)
     {
         selectColumns(sel, ctx, state, pks);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         EntryExpState estate = (EntryExpState) state;
@@ -113,17 +124,21 @@ public class MapEntry
         _val.selectColumns(sel, ctx, estate.val, pks);
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public Class getType() {
         return Map.Entry.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
@@ -136,18 +151,22 @@ public class MapEntry
             key = k;
             value = v;
         }
+        @Override
         public K getKey() {
             return key;
         }
 
+        @Override
         public V getValue() {
             return value;
         }
 
+        @Override
         public V setValue(V v) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean equals(Object other) {
             if (other instanceof Map.Entry == false)
                 return false;
@@ -158,6 +177,7 @@ public class MapEntry
                 that.getValue() == null : value.equals(that.getValue()));
         }
 
+        @Override
         public int hashCode() {
             return  (key == null   ? 0 : key.hashCode()) ^
             (value == null ? 0 : value.hashCode());

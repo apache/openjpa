@@ -20,6 +20,6 @@
 package org.apache.openjpa.persistence.inheritance.entities.testinterfaces;
 
 public interface MSC {
-    public String getMappedSuperclassData();
-    public void setMappedSuperclassData(String mappedSuperclassData);
+    String getMappedSuperclassData();
+    void setMappedSuperclassData(String mappedSuperclassData);
 }

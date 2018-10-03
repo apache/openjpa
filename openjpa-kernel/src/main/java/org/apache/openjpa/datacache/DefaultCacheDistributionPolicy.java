@@ -29,17 +29,21 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  */
 public class DefaultCacheDistributionPolicy implements CacheDistributionPolicy {
+    @Override
     public String selectCache(OpenJPAStateManager sm, Object context) {
         return sm.getMetaData().getDataCacheName();
 
     }
 
+    @Override
     public void endConfiguration() {
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
     }
 
+    @Override
     public void startConfiguration() {
     }
 }

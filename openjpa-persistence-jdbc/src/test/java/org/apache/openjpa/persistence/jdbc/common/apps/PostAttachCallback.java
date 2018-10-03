@@ -24,6 +24,7 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
  *
  * @deprecated
  */
+@Deprecated
 public interface PostAttachCallback {
 
     /**
@@ -33,5 +34,5 @@ public interface PostAttachCallback {
      * @param detached the detached instance that corresponds to
      * this managed instance
      */
-    public void jdoPostAttach(Object detached);
+    void jdoPostAttach(Object detached);
 }

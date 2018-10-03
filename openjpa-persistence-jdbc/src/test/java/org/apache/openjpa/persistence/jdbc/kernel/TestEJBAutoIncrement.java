@@ -39,7 +39,8 @@ public class TestEJBAutoIncrement extends BaseJDBCTest
 		super(name);
 	}
 
-	public void setUp()
+	@Override
+    public void setUp()
 	{
 		deleteAll(AutoIncrementPC1.class);
 		deleteAll(AutoIncrementPC2.class);

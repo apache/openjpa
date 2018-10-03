@@ -43,12 +43,14 @@ public class AnnuityPersistebleObject implements JPAPersisteble {
 		this.version = version;
 	}
 
-	@javax.persistence.Id
+	@Override
+    @javax.persistence.Id
 	public String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	@Override
+    public void setId(String id) {
 		this.id = id;
 	}
 
@@ -60,11 +62,13 @@ public class AnnuityPersistebleObject implements JPAPersisteble {
 		this.lastUpdateDate = lastUpdateDate;
 	}
 
-	@Transient
+	@Override
+    @Transient
 	public Parameterizable<String, String> getConfiguration() {
 		return this.config;
 	}
-	@Transient
+	@Override
+    @Transient
 	public void setConfiguration(Parameterizable<String, String> config) {
 		this.config = config;
 	}

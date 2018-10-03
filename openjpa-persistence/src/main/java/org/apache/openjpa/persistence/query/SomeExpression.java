@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 class SomeExpression extends UnaryOperatorExpression implements Subquery {
-	public SomeExpression(QueryDefinitionImpl sub) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public SomeExpression(QueryDefinitionImpl sub) {
 		super(sub, UnaryFunctionalOperator.SOME);
 	}
 }

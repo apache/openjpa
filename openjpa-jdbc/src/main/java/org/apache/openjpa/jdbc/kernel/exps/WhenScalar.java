@@ -32,6 +32,8 @@ import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 public class WhenScalar
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val1;
     private final Val _val2;
 
@@ -55,12 +57,14 @@ public class WhenScalar
         return _val2.getType();
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         ExpState s1 = _val1.initialize(sel, ctx, 0);
         ExpState s2 = _val2.initialize(sel, ctx, 0);
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -69,6 +73,7 @@ public class WhenScalar
         _val2.appendTo(sel, ctx, bstate.state2, buf, 0);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -76,6 +81,7 @@ public class WhenScalar
         _val2.selectColumns(sel, ctx, bstate.state2, pks);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val1.acceptVisit(visitor);

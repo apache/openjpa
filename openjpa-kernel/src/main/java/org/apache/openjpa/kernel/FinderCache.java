@@ -76,7 +76,7 @@ public interface FinderCache<K,V,R> extends Configurable {
      *
      * @return FinderQuery for the given mapping.
      */
-    public FinderQuery<K,V,R> get(K key, FetchConfiguration fetch);
+    FinderQuery<K,V,R> get(K key, FetchConfiguration fetch);
 
     /**
      * Cache a FinderQuery for the given key and value.
@@ -89,17 +89,17 @@ public interface FinderCache<K,V,R> extends Configurable {
      * constructed or an existing query. If the given key-value can not be
      * cached, then return null.
      */
-    public FinderQuery<K,V,R> cache(K key, V value, FetchConfiguration fetch);
+    FinderQuery<K,V,R> cache(K key, V value, FetchConfiguration fetch);
 
 	/**
 	 * Get a map view of the cached entries as strings.
 	 */
-	public Map<String, String> getMapView();
+	Map<String, String> getMapView();
 
 	/**
 	 * Remove the FinderQuery for the given key from this cache.
 	 */
-	public boolean invalidate(K key);
+	boolean invalidate(K key);
 
     /**
      * Marks the given key as not amenable to caching.
@@ -111,34 +111,34 @@ public interface FinderCache<K,V,R> extends Configurable {
      * @return finder query for the given class if it had been cached before.
      * null otherwise.
      */
-    public FinderQuery<K,V,R> markUncachable(K key);
+    FinderQuery<K,V,R> markUncachable(K key);
 
     /**
 	 * Affirms if the given key matches any of the exclusion patterns.
 	 */
-	public boolean isExcluded(K key);
+	boolean isExcluded(K key);
 
 	/**
 	 * Gets the excluded stringified keys.
 	 */
-	public List<String> getExcludes();
+	List<String> getExcludes();
 
 	/**
      * Adds the given pattern to the list of excluded patterns. Any existing
 	 * cache entry whose key matches the given pattern will be marked
 	 * non-cachable in a reversible manner.
 	 */
-	public void addExclusionPattern(String pattern);
+	void addExclusionPattern(String pattern);
 
 	/**
 	 * Removes the given pattern from the list of excluded patterns.
 	 * Any excluded entry that matches the given pattern can now be cached
 	 * again, unless it has been marked non-cachable explicitly.
 	 */
-	public void removeExclusionPattern(String pattern);
+	void removeExclusionPattern(String pattern);
 
 	/**
 	 * Gets the simple statistics for executed finder queries.
 	 */
-	public QueryStatistics<K> getStatistics();
+	QueryStatistics<K> getStatistics();
 }

@@ -22,10 +22,10 @@ import java.sql.Types;
 import java.util.Date;
 import java.util.Locale;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Helper class to deal with schemas.
@@ -45,6 +45,7 @@ public class Schemas {
      * none.
      * @deprecated
      */
+    @Deprecated
     public static String getNewTableSchema(JDBCConfiguration conf) {
         return getNewTableSchemaIdentifier(conf).getName();
     }

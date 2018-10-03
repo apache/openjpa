@@ -41,14 +41,14 @@ public interface FetchConfiguration
     /**
      * Constant to revert any setting back to its default value.
      */
-    public static final int DEFAULT = -99;
+    int DEFAULT = -99;
 
     /**
      * Constant indicating that a field does not require fetching.
      *
      * @see #requiresFetch
      */
-    public static final int FETCH_NONE = 0;
+    int FETCH_NONE = 0;
 
     /**
      * Constant indicating that a field requires a fetch and load of fetched
@@ -56,7 +56,7 @@ public interface FetchConfiguration
      *
      * @see #requiresFetch
      */
-    public static final int FETCH_LOAD = 1;
+    int FETCH_LOAD = 1;
 
     /**
      * Constant indicating that a reference to the field's value must be
@@ -66,14 +66,14 @@ public interface FetchConfiguration
      *
      * @see #requiresFetch
      */
-    public static final int FETCH_REF = 2;
+    int FETCH_REF = 2;
 
 
     /**
      * Return the context associated with this configuration;
      * may be null if it has not been set or this object has been serialized.
      */
-    public StoreContext getContext();
+    StoreContext getContext();
 
     /**
      * Called automatically by the system to associate the fetch configuration
@@ -82,37 +82,37 @@ public interface FetchConfiguration
      * for specific back ends cannot rely on the context's configuration
      * implementing their back end's configuration sub-interface.
      */
-    public void setContext(StoreContext ctx);
+    void setContext(StoreContext ctx);
 
     /**
      * Clone this instance.
      */
-    public Object clone();
+    Object clone();
 
     /**
      * Copy the state from the given fetch configuration to this one.
      */
-    public void copy(FetchConfiguration fetch);
+    void copy(FetchConfiguration fetch);
 
     /**
      * Return the fetch batch size for large result set support.
      * Defaults to the	<code>openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
-    public int getFetchBatchSize();
+    int getFetchBatchSize();
 
     /**
      * Set the fetch batch size for large result set support.
      * Defaults to the	<code>openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
-    public FetchConfiguration setFetchBatchSize(int fetchBatchSize);
+    FetchConfiguration setFetchBatchSize(int fetchBatchSize);
 
     /**
      * Return the maximum depth of fetched instance graph.
      * Defaults to <code>1</code>
      */
-    public int getMaxFetchDepth();
+    int getMaxFetchDepth();
 
     /**
      * Set the maximum depth of the fetched instance graph.
@@ -121,7 +121,7 @@ public interface FetchConfiguration
      * instance. <code>-1</code> implies no limit. <code>0</code> is not
      * permissible.
      */
-    public FetchConfiguration setMaxFetchDepth(int max);
+    FetchConfiguration setMaxFetchDepth(int max);
 
     /**
      * Return whether or not query caching is enabled. If this returns
@@ -130,73 +130,73 @@ public interface FetchConfiguration
      * returns <code>false</code>, query caching will not be used
      * even if the datacache plugin is installed.
      */
-    public boolean getQueryCacheEnabled();
+    boolean getQueryCacheEnabled();
 
     /**
      * Control whether or not query caching is enabled. This has no effect
      * if the datacache plugin is not installed, or if the query cache size
      * is set to zero.
      */
-    public FetchConfiguration setQueryCacheEnabled(boolean cache);
+    FetchConfiguration setQueryCacheEnabled(boolean cache);
 
     /**
      * The query automatic flush configuration.
      */
-    public int getFlushBeforeQueries();
+    int getFlushBeforeQueries();
 
     /**
      * The query automatic flush configuration.
      */
-    public FetchConfiguration setFlushBeforeQueries(int flush);
+    FetchConfiguration setFlushBeforeQueries(int flush);
 
     /**
      * Affirms if extended path lookup feature is active.
      *
      * @since 2.0.0
      */
-    public boolean getExtendedPathLookup();
+    boolean getExtendedPathLookup();
 
     /**
      * Sets extended path lookup feature.
      *
      * @since 2.0.0
      */
-    public FetchConfiguration setExtendedPathLookup(boolean flag);
+    FetchConfiguration setExtendedPathLookup(boolean flag);
 
     /**
      * Returns immutable set of names of the fetch groups that this component
      * will use when loading objects. Defaults to the
      * <code>openjpa.FetchGroups</code> setting.  This set is not thread safe.
      */
-    public Set<String> getFetchGroups();
+    Set<String> getFetchGroups();
 
     /**
      * Return true if the given fetch group has been added.
      */
-    public boolean hasFetchGroup(String group);
+    boolean hasFetchGroup(String group);
 
     /**
      * Adds <code>group</code> to the set of fetch group names to
      * use when loading objects.
      */
-    public FetchConfiguration addFetchGroup(String group);
+    FetchConfiguration addFetchGroup(String group);
 
     /**
      * Adds <code>groups</code> to the set of fetch group names to
      * use when loading objects.
      */
-    public FetchConfiguration addFetchGroups(Collection<String> groups);
+    FetchConfiguration addFetchGroups(Collection<String> groups);
 
     /**
      * Remove the given fetch group.
      */
-    public FetchConfiguration removeFetchGroup(String group);
+    FetchConfiguration removeFetchGroup(String group);
 
     /**
      * Removes <code>groups</code> from the set of fetch group names
      * to use when loading objects.
      */
-    public FetchConfiguration removeFetchGroups(Collection<String> groups);
+    FetchConfiguration removeFetchGroups(Collection<String> groups);
 
     /**
      * Clears the set of fetch group names to use when loading
@@ -204,54 +204,54 @@ public interface FetchConfiguration
      * the default fetch group (and any requested field) will be
      * loaded when loading an object.
      */
-    public FetchConfiguration clearFetchGroups();
+    FetchConfiguration clearFetchGroups();
 
     /**
      * Resets the set of fetch groups to the list in the global configuration.
      */
-    public FetchConfiguration resetFetchGroups();
+    FetchConfiguration resetFetchGroups();
 
     /**
      * Returns the set of fully-qualified field names that this component
      * will use when loading objects. Defaults to the empty set.  This set is
      * not thread safe.
      */
-    public Set<String> getFields();
+    Set<String> getFields();
 
     /**
      * Return true if the given fully-qualified field has been added.
      */
-    public boolean hasField(String field);
+    boolean hasField(String field);
 
     /**
      * Adds <code>field</code> to the set of fully-qualified field names to
      * use when loading objects.
      */
-    public FetchConfiguration addField(String field);
+    FetchConfiguration addField(String field);
 
     /**
      * Adds <code>fields</code> to the set of fully-qualified field names to
      * use when loading objects.
      */
-    public FetchConfiguration addFields(Collection<String> fields);
+    FetchConfiguration addFields(Collection<String> fields);
 
     /**
      * Remove the given fully-qualified field.
      */
-    public FetchConfiguration removeField(String field);
+    FetchConfiguration removeField(String field);
 
     /**
      * Removes <code>fields</code> from the set of fully-qualified field names
      * to use when loading objects.
      */
-    public FetchConfiguration removeFields(Collection<String> fields);
+    FetchConfiguration removeFields(Collection<String> fields);
 
     /**
      * Clears the set of field names to use when loading
      * data. After this operation is invoked, only those fields in
      * the configured fetch groups will be loaded when loading an object.
      */
-    public FetchConfiguration clearFields();
+    FetchConfiguration clearFields();
 
     /**
      * The number of milliseconds to wait for an object lock, or -1 for no
@@ -259,7 +259,7 @@ public interface FetchConfiguration
      *
      * @since 0.3.1
      */
-    public int getLockTimeout();
+    int getLockTimeout();
 
     /**
      * The number of milliseconds to wait for an object lock, or -1 for no
@@ -267,21 +267,21 @@ public interface FetchConfiguration
      *
      * @since 0.3.1
      */
-    public FetchConfiguration setLockTimeout(int timeout);
+    FetchConfiguration setLockTimeout(int timeout);
 
     /**
      * The lock scope for next fetch.
      *
      * @since 2.0.0
      */
-    public int getLockScope();
+    int getLockScope();
 
     /**
      * The lock scope for next fetch.
      *
      * @since 2.0.0
      */
-    public FetchConfiguration setLockScope(int scope);
+    FetchConfiguration setLockScope(int scope);
 
     /**
      * The number of milliseconds to wait for a query, or -1 for no
@@ -289,7 +289,7 @@ public interface FetchConfiguration
      *
      * @since 2.0.0
      */
-    public int getQueryTimeout();
+    int getQueryTimeout();
 
     /**
      * The number of milliseconds to wait for a query, or -1 for no
@@ -297,68 +297,68 @@ public interface FetchConfiguration
      *
      * @since 2.0.0
      */
-    public FetchConfiguration setQueryTimeout(int timeout);
+    FetchConfiguration setQueryTimeout(int timeout);
 
     /**
      * The lock level to use for locking loaded objects.
      *
      * @since 0.3.1
      */
-    public int getReadLockLevel();
+    int getReadLockLevel();
 
     /**
      * The lock level to use for locking loaded objects.
      *
      * @since 0.3.1
      */
-    public FetchConfiguration setReadLockLevel(int level);
+    FetchConfiguration setReadLockLevel(int level);
 
     /**
      * The lock level to use for locking dirtied objects.
      *
      * @since 0.3.1
      */
-    public int getWriteLockLevel();
+    int getWriteLockLevel();
 
     /**
      * Gets the current storage mode for data cache.
      *
      * @since 2.0.0
      */
-    public DataCacheStoreMode getCacheStoreMode();
+    DataCacheStoreMode getCacheStoreMode();
 
     /**
      * Sets the current storage mode for data cache.
      *
      * @since 2.0.0
      */
-    public void setCacheStoreMode(DataCacheStoreMode mode);
+    void setCacheStoreMode(DataCacheStoreMode mode);
 
     /**
      * Gets the current retrieve mode for data cache.
      *
      * @since 2.0.0
      */
-    public DataCacheRetrieveMode getCacheRetrieveMode();
+    DataCacheRetrieveMode getCacheRetrieveMode();
 
     /**
      * Sets the current retrieve mode for data cache.
      *
      * @since 2.0.0
      */
-    public void setCacheRetrieveMode(DataCacheRetrieveMode mode);
+    void setCacheRetrieveMode(DataCacheRetrieveMode mode);
 
     /**
      * The lock level to use for locking dirtied objects.
      *
      * @since 0.3.1
      */
-    public FetchConfiguration setWriteLockLevel(int level);
+    FetchConfiguration setWriteLockLevel(int level);
 
     /**
      * Return a new result list for the current fetch configuration.
      */
-    public ResultList<?> newResultList(ResultObjectProvider rop);
+    ResultList<?> newResultList(ResultObjectProvider rop);
 
     /**
      * Sets an arbitrary query hint that may be utilized during execution.
@@ -373,7 +373,7 @@ public interface FetchConfiguration
      *
      * @since 2.0.0
      */
-    public void setHint(String name, Object value, Object original);
+    void setHint(String name, Object value, Object original);
 
     /**
      * Sets an arbitrary query hint that may be utilized during execution.
@@ -390,7 +390,7 @@ public interface FetchConfiguration
      *
      * @since 2.0.0
      */
-    public void setHint(String key, Object value);
+    void setHint(String key, Object value);
 
     /**
      * Get the hint value for the specific key as originally set by the caller, or null if the hint is not specified.
@@ -398,7 +398,7 @@ public interface FetchConfiguration
 	 * @param name the hint name
 	 * @since 0.4.0
 	 */
-	public Object getHint (String key);
+	Object getHint (String key);
 
 	/**
      * Get an immutable view of the currently active hints and their values.
@@ -406,49 +406,49 @@ public interface FetchConfiguration
 	 *
 	 * @since 2.0.0
 	 */
-	public Map<String, Object> getHints();
+	Map<String, Object> getHints();
 
 	/**
 	 * Affirm if the given hint has been set in this receiver.
 	 *
 	 */
-	public boolean isHintSet(String key);
+	boolean isHintSet(String key);
 
 	/**
 	 * Affirm if the Fetch Plan currently matches the Persistence Unit's configured default.
 	 *
 	 */
-	public boolean isDefaultPUFetchGroupConfigurationOnly();
+	boolean isDefaultPUFetchGroupConfigurationOnly();
 
     /**
      * Root classes for recursive operations. This set is not thread safe.
      */
-    public Set<Class<?>> getRootClasses();
+    Set<Class<?>> getRootClasses();
 
     /**
      * Root classes for recursive operations.
      */
-    public FetchConfiguration setRootClasses(Collection<Class<?>> classes);
+    FetchConfiguration setRootClasses(Collection<Class<?>> classes);
 
     /**
      * Root instances for recursive operations. This set is not thread safe.
      */
-    public Set<Object> getRootInstances();
+    Set<Object> getRootInstances();
 
     /**
      * Root instances for recursive operations.
      */
-    public FetchConfiguration setRootInstances(Collection<?> roots);
+    FetchConfiguration setRootInstances(Collection<?> roots);
 
     /**
      * Synchronize on internal lock if multithreaded is true.
      */
-    public void lock();
+    void lock();
 
     /**
      * Release internal lock if multithreaded is true.
      */
-    public void unlock();
+    void unlock();
 
     /**
      * Affirms if the given field requires to be fetched in the context
@@ -457,14 +457,14 @@ public interface FetchConfiguration
      *
      * @since 0.4.1
      */
-    public int requiresFetch(FieldMetaData fm);
+    int requiresFetch(FieldMetaData fm);
 
     /**
      * Return false if we know that the object being fetched with this
      * configuration does not require a load, because this configuration came
      * from a traversal of a {@link #FETCH_REF} field.
      */
-    public boolean requiresLoad();
+    boolean requiresLoad();
 
     /**
      * Traverse the given field to generate (possibly) a new configuration
@@ -473,10 +473,10 @@ public interface FetchConfiguration
      * @return a new configuration state resulting out of traversal
      * @since 0.4.1
      */
-    public FetchConfiguration traverse(FieldMetaData fm);
+    FetchConfiguration traverse(FieldMetaData fm);
 
     /**
      * Whether SQL generated by the FetchConfiguration's current configuration should be cached.
      */
-    public boolean isFetchConfigurationSQLCacheAdmissible();
+    boolean isFetchConfigurationSQLCacheAdmissible();
 }

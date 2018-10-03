@@ -19,9 +19,9 @@
 
 package org.apache.openjpa.persistence.util;
 
-import javax.persistence.Id;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 public class ToManyEager {

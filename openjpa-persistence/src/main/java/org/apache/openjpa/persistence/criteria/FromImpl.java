@@ -79,6 +79,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Return the joins that have been made from this receiver.
      */
+    @Override
     public java.util.Set<Join<X, ?>> getJoins() {
         return Expressions.returnCopy(_joins);
     }
@@ -86,6 +87,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given attribute using an inner join.
      */
+    @Override
     public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute) {
         return join(attribute, JoinType.INNER);
     }
@@ -93,8 +95,9 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given attribute using the given join type.
      */
+    @Override
     public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute, JoinType jt) {
-        Join<X, Y> join = new Joins.SingularJoin<X,Y>(this,
+        Join<X, Y> join = new Joins.SingularJoin<>(this,
                 (Members.SingularAttributeImpl<? super X, Y>) attribute, jt);
         addJoin(join);
 
@@ -104,6 +107,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given Collection-valued attribute using an inner join.
      */
+    @Override
     public <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection) {
         return join(collection, JoinType.INNER);
     }
@@ -112,9 +116,10 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
      *  Join to the given Collection-valued attribute using the given
      *  join type.
      */
+    @Override
     public <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection,
         JoinType jt) {
-        CollectionJoin<X, Y> join = new Joins.Collection<X, Y>(this,
+        CollectionJoin<X, Y> join = new Joins.Collection<>(this,
              (Members.CollectionAttributeImpl<? super X, Y>)collection, jt);
         addJoin(join);
 
@@ -124,6 +129,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given Set-valued attribute using an inner join.
      */
+    @Override
     public <Y> SetJoin<X,Y> join(SetAttribute<? super X, Y> set) {
         return join(set, JoinType.INNER);
     }
@@ -131,8 +137,9 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given Set-valued attribute using the given join type.
      */
+    @Override
     public <Y> SetJoin<X,Y> join(SetAttribute<? super X, Y> set, JoinType jt) {
-        SetJoin<X, Y> join = new Joins.Set<X, Y>(this, (Members.SetAttributeImpl<? super X, Y>)set, jt);
+        SetJoin<X, Y> join = new Joins.Set<>(this, (Members.SetAttributeImpl<? super X, Y>)set, jt);
         addJoin(join);
         return join;
     }
@@ -140,6 +147,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given List-valued attribute using an inner join.
      */
+    @Override
     public <Y> ListJoin<X,Y> join(ListAttribute<? super X, Y> list) {
         return join(list, JoinType.INNER);
     }
@@ -147,8 +155,9 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given List-valued attribute using the given join type.
      */
+    @Override
     public <Y> ListJoin<X,Y> join(ListAttribute<? super X, Y> list, JoinType jt) {
-        ListJoin<X, Y> join = new Joins.List<X, Y>(this, (Members.ListAttributeImpl<? super X, Y>)list, jt);
+        ListJoin<X, Y> join = new Joins.List<>(this, (Members.ListAttributeImpl<? super X, Y>)list, jt);
         addJoin(join);
         return join;
     }
@@ -156,6 +165,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given Map-valued attribute using an inner join.
      */
+    @Override
     public <K,V> MapJoin<X,K,V> join(MapAttribute<? super X,K,V> map) {
         return join(map, JoinType.INNER);
     }
@@ -163,18 +173,21 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given Map-valued attribute using the given join type.
      */
+    @Override
     public <K,V> MapJoin<X,K,V> join(MapAttribute<? super X,K,V> map, JoinType jt) {
-        MapJoin<X,K,V> join = new Joins.Map<X,K,V>(this, (Members.MapAttributeImpl<? super X,K,V>)map, jt);
+        MapJoin<X,K,V> join = new Joins.Map<>(this, (Members.MapAttributeImpl<? super X,K,V>)map, jt);
         addJoin(join);
         return join;
     }
 
     // String based counterparts
 
+    @Override
     public <W,Y> Join<W,Y> join(String attr) {
         return join(attr, JoinType.INNER);
     }
 
+    @Override
     public <W,Y> Join<W,Y> join(String name, JoinType jt) {
         assertJoinable(type);
         ManagedType<X> mType = (ManagedType<X>)type;
@@ -196,41 +209,49 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     }
 
 
+    @Override
     public <W,Y> CollectionJoin<W, Y> joinCollection(String attr) {
         assertJoinable(type);
         return (CollectionJoin<W,Y>)join(((ManagedType<X>)type).getCollection(attr), JoinType.INNER);
     }
 
+    @Override
     public <W,Y> CollectionJoin<W, Y> joinCollection(String attr, JoinType jt) {
         assertJoinable(type);
         return (CollectionJoin<W,Y>)join(((ManagedType<X>)type).getCollection(attr), jt);
     }
 
+    @Override
     public <W,Y> ListJoin<W, Y> joinList(String attr) {
         assertJoinable(type);
         return (ListJoin<W,Y>)join(((ManagedType<X>)type).getList(attr), JoinType.INNER);
     }
 
+    @Override
     public <W,Y> ListJoin<W,Y> joinList(String attr, JoinType jt) {
         assertJoinable(type);
         return (ListJoin<W,Y>)join(((ManagedType<X>)type).getList(attr), jt);
     }
 
+    @Override
     public <W,K,V> MapJoin<W,K,V> joinMap(String attr) {
         assertJoinable(type);
         return (MapJoin<W,K,V>)join(((ManagedType<X>)type).getMap(attr));
     }
 
+    @Override
     public <W,K,V> MapJoin<W,K,V>  joinMap(String attr, JoinType jt) {
         assertJoinable(type);
         return (MapJoin<W,K,V>)join(((ManagedType<X>)type).getMap(attr));
     }
 
+    @Override
     public <W,Y> SetJoin<W, Y>  joinSet(String attr) {
         assertJoinable(type);
         return (SetJoin<W, Y>)join(((ManagedType<X>)type).getSet(attr));
     }
 
+    @Override
     public <W,Y> SetJoin<W, Y>  joinSet(String attr, JoinType jt) {
         assertJoinable(type);
         return (SetJoin<W, Y>)join(((ManagedType<X>)type).getSet(attr), jt);
@@ -244,34 +265,40 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
 
     private void addJoin(Join<X,?> join) {
         if (_joins == null)
-            _joins = new HashSet<Join<X,?>>();
+            _joins = new HashSet<>();
          _joins.add(join);
     }
 
 
+    @Override
     public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt) {
         return addFetch((Members.Member<? super X, Y>)assoc, jt);
     }
 
+    @Override
     public <Y> Fetch<X,Y> fetch(SingularAttribute<? super X, Y> assoc) {
         return fetch(assoc, JoinType.INNER);
     }
 
+    @Override
     public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc,
         JoinType jt) {
         return addFetch((Members.Member<? super X, Y>)assoc, jt);
     }
 
+    @Override
     public <Y> Fetch<X,Y> fetch(PluralAttribute<? super X, ?, Y> assoc) {
         return fetch(assoc, JoinType.INNER);
     }
 
     //String-based:
 
+    @Override
     public <X,Y> Fetch<X, Y> fetch(String assocName) {
         return fetch(assocName, JoinType.INNER);
     }
 
+    @Override
     public <X,Y> Fetch<X, Y> fetch(String name, JoinType jt) {
         assertJoinable(type);
         Attribute<? super X,?> attr = ((ManagedType<X>)type).getAttribute(name);
@@ -282,6 +309,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
         }
     }
 
+    @Override
     public java.util.Set<Fetch<X, ?>> getFetches() {
         return Expressions.returnCopy(_fetches);
     }
@@ -290,16 +318,18 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
             JoinType jt) {
         Fetch<X,Y> fetch = new FetchPathImpl(this, member, jt);
         if (_fetches == null)
-            _fetches = new HashSet<Fetch<X,?>>();
+            _fetches = new HashSet<>();
         _fetches.add(fetch);
         return fetch;
     }
 
+    @Override
     public void acceptVisit(CriteriaExpressionVisitor visitor) {
         Expressions.acceptVisit(visitor, this,
             _joins == null ? null : _joins.toArray(new ExpressionImpl<?>[_joins.size()]));
     }
 
+    @Override
     public From<Z,X> getCorrelationParent() {
         return (From<Z,X>)getCorrelatedPath();
     }

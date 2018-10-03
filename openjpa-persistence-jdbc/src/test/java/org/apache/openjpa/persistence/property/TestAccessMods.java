@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestAccessMods
     extends SingleEMFTestCase {
 
+        @Override
         public void setUp() {
             setUp("openjpa.Compatibility", "PrivatePersistentProperties=false",
                 DROP_TABLES, AccessModsEntity.class);

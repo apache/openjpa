@@ -21,10 +21,12 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex2;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class EmployeePK implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     String name;
     Date bDay;
 
@@ -42,6 +44,7 @@ public class EmployeePK implements Serializable {
         return bDay;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -54,6 +57,7 @@ public class EmployeePK implements Serializable {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int code = 0;
         code += name.hashCode();

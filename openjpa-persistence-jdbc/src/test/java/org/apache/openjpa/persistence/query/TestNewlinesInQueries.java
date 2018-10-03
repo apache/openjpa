@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestNewlinesInQueries
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(SimpleEntity.class, CLEAR_TABLES);
 

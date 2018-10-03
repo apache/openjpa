@@ -18,7 +18,12 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.PostPersist;
+import javax.persistence.Transient;
 
 @Entity
 public class EntityWithGeneratedValueAndPostPersist {

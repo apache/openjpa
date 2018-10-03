@@ -45,7 +45,7 @@ public interface Relation<V1,V2> {
      *
      * @return a non-null source vertex.
      */
-    public V1 getSource();
+    V1 getSource();
 
     /**
      * Gets the immutable target vertex.
@@ -53,7 +53,7 @@ public interface Relation<V1,V2> {
      *
      * @return a target vertex. May be null.
      */
-    public V2 getTarget();
+    V2 getTarget();
 
 
     /**
@@ -61,13 +61,13 @@ public interface Relation<V1,V2> {
      *
      * @return the same relation for <em>fluent</em> method-chaining
      */
-    public Relation<V1,V2> addAttribute(String key, Object value);
+    Relation<V1,V2> addAttribute(String key, Object value);
 
     /**
      * Affirms if an attribute value has been associated with the given key.
      *
      */
-    public boolean hasAttribute(String key);
+    boolean hasAttribute(String key);
 
     /**
      * Gets the value of the given attribute.
@@ -77,17 +77,17 @@ public interface Relation<V1,V2> {
      *
      * @see #hasAttribute(String)
      */
-    public Object getAttribute(String key);
+    Object getAttribute(String key);
 
     /**
      * Removes the given attribute.
      *
      * @return the modified relation for <em>fluent</em> method chaining.
      */
-    public Relation<V1,V2> removeAttribute(String key);
+    Relation<V1,V2> removeAttribute(String key);
 
     /**
      * Gets the key-value pairs associated with this relation.
      */
-    public Properties getAttributes();
+    Properties getAttributes();
 }

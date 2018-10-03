@@ -21,7 +21,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Version;
 
 import org.apache.openjpa.persistence.DataCache;
 
@@ -35,7 +39,7 @@ public class Supplier {
     String name;
 
     @ManyToMany
-    List<PartBase> supplies = new ArrayList<PartBase>();
+    List<PartBase> supplies = new ArrayList<>();
 
     @Version
     long version;
@@ -77,6 +81,7 @@ public class Supplier {
         this.supplies = supplies;
     }
 
+    @Override
     public String toString() {
 
         return "Supplier:"+sid+" name:+"+name;

@@ -24,6 +24,7 @@ import org.apache.openjpa.persistence.query.GroupingTestCase;
 
 public class TestJDBCGrouping extends GroupingTestCase {
 
+    @Override
     protected void prepareQuery(Query q) {
         // nothing to do for JDBC case
     }

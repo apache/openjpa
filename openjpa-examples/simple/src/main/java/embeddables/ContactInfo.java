@@ -39,6 +39,7 @@ public class ContactInfo {
     @Embedded
     Phone homePhone;
 
+    @Override
     public String toString() {
         return homeAddress.toString() + " " + homePhone.toString();
     }

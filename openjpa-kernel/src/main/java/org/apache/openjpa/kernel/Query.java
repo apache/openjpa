@@ -38,80 +38,80 @@ public interface Query
     /**
      * The broker that generated this query.
      */
-    public Broker getBroker();
+    Broker getBroker();
 
     /**
      * The query string or template.
      */
-    public boolean setQuery(Object query);
+    boolean setQuery(Object query);
 
     /**
      * Whether to ignore changes in the current transaction.
      */
-    public void setIgnoreChanges(boolean ignore);
+    void setIgnoreChanges(boolean ignore);
 
     /**
      * Register a filter listener for the query.
      */
-    public void addFilterListener(FilterListener listener);
+    void addFilterListener(FilterListener listener);
 
     /**
      * Remove a filter listener from the query.
      */
-    public void removeFilterListener(FilterListener listener);
+    void removeFilterListener(FilterListener listener);
 
     /**
      * Register an aggregate listener for the query.
      */
-    public void addAggregateListener(AggregateListener listener);
+    void addAggregateListener(AggregateListener listener);
 
     /**
      * Remove an aggregate listener from the query.
      */
-    public void removeAggregateListener(AggregateListener listener);
+    void removeAggregateListener(AggregateListener listener);
 
     /**
      * Return the candidate extent, or <code>null</code> if a
      * collection was specified instead of an extent.
      */
-    public Extent getCandidateExtent();
+    Extent getCandidateExtent();
 
     /**
      * Set the candidate extent.
      */
-    public void setCandidateExtent(Extent extent);
+    void setCandidateExtent(Extent extent);
 
     /**
      * Set a collection of candidates.
      */
-    public void setCandidateCollection(Collection<?> coll);
+    void setCandidateCollection(Collection<?> coll);
 
     /**
      * Compile the query.
      */
-    public void compile();
+    void compile();
 
     /**
      * Execute.
      */
-    public Object execute();
+    Object execute();
 
     /**
      * Execute with parameter map.
      */
-    public Object execute(Map<?,?> params);
+    Object execute(Map<?,?> params);
 
     /**
      * Execute with parameter array.
      */
-    public Object execute(Object[] params);
+    Object execute(Object[] params);
 
     /**
      * Deletes all of the instances that are satisfied by the query.
      *
      * @return the number of instances that were deleted
      */
-    public long deleteAll();
+    long deleteAll();
 
     /**
      * Deletes all of the instances that are satisfied by the query.
@@ -119,7 +119,7 @@ public interface Query
      * @param parameters the positional parameters for the query
      * @return the number of instances that were deleted
      */
-    public long deleteAll(Object[] parameters);
+    long deleteAll(Object[] parameters);
 
     /**
      * Deletes all of the instances that are satisfied by the query.
@@ -127,14 +127,14 @@ public interface Query
      * @param parameterMap the named parameter map
      * @return the number of instances that were deleted
      */
-    public long deleteAll(Map<?,?> parameterMap);
+    long deleteAll(Map<?,?> parameterMap);
 
     /**
      * Performs an update of the instances that are satisfied by the query.
      *
      * @return the number of instances that were update
      */
-    public long updateAll();
+    long updateAll();
 
     /**
      * Performs an update of the instances that are satisfied by the query.
@@ -142,7 +142,7 @@ public interface Query
      * @param parameters the positional parameter array
      * @return the number of instances that were update
      */
-    public long updateAll(Object[] parameters);
+    long updateAll(Object[] parameters);
 
     /**
      * Performs an update of the instances that are satisfied by the query.
@@ -150,19 +150,19 @@ public interface Query
      * @param parameterMap the named parameter map
      * @return the number of instances that were update
      */
-    public long updateAll(Map<?,?> parameterMap);
+    long updateAll(Map<?,?> parameterMap);
 
     /**
      * Close all open query results.
      */
-    public void closeAll();
+    void closeAll();
 
     /**
      * Close query results that are consuming resources. Allow results that
      * are not consuming resources to remain open so that they continue to
      * function normally.
      */
-    public void closeResources();
+    void closeResources();
 
     /**
      * Returns a description of the commands that will be sent to
@@ -172,22 +172,22 @@ public interface Query
      * @param params the named parameter map for the query invocation
      * @since 0.3.2
      */
-    public String[] getDataStoreActions(Map<?,?> params);
+    String[] getDataStoreActions(Map<?,?> params);
 
     /**
      * Assert that the query's broker is still open.
      */
-    public void assertOpen();
+    void assertOpen();
 
     /**
      * Assert that the query is not read-only.
      */
-    public void assertNotReadOnly();
+    void assertNotReadOnly();
 
     /**
      * Check that the query has not been serialized, which causes it to lose
      * its association with its Broker.
 	 */
-	public void assertNotSerialized ();
+	void assertNotSerialized ();
 }
 

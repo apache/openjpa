@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Entity;
 
 @Entity
@@ -28,6 +30,7 @@ public class JoinTableMapPC
     private String name;
     private Map helpers = new HashMap();
 
+    @Override
     public Map getHelpers() {
         return this.helpers;
     }

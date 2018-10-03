@@ -65,6 +65,7 @@ public class Division {
         this.name = name;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Division)) return false;
         Division other = (Division) o;
@@ -74,6 +75,7 @@ public class Division {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret = ret * 31 + name.hashCode();

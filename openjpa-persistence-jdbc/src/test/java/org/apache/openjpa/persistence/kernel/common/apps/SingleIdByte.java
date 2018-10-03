@@ -30,6 +30,7 @@ public class SingleIdByte implements SingleId {
     private byte pk;
     private String str;
 
+    @Override
     public boolean correctIdClass(Class c) {
         return ByteId.class.equals(c);
     }
@@ -42,14 +43,17 @@ public class SingleIdByte implements SingleId {
         pk = i;
     }
 
+    @Override
     public String getPkString() {
         return pk + "";
     }
 
+    @Override
     public String getString() {
         return str;
     }
 
+    @Override
     public void setString(String s) {
         str = s;
     }

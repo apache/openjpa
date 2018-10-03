@@ -67,9 +67,10 @@ import org.apache.openjpa.util.OpenJPAId;
  * @author Abe White
  * @author Steve Kim (query metadata)
  */
-@SuppressWarnings("serial")
 public class MetaDataRepository implements PCRegistry.RegisterClassListener, Configurable, Closeable, MetaDataModes,
     Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constant to not validate any metadata.
@@ -109,14 +110,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private SequenceMetaData _sysSeq = null;
     // cache of parsed metadata, oid class to class, and interface class
     // to metadatas
-    private Map<Class<?>, ClassMetaData> _metas = new HashMap<Class<?>, ClassMetaData>();
-    private Map<String, ClassMetaData> _metaStringMap = new ConcurrentHashMap<String, ClassMetaData>();
+    private Map<Class<?>, ClassMetaData> _metas = new HashMap<>();
+    private Map<String, ClassMetaData> _metaStringMap = new ConcurrentHashMap<>();
     private Map<Class<?>, Class<?>> _oids = Collections.synchronizedMap(new HashMap<Class<?>, Class<?>>());
     private Map<Class<?>, Collection<Class<?>>> _impls =
         Collections.synchronizedMap(new HashMap<Class<?>, Collection<Class<?>>>());
     private Map<Class<?>, Class<?>> _ifaces = Collections.synchronizedMap(new HashMap<Class<?>, Class<?>>());
-    private Map<String, QueryMetaData> _queries = new HashMap<String, QueryMetaData>();
-    private Map<String, SequenceMetaData> _seqs = new HashMap<String, SequenceMetaData>();
+    private Map<String, QueryMetaData> _queries = new HashMap<>();
+    private Map<String, SequenceMetaData> _seqs = new HashMap<>();
     private Map<String, List<Class<?>>> _aliases = Collections.synchronizedMap(new HashMap<String, List<Class<?>>>());
     private Map<Class<?>, NonPersistentMetaData> _pawares =
         Collections.synchronizedMap(new HashMap<Class<?>, NonPersistentMetaData>());
@@ -129,7 +130,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     // xml mapping
     protected final XMLMetaData[] EMPTY_XMLMETAS;
-    private final Map<Class<?>, XMLMetaData> _xmlmetas = new HashMap<Class<?>, XMLMetaData>();
+    private final Map<Class<?>, XMLMetaData> _xmlmetas = new HashMap<>();
 
     private transient OpenJPAConfiguration _conf = null;
     private transient Log _log = null;
@@ -142,12 +143,12 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     // we buffer up any classes that register themselves to prevent
     // reentrancy errors if classes register during a current parse (common)
-    private final Collection<Class<?>> _registered = new HashSet<Class<?>>();
+    private final Collection<Class<?>> _registered = new HashSet<>();
 
     // set of metadatas we're in the process of resolving
-    private final List<ClassMetaData> _resolving = new ArrayList<ClassMetaData>();
-    private final List<ClassMetaData> _mapping = new ArrayList<ClassMetaData>();
-    private final List<RuntimeException> _errs = new LinkedList<RuntimeException>();
+    private final List<ClassMetaData> _resolving = new ArrayList<>();
+    private final List<ClassMetaData> _mapping = new ArrayList<>();
+    private final List<RuntimeException> _errs = new LinkedList<>();
 
     // system listeners
     private LifecycleEventManager.ListenerList _listeners = new LifecycleEventManager.ListenerList(3);
@@ -340,7 +341,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _log.trace(_loc.get("repos-initializeEager-found", classes));
         }
 
-        List<Class<?>> loaded = new ArrayList<Class<?>>();
+        List<Class<?>> loaded = new ArrayList<>();
         for (String c : classes) {
             try {
                 Class<?> cls = AccessController.doPrivileged((J2DoPrivHelper.getForNameAction(c, true, multi)));
@@ -522,7 +523,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     }
 
     private Collection<String> getAliasNamesInternal() {
-        Collection<String> aliases = new HashSet<String>();
+        Collection<String> aliases = new HashSet<>();
         for(Map.Entry<String, List<Class<?>>> e : _aliases.entrySet()){
             if (e.getValue() != null) {
                 aliases.add(e.getKey());
@@ -540,7 +541,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
         // check cache for existing metadata, or give up if no metadata and
         // our list of configured persistent types doesn't include the class
-        ClassMetaData meta = (ClassMetaData) _metas.get(cls);
+        ClassMetaData meta = _metas.get(cls);
         if (meta != null && ((meta.getSourceMode() & MODE_META) != 0 || (_sourceMode & MODE_META) == 0))
             return meta;
 
@@ -589,7 +590,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
         // check cache again
         if (meta == null)
-            meta = (ClassMetaData) _metas.get(cls);
+            meta = _metas.get(cls);
         if (meta != null && ((meta.getSourceMode() & MODE_META) != 0 || (_sourceMode & MODE_META) == 0))
             return meta;
 
@@ -673,7 +674,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 re = _errs.get(0);
             } else {
                 re = new MetaDataException(_loc.get("resolve-errs"))
-                    .setNestedThrowables((Throwable[]) _errs
+                    .setNestedThrowables(_errs
                     .toArray(new Exception[_errs.size()]));
             }
             _errs.clear();
@@ -788,7 +789,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // initialize mapping for runtime use
         if ((_resMode & MODE_MAPPING_INIT) != 0) {
             for (int i = 0; i < mapped.size(); i++) {
-                meta = (ClassMetaData) mapped.get(i);
+                meta = mapped.get(i);
                 try {
                     meta.resolve(MODE_MAPPING_INIT);
                 } catch (RuntimeException re) {
@@ -822,7 +823,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // that each processing call might place more metas in the buffer as
         // one class tries to access metadata for another
         ClassMetaData buffered;
-        List<ClassMetaData> processed = new ArrayList<ClassMetaData>(5);
+        List<ClassMetaData> processed = new ArrayList<>(5);
         while (!buffer.isEmpty()) {
             buffered = buffer.get(0);
             try {
@@ -865,12 +866,12 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private ClassMetaData[] getMetaDatasInternal() {
             // prevent concurrent mod errors when resolving one metadata
             // introduces others
-            ClassMetaData[] metas = (ClassMetaData[]) _metas.values().toArray(new ClassMetaData[_metas.size()]);
+            ClassMetaData[] metas = _metas.values().toArray(new ClassMetaData[_metas.size()]);
             for (int i = 0; i < metas.length; i++)
                 if (metas[i] != null)
                     getMetaData(metas[i].getDescribedType(), metas[i].getEnvClassLoader(), true);
 
-            List<ClassMetaData> resolved = new ArrayList<ClassMetaData>(_metas.size());
+            List<ClassMetaData> resolved = new ArrayList<>(_metas.size());
             for (ClassMetaData meta : _metas.values()) {
                 if (meta != null)
                     resolved.add(meta);
@@ -884,7 +885,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * Return the cached metadata for the given class, without any resolution. Return null if none.
      */
     public ClassMetaData getCachedMetaData(Class<?> cls) {
-        return (ClassMetaData) _metas.get(cls);
+        return _metas.get(cls);
     }
 
     /**
@@ -1138,7 +1139,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 // will only register concrete superclass in PCRegistry
                 sup.clearSubclassCache();
                 addToCollection(_subs, sup.getDescribedType(), impl, true);
-                sup = (ClassMetaData) sup.getPCSuperclassMetaData();
+                sup = sup.getPCSuperclassMetaData();
         }
     }
 
@@ -1278,7 +1279,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     private ClassMetaData[] getImplementorMetaDatasInternal(Collection<Class<?>> classes, ClassLoader envLoader,
         boolean mustExist) {
-        Collection<ClassMetaData> mapped = new ArrayList<ClassMetaData>(classes.size());
+        Collection<ClassMetaData> mapped = new ArrayList<>(classes.size());
         ClassMetaData meta = null;
         for (Class<?> c : classes) {
             meta = getMetaData(c, envLoader, true);
@@ -1293,7 +1294,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * given class is not registered as persistence-aware.
      */
     public NonPersistentMetaData getPersistenceAware(Class<?> cls) {
-        return (NonPersistentMetaData) _pawares.get(cls);
+        return _pawares.get(cls);
     }
 
     /**
@@ -1314,7 +1315,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private NonPersistentMetaData[] getPersistenceAwaresInternal() {
             if (_pawares.isEmpty())
                 return EMPTY_NON_PERSISTENT;
-            return (NonPersistentMetaData[]) _pawares.values().toArray(new NonPersistentMetaData[_pawares.size()]);
+            return _pawares.values().toArray(new NonPersistentMetaData[_pawares.size()]);
     }
 
     /**
@@ -1337,7 +1338,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     private NonPersistentMetaData addPersistenceAwareInternal(Class<?> cls) {
             if (_pawares.containsKey(cls))
-                return (NonPersistentMetaData) _pawares.get(cls);
+                return _pawares.get(cls);
             if (getCachedMetaData(cls) != null)
                 throw new MetaDataException(_loc.get("pc-and-aware", cls));
             NonPersistentMetaData meta =
@@ -1360,7 +1361,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * interface is not registered as persistence-aware.
      */
     public NonPersistentMetaData getNonMappedInterface(Class<?> iface) {
-        return (NonPersistentMetaData) _nonMapped.get(iface);
+        return _nonMapped.get(iface);
     }
 
     /**
@@ -1381,7 +1382,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private NonPersistentMetaData[] getNonMappedInterfacesInternal() {
             if (_nonMapped.isEmpty())
                 return EMPTY_NON_PERSISTENT;
-            return (NonPersistentMetaData[]) _nonMapped.values().toArray(new NonPersistentMetaData[_nonMapped.size()]);
+            return _nonMapped.values().toArray(new NonPersistentMetaData[_nonMapped.size()]);
     }
 
     /**
@@ -1406,7 +1407,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     private NonPersistentMetaData addNonMappedInterfaceInternal(Class<?> iface) {
             if (_nonMapped.containsKey(iface))
-                return (NonPersistentMetaData) _nonMapped.get(iface);
+                return _nonMapped.get(iface);
             if (getCachedMetaData(iface) != null)
                 throw new MetaDataException(_loc.get("non-mapped-pc", iface));
             NonPersistentMetaData meta =
@@ -1529,7 +1530,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
             // attempt to load classes so that they get processed
             ClassLoader clsLoader = _conf.getClassResolverInstance().getClassLoader(getClass(), envLoader);
-            List<Class<?>> classes = new ArrayList<Class<?>>(names.size());
+            List<Class<?>> classes = new ArrayList<>(names.size());
             Class<?> cls;
             for (String className : names) {
                 cls = classForName(className, clsLoader);
@@ -1598,6 +1599,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     // RegisterClassListener implementation
     // //////////////////////////////////////
 
+    @Override
     public void register(Class<?> cls) {
         // buffer registered classes until an oid metadata request is made,
         // at which point we'll parse everything in the buffer
@@ -1686,7 +1688,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 if (_log.isWarnEnabled())
                     _log.warn(_loc.get("failed-registered", reg[i]), t);
                 if (failed == null)
-                    failed = new ArrayList<Class<?>>();
+                    failed = new ArrayList<>();
                 failed.add(reg[i]);
             }
         }
@@ -1718,7 +1720,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             ClassMetaData meta;
             for (Class<?> anc = cls; (anc = PCRegistry.getPersistentSuperclass(anc)) != null;) {
                 addToCollection(_subs, anc, cls, true);
-                meta = (ClassMetaData) _metas.get(anc);
+                meta = _metas.get(anc);
                 if (meta != null)
                     meta.clearSubclassCache();
                 leastDerived = anc;
@@ -1781,7 +1783,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             if (alias != null) {
                 List<Class<?>> classes = _aliases.get(alias);
                 if (classes == null)
-                    classes = new ArrayList<Class<?>>(3);
+                    classes = new ArrayList<>(3);
                 if (!classes.contains(cls)) {
                     classes.add(cls);
                     _aliases.put(alias, classes);
@@ -1911,27 +1913,30 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     // Configurable implementation
     // /////////////////////////////
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _conf = (OpenJPAConfiguration) conf;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_METADATA);
         _filterRegisteredClasses = _conf.getCompatibilityInstance().getFilterPCRegistryClasses();
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
         initializeMetaDataFactory();
 		if (_implGen == null)
 			_implGen = new InterfaceImplGenerator(this);
         if (_preload == true) {
-            _oids = new HashMap<Class<?>, Class<?>>();
-            _impls = new HashMap<Class<?>, Collection<Class<?>>>();
-            _ifaces = new HashMap<Class<?>, Class<?>>();
-            _aliases = new HashMap<String, List<Class<?>>>();
-            _pawares = new HashMap<Class<?>, NonPersistentMetaData>();
-            _nonMapped = new HashMap<Class<?>, NonPersistentMetaData>();
-            _subs = new HashMap<Class<?>, List<Class<?>>>();
+            _oids = new HashMap<>();
+            _impls = new HashMap<>();
+            _ifaces = new HashMap<>();
+            _aliases = new HashMap<>();
+            _pawares = new HashMap<>();
+            _nonMapped = new HashMap<>();
+            _subs = new HashMap<>();
             // Wait till we're done loading MetaData to flip _lock boolean.
         }
     }
@@ -2048,10 +2053,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public QueryMetaData getCachedQueryMetaData(String name) {
         if (_locking) {
             synchronized (this) {
-                return (QueryMetaData) _queries.get(name);
+                return _queries.get(name);
             }
         } else {
-            return (QueryMetaData) _queries.get(name);
+            return _queries.get(name);
         }
     }
 
@@ -2232,10 +2237,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public SequenceMetaData[] getSequenceMetaDatas() {
         if (_locking) {
             synchronized (this) {
-                return (SequenceMetaData[]) _seqs.values().toArray(new SequenceMetaData[_seqs.size()]);
+                return _seqs.values().toArray(new SequenceMetaData[_seqs.size()]);
             }
         } else {
-            return (SequenceMetaData[]) _seqs.values().toArray(new SequenceMetaData[_seqs.size()]);
+            return _seqs.values().toArray(new SequenceMetaData[_seqs.size()]);
         }
     }
 
@@ -2245,10 +2250,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public SequenceMetaData getCachedSequenceMetaData(String name) {
         if (_locking) {
             synchronized (this) {
-                return (SequenceMetaData) _seqs.get(name);
+                return _seqs.get(name);
             }
         } else {
-            return (SequenceMetaData) _seqs.get(name);
+            return _seqs.get(name);
         }
     }
 
@@ -2371,6 +2376,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Free the resources used by this repository. Closes all user sequences.
      */
+    @Override
     public void close() {
         if (_locking) {
             synchronized (this) {
@@ -2393,15 +2399,19 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      */
     private static class QueryKey implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public String clsName;
         public String name;
 
+        @Override
         public int hashCode() {
             int clsHash = (clsName == null) ? 0 : clsName.hashCode();
             int nameHash = (name == null) ? 0 : name.hashCode();
             return clsHash + nameHash;
         }
 
+        @Override
         public boolean equals(Object obj) {
             if (obj == this)
                 return true;
@@ -2440,7 +2450,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // load JAXB XML metadata
         _factory.loadXMLMetaData(cls);
 
-        xmlmeta = (XMLClassMetaData) _xmlmetas.get(cls);
+        xmlmeta = _xmlmetas.get(cls);
 
         return xmlmeta;
     }

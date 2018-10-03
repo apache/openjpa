@@ -18,10 +18,8 @@
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
-import javax.persistence.*;
-
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.
-        CallbackStorage;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("SUB")
@@ -35,18 +33,21 @@ public class LifeCycleDDEntitySub extends LifeCycleDDEntity
 		super(n, sn);
 	}
 
-	public void verifyPrePersist()
+	@Override
+    public void verifyPrePersist()
 	{
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("over-verifyprp");
 	}
 
-	public void verifyPostPersist()
+	@Override
+    public void verifyPostPersist()
 	{
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("over-verifypop");
 	}
 
+    @Override
     public void verifyPreRemove()
     {
 		CallbackStorage store = CallbackStorage.getInstance();

@@ -28,12 +28,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import java.util.IdentityHashMap;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.DetachOptions;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -603,6 +603,7 @@ public class DetachManager
             _detSM = detSM;
         }
 
+        @Override
         protected PersistenceCapable getDetachedPersistenceCapable() {
             return _to;
         }
@@ -653,51 +654,61 @@ public class DetachManager
             }
         }
 
+        @Override
         public void storeBooleanField(int field, boolean curVal) {
             super.storeBooleanField(field, curVal);
             sm.replaceField(_to, this, field);
         }
 
+        @Override
         public void storeByteField(int field, byte curVal) {
             super.storeByteField(field, curVal);
             sm.replaceField(_to, this, field);
         }
 
+        @Override
         public void storeCharField(int field, char curVal) {
             super.storeCharField(field, curVal);
             sm.replaceField(_to, this, field);
         }
 
+        @Override
         public void storeDoubleField(int field, double curVal) {
             super.storeDoubleField(field, curVal);
             sm.replaceField(_to, this, field);
         }
 
+        @Override
         public void storeFloatField(int field, float curVal) {
             super.storeFloatField(field, curVal);
             sm.replaceField(_to, this, field);
         }
 
+        @Override
         public void storeIntField(int field, int curVal) {
             super.storeIntField(field, curVal);
             sm.replaceField(_to, this, field);
         }
 
+        @Override
         public void storeLongField(int field, long curVal) {
             super.storeLongField(field, curVal);
             sm.replaceField(_to, this, field);
         }
 
+        @Override
         public void storeShortField(int field, short curVal) {
             super.storeShortField(field, curVal);
             sm.replaceField(_to, this, field);
         }
 
+        @Override
         public void storeStringField(int field, String curVal) {
             super.storeStringField(field, curVal);
             sm.replaceField(_to, this, field);
         }
 
+        @Override
         public void storeObjectField(int field, Object curVal) {
             super.storeObjectField(field, detachField(curVal, field));
             sm.replaceField(_to, this, field);

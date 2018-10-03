@@ -28,11 +28,10 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.List;
 
-
-import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
 
 public class TestMathQueries extends BaseQueryTest {
 
@@ -44,6 +43,7 @@ public class TestMathQueries extends BaseQueryTest {
         super(name);
     }
 
+    @Override
     public void setUp() {
         deleteAll(QueryTest1.class);
         OpenJPAEntityManager pm = getEM();

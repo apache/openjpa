@@ -34,10 +34,12 @@ public class TestQueryTargetPolicy extends SliceTestCase {
     private int POBJECT_COUNT = 2;
     private int VALUE_MIN = 100;
 
+    @Override
     protected String getPersistenceUnitName() {
         return "ordering";
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
                 Car.class, Manufacturer.class,

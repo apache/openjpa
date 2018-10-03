@@ -19,12 +19,12 @@
 package org.apache.openjpa.persistence.meta;
 
 
-import org.apache.openjpa.persistence.meta.common.apps.FieldOrderPC;
-import org.apache.openjpa.persistence.meta.common.apps.FieldOrderPCSubclass;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.meta.common.apps.FieldOrderPC;
+import org.apache.openjpa.persistence.meta.common.apps.FieldOrderPCSubclass;
 
 public class TestFieldDeclarationOrder
     extends AbstractTestCase {

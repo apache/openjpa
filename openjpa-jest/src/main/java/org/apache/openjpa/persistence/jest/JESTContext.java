@@ -58,7 +58,7 @@ public class JESTContext implements JPAServletContext {
     protected MetaDataRepository       _repos;
     private String _rootResource;
     protected Log _log;
-    protected static PrototypeFactory<String,JESTCommand> _cf = new PrototypeFactory<String,JESTCommand>();
+    protected static PrototypeFactory<String,JESTCommand> _cf = new PrototypeFactory<>();
     public static final Localizer _loc = Localizer.forPackage(JESTContext.class);
     private static final String ONE_YEAR_FROM_NOW;
     public static final char QUERY_SEPARATOR = '?';
@@ -95,6 +95,7 @@ public class JESTContext implements JPAServletContext {
     /**
      * Gets the name of the persistence unit.
      */
+    @Override
     public String getPersistenceUnitName() {
         return _unit;
     }
@@ -103,6 +104,7 @@ public class JESTContext implements JPAServletContext {
      * Gets the persistence context. The persistence context is lazily constructed because all commands
      * may not need it.
      */
+    @Override
     public OpenJPAEntityManager getPersistenceContext() {
         if (_em == null) {
             _em = _emf.createEntityManager();
@@ -113,13 +115,13 @@ public class JESTContext implements JPAServletContext {
     /**
      * Gets the request.
      */
+    @Override
     public HttpServletRequest getRequest() {
         return _request;
     }
 
-    /**
-     *
-     */
+    
+    @Override
     public String getRequestURI() {
         StringBuffer buf = _request.getRequestURL();
         String query = _request.getQueryString();
@@ -133,6 +135,7 @@ public class JESTContext implements JPAServletContext {
     /**
      * Gets the response.
      */
+    @Override
     public HttpServletResponse getResponse() {
         return _response;
     }
@@ -211,6 +214,7 @@ public class JESTContext implements JPAServletContext {
     }
 
 
+    @Override
     public ClassMetaData resolve(String alias) {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         return _repos.getMetaData(alias, loader, true);
@@ -259,6 +263,7 @@ public class JESTContext implements JPAServletContext {
         }
     }
 
+    @Override
     public void log(short level, String message) {
         switch (level) {
             case Log.INFO:  _log.info(message); break;

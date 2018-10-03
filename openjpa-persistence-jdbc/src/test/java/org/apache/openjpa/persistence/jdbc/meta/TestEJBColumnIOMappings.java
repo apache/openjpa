@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.jdbc.meta;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.kernel.common.apps.*;
+import org.apache.openjpa.persistence.kernel.common.apps.ColumnIOPC;
 
 public class TestEJBColumnIOMappings
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
@@ -29,7 +29,8 @@ public class TestEJBColumnIOMappings
 		super(name);
 	}
 
-	public void setUp()
+	@Override
+    public void setUp()
 	{
 		deleteAll(ColumnIOPC.class);
 	}

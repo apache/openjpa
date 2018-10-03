@@ -21,9 +21,8 @@ package org.apache.openjpa.persistence.annotations;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 //import kodo.persistence.test.*;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedOwner;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedValue;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
@@ -49,6 +48,7 @@ public class TestEJBEmbedded extends AnnotationTestCase
         CLOB = buf.toString();
     }
 
+    @Override
     public void setUp()
     {
         deleteAll (EmbedOwner.class);

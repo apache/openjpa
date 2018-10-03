@@ -77,6 +77,7 @@ public class Item implements Serializable {
         return rating;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -90,6 +91,7 @@ public class Item implements Serializable {
         return id == item.id;
     }
 
+    @Override
     public int hashCode() {
         return id;
     }

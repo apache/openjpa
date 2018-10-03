@@ -48,22 +48,27 @@ public class ExtentImpl<T>
     /**
      * Delegate.
      */
+    @Override
     public org.apache.openjpa.kernel.Extent<T> getDelegate() {
         return _extent.getDelegate();
     }
 
+    @Override
     public Class<T> getElementClass() {
         return _extent.getElementType();
     }
 
+    @Override
     public boolean hasSubclasses() {
         return _extent.hasSubclasses();
     }
 
+    @Override
     public OpenJPAEntityManager getEntityManager() {
         return _em;
     }
 
+    @Override
     public FetchPlan getFetchPlan() {
         _em.assertNotCloseInvoked();
         _extent.lock();
@@ -78,33 +83,40 @@ public class ExtentImpl<T>
         }
     }
 
+    @Override
     public boolean getIgnoreChanges() {
         return _extent.getIgnoreChanges();
     }
 
+    @Override
     public void setIgnoreChanges(boolean ignoreChanges) {
         _em.assertNotCloseInvoked();
         _extent.setIgnoreChanges(ignoreChanges);
     }
 
+    @Override
     public List<T> list() {
         _em.assertNotCloseInvoked();
         return _extent.list();
     }
 
+    @Override
     public Iterator<T> iterator() {
         _em.assertNotCloseInvoked();
         return _extent.iterator();
     }
 
+    @Override
     public void closeAll() {
         _extent.closeAll();
     }
 
+    @Override
     public int hashCode() {
         return ((_extent == null) ? 0  : _extent.hashCode());
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;

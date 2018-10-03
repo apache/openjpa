@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestDerivedIdentity extends SingleEMFTestCase {
+    @Override
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Dependent5a.class, Employee5.class, EmployeeId5.class);
     }

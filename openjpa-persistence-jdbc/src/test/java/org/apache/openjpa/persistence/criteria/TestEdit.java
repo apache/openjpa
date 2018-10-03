@@ -198,6 +198,7 @@ public class TestEdit extends CriteriaTest {
         c.where(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p1")));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("p1", "XYZ");
             }
@@ -207,6 +208,7 @@ public class TestEdit extends CriteriaTest {
         c.where(cb.and(where, cb.equal(p.get(Person_.name), cb.parameter(String.class, "p2"))));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("p1", "MNO");
                 q.setParameter("p2", "ABC");
@@ -224,6 +226,7 @@ public class TestEdit extends CriteriaTest {
                        cb.equal(p.get(Person_.name), cb.parameter(String.class, "p2"))));
         assertEquals(2,c.getParameters().size());
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("p1", "XYZ");
                 q.setParameter("p2", "ABC");
@@ -233,6 +236,7 @@ public class TestEdit extends CriteriaTest {
         c.where(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p3")));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("p3", "MNO");
             }
@@ -249,6 +253,7 @@ public class TestEdit extends CriteriaTest {
                        cb.equal(p.get(Person_.name), cb.parameter(String.class, "p2"))));
         assertEquals(2,c.getParameters().size());
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("p1", "XYZ");
                 q.setParameter("p2", "ABC");
@@ -258,6 +263,7 @@ public class TestEdit extends CriteriaTest {
         c.where(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p1")));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("p1", "MNO");
             }

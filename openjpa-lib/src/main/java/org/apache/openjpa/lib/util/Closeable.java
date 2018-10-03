@@ -26,5 +26,5 @@ package org.apache.openjpa.lib.util;
  */
 public interface Closeable {
 
-    public void close() throws Exception;
+    void close() throws Exception;
 }

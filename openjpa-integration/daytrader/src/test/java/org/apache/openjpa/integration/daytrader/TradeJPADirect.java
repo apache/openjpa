@@ -93,8 +93,8 @@ public class TradeJPADirect {
 
     // constructor for OpenJPA junit tests
     public TradeJPADirect(Log log, EntityManagerFactory emf, boolean poolEm) {
-        this.log = log;
-        this.emf = emf;
+        TradeJPADirect.log = log;
+        TradeJPADirect.emf = emf;
         _poolEm = poolEm;
         if (initialized == false)
             init();
@@ -140,9 +140,9 @@ public class TradeJPADirect {
             quotes = query.getResultList();
 
             QuoteDataBean[] quoteArray = (QuoteDataBean[]) quotes.toArray(new QuoteDataBean[quotes.size()]);
-            ArrayList<QuoteDataBean> topGainers = new ArrayList<QuoteDataBean>(
+            ArrayList<QuoteDataBean> topGainers = new ArrayList<>(
                                                                               5);
-            ArrayList<QuoteDataBean> topLosers = new ArrayList<QuoteDataBean>(5);
+            ArrayList<QuoteDataBean> topLosers = new ArrayList<>(5);
             // BigDecimal TSIA = FinancialUtils.ZERO;
             BigDecimal TSIA = (new BigDecimal(0.00)).setScale(2);
             // BigDecimal openTSIA = FinancialUtils.ZERO;
@@ -963,6 +963,7 @@ public class TradeJPADirect {
     }
 
     class quotePriceComparator implements java.util.Comparator {
+        @Override
         public int compare(Object quote1, Object quote2) {
             double change1 = ((QuoteDataBean) quote1).getChange();
             double change2 = ((QuoteDataBean) quote2).getChange();

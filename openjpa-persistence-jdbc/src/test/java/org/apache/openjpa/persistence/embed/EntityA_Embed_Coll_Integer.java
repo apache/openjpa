@@ -30,6 +30,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name="TBL5A")
 public class EntityA_Embed_Coll_Integer implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     Integer id;
 

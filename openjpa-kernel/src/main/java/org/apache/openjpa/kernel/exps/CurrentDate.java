@@ -29,19 +29,24 @@ import org.apache.openjpa.kernel.StoreContext;
  */
 class CurrentDate
     extends Val {
+    
+    private static final long serialVersionUID = 1L;
     private final Class<? extends Date> _type;
 
     public CurrentDate(Class<? extends Date> type) {
         _type = type;
     }
 
+    @Override
     public Class getType() {
         return _type;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig, StoreContext ctx, Object[] params) {
         try {
             _type.getConstructor(long.class).newInstance(System.currentTimeMillis());

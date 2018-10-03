@@ -31,6 +31,7 @@ import org.apache.openjpa.slice.TestQueryTargetPolicy;
  *
  */
 public class SampleQueryTargetPolicy implements QueryTargetPolicy {
+    @Override
     public String[] getTargets(String query, Map<Object, Object> params,
             String language, List<String> slices,
             Object context) {

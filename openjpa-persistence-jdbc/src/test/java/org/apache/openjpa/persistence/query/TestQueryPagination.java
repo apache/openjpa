@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.query;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -32,6 +33,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestQueryPagination
     extends SQLListenerTestCase {
 
+    @Override
     public void setUp() {
         setUp(SimpleEntity.class, CLEAR_TABLES);
 

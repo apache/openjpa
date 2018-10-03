@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.ant;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
@@ -27,6 +25,8 @@ import org.apache.openjpa.lib.ant.AbstractTask;
 import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.types.EnumeratedAttribute;
 
 /**
  * Executes the {@link SchemaTool} on the specified XML schema definition
@@ -131,10 +131,12 @@ public class SchemaToolTask
         this.file = file;
     }
 
+    @Override
     protected ConfigurationImpl newConfiguration() {
         return new JDBCConfigurationImpl();
     }
 
+    @Override
     protected void executeOn(String[] files)
         throws Exception {
         if (SchemaTool.ACTION_IMPORT.equals(flags.action))
@@ -151,6 +153,7 @@ public class SchemaToolTask
     public static class Action
         extends EnumeratedAttribute {
 
+        @Override
         public String[] getValues() {
             return SchemaTool.ACTIONS;
         }

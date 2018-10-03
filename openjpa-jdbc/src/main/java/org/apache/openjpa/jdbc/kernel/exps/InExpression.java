@@ -41,6 +41,8 @@ import org.apache.openjpa.kernel.exps.Parameter;
 class InExpression
     implements Exp {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private final Const _const;
 
@@ -67,6 +69,7 @@ class InExpression
         return _val;
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         ExpState valueState = _val.initialize(sel, ctx, 0);
         ExpState constantState = _const.initialize(sel, ctx, 0);
@@ -90,6 +93,7 @@ class InExpression
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         InExpState istate = (InExpState) state;
@@ -201,6 +205,7 @@ class InExpression
             buf.append(")");
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         InExpState istate = (InExpState) state;
@@ -228,6 +233,7 @@ class InExpression
         return (Collection) val;
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

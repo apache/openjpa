@@ -28,10 +28,12 @@ public class PIdJTIDMSCMappedSuperclass
 extends PIdJTIDMSCRootEntity implements MSC {
     private String mappedSuperclassData;
 
+    @Override
     public String getMappedSuperclassData() {
         return mappedSuperclassData;
     }
 
+    @Override
     public void setMappedSuperclassData(String mappedSuperclassData) {
         this.mappedSuperclassData = mappedSuperclassData;
     }

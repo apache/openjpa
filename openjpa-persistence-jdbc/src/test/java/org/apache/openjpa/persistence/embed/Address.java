@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.*;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * An entity that extends a MappedSuperClass and embeds an entity.

@@ -30,6 +30,8 @@ import javax.persistence.Entity;
 @DiscriminatorValue("RT3")
 public class RuntimeTest3 extends RuntimeTest2 {
 
+    
+    private static final long serialVersionUID = 1L;
     private int intField3;
 
     public RuntimeTest3() {

@@ -27,17 +27,16 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
-import java.sql.*;
-import javax.sql.*;
-import org.apache.openjpa.jdbc.conf.*;
+import java.sql.Connection;
+
+import javax.persistence.EntityManager;
+import javax.sql.DataSource;
+
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-import javax.persistence.EntityManager;
-
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.jdbc.common.apps.UnknownSubclassParent;
 
 
 public class TestUnknownSubclass  extends JDBCTestCase {
@@ -54,6 +53,7 @@ public class TestUnknownSubclass  extends JDBCTestCase {
     public TestUnknownSubclass(String name) {
         super(name);
     }
+    @Override
     public void setUp()
         throws Exception {
         // pcl: in the new (registration-less) system, this should not

@@ -28,6 +28,9 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 public class NoneFieldStrategy
     extends AbstractFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public static final String ALIAS = "none";
 
     private static final NoneFieldStrategy _instance = new NoneFieldStrategy();
@@ -45,10 +48,12 @@ public class NoneFieldStrategy
     private NoneFieldStrategy() {
     }
 
+    @Override
     public String getAlias() {
         return ALIAS;
     }
 
+    @Override
     public void setFieldMapping(FieldMapping owner) {
     }
 }

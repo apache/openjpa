@@ -36,7 +36,9 @@ import org.apache.openjpa.persistence.FetchGroup;
 @FetchGroup(name="value", attributes={@FetchAttribute(name="value")})
 public class InheritanceHierarchyConcrete extends InheritanceHierarchyAbstract implements Serializable {
 
-	@Basic
+	
+    private static final long serialVersionUID = 1L;
+    @Basic
 	private int value;
 
 	public int getValue() {

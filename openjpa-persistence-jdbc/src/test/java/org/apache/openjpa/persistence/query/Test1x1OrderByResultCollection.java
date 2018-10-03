@@ -28,6 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class Test1x1OrderByResultCollection extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(Hardware.class, Person.class, CLEAR_TABLES
             , "openjpa.jdbc.DBDictionary", "fullResultCollectionInOrderByRelation=true"
@@ -70,7 +71,7 @@ public class Test1x1OrderByResultCollection extends SingleEMTestCase {
        assertEquals(4, results.size());
 
        // remove null techOwner or techOwner.name entries in collection first
-       List<Hardware> nonNullResults = new ArrayList<Hardware>(results.size());
+       List<Hardware> nonNullResults = new ArrayList<>(results.size());
        for (Hardware hw : results) {
            if (hw.getTechOwner() != null
                    && hw.getTechOwner().getName() != null) {

@@ -29,10 +29,9 @@ import org.apache.openjpa.persistence.ManagedInterface;
 public interface MixedInterface {
 
     @Id
-    @GeneratedValue
-    public int getId();
-    public void setId(int id);
+    @GeneratedValue int getId();
+    void setId(int id);
 
-    public int getIntField();
-    public void setIntField(int i);
+    int getIntField();
+    void setIntField(int i);
 }

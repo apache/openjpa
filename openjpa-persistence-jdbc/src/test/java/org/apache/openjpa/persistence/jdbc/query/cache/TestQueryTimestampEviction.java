@@ -23,17 +23,18 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.openjpa.datacache.AbstractQueryCache.EvictPolicy;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.QueryCache;
-import org.apache.openjpa.datacache.AbstractQueryCache.EvictPolicy;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
-    private List<String> _sql = new ArrayList<String>();
+    private List<String> _sql = new ArrayList<>();
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(
                 "openjpa.DataCache", "true",
@@ -115,6 +116,7 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
     public void testWriteLock() throws Exception {
         final QueryCache qc = emf.getConfiguration().getDataCacheManagerInstance().getSystemQueryCache();
         Thread t2 = new Thread() {
+            @Override
             public void run() {
                 qc.writeLock();
                 qc.writeUnlock();

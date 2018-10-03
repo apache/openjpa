@@ -33,7 +33,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
-import org.apache.openjpa.meta.XMLFieldMetaData;
 import org.apache.openjpa.meta.XMLMetaData;
 
 /**
@@ -256,7 +255,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                 else if (el.getAnnotation(xmlAttributeClass) != null) {
                     field = _repos.newXMLFieldMetaData(((Field) member)
                         .getType(), member.getName());
-                    field.setXmltype(XMLFieldMetaData.ATTRIBUTE);
+                    field.setXmltype(XMLMetaData.ATTRIBUTE);
                     String xmlname = (String) xmlAttributeName.invoke(
                         el.getAnnotation(xmlAttributeClass), new Object[]{});
                     // avoid JAXB XML bind default name

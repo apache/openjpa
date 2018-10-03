@@ -34,32 +34,32 @@ public interface PCData
     /**
      * Return the id of this instance.
      */
-    public Object getId();
+    Object getId();
 
     /**
      * Return the type of this instance.
      */
-    public Class getType();
+    Class getType();
 
     /**
      * Returns the instance-level impl data, or null if none.
      */
-    public Object getImplData();
+    Object getImplData();
 
     /**
      * Sets the stored instance-level impl data.
      */
-    public void setImplData(Object val);
+    void setImplData(Object val);
 
     /**
      * Returns the current version object that this data was loaded from.
      */
-    public Object getVersion();
+    Object getVersion();
 
     /**
      * Sets the current version object that this data was loaded from.
      */
-    public void setVersion(Object version);
+    void setVersion(Object version);
 
     /**
      * Loads all fields that are currently stored in the cache
@@ -69,7 +69,7 @@ public interface PCData
      * @param fetch the fetch configuration to use for loading related objects
      * @param context current context information
      */
-    public void load(OpenJPAStateManager sm, FetchConfiguration fetch,
+    void load(OpenJPAStateManager sm, FetchConfiguration fetch,
         Object context);
 
     /**
@@ -82,31 +82,31 @@ public interface PCData
      * @param fetch the fetch configuration to use for loading related objects
      * @param context current context information
      */
-    public void load(OpenJPAStateManager sm, BitSet fields,
+    void load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, Object context);
 
     /**
      * Store all loaded fields of the state manager.
      */
-    public void store(OpenJPAStateManager sm);
+    void store(OpenJPAStateManager sm);
 
     /**
      * Store the given fields from the state manager.
      */
-    public void store(OpenJPAStateManager sm, BitSet fields);
+    void store(OpenJPAStateManager sm, BitSet fields);
 
     /**
      * Return the data stored in the given field index.
      */
-    public Object getData(int i);
+    Object getData(int i);
 
     /**
      * Whether the given field index has stored data.
      */
-    public boolean isLoaded(int i);
+    boolean isLoaded(int i);
 
     /**
      * Get the name of the cache where this data is stored.
      */
-    public String getCache();
+    String getCache();
 }

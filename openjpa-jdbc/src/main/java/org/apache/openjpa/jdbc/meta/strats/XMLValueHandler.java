@@ -45,11 +45,15 @@ import org.apache.openjpa.util.InternalException;
  */
 public class XMLValueHandler
     extends AbstractValueHandler {
+    
+    private static final long serialVersionUID = 1L;
     private static final String PROXY_SUFFIX = "$proxy";
 
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
         DBDictionary dict = vm.getMappingRepository().getDBDictionary();
@@ -69,6 +73,7 @@ public class XMLValueHandler
         return new Column[]{ col };
     }
 
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         // check for null value.
@@ -93,6 +98,7 @@ public class XMLValueHandler
         }
     }
 
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val) {
         // check for null value.
         if (val == null)

@@ -1176,6 +1176,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         ParameterExpression<Embed_Embed> param1 = cb.parameter(Embed_Embed.class, "embed2");
         q.where(cb.isMember(param1, a.get(EntityA_Coll_Embed_Embed_.embeds)));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("embed2", new Embed_Embed());
             }
@@ -1195,6 +1196,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.isMember(param1, a.get(EntityA_Coll_Embed_Embed_.embeds)));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("embed2", new Embed_Embed());
             }
@@ -1213,6 +1215,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Parameter<Embed_Embed> param1 = cb.parameter(Embed_Embed.class);
         //q.where(cb.equal(param1, e));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("embed2", new Embed_Embed());
             }
@@ -1520,6 +1523,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("image", "my photo");
             }
@@ -1540,6 +1544,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("image", "my photo");
             }
@@ -1561,6 +1566,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(i));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("image", "my photo");
             }
@@ -1581,6 +1587,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("image", "my photo");
             }
@@ -1602,6 +1609,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(i));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("image", "my photo");
             }
@@ -1622,6 +1630,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("image", "my photo");
             }
@@ -1643,6 +1652,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(i));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("image", "my photo");
             }
@@ -1680,6 +1690,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.equal(param1, sq));
         q.orderBy(cb.asc(c));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("division", new Division());
             }
@@ -1701,6 +1712,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("division", new Division());
             }
@@ -1722,6 +1734,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("division", new Division());
             }
@@ -1743,6 +1756,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.equal(param1, sq));
         q.orderBy(cb.asc(c));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("division", new Division());
             }
@@ -1764,6 +1778,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("k", new Division());
             }
@@ -1785,6 +1800,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("k", new Division());
             }

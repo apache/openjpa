@@ -33,6 +33,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
@@ -62,10 +63,12 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         super(conf);
     }
 
+    @Override
     protected String getUniqueName(Class type) {
         return super.getUniqueName(type) + POSTFIX;
     }
 
+    @Override
     protected void finish(DynamicPCData data, ClassMetaData meta) {
         int timeout = meta.getDataCacheTimeout();
         if (timeout > 0)
@@ -74,6 +77,7 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
             ((Timed) data).setTimeout(-1);
     }
 
+    @Override
     protected void decorate(BCClass bc, ClassMetaData meta) {
         enhanceToData(bc);
         enhanceToNestedData(bc);
@@ -248,8 +252,8 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
     /**
      * Simple interface to give access to expiration time.
      */
-    public static interface Timed {
+    public interface Timed {
 
-        public void setTimeout(long time);
+        void setTimeout(long time);
     }
 }

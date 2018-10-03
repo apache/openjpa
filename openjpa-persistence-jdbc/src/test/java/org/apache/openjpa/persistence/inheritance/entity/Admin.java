@@ -29,7 +29,7 @@ import javax.persistence.OneToMany;
 @DiscriminatorValue("admin")
 public class Admin extends ComputerUser {
 	@OneToMany(mappedBy = "admin")
-	protected Set<RegularUser> regularUsers = new HashSet<RegularUser>();
+	protected Set<RegularUser> regularUsers = new HashSet<>();
 
 	public boolean addRegularUser(RegularUser version) {
 		return regularUsers.add(version);

@@ -20,10 +20,10 @@ package org.apache.openjpa.persistence.query.results;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.openjpa.lib.rop.ListResultList;
-import org.apache.openjpa.lib.rop.ResultList;
 
 import org.apache.openjpa.kernel.DistinctResultList;
+import org.apache.openjpa.lib.rop.ListResultList;
+import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.PersistenceExceptions;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -36,13 +36,14 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * @since 2.1.0
  */
 public class TestListResultSerialization extends SQLListenerTestCase {
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         assertNotNull(emf);
     }
 
     public void testRoundtrip() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("xxx");
         list.add("yyy");
         ResultList resultList = new ListResultList(list);

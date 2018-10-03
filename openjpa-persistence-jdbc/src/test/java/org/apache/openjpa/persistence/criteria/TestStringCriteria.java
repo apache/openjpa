@@ -35,7 +35,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.openjpa.persistence.criteria.AbstractCriteriaTestCase.QueryDecorator;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 public class TestStringCriteria extends CriteriaTest {
@@ -218,6 +217,7 @@ public class TestStringCriteria extends CriteriaTest {
         q.select(c).where(cb.equal(c.get("status"), param));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("stat", 1);
             }

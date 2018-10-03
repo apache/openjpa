@@ -21,17 +21,17 @@ package org.apache.openjpa.persistence;
 import javax.persistence.EntityManager;
 import javax.persistence.spi.LoadState;
 
-import junit.framework.Assert;
 import org.apache.openjpa.persistence.entity.EntityA;
 import org.apache.openjpa.persistence.entity.EntityB;
 import org.apache.openjpa.persistence.entity.EntityC;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-/**
- *
- */
+import junit.framework.Assert;
+
+
 public class TestOpenJPA2330 extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(EntityA.class, EntityB.class, EntityC.class);
     }

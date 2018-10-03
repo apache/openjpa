@@ -42,6 +42,7 @@ public enum FetchMode implements OpenJPAEnum<FetchMode>{
         _names = names;
     }
 
+    @Override
     public int toKernelConstant() {
         return eagerFetchConstant;
     }
@@ -62,10 +63,12 @@ public enum FetchMode implements OpenJPAEnum<FetchMode>{
         }
     }
 
+    @Override
     public int convertToKernelConstant(String s) {
         return FetchMode.toKernelConstantFromString(s);
     }
 
+    @Override
     public int convertToKernelConstant(int i) {
         if (i == FetchConfiguration.DEFAULT)
             return i;

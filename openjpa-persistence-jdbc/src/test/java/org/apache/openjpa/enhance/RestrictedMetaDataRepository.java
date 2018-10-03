@@ -32,10 +32,10 @@ import org.apache.openjpa.meta.MetaDataRepository;
  * especially useful in the case where all pu's are enhanced generically,
  * automatically picking up all entities in the classpath.
  */
-@SuppressWarnings("serial")
 public class RestrictedMetaDataRepository extends MetaDataRepository {
 
-    private Set<String> _excludedTypes = new HashSet<String>();
+    private static final long serialVersionUID = 1L;
+    private Set<String> _excludedTypes = new HashSet<>();
 
     public String getExcludedTypes() {
         return _excludedTypes.toString();
@@ -48,6 +48,7 @@ public class RestrictedMetaDataRepository extends MetaDataRepository {
         }
     }
 
+    @Override
     public Set<String> getPersistentTypeNames(boolean devpath, ClassLoader envLoader) {
         Set<String> types = super.getPersistentTypeNames(devpath, envLoader);
         String[] typeArray = types.toArray(new String[types.size()]);

@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
@@ -44,10 +45,12 @@ public class AImplB implements AIntf {
         this.pk2 = pk2;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
@@ -70,6 +73,8 @@ public class AImplB implements AIntf {
 
     public static class Idkey implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public int pk1;
         public String pk2;
 
@@ -84,6 +89,7 @@ public class AImplB implements AIntf {
             }
         }
 
+        @Override
         public String toString() {
             return pk1 + "/" + pk2;
         }

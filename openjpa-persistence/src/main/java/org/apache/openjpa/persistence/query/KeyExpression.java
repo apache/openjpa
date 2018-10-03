@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class KeyExpression extends OperatorPath {
-	public KeyExpression(AbstractDomainObject expr) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public KeyExpression(AbstractDomainObject expr) {
 		super(expr, PathOperator.KEY);
 	}
 }

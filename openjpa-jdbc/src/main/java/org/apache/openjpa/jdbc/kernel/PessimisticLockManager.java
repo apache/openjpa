@@ -65,11 +65,13 @@ public class PessimisticLockManager
         setVersionUpdateOnWriteLock(false);
     }
 
+    @Override
     public void setContext(StoreContext ctx) {
         super.setContext(ctx);
         _store = (JDBCStore) ctx.getStoreManager().getInnermostDelegate();
     }
 
+    @Override
     public boolean selectForUpdate(Select sel, int lockLevel) {
         if (lockLevel == LOCK_NONE)
             return false;
@@ -91,6 +93,7 @@ public class PessimisticLockManager
         return true;
     }
 
+    @Override
     public void loadedForUpdate(OpenJPAStateManager sm) {
         // we set a low lock level to indicate that we don't need datastore
         // locking, but we don't necessarily have a read or write lock
@@ -99,6 +102,7 @@ public class PessimisticLockManager
             setLockLevel(sm, LOCK_DATASTORE_ONLY);
     }
 
+    @Override
     protected void lockInternal(OpenJPAStateManager sm, int level, int timeout,
         Object sdata, boolean postVersionCheck) {
         // we can skip any already-locked instance regardless of level because
@@ -135,7 +139,7 @@ public class PessimisticLockManager
         //a value of LockLevels.LOCK_NONE.
         List<SQLBuffer> sqls = (sm.getLock() == null || sm.getLock().equals(LockLevels.LOCK_NONE))
             ?  getLockRows(dict, id, mapping, fetch, _store.getSQLFactory())
-            : new ArrayList<SQLBuffer>();
+            : new ArrayList<>();
         if (ctx.getFetchConfiguration().getLockScope() == LockScopes.LOCKSCOPE_EXTENDED)
             lockJoinTables(sqls, dict, id, mapping, fetch, _store.getSQLFactory());
 
@@ -173,7 +177,7 @@ public class PessimisticLockManager
         Select select = factory.newSelect();
         select.select(mapping.getPrimaryKeyColumns());
         select.wherePrimaryKey(id, mapping, _store);
-        List<SQLBuffer> sqls = new ArrayList<SQLBuffer>();
+        List<SQLBuffer> sqls = new ArrayList<>();
         sqls.add(select.toSelect(true, fetch));
         return sqls;
     }

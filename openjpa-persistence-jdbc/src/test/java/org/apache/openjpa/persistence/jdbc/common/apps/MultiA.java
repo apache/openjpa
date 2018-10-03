@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MultiA {
 

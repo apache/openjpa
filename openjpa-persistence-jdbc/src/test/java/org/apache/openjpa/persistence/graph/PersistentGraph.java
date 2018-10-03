@@ -39,10 +39,9 @@ import javax.persistence.MappedSuperclass;
  *
  * @param <E> type of element.
  */
-@SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class PersistentGraph<E> extends AbstractGraph<E> implements Serializable {
-
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue
     private long id;

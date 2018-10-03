@@ -119,7 +119,7 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
     }
 
     private List<Object> createData(EntityManager em) {
-        List<Object> data = new ArrayList<Object>();
+        List<Object> data = new ArrayList<>();
         Automobile auto = new Automobile();
         auto.setMake("Ford");
         auto.setModel("Pinto");
@@ -130,7 +130,7 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
         auto2.setModel("Sightseer");
         data.add(auto2);
 
-        List<Automobile> autos = new ArrayList<Automobile>();
+        List<Automobile> autos = new ArrayList<>();
         autos.add(auto);
         autos.add(auto2);
 
@@ -144,7 +144,7 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
         p2.setAutos(autos);
         data.add(p2);
 
-        List<Passenger> passengers = new ArrayList<Passenger>();
+        List<Passenger> passengers = new ArrayList<>();
         passengers.add(p1);
         passengers.add(p2);
         auto.setPassengers(passengers);

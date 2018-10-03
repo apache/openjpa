@@ -90,7 +90,7 @@ public class PersistenceMetaDataFactory
     private boolean _fieldOverride = true;
 
     protected Stack<XMLPersistenceMetaDataParser> _stack =
-        new Stack<XMLPersistenceMetaDataParser>();
+        new Stack<>();
 
     /**
      * Whether to use field-level override or class-level override.
@@ -142,6 +142,7 @@ public class PersistenceMetaDataFactory
     /**
      * Create a new annotation serializer.
      */
+    @Override
     protected AnnotationPersistenceMetaDataSerializer
         newAnnotationSerializer() {
         return new AnnotationPersistenceMetaDataSerializer
@@ -207,6 +208,7 @@ public class PersistenceMetaDataFactory
         return new XMLPersistenceMetaDataSerializer(repos.getConfiguration());
     }
 
+    @Override
     public void load(Class<?> cls, int mode, ClassLoader envLoader) {
         if (mode == MODE_NONE)
             return;
@@ -225,7 +227,7 @@ public class PersistenceMetaDataFactory
         boolean parsedXML = false;
         if (_unparsed != null && !_unparsed.isEmpty()
             && (mode & MODE_META) != 0) {
-            Set<URL> unparsed = new HashSet<URL>(_unparsed);
+            Set<URL> unparsed = new HashSet<>(_unparsed);
             for (URL url : unparsed) {
                 parseXML(url, cls, mode, envLoader);
             }
@@ -337,11 +339,11 @@ public class PersistenceMetaDataFactory
                 "map-persistent-type-names", rsrc, Arrays.asList(names)));
 
         if (_xml == null)
-            _xml = new HashMap<URL, Set<String>>();
-        _xml.put((URL) rsrc, new HashSet<String>(Arrays.asList(names)));
+            _xml = new HashMap<>();
+        _xml.put((URL) rsrc, new HashSet<>(Arrays.asList(names)));
 
         if (_unparsed == null)
-            _unparsed = new HashSet<URL>();
+            _unparsed = new HashSet<>();
         _unparsed.add((URL) rsrc);
     }
 
@@ -476,6 +478,7 @@ public class PersistenceMetaDataFactory
         }
     }
 
+    @Override
     public MetaDataDefaults getDefaults() {
         return _def;
     }
@@ -499,10 +502,12 @@ public class PersistenceMetaDataFactory
             _xml.clear();
     }
 
+    @Override
     protected Parser newParser(boolean loading) {
         return newXMLParser(loading);
     }
 
+    @Override
     protected Serializer newSerializer() {
         return newXMLSerializer();
     }
@@ -512,10 +517,12 @@ public class PersistenceMetaDataFactory
         parse(parser, Collections.singleton(defaultXMLFile()));
     }
 
+    @Override
     protected File defaultSourceFile(ClassMetaData meta) {
         return defaultXMLFile();
     }
 
+    @Override
     protected File defaultSourceFile(QueryMetaData query, Map clsNames) {
         ClassMetaData meta = getDefiningMetaData(query, clsNames);
         File file = (meta == null) ? null : meta.getSourceFile();
@@ -524,6 +531,7 @@ public class PersistenceMetaDataFactory
         return defaultXMLFile();
     }
 
+    @Override
     protected File defaultSourceFile(SequenceMetaData seq, Map clsNames) {
         return defaultXMLFile();
     }
@@ -545,12 +553,15 @@ public class PersistenceMetaDataFactory
         return new File(dir, "orm.xml");
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
         if (rsrcs == null)
             rsrcs = Collections.singleton("META-INF/orm.xml");
@@ -558,6 +569,7 @@ public class PersistenceMetaDataFactory
 			rsrcs.add("META-INF/orm.xml");
 	}
 
+    @Override
     public void setInto(Options opts) {
         opts.keySet().retainAll(opts.setInto(_def).keySet());
     }
@@ -594,6 +606,7 @@ public class PersistenceMetaDataFactory
             (repos.getConfiguration());
     }
 
+    @Override
     public void loadXMLMetaData(Class<?> cls) {
         AnnotationPersistenceXMLMetaDataParser parser
             = getXMLAnnotationParser();
@@ -602,6 +615,7 @@ public class PersistenceMetaDataFactory
 
     private static String UNDERSCORE = "_";
 
+    @Override
     public String getManagedClassName(String mmClassName) {
         if (mmClassName == null || mmClassName.length() == 0)
             return null;
@@ -610,16 +624,19 @@ public class PersistenceMetaDataFactory
         return mmClassName;
     }
 
+    @Override
     public String getMetaModelClassName(String managedClassName) {
         if (managedClassName == null || managedClassName.length() == 0)
             return null;
         return managedClassName + UNDERSCORE;
     }
 
+    @Override
     public boolean isMetaClass(Class<?> c) {
         return c != null && c.getAnnotation(StaticMetamodel.class) != null;
     }
 
+    @Override
     public Class<?> getManagedClass(Class<?> c) {
         if (isMetaClass(c)) {
             return c.getAnnotation(StaticMetamodel.class).value();

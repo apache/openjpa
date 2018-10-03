@@ -37,6 +37,7 @@ public class Phone {
     @Basic
     private String type;
 
+    @Override
     public String toString() {
         return "type: " + type + " number:" + number;
     }

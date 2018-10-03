@@ -49,7 +49,8 @@ public enum BinaryConditionalOperator {
 		_symbol = symbol;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return _symbol;
 	}
 }

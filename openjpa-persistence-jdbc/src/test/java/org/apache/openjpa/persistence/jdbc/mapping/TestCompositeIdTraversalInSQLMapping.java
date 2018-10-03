@@ -19,11 +19,14 @@
 package org.apache.openjpa.persistence.jdbc.mapping;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.*;
-import org.apache.openjpa.persistence.common.utils.*;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.EntityWithCompositeId;
+import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.OwnerOfEntityWithCompositeId;
+import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.RecursiveEntityWithCompositeId;
 
 
 public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
@@ -35,7 +38,8 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 	}
 
 
-	public void setUp()
+	@Override
+    public void setUp()
 	{
 		deleteAll(OwnerOfEntityWithCompositeId.class);
 		deleteAll(EntityWithCompositeId.class);

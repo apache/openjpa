@@ -26,6 +26,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.event.AbstractLifecycleListener;
@@ -58,6 +59,7 @@ public abstract class AbstractBrokerSerializationTest<T>
 
     private Object id;
 
+    @Override
     public void setUp() {
         testGlobalRefreshCount = 0;
         deserializedLifeListener = null;
@@ -408,6 +410,8 @@ public abstract class AbstractBrokerSerializationTest<T>
         extends AbstractTransactionListener
         implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         private int beginCount = 0;
 
         public TxListener() {
@@ -431,6 +435,8 @@ public abstract class AbstractBrokerSerializationTest<T>
         extends AbstractLifecycleListener
         implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         private int refreshCount = 0;
 
         @Override

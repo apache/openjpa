@@ -21,7 +21,13 @@ package org.apache.openjpa.persistence.common.apps;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)

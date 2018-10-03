@@ -26,6 +26,7 @@ package org.apache.openjpa.kernel;
 public class NoneLockManager
     extends AbstractLockManager {
 
+    @Override
     public void lock(OpenJPAStateManager sm, int level, int timeout,
         Object context) {
         // Duplicate code in the 2 lock methods to enforce proper action
@@ -33,15 +34,18 @@ public class NoneLockManager
         sm.setLock(Boolean.TRUE);
     }
 
+    @Override
     public void refreshLock(OpenJPAStateManager sm, int level, int timeout,
         Object context) {
         sm.setLock(Boolean.TRUE);
     }
 
+    @Override
     public void release(OpenJPAStateManager sm) {
         sm.setLock(null);
     }
 
+    @Override
     public int getLockLevel(OpenJPAStateManager sm) {
         return LOCK_NONE;
     }

@@ -37,6 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSubquery
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             OrderItem.class, Magazine.class, Publisher.class, Employee.class,

@@ -107,10 +107,12 @@ public class DelayedPriorityQueueProxy extends PriorityQueue implements ProxyCol
         return false;
     }
 
+    @Override
     public OpenJPAStateManager getOwner() {
         return this.sm;
     }
 
+    @Override
     public int getOwnerField() {
         return this.field;
     }
@@ -128,6 +130,7 @@ public class DelayedPriorityQueueProxy extends PriorityQueue implements ProxyCol
         return localProxy;
     }
 
+    @Override
     public ChangeTracker getChangeTracker() {
         return this.changeTracker;
     }
@@ -136,10 +139,12 @@ public class DelayedPriorityQueueProxy extends PriorityQueue implements ProxyCol
         changeTracker = ct;
     }
 
+    @Override
     public Object copy(Object paramObject) {
         return new PriorityQueue((PriorityQueue) paramObject);
     }
 
+    @Override
     public Class getElementType() {
         return this.elementType;
     }
@@ -148,6 +153,7 @@ public class DelayedPriorityQueueProxy extends PriorityQueue implements ProxyCol
         elementType = elemType;
     }
 
+    @Override
     public ProxyCollection newInstance(Class paramClass,
             Comparator paramComparator, boolean paramBoolean1,
             boolean paramBoolean2) {

@@ -51,30 +51,37 @@ public class GeneratorImpl
     /**
      * Delegate.
      */
+    @Override
     public Seq getDelegate() {
         return _seq.getDelegate();
     }
 
+    @Override
     public String getName() {
         return _name;
     }
 
+    @Override
     public Object next() {
         return _seq.next(_ctx, _meta);
     }
 
+    @Override
     public Object current() {
         return _seq.current(_ctx, _meta);
     }
 
+    @Override
     public void allocate(int additional) {
         _seq.allocate(additional, _ctx, _meta);
     }
 
+    @Override
     public int hashCode() {
         return ((_seq == null) ? 0  : _seq.hashCode());
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;

@@ -58,8 +58,8 @@ public class PathFinder {
         Node source = new Node(null, x1, y1);
         Node target = new Node(null, x2, y2);
         int maxCost = distance(source, target)*2;
-        LinkedList<Node> openList = new LinkedList<Node>();
-        List<Node> closedList = new ArrayList<Node>();
+        LinkedList<Node> openList = new LinkedList<>();
+        List<Node> closedList = new ArrayList<>();
         openList.add(source);
         do {
             Node current = openList.remove(0);
@@ -119,7 +119,7 @@ public class PathFinder {
     }
 
     List<Point> traceBackPath(Node target) {
-        LinkedList<Point> path = new LinkedList<Point>();
+        LinkedList<Point> path = new LinkedList<>();
         path.add(new Point(target.x, target.y));
         Node next = target.parent;
         while (next != null) {
@@ -132,7 +132,7 @@ public class PathFinder {
     List<Point> straighten(List<Point> path) {
         if (path.size() < 3)
             return path;
-        List<Point> mids = new ArrayList<Point>();
+        List<Point> mids = new ArrayList<>();
         Point prev = path.get(0);
         Point mid  = path.get(1);
         for (int i = 2; i < path.size(); i++) {
@@ -158,6 +158,7 @@ public class PathFinder {
             this.y = y;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o instanceof Node) {
@@ -173,6 +174,7 @@ public class PathFinder {
             return f > o.f ? 1 : -1;
         }
 
+        @Override
         public String toString() {
             return "(" + x + "," + y + ":" + g + ")";
         }

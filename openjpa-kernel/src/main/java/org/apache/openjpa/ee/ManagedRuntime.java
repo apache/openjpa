@@ -36,7 +36,7 @@ public interface ManagedRuntime {
      * map transactional PersistenceManagers to the current transaction,
      * and possibly to enlist XA resources.
      */
-    public TransactionManager getTransactionManager()
+    TransactionManager getTransactionManager()
         throws Exception;
 
     /**
@@ -47,7 +47,7 @@ public interface ManagedRuntime {
      * @param  cause  the Throwable that caused the transaction to be
      *                marked for rollback, or null of none is known
      */
-    public void setRollbackOnly(Throwable cause)
+    void setRollbackOnly(Throwable cause)
         throws Exception;
 
     /**
@@ -56,7 +56,7 @@ public interface ManagedRuntime {
      *
      * @return the Throwable cause, or null if none
      */
-    public Throwable getRollbackCause()
+    Throwable getRollbackCause()
         throws Exception;
 
     /**
@@ -64,7 +64,7 @@ public interface ManagedRuntime {
      * and Brokers.
      * @return the transaction key
      */
-    public Object getTransactionKey()
+    Object getTransactionKey()
         throws Exception, SystemException;
 
     /**
@@ -85,7 +85,7 @@ public interface ManagedRuntime {
      * @throws NotSupportedException
      *             if the transaction can not be suspended.
      */
-    public void doNonTransactionalWork(Runnable runnable)
+    void doNonTransactionalWork(Runnable runnable)
             throws NotSupportedException;
 
 }

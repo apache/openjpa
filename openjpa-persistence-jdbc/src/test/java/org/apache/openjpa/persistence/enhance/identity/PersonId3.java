@@ -45,6 +45,7 @@ public class PersonId3 {
         return lastName;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof PersonId3)) return false;
@@ -58,6 +59,7 @@ public class PersonId3 {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         if (firstName != null)

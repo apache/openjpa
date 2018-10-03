@@ -33,7 +33,7 @@ public class Division {
     private int id;
 
     @ElementCollection
-    private Map<Employee, String> employees = new HashMap<Employee, String>();
+    private Map<Employee, String> employees = new HashMap<>();
 
     public int getId() {
         return id;

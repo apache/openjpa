@@ -39,8 +39,8 @@ import javax.swing.table.TableModel;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class EntityDataModel<T> extends AbstractTableModel implements TableModel, Iterable<T> {
+    private static final long serialVersionUID = 1L;
     /**
      * Constant designates to include non-relation fields.
      */
@@ -84,10 +84,10 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
         this.data = data;
         EntityType<T> entityType = meta.entity(cls);
 
-        columnNames   = new ArrayList<String>();
-        columnClasses = new ArrayList<Class<?>>();
-        attributes    = new ArrayList<Attribute<? super T,?>>();
-        methods       = new ArrayList<Method>();
+        columnNames   = new ArrayList<>();
+        columnClasses = new ArrayList<>();
+        attributes    = new ArrayList<>();
+        methods       = new ArrayList<>();
 
         showsRowCount     = (styleBits & ROW_COUNT) != 0;
         showsBasicAttr    = (styleBits & BASIC_ATTR) != 0;

@@ -46,6 +46,7 @@ public class TestEmLockMode extends SequencedActionsTest {
     private static String DB2_PESSIMISTIC_RR_SQL =
         "SELECT .* FROM LockEmployee .* WITH RR USE .*";
 
+    @Override
     public void setUp() {
         setUp(LockEmployee.class, "openjpa.LockManager", "mixed");
         commonSetUp();

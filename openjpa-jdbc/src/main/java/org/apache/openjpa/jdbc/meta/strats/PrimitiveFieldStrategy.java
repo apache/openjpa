@@ -54,6 +54,9 @@ public class PrimitiveFieldStrategy
     extends AbstractFieldStrategy
     implements Joinable, Embeddable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Object NULL = new Object();
 
     private static final Localizer _loc = Localizer.forPackage
@@ -61,6 +64,7 @@ public class PrimitiveFieldStrategy
 
     private boolean _stateImage = false;
 
+    @Override
     public void map(boolean adapt) {
         if (field.isSerialized() || !field.getType().isPrimitive())
             throw new MetaDataException(_loc.get("not-primitive", field));
@@ -106,6 +110,7 @@ public class PrimitiveFieldStrategy
         field.getDefiningMapping().setJoinable(field.getColumns()[0], this);
     }
 
+    @Override
     public void initialize() {
         // record whether we're using a state image indicator, which requires
         // that we do special null checks when loading primitives
@@ -115,6 +120,7 @@ public class PrimitiveFieldStrategy
             field.setUsesImplData(null);
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if (!field.getColumnIO().isInsertable(0, false))
@@ -124,6 +130,7 @@ public class PrimitiveFieldStrategy
             update(sm, row);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         if (!field.getColumnIO().isUpdatable(0, false))
@@ -133,6 +140,7 @@ public class PrimitiveFieldStrategy
             update(sm, row);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         field.deleteRow(sm, store, rm);
@@ -174,6 +182,7 @@ public class PrimitiveFieldStrategy
         }
     }
 
+    @Override
     public int supportsSelect(Select sel, int type, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch) {
         if (type == Select.TYPE_JOINLESS && sel.isSelected(field.getTable()))
@@ -181,12 +190,14 @@ public class PrimitiveFieldStrategy
         return 0;
     }
 
+    @Override
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode) {
         sel.select(field.getColumns()[0], field.join(sel));
         return 1;
     }
 
+    @Override
     public void load(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
@@ -233,28 +244,33 @@ public class PrimitiveFieldStrategy
             sm.setImplData(field.getIndex(), NULL);
     }
 
+    @Override
     public void appendIsNull(SQLBuffer sql, Select sel, Joins joins) {
         joins = join(joins, false);
         sql.append(sel.getColumnAlias(field.getColumns()[0], joins)).
             append(" IS ").appendValue(null, field.getColumns()[0]);
     }
 
+    @Override
     public void appendIsNotNull(SQLBuffer sql, Select sel, Joins joins) {
         joins = join(joins, false);
         sql.append(sel.getColumnAlias(field.getColumns()[0], joins)).
             append(" IS NOT ").appendValue(null, field.getColumns()[0]);
     }
 
+    @Override
     public Joins join(Joins joins, boolean forceOuter) {
         return field.join(joins, forceOuter, false);
     }
 
+    @Override
     public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
         return res.getObject(field.getColumns()[0], null, joins);
     }
 
+    @Override
     public boolean isVersionable() {
         if (field.isJoinOuter())
             return false;
@@ -271,6 +287,7 @@ public class PrimitiveFieldStrategy
         }
     }
 
+    @Override
     public void where(OpenJPAStateManager sm, JDBCStore store, RowManager rm,
         Object prevValue)
         throws SQLException {
@@ -292,10 +309,12 @@ public class PrimitiveFieldStrategy
     // Joinable implementation
     ///////////////////////////
 
+    @Override
     public int getFieldIndex() {
         return field.getIndex();
     }
 
+    @Override
     public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
         JDBCStore store, Joins joins)
         throws SQLException {
@@ -306,19 +325,23 @@ public class PrimitiveFieldStrategy
             field.getTypeCode());
     }
 
+    @Override
     public Column[] getColumns() {
         return field.getColumns();
     }
 
+    @Override
     public Object getJoinValue(Object fieldVal, Column col, JDBCStore store) {
         return fieldVal;
     }
 
+    @Override
     public Object getJoinValue(OpenJPAStateManager sm, Column col,
         JDBCStore store) {
         return sm.fetch(field.getIndex());
     }
 
+    @Override
     public void setAutoAssignedValue(OpenJPAStateManager sm, JDBCStore store,
         Column col, Object autoInc) {
         int idx = field.getIndex();
@@ -386,22 +409,27 @@ public class PrimitiveFieldStrategy
     // Embeddable implementation
     /////////////////////////////
 
+    @Override
     public ColumnIO getColumnIO() {
         return field.getColumnIO();
     }
 
+    @Override
     public Object[] getResultArguments() {
         return null;
     }
 
+    @Override
     public Object toEmbeddedObjectValue(Object val) {
         return val;
     }
 
+    @Override
     public Object toEmbeddedDataStoreValue(Object val, JDBCStore store) {
         return toDataStoreValue(val, store);
     }
 
+    @Override
     public void loadEmbedded(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Object val)
         throws SQLException {

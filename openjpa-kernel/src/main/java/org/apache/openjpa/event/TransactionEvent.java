@@ -34,6 +34,9 @@ import org.apache.openjpa.kernel.Broker;
 public class TransactionEvent
     extends EventObject {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Event type signifying that a transaction has just begun.
      */

@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -95,6 +96,7 @@ public class Entity1 implements Serializable {
         return entity2Field;
     }
 
+    @Override
     public String toString() {
         return ("PK: " + pk + " StringField: " + stringField + " IntField: " +
             intField);

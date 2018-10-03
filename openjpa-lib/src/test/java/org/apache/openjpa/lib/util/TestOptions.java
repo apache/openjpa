@@ -43,6 +43,7 @@ public class TestOptions extends TestCase {
         super(test);
     }
 
+    @Override
     public void setUp() {
         Properties defs = new Properties();
         defs.setProperty("default", "value");

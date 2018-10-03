@@ -131,7 +131,7 @@ public abstract class AbstractCFMetaDataFactory
             this.urls = null;
         else {
             String[] strs = StringUtil.split(urls, ";", 0);
-            this.urls = new HashSet<URL>((int) (strs.length * 1.33 + 1));
+            this.urls = new HashSet<>((int) (strs.length * 1.33 + 1));
             try {
                 for (int i = 0; i < strs.length; i++)
                     this.urls.add(new URL(strs[i]));
@@ -155,7 +155,7 @@ public abstract class AbstractCFMetaDataFactory
     public void setResources(String rsrcs) {
         // keep list mutable so subclasses can add implicit locations
         this.rsrcs = (StringUtil.isEmpty(rsrcs)) ? null
-          : new ArrayList<String>(Arrays.asList(StringUtil.split(rsrcs, ";", 0)));
+          : new ArrayList<>(Arrays.asList(StringUtil.split(rsrcs, ";", 0)));
     }
 
     /**
@@ -173,9 +173,10 @@ public abstract class AbstractCFMetaDataFactory
     public void setClasspathScan(String cpath) {
         // keep list mutable so subclasses can add implicit locations
         this.cpath = (StringUtil.isEmpty(cpath)) ? null
-          : new ArrayList<String>(Arrays.asList(StringUtil.split(cpath, ";", 0)));
+          : new ArrayList<>(Arrays.asList(StringUtil.split(cpath, ";", 0)));
     }
 
+    @Override
     public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
         SequenceMetaData[] seqs, int mode, Map<File,String> output) {
         if (mode == MODE_NONE)
@@ -188,7 +189,7 @@ public abstract class AbstractCFMetaDataFactory
         Class<?> cls = (metas.length == 0) ? null : metas[0].getDescribedType();
         ClassLoader loader = repos.getConfiguration().
             getClassResolverInstance().getClassLoader(cls, null);
-        Map<String,ClassMetaData> clsNames = new HashMap<String,ClassMetaData>
+        Map<String,ClassMetaData> clsNames = new HashMap<>
         	((int) (metas.length * 1.33 + 1));
         for (int i = 0; i < metas.length; i++)
             clsNames.put(metas[i].getDescribedType().getName(), metas[i]);
@@ -239,9 +240,9 @@ public abstract class AbstractCFMetaDataFactory
                     && (queries[i].getSourceMode() & mode) != 0)
                     ser.addQueryMetaData(queries[i]);
 
-            int flags = ser.PRETTY;
+            int flags = MetaDataSerializer.PRETTY;
             if ((store & STORE_VERBOSE) != 0)
-                flags |= ser.VERBOSE;
+                flags |= MetaDataSerializer.VERBOSE;
             serialize(ser, output, flags);
         }
 
@@ -266,12 +267,13 @@ public abstract class AbstractCFMetaDataFactory
                 for (int i = 0; i < queries.length; i++)
                     if (queries[i].getSourceMode() == MODE_QUERY)
                         ser.addQueryMetaData(queries[i]);
-                serialize(ser, output, ser.PRETTY);
+                serialize(ser, output, MetaDataSerializer.PRETTY);
             }
         }
         return true;
     }
 
+    @Override
     public boolean drop(Class[] cls, int mode, ClassLoader envLoader) {
         if (mode == MODE_NONE)
             return true;
@@ -349,14 +351,14 @@ public abstract class AbstractCFMetaDataFactory
                 for (int i = 0; i < cls.length; i++)
                     ser.removeMetaData(pr.getMetaData(cls[i], envLoader,
                         false));
-            serialize(ser, null, Serializer.PRETTY);
+            serialize(ser, null, MetaDataSerializer.PRETTY);
         }
         if (qqs != null && !qqs.isEmpty()) {
             ser = newSerializer();
             ser.setMode(MODE_QUERY);
             for (int i = 0; i < qqs.size(); i++)
                 ser.addQueryMetaData((QueryMetaData) qqs.get(i));
-            serialize(ser, null, Serializer.PRETTY);
+            serialize(ser, null, MetaDataSerializer.PRETTY);
         }
         return true;
     }
@@ -606,6 +608,7 @@ public abstract class AbstractCFMetaDataFactory
         return null;
     }
 
+    @Override
     public Set<String> getPersistentTypeNames(boolean devpath, ClassLoader envLoader) {
         // some configured locations might be implicit in spec, so return
         // null if we don't find any classes, rather than if we don't have
@@ -642,7 +645,7 @@ public abstract class AbstractCFMetaDataFactory
         throws IOException {
         ClassArgParser cparser = newClassArgParser();
         String[] clss;
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         if (files != null) {
             File file;
             for (Iterator itr = files.iterator(); itr.hasNext();) {
@@ -873,7 +876,7 @@ public abstract class AbstractCFMetaDataFactory
                         throw new IOException("Error generating puORMUrlStr.", e.getCause());
                     }
 
-                    List<URL> urls = new ArrayList<URL>(3);
+                    List<URL> urls = new ArrayList<>(3);
                     while (mitr.hasNext()) {
                         url = (URL) mitr.next();
                         String urlString = url.toString();
@@ -1038,6 +1041,7 @@ public abstract class AbstractCFMetaDataFactory
      */
     protected abstract MetaDataFilter newMetaDataFilter();
 
+    @Override
     public void clear() {
         super.clear();
         _typeNames = null;
@@ -1046,57 +1050,57 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Internal parser interface.
      */
-    public static interface Parser
+    public interface Parser
         extends MetaDataParser {
 
         /**
          * Returns the repository for this parser. If none has been set,
          * creates a new repository and sets it.
          */
-        public MetaDataRepository getRepository();
+        MetaDataRepository getRepository();
 
         /**
          * The parse mode according to the expected document type.
          */
-        public void setMode(int mode);
+        void setMode(int mode);
     }
 
     /**
      * Internal serializer interface.
      */
-    public static interface Serializer
+    public interface Serializer
         extends MetaDataSerializer {
 
         /**
          * The serialization mode according to the expected document type. The
          * mode constants act as bit flags, and therefore can be combined.
          */
-        public void setMode(int mode);
+        void setMode(int mode);
 
         /**
          * Add a class meta data to the set to be serialized.
          */
-        public void addMetaData(ClassMetaData meta);
+        void addMetaData(ClassMetaData meta);
 
         /**
          * Remove a class meta data from the set to be serialized.
          */
-        public boolean removeMetaData(ClassMetaData meta);
+        boolean removeMetaData(ClassMetaData meta);
 
         /**
          * Add a sequence meta data to the set to be serialized.
          */
-        public void addSequenceMetaData(SequenceMetaData meta);
+        void addSequenceMetaData(SequenceMetaData meta);
 
         /**
          * Add a query meta data to the set to be serialized.
          */
-        public void addQueryMetaData(QueryMetaData meta);
+        void addQueryMetaData(QueryMetaData meta);
 
         /**
          * Add all components in the given repository to the set to be
          * serialized.
          */
-        public void addAll (MetaDataRepository repos);
+        void addAll (MetaDataRepository repos);
     }
 }

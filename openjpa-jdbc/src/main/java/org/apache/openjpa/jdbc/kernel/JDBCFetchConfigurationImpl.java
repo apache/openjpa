@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -43,6 +42,7 @@ import org.apache.openjpa.lib.rop.SimpleResultList;
 import org.apache.openjpa.lib.rop.SoftRandomAccessResultList;
 import org.apache.openjpa.lib.rop.WindowResultList;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.UserException;
 
@@ -51,11 +51,11 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class JDBCFetchConfigurationImpl
     extends FetchConfigurationImpl
     implements JDBCFetchConfiguration {
 
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage(JDBCFetchConfigurationImpl.class);
 
     /**
@@ -82,6 +82,8 @@ public class JDBCFetchConfigurationImpl
      * Configurable JDBC state shared throughout a traversal chain.
      */
     protected static class JDBCConfigurationState implements Serializable {
+        
+        private static final long serialVersionUID = 1L;
         public int eagerMode = 0;
         public int subclassMode = 0;
         public int type = 0;
@@ -106,11 +108,13 @@ public class JDBCFetchConfigurationImpl
         _state = (jstate == null) ? new JDBCConfigurationState() : jstate;
     }
 
+    @Override
     protected FetchConfigurationImpl newInstance(ConfigurationState state) {
         JDBCConfigurationState jstate = (state == null) ? null : _state;
         return new JDBCFetchConfigurationImpl(state, jstate);
     }
 
+    @Override
     public void setContext(StoreContext ctx) {
         super.setContext(ctx);
         JDBCConfiguration conf = getJDBCConfiguration();
@@ -125,6 +129,7 @@ public class JDBCFetchConfigurationImpl
         setJoinSyntax(conf.getDBDictionaryInstance().joinSyntax);
     }
 
+    @Override
     public void copy(FetchConfiguration fetch) {
         super.copy(fetch);
         JDBCFetchConfiguration jf = (JDBCFetchConfiguration) fetch;
@@ -148,10 +153,12 @@ public class JDBCFetchConfigurationImpl
         _state.ignoreDfgForFkSelect = b;
     }
 
+    @Override
     public int getEagerFetchMode() {
         return _state.eagerMode;
     }
 
+    @Override
     public JDBCFetchConfiguration setEagerFetchMode(int mode) {
         if (mode != DEFAULT
             && mode != EagerFetchModes.EAGER_NONE
@@ -169,10 +176,12 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public int getSubclassFetchMode() {
         return _state.subclassMode;
     }
 
+    @Override
     public int getSubclassFetchMode(ClassMapping cls) {
         if (cls == null)
             return _state.subclassMode;
@@ -182,6 +191,7 @@ public class JDBCFetchConfigurationImpl
         return Math.min(mode, _state.subclassMode);
     }
 
+    @Override
     public JDBCFetchConfiguration setSubclassFetchMode(int mode) {
         if (mode != DEFAULT
             && mode != EagerFetchModes.EAGER_NONE
@@ -199,10 +209,12 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public int getResultSetType() {
         return _state.type;
     }
 
+    @Override
     public JDBCFetchConfiguration setResultSetType(int type) {
         if (type != DEFAULT
             && type != ResultSet.TYPE_FORWARD_ONLY
@@ -219,10 +231,12 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public int getFetchDirection() {
         return _state.direction;
     }
 
+    @Override
     public JDBCFetchConfiguration setFetchDirection(int direction) {
         if (direction != DEFAULT
             && direction != ResultSet.FETCH_FORWARD
@@ -240,10 +254,12 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public int getLRSSize() {
         return _state.size;
     }
 
+    @Override
     public JDBCFetchConfiguration setLRSSize(int size) {
         if (size != DEFAULT
             && size != LRSSizes.SIZE_QUERY
@@ -260,10 +276,12 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public int getJoinSyntax() {
         return _state.syntax;
     }
 
+    @Override
     public JDBCFetchConfiguration setJoinSyntax(int syntax) {
         if (syntax != DEFAULT
             && syntax != JoinSyntaxes.SYNTAX_SQL92
@@ -280,6 +298,7 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public ResultList<?> newResultList(ResultObjectProvider rop) {
         // if built around a list, just use a simple wrapper
         if (rop instanceof ListResultObjectProvider)
@@ -312,16 +331,19 @@ public class JDBCFetchConfigurationImpl
         return new SimpleResultList(rop);
     }
 
+    @Override
     public Set<String> getJoins() {
         if (_state.joins == null)
             return Collections.emptySet();
         return _state.joins;
     }
 
+    @Override
     public boolean hasJoin(String field) {
         return _state.joins != null && _state.joins.contains(field);
     }
 
+    @Override
     public JDBCFetchConfiguration addJoin(String join) {
         if (StringUtil.isEmpty(join))
             throw new UserException(_loc.get("null-join"));
@@ -329,7 +351,7 @@ public class JDBCFetchConfigurationImpl
         lock();
         try {
             if (_state.joins == null)
-                _state.joins = new HashSet<String>();
+                _state.joins = new HashSet<>();
             _state.joins.add(join);
         } finally {
             unlock();
@@ -337,6 +359,7 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public JDBCFetchConfiguration addJoins(Collection<String> joins) {
         if (joins == null || joins.isEmpty())
             return this;
@@ -345,6 +368,7 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public JDBCFetchConfiguration removeJoin(String field) {
         lock();
         try {
@@ -356,6 +380,7 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public JDBCFetchConfiguration removeJoins(Collection<String> joins) {
         lock();
         try {
@@ -367,6 +392,7 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public JDBCFetchConfiguration clearJoins() {
         lock();
         try {
@@ -378,10 +404,12 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public int getIsolation() {
         return _state.isolationLevel;
     }
 
+    @Override
     public JDBCFetchConfiguration setIsolation(int level) {
         if (level != -1 && level != DEFAULT
             && level != Connection.TRANSACTION_NONE
@@ -398,6 +426,7 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm) {
         return (JDBCFetchConfiguration) traverse(fm);
     }
@@ -417,17 +446,20 @@ public class JDBCFetchConfigurationImpl
         return (JDBCConfiguration) conf;
     }
 
+    @Override
     public Set<String> getFetchInnerJoins() {
         if (_state.fetchInnerJoins == null)
             return Collections.emptySet();
         return _state.fetchInnerJoins;
     }
 
+    @Override
     public boolean hasFetchInnerJoin(String field) {
         return _state.fetchInnerJoins != null &&
             _state.fetchInnerJoins.contains(field);
     }
 
+    @Override
     public JDBCFetchConfiguration addFetchInnerJoin(String join) {
         if (StringUtil.isEmpty(join))
             throw new UserException(_loc.get("null-join"));
@@ -435,7 +467,7 @@ public class JDBCFetchConfigurationImpl
         lock();
         try {
             if (_state.fetchInnerJoins == null)
-                _state.fetchInnerJoins = new HashSet<String>();
+                _state.fetchInnerJoins = new HashSet<>();
             _state.fetchInnerJoins.add(join);
         } finally {
             unlock();
@@ -443,11 +475,12 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
+    @Override
     public JDBCFetchConfiguration addFetchInnerJoins(Collection<String> joins) {
         if (joins == null || joins.isEmpty())
             return this;
         for (Iterator<String> itr = joins.iterator(); itr.hasNext();)
-            addFetchInnerJoin((String) itr.next());
+            addFetchInnerJoin(itr.next());
         return this;
     }
 }

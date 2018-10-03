@@ -19,8 +19,10 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 
-import java.util.*;
-import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Entity;
 
 /**
  *	<p>Persistent class used in testing.</p>

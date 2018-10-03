@@ -124,6 +124,7 @@ public class QuoteDataBean implements Serializable {
         setSymbol(symbol);
     }
 
+    @Override
     public String toString() {
         return "\n\tQuote Data for: " + getSymbol()
                 + "\n\t\t companyName: " + getCompanyName()

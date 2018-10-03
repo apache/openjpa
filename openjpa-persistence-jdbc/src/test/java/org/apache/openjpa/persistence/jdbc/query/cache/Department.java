@@ -57,7 +57,7 @@ public class Department {
 
 	public void addEmployee(FullTimeEmployee e) {
 		if (fullTimeEmployees == null)
-			fullTimeEmployees = new ArrayList<FullTimeEmployee>();
+			fullTimeEmployees = new ArrayList<>();
 		this.fullTimeEmployees.add(e);
 		e.setDept(this);
 	}
@@ -68,7 +68,7 @@ public class Department {
 
 	public void addEmployee(PartTimeEmployee e) {
 		if (partTimeEmployees == null)
-			partTimeEmployees = new ArrayList<PartTimeEmployee>();
+			partTimeEmployees = new ArrayList<>();
 		this.partTimeEmployees.add(e);
 		e.setDept(this);
 	}

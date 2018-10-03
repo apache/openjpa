@@ -24,11 +24,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
 import javax.persistence.Entity;
 
 @Entity
 public class AttachD
     implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     private Object version;
 

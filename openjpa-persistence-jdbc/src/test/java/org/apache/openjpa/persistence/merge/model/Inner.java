@@ -41,7 +41,7 @@ public class Inner {
     private String name = null;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "inners")
-    private Collection<Outer> outers = new ArrayList<Outer>();
+    private Collection<Outer> outers = new ArrayList<>();
 
     public String getName() {
         return name;

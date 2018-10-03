@@ -34,13 +34,17 @@ import org.apache.openjpa.util.UserException;
  *
  * @deprecated Use <code>matches()</code> instead.
  */
+@Deprecated
 public class JDBCWildcardMatch
     extends WildcardMatch
     implements JDBCFilterListener {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (JDBCWildcardMatch.class);
 
+    @Override
     public void appendTo(SQLBuffer sql, FilterValue target, FilterValue[] args,
         ClassMapping type, JDBCStore store) {
         if (!args[0].isConstant())

@@ -47,6 +47,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
         closeEMF(emf1);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(Person.class, CLEAR_TABLES);
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -87,11 +88,12 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
     }
 
     protected EntityManager getEm(EntityManagerFactory emf, String name, String value) {
-        Map<String, Object> props = new HashMap<String, Object>();
+        Map<String, Object> props = new HashMap<>();
         props.put(name, value);
         return emf.createEntityManager(props);
     }
 
+    @Override
     public String getPersistenceUnitName() {
         return "TestCfSwitching";
     }

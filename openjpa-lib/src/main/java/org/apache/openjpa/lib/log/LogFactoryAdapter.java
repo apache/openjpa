@@ -19,7 +19,6 @@
 package org.apache.openjpa.lib.log;
 
 import java.util.Map;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -31,8 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class LogFactoryAdapter implements LogFactory {
 
     // cache category to log adapters
-    private Map<String, Log> _logs = new ConcurrentHashMap<String, Log>();
+    private Map<String, Log> _logs = new ConcurrentHashMap<>();
 
+    @Override
     public Log getLog(String channel) {
         // no locking; OK if same adapter created multiple times
         Log log = _logs.get(channel);

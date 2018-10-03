@@ -21,10 +21,12 @@ package org.apache.openjpa.persistence.embed;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class EmployeePK2 implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     String name;
     Date bDay;
 
@@ -34,6 +36,7 @@ public class EmployeePK2 implements Serializable {
         this.bDay = bDay;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof EmployeePK2)) return false;
@@ -43,6 +46,7 @@ public class EmployeePK2 implements Serializable {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int code = 0;
         code = code * 31 + name.hashCode();

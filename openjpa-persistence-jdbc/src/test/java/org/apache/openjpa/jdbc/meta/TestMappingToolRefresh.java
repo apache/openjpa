@@ -20,7 +20,6 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.Map;
 
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.SchemaTool;

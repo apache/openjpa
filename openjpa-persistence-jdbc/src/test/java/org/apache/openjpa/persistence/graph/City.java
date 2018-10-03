@@ -29,9 +29,9 @@ import javax.persistence.Id;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 @Entity
 public class City implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Id
     private String name;
 

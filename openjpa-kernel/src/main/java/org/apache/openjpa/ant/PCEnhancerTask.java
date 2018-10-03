@@ -76,10 +76,12 @@ public class PCEnhancerTask
         flags.tmpClassLoader = tmpClassLoader;
     }
 
+    @Override
     protected ConfigurationImpl newConfiguration() {
         return new OpenJPAConfigurationImpl();
     }
 
+    @Override
     protected void executeOn(String[] files)
         throws IOException {
         flags.directory = (dirName == null) ? null

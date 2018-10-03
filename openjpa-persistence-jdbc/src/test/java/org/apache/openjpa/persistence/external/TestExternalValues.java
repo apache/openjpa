@@ -24,13 +24,14 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.persistence.RollbackException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
+import junit.framework.Assert;
+
 public class TestExternalValues extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         super.setUp(DROP_TABLES, EntityA.class);
     }

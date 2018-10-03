@@ -31,10 +31,8 @@ import org.apache.openjpa.jdbc.sql.Select;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class JDBCColumnOrder
-    implements JDBCOrder {
-
+class JDBCColumnOrder implements JDBCOrder {
+    private static final long serialVersionUID = 1L;
     private Column _col = null;
     private ColumnIO _io = null;
 
@@ -69,26 +67,33 @@ class JDBCColumnOrder
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public String getName() {
         return (_col == null) ? "" : _col.getName();
     }
 
+    @Override
     public DBIdentifier getIdentifier() {
         return (_col == null) ? DBIdentifier.newColumn("") : _col.getIdentifier();
     }
 
+    @Override
     public boolean isAscending() {
         return true;
     }
 
+    @Override
     public Comparator<?> getComparator() {
         return null;
     }
 
+    @Override
     public boolean isInRelation() {
         return false;
     }
 
+    @Override
     public void order(Select sel, ClassMapping elem, Joins joins) {
         if (_col != null)
             sel.orderBy(_col, true, joins, true);

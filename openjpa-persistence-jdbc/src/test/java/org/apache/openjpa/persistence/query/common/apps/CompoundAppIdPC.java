@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.query.common.apps;
 
 import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
@@ -67,6 +68,8 @@ public class CompoundAppIdPC {
 
     public static class Idkey implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public String pk1;
         public int pk2;
 
@@ -81,6 +84,7 @@ public class CompoundAppIdPC {
             }
         }
 
+        @Override
         public String toString() {
             return pk2 + "/" + pk1;
         }

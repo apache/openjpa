@@ -24,7 +24,6 @@ import java.util.Objects;
 import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 /**
@@ -50,6 +49,7 @@ public class ObjectValue extends Value {
     /**
      * The internal value.
      */
+    @Override
     public Object get() {
         return _value;
     }
@@ -125,6 +125,7 @@ public class ObjectValue extends Value {
         return Configurations.newInstance(clsName, this, conf, cl, fatal);
     }
 
+    @Override
     public Class<?> getValueType() {
         return Object.class;
     }
@@ -136,10 +137,12 @@ public class ObjectValue extends Value {
     protected void objectChanged() {
     }
 
+    @Override
     protected String getInternalString() {
         return null;
     }
 
+    @Override
     protected void setInternalString(String str) {
         if (str == null)
             set(null);
@@ -148,6 +151,7 @@ public class ObjectValue extends Value {
                 getProperty()).getMessage());
     }
 
+    @Override
     protected void setInternalObject(Object obj) {
         set(obj);
     }

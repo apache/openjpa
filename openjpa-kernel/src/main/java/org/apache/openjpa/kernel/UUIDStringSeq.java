@@ -46,21 +46,26 @@ public class UUIDStringSeq
     private UUIDStringSeq() {
     }
 
+    @Override
     public void setType(int type) {
     }
 
+    @Override
     public synchronized Object next(StoreContext ctx, ClassMetaData meta) {
         _last = UUIDGenerator.nextString(UUIDGenerator.TYPE1);
         return _last;
     }
 
+    @Override
     public synchronized Object current(StoreContext ctx, ClassMetaData meta) {
         return _last;
     }
 
+    @Override
     public void allocate(int additional, StoreContext ctx, ClassMetaData meta) {
     }
 
+    @Override
     public void close() {
 	}
 }

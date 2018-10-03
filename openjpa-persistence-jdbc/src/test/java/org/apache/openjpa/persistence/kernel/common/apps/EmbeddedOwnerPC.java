@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -94,6 +95,8 @@ public class EmbeddedOwnerPC {
 
     public static class EmbKey implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public int id1;
         public int id2;
 

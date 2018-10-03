@@ -33,48 +33,63 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 public abstract class AbstractStrategy
     implements Strategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
+    @Override
     public String getAlias() {
         return getClass().getName();
     }
 
+    @Override
     public void map(boolean adapt) {
     }
 
+    @Override
     public void initialize() {
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
     }
 
+    @Override
     public Boolean isCustomInsert(OpenJPAStateManager sm, JDBCStore store) {
         return Boolean.FALSE;
     }
 
+    @Override
     public Boolean isCustomUpdate(OpenJPAStateManager sm, JDBCStore store) {
         return Boolean.FALSE;
     }
 
+    @Override
     public Boolean isCustomDelete(OpenJPAStateManager sm, JDBCStore store) {
         return Boolean.FALSE;
     }
 
+    @Override
     public void customInsert(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
     }
 
+    @Override
     public void customUpdate(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
     }
 
+    @Override
     public void customDelete(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
     }

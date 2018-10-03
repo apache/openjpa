@@ -31,19 +31,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
-import org.apache.openjpa.persistence.test.AllowFailure;
-
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.RestoreStateType;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 public class TestInitialValueFetching extends BaseKernelTest {
 
@@ -54,6 +51,7 @@ public class TestInitialValueFetching extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
         OpenJPAEntityManager pm = getPM();

@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
 
     private static Cache cache = null;
-    private static List<String> sql = new ArrayList<String>();
+    private static List<String> sql = new ArrayList<>();
     private static JDBCListener listener;
 
     private static Class<?>[] expectedInCache = persistentTypes;
@@ -51,6 +51,7 @@ public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
         return emf;
     }
 
+    @Override
     public JDBCListener getListener() {
         if (listener == null) {
             listener =  new FilteringJDBCListener(getSql());
@@ -58,6 +59,7 @@ public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
         return listener;
     }
 
+    @Override
     public List<String> getSql() {
         return sql;
     }

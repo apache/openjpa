@@ -62,7 +62,7 @@ public class Osoba {
 
 	public void addProjekty(Projekt projekt) {
 		if (projekty == null)
-			projekty = new ArrayList<Projekt>();
+			projekty = new ArrayList<>();
 		projekty.add(projekt);
 	}
 

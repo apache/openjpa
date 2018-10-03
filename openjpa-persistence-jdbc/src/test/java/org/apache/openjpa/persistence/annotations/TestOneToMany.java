@@ -18,12 +18,11 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import java.util.*;
+import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
 
 
 /**
@@ -38,6 +37,7 @@ public class TestOneToMany extends AnnotationTestCase
 		super(name, "annotationcactusapp");
 	}
 
+    @Override
     public void setUp() {
         deleteAll(AnnoTest1.class);
         deleteAll(AnnoTest2.class);

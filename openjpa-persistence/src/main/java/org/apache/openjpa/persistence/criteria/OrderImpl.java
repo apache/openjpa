@@ -40,19 +40,23 @@ class OrderImpl implements Order, CriteriaExpression {
 		this(e, true);
 	}
 
-	public ExpressionImpl<?> getExpression() {
+	@Override
+    public ExpressionImpl<?> getExpression() {
 		return e;
 	}
 
-	public boolean isAscending() {
+	@Override
+    public boolean isAscending() {
 		return _ascending;
 	}
 
-	public Order reverse() {
+	@Override
+    public Order reverse() {
 		_ascending = !_ascending;
 		return this;
 	}
 
+    @Override
     public void acceptVisit(CriteriaExpressionVisitor visitor) {
         if (!visitor.isVisited(this)) {
             visitor.enter(this);
@@ -60,15 +64,18 @@ class OrderImpl implements Order, CriteriaExpression {
         }
     }
 
+    @Override
     public StringBuilder asValue(AliasContext q) {
         return (e.isAutoAliased() ? e.asValue(q) : new StringBuilder(e.getAlias()))
             .append(_ascending ? "" : " DESC");
     }
 
+    @Override
     public StringBuilder asProjection(AliasContext q) {
         throw new IllegalStateException(this + " can not be rendered as projection");
     }
 
+    @Override
     public StringBuilder asVariable(AliasContext q) {
         throw new IllegalStateException(this + " can not be rendered as variable");
     }

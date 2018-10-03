@@ -22,7 +22,6 @@ import javax.persistence.Entity;
 import javax.persistence.EntityResult;
 import javax.persistence.FieldResult;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
 
 @javax.persistence.Table(name = "CRT_REQUISICAO_CHEQUE_PERS")

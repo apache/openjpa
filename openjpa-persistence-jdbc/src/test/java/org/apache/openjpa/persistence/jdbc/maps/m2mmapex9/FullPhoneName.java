@@ -49,6 +49,7 @@ public class FullPhoneName {
         this.lName = lName;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof FullPhoneName)) return false;
         FullPhoneName other = (FullPhoneName) o;
@@ -58,6 +59,7 @@ public class FullPhoneName {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret += lName.hashCode();

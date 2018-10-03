@@ -27,11 +27,11 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+import junit.framework.Assert;
 
 public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
     public int numCompany = 2;
@@ -42,6 +42,7 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
     public int divId = 1;
     public int vpId = 1;
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Company.class,
@@ -130,7 +131,7 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
         em.close();
     }
 
-    protected List<String> sql = new ArrayList<String>();
+    protected List<String> sql = new ArrayList<>();
     protected int sqlCount;
 
     public List<String> getSql() {

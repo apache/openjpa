@@ -51,6 +51,7 @@ public abstract class AbstractClass {
         return name;
     }
 
+    @Override
     public String toString() {
         return "Id=" + id +
                ";Name=" + name;

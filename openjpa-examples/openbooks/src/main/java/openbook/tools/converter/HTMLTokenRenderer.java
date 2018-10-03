@@ -21,10 +21,10 @@ package openbook.tools.converter;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.antlr.runtime.Token;
+
 import openbook.tools.parser.JavaParser;
 import openbook.tools.util.TextProcessingUtility;
-
-import org.antlr.runtime.Token;
 
 /**
  * Renders Java source tokens as HTML tags.
@@ -81,7 +81,7 @@ public class HTMLTokenRenderer implements TokenRenderer {
     public static final String CSS_DECIMAL     = "decimal";
     public static final String CSS_LINE_NO     = "lineno";
 
-    private Set<String> customIdentifiers = new HashSet<String>();
+    private Set<String> customIdentifiers = new HashSet<>();
 
     public static final String NEW_LINE = "\r\n";
     public static final String HTML_BR_TAG = "<br>";
@@ -90,6 +90,7 @@ public class HTMLTokenRenderer implements TokenRenderer {
     /**
      * Gets a end-of-line string: a HTML &lt;br&gt; tag followed by carriage return and line feed.
      */
+    @Override
     public String endLine(int line) {
         return  addLineBreak ?  HTML_BR_TAG + NEW_LINE : NEW_LINE;
     }
@@ -97,6 +98,7 @@ public class HTMLTokenRenderer implements TokenRenderer {
     /**
      * Gets a string for beginning of a new line.
      */
+    @Override
     public String newLine(int line) {
         String result = "";
         if (showLineNumber) {
@@ -187,6 +189,7 @@ public class HTMLTokenRenderer implements TokenRenderer {
     /**
      * Gets the opening &lt;BODY&gt; and &lt;HTML&gt; tags and the &lt;link type="stylesheet"&gt; clause.
      */
+    @Override
     public String getPrologue() {
         return insertLines(
                 "<HTML>",
@@ -199,6 +202,7 @@ public class HTMLTokenRenderer implements TokenRenderer {
     /**
      * Gets the closing &lt;BODY&gt; and &lt;HTML&gt; tags
      */
+    @Override
     public String getEpilogue() {
         return insertLines(" ", "</BODY>", "</HTML>");
     }

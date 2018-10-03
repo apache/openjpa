@@ -26,6 +26,7 @@ import javax.persistence.EntityTransaction;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestEmbedded extends SQLListenerTestCase {
+    @Override
     public void setUp() {
         super.setUp(BaseEntity.class, Address.class, Geocode.class,
                 CLEAR_TABLES);

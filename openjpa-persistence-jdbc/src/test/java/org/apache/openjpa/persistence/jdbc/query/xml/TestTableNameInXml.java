@@ -28,6 +28,7 @@ public class TestTableNameInXml extends SQLListenerTestCase {
     String containsSQL = " FROM TableNameInXml ";
     String notContainsSQL = " FROM TableNameInXmlEntity ";
 
+    @Override
     public void setUp() {
         super.setUp(TableNameInXmlEntity.class);
     }
@@ -79,6 +80,7 @@ public class TestTableNameInXml extends SQLListenerTestCase {
         em.close();
     }
 
+    @Override
     protected String getPersistenceUnitName() {
         return "TableNameInXml-PU";
     }

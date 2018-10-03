@@ -19,17 +19,17 @@
 package org.apache.openjpa.persistence.callbacks;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Version;
-import javax.persistence.PreRemove;
+import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
-import javax.persistence.PostPersist;
-import javax.persistence.GeneratedValue;
+import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 @Entity
 public class ExceptionsFromCallbacksEntity {
@@ -128,5 +128,8 @@ public class ExceptionsFromCallbacksEntity {
 
     public class CallbackTestException
         extends RuntimeException {
+
+        
+        private static final long serialVersionUID = 1L;
     }
 }

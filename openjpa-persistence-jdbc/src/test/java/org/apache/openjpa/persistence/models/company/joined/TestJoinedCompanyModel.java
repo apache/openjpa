@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.models.company.joined;
 
-import org.apache.openjpa.persistence.models.company.*;
+import org.apache.openjpa.persistence.models.company.CompanyModelTest;
 
 public class TestJoinedCompanyModel extends CompanyModelTest {
 }

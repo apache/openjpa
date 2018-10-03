@@ -21,8 +21,8 @@ package org.apache.openjpa.instrumentation.jmx;
 import java.lang.management.ManagementFactory;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -71,7 +71,7 @@ public class JMXProvider
      */
     public Set<MBeanServer> getMBeanServer() {
         if (_mbs == null) {
-            _mbs =  new HashSet<MBeanServer>();
+            _mbs =  new HashSet<>();
             // Look in both of these static methods to find all MBServers. In some environments the server returned by
             // the getPlatformMBeanServer() call isn't the one used by the runtime. Might be over kill by calling both,
             // but it shouldn't hurt anything.
@@ -151,6 +151,7 @@ public class JMXProvider
     /**
      * Start an instrument.  Registers an mbean with the server.
      */
+    @Override
     public void startInstrument(Instrument instrument) {
         if (!instrument.isStarted()) {
             registerMBean((JMXInstrument)instrument);
@@ -161,6 +162,7 @@ public class JMXProvider
     /**
      * Stop an instrument.  Unregisters an mbean with the server.
      */
+    @Override
     public void stopInstrument(Instrument instrument, boolean force) {
         if (instrument.isStarted() || force) {
             Set<MBeanServer> mbs = getMBeanServer();

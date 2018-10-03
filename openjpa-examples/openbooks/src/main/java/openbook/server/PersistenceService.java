@@ -32,14 +32,14 @@ import javax.persistence.PersistenceContextType;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 abstract class PersistenceService implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final EntityManagerFactory emf;
     private final String unitName;
     private final boolean isManaged;
     private final PersistenceContextType scope;
 
-    private ThreadLocal<EntityManager> thread = new ThreadLocal<EntityManager>();
+    private ThreadLocal<EntityManager> thread = new ThreadLocal<>();
     private ReentrantLock lock = new ReentrantLock();
 
     protected PersistenceService(String unit, EntityManagerFactory emf, boolean managed,

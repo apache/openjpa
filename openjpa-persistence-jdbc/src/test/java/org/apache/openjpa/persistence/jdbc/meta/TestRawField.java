@@ -27,10 +27,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.RawField;
 
 
 public class TestRawField
@@ -42,6 +40,7 @@ public class TestRawField
     	super(name);
     }
 
+    @Override
     public void setUp() {
        deleteAll(RawField.class);
     }

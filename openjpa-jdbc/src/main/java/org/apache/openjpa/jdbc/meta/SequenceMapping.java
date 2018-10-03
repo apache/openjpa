@@ -36,9 +36,8 @@ import org.apache.openjpa.meta.SequenceMetaData;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public class SequenceMapping
-    extends SequenceMetaData {
+public class SequenceMapping extends SequenceMetaData {
+    private static final long serialVersionUID = 1L;
 
     /**
      * {@link ValueTableJDBCSeq} alias.
@@ -76,6 +75,7 @@ public class SequenceMapping
      * @param name
      * @param repos
      */
+    @Deprecated
     public SequenceMapping(String name, MappingRepository repos) {
         super(name, repos);
     }
@@ -110,6 +110,7 @@ public class SequenceMapping
      * Name of sequence table, if any.
      * @deprecated
      */
+    @Deprecated
     public String getTable() {
         return getTableIdentifier().getName();
     }
@@ -122,6 +123,7 @@ public class SequenceMapping
      * Name of sequence table, if any.
      * @deprecated
      */
+    @Deprecated
     public void setTable(String table) {
         setTableIdentifier(DBIdentifier.newTable(table));
     }
@@ -134,6 +136,7 @@ public class SequenceMapping
      * Name of sequence column, if any.
      * @deprecated
      */
+    @Deprecated
     public String getSequenceColumn() {
         return getSequenceColumnIdentifier().getName();
     }
@@ -146,6 +149,7 @@ public class SequenceMapping
      * Name of sequence column, if any.
      * @deprecated
      */
+    @Deprecated
     public void setSequenceColumn(String sequenceColumn) {
         setSequenceColumnIdentifier(DBIdentifier.newColumn(sequenceColumn));
     }
@@ -158,6 +162,7 @@ public class SequenceMapping
      * Name of primary key column, if any.
      * @deprecated
      */
+    @Deprecated
     public String getPrimaryKeyColumn() {
         return getPrimaryKeyColumnIdentifier().getName();
     }
@@ -170,6 +175,7 @@ public class SequenceMapping
      * Name of primary key column, if any.
      * @deprecated
      */
+    @Deprecated
     public void setPrimaryKeyColumn(String primaryKeyColumn) {
         setPrimaryKeyColumnIdentifier(DBIdentifier.newColumn(primaryKeyColumn));
     }
@@ -196,6 +202,7 @@ public class SequenceMapping
      * @deprecated
      * @param cols
      */
+    @Deprecated
     public void setUniqueColumns(String[] cols) {
         setUniqueColumnsIdentifier(DBIdentifier.toArray(cols, DBIdentifierType.COLUMN));
     }
@@ -207,6 +214,7 @@ public class SequenceMapping
     /**
      * @deprecated
      */
+    @Deprecated
     public String[] getUniqueColumns() {
         return DBIdentifier.toStringArray(getUniqueColumnsIdentifier());
     }
@@ -216,6 +224,7 @@ public class SequenceMapping
     }
 
 
+    @Override
     protected PluginValue newPluginValue(String property) {
         return new JDBCSeqValue(property);
     }
@@ -257,6 +266,7 @@ public class SequenceMapping
      * @deprecated
      * @param name
      */
+    @Deprecated
     public void setUniqueConstraintName(String name) {
         _uniqueConstraintName = DBIdentifier.newConstraint(name);
     }
@@ -268,6 +278,7 @@ public class SequenceMapping
     /**
      * @deprecated
      */
+    @Deprecated
     public String getUniqueConstraintName() {
         return getUniqueConstraintIdentifier().getName();
     }

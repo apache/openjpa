@@ -33,72 +33,72 @@ public interface Joins {
     /**
      * Whether we have any joins.
      */
-    public boolean isEmpty();
+    boolean isEmpty();
 
     /**
      * Whether this joins path results in outer joins.
      */
-    public boolean isOuter();
+    boolean isOuter();
 
     /**
      * Perform a cross join on the given tables.
      */
-    public Joins crossJoin(Table localTable, Table foreignTable);
+    Joins crossJoin(Table localTable, Table foreignTable);
 
     /**
      * Join the columns of the given foreign key.
      */
-    public Joins join(ForeignKey fk, boolean inverse, boolean toMany);
+    Joins join(ForeignKey fk, boolean inverse, boolean toMany);
 
     /**
      * Join the columns of the given foreign key.
      */
-    public Joins outerJoin(ForeignKey fk, boolean inverse, boolean toMany);
+    Joins outerJoin(ForeignKey fk, boolean inverse, boolean toMany);
 
     /**
      * Join the columns of the given foreign key, which represents a relation
      * via the given field name.
      */
-    public Joins joinRelation(String name, ForeignKey fk, ClassMapping target,
+    Joins joinRelation(String name, ForeignKey fk, ClassMapping target,
         int subclasses, boolean inverse, boolean toMany);
 
     /**
      * Join the columns of the given foreign key, which represents a relation
      * via the given field name.
      */
-    public Joins outerJoinRelation(String name, ForeignKey fk,
+    Joins outerJoinRelation(String name, ForeignKey fk,
         ClassMapping target, int subclasses, boolean inverse, boolean toMany);
 
     /**
      * Set the variable name being traversed into with the next join.
      */
-    public Joins setVariable(String var);
+    Joins setVariable(String var);
 
     /**
      * Set the subquery alias.
      */
-    public Joins setSubselect(String alias);
+    Joins setSubselect(String alias);
 
     /**
      * Set subquery context when traversing into the next join is
      * in transition from parent context to subquery.
      * @param context
      */
-    public Joins setJoinContext(Context context);
+    Joins setJoinContext(Context context);
 
     /**
      * Set the correlated variable name being traversed into
      * with the next join.
      */
-    public Joins setCorrelatedVariable(String var);
+    Joins setCorrelatedVariable(String var);
 
     /**
      * Return correlated variable name
      */
-    public String getCorrelatedVariable();
+    String getCorrelatedVariable();
 
     /**
      * Move joins that belong to subquery's parent
      */
-    public void moveJoinsToParent();
+    void moveJoinsToParent();
 }

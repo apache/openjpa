@@ -18,21 +18,22 @@
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
-import java.sql.*;
-import java.util.*;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.kernel.StoreManager;
-import org.apache.openjpa.kernel.DelegatingStoreManager;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.kernel.DelegatingStoreManager;
+import org.apache.openjpa.kernel.StoreManager;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
 
 public class TestIncrementalJDBCFlushes
         extends BaseJDBCTest {
@@ -48,6 +49,7 @@ public class TestIncrementalJDBCFlushes
     }
 
 
+    @Override
     public void setUp() {
         emf = getEmf(getProps());
 

@@ -25,70 +25,83 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class EDirtyState
-    extends PCState {
+class EDirtyState extends PCState {
+    private static final long serialVersionUID = 1L;
 
     @Override
     void initialize(StateManagerImpl context, PCState previous) {
         context.saveFields(false);
     }
 
+    @Override
     void beforeFlush(StateManagerImpl context, boolean logical,
         OpCallbacks call) {
         context.preFlush(logical, call);
     }
 
+    @Override
     PCState commit(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState commitRetain(StateManagerImpl context) {
         return ENONTRANS;
     }
 
+    @Override
     PCState rollback(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState rollbackRestore(StateManagerImpl context) {
         context.restoreFields();
         return ENONTRANS;
     }
 
+    @Override
     PCState delete(StateManagerImpl context) {
         context.preDelete();
         return EDELETED;
     }
 
+    @Override
     PCState nontransactional(StateManagerImpl context) {
         return error("dirty", context);
     }
 
+    @Override
     PCState release(StateManagerImpl context) {
         return TRANSIENT;
     }
 
+    @Override
     PCState afterRefresh() {
         return ECLEAN;
     }
 
+    @Override
     PCState afterOptimisticRefresh() {
         return ENONTRANS;
     }
 
+    @Override
     boolean isTransactional() {
         return true;
     }
 
+    @Override
     public boolean isPersistent() {
         return true;
     }
 
+    @Override
     boolean isDirty() {
         return true;
     }
 
+    @Override
     public String toString() {
         return "Embedded-Dirty";
     }

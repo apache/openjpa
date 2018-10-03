@@ -19,12 +19,14 @@
 package org.apache.openjpa.persistence.query;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Test that we can exclude subclass instances from query results.
@@ -34,6 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestQueryExcludingSubclasses
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(ManyOneEntity.class, ManyOneEntitySub.class);
 

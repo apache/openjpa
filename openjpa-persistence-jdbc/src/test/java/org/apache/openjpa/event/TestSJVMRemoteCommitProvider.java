@@ -18,15 +18,16 @@
  */
 package org.apache.openjpa.event;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Collections;
+
 import javax.persistence.Persistence;
 
-import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 
 public class TestSJVMRemoteCommitProvider
 extends AbstractCachedEMFTestCase {
@@ -36,6 +37,7 @@ extends AbstractCachedEMFTestCase {
     private ListenerImpl listen1;
     private ListenerImpl listen2;
 
+    @Override
     public void setUp() {
         Map sjvm1 = new HashMap();
         sjvm1.put("openjpa.RemoteCommitProvider", "sjvm");
@@ -55,6 +57,7 @@ extends AbstractCachedEMFTestCase {
             listen2 = new ListenerImpl());
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         clear(emf1);
@@ -84,10 +87,12 @@ extends AbstractCachedEMFTestCase {
 
         private int eventCount;
 
+        @Override
         public void afterCommit(RemoteCommitEvent event) {
             eventCount++;
         }
 
+        @Override
         public void close() {
         }
     }

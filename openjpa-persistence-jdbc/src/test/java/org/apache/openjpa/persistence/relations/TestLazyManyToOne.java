@@ -20,14 +20,15 @@ package org.apache.openjpa.persistence.relations;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestLazyManyToOne extends SQLListenerTestCase {
 
     private int id;
 
+    @Override
     public void setUp() {
         setUp(BasicEntity.class, UnidirectionalManyToOne.class, CLEAR_TABLES);
 

@@ -29,6 +29,9 @@ import org.apache.openjpa.kernel.Filters;
 public class Abs
     extends UnaryOp {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the value to operate on.
      */
@@ -36,6 +39,7 @@ public class Abs
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         Class wrap = Filters.wrap(c);
         if (wrap == Integer.class
@@ -48,10 +52,12 @@ public class Abs
         return int.class;
     }
 
+    @Override
     protected String getOperator() {
         return "ABS";
     }
 
+    @Override
     public int getId() {
         return Val.ABS_VAL;
     }

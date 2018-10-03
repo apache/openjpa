@@ -21,7 +21,12 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="DEPT_PQC")
@@ -37,7 +42,7 @@ public class Department {
 	private Company company;
 
 	@OneToMany
-	private Collection<Employee> employees = new HashSet<Employee>();
+	private Collection<Employee> employees = new HashSet<>();
 
 	public Company getCompany() {
 		return company;

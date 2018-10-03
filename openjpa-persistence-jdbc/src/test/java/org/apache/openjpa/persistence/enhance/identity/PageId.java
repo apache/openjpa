@@ -32,6 +32,8 @@ import java.io.Serializable;
  *
  */
 public final class PageId implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     private int number;
     private BookId book;
 
@@ -43,6 +45,7 @@ public final class PageId implements Serializable {
         this.number = number;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof PageId)) {
             return false;
@@ -61,6 +64,7 @@ public final class PageId implements Serializable {
         return true;
     }
 
+    @Override
     public int hashCode() {
         return number * (book != null ? getBook().hashCode() : 31);
     }

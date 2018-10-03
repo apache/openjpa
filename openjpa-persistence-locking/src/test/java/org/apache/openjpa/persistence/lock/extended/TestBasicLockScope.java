@@ -31,6 +31,7 @@ import javax.persistence.EntityManager;
  */
 public class TestBasicLockScope extends LockScopeTestCase {
 
+    @Override
     public void setUp() {
         setSupportedDatabases(
                 org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
@@ -104,6 +105,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
         commonLockTest(testName, LSEBase.class, id0, extended,
                 "SELECT c FROM LSEBase c WHERE c.firstName LIKE :firstName", "findLSEBase" + scope,
                 new AssertCallback() {
+                    @Override
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -122,6 +124,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -143,6 +146,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -164,6 +168,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -182,6 +187,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -203,6 +209,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -266,6 +273,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
         commonLockTest(testName, LSESecTbl.class, id0, extended,
                 "SELECT c FROM LSESecTbl c WHERE c.firstName LIKE :firstName", "findLSESecTbl" + scope,
                 new AssertCallback() {
+                    @Override
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -288,6 +296,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -323,6 +332,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -359,6 +369,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -381,6 +392,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -417,6 +429,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -484,6 +497,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 "SELECT c FROM LSESngTblAbs c WHERE c.firstName LIKE :firstName",
                 "findLSESngTblCon" + scope, new AssertCallback() {
 
+                    @Override
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -503,6 +517,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -530,6 +545,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -553,6 +569,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -572,6 +589,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -596,6 +614,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -662,6 +681,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 "SELECT c FROM LSEJoinCon c WHERE c.firstName LIKE :firstName", "findLSEJoinCon"
                         + scope, new AssertCallback() {
 
+                    @Override
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -683,6 +703,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -717,6 +738,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -752,6 +774,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -773,6 +796,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -808,6 +832,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -876,6 +901,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 "SELECT c FROM LSEEleCol c WHERE c.firstName LIKE :firstName", "findLSEEleCol" + scope,
                 new AssertCallback() {
 
+                    @Override
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -892,6 +918,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -915,6 +942,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -937,6 +965,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -953,6 +982,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -975,6 +1005,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -1041,6 +1072,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 "SELECT c FROM LSEEleColEgr c WHERE c.firstName LIKE :firstName",
                 "findLSEEleColEgr" + scope, new AssertCallback() {
 
+                    @Override
                     public void findNoLockDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -1065,6 +1097,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findPessimisticForcIncDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -1103,6 +1136,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void queryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:     // **Non-atomic lock, No need to lock LSEEleColEgr_collection *********
@@ -1146,6 +1180,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterQueryPessimisticReadDbSQL(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:
@@ -1170,6 +1205,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void namedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {
                         case db2:     // **Non-atomic lock, No need to lock LSEEleColEgr_collection *********
@@ -1213,6 +1249,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         }
                     }
 
+                    @Override
                     public void findNoLockAfterNamedQueryPessimisticWriteDbSql(EntityManager em) {
                         switch (getDBType(em)) {    // **Check
                         case db2:

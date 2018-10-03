@@ -18,19 +18,20 @@
  */
 package org.apache.openjpa.persistence.models.company;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 public interface IProductOrder {
 
-    public void setItems(List<? extends ILineItem> items);
-    public List<? extends ILineItem> getItems();
+    void setItems(List<? extends ILineItem> items);
+    List<? extends ILineItem> getItems();
 
-    public void setOrderDate(Date orderDate);
-    public Date getOrderDate();
+    void setOrderDate(Date orderDate);
+    Date getOrderDate();
 
-    public void setShippedDate(Date shippedDate);
-    public Date getShippedDate();
+    void setShippedDate(Date shippedDate);
+    Date getShippedDate();
 
-    public void setCustomer(ICustomer customer);
-    public ICustomer getCustomer();
+    void setCustomer(ICustomer customer);
+    ICustomer getCustomer();
 }

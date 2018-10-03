@@ -63,10 +63,12 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
         _orderValues = (comp == null) ? null : new Object[rops.length];
     }
 
+    @Override
     public boolean supportsRandomAccess() {
         return false;
     }
 
+    @Override
     public void open() throws Exception {
         // if we have a comparator, then open all; else open first
         int len = (_comp != null) ? _rops.length : 1;
@@ -76,10 +78,12 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
         }
     }
 
+    @Override
     public boolean absolute(int pos) throws Exception {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int size() throws Exception {
         if (_size != -1)
             return _size;
@@ -106,6 +110,7 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
         return _size;
     }
 
+    @Override
     public void reset() throws Exception {
         for (int i = 0; i < _rops.length; i++)
             if (_status[i] != UNOPENED)
@@ -113,6 +118,7 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
         clear();
     }
 
+    @Override
     public void close() throws Exception {
         Exception err = null;
         for (int i = 0; i < _rops.length; i++) {
@@ -141,12 +147,14 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
         }
     }
 
+    @Override
     public void handleCheckedException(Exception e) {
         if (_rops.length == 0)
             throw new RuntimeException(e);
         _rops[0].handleCheckedException(e);
     }
 
+    @Override
     public boolean next() throws Exception {
         // initialize all rops with the latest values
         boolean hasValue = false;
@@ -209,6 +217,7 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
         return true;
     }
 
+    @Override
     public Object getResultObject() throws Exception {
         return _cur;
     }

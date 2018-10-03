@@ -59,7 +59,6 @@ import org.apache.openjpa.util.ObjectId;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class FieldMapping
     extends FieldMetaData
     implements ValueMapping, FieldStrategy {
@@ -295,6 +294,7 @@ public class FieldMapping
     /**
      * Increment the reference count of used schema components.
      */
+    @Override
     public void refSchemaComponents() {
         if (_fk != null) {
             _fk.ref();
@@ -317,6 +317,7 @@ public class FieldMapping
     /**
      * Clear mapping information, including strategy.
      */
+    @Override
     public void clearMapping() {
         _strategy = null;
         _fk = null;
@@ -334,6 +335,7 @@ public class FieldMapping
     /**
      * Update {@link MappingInfo} with our current mapping information.
      */
+    @Override
     public void syncMappingInfo() {
         if (isVersion()) {
             // we rely on the fact that the version will setup our mapping
@@ -368,6 +370,7 @@ public class FieldMapping
      * if it has a null strategy, and therefore is probably in the process of
      * being mapped).
      */
+    @Override
     public boolean isMapped() {
         return _strategy != NoneFieldStrategy.getInstance();
     }
@@ -398,6 +401,7 @@ public class FieldMapping
      * Convenience method to perform cast from
      * {@link FieldMetaData#getRepository}
      */
+    @Override
     public MappingRepository getMappingRepository() {
         return (MappingRepository) getRepository();
     }
@@ -455,6 +459,7 @@ public class FieldMapping
         return (FieldMapping[]) getInverseMetaDatas();
     }
 
+    @Override
     public boolean resolve(int mode) {
         int cur = getResolve();
         if (super.resolve(mode))
@@ -547,12 +552,14 @@ public class FieldMapping
             _strategy.initialize();
     }
 
+    @Override
     public void copy(FieldMetaData fmd) {
         super.copy(fmd);
         if (_fetchMode == Integer.MAX_VALUE)
             _fetchMode = ((FieldMapping) fmd).getEagerFetchMode();
     }
 
+    @Override
     protected boolean validateDataStoreExtensionPrefix(String prefix) {
         return "jdbc-".equals(prefix);
     }
@@ -561,10 +568,12 @@ public class FieldMapping
     // FieldStrategy implementation
     ////////////////////////////////
 
+    @Override
     public String getAlias() {
         return assertStrategy().getAlias();
     }
 
+    @Override
     public void map(boolean adapt) {
         assertStrategy().map(adapt);
     }
@@ -615,10 +624,12 @@ public class FieldMapping
                 installPrimaryKey(this, _fk.getTable());
     }
 
+    @Override
     public void initialize() {
         assertStrategy().initialize();
     }
 
+    @Override
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
     	setPKValueFromMappedByIdField(sm);
@@ -696,11 +707,13 @@ public class FieldMapping
             val);
     }
 
+    @Override
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         assertStrategy().update(sm, store, rm);
     }
 
+    @Override
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         assertStrategy().delete(sm, store, rm);
@@ -801,56 +814,68 @@ public class FieldMapping
         }
     }
 
+    @Override
     public Boolean isCustomInsert(OpenJPAStateManager sm, JDBCStore store) {
         return assertStrategy().isCustomInsert(sm, store);
     }
 
+    @Override
     public Boolean isCustomUpdate(OpenJPAStateManager sm, JDBCStore store) {
         return assertStrategy().isCustomUpdate(sm, store);
     }
 
+    @Override
     public Boolean isCustomDelete(OpenJPAStateManager sm, JDBCStore store) {
         return assertStrategy().isCustomDelete(sm, store);
     }
 
+    @Override
     public void customInsert(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         assertStrategy().customInsert(sm, store);
     }
 
+    @Override
     public void customUpdate(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         assertStrategy().customUpdate(sm, store);
     }
 
+    @Override
     public void customDelete(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
         assertStrategy().customDelete(sm, store);
     }
 
+    @Override
     public void setFieldMapping(FieldMapping owner) {
         assertStrategy().setFieldMapping(owner);
     }
 
+    @Override
     public int supportsSelect(Select sel, int type, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch) {
         return assertStrategy().supportsSelect(sel, type, sm, store, fetch);
     }
 
+    @Override
     public void selectEagerParallel(SelectExecutor sel, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
         assertStrategy().selectEagerParallel(sel, sm, store, fetch, eagerMode);
     }
 
+    @Override
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
         assertStrategy().selectEagerJoin(sel, sm, store, fetch, eagerMode);
     }
 
+    @Override
     public boolean isEagerSelectToMany() {
         return assertStrategy().isEagerSelectToMany();
     }
 
+    @Override
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode) {
         return assertStrategy().select(sel, sm, store, fetch, eagerMode);
@@ -912,79 +937,96 @@ public class FieldMapping
                 orders[i].order(sel, elem, joins);
     }
 
+    @Override
     public Object loadEagerParallel(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Object res)
         throws SQLException {
         return assertStrategy().loadEagerParallel(sm, store, fetch, res);
     }
 
+    @Override
     public void loadEagerJoin(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         assertStrategy().loadEagerJoin(sm, store, fetch, res);
     }
 
+    @Override
     public void load(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         assertStrategy().load(sm, store, fetch, res);
     }
 
+    @Override
     public void load(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch)
         throws SQLException {
         assertStrategy().load(sm, store, fetch);
     }
 
+    @Override
     public Object toDataStoreValue(Object val, JDBCStore store) {
         return assertStrategy().toDataStoreValue(val, store);
     }
 
+    @Override
     public Object toKeyDataStoreValue(Object val, JDBCStore store) {
         return assertStrategy().toKeyDataStoreValue(val, store);
     }
 
+    @Override
     public void appendIsEmpty(SQLBuffer sql, Select sel, Joins joins) {
         assertStrategy().appendIsEmpty(sql, sel, joins);
     }
 
+    @Override
     public void appendIsNotEmpty(SQLBuffer sql, Select sel, Joins joins) {
         assertStrategy().appendIsNotEmpty(sql, sel, joins);
     }
 
+    @Override
     public void appendIsNull(SQLBuffer sql, Select sel, Joins joins) {
         assertStrategy().appendIsNull(sql, sel, joins);
     }
 
+    @Override
     public void appendIsNotNull(SQLBuffer sql, Select sel, Joins joins) {
         assertStrategy().appendIsNotNull(sql, sel, joins);
     }
 
+    @Override
     public void appendSize(SQLBuffer sql, Select sel, Joins joins) {
         assertStrategy().appendSize(sql, sel, joins);
     }
 
+    @Override
     public void appendIndex(SQLBuffer sql, Select sel, Joins joins) {
         assertStrategy().appendIndex(sql, sel, joins);
     }
 
+    @Override
     public void appendType(SQLBuffer sql, Select sel, Joins joins) {
         assertStrategy().appendType(sql, sel, joins);
     }
 
+    @Override
     public Joins join(Joins joins, boolean forceOuter) {
         return assertStrategy().join(joins, forceOuter);
     }
 
+    @Override
     public Joins joinKey(Joins joins, boolean forceOuter) {
         return assertStrategy().joinKey(joins, forceOuter);
     }
 
+    @Override
     public Joins joinRelation(Joins joins, boolean forceOuter,
         boolean traverse) {
         return assertStrategy().joinRelation(joins, forceOuter, traverse);
     }
 
+    @Override
     public Joins joinKeyRelation(Joins joins, boolean forceOuter,
         boolean traverse) {
         return assertStrategy().joinKeyRelation(joins, forceOuter, traverse);
@@ -1002,6 +1044,7 @@ public class FieldMapping
         return joins.join(_fk, true, toMany);
     }
 
+    @Override
     public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
@@ -1013,6 +1056,7 @@ public class FieldMapping
         return assertStrategy().loadProjection(store, fetch, res, joins);
     }
 
+    @Override
     public Object loadKeyProjection(JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
@@ -1020,10 +1064,12 @@ public class FieldMapping
             .loadKeyProjection(store, fetch, res, joins);
     }
 
+    @Override
     public boolean isVersionable() {
         return assertStrategy().isVersionable();
     }
 
+    @Override
     public void where(OpenJPAStateManager sm, JDBCStore store, RowManager rm,
         Object prevValue)
         throws SQLException {
@@ -1040,38 +1086,47 @@ public class FieldMapping
     // ValueMapping implementation
     ///////////////////////////////
 
+    @Override
     public ValueMappingInfo getValueInfo() {
         return _val.getValueInfo();
     }
 
+    @Override
     public ValueHandler getHandler() {
         return _val.getHandler();
     }
 
+    @Override
     public void setHandler(ValueHandler handler) {
         _val.setHandler(handler);
     }
 
+    @Override
     public FieldMapping getFieldMapping() {
         return this;
     }
 
+    @Override
     public ClassMapping getTypeMapping() {
         return _val.getTypeMapping();
     }
 
+    @Override
     public ClassMapping getDeclaredTypeMapping() {
         return _val.getDeclaredTypeMapping();
     }
 
+    @Override
     public ClassMapping getEmbeddedMapping() {
         return _val.getEmbeddedMapping();
     }
 
+    @Override
     public FieldMapping getValueMappedByMapping() {
         return _val.getValueMappedByMapping();
     }
 
+    @Override
     public Column[] getColumns() {
         // pcl: 6 July 2007: this seems a bit hacky, but if the mapping is a
         // version, it will have a NoneFieldMapping (since the version strategy
@@ -1088,89 +1143,110 @@ public class FieldMapping
             return _val.getColumns();
     }
 
+    @Override
     public void setColumns(Column[] cols) {
         _val.setColumns(cols);
     }
 
+    @Override
     public ColumnIO getColumnIO() {
         return _val.getColumnIO();
     }
 
+    @Override
     public void setColumnIO(ColumnIO io) {
         _val.setColumnIO(io);
     }
 
+    @Override
     public ForeignKey getForeignKey() {
         return _val.getForeignKey();
     }
 
+    @Override
     public ForeignKey getForeignKey(ClassMapping target) {
         return _val.getForeignKey(target);
     }
 
+    @Override
     public void setForeignKey(ForeignKey fk) {
         _val.setForeignKey(fk);
     }
 
+    @Override
     public int getJoinDirection() {
         return _val.getJoinDirection();
     }
 
+    @Override
     public void setJoinDirection(int direction) {
         _val.setJoinDirection(direction);
     }
 
+    @Override
     public void setForeignKey(Row row, OpenJPAStateManager sm)
         throws SQLException {
         _val.setForeignKey(row, sm);
     }
 
+    @Override
     public void setForeignKey(Row row, OpenJPAStateManager sm, int targetNumber)
         throws SQLException {
         _val.setForeignKey(row, sm, targetNumber);
     }
 
+    @Override
     public void whereForeignKey(Row row, OpenJPAStateManager sm)
         throws SQLException {
         _val.whereForeignKey(row, sm);
     }
 
+    @Override
     public ClassMapping[] getIndependentTypeMappings() {
         return _val.getIndependentTypeMappings();
     }
 
+    @Override
     public int getSelectSubclasses() {
         return _val.getSelectSubclasses();
     }
 
+    @Override
     public Unique getValueUnique() {
         return _val.getValueUnique();
     }
 
+    @Override
     public void setValueUnique(Unique unq) {
         _val.setValueUnique(unq);
     }
 
+    @Override
     public Index getValueIndex() {
         return _val.getValueIndex();
     }
 
+    @Override
     public void setValueIndex(Index idx) {
         _val.setValueIndex(idx);
     }
 
+    @Override
     public boolean getUseClassCriteria() {
         return _val.getUseClassCriteria();
     }
 
+    @Override
     public void setUseClassCriteria(boolean criteria) {
         _val.setUseClassCriteria(criteria);
     }
 
+    @Override
     public int getPolymorphic() {
         return _val.getPolymorphic();
     }
 
+    @Override
     public void setPolymorphic(int poly) {
         _val.setPolymorphic(poly);
     }
@@ -1178,14 +1254,18 @@ public class FieldMapping
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public void mapConstraints(String name, boolean adapt) {
         _val.mapConstraints(name, adapt);
     }
 
+    @Override
     public void mapConstraints(DBIdentifier name, boolean adapt) {
         _val.mapConstraints(name, adapt);
     }
 
+    @Override
     public void copyMappingInfo(ValueMapping vm) {
         _val.copyMappingInfo(vm);
     }

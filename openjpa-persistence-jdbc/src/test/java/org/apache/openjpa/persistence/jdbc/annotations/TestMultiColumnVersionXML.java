@@ -19,10 +19,12 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 public class TestMultiColumnVersionXML extends TestMultiColumnVersion {
+    @Override
     public void setUp() {
         super.setUp();
     }
 
+    @Override
     protected String getPersistenceUnitName() {
         return "version-columns-xml";
     }

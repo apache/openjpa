@@ -18,11 +18,10 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import org.apache.openjpa.meta.*;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
-
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Entity1;
 
 public class TestAnnotationBasics extends AnnotationTestCase {
 

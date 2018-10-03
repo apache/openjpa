@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.datacache.common.apps.M2MEntityF;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestM2MInDataCache extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         setUp("openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm", M2MEntityE.class, M2MEntityF.class,
             CLEAR_TABLES);

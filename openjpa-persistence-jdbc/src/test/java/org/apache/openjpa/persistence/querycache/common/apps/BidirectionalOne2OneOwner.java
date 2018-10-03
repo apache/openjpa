@@ -19,7 +19,10 @@
 
 package org.apache.openjpa.persistence.querycache.common.apps;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Version;
 
 /**
  * A persistent entity that owns bidirectional single-valued relationship.
@@ -79,7 +82,8 @@ public class BidirectionalOne2OneOwner {
 		return version;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return this.getClass().getSimpleName() + ":" + id + ":" + name;
 	}
 

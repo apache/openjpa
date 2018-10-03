@@ -38,15 +38,18 @@ public class SubclassF extends BaseClass3 implements ManagedIface2  {
         return classFName;
     }
 
+    @Override
     public String toString() {
         return super.toString() + ";classFName=" + classFName +
             ";intFieldSup=" + intFieldSup;
     }
 
+    @Override
     public int getIntFieldSup() {
         return intFieldSup;
     }
 
+    @Override
     public void setIntFieldSup(int i) {
         this.intFieldSup = i;
     }

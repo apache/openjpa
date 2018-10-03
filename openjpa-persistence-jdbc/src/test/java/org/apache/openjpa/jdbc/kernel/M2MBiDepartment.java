@@ -36,7 +36,7 @@ public class M2MBiDepartment {
 	String name;
 
 	@ManyToMany(mappedBy="departments", fetch=FetchType.EAGER)
-    public Collection<M2MBiEmployee> employees = new ArrayList<M2MBiEmployee>();
+    public Collection<M2MBiEmployee> employees = new ArrayList<>();
 
 	@Version
     private int version;

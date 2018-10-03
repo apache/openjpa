@@ -21,11 +21,10 @@ package org.apache.openjpa.conf;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.PluginListValue;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.conf.PluginListValue;
-import org.apache.openjpa.conf.NoOpCacheMarshaller;
-import org.apache.openjpa.lib.conf.Configuration;
 
 /**
  * A configuration value for handling and accessing cache marshallers.
@@ -55,12 +54,13 @@ public class CacheMarshallersValue
         setScope(getClass());
     }
 
+    @Override
     public Object instantiate(Class<?> elemType, Configuration conf,
         boolean fatal) {
         CacheMarshaller[] ms = (CacheMarshaller[])
             super.instantiate(elemType, conf, fatal);
         if (ms != null) {
-            _marshallers = new HashMap<String,CacheMarshaller>();
+            _marshallers = new HashMap<>();
             for (int i = 0; i < ms.length; i++) {
                 String mid = ms[i].getId();
                 if (mid != null)

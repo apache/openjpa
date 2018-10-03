@@ -43,12 +43,12 @@ public class ToyBox {
     private long version;
 
     public ToyBox() {
-        toyList = new ArrayList<Toy>();
+        toyList = new ArrayList<>();
     }
 
     public ToyBox(int id) {
         this.id = id;
-        toyList = new ArrayList<Toy>();
+        toyList = new ArrayList<>();
     }
 
     public int getId() {

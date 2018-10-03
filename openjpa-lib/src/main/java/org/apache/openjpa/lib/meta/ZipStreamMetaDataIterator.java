@@ -50,6 +50,7 @@ public class ZipStreamMetaDataIterator
         _filter = filter;
     }
 
+    @Override
     public boolean hasNext() throws IOException {
         if (_stream == null)
             return false;
@@ -74,6 +75,7 @@ public class ZipStreamMetaDataIterator
         return _entry != null;
     }
 
+    @Override
     public String next() throws IOException {
         if (!hasNext())
             throw new NoSuchElementException();
@@ -83,6 +85,7 @@ public class ZipStreamMetaDataIterator
         return ret;
     }
 
+    @Override
     public InputStream getInputStream() {
         if (_last == null)
             throw new IllegalStateException();
@@ -92,10 +95,12 @@ public class ZipStreamMetaDataIterator
         return new NoCloseInputStream();
     }
 
+    @Override
     public File getFile() {
         return null;
     }
 
+    @Override
     public void close() {
         try {
             _stream.close();
@@ -107,10 +112,12 @@ public class ZipStreamMetaDataIterator
     // MetaDataFilter.Resource implementation
     //////////////////////////////////////////
 
+    @Override
     public String getName() {
         return _entry.getName();
     }
 
+    @Override
     public byte[] getContent() throws IOException {
         // buffer content so that future calls to getInputStream can read
         // the same data
@@ -128,18 +135,22 @@ public class ZipStreamMetaDataIterator
      */
     private class NoCloseInputStream extends InputStream {
 
+        @Override
         public int available() throws IOException {
             return _stream.available();
         }
 
+        @Override
         public int read() throws IOException {
             return _stream.read();
         }
 
+        @Override
         public int read(byte[] b, int off, int len) throws IOException {
             return _stream.read(b, off, len);
         }
 
+        @Override
         public void close() {
         }
     }

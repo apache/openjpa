@@ -70,7 +70,7 @@ public class MetamodelHelper {
      * @param type
      */
     public static List<Attribute<?,?>> getAttributesInOrder(ManagedType<?> type) {
-        List<Attribute<?,?>> list = new ArrayList<Attribute<?,?>>(type.getAttributes());
+        List<Attribute<?,?>> list = new ArrayList<>(type.getAttributes());
         Collections.sort(list, new AttributeComparator());
         return list;
     }
@@ -170,6 +170,7 @@ public class MetamodelHelper {
      *
      */
     public static class AttributeComparator implements Comparator<Attribute<?,?>> {
+        @Override
         public int compare(Attribute<?, ?> a1, Attribute<?, ?> a2) {
             AttributeCategory t1 = getAttributeCategory(a1);
             AttributeCategory t2 = getAttributeCategory(a2);

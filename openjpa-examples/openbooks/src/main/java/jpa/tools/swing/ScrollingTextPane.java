@@ -32,8 +32,8 @@ import javax.swing.text.Document;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 public class ScrollingTextPane extends JTextPane {
+    private static final long serialVersionUID = 1L;
 
     public void appendText(String text) {
         if (text == null)

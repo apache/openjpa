@@ -29,7 +29,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -44,6 +43,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
@@ -140,7 +140,7 @@ public class DataSourceFactory {
         DecoratingDataSource dds = new DecoratingDataSource(ds);
         try {
             // add user-defined decorators
-            List<ConnectionDecorator> decorators = new ArrayList<ConnectionDecorator>();
+            List<ConnectionDecorator> decorators = new ArrayList<>();
             decorators.addAll(Arrays.asList(conf.
                 getConnectionDecoratorInstances()));
 
@@ -316,11 +316,13 @@ public class DataSourceFactory {
             _pass = pass;
         }
 
+        @Override
         public Connection getConnection()
             throws SQLException {
             return super.getConnection(_user, _pass);
         }
 
+        @Override
         public Connection getConnection(String user, String pass)
             throws SQLException {
             return super.getConnection(user, pass);

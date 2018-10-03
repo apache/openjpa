@@ -20,6 +20,6 @@
 package org.apache.openjpa.persistence.inheritance.entities.testinterfaces;
 
 public interface LeafA extends RootEntity {
-    public String getLeafAData();
-    public void setLeafAData(String leafAData);
+    String getLeafAData();
+    void setLeafAData(String leafAData);
 }

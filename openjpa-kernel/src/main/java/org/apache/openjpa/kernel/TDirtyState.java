@@ -25,9 +25,8 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-class TDirtyState
-    extends PCState {
+class TDirtyState extends PCState {
+    private static final long serialVersionUID = 1L;
 
     @Override
     void initialize(StateManagerImpl context, PCState previous) {
@@ -36,43 +35,53 @@ class TDirtyState
         context.setDirty(true);
     }
 
+    @Override
     PCState commit(StateManagerImpl context) {
         return TCLEAN;
     }
 
+    @Override
     PCState commitRetain(StateManagerImpl context) {
         return TCLEAN;
     }
 
+    @Override
     PCState rollback(StateManagerImpl context) {
         return TCLEAN;
     }
 
+    @Override
     PCState rollbackRestore(StateManagerImpl context) {
         context.restoreFields();
         return TCLEAN;
     }
 
+    @Override
     PCState persist(StateManagerImpl context) {
         return (context.getBroker().isActive()) ? PNEW : PNONTRANSNEW;
     }
 
+    @Override
     PCState delete(StateManagerImpl context) {
         return error("transient", context);
     }
 
+    @Override
     PCState nontransactional(StateManagerImpl context) {
         return error("dirty", context);
     }
 
+    @Override
     boolean isTransactional() {
         return true;
     }
 
+    @Override
     boolean isDirty() {
         return true;
     }
 
+    @Override
     public String toString() {
         return "Transient-Dirty";
     }

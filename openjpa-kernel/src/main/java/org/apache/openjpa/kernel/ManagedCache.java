@@ -38,6 +38,9 @@ import org.apache.openjpa.util.UserException;
  */
 class ManagedCache implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc =
         Localizer.forPackage(ManagedCache.class);
 
@@ -100,7 +103,7 @@ class ManagedCache implements Serializable {
     public void add(StateManagerImpl sm) {
         if (!sm.isIntercepting()) {
             if (_untracked == null)
-                _untracked = new HashSet<StateManagerImpl>();
+                _untracked = new HashSet<>();
             _untracked.add(sm);
         }
 
@@ -115,7 +118,7 @@ class ManagedCache implements Serializable {
         // permanent oid yet
         if (sm.isNew()) {
             if (_news == null)
-                _news = new HashMap<Object,StateManagerImpl>();
+                _news = new HashMap<>();
             _news.put(sm.getId(), sm);
             return;
         }
@@ -195,7 +198,7 @@ class ManagedCache implements Serializable {
 
             // same oid as deleted instance; put in conflict cache
             if (_conflicts == null)
-                _conflicts = new HashMap<Object,StateManagerImpl>();
+                _conflicts = new HashMap<>();
             _conflicts.put(sm.getObjectId(), sm);
         }
     }
@@ -257,7 +260,7 @@ class ManagedCache implements Serializable {
         if (size == 0)
             return Collections.EMPTY_LIST;
 
-        List<StateManagerImpl> copy = new ArrayList<StateManagerImpl>(size);
+        List<StateManagerImpl> copy = new ArrayList<>(size);
         for (StateManagerImpl sm : _main.values())
             copy.add(sm);
         if (_conflicts != null && !_conflicts.isEmpty())

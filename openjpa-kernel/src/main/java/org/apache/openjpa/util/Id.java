@@ -33,6 +33,9 @@ import org.apache.openjpa.lib.util.Localizer;
 public final class Id
     extends OpenJPAId {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage(Id.class);
 
     private final long _id;
@@ -140,14 +143,17 @@ public final class Id
         return _id;
     }
 
+    @Override
     public Object getIdObject() {
         return _id;
     }
 
+    @Override
     protected int idHash() {
         return (int) (_id ^ (_id >>> 32));
     }
 
+    @Override
     protected boolean idEquals(OpenJPAId other) {
         return _id == ((Id) other)._id;
 	}

@@ -30,9 +30,11 @@ public class PIdSTSDMSCEntityD
 extends PIdSTSDMSCMappedSuperclass implements EntityD {
 private String entityDData;
 
+    @Override
     public String getEntityDData() {
         return entityDData;
     }
+    @Override
     public void setEntityDData(String entityDData) {
         this.entityDData = entityDData;
     }

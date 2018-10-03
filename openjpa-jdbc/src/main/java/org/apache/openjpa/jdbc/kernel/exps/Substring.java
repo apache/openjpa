@@ -36,6 +36,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 public class Substring
     extends AbstractVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val1;
     private final Val _val2;
     private ClassMetaData _meta = null;
@@ -56,32 +58,39 @@ public class Substring
         return _val2;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
 
+    @Override
     public Class getType() {
         return String.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         ExpState s1 = _val1.initialize(sel, ctx, 0);
         ExpState s2 = _val2.initialize(sel, ctx, 0);
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -89,10 +98,12 @@ public class Substring
         _val2.selectColumns(sel, ctx, bstate.state2, true);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
@@ -105,12 +116,14 @@ public class Substring
         return buf;
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -118,10 +131,12 @@ public class Substring
         _val2.calculateValue(sel, ctx, bstate.state2, null, null);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
@@ -139,6 +154,7 @@ public class Substring
         ctx.store.getDBDictionary().substring(sql, str, start, length);
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val1.acceptVisit(visitor);
@@ -146,6 +162,7 @@ public class Substring
         visitor.exit(this);
     }
 
+    @Override
     public int getId() {
         return Val.SUBSTRING_VAL;
     }

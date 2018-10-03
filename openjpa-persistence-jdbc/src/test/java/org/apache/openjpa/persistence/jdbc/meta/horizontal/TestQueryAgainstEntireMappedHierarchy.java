@@ -27,10 +27,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta.horizontal;
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.HorizD;
+import org.apache.openjpa.persistence.jdbc.common.apps.HorizJ;
+import org.apache.openjpa.persistence.jdbc.common.apps.HorizK;
 
 
 public class TestQueryAgainstEntireMappedHierarchy
@@ -42,6 +42,7 @@ public class TestQueryAgainstEntireMappedHierarchy
     	super(name);
     }
 
+    @Override
     public void setUpTestCase()
     {
         // this test depends on this fact

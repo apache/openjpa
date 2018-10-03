@@ -50,7 +50,7 @@ public class ClassTableJDBCSeq
     private static final Localizer _loc = Localizer.forPackage
         (ClassTableJDBCSeq.class);
 
-    private final Map<String, Status> _stats = new HashMap<String, Status>();
+    private final Map<String, Status> _stats = new HashMap<>();
     private boolean _ignore = false;
     private boolean _aliases = false;
 
@@ -78,6 +78,7 @@ public class ClassTableJDBCSeq
      * @deprecated Use {@link #setIgnoreUnmapped}. Retained for
      * backwards-compatibility for auto-configuration.
      */
+    @Deprecated
     public void setIgnoreVirtual(boolean ignore) {
         setIgnoreUnmapped(ignore);
     }
@@ -98,6 +99,7 @@ public class ClassTableJDBCSeq
         _aliases = aliases;
     }
 
+    @Override
     protected synchronized Status getStatus(ClassMapping mapping) {
         if (mapping == null)
             return null;
@@ -110,6 +112,7 @@ public class ClassTableJDBCSeq
         return stat;
     }
 
+    @Override
     protected Column addPrimaryKeyColumn(Table table) {
         DBDictionary dict = getConfiguration().getDBDictionaryInstance();
         Column pkColumn = table.addColumn(dict.getValidColumnName(
@@ -120,6 +123,7 @@ public class ClassTableJDBCSeq
         return pkColumn;
     }
 
+    @Override
     protected Object getPrimaryKey(ClassMapping mapping) {
         if (mapping == null)
             return null;
@@ -171,6 +175,7 @@ public class ClassTableJDBCSeq
         final String[] arguments = opts.setFromCmdLine(args);
         boolean ret = Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts) throws Exception {
                 JDBCConfiguration conf = new JDBCConfigurationImpl();
                 try {

@@ -54,6 +54,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
     private static List<Integer> ORIGINAL_ZIPS;
     private OpenJPAEntityManager _em;
 
+    @Override
     public void setUp() throws Exception {
         if (_emf == null) {
             super.setUp(Address.class, "openjpa.ConnectionFactoryProperties", "PrintParameters=true", CLEAR_TABLES);
@@ -65,6 +66,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
         _em = _emf.createEntityManager();
     }
 
+    @Override
     public void tearDown() throws Exception {
         // block super class tear down
     }

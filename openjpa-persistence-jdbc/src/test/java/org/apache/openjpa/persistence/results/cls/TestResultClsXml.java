@@ -28,6 +28,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestResultClsXml extends SQLListenerTestCase {
+    @Override
     public void setUp() {
         setUp(ResultClsXml.class, DROP_TABLES);
         assertNotNull(emf);
@@ -60,6 +61,7 @@ public class TestResultClsXml extends SQLListenerTestCase {
         }
     }
 
+    @Override
     protected String getPersistenceUnitName() {
         return "query-result";
     }

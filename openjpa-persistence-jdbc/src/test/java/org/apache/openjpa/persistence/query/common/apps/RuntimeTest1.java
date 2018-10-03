@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -40,6 +41,9 @@ import org.apache.openjpa.persistence.PersistentCollection;
 @Entity
 @DiscriminatorValue("RT1")
 public class RuntimeTest1 implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     public static final String someStaticField = "someField";
 

@@ -35,6 +35,8 @@ import org.apache.openjpa.util.InternalException;
 public class LifecycleMetaData
     implements Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     public static final int IGNORE_NONE = 0;
     public static final int IGNORE_HIGH = 2 << 0;
     public static final int IGNORE_LOW = 2 << 1;

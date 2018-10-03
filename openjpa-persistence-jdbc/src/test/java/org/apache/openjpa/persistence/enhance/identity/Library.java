@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.enhance.identity;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,12 +44,15 @@ import org.apache.openjpa.persistence.jdbc.VersionColumn;
 @Entity
 @VersionColumn
 public class Library implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @Id
     @Column(name="LIBRARY_NAME", nullable = false)
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "library")
-    private Set<Book> books = new HashSet<Book>();
+    private Set<Book> books = new HashSet<>();
 
     private String location;
 
@@ -87,6 +91,7 @@ public class Library implements Serializable {
 		this.location = location;
 	}
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Library)) {
             return false;
@@ -101,6 +106,7 @@ public class Library implements Serializable {
         return true;
     }
 
+    @Override
     public int hashCode() {
         return getName().hashCode();
     }

@@ -71,7 +71,7 @@ public class Movie {
 
     public void addActor(Actor a) {
         if (actors == null)
-            actors = new HashSet<Actor>();
+            actors = new HashSet<>();
         actors.add(a);
     }
 

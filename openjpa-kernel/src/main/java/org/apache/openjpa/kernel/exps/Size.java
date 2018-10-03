@@ -30,14 +30,19 @@ import java.util.Map;
 class Size
     extends UnaryMathVal {
 
+    
+    private static final long serialVersionUID = 1L;
+
     public Size(Val val) {
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         return int.class;
     }
 
+    @Override
     protected Object operate(Object o, Class c) {
         if (o instanceof Collection)
             return ((Collection) o).size();

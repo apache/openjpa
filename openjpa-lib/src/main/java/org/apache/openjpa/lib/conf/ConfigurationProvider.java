@@ -33,22 +33,22 @@ public interface ConfigurationProvider {
     /**
      * Return properties loaded thus far, or empty map if none.
      */
-    public Map<String,Object> getProperties();
+    Map<String,Object> getProperties();
 
     /**
      * Add the given properties to those in this provider, overwriting
      * any existing properties under the same keys.
      */
-    public void addProperties(Map<?,?> props);
+    void addProperties(Map<?,?> props);
 
     /**
      * Add a single property, overwriting any existing property under the
      * same key.
      */
-    public Object addProperty(String key, Object value);
+    Object addProperty(String key, Object value);
 
     /**
      * Set loaded information into the given configuration.
      */
-    public void setInto(Configuration conf);
+    void setInto(Configuration conf);
 }

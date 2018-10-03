@@ -58,17 +58,21 @@ public abstract class AbstractUpdateManager
     protected JDBCConfiguration conf = null;
     protected DBDictionary dict = null;
 
+    @Override
     public void setConfiguration(Configuration conf) {
         this.conf = (JDBCConfiguration) conf;
         dict = this.conf.getDBDictionaryInstance();
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
     }
 
+    @Override
     public Collection flush(Collection states, JDBCStore store) {
         Connection conn = store.getConnection();
         try {
@@ -249,7 +253,7 @@ public abstract class AbstractUpdateManager
     }
 
     private FieldMapping[] reorderFields(FieldMapping[] fields) {
-        List<FieldMapping> pkFmds = new ArrayList<FieldMapping>();
+        List<FieldMapping> pkFmds = new ArrayList<>();
         FieldMapping[] ret = new FieldMapping[fields.length];
         int j = 0;
         for (int i = 0; i < fields.length; i++) {

@@ -31,7 +31,6 @@ import java.util.Map.Entry;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
-import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -42,6 +41,7 @@ import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.util.UserException;
 
@@ -53,10 +53,11 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class ClassMappingInfo
     extends MappingInfo
     implements SourceTracker, Commentable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage
         (ClassMappingInfo.class);
@@ -108,6 +109,7 @@ public class ClassMappingInfo
      * The given table name.
      * @deprecated
      */
+    @Deprecated
     public String getTableName() {
         return getTableIdentifier().getName();
     }
@@ -120,6 +122,7 @@ public class ClassMappingInfo
      * The given table name.
      * @deprecated
      */
+    @Deprecated
     public void setTableName(String table) {
         setTableIdentifier(DBIdentifier.newTable(table));
     }
@@ -132,6 +135,7 @@ public class ClassMappingInfo
      * The default schema name for unqualified tables.
      * @deprecated
      */
+    @Deprecated
     public String getSchemaName() {
         return getSchemaIdentifier().getName();
     }
@@ -144,6 +148,7 @@ public class ClassMappingInfo
      * The default schema name for unqualified tables.
      * @deprecated
      */
+    @Deprecated
     public void setSchemaName(String schema) {
         setSchemaIdentifier(DBIdentifier.newSchema(schema));
     }
@@ -170,6 +175,7 @@ public class ClassMappingInfo
      * Return the class-level joined tables.
      * @deprecated
      */
+    @Deprecated
     public String[] getSecondaryTableNames() {
         if (_seconds == null)
             return new String[0];
@@ -179,7 +185,7 @@ public class ClassMappingInfo
     public DBIdentifier[] getSecondaryTableIdentifiers() {
         if (_seconds == null)
             return new DBIdentifier[0];
-        return (DBIdentifier[]) _seconds.keySet().toArray(new DBIdentifier[_seconds.size()]);
+        return _seconds.keySet().toArray(new DBIdentifier[_seconds.size()]);
     }
 
     /**
@@ -189,6 +195,7 @@ public class ClassMappingInfo
      * class-level join, or the given name if no join exists.
      * @deprecated
      */
+    @Deprecated
     public String getSecondaryTableName(String tableName) {
         return getSecondaryTableIdentifier(DBIdentifier.newTable(tableName)).getName();
     }
@@ -209,7 +216,7 @@ public class ClassMappingInfo
         DBIdentifier join = DBIdentifier.NULL;
         for (Iterator<DBIdentifier> itr = _seconds.keySet().iterator(); itr.hasNext();) {
             // award a caseless match without schema 2 points
-            fullJoin = (DBIdentifier) itr.next();
+            fullJoin = itr.next();
             QualifiedDBIdentifier joinPath = QualifiedDBIdentifier.getPath(fullJoin);
             if (joinPath.isUnqualifiedObject() && pts < 2 && fullJoin.equalsIgnoreCase(tableName)) {
                 best = fullJoin;
@@ -236,6 +243,7 @@ public class ClassMappingInfo
      * list if none.
      * @deprecated
      */
+    @Deprecated
     public List<Column> getSecondaryTableJoinColumns(String tableName) {
         return getSecondaryTableJoinColumns(DBIdentifier.newTable(tableName));
     }
@@ -267,6 +275,7 @@ public class ClassMappingInfo
      * must be known before unique constraints are added to a Secondary table.
      * @deprecated
      */
+    @Deprecated
     public void addSecondaryTable(String second) {
     	setSecondaryTableJoinColumns(DBIdentifier.newTable(second), null);
     }
@@ -279,6 +288,7 @@ public class ClassMappingInfo
      * Declare the given class-level join to the named (secondary) table.
      * @deprecated
      */
+    @Deprecated
     public void setSecondaryTableJoinColumns(String tableName, List<Column> cols) {
         if (cols == null)
             cols = Collections.emptyList();
@@ -289,7 +299,7 @@ public class ClassMappingInfo
         if (cols == null)
             cols = Collections.emptyList();
         if (_seconds == null)
-            _seconds = new LinkedHashMap<DBIdentifier, List<Column>>();
+            _seconds = new LinkedHashMap<>();
         _seconds.put(tableName, cols);
     }
 
@@ -297,6 +307,7 @@ public class ClassMappingInfo
      * Return the named table for the given class.
      * @deprecated
      */
+    @Deprecated
     public Table getTable(final ClassMapping cls, String tableName,
         boolean adapt) {
         return getTable(cls, DBIdentifier.newTable(tableName), adapt);
@@ -309,12 +320,14 @@ public class ClassMappingInfo
             boolean adapt) {
 
         Table t = createTable(cls, new TableDefaults() {
+            @Override
             public String get(Schema schema) {
                 // delay this so that we don't do schema reflection for unique
                 // table name unless necessary
                 return cls.getMappingRepository().getMappingDefaults().
                     getTableName(cls, schema);
             }
+            @Override
             public DBIdentifier getIdentifier(Schema schema) {
                 return cls.getMappingRepository().getMappingDefaults().
                     getTableIdentifier(cls, schema);
@@ -355,11 +368,13 @@ public class ClassMappingInfo
             return null;
 
         ForeignKeyDefaults def = new ForeignKeyDefaults() {
+            @Override
             public ForeignKey get(Table local, Table foreign, boolean inverse) {
                 return cls.getMappingRepository().getMappingDefaults().
                     getJoinForeignKey(cls, local, foreign);
             }
 
+            @Override
             public void populate(Table local, Table foreign, Column col,
                 Object target, boolean inverse, int pos, int cols) {
                 cls.getMappingRepository().getMappingDefaults().
@@ -390,7 +405,7 @@ public class ClassMappingInfo
             && sup.getTable() != null)
             syncForeignKey(cls, cls.getJoinForeignKey(), cls.getTable(),
                 sup.getTable());
-        else if (cls.getIdentityType() == ClassMapping.ID_DATASTORE)
+        else if (cls.getIdentityType() == ClassMetaData.ID_DATASTORE)
             syncColumns(cls, cls.getPrimaryKeyColumns(), false);
 
         // record inheritance strategy if class does not use default strategy
@@ -403,15 +418,18 @@ public class ClassMappingInfo
             setStrategy(strat);
     }
 
+    @Override
     public boolean hasSchemaComponents() {
         return super.hasSchemaComponents() || !DBIdentifier.isNull(_tableName);
     }
 
+    @Override
     protected void clear(boolean canFlags) {
         super.clear(canFlags);
         _tableName = DBIdentifier.NULL;
     }
 
+    @Override
     public void copy(MappingInfo info) {
         super.copy(info);
         if (!(info instanceof ClassMappingInfo))
@@ -424,7 +442,7 @@ public class ClassMappingInfo
             _subStrat = cinfo.getHierarchyStrategy();
         if (cinfo._seconds != null) {
             if (_seconds == null)
-                _seconds = new HashMap<DBIdentifier, List<Column>>();
+                _seconds = new HashMap<>();
             DBIdentifier key;
             for (Iterator<DBIdentifier> itr = cinfo._seconds.keySet().iterator();
                 itr.hasNext();) {
@@ -435,7 +453,7 @@ public class ClassMappingInfo
         }
         if (cinfo._uniques != null) {
         	if (_uniques == null)
-        		_uniques = new HashMap<DBIdentifier, List<Unique>>();
+        		_uniques = new HashMap<>();
         for (Entry<DBIdentifier, List<Unique>> entry : cinfo._uniques.entrySet())
         		if (!_uniques.containsKey(entry.getKey()))
         			_uniques.put(entry.getKey(), entry.getValue());
@@ -450,6 +468,7 @@ public class ClassMappingInfo
      * @param unique the unique constraint. null means no-op.
      * @deprecated
      */
+    @Deprecated
     public void addUnique(String table, Unique unique) {
         addUnique(DBIdentifier.newTable(table), unique);
     }
@@ -470,11 +489,11 @@ public class ClassMappingInfo
     	if (unique == null)
     		return;
         if (_uniques == null)
-            _uniques = new HashMap<DBIdentifier,List<Unique>>();
+            _uniques = new HashMap<>();
         unique.setTableIdentifier(table);
         List<Unique> uniques = _uniques.get(table);
         if (uniques == null) {
-        	uniques = new ArrayList<Unique>();
+        	uniques = new ArrayList<>();
         	uniques.add(unique);
         	_uniques.put(table, uniques);
         } else {
@@ -486,6 +505,7 @@ public class ClassMappingInfo
      * Get the unique constraints of the given primary or secondary table.
      * @deprecated
      */
+    @Deprecated
     public Unique[] getUniques(String table) {
         return getUniques(DBIdentifier.newTable(table));
     }
@@ -509,7 +529,7 @@ public class ClassMappingInfo
     public Unique[] getUniques(MetaDataContext cm, boolean adapt) {
         if (_uniques == null || _uniques.isEmpty())
             return new Unique[0];
-        List<Unique> result = new ArrayList<Unique>();
+        List<Unique> result = new ArrayList<>();
         for (DBIdentifier tableName : _uniques.keySet()) {
         	List<Unique> uniqueConstraints = _uniques.get(tableName);
         	for (Unique template : uniqueConstraints) {
@@ -536,14 +556,17 @@ public class ClassMappingInfo
         return result.toArray(new Unique[result.size()]);
     }
 
+    @Override
     public File getSourceFile() {
         return _file;
     }
 
+    @Override
     public Object getSourceScope() {
         return null;
     }
 
+    @Override
     public int getSourceType() {
         return _srcType;
     }
@@ -553,18 +576,22 @@ public class ClassMappingInfo
         _srcType = srcType;
     }
 
+    @Override
     public String getResourceName() {
         return _className;
     }
 
+    @Override
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
 
+    @Override
     public void setComments(String[] comments) {
         _comments = comments;
     }
 
+    @Override
     public int getLineNumber() {
         return _lineNum;
     }
@@ -573,6 +600,7 @@ public class ClassMappingInfo
         _lineNum = lineNum;
     }
 
+    @Override
     public int getColNumber() {
         return _colNum;
     }

@@ -87,10 +87,12 @@ public class DelegatingBroker
         return (_del == null) ? _broker : _del.getInnermostDelegate();
     }
 
+    @Override
     public int hashCode() {
         return getInnermostDelegate().hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -125,10 +127,12 @@ public class DelegatingBroker
         return (_trans == null) ? re : _trans.translate(re);
     }
 
+    @Override
     public Broker getBroker() {
         return this;
     }
 
+    @Override
     public OpenJPAConfiguration getConfiguration() {
         try {
             return _broker.getConfiguration();
@@ -137,6 +141,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public FetchConfiguration getFetchConfiguration() {
         try {
             return _broker.getFetchConfiguration();
@@ -145,6 +150,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public FetchConfiguration pushFetchConfiguration() {
         try {
             return _broker.pushFetchConfiguration();
@@ -153,6 +159,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public FetchConfiguration pushFetchConfiguration(FetchConfiguration fc) {
         try {
             return _broker.pushFetchConfiguration(fc);
@@ -161,6 +168,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void popFetchConfiguration() {
         try {
             _broker.popFetchConfiguration();
@@ -169,6 +177,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public ClassLoader getClassLoader() {
         try {
             return _broker.getClassLoader();
@@ -177,6 +186,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public LockManager getLockManager() {
         try {
             return _broker.getLockManager();
@@ -185,6 +195,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public DelegatingStoreManager getStoreManager() {
         try {
             return _broker.getStoreManager();
@@ -193,6 +204,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public String getConnectionUserName() {
         try {
             return _broker.getConnectionUserName();
@@ -201,6 +213,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public String getConnectionPassword() {
         try {
             return _broker.getConnectionPassword();
@@ -209,6 +222,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Map<String,Object> getProperties() {
         try {
             return _broker.getProperties();
@@ -217,6 +231,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Set<String> getSupportedProperties() {
         try {
             return _broker.getSupportedProperties();
@@ -225,6 +240,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object find(Object oid, boolean validate, FindCallbacks call) {
         try {
             return _broker.find(oid, validate, call);
@@ -233,6 +249,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object[] findAll(Collection oids, boolean validate,
         FindCallbacks call) {
         try {
@@ -242,6 +259,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object findCached(Object oid, FindCallbacks call) {
         try {
             return _broker.findCached(oid, call);
@@ -250,6 +268,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object find(Object oid, FetchConfiguration fetch, BitSet exclude,
         Object edata, int flags) {
         try {
@@ -259,6 +278,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object[] findAll(Collection oids, FetchConfiguration fetch,
         BitSet exclude, Object edata, int flags) {
         try {
@@ -268,6 +288,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Iterator extentIterator(Class cls, boolean subs,
         FetchConfiguration fetch, boolean ignoreChanges) {
         try {
@@ -277,6 +298,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void retrieve(Object obj, boolean fgOnly, OpCallbacks call) {
         try {
             _broker.retrieve(obj, fgOnly, call);
@@ -285,6 +307,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void retrieveAll(Collection objs, boolean fgOnly, OpCallbacks call) {
         try {
             _broker.retrieveAll(objs, fgOnly, call);
@@ -293,6 +316,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public OpenJPAStateManager embed(Object obj, Object id,
         OpenJPAStateManager owner, ValueMetaData ownerMeta) {
         try {
@@ -302,6 +326,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Class getObjectIdType(Class cls) {
         try {
             return _broker.getObjectIdType(cls);
@@ -310,6 +335,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object newObjectId(Class cls, Object val) {
         try {
             return _broker.newObjectId(cls, val);
@@ -318,6 +344,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Collection getManagedObjects() {
         try {
             return _broker.getManagedObjects();
@@ -326,6 +353,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Collection getTransactionalObjects() {
         try {
             return _broker.getTransactionalObjects();
@@ -334,6 +362,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Collection getPendingTransactionalObjects() {
         try {
             return _broker.getPendingTransactionalObjects();
@@ -342,6 +371,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Collection getDirtyObjects() {
         try {
             return _broker.getDirtyObjects();
@@ -350,6 +380,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getOrderDirtyObjects() {
         try {
             return _broker.getOrderDirtyObjects();
@@ -358,6 +389,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setOrderDirtyObjects(boolean order) {
         try {
             _broker.setOrderDirtyObjects(order);
@@ -366,6 +398,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Collection getPersistedTypes() {
         try {
             return _broker.getPersistedTypes();
@@ -374,6 +407,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Collection getUpdatedTypes() {
         try {
             return _broker.getUpdatedTypes();
@@ -382,6 +416,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Collection getDeletedTypes() {
         try {
             return _broker.getDeletedTypes();
@@ -390,6 +425,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public OpenJPAStateManager getStateManager(Object obj) {
         try {
             return _broker.getStateManager(obj);
@@ -398,6 +434,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public int getLockLevel(Object obj) {
         try {
             return _broker.getLockLevel(obj);
@@ -406,6 +443,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object getVersion(Object obj) {
         try {
             return _broker.getVersion(obj);
@@ -414,6 +452,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isDirty(Object obj) {
         try {
             return _broker.isDirty(obj);
@@ -422,6 +461,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isTransactional(Object obj) {
         try {
             return _broker.isTransactional(obj);
@@ -430,6 +470,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isPersistent(Object obj) {
         try {
             return _broker.isPersistent(obj);
@@ -438,6 +479,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isNew(Object obj) {
         try {
             return _broker.isNew(obj);
@@ -446,6 +488,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isDeleted(Object obj) {
         try {
             return _broker.isDeleted(obj);
@@ -454,6 +497,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object getObjectId(Object obj) {
         try {
             return _broker.getObjectId(obj);
@@ -462,6 +506,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isManaged() {
         try {
             return _broker.isManaged();
@@ -470,6 +515,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isActive() {
         try {
             return _broker.isActive();
@@ -478,6 +524,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isStoreActive() {
         try {
             return _broker.isStoreActive();
@@ -486,6 +533,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean hasConnection() {
         try {
             return _broker.hasConnection();
@@ -494,6 +542,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object getConnection() {
         try {
             return _broker.getConnection();
@@ -502,6 +551,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void lock() {
         try {
             _broker.lock();
@@ -510,6 +560,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void unlock() {
         try {
             _broker.unlock();
@@ -518,6 +569,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean beginOperation(boolean read) {
         try {
             return _broker.beginOperation(read);
@@ -526,6 +578,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean endOperation() {
         try {
             return _broker.endOperation();
@@ -534,6 +587,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setImplicitBehavior(OpCallbacks call,
         RuntimeExceptionTranslator ex) {
         try {
@@ -543,6 +597,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public BrokerFactory getBrokerFactory() {
         try {
             return _broker.getBrokerFactory();
@@ -551,6 +606,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public int getConnectionRetainMode() {
         try {
             return _broker.getConnectionRetainMode();
@@ -559,6 +615,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public ManagedRuntime getManagedRuntime() {
         try {
             return _broker.getManagedRuntime();
@@ -567,6 +624,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public InverseManager getInverseManager() {
         try {
             return _broker.getInverseManager();
@@ -575,6 +633,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getMultithreaded() {
         try {
             return _broker.getMultithreaded();
@@ -583,6 +642,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setMultithreaded(boolean multi) {
         try {
             _broker.setMultithreaded(multi);
@@ -591,6 +651,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getIgnoreChanges() {
         try {
             return _broker.getIgnoreChanges();
@@ -599,6 +660,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setIgnoreChanges(boolean ignore) {
         try {
             _broker.setIgnoreChanges(ignore);
@@ -607,6 +669,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getNontransactionalRead() {
         try {
             return _broker.getNontransactionalRead();
@@ -615,6 +678,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setNontransactionalRead(boolean read) {
         try {
             _broker.setNontransactionalRead(read);
@@ -623,6 +687,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getNontransactionalWrite() {
         try {
             return _broker.getNontransactionalWrite();
@@ -631,6 +696,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setNontransactionalWrite(boolean write) {
         try {
             _broker.setNontransactionalWrite(write);
@@ -639,6 +705,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public int getRestoreState() {
         try {
             return _broker.getRestoreState();
@@ -647,6 +714,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setRestoreState(int restore) {
         try {
             _broker.setRestoreState(restore);
@@ -655,6 +723,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getOptimistic() {
         try {
             return _broker.getOptimistic();
@@ -663,6 +732,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setOptimistic(boolean opt) {
         try {
             _broker.setOptimistic(opt);
@@ -671,6 +741,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getRetainState() {
         try {
             return _broker.getRetainState();
@@ -679,6 +750,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setRetainState(boolean retain) {
         try {
             _broker.setRetainState(retain);
@@ -687,6 +759,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public int getAutoClear() {
         try {
             return _broker.getAutoClear();
@@ -695,6 +768,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setAutoClear(int clear) {
         try {
             _broker.setAutoClear(clear);
@@ -703,6 +777,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public int getAutoDetach() {
         try {
             return _broker.getAutoDetach();
@@ -711,6 +786,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setAutoDetach(int flags) {
         try {
             _broker.setAutoDetach(flags);
@@ -719,6 +795,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setAutoDetach(int flag, boolean on) {
         try {
             _broker.setAutoDetach(flag, on);
@@ -727,6 +804,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public int getDetachState() {
         try {
             return _broker.getDetachState();
@@ -735,6 +813,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setDetachState(int mode) {
         try {
             _broker.setDetachState(mode);
@@ -743,6 +822,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isDetachedNew() {
         try {
             return _broker.isDetachedNew();
@@ -751,6 +831,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setDetachedNew(boolean isNew) {
         try {
             _broker.setDetachedNew(isNew);
@@ -759,6 +840,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getSyncWithManagedTransactions() {
         try {
             return _broker.getSyncWithManagedTransactions();
@@ -767,6 +849,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setSyncWithManagedTransactions(boolean sync) {
         try {
             _broker.setSyncWithManagedTransactions(sync);
@@ -775,6 +858,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getEvictFromDataCache() {
         try {
             return _broker.getEvictFromDataCache();
@@ -783,6 +867,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setEvictFromDataCache(boolean evict) {
         try {
             _broker.setEvictFromDataCache(evict);
@@ -791,6 +876,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getPopulateDataCache() {
         try {
             return _broker.getPopulateDataCache();
@@ -799,6 +885,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setPopulateDataCache(boolean cache) {
         try {
             _broker.setPopulateDataCache(cache);
@@ -807,6 +894,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isTrackChangesByType() {
         try {
             return _broker.isTrackChangesByType();
@@ -815,6 +903,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setTrackChangesByType(boolean largeTransaction) {
         try {
             _broker.setTrackChangesByType(largeTransaction);
@@ -823,6 +912,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object putUserObject(Object key, Object val) {
         try {
             return _broker.putUserObject(key, val);
@@ -831,6 +921,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object getUserObject(Object key) {
         try {
             return _broker.getUserObject(key);
@@ -839,6 +930,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void addTransactionListener(Object listener) {
         try {
             _broker.addTransactionListener(listener);
@@ -847,6 +939,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void removeTransactionListener(Object listener) {
         try {
             _broker.removeTransactionListener(listener);
@@ -855,6 +948,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Collection<Object> getTransactionListeners() {
         try {
             return _broker.getTransactionListeners();
@@ -863,6 +957,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public int getTransactionListenerCallbackMode() {
         try {
             return _broker.getTransactionListenerCallbackMode();
@@ -871,6 +966,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setTransactionListenerCallbackMode(int mode) {
         try {
             _broker.setTransactionListenerCallbackMode(mode);
@@ -879,6 +975,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void addLifecycleListener(Object listener, Class[] classes) {
         try {
             _broker.addLifecycleListener(listener, classes);
@@ -887,6 +984,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void removeLifecycleListener(Object listener) {
         try {
             _broker.removeLifecycleListener(listener);
@@ -895,6 +993,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public int getLifecycleListenerCallbackMode() {
         try {
             return _broker.getLifecycleListenerCallbackMode();
@@ -903,6 +1002,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setLifecycleListenerCallbackMode(int mode) {
         try {
             _broker.setLifecycleListenerCallbackMode(mode);
@@ -911,6 +1011,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public LifecycleEventManager getLifecycleEventManager() {
         try {
             return _broker.getLifecycleEventManager();
@@ -919,6 +1020,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void begin() {
         try {
             _broker.begin();
@@ -927,6 +1029,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void commit() {
         try {
             _broker.commit();
@@ -935,6 +1038,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void rollback() {
         try {
             _broker.rollback();
@@ -943,6 +1047,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean syncWithManagedTransaction() {
         try {
             return _broker.syncWithManagedTransaction();
@@ -951,6 +1056,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void commitAndResume() {
         try {
             _broker.commitAndResume();
@@ -959,6 +1065,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void rollbackAndResume() {
         try {
             _broker.rollbackAndResume();
@@ -967,6 +1074,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setRollbackOnly() {
         try {
             _broker.setRollbackOnly();
@@ -975,6 +1083,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setRollbackOnly(Throwable cause) {
         try {
             _broker.setRollbackOnly(cause);
@@ -983,6 +1092,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Throwable getRollbackCause() {
         try {
             return _broker.getRollbackCause();
@@ -991,6 +1101,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getRollbackOnly() {
         try {
             return _broker.getRollbackOnly();
@@ -999,6 +1110,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void setSavepoint(String name) {
         try {
             _broker.setSavepoint(name);
@@ -1007,6 +1119,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void rollbackToSavepoint() {
         try {
             _broker.rollbackToSavepoint();
@@ -1015,6 +1128,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void rollbackToSavepoint(String name) {
         try {
             _broker.rollbackToSavepoint(name);
@@ -1023,6 +1137,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void releaseSavepoint() {
         try {
             _broker.releaseSavepoint();
@@ -1031,6 +1146,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void releaseSavepoint(String name) {
         try {
             _broker.releaseSavepoint(name);
@@ -1039,6 +1155,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void flush() {
         try {
             _broker.flush();
@@ -1047,6 +1164,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void preFlush() {
         try {
             _broker.preFlush();
@@ -1055,6 +1173,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void validateChanges() {
         try {
             _broker.validateChanges();
@@ -1063,6 +1182,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void beginStore() {
         try {
             _broker.beginStore();
@@ -1071,6 +1191,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void persist(Object obj, OpCallbacks call) {
         try {
             _broker.persist(obj, call);
@@ -1079,6 +1200,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void persistAll(Collection objs, OpCallbacks call) {
         try {
             _broker.persistAll(objs, call);
@@ -1087,6 +1209,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public OpenJPAStateManager persist(Object obj, Object id,
         OpCallbacks call) {
         try {
@@ -1096,6 +1219,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void delete(Object obj, OpCallbacks call) {
         try {
             _broker.delete(obj, call);
@@ -1104,6 +1228,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void deleteAll(Collection objs, OpCallbacks call) {
         try {
             _broker.deleteAll(objs, call);
@@ -1112,6 +1237,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void release(Object obj, OpCallbacks call) {
         try {
             _broker.release(obj, call);
@@ -1120,6 +1246,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void releaseAll(Collection objs, OpCallbacks call) {
         try {
             _broker.releaseAll(objs, call);
@@ -1128,6 +1255,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void refresh(Object obj, OpCallbacks call) {
         try {
             _broker.refresh(obj, call);
@@ -1136,6 +1264,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void refreshAll(Collection objs, OpCallbacks call) {
         try {
             _broker.refreshAll(objs, call);
@@ -1144,6 +1273,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void evict(Object obj, OpCallbacks call) {
         try {
             _broker.evict(obj, call);
@@ -1152,6 +1282,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void evictAll(Collection objs, OpCallbacks call) {
         try {
             _broker.evictAll(objs, call);
@@ -1160,6 +1291,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void evictAll(OpCallbacks call) {
         try {
             _broker.evictAll(call);
@@ -1168,6 +1300,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void evictAll(Extent extent, OpCallbacks call) {
         try {
             _broker.evictAll(extent, call);
@@ -1176,6 +1309,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object detach(Object obj, OpCallbacks call) {
         try {
             return _broker.detach(obj, call);
@@ -1184,6 +1318,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object[] detachAll(Collection objs, OpCallbacks call) {
         try {
             return _broker.detachAll(objs, call);
@@ -1192,6 +1327,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void detachAll(OpCallbacks call) {
         try {
             _broker.detachAll(call);
@@ -1200,6 +1336,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void detachAll(OpCallbacks call, boolean flush) {
         try {
             _broker.detachAll(call, flush);
@@ -1208,6 +1345,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object attach(Object obj, boolean copyNew, OpCallbacks call) {
         try {
             return _broker.attach(obj, copyNew, call);
@@ -1216,6 +1354,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object[] attachAll(Collection objs, boolean copyNew,
         OpCallbacks call) {
         try {
@@ -1225,6 +1364,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void transactional(Object pc, boolean updateVersion, OpCallbacks
         call) {
         try {
@@ -1234,6 +1374,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void transactionalAll(Collection objs, boolean updateVersion,
         OpCallbacks call) {
         try {
@@ -1243,6 +1384,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void nontransactional(Object pc, OpCallbacks call) {
         try {
             _broker.nontransactional(pc, call);
@@ -1251,6 +1393,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void nontransactionalAll(Collection objs, OpCallbacks call) {
         try {
             _broker.nontransactionalAll(objs, call);
@@ -1259,6 +1402,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Extent newExtent(Class cls, boolean subs) {
         try {
             return _broker.newExtent(cls, subs);
@@ -1267,6 +1411,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Query newQuery(String language, Class cls, Object query) {
         try {
             return _broker.newQuery(language, cls, query);
@@ -1275,6 +1420,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Query newQuery(String language, Object query) {
         try {
             return _broker.newQuery(language, query);
@@ -1283,6 +1429,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Seq getIdentitySequence(ClassMetaData meta) {
         try {
             return _broker.getIdentitySequence(meta);
@@ -1291,6 +1438,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Seq getValueSequence(FieldMetaData fmd) {
         try {
             return _broker.getValueSequence(fmd);
@@ -1299,6 +1447,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void lock(Object obj, int level, int timeout, OpCallbacks call) {
         try {
             _broker.lock(obj, level, timeout, call);
@@ -1307,6 +1456,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void lock(Object obj, OpCallbacks call) {
         try {
             _broker.lock(obj, call);
@@ -1315,6 +1465,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void lockAll(Collection objs, int level, int timeout,
         OpCallbacks call) {
         try {
@@ -1324,6 +1475,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void lockAll(Collection objs, OpCallbacks call) {
         try {
             _broker.lockAll(objs, call);
@@ -1332,6 +1484,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean cancelAll() {
         try {
             return _broker.cancelAll();
@@ -1340,6 +1493,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void dirtyType(Class cls) {
         try {
             _broker.dirtyType(cls);
@@ -1348,6 +1502,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void close() {
         try {
             _broker.close();
@@ -1356,6 +1511,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isClosed() {
         try {
             return _broker.isClosed();
@@ -1364,6 +1520,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isCloseInvoked() {
         try {
             return _broker.isCloseInvoked();
@@ -1372,6 +1529,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void assertOpen() {
         try {
             _broker.assertOpen();
@@ -1380,6 +1538,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void assertActiveTransaction() {
         try {
             _broker.assertActiveTransaction();
@@ -1388,6 +1547,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void assertNontransactionalRead() {
         try {
             _broker.assertNontransactionalRead();
@@ -1396,6 +1556,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void assertWriteOperation() {
         try {
             _broker.assertWriteOperation();
@@ -1408,6 +1569,7 @@ public class DelegatingBroker
     // Implementation of Synchronization interface
     ///////////////////////////////////////////////
 
+    @Override
     public void beforeCompletion() {
         try {
             _broker.beforeCompletion();
@@ -1416,6 +1578,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public void afterCompletion(int status) {
         try {
             _broker.afterCompletion(status);
@@ -1424,6 +1587,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public Object newInstance(Class cls) {
         try {
             return _broker.newInstance(cls);
@@ -1432,6 +1596,7 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean isDetached(Object obj) {
         try {
             return _broker.isDetached(obj);
@@ -1440,54 +1605,67 @@ public class DelegatingBroker
         }
     }
 
+    @Override
     public boolean getCachePreparedQuery() {
         return _broker.getCachePreparedQuery();
     }
 
+    @Override
     public void setCachePreparedQuery(boolean flag) {
         _broker.setCachePreparedQuery(flag);
     }
 
+    @Override
     public String getConnectionFactoryName() {
         return _broker.getConnectionFactoryName();
     }
 
+    @Override
     public void setConnectionFactoryName(String connectionFactoryName) {
         _broker.setConnectionFactoryName(connectionFactoryName);
     }
 
+    @Override
     public String getConnectionFactory2Name() {
         return _broker.getConnectionFactory2Name();
     }
 
+    @Override
     public void setConnectionFactory2Name(String connectionFactory2Name) {
         _broker.setConnectionFactory2Name(connectionFactory2Name);
     }
 
+    @Override
     public Object getConnectionFactory() {
         return _broker.getConnectionFactory();
     }
 
+    @Override
     public Object getConnectionFactory2() {
         return _broker.getConnectionFactory2();
     }
 
+    @Override
     public boolean isCached(List<Object> oid) {
         return _broker.isCached(oid);
     }
 
+    @Override
     public boolean getAllowReferenceToSiblingContext() {
         return _broker.getAllowReferenceToSiblingContext();
     }
 
+    @Override
     public void setAllowReferenceToSiblingContext(boolean allow) {
         _broker.setAllowReferenceToSiblingContext(allow);
     }
 
+    @Override
     public boolean getPostLoadOnMerge() {
         return _broker.getPostLoadOnMerge();
     }
 
+    @Override
     public void setPostLoadOnMerge(boolean allow) {
         _broker.setPostLoadOnMerge(allow);
     }

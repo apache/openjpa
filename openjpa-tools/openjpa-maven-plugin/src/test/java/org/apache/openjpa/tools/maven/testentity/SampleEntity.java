@@ -54,7 +54,8 @@ public class SampleEntity
     this.string1 = string1;
   }
 
-  public String toString()  {
+  @Override
+public String toString()  {
     return xint1 + ":" + string1;
   }
 

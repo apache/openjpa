@@ -33,91 +33,111 @@ class TransferFieldManager
     protected Object objval = null;
     protected int field = -1;
 
+    @Override
     public boolean fetchBooleanField(int field) {
         return longval == 1;
     }
 
+    @Override
     public byte fetchByteField(int field) {
         return (byte) longval;
     }
 
+    @Override
     public char fetchCharField(int field) {
         return (char) longval;
     }
 
+    @Override
     public double fetchDoubleField(int field) {
         return dblval;
     }
 
+    @Override
     public float fetchFloatField(int field) {
         return (float) dblval;
     }
 
+    @Override
     public int fetchIntField(int field) {
         return (int) longval;
     }
 
+    @Override
     public long fetchLongField(int field) {
         return longval;
     }
 
+    @Override
     public Object fetchObjectField(int field) {
         return objval;
     }
 
+    @Override
     public short fetchShortField(int field) {
         return (short) longval;
     }
 
+    @Override
     public String fetchStringField(int field) {
         return (String) objval;
     }
 
+    @Override
     public void storeBooleanField(int field, boolean curVal) {
         this.field = field;
         longval = (curVal) ? 1 : 0;
     }
 
+    @Override
     public void storeByteField(int field, byte curVal) {
         this.field = field;
         longval = curVal;
     }
 
+    @Override
     public void storeCharField(int field, char curVal) {
         this.field = field;
         longval = (long) curVal;
     }
 
+    @Override
     public void storeDoubleField(int field, double curVal) {
         this.field = field;
         dblval = curVal;
     }
 
+    @Override
     public void storeFloatField(int field, float curVal) {
         this.field = field;
         dblval = curVal;
     }
 
+    @Override
     public void storeIntField(int field, int curVal) {
         this.field = field;
         longval = curVal;
     }
 
+    @Override
     public void storeLongField(int field, long curVal) {
         this.field = field;
         longval = curVal;
     }
 
+    @Override
     public void storeObjectField(int field, Object curVal) {
         this.field = field;
         objval = curVal;
     }
 
+    @Override
     public void storeShortField(int field, short curVal) {
         this.field = field;
         longval = curVal;
     }
 
+    @Override
     public void storeStringField(int field, String curVal) {
         this.field = field;
         objval = curVal;

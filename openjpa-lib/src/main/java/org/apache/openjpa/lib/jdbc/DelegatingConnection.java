@@ -76,10 +76,12 @@ public class DelegatingConnection implements Connection, Closeable {
         return (_del == null) ? _conn : _del.getInnermostDelegate();
     }
 
+    @Override
     public int hashCode() {
         return getInnermostDelegate().hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -88,6 +90,7 @@ public class DelegatingConnection implements Connection, Closeable {
         return getInnermostDelegate().equals(other);
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer("conn ").append(hashCode());
         appendInfo(buf);
@@ -99,6 +102,7 @@ public class DelegatingConnection implements Connection, Closeable {
             _del.appendInfo(buf);
     }
 
+    @Override
     public Statement createStatement() throws SQLException {
         return createStatement(true);
     }
@@ -118,6 +122,7 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public PreparedStatement prepareStatement(String str) throws SQLException {
         return prepareStatement(str, true);
     }
@@ -139,6 +144,7 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public CallableStatement prepareCall(String str) throws SQLException {
         return prepareCall(str, true);
     }
@@ -159,34 +165,42 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public String nativeSQL(String str) throws SQLException {
         return _conn.nativeSQL(str);
     }
 
+    @Override
     public void setAutoCommit(boolean bool) throws SQLException {
         _conn.setAutoCommit(bool);
     }
 
+    @Override
     public boolean getAutoCommit() throws SQLException {
         return _conn.getAutoCommit();
     }
 
+    @Override
     public void commit() throws SQLException {
         _conn.commit();
     }
 
+    @Override
     public void rollback() throws SQLException {
         _conn.rollback();
     }
 
+    @Override
     public void close() throws SQLException {
         _conn.close();
     }
 
+    @Override
     public boolean isClosed() throws SQLException {
         return _conn.isClosed();
     }
 
+    @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         return getMetaData(true);
     }
@@ -206,38 +220,47 @@ public class DelegatingConnection implements Connection, Closeable {
         return meta;
     }
 
+    @Override
     public void setReadOnly(boolean bool) throws SQLException {
         _conn.setReadOnly(bool);
     }
 
+    @Override
     public boolean isReadOnly() throws SQLException {
         return _conn.isReadOnly();
     }
 
+    @Override
     public void setCatalog(String str) throws SQLException {
         _conn.setCatalog(str);
     }
 
+    @Override
     public String getCatalog() throws SQLException {
         return _conn.getCatalog();
     }
 
+    @Override
     public void setTransactionIsolation(int i) throws SQLException {
         _conn.setTransactionIsolation(i);
     }
 
+    @Override
     public int getTransactionIsolation() throws SQLException {
         return _conn.getTransactionIsolation();
     }
 
+    @Override
     public SQLWarning getWarnings() throws SQLException {
         return _conn.getWarnings();
     }
 
+    @Override
     public void clearWarnings() throws SQLException {
         _conn.clearWarnings();
     }
 
+    @Override
     public Statement createStatement(int type, int concur) throws SQLException {
         return createStatement(type, concur, true);
     }
@@ -258,6 +281,7 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public PreparedStatement prepareStatement(String str, int type, int concur)
         throws SQLException {
         return prepareStatement(str, type, concur, true);
@@ -279,6 +303,7 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public CallableStatement prepareCall(String str, int type, int concur)
         throws SQLException {
         return prepareCall(str, type, concur, true);
@@ -300,40 +325,49 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public Map<String, Class<?>> getTypeMap() throws SQLException {
         return _conn.getTypeMap();
     }
 
+    @Override
     public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
         _conn.setTypeMap(map);
     }
 
     // JDBC 3.0 methods follow.
 
+    @Override
     public void setHoldability(int holdability) throws SQLException {
         _conn.setHoldability(holdability);
     }
 
+    @Override
     public int getHoldability() throws SQLException {
         return _conn.getHoldability();
     }
 
+    @Override
     public Savepoint setSavepoint() throws SQLException {
         return _conn.setSavepoint();
     }
 
+    @Override
     public Savepoint setSavepoint(String savepoint) throws SQLException {
         return _conn.setSavepoint(savepoint);
     }
 
+    @Override
     public void rollback(Savepoint savepoint) throws SQLException {
         _conn.rollback(savepoint);
     }
 
+    @Override
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
         _conn.releaseSavepoint(savepoint);
     }
 
+    @Override
     public Statement createStatement(int resultSetType,
         int resultSetConcurrency, int resultSetHoldability)
         throws SQLException {
@@ -356,6 +390,7 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql,
         int resultSetType, int resultSetConcurrency, int resultSetHoldability)
         throws SQLException {
@@ -378,6 +413,7 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public CallableStatement prepareCall(String sql,
         int resultSetType, int resultSetConcurrency, int resultSetHoldability)
         throws SQLException {
@@ -400,6 +436,7 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys)
         throws SQLException {
         return prepareStatement(sql, autoGeneratedKeys, true);
@@ -418,6 +455,7 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int[] columnIndexes)
         throws SQLException {
         return prepareStatement(sql, columnIndexes, true);
@@ -436,6 +474,7 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames)
         throws SQLException {
         return prepareStatement(sql, columnNames, true);
@@ -456,6 +495,7 @@ public class DelegatingConnection implements Connection, Closeable {
 
     //  JDBC 4.0 methods follow.
 
+    @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
@@ -483,68 +523,84 @@ public class DelegatingConnection implements Connection, Closeable {
         }
     }
 
+    @Override
     public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
         return _conn.createArrayOf(typeName, elements);
     }
 
+    @Override
     public Blob createBlob() throws SQLException {
         return _conn.createBlob();
     }
 
+    @Override
     public Clob createClob() throws SQLException {
         return _conn.createClob();
     }
 
+    @Override
     public NClob createNClob() throws SQLException {
         return _conn.createNClob();
     }
 
+    @Override
     public SQLXML createSQLXML() throws SQLException {
         return _conn.createSQLXML();
     }
 
+    @Override
     public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
         return _conn.createStruct(typeName, attributes);
     }
 
+    @Override
     public Properties getClientInfo() throws SQLException {
         return _conn.getClientInfo();
     }
 
+    @Override
     public String getClientInfo(String name) throws SQLException {
         return _conn.getClientInfo(name);
     }
 
+    @Override
     public boolean isValid(int timeout) throws SQLException {
         return _conn.isValid(timeout);
     }
 
+    @Override
     public void setClientInfo(Properties properties) throws SQLClientInfoException {
         _conn.setClientInfo(properties);
     }
 
+    @Override
     public void setClientInfo(String name, String value) throws SQLClientInfoException {
         _conn.setClientInfo(name, value);
     }
 
     // Java 7 methods follow
 
+    @Override
     public void abort(Executor executor) throws SQLException {
     	throw new UnsupportedOperationException();
     }
 
+    @Override
     public int getNetworkTimeout() throws SQLException{
     	throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException{
     	throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getSchema() throws SQLException {
     	throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setSchema(String schema)throws SQLException {
     	throw new UnsupportedOperationException();
     }

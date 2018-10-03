@@ -67,10 +67,12 @@ public class DelegatingDataSource implements DataSource, Closeable {
         return (_del == null) ? _ds : _del.getInnermostDelegate();
     }
 
+    @Override
     public int hashCode() {
         return getInnermostDelegate().hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -79,6 +81,7 @@ public class DelegatingDataSource implements DataSource, Closeable {
         return getInnermostDelegate().equals(other);
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer("datasource "). append(hashCode());
         appendInfo(buf);
@@ -90,26 +93,32 @@ public class DelegatingDataSource implements DataSource, Closeable {
             _del.appendInfo(buf);
     }
 
+    @Override
     public PrintWriter getLogWriter() throws SQLException {
         return _ds.getLogWriter();
     }
 
+    @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
         _ds.setLogWriter(out);
     }
 
+    @Override
     public int getLoginTimeout() throws SQLException {
         return _ds.getLoginTimeout();
     }
 
+    @Override
     public void setLoginTimeout(int timeout) throws SQLException {
         _ds.setLoginTimeout(timeout);
     }
 
+    @Override
     public Connection getConnection() throws SQLException {
         return _ds.getConnection();
     }
 
+    @Override
     public Connection getConnection(String user, String pass)
         throws SQLException {
         if (user == null && pass == null)
@@ -129,16 +138,19 @@ public class DelegatingDataSource implements DataSource, Closeable {
         return null;
     }
 
+    @Override
     public void close() throws Exception {
         if (_ds instanceof Closeable)
             ((Closeable) _ds).close();
     }
 
     // java.sql.Wrapper implementation (JDBC 4)
+    @Override
     public boolean isWrapperFor(Class iface) {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
 
+    @Override
     public Object unwrap(Class iface) {
         if (isWrapperFor(iface))
             return getDelegate();
@@ -158,6 +170,7 @@ public class DelegatingDataSource implements DataSource, Closeable {
 
     // Java 7 methods follow
 
+    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException{
         return _ds.getParentLogger();
     }

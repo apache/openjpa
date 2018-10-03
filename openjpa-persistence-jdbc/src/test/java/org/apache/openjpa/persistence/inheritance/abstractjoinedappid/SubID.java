@@ -20,4 +20,7 @@ package org.apache.openjpa.persistence.inheritance.abstractjoinedappid;
 
 public class SubID extends SuperID {
 
+    
+    private static final long serialVersionUID = 1L;
+
 }

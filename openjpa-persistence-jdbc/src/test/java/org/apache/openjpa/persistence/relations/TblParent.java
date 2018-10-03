@@ -36,7 +36,7 @@ public class TblParent {
 
 	@OneToMany(mappedBy="tblParent",fetch = FetchType.LAZY,cascade = {
 		CascadeType.PERSIST,CascadeType.MERGE })
-	private Collection<TblChild> tblChildren = new ArrayList<TblChild>();
+	private Collection<TblChild> tblChildren = new ArrayList<>();
 
 	public Integer getParentId() {
 		return parentId;

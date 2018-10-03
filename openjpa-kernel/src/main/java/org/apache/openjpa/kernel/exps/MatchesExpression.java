@@ -30,6 +30,9 @@ import org.apache.openjpa.lib.util.StringUtil;
 class MatchesExpression
     extends CompareExpression {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static final Localizer _loc = Localizer.forPackage(
         MatchesExpression.class);
 
@@ -51,6 +54,7 @@ class MatchesExpression
         _affirmation = affirmation;
     }
 
+    @Override
     protected boolean compare(Object o1, Object o2) {
         if (o1 == null || o2 == null)
             return false;

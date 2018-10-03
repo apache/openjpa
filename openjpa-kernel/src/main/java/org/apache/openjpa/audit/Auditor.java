@@ -46,12 +46,12 @@ public interface Auditor extends Configurable, Closeable {
 	 * @param updates the set of auditable objects being updated. Can be empty, but never null.
 	 * @param deletes the set of auditable objects being deleted. Can be empty, but never null.
 	 */
-	public void audit(Broker broker, Collection<Audited> newObjects, Collection<Audited> updates,
+	void audit(Broker broker, Collection<Audited> newObjects, Collection<Audited> updates,
 			Collection<Audited> deletes);
 
 	/**
 	 * Affirm if the transaction be rolled back if {@link #audit(Broker, Collection, Collection, Collection) audit}
 	 * operation fails with an exception.
 	 */
-	public boolean isRollbackOnError();
+	boolean isRollbackOnError();
 }

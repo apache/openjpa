@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -50,44 +51,54 @@ public class RelationMapInverseKeyFieldStrategy
     extends RelationToManyInverseKeyFieldStrategy
     implements LRSMapFieldStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage
         (RelationMapInverseKeyFieldStrategy.class);
 
+    @Override
     public FieldMapping getFieldMapping() {
         return field;
     }
 
+    @Override
     public ClassMapping[] getIndependentKeyMappings(boolean traverse) {
         return ClassMapping.EMPTY_MAPPINGS;
     }
 
+    @Override
     public ClassMapping[] getIndependentValueMappings(boolean traverse) {
         return getIndependentElementMappings(traverse);
     }
 
+    @Override
     public Column[] getKeyColumns(ClassMapping cls) {
         return cls.getFieldMapping(field.getKey().
             getValueMappedByMetaData().getIndex()).getColumns();
     }
 
+    @Override
     public Column[] getValueColumns(ClassMapping cls) {
         return cls.getPrimaryKeyColumns();
     }
 
+    @Override
     public ForeignKey getJoinForeignKey(ClassMapping cls) {
         return super.getJoinForeignKey(cls);
     }
 
+    @Override
     public void selectKey(Select sel, ClassMapping key, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
         ValueMapping vm = field.getKeyMapping();
         if (vm.isEmbedded())
             sel.select(key, field.getKeyMapping().getSelectSubclasses(),
-                store, fetch, JDBCFetchConfiguration.EAGER_NONE, joins);
+                store, fetch, EagerFetchModes.EAGER_NONE, joins);
         else
             throw new InternalException();
     }
 
+    @Override
     public Object loadKey(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
@@ -99,6 +110,7 @@ public class RelationMapInverseKeyFieldStrategy
             throw new InternalException();
     }
 
+    @Override
     public Object deriveKey(JDBCStore store, Object value) {
         OpenJPAStateManager sm = RelationStrategies.getStateManager(value,
             store.getContext());
@@ -106,23 +118,27 @@ public class RelationMapInverseKeyFieldStrategy
             getValueMappedByMetaData().getIndex(), false);
     }
 
+    @Override
     public Object deriveValue(JDBCStore store, Object key) {
         return null;
     }
 
+    @Override
     public void selectValue(Select sel, ClassMapping val,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         Joins joins) {
-        selectElement(sel, val, store, fetch, JDBCFetchConfiguration.EAGER_NONE,
+        selectElement(sel, val, store, fetch, EagerFetchModes.EAGER_NONE,
             joins);
     }
 
+    @Override
     public Object loadValue(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         return loadElement(sm, store, fetch, res, joins);
     }
 
+    @Override
     public Result[] getResults(final OpenJPAStateManager sm,
         final JDBCStore store, final JDBCFetchConfiguration fetch,
         final int eagerMode, final Joins[] joins, boolean lrs)
@@ -131,10 +147,11 @@ public class RelationMapInverseKeyFieldStrategy
         final ClassMapping[] vals = val.getIndependentTypeMappings();
         Union union = store.getSQLFactory().newUnion(vals.length);
         if (fetch.getSubclassFetchMode(val.getTypeMapping())
-            != JDBCFetchConfiguration.EAGER_JOIN)
+            != EagerFetchModes.EAGER_JOIN)
             union.abortUnion();
         union.setLRS(lrs);
         union.select(new Union.Selector() {
+            @Override
             public void select(Select sel, int idx) {
                 joins[1] = selectAll(sel, vals[idx], sm, store, fetch,
                     eagerMode);
@@ -144,10 +161,12 @@ public class RelationMapInverseKeyFieldStrategy
         return new Result[]{ res, res };
     }
 
+    @Override
     public Joins joinKeyRelation(Joins joins, ClassMapping key) {
         return joins;
     }
 
+    @Override
     public Joins joinKeyRelation(Joins joins, boolean forceOuter,
         boolean traverse) {
         ValueMapping key = field.getKeyMapping();
@@ -169,23 +188,28 @@ public class RelationMapInverseKeyFieldStrategy
             false, false);
     }
 
+    @Override
     public Joins joinValueRelation(Joins joins, ClassMapping val) {
         return joinElementRelation(joins, val);
     }
 
+    @Override
     protected Proxy newLRSProxy() {
         return new LRSProxyMap(this);
     }
 
+    @Override
     protected void add(JDBCStore store, Object coll, Object obj) {
         if (obj != null)
             ((Map) coll).put(deriveKey(store, obj), obj);
     }
 
+    @Override
     protected Collection toCollection(Object val) {
         return (val == null) ? null : ((Map) val).values();
     }
 
+    @Override
     public void map(boolean adapt) {
         if (field.getTypeCode() != JavaTypes.MAP)
             throw new MetaDataException(_loc.get("not-map", field));
@@ -194,6 +218,7 @@ public class RelationMapInverseKeyFieldStrategy
         super.map(adapt);
     }
 
+    @Override
     public Joins joinKey(Joins joins, boolean forceOuter) {
         return joinRelation(join(joins, forceOuter), forceOuter, false);
     }

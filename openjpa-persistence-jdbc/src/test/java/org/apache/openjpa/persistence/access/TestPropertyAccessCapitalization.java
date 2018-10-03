@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestPropertyAccessCapitalization extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         setUp(DROP_TABLES, PropertyAccessCapitalization.class, PropertyAccessCapitalizationOldBehavior.class);
     }

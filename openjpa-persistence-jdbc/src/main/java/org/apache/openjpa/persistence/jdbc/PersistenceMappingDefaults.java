@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -216,6 +216,7 @@ public class PersistenceMappingDefaults
             foreign, col, target, inverse, pos, cols);
     }
 
+    @Override
     public void populateForeignKeyColumn(ValueMapping vm, DBIdentifier sName,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols) {
@@ -238,7 +239,7 @@ public class PersistenceMappingDefaults
                     sName = DBIdentifier.newColumn(vm.getFieldMapping().getName());
                 if (isRemoveHungarianNotation())
                     sName = DBIdentifier.newColumn(Normalizer.removeHungarianNotation(sName.getName()));
-                sName = sName.combine(sName, ((Column)target).getIdentifier().getName());
+                sName = DBIdentifier.combine(sName, ((Column)target).getIdentifier().getName());
 
                 // No need to check for uniqueness.
                 sName = dict.getValidColumnName(sName, local, false);

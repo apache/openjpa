@@ -32,10 +32,11 @@ import javax.persistence.OrderColumn;
  * @author Pinaki Poddar
  *
  */
-@SuppressWarnings("serial")
 @Entity
 @IdClass(LineItem.LineItemId.class)
 public class LineItem implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * <A name="order">
      * An example of a compound derived identity.
@@ -122,6 +123,8 @@ public class LineItem implements Serializable {
      *
      */
     public static class LineItemId implements Serializable {
+        
+        private static final long serialVersionUID = 1L;
         long order;
         int index;
 

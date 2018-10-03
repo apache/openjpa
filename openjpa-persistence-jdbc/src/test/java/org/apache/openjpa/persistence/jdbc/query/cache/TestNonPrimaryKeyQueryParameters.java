@@ -53,7 +53,8 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
     private static final int LINEITEM_PER_INVOICE = 1;
 	private static final String DEPT_NAME = "ENGINEERING";
 
-	public void setUp() {
+	@Override
+    public void setUp() {
 		super.setUp(CLEAR_TABLES, Department.class, Employee.class,
 				FullTimeEmployee.class, PartTimeEmployee.class,
 				Invoice.class, LineItem.class,

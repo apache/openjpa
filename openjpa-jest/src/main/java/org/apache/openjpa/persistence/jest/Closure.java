@@ -39,7 +39,7 @@ import org.apache.openjpa.meta.JavaTypes;
  *
  */
 public class Closure implements Iterable<OpenJPAStateManager> {
-    private Set<OpenJPAStateManager> _visited = new LinkedHashSet<OpenJPAStateManager>();
+    private Set<OpenJPAStateManager> _visited = new LinkedHashSet<>();
 
     public Closure(OpenJPAStateManager root) {
         this(Collections.singleton(root));
@@ -97,6 +97,7 @@ public class Closure implements Iterable<OpenJPAStateManager> {
         return null;
     }
 
+    @Override
     public Iterator<OpenJPAStateManager> iterator() {
         return _visited.iterator();
     }

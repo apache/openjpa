@@ -56,26 +56,31 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
         _exps = exps;
     }
 
+    @Override
     public boolean absolute(int pos) throws Exception {
         return false;
     }
 
+    @Override
     public void close() throws Exception {
         _opened = false;
         for (ResultObjectProvider rop:_rops)
             rop.close();
     }
 
+    @Override
     public Object getResultObject() throws Exception {
         if (!_opened)
             throw new InternalException(_loc.get("not-open"));
         return _single;
     }
 
+    @Override
     public void handleCheckedException(Exception e) {
         _rops[0].handleCheckedException(e);
     }
 
+    @Override
     public boolean next() throws Exception {
         if (!_opened) {
             open();
@@ -183,12 +188,14 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
         		"SUM()", (current == null ? other : current).getClass().getName()).toString());
     }
 
+    @Override
     public void open() throws Exception {
         for (ResultObjectProvider rop:_rops)
             rop.open();
         _opened = true;
     }
 
+    @Override
     public void reset() throws Exception {
         _single = null;
         for (ResultObjectProvider rop : _rops) {
@@ -196,10 +203,12 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
         }
     }
 
+    @Override
     public int size() throws Exception {
         return 1;
     }
 
+    @Override
     public boolean supportsRandomAccess() {
          return false;
     }

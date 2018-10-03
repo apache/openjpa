@@ -33,6 +33,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 public class ByteArrayValueHandler
     extends AbstractValueHandler {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final ByteArrayValueHandler _instance =
         new ByteArrayValueHandler();
 
@@ -46,6 +48,8 @@ public class ByteArrayValueHandler
     /**
      * @deprecated
      */
+    @Deprecated
+    @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
         DBDictionary dict = vm.getMappingRepository().getDBDictionary();
@@ -62,11 +66,13 @@ public class ByteArrayValueHandler
         return new Column[]{ col };
     }
 
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         return PrimitiveWrapperArrays.toByteArray(val);
     }
 
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val) {
         return PrimitiveWrapperArrays.toObjectValue(vm, (byte[]) val);
     }

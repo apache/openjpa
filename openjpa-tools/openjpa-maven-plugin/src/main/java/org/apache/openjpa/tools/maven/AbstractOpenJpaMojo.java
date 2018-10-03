@@ -358,7 +358,7 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
     protected void extendRealmClasspath()
         throws MojoExecutionException
     {
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
 
         for(String fileName: getClasspathElements()) {
             File pathElem = new File(fileName);
@@ -391,7 +391,7 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      */
     protected List<File> findEntityClassFiles() throws MojoExecutionException
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
 
         try
         {

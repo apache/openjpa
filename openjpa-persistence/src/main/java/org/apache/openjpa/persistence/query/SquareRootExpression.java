@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class SquareRootExpression extends UnaryOperatorExpression {
-	public SquareRootExpression(Expression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public SquareRootExpression(Expression op) {
 		super(op, UnaryFunctionalOperator.SQRT);
 	}
 }

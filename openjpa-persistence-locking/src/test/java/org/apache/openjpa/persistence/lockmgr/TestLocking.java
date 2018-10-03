@@ -37,6 +37,7 @@ public class TestLocking extends SQLListenerTestCase {
         return "locking-test";
     }
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, Person.class, PhoneNumber.class
         // ,"openjpa.Log", "SQL=trace"
@@ -45,7 +46,7 @@ public class TestLocking extends SQLListenerTestCase {
     }
 
     public void testExtendedLockScope() throws Exception {
-        Map<String, Object> props = new HashMap<String, Object>();
+        Map<String, Object> props = new HashMap<>();
         props.put("javax.persistence.lock.scope", PessimisticLockScope.EXTENDED);
 
         OpenJPAEntityManagerSPI em1 = emf.createEntityManager();

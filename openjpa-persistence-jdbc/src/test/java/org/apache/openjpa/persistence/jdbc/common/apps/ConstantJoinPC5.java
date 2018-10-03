@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="conjoinpc5")

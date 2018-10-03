@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class LiteralExpression extends ConstantExpression {
-	public LiteralExpression(Object literal) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public LiteralExpression(Object literal) {
 		super(literal);
 	}
 }

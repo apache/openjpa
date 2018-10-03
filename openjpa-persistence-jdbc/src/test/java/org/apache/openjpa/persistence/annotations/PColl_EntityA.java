@@ -36,7 +36,7 @@ public class PColl_EntityA {
     private int id;
 
     @PersistentCollection(elementEmbedded = true)
-    private Set<PColl_EmbedB> embedCollection = new HashSet<PColl_EmbedB>();
+    private Set<PColl_EmbedB> embedCollection = new HashSet<>();
 
     @Version
     private int version;
@@ -61,6 +61,7 @@ public class PColl_EntityA {
         this.embedCollection.add(element);
     }
 
+    @Override
     public String toString() {
         return "PColl_EntityD<id=" + id + ",ver=" + version
             + ",embedBCollection#=" + embedCollection.size() + ">";

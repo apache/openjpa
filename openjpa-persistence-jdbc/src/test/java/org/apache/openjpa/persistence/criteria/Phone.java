@@ -35,7 +35,7 @@ public class Phone {
     private int id;
 
     @ManyToMany
-    private Collection<Employee> employees = new ArrayList<Employee>();
+    private Collection<Employee> employees = new ArrayList<>();
 
 	private String vendor;
 

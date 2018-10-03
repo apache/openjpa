@@ -33,6 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestXmlOverrideEntity extends SingleEMFTestCase {
 
+    @Override
     public void setUp() throws ClassNotFoundException {
         setUp(
         org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed.class,
@@ -43,6 +44,7 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
             XmlOverrideEntity.class.getClassLoader());
     }
 
+    @Override
     protected String getPersistenceUnitName() {
         return "xml-persistence-unit";
     }

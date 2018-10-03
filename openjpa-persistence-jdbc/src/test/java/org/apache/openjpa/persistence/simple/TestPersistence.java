@@ -21,9 +21,10 @@ package org.apache.openjpa.persistence.simple;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
-import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.textui.TestRunner;
 
 /**
  * Simple test case to get an EntityManager and perform some basic operations.
@@ -33,6 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestPersistence
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(AllFieldTypes.class, Place.class);
     }

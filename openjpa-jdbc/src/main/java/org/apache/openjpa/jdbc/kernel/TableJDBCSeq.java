@@ -28,13 +28,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.transaction.NotSupportedException;
 
-import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
-import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
@@ -45,7 +45,7 @@ import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.RowImpl;
+import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -54,6 +54,7 @@ import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.UserException;
@@ -86,7 +87,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     private transient Log _log = null;
     private int _alloc = 50;
     private int _intValue = 1;
-    private final ConcurrentHashMap<ClassMapping, Status> _stat = new ConcurrentHashMap<ClassMapping, Status>();
+    private final ConcurrentHashMap<ClassMapping, Status> _stat = new ConcurrentHashMap<>();
 
     private DBIdentifier _table = DBIdentifier.newTable(DEFAULT_TABLE);
     private DBIdentifier _seqColumnName = DBIdentifier.newColumn("SEQUENCE_VALUE");
@@ -128,6 +129,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      * @deprecated Use {@link #setTable}. Retained for
      * backwards-compatibility	with auto-configuration.
      */
+    @Deprecated
     public void setTableName(String name) {
         setTable(name);
     }
@@ -224,27 +226,33 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      * @deprecated Use {@link #setAllocate}. Retained for backwards
      * compatibility of auto-configuration.
      */
+    @Deprecated
     public void setIncrement(int inc) {
         setAllocate(inc);
     }
 
+    @Override
     public JDBCConfiguration getConfiguration() {
         return _conf;
     }
 
+    @Override
     public void setConfiguration(Configuration conf) {
         _conf = (JDBCConfiguration) conf;
-        _log = _conf.getLog(JDBCConfiguration.LOG_RUNTIME);
+        _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
         buildTable();
     }
 
 
+    @Override
     public void addSchema(ClassMapping mapping, SchemaGroup group) {
         // Since the table is created by openjpa internally
         // we can create the table for each schema within the PU
@@ -283,6 +291,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         }
     }
 
+    @Override
     protected Object nextInternal(JDBCStore store, ClassMapping mapping) throws Exception {
         // if needed, grab the next handful of ids
         Status stat = getStatus(mapping);
@@ -302,6 +311,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         }
     }
 
+    @Override
     protected Object currentInternal(JDBCStore store, ClassMapping mapping)
         throws Exception {
         if (current == null) {
@@ -323,6 +333,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         return super.currentInternal(store, mapping);
     }
 
+    @Override
     protected void allocateInternal(int count, JDBCStore store,
         ClassMapping mapping)
         throws SQLException {
@@ -346,7 +357,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      * if cannot handle the given class. The mapping may be null.
      */
     protected Status getStatus(ClassMapping mapping) {
-        Status status = (Status) _stat.get(mapping);
+        Status status = _stat.get(mapping);
         if (status == null){
             status = new Status();
             Status tStatus = _stat.putIfAbsent(mapping, status);
@@ -500,7 +511,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         try {
             stmnt = prepareStatement(conn, insert);
             dict.setTimeouts(stmnt, _conf, true);
-            executeUpdate(_conf, conn, stmnt, insert, RowImpl.ACTION_INSERT);
+            executeUpdate(_conf, conn, stmnt, insert, Row.ACTION_INSERT);
         } finally {
             if (stmnt != null)
                 try { stmnt.close(); } catch (SQLException se) {}
@@ -604,7 +615,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
                 stmnt = prepareStatement(conn, upd);
                 dict.setTimeouts(stmnt, _conf, true);
                 updates = executeUpdate(_conf, conn, stmnt, upd,
-                        RowImpl.ACTION_UPDATE);
+                        Row.ACTION_UPDATE);
             } finally {
                 if (rs != null)
                     try { rs.close(); } catch (SQLException se) {}
@@ -629,6 +640,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      *            mapping to get the schema name
      * @deprecated
      */
+    @Deprecated
     public String resolveTableName(ClassMapping mapping, Table table) {
         return resolveTableIdentifier(mapping, table).getName();
     }
@@ -718,6 +730,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         final String[] arguments = opts.setFromCmdLine(args);
         boolean ret = Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
+            @Override
             public boolean run(Options opts) throws Exception {
                 JDBCConfiguration conf = new JDBCConfigurationImpl();
                 try {
@@ -803,10 +816,8 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     /**
      * Helper struct to hold status information.
      */
-    @SuppressWarnings("serial")
-    protected static class Status
-        implements Serializable {
-
+    protected static class Status implements Serializable {
+        private static final long serialVersionUID = 1L;
         public long seq = 1L;
         public long max = 0L;
     }
@@ -896,6 +907,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
          *             breaking the Runnable method signature. The caller can
          *             obtain the "real" exception by calling getCause().
          */
+        @Override
         public void run() throws RuntimeException {
             Connection conn = null;
             SQLException err = null;
@@ -967,6 +979,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
          *             breaking the Runnable method signature. The caller can
          *             obtain the "real" exception by calling getCause().
          */
+        @Override
         public void run() throws RuntimeException {
             Connection conn = null;
             try {

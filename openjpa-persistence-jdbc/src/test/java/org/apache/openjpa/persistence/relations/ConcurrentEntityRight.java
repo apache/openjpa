@@ -39,7 +39,7 @@ public class ConcurrentEntityRight {
 	private Map<String, ConcurrentEntityLeft> leftEntityMap;
 
 	public ConcurrentEntityRight() {
-		leftEntityMap = new ConcurrentHashMap<String, ConcurrentEntityLeft>();
+		leftEntityMap = new ConcurrentHashMap<>();
 	}
 
 	public int getId() {

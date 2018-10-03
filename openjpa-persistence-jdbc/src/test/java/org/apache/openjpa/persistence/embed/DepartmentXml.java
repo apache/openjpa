@@ -24,7 +24,7 @@ import java.util.Map;
 public class DepartmentXml {
     int deptId;
 
-    Map<Integer, EmployeeXml> empMap = new HashMap<Integer, EmployeeXml>();
+    Map<Integer, EmployeeXml> empMap = new HashMap<>();
 
     public int getDeptId() {
         return deptId;

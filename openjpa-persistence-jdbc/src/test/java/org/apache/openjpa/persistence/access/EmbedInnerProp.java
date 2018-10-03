@@ -48,6 +48,7 @@ public class EmbedInnerProp {
         eof = eo;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof EmbedInnerProp) {
             EmbedInnerProp ps = (EmbedInnerProp)obj;

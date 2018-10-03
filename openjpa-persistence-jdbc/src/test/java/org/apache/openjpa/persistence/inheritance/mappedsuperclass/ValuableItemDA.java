@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Entity used to test MappedSuperClass which does not have IdClass.

@@ -38,14 +38,14 @@ public interface InstrumentationManager extends Closeable {
      * @param conf the configuration to use for initialization
      * @param providers one or more providers as supplied via plugin list value
      */
-    public void initialize(OpenJPAConfiguration conf, PluginListValue providers);
+    void initialize(OpenJPAConfiguration conf, PluginListValue providers);
 
     /**
      * Manage a given provider.  This will plug the instruments managed by the
      * the provider into the life cycle of the manager
      * @param provider the instrumentation provider
      */
-    public void manageProvider(InstrumentationProvider provider);
+    void manageProvider(InstrumentationProvider provider);
 
     /**
      * Starts all instruments for all managed providers for a given level
@@ -53,7 +53,7 @@ public interface InstrumentationManager extends Closeable {
      * @param level  instrumentation level
      * @param context  instrumentation context (broker, factory, config,...)
      */
-    public void start(InstrumentationLevel level, Object context);
+    void start(InstrumentationLevel level, Object context);
 
     /**
      * Stops all instruments for all managed providers for a given level
@@ -61,11 +61,11 @@ public interface InstrumentationManager extends Closeable {
      * @param level  instrumentation level
      * @param context  instrumentation context (broker, factory, config,...)
      */
-    public void stop(InstrumentationLevel broker, Object context);
+    void stop(InstrumentationLevel broker, Object context);
 
     /**
      * Returns all providers managed by this manager.
      * @return  all providers managed by this manager
      */
-    public Set<InstrumentationProvider> getProviders();
+    Set<InstrumentationProvider> getProviders();
 }

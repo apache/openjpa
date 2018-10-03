@@ -21,17 +21,16 @@ package org.apache.openjpa.persistence.event;
 import java.util.Collection;
 import java.util.Collections;
 
-
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import junit.framework.AssertionFailedError;
-
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.event.TransactionListener;
 import org.apache.openjpa.persistence.CallbackMode;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
+
+import junit.framework.AssertionFailedError;
 
 @AllowFailure(message="surefire excluded")
 public class TestEvents
@@ -43,6 +42,7 @@ public class TestEvents
         super(s, "eventcactusapp");
     }
 
+    @Override
     public void setUp() {
         transactionListener = new TransactionEventListenerTestImpl();
         deleteAll(RuntimeTest1.class);
@@ -128,7 +128,7 @@ public class TestEvents
         //FIXME need to find an alternative
         ((OpenJPAEntityManagerSPI) pm)
             .setTransactionListenerCallbackMode(CallbackMode.IGNORE);
-        transactionListener.exception = transactionListener.EXCEPTION;
+        transactionListener.exception = TransactionEventListenerTestImpl.EXCEPTION;
 
         RuntimeTest1 t1 = new RuntimeTest1("foo", 5);
         startTx(pm);
@@ -149,7 +149,7 @@ public class TestEvents
             (OpenJPAEntityManager) currentEntityManager();
         ((OpenJPAEntityManagerSPI) pm)
             .addTransactionListener(transactionListener);
-        transactionListener.exception = transactionListener.EXCEPTION;
+        transactionListener.exception = TransactionEventListenerTestImpl.EXCEPTION;
 
         RuntimeTest1 t1 = new RuntimeTest1("foo", 5);
         startTx(pm);
@@ -180,7 +180,7 @@ public class TestEvents
             (OpenJPAEntityManager) currentEntityManager();
         ((OpenJPAEntityManagerSPI) pm)
             .addTransactionListener(transactionListener);
-        transactionListener.exception = transactionListener.EXCEPTION_AFTER;
+        transactionListener.exception = TransactionEventListenerTestImpl.EXCEPTION_AFTER;
 
         RuntimeTest1 t1 = new RuntimeTest1("foo", 5);
         startTx(pm);
@@ -219,16 +219,20 @@ public class TestEvents
         int status;
         Collection trans = Collections.EMPTY_LIST;
 
+        @Override
         public void afterBegin(TransactionEvent event) {
             status |= STARTED;
         }
 
+        @Override
         public void beforeFlush(TransactionEvent event) {
         }
 
+        @Override
         public void afterFlush(TransactionEvent event) {
         }
 
+        @Override
         public void beforeCommit(TransactionEvent event) {
             status |= COMMIT_BEGUN;
             trans = event.getTransactionalObjects();
@@ -236,22 +240,27 @@ public class TestEvents
                 throw new RuntimeException("xxx");
         }
 
+        @Override
         public void afterCommit(TransactionEvent event) {
             status |= COMMITTED;
             if (exception == EXCEPTION_AFTER)
                 throw new RuntimeException("xxx");
         }
 
+        @Override
         public void afterRollback(TransactionEvent event) {
             status |= ROLLEDBACK;
         }
 
+        @Override
         public void afterStateTransitions(TransactionEvent event) {
         }
 
+        @Override
         public void afterCommitComplete(TransactionEvent event) {
         }
 
+        @Override
         public void afterRollbackComplete(TransactionEvent event) {
         }
     }

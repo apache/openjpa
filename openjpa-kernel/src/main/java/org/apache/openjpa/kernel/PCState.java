@@ -37,9 +37,8 @@ import org.apache.openjpa.util.InvalidStateException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
-public class PCState
-    implements Serializable {
+public class PCState implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Persistent-New

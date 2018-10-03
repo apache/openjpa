@@ -31,11 +31,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
-import org.apache.regexp.REUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.MappingTool;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
+import org.apache.openjpa.persistence.jdbc.common.apps.BuildSchemaPC;
+import org.apache.regexp.REUtil;
 
 
 public class TestBuildSchema

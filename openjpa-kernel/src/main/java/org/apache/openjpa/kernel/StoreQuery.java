@@ -46,77 +46,77 @@ public interface StoreQuery
 
     // linkedmap doesn't allow a size of 0, so use 1
     // This is deprecated
-    public static final LinkedMap EMPTY_PARAMS = new LinkedMap(1);
-    public static final OrderedMap<Object, Class<?>> EMPTY_ORDERED_PARAMS = new OrderedMap<Object, Class<?>>();
-    public static final ClassMetaData[] EMPTY_METAS = new ClassMetaData[0];
-    public static final String[] EMPTY_STRINGS = new String[0];
-    public static final Object[] EMPTY_OBJECTS = new Object[0];
-    public static final Class<?>[] EMPTY_CLASSES = new Class[0];
-    public static final boolean[] EMPTY_BOOLEANS = new boolean[0];
+    LinkedMap EMPTY_PARAMS = new LinkedMap(1);
+    OrderedMap<Object, Class<?>> EMPTY_ORDERED_PARAMS = new OrderedMap<>();
+    ClassMetaData[] EMPTY_METAS = new ClassMetaData[0];
+    String[] EMPTY_STRINGS = new String[0];
+    Object[] EMPTY_OBJECTS = new Object[0];
+    Class<?>[] EMPTY_CLASSES = new Class[0];
+    boolean[] EMPTY_BOOLEANS = new boolean[0];
 
     /**
      * Return the query context that has been set.
      */
-    public QueryContext getContext();
+    QueryContext getContext();
 
     /**
      * Set the current query context. This will be called before use.
      */
-    public void setContext(QueryContext ctx);
+    void setContext(QueryContext ctx);
 
     /**
      * This is invoked when the user or a facade creates a new query with
      * an object that the system does not recognize. Return true if
      * the object is recognized by the store, false otherwise.
      */
-    public boolean setQuery(Object query);
+    boolean setQuery(Object query);
 
     /**
      * Return the standard filter listener for the given tag, or null.
      */
-    public FilterListener getFilterListener(String tag);
+    FilterListener getFilterListener(String tag);
 
     /**
      * Return the standard filter listener for the given tag, or null.
      */
-    public AggregateListener getAggregateListener(String tag);
+    AggregateListener getAggregateListener(String tag);
 
     /**
      * Create a new key for caching compiled query information. May be null.
      */
-    public Object newCompilationKey();
+    Object newCompilationKey();
 
     /**
      * Create a new compilation for this query. May be null.
      */
-    public Object newCompilation();
+    Object newCompilation();
 
     /**
      * Get the current compilation for this query. If it is null, do not create.
      */
-    public Object getCompilation();
+    Object getCompilation();
 
     /**
      * Populate internal data from compilation.
      */
-    public void populateFromCompilation(Object comp);
+    void populateFromCompilation(Object comp);
 
     /**
      * Invalidate any internal compilation state.
      */
-    public void invalidateCompilation();
+    void invalidateCompilation();
 
     /**
      * True if this query supports datastore execution, false if it
      * can only run in memory.
      */
-    public boolean supportsDataStoreExecution();
+    boolean supportsDataStoreExecution();
 
     /**
      * True if this query supports in-memory execution, false if it
      * can only run against the datastore.
      */
-    public boolean supportsInMemoryExecution();
+    boolean supportsInMemoryExecution();
 
     /**
      * Return an executor for in-memory execution of this query.
@@ -130,7 +130,7 @@ public interface StoreQuery
      * @param subs whether to include dependent mapped subclasses in the
      * results; independent subclasses should never be included
      */
-    public Executor newInMemoryExecutor(ClassMetaData meta, boolean subs);
+    Executor newInMemoryExecutor(ClassMetaData meta, boolean subs);
 
     /**
      * Return an executor for datastore execution of this query.
@@ -144,7 +144,7 @@ public interface StoreQuery
      * @param subs whether to include dependent mapped subclasses in the
      * results; independent subclasses should never be included
      */
-    public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs);
+    Executor newDataStoreExecutor(ClassMetaData meta, boolean subs);
 
     /**
      * Return true if this query supports execution against abstract or
@@ -154,24 +154,24 @@ public interface StoreQuery
      * implementing classes if we execute a query for an interface for
      * abstract type.
      */
-    public boolean supportsAbstractExecutors();
+    boolean supportsAbstractExecutors();
 
     /**
      * Whether this query requires a candidate class.
      */
-    public boolean requiresCandidateType();
+    boolean requiresCandidateType();
 
     /**
      * Whether this query requires parameters to be declared.
      */
-    public boolean requiresParameterDeclarations();
+    boolean requiresParameterDeclarations();
 
     /**
      * Whether this query supports declared parameters.
      */
-    public boolean supportsParameterDeclarations();
+    boolean supportsParameterDeclarations();
 
-    public Object evaluate(Object value, Object ob, Object[] params,
+    Object evaluate(Object value, Object ob, Object[] params,
         OpenJPAStateManager sm);
 
     /**
@@ -199,7 +199,7 @@ public interface StoreQuery
      *
      * @author Marc Prud'hommeaux
      */
-    public static interface Executor {
+    public interface Executor {
 
         /**
          * Return the result of executing this query with the given parameter
@@ -212,38 +212,38 @@ public interface StoreQuery
          * aggregate and does not have grouping
          * @see #isPacking
          */
-        public ResultObjectProvider executeQuery(StoreQuery q, Object[] params,
+        ResultObjectProvider executeQuery(StoreQuery q, Object[] params,
             Range range);
 
         /**
          * Deleted the objects that result from the execution of the
          * query, retuning the number of objects that were deleted.
          */
-        public Number executeDelete(StoreQuery q, Object[] params);
+        Number executeDelete(StoreQuery q, Object[] params);
 
         /**
          * Updates the objects that result from the execution of the
          * query, retuning the number of objects that were updated.
          */
-        public Number executeUpdate(StoreQuery q, Object[] params);
+        Number executeUpdate(StoreQuery q, Object[] params);
 
         /**
          * Return a description of the commands that will be sent to
          * the datastore in order to execute the query.
          */
-        public String[] getDataStoreActions(StoreQuery q, Object[] params,
+        String[] getDataStoreActions(StoreQuery q, Object[] params,
             Range range);
 
         /**
          * Validate components of query.
          */
-        public void validate(StoreQuery q);
+        void validate(StoreQuery q);
 
         /**
          * Mutate the given range to set any range information stored in
          * the query string and/or parameters.
          */
-        public void getRange(StoreQuery q, Object[] params, Range range);
+        void getRange(StoreQuery q, Object[] params, Range range);
 
         /**
          * Extract the value of the <code>orderIndex</code>th ordering
@@ -256,14 +256,14 @@ public interface StoreQuery
          *
          * @see StoreQuery#supportsAbstractExecutors
          */
-        public Object getOrderingValue(StoreQuery q, Object[] params,
+        Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int orderIndex);
 
         /**
          * Return the ordering direction for all ordering clauses, or empty
          * array if none.
          */
-        public boolean[] getAscending(StoreQuery q);
+        boolean[] getAscending(StoreQuery q);
 
         /**
          * Return true if this executor packs projections into the result
@@ -271,57 +271,57 @@ public interface StoreQuery
          * without result clauses must return true and perform the result
          * packing themselves.
          */
-        public boolean isPacking(StoreQuery q);
+        boolean isPacking(StoreQuery q);
 
         /**
          * If this is not a projection but the candidate results are placed
          * into a result class with an alias, return that alias.
          */
-        public String getAlias(StoreQuery q);
+        String getAlias(StoreQuery q);
 
         /**
          * Return the alias for each projection element, or empty array
          * if not a projection.
          */
-        public String[] getProjectionAliases(StoreQuery q);
+        String[] getProjectionAliases(StoreQuery q);
 
         /**
          * Return the expected types of the projections used by this query,
          * or an empty array if not a projection.
          */
-        public Class<?>[] getProjectionTypes(StoreQuery q);
+        Class<?>[] getProjectionTypes(StoreQuery q);
 
         /**
          * Return an array of all persistent classes used in this query, or
          * empty array if unknown.
          */
-        public ClassMetaData[] getAccessPathMetaDatas(StoreQuery q);
+        ClassMetaData[] getAccessPathMetaDatas(StoreQuery q);
 
         /**
          * Returns the operation this executor is meant to execute.
          *
          * @see QueryOperations
          */
-        public int getOperation(StoreQuery q);
+        int getOperation(StoreQuery q);
 
         /**
          * Return true if the compiled query is an aggregate.
          */
-        public boolean isAggregate(StoreQuery q);
+        boolean isAggregate(StoreQuery q);
 
-        public boolean isDistinct(StoreQuery q);
+        boolean isDistinct(StoreQuery q);
 
         /**
          * Whether the compiled query has grouping.
          */
-        public boolean hasGrouping(StoreQuery q);
+        boolean hasGrouping(StoreQuery q);
 
         /**
          * Return a map of parameter names to types. The returned
          * {@link Map#entrySet}'s {@link Iterator} must return values in the
          * order in which they were declared or used.
          */
-        public OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q);
+        OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q);
 
         /**
          * Return a map of parameter names to types. The returned
@@ -330,8 +330,7 @@ public interface StoreQuery
          *
          * <B>Warning</B>: Deprecated. Use {@linkplain #getOrderedParameterTypes(StoreQuery)} instead.
          */
-        @Deprecated
-        public LinkedMap getParameterTypes(StoreQuery q);
+        @Deprecated LinkedMap getParameterTypes(StoreQuery q);
 
         /**
          * Return an array from the given user parameter values.
@@ -345,20 +344,20 @@ public interface StoreQuery
          *
          * @since 2.0.0
          */
-        public Object[] toParameterArray(StoreQuery q, Map<?,?> userParams);
+        Object[] toParameterArray(StoreQuery q, Map<?,?> userParams);
 
         /**
          * Returns the result class, if any.
          */
-        public Class<?> getResultClass(StoreQuery q);
+        Class<?> getResultClass(StoreQuery q);
 
-        public ResultShape<?> getResultShape(StoreQuery q);
+        ResultShape<?> getResultShape(StoreQuery q);
 
         /**
          * Return a map of {@link FieldMetaData} to update
          * {@link Constant}s, in cases where this query is for a bulk update.
 	 	 */
-		public Map<FieldMetaData,Value> getUpdates (StoreQuery q);
+		Map<FieldMetaData,Value> getUpdates (StoreQuery q);
 
         /**
          * Return the parsed query expressions for our candidate types.
@@ -366,6 +365,6 @@ public interface StoreQuery
          *
          * @since 2.0.0
          */
-		public QueryExpressions[] getQueryExpressions();
+		QueryExpressions[] getQueryExpressions();
 	}
 }

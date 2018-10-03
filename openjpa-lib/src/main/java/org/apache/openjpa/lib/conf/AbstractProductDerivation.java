@@ -32,62 +32,76 @@ import java.util.Set;
 public abstract class AbstractProductDerivation
     implements ProductDerivation {
 
+    @Override
     public String getConfigurationPrefix() {
         return null;
     }
 
+    @Override
     public void validate()
         throws Exception {
     }
 
+    @Override
     public ConfigurationProvider loadGlobals(ClassLoader loader)
         throws Exception {
         return null;
     }
 
+    @Override
     public ConfigurationProvider loadDefaults(ClassLoader loader)
         throws Exception {
         return null;
     }
 
+    @Override
     public ConfigurationProvider load(String resource, String anchor,
         ClassLoader loader)
         throws Exception {
         return null;
     }
 
+    @Override
     public ConfigurationProvider load(File file, String anchor)
         throws Exception {
         return null;
     }
 
+    @Override
     public String getDefaultResourceLocation() {
         return null;
     }
 
+    @Override
     public List<String> getAnchorsInFile(File file) throws Exception {
         return null;
     }
 
+    @Override
     public List<String> getAnchorsInResource(String resource) throws Exception {
         return null;
     }
 
+    @Override
     public boolean beforeConfigurationConstruct(ConfigurationProvider cp) {
         return false;
     }
 
+    @Override
     public boolean beforeConfigurationLoad(Configuration conf) {
         return false;
     }
 
+    @Override
     public boolean afterSpecificationSet(Configuration conf) {
         return false;
     }
 
+    @Override
     public void beforeConfigurationClose(Configuration conf) {
     }
 
+    @Override
     public Set<String> getSupportedQueryHints() {
         return Collections.EMPTY_SET;
     }

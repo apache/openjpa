@@ -34,7 +34,7 @@ public interface FilterListener
     /**
      * Return the tag that this extension listens for.
      */
-    public String getTag();
+    String getTag();
 
     /**
      * Return true if this extension expects arguments to act on. Some
@@ -42,7 +42,7 @@ public interface FilterListener
      * switch a string to upper case might be of the form:
      * <code>field.ext:toUpperCase ()</code>.
      */
-    public boolean expectsArguments();
+    boolean expectsArguments();
 
     /**
      * Return true if this extension expects a target to act on. Some
@@ -52,7 +52,7 @@ public interface FilterListener
      * <code>ext:toUpperCase (field)</code> has no target but does have an
      * argument.
      */
-    public boolean expectsTarget();
+    boolean expectsTarget();
 
     /**
      * Evaluate the given expression. This method is used when
@@ -75,7 +75,7 @@ public interface FilterListener
      * @throws org.apache.openjpa.util.UserException if this extension does not
      * support in-memory operation
      */
-    public Object evaluate(Object target, Class targetClass, Object[] args,
+    Object evaluate(Object target, Class targetClass, Object[] args,
         Class[] argClasses, Object candidate, StoreContext ctx);
 
     /**
@@ -85,5 +85,5 @@ public interface FilterListener
      * @param argClasses the expected classes of the arguments, or null if
      * no arguments
      */
-    public Class getType(Class targetClass, Class[] argClasses);
+    Class getType(Class targetClass, Class[] argClasses);
 }

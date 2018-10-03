@@ -29,6 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestJoinLeftFetch extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(DROP_TABLES, DepartmentTest.class, PersonTest.class);
         createTestData();

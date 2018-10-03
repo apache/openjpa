@@ -28,6 +28,9 @@ import static org.apache.openjpa.persistence.query.PathOperator.NAVIGATION;
  */
 public class FetchPath extends AbstractDomainObject
     implements FetchJoinObject, Visitable {
+    
+    private static final long serialVersionUID = 1L;
+
     FetchPath(AbstractDomainObject parent, PathOperator joinType, String attr) {
 		super(parent.getOwner(), parent, joinType, attr);
 	}

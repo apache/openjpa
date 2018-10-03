@@ -46,7 +46,7 @@ public class Singer extends Person {
 
     public void addCd(CD cd) {
         if (cds == null)
-            cds = new HashSet<CD>();
+            cds = new HashSet<>();
         if (cds.add(cd))
             cd.setSinger(this);
     }

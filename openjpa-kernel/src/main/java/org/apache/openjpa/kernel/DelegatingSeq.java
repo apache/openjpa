@@ -72,10 +72,12 @@ public class DelegatingSeq
         return (_del == null) ? _seq : _del.getInnermostDelegate();
     }
 
+    @Override
     public int hashCode() {
         return getInnermostDelegate().hashCode();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -91,6 +93,7 @@ public class DelegatingSeq
         return (_trans == null) ? re : _trans.translate(re);
     }
 
+    @Override
     public void setType(int type) {
         try {
             _seq.setType(type);
@@ -99,6 +102,7 @@ public class DelegatingSeq
         }
     }
 
+    @Override
     public Object next(StoreContext ctx, ClassMetaData meta) {
         try {
             return _seq.next(ctx, meta);
@@ -107,6 +111,7 @@ public class DelegatingSeq
         }
     }
 
+    @Override
     public Object current(StoreContext ctx, ClassMetaData meta) {
         try {
             return _seq.current(ctx, meta);
@@ -115,6 +120,7 @@ public class DelegatingSeq
         }
     }
 
+    @Override
     public void allocate(int additional, StoreContext ctx, ClassMetaData meta) {
         try {
             _seq.allocate(additional, ctx, meta);
@@ -123,6 +129,7 @@ public class DelegatingSeq
         }
     }
 
+    @Override
     public void close() {
         try {
             _seq.close();

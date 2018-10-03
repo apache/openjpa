@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.kernel;
 
 import javax.persistence.EntityManager;
 
-
 import org.apache.openjpa.persistence.kernel.common.apps.ComplexEmbeddedPC;
 import org.apache.openjpa.persistence.kernel.common.apps.EmbeddedOwnerPC;
 import org.apache.openjpa.persistence.kernel.common.apps.EmbeddedPC;
@@ -37,6 +36,7 @@ public class TestEJBEmbedded extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void setUp() {
         deleteAll(EmbeddedOwnerPC.class);

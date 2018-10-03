@@ -35,6 +35,7 @@ import org.apache.openjpa.kernel.DetachedValueStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
@@ -112,7 +113,7 @@ public class RelationStrategies {
 
     public static void mapRelationToUnmappedPC(ValueMapping vm,
         DBIdentifier name, boolean adapt) {
-        if (vm.getTypeMapping().getIdentityType() == ClassMapping.ID_UNKNOWN)
+        if (vm.getTypeMapping().getIdentityType() == ClassMetaData.ID_UNKNOWN)
             throw new MetaDataException(_loc.get("rel-to-unknownid", vm));
 
         ValueMappingInfo vinfo = vm.getValueInfo();
@@ -129,7 +130,7 @@ public class RelationStrategies {
     private static Column[] newUnmappedPCTemplateColumns(ValueMapping vm,
         DBIdentifier name) {
         ClassMapping rel = vm.getTypeMapping();
-        if (rel.getIdentityType() == ClassMapping.ID_DATASTORE) {
+        if (rel.getIdentityType() == ClassMetaData.ID_DATASTORE) {
             Column col = new Column();
             col.setIdentifier(name);
             col.setJavaType(JavaTypes.LONG);

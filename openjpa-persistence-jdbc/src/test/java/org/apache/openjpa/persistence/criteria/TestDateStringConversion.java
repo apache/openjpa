@@ -114,6 +114,7 @@ public class TestDateStringConversion extends CriteriaTest {
         c.orderBy(cb.asc(d.get(Dependent_.endDate)));
 
         assertEquivalence(new QueryDecorator() {
+            @Override
             public void decorate(Query q) {
                 q.setParameter("dateString", dateString);
             }

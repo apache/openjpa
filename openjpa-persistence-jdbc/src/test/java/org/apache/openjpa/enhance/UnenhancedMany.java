@@ -17,10 +17,11 @@
  */
 package org.apache.openjpa.enhance;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import java.io.Serializable;
 
 @Entity
 public class UnenhancedMany implements Serializable, Cloneable {
@@ -51,6 +52,7 @@ public class UnenhancedMany implements Serializable, Cloneable {
         this.one = one;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this) return true;
         if (o == null) return false;
@@ -59,10 +61,12 @@ public class UnenhancedMany implements Serializable, Cloneable {
         return id == ((UnenhancedMany) o).id;
     }
 
+    @Override
     public int hashCode() {
         return id;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }

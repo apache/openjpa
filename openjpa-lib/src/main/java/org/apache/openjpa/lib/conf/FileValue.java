@@ -37,6 +37,7 @@ public class FileValue extends Value {
         super(prop);
     }
 
+    @Override
     public Class<File> getValueType() {
         return File.class;
     }
@@ -55,19 +56,23 @@ public class FileValue extends Value {
     /**
      * The internal value.
      */
+    @Override
     public File get() {
         return value;
     }
 
+    @Override
     protected String getInternalString() {
         return (value == null) ? null : AccessController.doPrivileged(
             J2DoPrivHelper.getAbsolutePathAction(value));
     }
 
+    @Override
     protected void setInternalString(String val) {
         set(new File(val));
     }
 
+    @Override
     protected void setInternalObject(Object obj) {
         set((File) obj);
     }

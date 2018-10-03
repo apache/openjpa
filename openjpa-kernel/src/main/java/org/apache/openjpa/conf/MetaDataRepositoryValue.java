@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
-import org.apache.openjpa.conf.CacheMarshallersValue;
 import org.apache.openjpa.meta.MetaDataRepository;
 
 /**
@@ -47,6 +46,7 @@ public class MetaDataRepositoryValue
         setString(aliases[0]);
     }
 
+    @Override
     public Object instantiate(Class type, Configuration c, boolean fatal) {
         MetaDataRepository repos = null;
         OpenJPAConfiguration conf = (OpenJPAConfiguration) c;

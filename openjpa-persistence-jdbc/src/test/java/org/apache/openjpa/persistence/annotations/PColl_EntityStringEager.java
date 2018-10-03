@@ -33,7 +33,7 @@ public class PColl_EntityStringEager {
     private int id;
 
     @PersistentCollection(fetch=FetchType.EAGER)
-    private Set<String> collectionOfStrings = new HashSet<String>();
+    private Set<String> collectionOfStrings = new HashSet<>();
 
     public int getId() {
         return id;

@@ -45,6 +45,7 @@ public class TestMappedSuperClass extends AnnotationTestCase {
         super(name, "annotationMappedSuperclassApp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(Store.class);
         deleteAll(Site.class);
@@ -105,7 +106,7 @@ public class TestMappedSuperClass extends AnnotationTestCase {
             store.setSiteId(site.getPartyId());
             store.setSite(site);
 
-            List<Store> stores = new ArrayList<Store>();
+            List<Store> stores = new ArrayList<>();
             stores.add(store);
             site.setStores(stores);
 
@@ -163,7 +164,7 @@ public class TestMappedSuperClass extends AnnotationTestCase {
             store.setCreateDate(new Date());
             store.setSite(site);
 
-            List<Store1> stores = new ArrayList<Store1>();
+            List<Store1> stores = new ArrayList<>();
             stores.add(store);
             site.setStores(stores);
 

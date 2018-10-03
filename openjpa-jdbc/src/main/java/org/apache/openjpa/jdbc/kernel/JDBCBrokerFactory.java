@@ -18,25 +18,6 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-
-import org.apache.openjpa.conf.SchemaGenerationSource;
-import org.apache.openjpa.lib.util.StringUtil;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
-import org.apache.openjpa.jdbc.meta.MappingRepository;
-import org.apache.openjpa.jdbc.meta.MappingTool;
-import org.apache.openjpa.kernel.AbstractBrokerFactory;
-import org.apache.openjpa.kernel.Bootstrap;
-import org.apache.openjpa.kernel.BrokerImpl;
-import org.apache.openjpa.kernel.StoreManager;
-import org.apache.openjpa.lib.conf.ConfigurationProvider;
-import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.util.UserException;
-
 import static org.apache.openjpa.conf.SchemaGenerationAction.CREATE;
 import static org.apache.openjpa.conf.SchemaGenerationAction.DROP;
 import static org.apache.openjpa.conf.SchemaGenerationAction.DROP_AND_CREATE;
@@ -50,15 +31,33 @@ import static org.apache.openjpa.jdbc.meta.MappingTool.ACTION_SCRIPT_CREATE;
 import static org.apache.openjpa.jdbc.meta.MappingTool.ACTION_SCRIPT_DROP;
 import static org.apache.openjpa.jdbc.meta.MappingTool.ACTION_SCRIPT_LOAD;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.openjpa.conf.SchemaGenerationSource;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.meta.MappingRepository;
+import org.apache.openjpa.jdbc.meta.MappingTool;
+import org.apache.openjpa.kernel.AbstractBrokerFactory;
+import org.apache.openjpa.kernel.Bootstrap;
+import org.apache.openjpa.kernel.BrokerImpl;
+import org.apache.openjpa.kernel.StoreManager;
+import org.apache.openjpa.lib.conf.ConfigurationProvider;
+import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.util.UserException;
+
 /**
  * BrokerFactory type for use with the JDBC runtime.
  *
  * @author Abe White
  * @author Marc Prud'hommeaux
  */
-@SuppressWarnings("serial")
-public class JDBCBrokerFactory
-    extends AbstractBrokerFactory {
+public class JDBCBrokerFactory extends AbstractBrokerFactory {
+    private static final long serialVersionUID = 1L;
 
     private static final Localizer _loc = Localizer.forPackage
         (JDBCBrokerFactory.class);
@@ -100,6 +99,7 @@ public class JDBCBrokerFactory
         super(conf);
     }
 
+    @Override
     public Map<String,Object> getProperties() {
         // add platform property
         Map<String,Object> props = super.getProperties();
@@ -119,10 +119,12 @@ public class JDBCBrokerFactory
         super.postCreationCallback();
     }
 
+    @Override
     protected StoreManager newStoreManager() {
         return new JDBCStoreManager();
     }
 
+    @Override
     protected BrokerImpl newBrokerImpl(String user, String pass) {
         BrokerImpl broker = super.newBrokerImpl(user, pass);
 

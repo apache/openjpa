@@ -36,7 +36,7 @@ public class FileScanner {
      * Scans the given
      */
     public List<File> scan(File dir) {
-        List<File> bag = new ArrayList<File>();
+        List<File> bag = new ArrayList<>();
         scan(dir, bag);
         return bag;
     }

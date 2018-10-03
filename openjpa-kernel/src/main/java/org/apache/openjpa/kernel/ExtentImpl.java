@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.iterators.FilterIterator;
@@ -31,7 +32,6 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProviderIterator;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
-import java.util.concurrent.locks.ReentrantLock;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
@@ -82,21 +82,25 @@ public class ExtentImpl<T>
             _lock = null;
     }
 
+    @Override
     public FetchConfiguration getFetchConfiguration() {
         return _fc;
     }
 
+    @Override
     public boolean getIgnoreChanges() {
         return _ignore;
     }
 
+    @Override
     public void setIgnoreChanges(boolean ignoreChanges) {
         _broker.assertOpen();
         _ignore = ignoreChanges;
     }
 
+    @Override
     public List<T> list() {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         Iterator<T> itr = iterator();
         try {
             while (itr.hasNext())
@@ -107,6 +111,7 @@ public class ExtentImpl<T>
         }
     }
 
+    @Override
     public Iterator<T> iterator() {
         _broker.assertNontransactionalRead();
         CloseableIterator citr = null;
@@ -165,18 +170,22 @@ public class ExtentImpl<T>
         return citr;
     }
 
+    @Override
     public Broker getBroker() {
         return _broker;
     }
 
+    @Override
     public Class<T> getElementType() {
         return _type;
     }
 
+    @Override
     public boolean hasSubclasses() {
         return _subs;
     }
 
+    @Override
     public void closeAll() {
         if (_openItrs == null)
             return;
@@ -202,11 +211,13 @@ public class ExtentImpl<T>
         }
     }
 
+    @Override
     public void lock() {
         if (_lock != null)
             _lock.lock();
     }
 
+    @Override
     public void unlock() {
         if (_lock != null)
             _lock.unlock();
@@ -215,13 +226,13 @@ public class ExtentImpl<T>
     /**
      * Closeable iterator.
      */
-    private static interface CloseableIterator<T>
+    private interface CloseableIterator<T>
         extends Closeable, Iterator<T> {
 
         /**
          * Set the extent to remove self from on close.
          */
-        public void setRemoveOnClose(ExtentImpl<T> extent);
+        void setRemoveOnClose(ExtentImpl<T> extent);
     }
 
     /**
@@ -234,24 +245,29 @@ public class ExtentImpl<T>
         private ExtentImpl<?> _extent = null;
         private boolean _closed = false;
 
+        @Override
         public boolean hasNext() {
             return (_closed) ? false : super.hasNext();
         }
 
+        @Override
         public Object next() {
             if (_closed)
                 throw new NoSuchElementException();
             return super.next();
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void setRemoveOnClose(ExtentImpl extent) {
             _extent = extent;
         }
 
+        @Override
         public void close()
             throws Exception {
             if (_extent != null && _extent._openItrs != null) {
@@ -284,24 +300,29 @@ public class ExtentImpl<T>
             setPredicate(this);
         }
 
+        @Override
         public boolean hasNext() {
             return (_closed) ? false : super.hasNext();
         }
 
+        @Override
         public Object next() {
             if (_closed)
                 throw new NoSuchElementException();
             return super.next();
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void setRemoveOnClose(ExtentImpl extent) {
             _extent = extent;
         }
 
+        @Override
         public void close()
             throws Exception {
             if (_extent != null && _extent._openItrs != null) {
@@ -317,6 +338,7 @@ public class ExtentImpl<T>
             ((Closeable) getIterator()).close();
         }
 
+        @Override
         public boolean evaluate(Object o) {
             return !_extent._broker.isDeleted(o);
         }
@@ -335,9 +357,11 @@ public class ExtentImpl<T>
             setPredicate(this);
         }
 
+        @Override
         public void close() {
         }
 
+        @Override
         public boolean evaluate(Object o) {
             if (!_broker.isNew(o))
                 return false;

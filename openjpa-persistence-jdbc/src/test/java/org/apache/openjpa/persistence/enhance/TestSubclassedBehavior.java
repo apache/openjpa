@@ -22,10 +22,19 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-
+import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.meta.AccessCode;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.enhance.common.apps.
         BackingFieldNameMismatchInstance;
 import org.apache.openjpa.persistence.enhance.common.apps.BaseEntity;
@@ -37,18 +46,10 @@ import org.apache.openjpa.persistence.enhance.common.apps.
 import org.apache.openjpa.persistence.enhance.common.apps.
         ManagedInverseTestInstance2;
 import org.apache.openjpa.persistence.enhance.common.apps.SubclassTestInstance;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import junit.framework.AssertionFailedError;
-import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.meta.AccessCode;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.ImplHelper;
+
+import junit.framework.AssertionFailedError;
 
 public class TestSubclassedBehavior extends AbstractTestCase {
 
@@ -57,6 +58,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
 
+    @Override
     public void setUp() {
         deleteAll(BasicSubclassInstance.class);
         deleteAll(BackingFieldNameMismatchInstance.class);

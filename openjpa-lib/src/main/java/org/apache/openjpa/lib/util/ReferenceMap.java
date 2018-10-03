@@ -30,19 +30,19 @@ public interface ReferenceMap extends Map {
     /**
      * Purge stale entries.
      */
-    public void removeExpired();
+    void removeExpired();
 
     /**
      * Overridable callback for when a key reference expires.
      *
      * @param value the value for the expired key
      */
-    public void keyExpired(Object value);
+    void keyExpired(Object value);
 
     /**
      * Overridable callback for when a value reference expires.
      *
      * @param key the key for the expired value
      */
-    public void valueExpired(Object key);
+    void valueExpired(Object key);
 }

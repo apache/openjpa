@@ -39,5 +39,5 @@ public interface OrphanedKeyAction {
      * @return the value to load into field <code>fmd</code>; typically
      * <code>null</code>
      */
-    public Object orphan(Object oid, OpenJPAStateManager sm, ValueMetaData vmd);
+    Object orphan(Object oid, OpenJPAStateManager sm, ValueMetaData vmd);
 }

@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEntityListeners extends SingleEMFTestCase {
 
@@ -27,6 +27,7 @@ public class TestEntityListeners extends SingleEMFTestCase {
     private static final int GLOBAL_LISTENER_ENTITY = 2;
     private static final int DUPLICATE_LISTENER_ENTITY = 3;
 
+    @Override
     public void setUp() {
         setUp(CLEAR_TABLES);
         ListenerImpl.prePersistCount = 0;

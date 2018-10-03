@@ -26,7 +26,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 public interface InterfaceTest2
     extends InterfaceTest {
 
-    public int getIntField();
+    int getIntField();
 
-    public void setIntField(int i);
+    void setIntField(int i);
 }

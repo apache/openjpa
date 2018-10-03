@@ -31,10 +31,12 @@ import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
     implements ConnectionDecorator {
 
+    private static final long serialVersionUID = 1L;
+
+    @Override
     public Connection decorate(Connection conn) {
         if (!hasListeners())
             return conn;
@@ -59,6 +61,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
     /**
      * Fire the given event to all listeners.
      */
+    @Override
     protected void fireEvent(Object event, Object listener) {
         JDBCListener listen = (JDBCListener) listener;
         JDBCEvent ev = (JDBCEvent) event;
@@ -112,6 +115,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             fireEvent(getDelegate(), JDBCEvent.AFTER_CONNECT, null, null, null);
         }
 
+        @Override
         public void commit() throws SQLException {
             JDBCEvent before = fireEvent(getDelegate(),
                 JDBCEvent.BEFORE_COMMIT, null, null, null);
@@ -123,6 +127,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public void rollback() throws SQLException {
             JDBCEvent before = fireEvent(getDelegate(),
                 JDBCEvent.BEFORE_ROLLBACK, null, null, null);
@@ -134,6 +139,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         protected Statement createStatement(boolean wrap) throws SQLException {
             JDBCEvent before = fireEvent(getDelegate(),
                 JDBCEvent.BEFORE_CREATE_STATEMENT, null, null, null);
@@ -148,6 +154,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             return stmnt;
         }
 
+        @Override
         protected Statement createStatement(int rsType, int rsConcur,
             boolean wrap) throws SQLException {
             JDBCEvent before = fireEvent(getDelegate(),
@@ -163,6 +170,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             return stmnt;
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
             JDBCEvent before = fireEvent(getDelegate(),
@@ -178,6 +186,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             return stmnt;
         }
 
+        @Override
         protected PreparedStatement prepareStatement(String sql, int rsType,
             int rsConcur, boolean wrap) throws SQLException {
             JDBCEvent before = fireEvent(getDelegate(),
@@ -193,6 +202,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             return stmnt;
         }
 
+        @Override
         public void close() throws SQLException {
             try {
                 fireEvent(getDelegate(), JDBCEvent.BEFORE_CLOSE,
@@ -219,6 +229,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             _sql = sql;
         }
 
+        @Override
         public int executeUpdate() throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), _sql);
@@ -231,6 +242,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         protected ResultSet executeQuery(boolean wrap) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), _sql);
@@ -243,6 +255,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public int[] executeBatch() throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), _sql);
@@ -255,6 +268,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public boolean execute() throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), _sql);
@@ -267,6 +281,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public int executeUpdate(String sql) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -279,6 +294,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public int executeUpdate(String sql, int i) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -291,6 +307,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public int executeUpdate(String sql, int[] ia) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -303,6 +320,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public int executeUpdate(String sql, String[] sa) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -315,6 +333,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public boolean execute(String sql) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -327,6 +346,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public boolean execute(String sql, int i) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -339,6 +359,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public boolean execute(String sql, int[] ia) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -351,6 +372,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public boolean execute(String sql, String[] sa) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -376,6 +398,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             _conn = conn;
         }
 
+        @Override
         public int executeUpdate(String sql) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -388,6 +411,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         protected ResultSet executeQuery(String sql, boolean wrap)
             throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
@@ -401,6 +425,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public boolean execute(String sql) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -413,6 +438,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public int executeUpdate(String sql, int i) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -425,6 +451,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public int executeUpdate(String sql, int[] ia) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -437,6 +464,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public int executeUpdate(String sql, String[] sa) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -449,6 +477,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public boolean execute(String sql, int i) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -461,6 +490,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public boolean execute(String sql, int[] ia) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
@@ -473,6 +503,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             }
         }
 
+        @Override
         public boolean execute(String sql, String[] sa) throws SQLException {
             JDBCEvent before = fireEvent(_conn.getDelegate(),
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);

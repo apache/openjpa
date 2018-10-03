@@ -140,7 +140,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Version;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.BeanLifecycleCallbacks;
 import org.apache.openjpa.event.LifecycleCallbacks;
@@ -153,6 +152,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
@@ -190,7 +190,7 @@ public class AnnotationPersistenceMetaDataParser
         (AnnotationPersistenceMetaDataParser.class);
 
     private static final Map<Class<?>, MetaDataTag> _tags =
-        new HashMap<Class<?>, MetaDataTag>();
+        new HashMap<>();
 
     static {
         _tags.put(Access.class, ACCESS);
@@ -252,11 +252,11 @@ public class AnnotationPersistenceMetaDataParser
     private int _mode = MODE_NONE;
 
     // packages and their parse modes
-    private final Map<Package, Integer> _pkgs = new HashMap<Package, Integer>();
+    private final Map<Package, Integer> _pkgs = new HashMap<>();
 
     // the class we were invoked to parse
     protected Class<?> _cls = null;
-    protected Stack<Class<?>> _stack = new Stack<Class<?>>();
+    protected Stack<Class<?>> _stack = new Stack<>();
     private File _file = null;
 
     /**
@@ -949,7 +949,7 @@ public class AnnotationPersistenceMetaDataParser
         for (Class<?> cls : classes) {
             if (!_conf.getCallbackOptionsInstance().getAllowsDuplicateListener()) {
                 if (listenerColl == null)
-                    listenerColl = new ArrayList<Class<?>>();
+                    listenerColl = new ArrayList<>();
                 if (listenerColl.contains(cls))
                     continue;
                 listenerColl.add(cls);
@@ -977,13 +977,13 @@ public class AnnotationPersistenceMetaDataParser
             throw new IllegalArgumentException("cls cannot be null");
 
         // first sort / filter based on inheritance
-        Set<Method> methods = new TreeSet<Method>(MethodComparator.
+        Set<Method> methods = new TreeSet<>(MethodComparator.
             getInstance());
 
         int mods;
         Class<?> sup = cls;
         MethodKey key;
-        Set<MethodKey> seen = new HashSet<MethodKey>();
+        Set<MethodKey> seen = new HashSet<>();
         do {
             for (Method m : (Method[]) AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredMethodsAction(sup))) {
@@ -1020,7 +1020,7 @@ public class AnnotationPersistenceMetaDataParser
                 for (int i = 0; i < events.length; i++) {
                     int e = events[i];
                     if (callbacks[e] == null)
-                        callbacks[e] = new ArrayList<LifecycleCallbacks>(3);
+                        callbacks[e] = new ArrayList<>(3);
                     MetaDataParsers.validateMethodsForSameCallback(cls,
                         callbacks[e], m, tag, conf, repos.getLog());
                     if (listener) {
@@ -2009,6 +2009,7 @@ public class AnnotationPersistenceMetaDataParser
             _method = m;
         }
 
+        @Override
         public int hashCode() {
             int code = 46 * 12 + _method.getName().hashCode();
             for (Class<?> param : _method.getParameterTypes())
@@ -2016,6 +2017,7 @@ public class AnnotationPersistenceMetaDataParser
             return code;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof MethodKey))
                 return false;
@@ -2037,6 +2039,7 @@ public class AnnotationPersistenceMetaDataParser
             return INSTANCE;
         }
 
+        @Override
         public int compare(Method m1, Method m2) {
             Class<?> c1 = m1.getDeclaringClass();
             Class<?> c2 = m2.getDeclaringClass();

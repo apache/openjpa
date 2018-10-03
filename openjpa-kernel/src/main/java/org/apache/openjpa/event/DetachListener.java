@@ -28,10 +28,10 @@ public interface DetachListener {
     /**
      * Invoked before the instance is detached.
      */
-    public void beforeDetach(LifecycleEvent event);
+    void beforeDetach(LifecycleEvent event);
 
     /**
      * Invoked after the instance has been detached.
      */
-    public void afterDetach(LifecycleEvent event);
+    void afterDetach(LifecycleEvent event);
 }

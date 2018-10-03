@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 public interface ManagedInterfaceSup {
 
-    public int getIntFieldSup();
+    int getIntFieldSup();
 
-    public void setIntFieldSup(int i);
+    void setIntFieldSup(int i);
 }

@@ -25,9 +25,9 @@ import java.util.Map;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Enumerates configuration property keys defined in JPA 2.0 Specification.
@@ -72,7 +72,7 @@ public class JPAProperties {
     public static final String VALIDATE_PRE_UPDATE  = PREFIX + "validation.group.pre-update";
     public static final String VALIDATE_GROUP_DEFAULT = "javax.validation.groups.Default";
 
-    private static Map<String,String> _names = new HashMap<String, String>();
+    private static Map<String,String> _names = new HashMap<>();
 
     /**
      * Record the given kernel property key (which is a bean property name without any suffix)

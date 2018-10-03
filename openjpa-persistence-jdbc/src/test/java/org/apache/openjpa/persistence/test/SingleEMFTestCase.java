@@ -51,6 +51,7 @@ public abstract class SingleEMFTestCase
      * set-up happens even if <code>setUp()</code> is not called from the
      * subclass.
      */
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         setUp(new Object[0]);
@@ -73,6 +74,7 @@ public abstract class SingleEMFTestCase
     /**
      * Closes the entity manager factory.
      */
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
 

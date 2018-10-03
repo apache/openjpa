@@ -25,9 +25,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
+
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 
 /**
  * Test for the {@link org.apache.openjpa.jdbc.sql.BooleanRepresentation} factory and default impls
@@ -62,7 +63,7 @@ public class TestBooleanRepresentation  extends TestCase {
         BooleanRepresentation booleanRepresentation = BooleanRepresentationFactory.valueOf(representationKey, cl);
         Assert.assertNotNull(booleanRepresentation);
 
-        DummyPreparedStatement<T> dummyPreparedStatement = new DummyPreparedStatement<T>(expectedType);
+        DummyPreparedStatement<T> dummyPreparedStatement = new DummyPreparedStatement<>(expectedType);
 
         booleanRepresentation.setBoolean(dummyPreparedStatement, 1, true);
         Assert.assertEquals(yesRepresentation, dummyPreparedStatement.getBooleanRepresentationValue());

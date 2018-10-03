@@ -19,11 +19,11 @@
 package org.apache.openjpa.persistence.kernel;
 
 import java.math.BigDecimal;
+
 import javax.persistence.EntityManager;
 
-
-import org.apache.openjpa.persistence.kernel.common.apps.AllFieldsTypeTest;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.kernel.common.apps.AllFieldsTypeTest;
 
 public class TestEJBState extends AbstractTestCase {
 
@@ -31,6 +31,7 @@ public class TestEJBState extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(AllFieldsTypeTest.class);
     }

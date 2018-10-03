@@ -78,6 +78,9 @@ import java.util.Set;
  */
 public class FormatPreservingProperties extends Properties {
 
+    
+    private static final long serialVersionUID = 1L;
+
     private static Localizer _loc = Localizer.forPackage
         (FormatPreservingProperties.class);
 
@@ -186,14 +189,17 @@ public class FormatPreservingProperties extends Properties {
         return this.allowDuplicates;
     }
 
+    @Override
     public String getProperty(String key) {
         return super.getProperty(key);
     }
 
+    @Override
     public String getProperty(String key, String defaultValue) {
         return super.getProperty(key, defaultValue);
     }
 
+    @Override
     public Object setProperty(String key, String value) {
         return put(key, value);
     }
@@ -202,6 +208,7 @@ public class FormatPreservingProperties extends Properties {
      * Circumvents the superclass {@link #putAll} implementation,
      * putting all the key-value pairs via {@link #put}.
      */
+    @Override
     public synchronized void putAll(Map m) {
         Map.Entry e;
         for (Iterator iter = m.entrySet().iterator(); iter.hasNext();) {
@@ -213,11 +220,13 @@ public class FormatPreservingProperties extends Properties {
     /**
      * Removes the key from the bookkeeping collectiotns as well.
      */
+    @Override
     public synchronized Object remove(Object key) {
         newKeys.remove(key);
         return super.remove(key);
     }
 
+    @Override
     public synchronized void clear() {
         super.clear();
 
@@ -228,6 +237,7 @@ public class FormatPreservingProperties extends Properties {
         modifiedKeys.clear();
     }
 
+    @Override
     public synchronized Object clone() {
         FormatPreservingProperties c = (FormatPreservingProperties)
             super.clone();
@@ -257,6 +267,7 @@ public class FormatPreservingProperties extends Properties {
         isNotDeserializing = true;
     }
 
+    @Override
     public synchronized Object put(Object key, Object val) {
         Object o = super.put(key, val);
 
@@ -281,6 +292,7 @@ public class FormatPreservingProperties extends Properties {
      *
      * @see Properties#load
      */
+    @Override
     public synchronized void load(InputStream in) throws IOException {
         isLoading = true;
         try {
@@ -420,6 +432,7 @@ public class FormatPreservingProperties extends Properties {
         return Character.isWhitespace(ch);
     }
 
+    @Override
     public void save(OutputStream out, String header) {
         try {
             store(out, header);
@@ -427,6 +440,7 @@ public class FormatPreservingProperties extends Properties {
         }
     }
 
+    @Override
     public void store(OutputStream out, String header) throws IOException {
         boolean endWithNewline = source != null && source.endsInNewline;
 
@@ -557,6 +571,9 @@ public class FormatPreservingProperties extends Properties {
 
     public static class DuplicateKeyException extends RuntimeException {
 
+        
+        private static final long serialVersionUID = 1L;
+
         public DuplicateKeyException(String key, Object firstVal,
             String secondVal) {
             super(_loc.get("dup-key", key, firstVal, secondVal).getMessage());
@@ -569,6 +586,8 @@ public class FormatPreservingProperties extends Properties {
      */
     private class PropertyLine implements Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         private final StringBuilder line = new StringBuilder();
         private String propertyKey;
         private String propertyValue;
@@ -680,12 +699,14 @@ public class FormatPreservingProperties extends Properties {
             this.source = source;
         }
 
+        @Override
         public int read() throws IOException {
             int c = super.read();
             source.endsInNewline = (c == '\n' || c == '\r');
             return c;
         }
 
+        @Override
         public int read(byte[] b, int off, int len) throws IOException {
             int n = super.read(b, off, len);
             if (n > 0)
@@ -698,6 +719,8 @@ public class FormatPreservingProperties extends Properties {
     static class PropertySource extends LinkedList
         implements Cloneable, Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         private boolean endsInNewline = false;
     }
 }

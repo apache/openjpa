@@ -47,7 +47,7 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
         // Mimic EM pooling
         boolean poolEm = true;
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,"
             + "SchemaAction='add,deleteTableContents')");
         emf = createEmf("daytrader", map);
@@ -105,7 +105,7 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
     private EntityManagerFactory createEmf(final String pu, Object... props) {
         Map<String, Object> map = getPropertiesMap(props);
         EntityManagerFactory emf = null;
-        Map<Object, Object> config = new HashMap<Object, Object>(System.getProperties());
+        Map<Object, Object> config = new HashMap<>(System.getProperties());
         config.putAll(map);
         emf = Persistence.createEntityManagerFactory(pu, config);
         if (emf == null) {

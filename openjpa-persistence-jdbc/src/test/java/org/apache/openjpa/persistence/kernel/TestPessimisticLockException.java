@@ -90,6 +90,7 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
         boolean gotPLEx = false;
         int count = 0;
 
+        @Override
         public synchronized void run() {
             OpenJPAEntityManager oem = OpenJPAPersistence.cast(emf.createEntityManager());
             oem.getTransaction().begin();

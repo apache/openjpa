@@ -63,16 +63,16 @@ public class EntityF {
     @ElementCollection
     // CollectionTable with default name generation
     @CollectionTable
-    private Set<String> cSet = new HashSet<String>();
+    private Set<String> cSet = new HashSet<>();
 
     @ElementCollection
     @CollectionTable(name="\"collectionDelimSet\"", schema="\"delim id\"")
-    private Set<String> collectionDelimSet = new HashSet<String>();
+    private Set<String> collectionDelimSet = new HashSet<>();
 
     @ElementCollection
     // MapKeyColumn with default name generation
     @MapKeyColumn
-    private Map<String, String> cMap = new HashMap<String, String>();
+    private Map<String, String> cMap = new HashMap<>();
 
     @ElementCollection
     // Note: Delimited column definition is not supported on some DBs, so
@@ -80,7 +80,7 @@ public class EntityF {
     // TODO: create a separate entity and conditionally run the test on a supported DB
     @MapKeyColumn(name="\"mapKey\"", columnDefinition="varchar(20)", table="\"d colmap\"")
     private Map<String, String> dcMap =
-        new HashMap<String, String>();
+        new HashMap<>();
 
     public EntityF(String name) {
         this.name = name;

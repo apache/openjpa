@@ -18,18 +18,19 @@
  */
 package org.apache.openjpa.example.gallery.constraint;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.apache.openjpa.example.gallery.ImageType.GIF;
+import static org.apache.openjpa.example.gallery.ImageType.JPEG;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
 import org.apache.openjpa.example.gallery.ImageType;
-import static org.apache.openjpa.example.gallery.ImageType.GIF;
-import static org.apache.openjpa.example.gallery.ImageType.JPEG;
 
 /**
  * Type-level annotation used to specify an image constraint.  Uses

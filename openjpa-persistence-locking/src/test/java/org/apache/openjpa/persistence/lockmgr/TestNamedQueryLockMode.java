@@ -45,6 +45,7 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
         return "locking-test";
     }
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, LockEmployee.class,
             "openjpa.LockManager", "pessimistic",

@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.test;
 
 import java.util.Collections;
 import java.util.List;
+
 import javax.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;

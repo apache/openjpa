@@ -35,9 +35,9 @@ import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.PluralAttribute.CollectionType;
 
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.kernel.Filters;
@@ -63,7 +63,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     public final MetamodelImpl model;
     public final ClassMetaData meta;
 
-    private java.util.Set<Attribute<? super X, ?>> attrs = new HashSet<Attribute<? super X, ?>>();
+    private java.util.Set<Attribute<? super X, ?>> attrs = new HashSet<>();
 
     private final DeclaredAttributeFilter<X> declaredAttributeFilter;
     private final SingularAttributeFilter<X> singularAttributeFilter;
@@ -190,8 +190,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                         f.getFullName(false), decCode).getMessage());
             }
         }
-        declaredAttributeFilter = new DeclaredAttributeFilter<X>(this);
-        singularAttributeFilter = new SingularAttributeFilter<X>();
+        declaredAttributeFilter = new DeclaredAttributeFilter<>(this);
+        singularAttributeFilter = new SingularAttributeFilter<>();
         pluralAttributeFilter = new SingularAttributeFilter<X>().inverse();
     }
 
@@ -199,6 +199,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Returns all the attributes of the managed type including attributes of the super type.
      *
      */
+    @Override
     public java.util.Set<Attribute<? super X, ?>> getAttributes() {
         return Collections.unmodifiableSet(attrs);
     }
@@ -207,6 +208,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Returns all the attributes declared by this managed type only.
      *
      */
+    @Override
     public java.util.Set<Attribute<X, ?>> getDeclaredAttributes() {
         return filter(attrs, new TreeSet<Attribute<X, ?>>(),
                 declaredAttributeFilter);
@@ -216,6 +218,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Returns the single-valued attributes of the managed type.
      *
      */
+    @Override
     public java.util.Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
         return filter(attrs, new TreeSet<SingularAttribute<? super X, ?>>(),
                 singularAttributeFilter);
@@ -225,6 +228,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Returns the single-valued attributes declared by the managed type.
      *
      */
+    @Override
     public java.util.Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
         return filter(attrs, new TreeSet<SingularAttribute<X, ?>>(),
                 declaredAttributeFilter,
@@ -251,6 +255,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
         Attribute<? super X, ?> result = pick(attrs,
                 new AttributeNameFilter<X>(name),
@@ -283,6 +288,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type) {
         Attribute<? super X, ?> result = pick(attrs,
                 new AttributeNameFilter<X>(name),
@@ -299,6 +305,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Returns all collection-valued attributes of the managed type.
      *
      */
+    @Override
     public java.util.Set<PluralAttribute<? super X, ?, ?>> getPluralAttributes() {
         return filter(attrs, new HashSet<PluralAttribute<? super X, ?, ?>>(),
                 pluralAttributeFilter);
@@ -308,6 +315,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Return all collection-valued attributes declared by the managed type.
      *
      */
+    @Override
     public java.util.Set<PluralAttribute<X, ?, ?>> getDeclaredPluralAttributes() {
         return filter(attrs, new HashSet<PluralAttribute<X, ?, ?>>(),
                 declaredAttributeFilter,
@@ -320,6 +328,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
                 new PluralCategoryFilter<X>(CollectionType.COLLECTION),
@@ -337,6 +346,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public <E> SetAttribute<? super X, E> getSet(String name, Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
                 new PluralCategoryFilter<X>(CollectionType.SET),
@@ -354,6 +364,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
                 new PluralCategoryFilter<X>(CollectionType.LIST),
@@ -371,6 +382,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType,
         Class<V> valueType) {
         Attribute<? super X, ?> result = pick(attrs,
@@ -389,6 +401,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name,  Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
@@ -407,6 +420,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
@@ -424,6 +438,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
@@ -442,6 +457,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType,
         Class<V> valueType) {
         Attribute<? super X, ?> result = pick(attrs,
@@ -464,6 +480,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public Attribute<? super X, ?> getAttribute(String name) {
         return getAttribute(name, null);
     }
@@ -473,6 +490,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public Attribute<X, ?> getDeclaredAttribute(String name) {
         return getDeclaredAttribute(name, null);
     }
@@ -482,6 +500,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public SingularAttribute<? super X, ?> getSingularAttribute(String name) {
         return getSingularAttribute(name, null);
     }
@@ -491,6 +510,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public SingularAttribute<X, ?> getDeclaredSingularAttribute(String name) {
         return getDeclaredSingularAttribute(name, null);
     }
@@ -500,6 +520,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public CollectionAttribute<? super X, ?> getCollection(String name) {
         return getCollection(name, null);
     }
@@ -509,6 +530,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public SetAttribute<? super X, ?> getSet(String name) {
         return getSet(name, null);
     }
@@ -518,6 +540,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public ListAttribute<? super X, ?> getList(String name) {
         return getList(name, null);
     }
@@ -527,6 +550,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public MapAttribute<? super X, ?, ?> getMap(String name) {
         return getMap(name, null, null);
     }
@@ -536,6 +560,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
         return getDeclaredCollection(name, null);
     }
@@ -545,6 +570,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public SetAttribute<X, ?> getDeclaredSet(String name) {
         return getDeclaredSet(name, null);
     }
@@ -554,6 +580,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public ListAttribute<X, ?> getDeclaredList(String name) {
         return getDeclaredList(name, null);
     }
@@ -563,6 +590,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      *
      * @throws IllegalArgumentException  if no such attribute exists
      */
+    @Override
     public MapAttribute<X, ?, ?> getDeclaredMap(String name) {
         return getDeclaredMap(name, null, null);
     }
@@ -754,7 +782,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Affirms if a given element satisfy a condition.
      *
      */
-    public static interface Filter<T> {
+    public interface Filter<T> {
         boolean selects(T attr);
 
         Filter<T> inverse();
@@ -838,12 +866,14 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             _invert = inverted;
         }
 
+        @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             return _invert ? attr.isCollection() : !attr.isCollection();
         }
 
+        @Override
         public SingularAttributeFilter<X> inverse() {
-            return new SingularAttributeFilter<X>(!_invert);
+            return new SingularAttributeFilter<>(!_invert);
         }
     }
 
@@ -861,13 +891,15 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             _invert = inverted;
         }
 
+        @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             return _invert ? attr.getDeclaringType() != owner : attr
                     .getDeclaringType() == owner;
         }
 
+        @Override
         public DeclaredAttributeFilter<X> inverse() {
-            return new DeclaredAttributeFilter<X>(owner, !_invert);
+            return new DeclaredAttributeFilter<>(owner, !_invert);
         }
     }
 
@@ -888,13 +920,15 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             _invert = inverted;
         }
 
+        @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             boolean result = _type == null || Filters.canConvert(attr.getJavaType(), _type, false);
             return _invert ? !result : result;
         }
 
+        @Override
         public AttributeTypeFilter<X, Y> inverse() {
-            return new AttributeTypeFilter<X, Y>(_type, !_invert);
+            return new AttributeTypeFilter<>(_type, !_invert);
         }
     }
 
@@ -912,13 +946,15 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             _invert = inverted;
         }
 
+        @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             return _invert ? !attr.getName().equals(_name) : attr.getName()
                     .equals(_name);
         }
 
+        @Override
         public AttributeNameFilter<X> inverse() {
-            return new AttributeNameFilter<X>(_name, !_invert);
+            return new AttributeNameFilter<>(_name, !_invert);
         }
     }
 
@@ -936,14 +972,16 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             _invert = inverted;
         }
 
+        @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             boolean result = (attr instanceof PluralAttribute<?, ?, ?>)
                     && ((PluralAttribute<?, ?, ?>) attr).getCollectionType() == _category;
             return _invert ? !result : result;
         }
 
+        @Override
         public PluralCategoryFilter<X> inverse() {
-            return new PluralCategoryFilter<X>(_category, !_invert);
+            return new PluralCategoryFilter<>(_category, !_invert);
         }
     }
 
@@ -965,6 +1003,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             _invert = inverted;
         }
 
+        @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             boolean result = (attr instanceof PluralAttribute<?, ?, ?>)
                     && (_elementType == null
@@ -973,8 +1012,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             return _invert ? !result : result;
         }
 
+        @Override
         public ElementTypeFilter<X, E> inverse() {
-            return new ElementTypeFilter<X, E>(_elementType, !_invert);
+            return new ElementTypeFilter<>(_elementType, !_invert);
         }
     }
 
@@ -994,6 +1034,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             _invert = inverted;
         }
 
+        @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             boolean result = (attr instanceof MapAttribute<?, ?, ?>)
                     && (_keyType == null
@@ -1003,8 +1044,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             return _invert ? !result : result;
         }
 
+        @Override
         public EntryTypeFilter<X, K, V> inverse() {
-            return new EntryTypeFilter<X, K, V>(_keyType, _valueType, !_invert);
+            return new EntryTypeFilter<>(_keyType, _valueType, !_invert);
         }
     }
 
@@ -1020,13 +1062,15 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             _invert = inverted;
         }
 
+        @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             boolean result = ((Members.Member<?, ?>) attr).fmd.isPrimaryKey();
             return _invert ? !result : result;
         }
 
+        @Override
         public IdAttributeFilter<X> inverse() {
-            return new IdAttributeFilter<X>(!_invert);
+            return new IdAttributeFilter<>(!_invert);
         }
     }
 
@@ -1041,14 +1085,16 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             _invert = inverted;
         }
 
+        @Override
         public boolean selects(Attribute<? super X, ?> attr) {
             FieldMetaData fmd = ((Members.Member<?, ?>) attr).fmd;
             boolean result = fmd.isVersion();
             return _invert ? !result : result;
         }
 
+        @Override
         public IdAttributeFilter<X> inverse() {
-            return new IdAttributeFilter<X>(!_invert);
+            return new IdAttributeFilter<>(!_invert);
         }
     }
 

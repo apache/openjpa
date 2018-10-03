@@ -65,20 +65,24 @@ public class RangeResultObjectProvider implements ResultObjectProvider {
         _endIdx = (int) endIdx;
     }
 
+    @Override
     public boolean supportsRandomAccess() {
         return _delegate.supportsRandomAccess();
     }
 
+    @Override
     public void open() throws Exception {
         _delegate.open();
     }
 
+    @Override
     public Object getResultObject() throws Exception {
         if (_idx < _startIdx || _idx >= _endIdx)
             throw new NoSuchElementException(String.valueOf(_idx));
         return _delegate.getResultObject();
     }
 
+    @Override
     public boolean next() throws Exception {
         // advance up to just behind _startIdx if we haven't already
         while (_idx < _startIdx - 1) {
@@ -101,6 +105,7 @@ public class RangeResultObjectProvider implements ResultObjectProvider {
         return _delegate.next();
     }
 
+    @Override
     public boolean absolute(int pos) throws Exception {
         _idx = pos + _startIdx;
         if (_idx >= _endIdx)
@@ -108,6 +113,7 @@ public class RangeResultObjectProvider implements ResultObjectProvider {
         return _delegate.absolute(_idx);
     }
 
+    @Override
     public int size() throws Exception {
         int size = _delegate.size();
         if (size == Integer.MAX_VALUE)
@@ -116,15 +122,18 @@ public class RangeResultObjectProvider implements ResultObjectProvider {
         return (size < 0) ? 0 : size;
     }
 
+    @Override
     public void reset() throws Exception {
         _idx = -1;
         _delegate.reset();
     }
 
+    @Override
     public void close() throws Exception {
         _delegate.close();
     }
 
+    @Override
     public void handleCheckedException(Exception e) {
         _delegate.handleCheckedException(e);
     }

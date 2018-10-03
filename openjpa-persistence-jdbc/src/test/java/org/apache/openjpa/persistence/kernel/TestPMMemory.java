@@ -30,16 +30,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-
 import org.apache.openjpa.event.AbstractTransactionListener;
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.event.TransactionListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 
 public class TestPMMemory extends BaseKernelTest {
 
@@ -69,6 +66,7 @@ public class TestPMMemory extends BaseKernelTest {
         testpm.testMemoryUse();
     }
 
+    @Override
     public void setUp() {
         System.out.println("About to delete all");
         deleteAllStaged(getPM(), RuntimeTest1.class);
@@ -145,8 +143,10 @@ public class TestPMMemory extends BaseKernelTest {
         if (!_doPause)
             return;
         try {
-            Thread.currentThread().yield();
-            Thread.currentThread().sleep((int) seconds * 1000);
+            Thread.currentThread();
+            Thread.yield();
+            Thread.currentThread();
+            Thread.sleep((int) seconds * 1000);
         } catch (Exception e) {
         }
     }
@@ -168,6 +168,7 @@ public class TestPMMemory extends BaseKernelTest {
         reportMemory();
 
         TransactionListener l = new AbstractTransactionListener() {
+            @Override
             public void afterCommit(TransactionEvent ev) {
                 System.out.println(
                     "My Listener in afterCommit");

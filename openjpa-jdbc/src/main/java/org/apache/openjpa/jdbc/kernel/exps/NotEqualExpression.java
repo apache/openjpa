@@ -29,6 +29,9 @@ import org.apache.openjpa.jdbc.sql.Select;
 class NotEqualExpression
     extends CompareEqualExpression {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Supply values to compare.
      */
@@ -36,6 +39,7 @@ class NotEqualExpression
         super(val1, val2);
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, BinaryOpExpState bstate,
         SQLBuffer buf, boolean val1Null, boolean val2Null) {
         if (val1Null && val2Null)

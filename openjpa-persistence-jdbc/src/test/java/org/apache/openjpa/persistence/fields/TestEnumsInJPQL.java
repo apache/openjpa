@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestEnumsInJPQL
     extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(EnumFieldType.class, CLEAR_TABLES);
 

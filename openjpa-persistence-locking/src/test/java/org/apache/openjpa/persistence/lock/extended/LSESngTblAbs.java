@@ -79,12 +79,14 @@ public abstract class LSESngTblAbs implements Externalizable {
         return version;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + '@'
             + Integer.toHexString(System.identityHashCode(this)) + "[id="
             + getId() + ", ver=" + getVersion() + "] first=" + getFirstName();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
         ClassNotFoundException {
         id = in.readInt();
@@ -92,6 +94,7 @@ public abstract class LSESngTblAbs implements Externalizable {
         firstName = (String) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(id);
         out.writeInt(version);

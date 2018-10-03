@@ -36,19 +36,24 @@ import org.apache.openjpa.util.InternalException;
 class CurrentDate
     extends Const {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Class<? extends Date> _type;
 
     public CurrentDate(Class<? extends Date> type) {
         _type = type;
     }
 
+    @Override
     public Class<? extends Date> getType() {
         return _type;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res) throws SQLException {
         if (Timestamp.class.isAssignableFrom(_type)) {
             return res.getTimestamp(this, null);
@@ -61,6 +66,7 @@ class CurrentDate
         }
     }
 
+    @Override
     public Object getValue(Object[] params) {
         try {
             return _type.getConstructor(long.class).newInstance(System.currentTimeMillis());
@@ -69,6 +75,7 @@ class CurrentDate
         }
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
         if (Timestamp.class.isAssignableFrom(_type)) {
             sql.append(ctx.store.getDBDictionary().currentTimestampFunction);

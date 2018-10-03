@@ -98,6 +98,7 @@ public class InstrumentationFactory {
         }
 
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            @Override
             public Object run() {
                 // Dynamic agent enhancement should only occur when the OpenJPA library is
                 // loaded using the system class loader.  Otherwise, the OpenJPA

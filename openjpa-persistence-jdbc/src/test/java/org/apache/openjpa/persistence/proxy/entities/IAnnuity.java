@@ -23,36 +23,36 @@ import java.util.List;
 
 public interface IAnnuity extends IAnnuityObject {
 
-	public abstract Double getLastPaidAmt();
+	Double getLastPaidAmt();
 
-	public abstract void setLastPaidAmt(Double lastPaidAmt);
+	void setLastPaidAmt(Double lastPaidAmt);
 
-	public abstract String getAccountNumber();
+	String getAccountNumber();
 
-	public abstract void setAccountNumber(String accountNumber);
+	void setAccountNumber(String accountNumber);
 
-	public abstract Double getAmount();
+	Double getAmount();
 
-	public abstract void setAmount(Double amount);
+	void setAmount(Double amount);
 
-	public abstract List<IPayout> getPayouts();
-	public abstract void setPayouts(List<IPayout> payout);
+	List<IPayout> getPayouts();
+	void setPayouts(List<IPayout> payout);
 
-	public abstract List<IRider> getRiders();
-	public abstract void setRiders(List<IRider> riders);
+	List<IRider> getRiders();
+	void setRiders(List<IRider> riders);
 
-	public abstract String getAnnuityHolderId();
-	public abstract void setAnnuityHolderId(String annuityHolderId);
+	String getAnnuityHolderId();
+	void setAnnuityHolderId(String annuityHolderId);
 
-	public abstract List<IPayor> getPayors();
-	public abstract void setPayors(List<IPayor> payors);
+	List<IPayor> getPayors();
+	void setPayors(List<IPayor> payors);
 
-    public abstract List<String> getComments();
-    public abstract void setComments(List<String> comments);
+    List<String> getComments();
+    void setComments(List<String> comments);
 
-    public abstract Date getApprovedAt();
-    public void setApprovedAt(Date approvedAt);
+    Date getApprovedAt();
+    void setApprovedAt(Date approvedAt);
 
-    public Annuity getPreviousAnnuity();
-    public void setPreviousAnnuity(Annuity previousAnnuity);
+    Annuity getPreviousAnnuity();
+    void setPreviousAnnuity(Annuity previousAnnuity);
 }

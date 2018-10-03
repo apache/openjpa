@@ -59,12 +59,12 @@ import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.util.Exceptions;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.UnsupportedException;
-import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UserException;
 
 
@@ -73,7 +73,6 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class FieldMetaData
     extends Extensions
     implements ValueMetaData, MetaDataContext, MetaDataModes, Commentable {
@@ -298,6 +297,7 @@ public class FieldMetaData
     /**
      * The metadata repository.
      */
+    @Override
     public MetaDataRepository getRepository() {
         return _owner.getRepository();
     }
@@ -349,6 +349,7 @@ public class FieldMetaData
      * The field name, qualified by the owning class.
      * @deprecated Use getFullName(boolean) instead.
      */
+    @Deprecated
     public String getFullName() {
         return getFullName(false);
     }
@@ -727,7 +728,7 @@ public class FieldMetaData
                 || isPrimaryKey() || isVersion())
                 _fgs = new String[0];
             else
-                _fgs = (String[]) _fgSet.toArray(new String[_fgSet.size()]);
+                _fgs = _fgSet.toArray(new String[_fgSet.size()]);
         }
         return _fgs;
     }
@@ -781,7 +782,7 @@ public class FieldMetaData
         if (_owner.getFetchGroup(fg) == null)
             throw new MetaDataException(_loc.get("unknown-fg", fg, this));
         if (in && _fgSet == null)
-            _fgSet = new HashSet<String>();
+            _fgSet = new HashSet<>();
         if ((in && _fgSet.add(fg))
             || (!in && _fgSet != null && _fgSet.remove(fg)))
             _fgs = null;
@@ -957,7 +958,7 @@ public class FieldMetaData
                     // inverses must be
                     if (field.getTypeCode() == JavaTypes.PC
                         || field.getElement().getTypeCode() == JavaTypes.PC) {
-                        inverses = new ArrayList<FieldMetaData>(3);
+                        inverses = new ArrayList<>(3);
                         inverses.add(field);
                     }
                 } else if (inv != null) {
@@ -965,7 +966,7 @@ public class FieldMetaData
                     if (field == null)
                         throw new MetaDataException(_loc.get("no-inverse",
                             this, inv));
-                    inverses = new ArrayList<FieldMetaData>(3);
+                    inverses = new ArrayList<>(3);
                     inverses.add(field);
                 }
 
@@ -995,7 +996,7 @@ public class FieldMetaData
                     if (_name.equals(fields[i].getMappedBy())
                         || _name.equals(fields[i].getInverse())) {
                         if (inverses == null)
-                            inverses = new ArrayList<FieldMetaData>(3);
+                            inverses = new ArrayList<>(3);
                         if (!inverses.contains(fields[i]))
                             inverses.add(fields[i]);
                     }
@@ -1260,7 +1261,7 @@ public class FieldMetaData
                 curComp = orders[i].getComparator();
                 if (curComp != null) {
                     if (comps == null)
-                        comps = new ArrayList<Comparator<?>>(orders.length);
+                        comps = new ArrayList<>(orders.length);
                     if (i != comps.size())
                         throw new MetaDataException(_loc.get
                             ("mixed-inmem-ordering", this));
@@ -1802,6 +1803,7 @@ public class FieldMetaData
         return StoreContext.class.getName().equals(type.getName());
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -1811,6 +1813,7 @@ public class FieldMetaData
             getFullName(true));
     }
 
+    @Override
     public int hashCode() {
         return getFullName(true).hashCode();
     }
@@ -1822,6 +1825,7 @@ public class FieldMetaData
             getFullName(true));
     }
 
+    @Override
     public String toString() {
         return getFullName(true);
     }
@@ -1833,6 +1837,7 @@ public class FieldMetaData
     /**
      * Resolve mode for this field.
      */
+    @Override
     public int getResolve() {
         return _resMode;
     }
@@ -1840,6 +1845,7 @@ public class FieldMetaData
     /**
      * Resolve mode for this field.
      */
+    @Override
     public void setResolve(int mode) {
         _resMode = mode;
     }
@@ -1847,6 +1853,7 @@ public class FieldMetaData
     /**
      * Resolve mode for this field.
      */
+    @Override
     public void setResolve(int mode, boolean on) {
         if (mode == MODE_NONE)
             _resMode = mode;
@@ -1859,6 +1866,7 @@ public class FieldMetaData
     /**
      * Resolve and validate metadata. Return true if already resolved.
      */
+    @Override
     public boolean resolve(int mode) {
         if ((_resMode & mode) == mode)
             return true;
@@ -2070,6 +2078,7 @@ public class FieldMetaData
         _elem.copy(field.getElement());
     }
 
+    @Override
     protected void addExtensionKeys(Collection exts) {
         getRepository().getMetaDataFactory().addFieldExtensionKeys(exts);
     }
@@ -2078,10 +2087,12 @@ public class FieldMetaData
     // Commentable
     ///////////////
 
+    @Override
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
 
+    @Override
     public void setComments(String[] comments) {
         _comments = comments;
     }
@@ -2090,14 +2101,17 @@ public class FieldMetaData
     // ValueMetaData implementation
     ////////////////////////////////
 
+    @Override
     public FieldMetaData getFieldMetaData() {
         return this;
     }
 
+    @Override
     public Class getType() {
         return _val.getType();
     }
 
+    @Override
     public void setType(Class type) {
         _val.setType(type);
         if (type.isArray())
@@ -2108,26 +2122,32 @@ public class FieldMetaData
         }
     }
 
+    @Override
     public int getTypeCode() {
         return _val.getTypeCode();
     }
 
+    @Override
     public void setTypeCode(int code) {
         _val.setTypeCode(code);
     }
 
+    @Override
     public boolean isTypePC() {
         return _val.isTypePC();
     }
 
+    @Override
     public ClassMetaData getTypeMetaData() {
         return _val.getTypeMetaData();
     }
 
+    @Override
     public Class getDeclaredType() {
         return _val.getDeclaredType();
     }
 
+    @Override
     public void setDeclaredType(Class type) {
         _val.setDeclaredType(type);
         if (type.isArray())
@@ -2138,118 +2158,147 @@ public class FieldMetaData
         }
     }
 
+    @Override
     public int getDeclaredTypeCode() {
         return _val.getDeclaredTypeCode();
     }
 
+    @Override
     public void setDeclaredTypeCode(int type) {
         _val.setDeclaredTypeCode(type);
     }
 
+    @Override
     public boolean isDeclaredTypePC() {
         return _val.isDeclaredTypePC();
     }
 
+    @Override
     public ClassMetaData getDeclaredTypeMetaData() {
         return _val.getDeclaredTypeMetaData();
     }
 
+    @Override
     public boolean isEmbedded() {
         return _val.isEmbedded();
     }
 
+    @Override
     public void setEmbedded(boolean embedded) {
         _val.setEmbedded(embedded);
     }
 
+    @Override
     public boolean isEmbeddedPC() {
         return _val.isEmbeddedPC();
     }
 
+    @Override
     public ClassMetaData getEmbeddedMetaData() {
         return _val.getEmbeddedMetaData();
     }
 
+    @Override
     public ClassMetaData addEmbeddedMetaData(int access) {
         return _val.addEmbeddedMetaData(access);
     }
+    @Override
     public ClassMetaData addEmbeddedMetaData() {
         return _val.addEmbeddedMetaData();
     }
 
+    @Override
     public int getCascadeDelete() {
         return _val.getCascadeDelete();
     }
 
+    @Override
     public void setCascadeDelete(int delete) {
         _val.setCascadeDelete(delete);
     }
 
+    @Override
     public int getCascadePersist() {
         return _val.getCascadePersist();
     }
 
+    @Override
     public void setCascadePersist(int persist) {
         _val.setCascadePersist(persist);
     }
 
+    @Override
     public void setCascadePersist(int cascade, boolean checkPUDefault) {
         _val.setCascadePersist(cascade, checkPUDefault);
     }
 
+    @Override
     public int getCascadeAttach() {
         return _val.getCascadeAttach();
     }
 
+    @Override
     public void setCascadeAttach(int attach) {
         _val.setCascadeAttach(attach);
     }
 
+    @Override
     public int getCascadeDetach() {
         return _val.getCascadeDetach();
     }
 
+    @Override
     public void setCascadeDetach(int detach) {
         _val.setCascadeDetach(detach);
     }
 
+    @Override
     public int getCascadeRefresh() {
         return _val.getCascadeRefresh();
     }
 
+    @Override
     public void setCascadeRefresh(int refresh) {
         _val.setCascadeRefresh(refresh);
     }
 
+    @Override
     public boolean isSerialized() {
         return _val.isSerialized();
     }
 
+    @Override
     public void setSerialized(boolean serialized) {
         _val.setSerialized(serialized);
     }
 
+    @Override
     public String getValueMappedBy() {
         return _val.getValueMappedBy();
     }
 
+    @Override
     public void setValueMappedBy(String mapped) {
         _val.setValueMappedBy(mapped);
     }
 
+    @Override
     public FieldMetaData getValueMappedByMetaData () {
 		return _val.getValueMappedByMetaData ();
 	}
 
-	public Class<?> getTypeOverride () {
+	@Override
+    public Class<?> getTypeOverride () {
 		return _val.getTypeOverride ();
 	}
 
-	public void setTypeOverride(Class type) {
+	@Override
+    public void setTypeOverride(Class type) {
 		_val.setTypeOverride (type);
 	}
 
-	public void copy (ValueMetaData vmd) {
+	@Override
+    public void copy (ValueMetaData vmd) {
 		_val.copy (vmd);
 	}
 
@@ -2295,6 +2344,7 @@ public class FieldMetaData
             return _member;
         }
 
+        @Override
         public void readExternal(ObjectInput in)
             throws IOException, ClassNotFoundException {
             boolean isField = in.readBoolean();
@@ -2323,6 +2373,7 @@ public class FieldMetaData
             }
         }
 
+        @Override
         public void writeExternal(ObjectOutput out)
             throws IOException {
             boolean isField = _member instanceof Field;

@@ -38,7 +38,7 @@ public class Department3 {
     @OneToMany(mappedBy="department", fetch=FetchType.EAGER)
     @MapKey(name="name")
     Map<EmployeeName3, Employee3> emps =
-        new HashMap<EmployeeName3, Employee3>();
+        new HashMap<>();
 
     public int getDeptId() {
         return deptId;

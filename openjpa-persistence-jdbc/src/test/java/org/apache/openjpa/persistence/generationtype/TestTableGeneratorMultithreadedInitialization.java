@@ -26,6 +26,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 public class TestTableGeneratorMultithreadedInitialization extends AbstractPersistenceTestCase {
     Object[] props = new Object[] { Dog.class, CLEAR_TABLES };
 
+    @Override
     public void setUp() throws Exception {
     }
 

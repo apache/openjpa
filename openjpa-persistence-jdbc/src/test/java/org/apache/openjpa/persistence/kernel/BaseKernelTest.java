@@ -27,7 +27,9 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;

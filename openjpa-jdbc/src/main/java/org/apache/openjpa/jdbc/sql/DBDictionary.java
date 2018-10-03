@@ -67,10 +67,10 @@ import javax.sql.DataSource;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.ColumnDefIdentifierRule;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.identifier.DBIdentifierRule;
 import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
-import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
@@ -84,6 +84,7 @@ import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.DataSourceFactory;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.jdbc.schema.ForeignKey.FKMapKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.NameSet;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
@@ -92,7 +93,6 @@ import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
-import org.apache.openjpa.jdbc.schema.ForeignKey.FKMapKey;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.Seq;
@@ -421,14 +421,14 @@ public class DBDictionary
     protected boolean connected = false;
     protected boolean isJDBC3 = false;
     protected boolean isJDBC4 = false;
-    protected final Set<String> reservedWordSet = new HashSet<String>();
+    protected final Set<String> reservedWordSet = new HashSet<>();
     // reservedWordSet subset that CANNOT be used as valid column names
     // (i.e., without surrounding them with double-quotes)
-    protected Set<String> invalidColumnWordSet = new HashSet<String>();
-    protected final Set<String> systemSchemaSet = new HashSet<String>();
-    protected final Set<String> systemTableSet = new HashSet<String>();
-    protected final Set<String> fixedSizeTypeNameSet = new HashSet<String>();
-    protected final Set<String> typeModifierSet = new HashSet<String>();
+    protected Set<String> invalidColumnWordSet = new HashSet<>();
+    protected final Set<String> systemSchemaSet = new HashSet<>();
+    protected final Set<String> systemTableSet = new HashSet<>();
+    protected final Set<String> fixedSizeTypeNameSet = new HashSet<>();
+    protected final Set<String> typeModifierSet = new HashSet<>();
 
     // NamingConfiguration properties
     private boolean delimitIdentifiers = false;
@@ -443,14 +443,14 @@ public class DBDictionary
 
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;
-    private Map<String, IdentifierRule> namingRules = new HashMap<String, IdentifierRule>();
+    private Map<String, IdentifierRule> namingRules = new HashMap<>();
     private IdentifierRule defaultNamingRule = null;  // cached for performance
 
     /**
      * If a native query begins with any of the values found here then it will
      * be treated as a select statement.
      */
-    protected final Set<String> selectWordSet = new HashSet<String>();
+    protected final Set<String> selectWordSet = new HashSet<>();
 
     // when we store values that lose precision, track the types so that the
     // first time it happens we can warn the user
@@ -463,7 +463,7 @@ public class DBDictionary
     public int batchLimit = NO_BATCH;
 
     public final Map<Integer,Set<String>> sqlStateCodes =
-        new HashMap<Integer, Set<String>>();
+        new HashMap<>();
 
     protected ProxyManager _proxyManager;
 
@@ -1589,7 +1589,7 @@ public class DBDictionary
         boolean warn;
         synchronized (this) {
             if (_precisionWarnedTypes == null)
-                _precisionWarnedTypes = new HashSet<Class<?>>();
+                _precisionWarnedTypes = new HashSet<>();
             warn = _precisionWarnedTypes.add(orig.getClass());
         }
 
@@ -2280,13 +2280,13 @@ public class DBDictionary
      * tables should override this method.
      */
     public String[] getDeleteTableContentsSQL(Table[] tables,Connection conn) {
-        Collection<String> sql = new ArrayList<String>();
+        Collection<String> sql = new ArrayList<>();
 
         // collect and drop non-deferred physical restrict constraints, and
         // collect the DELETE FROM statements
-        Collection<String> deleteSQL = new ArrayList<String>(tables.length);
+        Collection<String> deleteSQL = new ArrayList<>(tables.length);
         Collection<ForeignKey> restrictConstraints =
-            new LinkedHashSet<ForeignKey>();
+            new LinkedHashSet<>();
         for (int i = 0; i < tables.length; i++) {
             ForeignKey[] fks = tables[i].getForeignKeys();
             for (int j = 0; j < fks.length; j++) {
@@ -3169,6 +3169,7 @@ public class DBDictionary
      * the current DB.
      * @deprecated
      */
+    @Deprecated
     public String getValidTableName(String name, Schema schema) {
         return getValidTableName(DBIdentifier.newTable(name), schema).getName();
     }
@@ -3186,6 +3187,7 @@ public class DBDictionary
      * for the current DB.
      * @deprecated
      */
+    @Deprecated
     public String getValidSequenceName(String name, Schema schema) {
         return getValidSequenceName(DBIdentifier.newSequence(name), schema).getName();
     }
@@ -3204,6 +3206,7 @@ public class DBDictionary
      * specified table.
      * @deprecated
      */
+    @Deprecated
     public String getValidColumnName(String name, Table table) {
         return getValidColumnName(DBIdentifier.newColumn(name), table, true).getName();
     }
@@ -3223,6 +3226,7 @@ public class DBDictionary
      * be made unique for the specified table.
      * @deprecated
      */
+    @Deprecated
     public String getValidColumnName(String name, Table table,
         boolean checkForUniqueness) {
         return getValidColumnName(DBIdentifier.newColumn(name), table, checkForUniqueness).toString();
@@ -3255,6 +3259,7 @@ public class DBDictionary
      * valid for the current DB.
      * @deprecated
      */
+    @Deprecated
     public String getValidForeignKeyName(String name, Table table,
         Table toTable) {
         return getValidForeignKeyName(DBIdentifier.newForeignKey(name), table,
@@ -3275,6 +3280,7 @@ public class DBDictionary
      * for the current DB.
      * @deprecated
      */
+    @Deprecated
     public String getValidIndexName(String name, Table table) {
         return getValidIndexName(DBIdentifier.newIndex(name), table).getName();
     }
@@ -3292,6 +3298,7 @@ public class DBDictionary
      * it valid for the current DB.
      * @deprecated
      */
+    @Deprecated
     public String getValidUniqueName(String name, Table table) {
         return getValidUniqueName(DBIdentifier.newConstraint(name), table).getName();
     }
@@ -3353,6 +3360,7 @@ public class DBDictionary
      * incomplete.
      * @deprecated
      */
+    @Deprecated
     protected String makeNameValid(String name, NameSet set, int maxLen,
         int nameType) {
         return makeNameValid(name, set, maxLen, nameType, true);
@@ -3919,6 +3927,7 @@ public class DBDictionary
      * the user as one of his schemas
      * @deprecated
      */
+    @Deprecated
     public boolean isSystemTable(String name, String schema,
         boolean targetSchema) {
         return isSystemTable(DBIdentifier.newTable(name),
@@ -3957,6 +3966,7 @@ public class DBDictionary
      * @param table the index table
      * @deprecated
      */
+    @Deprecated
     public boolean isSystemIndex(String name, Table table) {
         return false;
     }
@@ -3985,6 +3995,7 @@ public class DBDictionary
      * the user as one of his schemas
      * @deprecated
      */
+    @Deprecated
     public boolean isSystemSequence(String name, String schema,
         boolean targetSchema) {
         return isSystemSequence(DBIdentifier.newSequence(name),
@@ -4029,6 +4040,7 @@ public class DBDictionary
      * Reflect on the schema to find tables matching the given name pattern.
      * @deprecated
      */
+    @Deprecated
     public Table[] getTables(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, Connection conn)
         throws SQLException {
@@ -4089,6 +4101,7 @@ public class DBDictionary
      * retrieve a list of sequences.
      * @deprecated
      */
+    @Deprecated
     public Sequence[] getSequences(DatabaseMetaData meta, String catalog,
         String schemaName, String sequenceName, Connection conn)
         throws SQLException {
@@ -4146,6 +4159,7 @@ public class DBDictionary
      * Return the SQL needed to select the list of sequences.
      * @deprecated
      */
+    @Deprecated
     protected String getSequencesSQL(String schemaName, String sequenceName) {
         return null;
     }
@@ -4159,6 +4173,7 @@ public class DBDictionary
      * column patterns.
      * @deprecated
      */
+    @Deprecated
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
         throws SQLException {
@@ -4235,6 +4250,7 @@ public class DBDictionary
      * Reflect on the schema to find primary keys for the given table pattern.
      * @deprecated
      */
+    @Deprecated
     public PrimaryKey[] getPrimaryKeys(DatabaseMetaData meta,
         String catalog, String schemaName, String tableName, Connection conn)
         throws SQLException {
@@ -4259,6 +4275,7 @@ public class DBDictionary
      * Reflect on the schema to find primary keys for the given table pattern.
      * @deprecated
      */
+    @Deprecated
     protected PrimaryKey[] getPrimaryKeysFromGetPrimaryKeys
         (DatabaseMetaData meta, String catalog, String schemaName,
             String tableName, Connection conn)
@@ -4314,6 +4331,7 @@ public class DBDictionary
      * Reflect on the schema to find primary keys for the given table pattern.
      * @deprecated
      */
+    @Deprecated
     protected PrimaryKey[] getPrimaryKeysFromBestRowIdentifier
         (DatabaseMetaData meta, String catalog, String schemaName,
             String tableName, Connection conn) throws SQLException {
@@ -4360,6 +4378,7 @@ public class DBDictionary
      * Reflect on the schema to find indexes matching the given table pattern.
      * @deprecated
      */
+    @Deprecated
     public Index[] getIndexInfo(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, boolean unique,
         boolean approx, Connection conn)
@@ -4418,6 +4437,7 @@ public class DBDictionary
      * table pattern.
      * @deprecated
      */
+    @Deprecated
     public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, Connection conn)
         throws SQLException {
@@ -4439,6 +4459,7 @@ public class DBDictionary
      * table pattern.
      * @deprecated
      */
+    @Deprecated
     public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, Connection conn, boolean partialKeys)
         throws SQLException {
@@ -4465,8 +4486,8 @@ public class DBDictionary
                 getSchemaNameForMetadata(schemaName),
                 getTableNameForMetadata(tableName));
 
-            List<ForeignKey> importedKeyList = new ArrayList<ForeignKey>();
-            Map<FKMapKey, ForeignKey> fkMap = new HashMap<FKMapKey, ForeignKey>();
+            List<ForeignKey> importedKeyList = new ArrayList<>();
+            Map<FKMapKey, ForeignKey> fkMap = new HashMap<>();
 
             while (keys != null && keys.next()) {
                 ForeignKey nfk = newForeignKey(keys);
@@ -4632,6 +4653,7 @@ public class DBDictionary
     /**
      * Return DB specific schemaCase
      */
+    @Override
     public String getSchemaCase(){
         return schemaCase;
     }
@@ -4703,7 +4725,7 @@ public class DBDictionary
         return toDBName(namingUtil.getGeneratedKeySequenceName(col, maxAutoAssignNameLength));
     }
 
-    protected Map<String, StoredProcedure> _procs = new TreeMap<String, StoredProcedure>();
+    protected Map<String, StoredProcedure> _procs = new TreeMap<>();
 
     /**
      * Gets the metadata of the stored procedure by the given name either from the cached version or
@@ -4748,6 +4770,7 @@ public class DBDictionary
     // Configurable implementation
     ///////////////////////////////
 
+    @Override
     public void setConfiguration(Configuration conf) {
         this.conf = (JDBCConfiguration) conf;
         this.log = this.conf.getLog(JDBCConfiguration.LOG_JDBC);
@@ -4776,9 +4799,11 @@ public class DBDictionary
         return true;
     }
 
+    @Override
     public void startConfiguration() {
     }
 
+    @Override
     public void endConfiguration() {
         // initialize the set of reserved SQL92 words from resource
         InputStream in = DBDictionary.class.getResourceAsStream
@@ -4837,7 +4862,7 @@ public class DBDictionary
             return;
         Set<String> codes = sqlStateCodes.get(errorType);
         if (codes == null) {
-            codes = new HashSet<String>();
+            codes = new HashSet<>();
             codes.add(errorCode.trim());
             sqlStateCodes.put(errorType, codes);
         } else {
@@ -4947,6 +4972,7 @@ public class DBDictionary
      * {@link #initializationSQL} that has been set for the dictionary but
      * does not decorate the connection.
      */
+    @Override
     public Connection decorate(Connection conn)
         throws SQLException {
         if (!connected)
@@ -4983,6 +5009,7 @@ public class DBDictionary
      * @see LoggingConnectionDecorator#setWarningAction
      * @see LoggingConnectionDecorator#setWarningHandler
      */
+    @Override
     public void handleWarning(SQLWarning warning)
         throws SQLException {
     }
@@ -5063,7 +5090,7 @@ public class DBDictionary
             if (states.getValue().contains(errorState))
                 return states.getKey();
         }
-        return StoreException.GENERAL;
+        return ExceptionInfo.GENERAL;
     }
 
     /**
@@ -5260,6 +5287,7 @@ public class DBDictionary
      * Create an index if necessary for some database tables
      * @deprecated
      */
+    @Deprecated
     public void createIndexIfNecessary(Schema schema, String table,
             Column pkColumn) {
     }
@@ -5491,6 +5519,7 @@ public class DBDictionary
     /**
      * @return the supportsDelimitedIds
      */
+    @Override
     public boolean getSupportsDelimitedIdentifiers() {
         return (supportsDelimitedIdentifiers == null ? false : supportsDelimitedIdentifiers);
     }
@@ -5563,10 +5592,12 @@ public class DBDictionary
         return log;
     }
 
+    @Override
     public boolean delimitAll() {
         return delimitIdentifiers;
     }
 
+    @Override
     public String getLeadingDelimiter() {
         return leadingDelimiter;
     }
@@ -5575,14 +5606,17 @@ public class DBDictionary
         leadingDelimiter = delim;
     }
 
+    @Override
     public String getIdentifierDelimiter() {
         return catalogSeparator;
     }
 
+    @Override
     public String getIdentifierConcatenator() {
         return nameConcatenator;
     }
 
+    @Override
     public String getTrailingDelimiter() {
         return trailingDelimiter;
     }
@@ -5591,6 +5625,7 @@ public class DBDictionary
         trailingDelimiter = delim;
     }
 
+    @Override
     public IdentifierRule getDefaultIdentifierRule() {
         if (defaultNamingRule == null) {
             defaultNamingRule = namingRules.get(DBIdentifierType.DEFAULT.name());
@@ -5598,6 +5633,7 @@ public class DBDictionary
         return defaultNamingRule;
     }
 
+    @Override
     public <T> IdentifierRule getIdentifierRule(T t) {
         if (t.equals(DBIdentifierType.DEFAULT.name())) {
             return getDefaultIdentifierRule();
@@ -5609,6 +5645,7 @@ public class DBDictionary
         return nrule;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Map<String, IdentifierRule> getIdentifierRules() {
         return namingRules;
@@ -5621,6 +5658,7 @@ public class DBDictionary
         return namingUtil;
     }
 
+    @Override
     public String getDelimitedCase() {
         return delimitedCase;
     }
@@ -5651,6 +5689,7 @@ public class DBDictionary
         return defaultSchemaName;
     }
 
+    @Override
     public String getConversionKey() {
         if (conversionKey == null) {
             conversionKey = getLeadingDelimiter() + getIdentifierDelimiter() +

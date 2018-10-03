@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestQueryEscapeCharacters
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(Employee.class, CLEAR_TABLES);
 
@@ -59,6 +60,7 @@ public class TestQueryEscapeCharacters
         em.close();
     }
 
+    @Override
     public void tearDown() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

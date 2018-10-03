@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * the type.
  */
 public class TestMultForeignKeys extends SQLListenerTestCase {
+    @Override
     public void setUp() {
         setUp(SimpleEntity.class,
             ContainsMultSimpleEntity.class,
@@ -96,7 +97,7 @@ public class TestMultForeignKeys extends SQLListenerTestCase {
         contMultSE.setSimpleEntity1(se1);
         contMultSE.setSimpleEntity2(se2);
 
-        Collection<ContainsMultSimpleEntity> contMultSEColl = new ArrayList<ContainsMultSimpleEntity>();
+        Collection<ContainsMultSimpleEntity> contMultSEColl = new ArrayList<>();
         contMultSEColl.add(contMultSE);
 
         TopLevel tl = new TopLevel();

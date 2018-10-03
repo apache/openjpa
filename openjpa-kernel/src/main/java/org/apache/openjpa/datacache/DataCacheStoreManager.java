@@ -70,6 +70,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         super(sm);
     }
 
+    @Override
     public void setContext(StoreContext ctx) {
         _ctx = ctx;
         _mgr = ctx.getConfiguration().getDataCacheManagerInstance();
@@ -77,10 +78,12 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         super.setContext(ctx);
     }
 
+    @Override
     public void begin() {
         super.begin();
     }
 
+    @Override
     public void commit() {
         try {
             super.commit();
@@ -92,6 +95,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         }
     }
 
+    @Override
     public void rollback() {
         try {
             super.rollback();
@@ -128,7 +132,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             // map each data cache to the modifications we need to perform
             Map<DataCache,Modifications> modMap = null;
             if ((_ctx.getPopulateDataCache() && _inserts != null) || _updates != null || _deletes != null)
-                modMap = new HashMap<DataCache,Modifications>();
+                modMap = new HashMap<>();
             Modifications mods;
             DataCachePCData data;
             DataCache cache;
@@ -238,10 +242,10 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
      * stale instances into a collection of up-to-date {@link DataCachePCData}s.
      */
     private List<DataCachePCData> transformToVersionSafePCDatas(DataCache cache, List<PCDataHolder> holders) {
-        List<DataCachePCData> transformed = new ArrayList<DataCachePCData>(holders.size());
-        Map<Object,Integer> ids = new HashMap<Object,Integer>(holders.size());
+        List<DataCachePCData> transformed = new ArrayList<>(holders.size());
+        Map<Object,Integer> ids = new HashMap<>(holders.size());
         // this list could be removed if DataCache.getAll() took a Collection
-        List<Object> idList = new ArrayList<Object>(holders.size());
+        List<Object> idList = new ArrayList<>(holders.size());
         int i = 0;
         for (PCDataHolder holder : holders) {
             ids.put(holder.sm.getObjectId(), i++);
@@ -276,6 +280,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         return mods;
     }
 
+    @Override
     public boolean exists(OpenJPAStateManager sm, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
         CacheStatistics stats = (cache == null) ? null : cache.getStatistics();
@@ -296,6 +301,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         return super.exists(sm, edata);
     }
 
+    @Override
     public boolean isCached(List<Object> oids, BitSet edata) {
         // If using partitioned cache, we were and still are broke.
         DataCache cache = _mgr.getSystemDataCache();
@@ -316,6 +322,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         return super.isCached(oids, edata);
     }
 
+    @Override
     public boolean syncVersion(OpenJPAStateManager sm, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
         FetchConfiguration fc = sm.getContext().getFetchConfiguration();
@@ -352,6 +359,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         return super.syncVersion(sm, edata);
     }
 
+    @Override
     public boolean initialize(OpenJPAStateManager sm, PCState state, FetchConfiguration fetch, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
         if (cache == null) {
@@ -431,6 +439,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         }
     }
 
+    @Override
     public boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
@@ -513,6 +522,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         }
     }
 
+    @Override
     public Collection<Object> loadAll(Collection<OpenJPAStateManager> sms, PCState state, int load,
         FetchConfiguration fetch, Object edata) {
         if (bypass(fetch, load)) {
@@ -521,7 +531,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
         Map<OpenJPAStateManager, BitSet> unloaded = null;
         List<OpenJPAStateManager> smList = null;
-        Map<DataCache,List<OpenJPAStateManager>> caches = new HashMap<DataCache,List<OpenJPAStateManager>>();
+        Map<DataCache,List<OpenJPAStateManager>> caches = new HashMap<>();
         DataCache cache;
         DataCachePCData data;
         BitSet fields;
@@ -538,7 +548,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 || sm.getPCState() == PCState.HOLLOW) {
                 smList = caches.get(cache);
                 if (smList == null) {
-                    smList = new ArrayList<OpenJPAStateManager>();
+                    smList = new ArrayList<>();
                     caches.put(cache, smList);
                 }
                 smList.add(sm);
@@ -549,7 +559,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
     for(Entry<DataCache,List<OpenJPAStateManager>> entry : caches.entrySet()){
             cache = entry.getKey();
             smList = entry.getValue();
-            List<Object> oidList = new ArrayList<Object>(smList.size());
+            List<Object> oidList = new ArrayList<>(smList.size());
 
             for (OpenJPAStateManager sm : smList) {
                 oidList.add((OpenJPAId) sm.getObjectId());
@@ -659,11 +669,12 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
     private static Map<OpenJPAStateManager, BitSet> addUnloaded(OpenJPAStateManager sm, BitSet fields,
         Map<OpenJPAStateManager, BitSet> unloaded) {
         if (unloaded == null)
-            unloaded = new HashMap<OpenJPAStateManager, BitSet>();
+            unloaded = new HashMap<>();
         unloaded.put(sm, fields);
         return unloaded;
     }
 
+    @Override
     public Collection<Exception> flush(Collection<OpenJPAStateManager> states) {
         Collection<Exception> exceps = super.flush(states);
 
@@ -683,7 +694,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         for (OpenJPAStateManager sm : states) {
             if (sm.getPCState() == PCState.PNEW && !sm.isFlushed()) {
                 if (_inserts == null) {
-                    _inserts = new ArrayList<OpenJPAStateManager>();
+                    _inserts = new ArrayList<>();
                 }
                 _inserts.add(sm);
 
@@ -698,12 +709,12 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             }
             else if (sm.getPCState() == PCState.PDIRTY) {
                 if (_updates == null) {
-                    _updates = new HashMap<OpenJPAStateManager, BitSet>();
+                    _updates = new HashMap<>();
                 }
                 _updates.put(sm, sm.getDirty());
             } else if (sm.getPCState() == PCState.PDELETED) {
                 if (_deletes == null) {
-                    _deletes = new HashSet<OpenJPAStateManager>();
+                    _deletes = new HashSet<>();
                 }
                 _deletes.add(sm);
             }
@@ -830,10 +841,10 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
      */
     private static class Modifications {
 
-        public final List<PCDataHolder> additions = new ArrayList<PCDataHolder>();
-        public final List<PCDataHolder> newUpdates = new ArrayList<PCDataHolder>();
-        public final List<PCDataHolder> existingUpdates = new ArrayList<PCDataHolder>();
-        public final List<Object> deletes = new ArrayList<Object>();
+        public final List<PCDataHolder> additions = new ArrayList<>();
+        public final List<PCDataHolder> newUpdates = new ArrayList<>();
+        public final List<PCDataHolder> existingUpdates = new ArrayList<>();
+        public final List<Object> deletes = new ArrayList<>();
     }
 
     /**

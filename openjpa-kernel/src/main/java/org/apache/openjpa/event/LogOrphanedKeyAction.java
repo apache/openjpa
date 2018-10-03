@@ -77,6 +77,7 @@ public class LogOrphanedKeyAction
         _level = LogFactoryImpl.getLevel(level);
     }
 
+    @Override
     public Object orphan(Object oid, OpenJPAStateManager sm,
         ValueMetaData vmd) {
         Log log = vmd.getRepository().getConfiguration().getLog(_channel);

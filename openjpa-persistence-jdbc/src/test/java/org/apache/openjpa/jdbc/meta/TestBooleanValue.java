@@ -18,14 +18,17 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestBooleanValue extends SingleEMFTestCase {
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(EntityBool.class);
     }

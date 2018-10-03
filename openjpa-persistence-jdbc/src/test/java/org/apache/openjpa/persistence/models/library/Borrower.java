@@ -18,9 +18,20 @@
  */
 package org.apache.openjpa.persistence.models.library;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="LIBBORROWER")
@@ -52,7 +63,7 @@ public class Borrower {
             throw new IllegalArgumentException("name cannot be empty or null");
 
         this.name = name;
-        books = new HashSet<Book>();
+        books = new HashSet<>();
     }
 
     public String getName() {
@@ -62,7 +73,7 @@ public class Borrower {
     public List<Book> getBooks() {
         if (books == null)
             return null;
-        return new ArrayList<Book>(books);
+        return new ArrayList<>(books);
     }
 
     public void borrowBook(Book book) {
@@ -89,10 +100,12 @@ public class Borrower {
         return volunteer;
     }
 
+    @Override
     public String toString() {
         return "borrower [" + oid + "] " + name;
     }
 
+    @Override
     public int hashCode() {
         return oid;
     }
@@ -100,6 +113,7 @@ public class Borrower {
     /**
      * Uses the object's persistent identity value to determine equivalence.
      */
+    @Override
     public boolean equals(Object other) {
         // standard fare
         if (other == this)

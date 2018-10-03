@@ -29,10 +29,10 @@ public interface LoadListener {
     /**
      * Invoked after state has been loaded into the instance.
      */
-    public void afterLoad(LifecycleEvent event);
+    void afterLoad(LifecycleEvent event);
 
     /**
      * Invoked after state has been refreshed.
      */
-    public void afterRefresh(LifecycleEvent event);
+    void afterRefresh(LifecycleEvent event);
 }

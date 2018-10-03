@@ -46,10 +46,12 @@ class PreparedProjectionResultObjectProvider
         _res = res;
     }
 
+    @Override
     public Result getResult() {
         return _res;
     }
 
+    @Override
     public void open() throws SQLException {
         // do nothing
     }

@@ -34,10 +34,12 @@ public class TestOrderedMergedResultObjectProvider extends ResultListTest {
         super(test);
     }
 
+    @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new WindowResultList(provider, 10);
     }
 
+    @Override
     protected ResultObjectProvider[] getResultObjectProviders(List list) {
         Collections.shuffle(list);
         int quart = list.size() / 4;
@@ -68,6 +70,7 @@ public class TestOrderedMergedResultObjectProvider extends ResultListTest {
 
     private static class IntValueComparator implements Comparator {
 
+        @Override
         public int compare(Object o1, Object o2) {
             return Integer.valueOf(o1.toString()).
                 compareTo(Integer.valueOf(o2.toString()));

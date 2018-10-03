@@ -26,11 +26,11 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+import junit.framework.Assert;
 
 public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
     public int numStudents = 2;
@@ -41,6 +41,7 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
     public int semesterId = 1;
     public List rsAllStudents = null;
 
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Course.class,

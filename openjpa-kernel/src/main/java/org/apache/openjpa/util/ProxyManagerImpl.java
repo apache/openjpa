@@ -41,13 +41,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.enhance.AsmAdaptor;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -57,8 +58,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.StringUtil;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -93,8 +92,8 @@ public class ProxyManagerImpl
         _stdMaps.put(SortedMap.class, TreeMap.class);
     }
 
-    private final Set<String> _unproxyable = new HashSet<String>();
-    private final Map<Class<?>, Proxy> _proxies = new ConcurrentHashMap<Class<?>, Proxy>();
+    private final Set<String> _unproxyable = new HashSet<>();
+    private final Map<Class<?>, Proxy> _proxies = new ConcurrentHashMap<>();
     private boolean _trackChanges = true;
     private boolean _assertType = false;
     private boolean _delayedCollectionLoading = false;
@@ -145,6 +144,7 @@ public class ProxyManagerImpl
      * applies to proxies that implement java.util.Collection (ie. not arrays
      * or maps).  Defaults to false.
      */
+    @Override
     public boolean getDelayCollectionLoading() {
         return _delayedCollectionLoading;
     }
@@ -175,6 +175,7 @@ public class ProxyManagerImpl
             _unproxyable.addAll(Arrays.asList(StringUtil.split(clsNames, ";", 0)));
     }
 
+    @Override
     public Object copyArray(Object orig) {
         if (orig == null)
             return null;
@@ -192,6 +193,7 @@ public class ProxyManagerImpl
         }
     }
 
+    @Override
     public Collection copyCollection(Collection orig) {
         if (orig == null)
             return null;
@@ -202,6 +204,7 @@ public class ProxyManagerImpl
         return (Collection) proxy.copy(orig);
     }
 
+    @Override
     public Proxy newCollectionProxy(Class type, Class elementType,
         Comparator compare, boolean autoOff) {
         type = toProxyableCollectionType(type);
@@ -210,6 +213,7 @@ public class ProxyManagerImpl
             _trackChanges, autoOff);
     }
 
+    @Override
     public Map copyMap(Map orig) {
         if (orig == null)
             return null;
@@ -220,6 +224,7 @@ public class ProxyManagerImpl
         return (Map) proxy.copy(orig);
     }
 
+    @Override
     public Proxy newMapProxy(Class type, Class keyType,
         Class elementType, Comparator compare,boolean autoOff) {
         type = toProxyableMapType(type);
@@ -228,6 +233,7 @@ public class ProxyManagerImpl
             (_assertType) ? elementType : null, compare, _trackChanges, autoOff);
     }
 
+    @Override
     public Date copyDate(Date orig) {
         if (orig == null)
             return null;
@@ -238,11 +244,13 @@ public class ProxyManagerImpl
         return (Date) proxy.copy(orig);
     }
 
+    @Override
     public Proxy newDateProxy(Class type) {
         ProxyDate proxy = getFactoryProxyDate(type);
         return proxy.newInstance();
     }
 
+    @Override
     public Calendar copyCalendar(Calendar orig) {
         if (orig == null)
             return null;
@@ -253,6 +261,7 @@ public class ProxyManagerImpl
         return (Calendar) proxy.copy(orig);
     }
 
+    @Override
     public Proxy newCalendarProxy(Class type, TimeZone zone) {
         if (type == Calendar.class)
             type = GregorianCalendar.class;
@@ -263,6 +272,7 @@ public class ProxyManagerImpl
         return cal;
     }
 
+    @Override
     public Object copyCustom(Object orig) {
         if (orig == null)
             return null;
@@ -282,6 +292,7 @@ public class ProxyManagerImpl
         return (proxy == null) ? null : proxy.copy(orig);
     }
 
+    @Override
     public Proxy newCustomProxy(Object orig, boolean autoOff) {
         if (orig == null)
             return null;
@@ -463,6 +474,7 @@ public class ProxyManagerImpl
             if (pcls == null) {
                 // TODO Move this to J2DOPrivHelper?
                 BCClass bc = AccessController.doPrivileged(new PrivilegedAction<BCClass>() {
+                    @Override
                     public BCClass run() {
                         return generateProxyBeanBytecode(type, true);
                     }
@@ -1727,6 +1739,7 @@ public class ProxyManagerImpl
                 // TODO Move this to J2DOPrivHelper
                 bc = AccessController
                     .doPrivileged(new PrivilegedAction<BCClass>() {
+                        @Override
                         public BCClass run() {
                             return mgr.generateProxyBeanBytecode(fCls, false);
                         }

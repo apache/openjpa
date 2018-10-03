@@ -65,6 +65,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
     public DelayedLinkedHashSetProxy() {
     }
 
+    @Override
     public void setOwner(OpenJPAStateManager paramOpenJPAStateManager,
             int paramInt) {
         // If clearing the owner of this proxy, store away what is necessary for
@@ -97,14 +98,17 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
         return false;
     }
 
+    @Override
     public OpenJPAStateManager getOwner() {
         return this.sm;
     }
 
+    @Override
     public int getOwnerField() {
         return this.field;
     }
 
+    @Override
     public ChangeTracker getChangeTracker() {
         return this.changeTracker;
     }
@@ -118,6 +122,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
         return new LinkedHashSet((Collection) paramObject);
     }
 
+    @Override
     public Class getElementType() {
         return this.elementType;
     }
@@ -126,6 +131,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
         elementType = elemType;
     }
 
+    @Override
     public ProxyCollection newInstance(Class paramClass,
             Comparator paramComparator, boolean paramBoolean1,
             boolean paramBoolean2) {
@@ -285,6 +291,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
         return super.toString();
     }
 
+    @Override
     public boolean equals(Object paramObject) {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -292,6 +299,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
         return super.equals(paramObject);
     }
 
+    @Override
     public int hashCode() {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -302,6 +310,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
     // //////////////////////////////////////
     // DelayedProxy methods
     // //////////////////////////////////////
+    @Override
     public int getDelayedField() {
         if (field == -1 || _detached) {
             return _delayedField;
@@ -309,6 +318,7 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
         return field;
     }
 
+    @Override
     public OpenJPAStateManager getDelayedOwner() {
         if (sm == null || _detached) {
             return _delayedSm;
@@ -316,10 +326,12 @@ public class DelayedLinkedHashSetProxy extends LinkedHashSet implements DelayedP
         return sm;
     }
 
+    @Override
     public boolean isDirectAccess() {
         return _directAccess;
     }
 
+    @Override
     public void setDirectAccess(boolean direct) {
         _directAccess = direct;
     }

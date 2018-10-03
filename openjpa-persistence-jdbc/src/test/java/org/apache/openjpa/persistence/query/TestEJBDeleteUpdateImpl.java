@@ -20,11 +20,10 @@ package org.apache.openjpa.persistence.query;
 
 import javax.persistence.Query;
 
-
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.query.common.apps.Entity1;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest2;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
 
@@ -36,6 +35,7 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
         super(test);
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);

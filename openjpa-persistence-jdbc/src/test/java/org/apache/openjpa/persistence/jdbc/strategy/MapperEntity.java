@@ -37,7 +37,7 @@ public class MapperEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @MapKeyColumn(name = "CODE")
     @MapKeyEnumerated(EnumType.STRING)
-    private Map<Key, MappedEntity> values = new HashMap<Key, MappedEntity>();
+    private Map<Key, MappedEntity> values = new HashMap<>();
 
     public MappedEntity get(Key key) {
         if (!values.containsKey(key)) {

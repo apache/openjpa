@@ -39,9 +39,9 @@ import serp.bytecode.Project;
  *
  */
 public class ClassSelector {
-	private List<String> _supers = new ArrayList<String>();
-	private List<String> _interfaces = new ArrayList<String>();
-	private List<String> _annotations = new ArrayList<String>();
+	private List<String> _supers = new ArrayList<>();
+	private List<String> _interfaces = new ArrayList<>();
+	private List<String> _annotations = new ArrayList<>();
 
 	/**
 	 * Prints the class names that satisfy the following criteria
@@ -82,7 +82,7 @@ public class ClassSelector {
 	 * @return list of class names that match the selection.
 	 */
 	public List<String> list(File file, boolean recursive) {
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		list(file, recursive, names);
 		return names;
 	}
@@ -91,6 +91,7 @@ public class ClassSelector {
 		if (file.isDirectory()) {
 			if (recursive) {
                 String[] children = file.list(new FilenameFilter() {
+                    @Override
                     public boolean accept(File dir, String name) {
 						return name.endsWith(".class");
 					}
@@ -98,6 +99,7 @@ public class ClassSelector {
 				for (String name : children)
                     list(new File(file, name), recursive, names);
 				String[] dirs = file.list(new FilenameFilter() {
+                    @Override
                     public boolean accept(File dir, String name) {
                         return new File(dir, name).isDirectory();
 					}

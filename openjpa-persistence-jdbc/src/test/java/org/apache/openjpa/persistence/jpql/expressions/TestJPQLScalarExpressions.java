@@ -20,14 +20,17 @@ package org.apache.openjpa.persistence.jpql.expressions;
 
 import java.util.List;
 
-import javax.persistence.Query;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.common.apps.*;
+import org.apache.openjpa.persistence.common.apps.Address;
+import org.apache.openjpa.persistence.common.apps.CompUser;
+import org.apache.openjpa.persistence.common.apps.FemaleUser;
+import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestJPQLScalarExpressions extends AbstractTestCase {
@@ -44,6 +47,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         super(name, "jpqlclausescactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(CompUser.class);
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();

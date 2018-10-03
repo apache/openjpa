@@ -39,10 +39,12 @@ public class TestSavepointEmbeddedPreFlush extends TestSavepointEmbedded {
         super(name);
     }
 
+    @Override
     protected String getSavepointPlugin() {
         return "in-mem(PreFlush=true)";
     }
 
+    @Override
     protected boolean expectNewEmbeddedFailure() {
         return false;
     }

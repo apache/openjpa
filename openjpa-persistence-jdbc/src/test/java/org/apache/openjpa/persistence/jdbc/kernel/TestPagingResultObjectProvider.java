@@ -18,22 +18,26 @@
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
-import java.util.*;
-
-import org.apache.openjpa.jdbc.sql.*;
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 //import org.apache.openjpa.kernel.Extent;
 import org.apache.openjpa.persistence.Extent;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.common.apps.PagingAppIdPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.PagingHelperPC;
+import org.apache.openjpa.persistence.jdbc.common.apps.PagingPC;
 
 /**
  * <p>Test large result, to-many eager paging.</p>
@@ -49,6 +53,7 @@ public class TestPagingResultObjectProvider
 		super(name);
 	}
 
+    @Override
     public void setUp() throws Exception{
 		super.setUp();
 		emf = getEmf(getProps());
@@ -62,7 +67,7 @@ public class TestPagingResultObjectProvider
             (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI)
             OpenJPAPersistence.cast(emf)).getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
-        if (dict.joinSyntax == Join.SYNTAX_TRADITIONAL)
+        if (dict.joinSyntax == JoinSyntaxes.SYNTAX_TRADITIONAL)
             return true;
 
         // skip test case that requires subselect for DBs that don't support it

@@ -19,6 +19,7 @@
 package org.apache.openjpa.ee;
 
 import java.lang.reflect.Method;
+
 import javax.transaction.TransactionManager;
 
 /**
@@ -40,6 +41,7 @@ public class SunOneManagedRuntime extends AbstractManagedRuntime
             (Class[]) null);
     }
 
+    @Override
     public TransactionManager getTransactionManager()
         throws Exception {
         // return Switch.getSwitch ().getTransactionManager ();
@@ -47,12 +49,14 @@ public class SunOneManagedRuntime extends AbstractManagedRuntime
         return (TransactionManager) _txManagerMeth.invoke(sw, (Object[]) null);
     }
 
+    @Override
     public void setRollbackOnly(Throwable cause)
         throws Exception {
         // there is no generic support for setting the rollback cause
         getTransactionManager().getTransaction().setRollbackOnly();
     }
 
+    @Override
     public Throwable getRollbackCause()
         throws Exception {
         // there is no generic support for setting the rollback cause

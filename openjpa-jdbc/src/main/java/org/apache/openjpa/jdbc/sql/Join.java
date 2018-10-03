@@ -158,10 +158,12 @@ public class Join
         return join;
     }
 
+    @Override
     public int hashCode() {
         return _alias1 ^ _alias2;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -173,6 +175,7 @@ public class Join
             || (_alias1 == j._alias2 && _alias2 == j._alias1);
     }
 
+    @Override
     public String toString() {
         String typeString;
         if (_type == TYPE_CROSS)
@@ -187,6 +190,7 @@ public class Join
             + _alias1 + "->t" + _alias2 + " (" + typeString + ")";
     }
 
+    @Override
     public Object clone() {
         try {
             return super.clone();

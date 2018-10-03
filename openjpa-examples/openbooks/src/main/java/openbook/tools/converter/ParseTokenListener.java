@@ -21,11 +21,11 @@ package openbook.tools.converter;
 import java.io.PrintStream;
 import java.util.StringTokenizer;
 
-import openbook.tools.parser.JavaParser;
-
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.debug.BlankDebugEventListener;
+
+import openbook.tools.parser.JavaParser;
 
 /**
  * A token processor to render the ANTLR tokens.

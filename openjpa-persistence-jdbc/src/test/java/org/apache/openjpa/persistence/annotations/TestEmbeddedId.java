@@ -18,13 +18,12 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import javax.persistence.*;
+import javax.persistence.Query;
 
-import org.apache.openjpa.enhance.*;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-
-import
-    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbeddedIdClass;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbeddedIdEntity;
 
 /**
  * <p>Test embedded id classes.</p>
@@ -42,6 +41,7 @@ public class TestEmbeddedId extends AnnotationTestCase
     EmbeddedIdClass _oid;
     EmbeddedIdClass _roid;
 
+    @Override
     public void setUp() {
         deleteAll(EmbeddedIdEntity.class);
 

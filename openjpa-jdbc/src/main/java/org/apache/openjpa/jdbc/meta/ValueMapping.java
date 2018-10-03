@@ -44,139 +44,139 @@ public interface ValueMapping
     /**
      * Standard forward join.
      */
-    public static final int JOIN_FORWARD = 0;
+    int JOIN_FORWARD = 0;
 
     /**
      * Inverse join.
      */
-    public static final int JOIN_INVERSE = 1;
+    int JOIN_INVERSE = 1;
 
     /**
      * Inverse join that is marked up as a forward join because the
      * backing mapping expects an inverse direction.
      */
-    public static final int JOIN_EXPECTED_INVERSE = 2;
+    int JOIN_EXPECTED_INVERSE = 2;
 
     /**
      * A fully polymorphic relation (the default).
      */
-    public static final int POLY_TRUE = 0;
+    int POLY_TRUE = 0;
 
     /**
      * A non-polymorphic relation.
      */
-    public static final int POLY_FALSE = 1;
+    int POLY_FALSE = 1;
 
     /**
      * A relation that can hold any joinable subclass type.
      */
-    public static final int POLY_JOINABLE = 2;
+    int POLY_JOINABLE = 2;
 
     /**
      * Raw mapping data.
      */
-    public ValueMappingInfo getValueInfo();
+    ValueMappingInfo getValueInfo();
 
     /**
      * The handler used for this value, or null if none.
      */
-    public ValueHandler getHandler();
+    ValueHandler getHandler();
 
     /**
      * The handler used for this value, or null if none.
      */
-    public void setHandler(ValueHandler handler);
+    void setHandler(ValueHandler handler);
 
     /**
      * Convenience method to perform cast from
      * {@link ValueMetaData#getRepository}.
      */
-    public MappingRepository getMappingRepository();
+    MappingRepository getMappingRepository();
 
     /**
      * Convenience method to perform cast from
      * {@link ValueMetaData#getFieldMetaData}.
      */
-    public FieldMapping getFieldMapping();
+    FieldMapping getFieldMapping();
 
     /**
      * Convenience method to perform cast from
      * {@link ValueMetaData#getTypeMetaData}.
      */
-    public ClassMapping getTypeMapping();
+    ClassMapping getTypeMapping();
 
     /**
      * Convenience method to perform cast from
      * {@link ValueMetaData#getDeclaredTypeMetaData}.
      */
-    public ClassMapping getDeclaredTypeMapping();
+    ClassMapping getDeclaredTypeMapping();
 
     /**
      * Convenience method to perform cast from
      * {@link ValueMetaData#getEmbeddedMetaData}.
      */
-    public ClassMapping getEmbeddedMapping();
+    ClassMapping getEmbeddedMapping();
 
     /**
      * Convenience method to perform cast from
      * {@link ValueMetaData#getValueMappedByMetaData}.
      */
-    public FieldMapping getValueMappedByMapping();
+    FieldMapping getValueMappedByMapping();
 
     /**
      * The columns that hold the data for this value.
      */
-    public Column[] getColumns();
+    Column[] getColumns();
 
     /**
      * The columns that hold the data for this value.
      */
-    public void setColumns(Column[] cols);
+    void setColumns(Column[] cols);
 
     /**
      * I/O information on the foreign key, or columns if this value doesn't
      * have a key.
      */
-    public ColumnIO getColumnIO();
+    ColumnIO getColumnIO();
 
     /**
      * I/O information on the foreign key, or columns if this value doesn't
      * have a key.
      */
-    public void setColumnIO(ColumnIO io);
+    void setColumnIO(ColumnIO io);
 
     /**
      * If this value joins to another record, the foreign key.
      */
-    public ForeignKey getForeignKey();
+    ForeignKey getForeignKey();
 
     /**
      * Return an equivalent of this value's foreign key, but joining to the
      * given target, which may be an unjoined subclass of this value's
      * related type.
      */
-    public ForeignKey getForeignKey(ClassMapping target);
+    ForeignKey getForeignKey(ClassMapping target);
 
     /**
      * If this value joins to another record, the foreign key.
      */
-    public void setForeignKey(ForeignKey fk);
+    void setForeignKey(ForeignKey fk);
 
     /**
      * The join direction.
      */
-    public int getJoinDirection();
+    int getJoinDirection();
 
     /**
      * The join direction.
      */
-    public void setJoinDirection(int direction);
+    void setJoinDirection(int direction);
 
     /**
      * Sets this value's foreign key to the given related object. The object
      * may be null.
      */
-    public void setForeignKey(Row row, OpenJPAStateManager rel)
+    void setForeignKey(Row row, OpenJPAStateManager rel)
         throws SQLException;
 
     /**
@@ -184,14 +184,14 @@ public interface ValueMapping
      * may be null. If the object is one of2or more foreign keys with the
      * same target, the targetNumber specifies the one to set.
      */
-    public void setForeignKey(Row row, OpenJPAStateManager rel, int targetNumber)
+    void setForeignKey(Row row, OpenJPAStateManager rel, int targetNumber)
         throws SQLException;
 
     /**
      * Sets this value's foreign key to the given related object. The object
      * may be null.
      */
-    public void whereForeignKey(Row row, OpenJPAStateManager rel)
+    void whereForeignKey(Row row, OpenJPAStateManager rel)
         throws SQLException;
 
     /**
@@ -199,7 +199,7 @@ public interface ValueMapping
      * on whether this value is polymorphic and how the related type is mapped.
      * Return an empty array if value type is not PC.
      */
-    public ClassMapping[] getIndependentTypeMappings();
+    ClassMapping[] getIndependentTypeMappings();
 
     /**
      * Return the {@link org.apache.openjpa.sql.Select} subclasses constant
@@ -207,52 +207,52 @@ public interface ValueMapping
      * whether this relation is polymorphic, and whether it is configured to
      * use class criteria.
      */
-    public int getSelectSubclasses();
+    int getSelectSubclasses();
 
     /**
      * Unique constraint on this value's columns, or null if none.
      */
-    public Unique getValueUnique();
+    Unique getValueUnique();
 
     /**
      * Unique constraint on this value's columns, or null if none.
      */
-    public void setValueUnique(Unique unq);
+    void setValueUnique(Unique unq);
 
     /**
      * Index on this value's columns, or null if none.
      */
-    public Index getValueIndex();
+    Index getValueIndex();
 
     /**
      * Index on this value's columns, or null if none.
      */
-    public void setValueIndex(Index idx);
+    void setValueIndex(Index idx);
 
     /**
      * Whether to use class criteria when joining to related type.
      */
-    public boolean getUseClassCriteria();
+    boolean getUseClassCriteria();
 
     /**
      * Whether to use class criteria when joining to related type.
      */
-    public void setUseClassCriteria(boolean criteria);
+    void setUseClassCriteria(boolean criteria);
 
     /**
      * The degree to which this relation is polymorphic.
      */
-    public int getPolymorphic();
+    int getPolymorphic();
 
     /**
      * The degree to which this relation is polymorphic.
      */
-    public void setPolymorphic(int polymorphic);
+    void setPolymorphic(int polymorphic);
 
     /**
      * Increase the reference count on used schema components.
      */
-    public void refSchemaComponents();
+    void refSchemaComponents();
 
     /**
      * Map indexes and constraints for this value, using the current
@@ -260,27 +260,27 @@ public interface ValueMapping
      * must be set before calling this method.
      * @deprecated
      */
-    public void mapConstraints(String name, boolean adapt);
+    @Deprecated void mapConstraints(String name, boolean adapt);
 
     /**
      * Map indexes and constraints for this value, using the current
      * {@link ValueMappingInfo}. The foreign key or columns of this value
      * must be set before calling this method.
      */
-    public void mapConstraints(DBIdentifier name, boolean adapt);
+    void mapConstraints(DBIdentifier name, boolean adapt);
 
     /**
      * Clear mapping information, including strategy.
      */
-    public void clearMapping();
+    void clearMapping();
 
     /**
      * Update {@link MappingInfo} with our current mapping information.
      */
-    public void syncMappingInfo();
+    void syncMappingInfo();
 
     /**
      * Copy mapping info from the given instance to this one.
      */
-    public void copyMappingInfo(ValueMapping vm);
+    void copyMappingInfo(ValueMapping vm);
 }

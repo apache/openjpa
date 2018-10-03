@@ -34,7 +34,8 @@ public class TestEJBConstantJoinOnSameRefTable
 		super(name);
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public void setUp ()
 	{
 		deleteAll(ConstantJoinPC4.class);

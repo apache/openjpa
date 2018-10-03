@@ -20,8 +20,8 @@ package org.apache.openjpa.validation;
 
 import org.apache.openjpa.util.OpenJPAException;
 
-@SuppressWarnings("serial")
 public class ValidationUnavailableException extends OpenJPAException {
+    private static final long serialVersionUID = 1L;
 
     public ValidationUnavailableException(String msg) {
         super(msg);

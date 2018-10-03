@@ -35,6 +35,7 @@ import org.apache.openjpa.slice.jdbc.DistributedJDBCConfiguration;
  *
  */
 public class TestConfiguration extends SliceTestCase {
+    @Override
     protected String getPersistenceUnitName() {
         return "per-slice";
     }

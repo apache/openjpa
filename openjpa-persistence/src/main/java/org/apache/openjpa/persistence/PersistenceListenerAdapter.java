@@ -27,9 +27,9 @@ import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.LoadListener;
 import org.apache.openjpa.event.PersistListener;
+import org.apache.openjpa.event.PostDeleteListener;
 import org.apache.openjpa.event.PostPersistListener;
 import org.apache.openjpa.event.UpdateListener;
-import org.apache.openjpa.event.PostDeleteListener;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.CallbackException;
 
@@ -57,6 +57,7 @@ class PersistenceListenerAdapter
         }
     }
 
+    @Override
     public boolean respondsTo(int eventType) {
         return _callbacks[eventType] != null;
     }
@@ -81,42 +82,52 @@ class PersistenceListenerAdapter
         }
     }
 
+    @Override
     public void beforePersist(LifecycleEvent event) {
         makeCallback(event);
     }
 
+    @Override
     public void afterPersist(LifecycleEvent event) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void afterPersistPerformed(LifecycleEvent event) {
         makeCallback(event);
     }
 
+    @Override
     public void afterLoad(LifecycleEvent event) {
         makeCallback(event);
     }
 
+    @Override
     public void afterRefresh(LifecycleEvent event) {
         // no analagous callback
     }
 
+    @Override
     public void beforeUpdate(LifecycleEvent event) {
         makeCallback(event);
     }
 
+    @Override
     public void afterUpdatePerformed(LifecycleEvent event) {
         makeCallback(event);
     }
 
+    @Override
     public void beforeDelete(LifecycleEvent event) {
         makeCallback(event);
     }
 
+    @Override
     public void afterDelete(LifecycleEvent event) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void afterDeletePerformed(LifecycleEvent event) {
         makeCallback(event);
     }

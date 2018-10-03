@@ -26,7 +26,7 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 public interface InterfaceTest {
 
-    public String getStringField();
+    String getStringField();
 
-    public void setStringField(String str);
+    void setStringField(String str);
 }

@@ -33,6 +33,7 @@ public class TestByteArray extends SingleEMFTestCase {
     protected CriteriaBuilder cb;
     String pic = "IamNotAPicture";
     Character[] chars = new Character[] { new Character('a'), new Character('b') };
+    @Override
     public void setUp() {
         super.setUp(BlogUser.class
             // Using the following property will require corresponding

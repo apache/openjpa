@@ -23,6 +23,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestGetMetaData extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         setUp(Item.class, Person.class, Artist.class, Painter.class,
             CLEAR_TABLES);

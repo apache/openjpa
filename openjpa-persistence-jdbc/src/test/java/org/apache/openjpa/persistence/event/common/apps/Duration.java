@@ -93,6 +93,7 @@ public class Duration
         _running = false;
     }
 
+    @Override
     protected Object clone()
 
         throws CloneNotSupportedException {
@@ -176,6 +177,7 @@ public class Duration
         return _started;
     }
 
+    @Override
     public String toString() {
 
         double time = 0.0;

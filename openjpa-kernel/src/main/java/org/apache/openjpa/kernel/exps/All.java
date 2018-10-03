@@ -34,12 +34,15 @@ import org.apache.openjpa.util.UnsupportedException;
 class All
     extends UnaryMathVal {
 
+    
+    private static final long serialVersionUID = 1L;
     private static final Localizer _loc = Localizer.forPackage(All.class);
 
     public All(Val val) {
         super(val);
     }
 
+    @Override
     protected Class getType(Class c) {
         Class wrap = Filters.wrap(c);
         if (wrap == Integer.class
@@ -52,6 +55,7 @@ class All
         return int.class;
     }
 
+    @Override
     protected Object operate(Object o, Class c) {
         throw new UnsupportedException(_loc.get("in-mem-subquery"));
     }

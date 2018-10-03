@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -28,6 +28,9 @@ import javax.persistence.Table;
 @Table(name="JDBC_AttachE")
 public class AttachE
     implements Serializable {
+
+    
+    private static final long serialVersionUID = 1L;
 
     private Object version;
 

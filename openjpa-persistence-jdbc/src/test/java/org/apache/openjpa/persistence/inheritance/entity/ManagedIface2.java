@@ -27,10 +27,9 @@ import org.apache.openjpa.persistence.ManagedInterface;
 @ManagedInterface
 @Entity
 public interface ManagedIface2 {
-    @Id @GeneratedValue
-    public int getId();
-    public void setId(int id);
+    @Id @GeneratedValue int getId();
+    void setId(int id);
 
-    public int getIntFieldSup();
-    public void setIntFieldSup(int i);
+    int getIntFieldSup();
+    void setIntFieldSup(int i);
 }

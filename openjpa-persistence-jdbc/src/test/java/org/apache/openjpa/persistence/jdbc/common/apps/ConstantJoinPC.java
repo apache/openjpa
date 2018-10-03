@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+
 import javax.persistence.Entity;
 
 @Entity

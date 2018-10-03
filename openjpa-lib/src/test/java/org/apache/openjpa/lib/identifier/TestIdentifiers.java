@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.lib.identifier;
 
-import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
-import org.apache.openjpa.lib.identifier.IdentifierUtil;
-import org.apache.openjpa.lib.identifier.IdentifierUtilImpl;
 import org.apache.openjpa.lib.test.AbstractTestCase;
 
 public class TestIdentifiers extends AbstractTestCase {

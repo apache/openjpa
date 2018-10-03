@@ -31,7 +31,7 @@ public interface QueryOperations {
      *
      * @see QueryContext#getOperation
      */
-    public static final int OP_SELECT = 1;
+    int OP_SELECT = 1;
 
     /**
      * Symbolic constant that indicates that this query will be
@@ -39,7 +39,7 @@ public interface QueryOperations {
      *
      * @see QueryContext#getOperation
      */
-    public static final int OP_DELETE = 2;
+    int OP_DELETE = 2;
 
     /**
      * Symbolic constant that indicates that this query will be
@@ -47,5 +47,5 @@ public interface QueryOperations {
      *
      * @see QueryContext#getOperation
      */
-    public static final int OP_UPDATE = 3;
+    int OP_UPDATE = 3;
 }

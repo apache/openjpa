@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.enhance;
 
+import java.io.IOException;
+
+import javax.persistence.EntityManager;
+
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.MappingTool;
@@ -25,9 +29,6 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-
-import javax.persistence.EntityManager;
-import java.io.IOException;
 
 public class TestEmbeddedEnumSqlGeneration
     extends AbstractTestCase {
@@ -38,6 +39,7 @@ public class TestEmbeddedEnumSqlGeneration
         super(s, "org.apache.openjpa.persistence.enhance.EntityWithEnum");
     }
 
+    @Override
     public void setUp() {
     }
 

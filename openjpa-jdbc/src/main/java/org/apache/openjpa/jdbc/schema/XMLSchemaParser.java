@@ -25,9 +25,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.meta.SourceTracker;
@@ -35,6 +32,9 @@ import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.UserException;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -114,10 +114,10 @@ public class XMLSchemaParser
     private boolean _delay = false;
 
     // used to collect info on schema elements before they're resolved
-    private final Collection<PrimaryKeyInfo> _pkInfos = new LinkedList<PrimaryKeyInfo>();
-    private final Collection<IndexInfo> _indexInfos = new LinkedList<IndexInfo>();
-    private final Collection<UniqueInfo> _unqInfos = new LinkedList<UniqueInfo>();
-    private final Collection<ForeignKeyInfo> _fkInfos = new LinkedList<ForeignKeyInfo>();
+    private final Collection<PrimaryKeyInfo> _pkInfos = new LinkedList<>();
+    private final Collection<IndexInfo> _indexInfos = new LinkedList<>();
+    private final Collection<UniqueInfo> _unqInfos = new LinkedList<>();
+    private final Collection<ForeignKeyInfo> _fkInfos = new LinkedList<>();
 
     /**
      * Constructor. Supply configuration.
@@ -129,14 +129,17 @@ public class XMLSchemaParser
         setSuffix(".schema");
     }
 
+    @Override
     public boolean getDelayConstraintResolve() {
         return _delay;
     }
 
+    @Override
     public void setDelayConstraintResolve(boolean delay) {
         _delay = delay;
     }
 
+    @Override
     public void resolveConstraints() {
         resolvePrimaryKeys();
         resolveIndexes();
@@ -155,12 +158,14 @@ public class XMLSchemaParser
         _unqInfos.clear();
     }
 
+    @Override
     public SchemaGroup getSchemaGroup() {
         if (_group == null)
             _group = new SchemaGroup();
         return _group;
     }
 
+    @Override
     public void setSchemaGroup(SchemaGroup group) {
         _group = group;
     }
@@ -169,6 +174,7 @@ public class XMLSchemaParser
      * Parse the schema relating to the given class. The schemas will
      * be added to the current schema group.
      */
+    @Override
     protected void finish() {
         // now resolve pk, idx, fk info
         super.finish();
@@ -311,6 +317,7 @@ public class XMLSchemaParser
         }
     }
 
+    @Override
     protected void reset() {
         _schema = null;
         _table = null;
@@ -322,12 +329,14 @@ public class XMLSchemaParser
             clearConstraintInfo();
     }
 
+    @Override
     protected Reader getDocType()
         throws IOException {
         return new InputStreamReader(XMLSchemaParser.class
             .getResourceAsStream("schemas-doctype.rsrc"));
     }
 
+    @Override
     protected boolean startElement(String name, Attributes attrs)
         throws SAXException {
         switch (name.charAt(0)) {
@@ -366,6 +375,7 @@ public class XMLSchemaParser
         }
     }
 
+    @Override
     protected void endElement(String name) {
         switch (name.charAt(0)) {
             case's':
@@ -579,7 +589,7 @@ public class XMLSchemaParser
     private static class PrimaryKeyInfo {
 
         public PrimaryKey pk = null;
-        public Collection<String> cols = new LinkedList<String>();
+        public Collection<String> cols = new LinkedList<>();
     }
 
     /**
@@ -588,7 +598,7 @@ public class XMLSchemaParser
     private static class IndexInfo {
 
         public Index index = null;
-        public Collection<String> cols = new LinkedList<String>();
+        public Collection<String> cols = new LinkedList<>();
     }
 
     /**
@@ -597,7 +607,7 @@ public class XMLSchemaParser
     public static class UniqueInfo {
 
         public Unique unq = null;
-        public Collection<String> cols = new LinkedList<String>();
+        public Collection<String> cols = new LinkedList<>();
     }
 
     /**
@@ -607,11 +617,11 @@ public class XMLSchemaParser
 
         public ForeignKey fk = null;
         public String toTable = null;
-        public Collection<String> cols = new LinkedList<String>();
-        public Collection<String> pks = new LinkedList<String>();
-        public Collection<Object> consts = new LinkedList<Object>();
-        public Collection<String> constCols = new LinkedList<String>();
-        public Collection<Object> constsPK = new LinkedList<Object>();
-        public Collection<String> constColsPK = new LinkedList<String>();
+        public Collection<String> cols = new LinkedList<>();
+        public Collection<String> pks = new LinkedList<>();
+        public Collection<Object> consts = new LinkedList<>();
+        public Collection<String> constCols = new LinkedList<>();
+        public Collection<Object> constsPK = new LinkedList<>();
+        public Collection<String> constColsPK = new LinkedList<>();
     }
 }

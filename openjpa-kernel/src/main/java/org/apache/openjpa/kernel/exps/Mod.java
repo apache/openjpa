@@ -28,6 +28,9 @@ import org.apache.openjpa.kernel.Filters;
 class Mod
     extends MathVal {
 
+    
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor. Provide the values to mod.
      */
@@ -35,6 +38,7 @@ class Mod
         super(val1, val2);
     }
 
+    @Override
     protected Object operate(Object o1, Class c1, Object o2, Class c2) {
         return Filters.mod(o1, c1, o2, c2);
     }

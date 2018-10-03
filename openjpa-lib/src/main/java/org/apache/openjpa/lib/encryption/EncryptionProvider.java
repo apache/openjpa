@@ -35,7 +35,7 @@ public interface EncryptionProvider {
 	 * Note: Currently method is ONLY called to decrypt
 	 * openjpa.ConnectionPassword and openjpa.Connection2Password properties.
 	 */
-	public String decrypt(String password);
+	String decrypt(String password);
 
 	/**
 	 * This method will encrypt the provided string. If null is passed into this
@@ -45,5 +45,5 @@ public interface EncryptionProvider {
 	 * NOTE : This method is not called by the OpenJPA runtime. It is here for
 	 * possible future uses.
 	 */
-	public String encrypt(String password);
+	String encrypt(String password);
 }

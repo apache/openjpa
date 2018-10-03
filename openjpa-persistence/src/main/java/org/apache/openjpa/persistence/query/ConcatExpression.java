@@ -26,7 +26,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class ConcatExpression extends UnaryOperatorExpression {
-	public ConcatExpression(VarArgsExpression op) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public ConcatExpression(VarArgsExpression op) {
 		super(op, UnaryFunctionalOperator.CONCAT);
 	}
 }

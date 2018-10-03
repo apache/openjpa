@@ -25,11 +25,11 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
  */
 public interface HorizInterA {
 
-    public void setStringA(String stringA);
+    void setStringA(String stringA);
 
-    public String getStringA();
+    String getStringA();
 
-    public void setIntA(int intA);
+    void setIntA(int intA);
 
-    public int getIntA();
+    int getIntA();
 }

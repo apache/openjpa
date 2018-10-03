@@ -27,16 +27,19 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 import javax.persistence.EntityTransaction;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.MultiA;
+import org.apache.openjpa.persistence.jdbc.common.apps.MultiB;
+import org.apache.openjpa.persistence.jdbc.common.apps.MultiC;
+import org.apache.openjpa.persistence.jdbc.common.apps.MultiD;
 
 
 public class TestMultiTableMappings
@@ -56,6 +59,7 @@ public class TestMultiTableMappings
     public TestMultiTableMappings() {
     }
 
+    @Override
     public void setUpTestCase() {
        deleteAll(MultiA.class);
 

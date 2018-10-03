@@ -35,6 +35,7 @@ public class TestConfigurationProviderPrefixes
 
     private String[] _origPrefixes;
 
+    @Override
     public void setUp() {
         _origPrefixes = ProductDerivations.getConfigurationPrefixes();
         List l = new ArrayList(Arrays.asList(_origPrefixes));
@@ -43,6 +44,7 @@ public class TestConfigurationProviderPrefixes
             (String[]) l.toArray(new String[0]));
     }
 
+    @Override
     public void tearDown() {
         ProductDerivations.setConfigurationPrefixes(_origPrefixes);
     }

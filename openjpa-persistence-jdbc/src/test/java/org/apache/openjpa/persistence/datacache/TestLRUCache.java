@@ -67,7 +67,7 @@ public class TestLRUCache extends SingleEMFTestCase {
 
         Set<?> keys = cache.getCacheMap().keySet();
         assertEquals(cacheSize, keys.size());
-        List<String> strKeys = new ArrayList<String>();
+        List<String> strKeys = new ArrayList<>();
         for (Object key : keys) {
             strKeys.add(key.toString());
         }
@@ -87,7 +87,7 @@ public class TestLRUCache extends SingleEMFTestCase {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         StoreCacheImpl storeCache = (StoreCacheImpl) emf.getCache();
         DataCache cache = (DataCache) storeCache.getDelegate();
-        LinkedList<CachedPerson> people = new LinkedList<CachedPerson>();
+        LinkedList<CachedPerson> people = new LinkedList<>();
 
         // Persist cacheSize + 1 Entites.
         for (int i = 0; i < cacheSize + 1; i++) {

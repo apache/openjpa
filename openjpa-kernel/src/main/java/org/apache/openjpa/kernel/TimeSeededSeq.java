@@ -38,6 +38,7 @@ public class TimeSeededSeq
     private long _id = System.currentTimeMillis();
     private int _increment = 1;
 
+    @Override
     public void setType(int type) {
     }
 
@@ -49,18 +50,22 @@ public class TimeSeededSeq
         _increment = increment;
     }
 
+    @Override
     public synchronized Object next(StoreContext ctx, ClassMetaData meta) {
         _id += _increment;
         return _id;
     }
 
+    @Override
     public synchronized Object current(StoreContext ctx, ClassMetaData meta) {
         return _id;
     }
 
+    @Override
     public void allocate(int additional, StoreContext ctx, ClassMetaData meta) {
     }
 
+    @Override
     public void close() {
     }
 }

@@ -35,7 +35,7 @@ import javax.sql.DataSource;
 public class DecoratingDataSource extends DelegatingDataSource {
 
     private List<ConnectionDecorator> _decorators =
-        new CopyOnWriteArrayList<ConnectionDecorator>();
+        new CopyOnWriteArrayList<>();
 
     /**
      * Constructor. Supply wrapped data source.
@@ -82,11 +82,13 @@ public class DecoratingDataSource extends DelegatingDataSource {
         _decorators.clear();
     }
 
+    @Override
     public Connection getConnection() throws SQLException {
         Connection conn = super.getConnection();
         return decorate(conn);
     }
 
+    @Override
     public Connection getConnection(String user, String pass)
         throws SQLException {
         Connection conn = super.getConnection(user, pass);

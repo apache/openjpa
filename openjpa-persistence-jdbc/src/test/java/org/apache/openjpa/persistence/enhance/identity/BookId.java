@@ -32,10 +32,13 @@ import java.io.Serializable;
  *
  */
 public final class BookId implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     private String name;
     private String library;
 
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof BookId)) {
             return false;
@@ -54,6 +57,7 @@ public final class BookId implements Serializable {
         return true;
     }
 
+    @Override
     public int hashCode() {
         return safeHash(getName()) * safeHash(getLibrary());
     }

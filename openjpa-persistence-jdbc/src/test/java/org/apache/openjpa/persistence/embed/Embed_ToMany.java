@@ -32,7 +32,7 @@ public class Embed_ToMany {
     protected String name3;
 
     @OneToMany(fetch=FetchType.EAGER)
-    public List<EntityB1> bs = new ArrayList<EntityB1>();
+    public List<EntityB1> bs = new ArrayList<>();
 
     public String getName1() {
         return name1;

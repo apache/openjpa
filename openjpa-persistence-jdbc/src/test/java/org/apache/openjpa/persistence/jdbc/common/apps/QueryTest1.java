@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * <p>Used in testing; should be enhanced.</p>

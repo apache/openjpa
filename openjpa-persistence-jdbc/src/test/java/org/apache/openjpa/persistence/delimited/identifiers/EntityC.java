@@ -51,7 +51,7 @@ public class EntityC {
 
     @ManyToMany
     @JoinTable(name="\"c d\"", schema="\"delim id\"")
-    private Collection<EntityD> entityDs = new HashSet<EntityD>();
+    private Collection<EntityD> entityDs = new HashSet<>();
 
     @OneToOne
     @JoinColumn(name="\"entd2 id\"", referencedColumnName="\"entityD2 id\"")
@@ -60,13 +60,13 @@ public class EntityC {
     @ManyToMany
     @JoinTable(name="\"m jtbl\"", schema="\"delim id\"")
     @MapKeyJoinColumn(name="map_ed3", referencedColumnName="\"entityD3 id\"")
-    Map<EntityD3,EntityD4> map = new HashMap<EntityD3,EntityD4>();
+    Map<EntityD3,EntityD4> map = new HashMap<>();
 
     @ManyToMany
     @JoinTable(name="\"m2 jtbl\"", schema="\"delim id\"")
     @MapKeyJoinColumn(name="\"map ed4\"",
         referencedColumnName="\"entityD4 id\"")
-    Map<EntityD4,EntityD3> map2 = new HashMap<EntityD4,EntityD3>();
+    Map<EntityD4,EntityD3> map2 = new HashMap<>();
 
     public EntityC() {}
 

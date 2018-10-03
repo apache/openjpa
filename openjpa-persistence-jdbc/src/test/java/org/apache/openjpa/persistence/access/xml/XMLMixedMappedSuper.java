@@ -44,6 +44,7 @@ public class XMLMixedMappedSuper {
         return mname;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLMixedMappedSuper) {
             XMLMixedMappedSuper ps = (XMLMixedMappedSuper)obj;

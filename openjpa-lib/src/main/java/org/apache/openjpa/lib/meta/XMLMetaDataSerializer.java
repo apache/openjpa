@@ -86,10 +86,12 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
         _log = log;
     }
 
+    @Override
     public void serialize(int flags) throws IOException {
         serialize((Map) null, flags);
     }
 
+    @Override
     public void serialize(Map output, int flags)
         throws IOException {
         Map<File, Collection<Object>> files = getFileMap();
@@ -156,7 +158,7 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
 
         // create a map of files to lists of objects
         Map<File, Collection<Object>> files =
-            new HashMap<File, Collection<Object>>();
+            new HashMap<>();
         File file;
         Collection<Object> fileObjs;
         for(Object obj : objs) {
@@ -169,7 +171,7 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
 
             fileObjs = (Collection<Object>) files.get(file);
             if (fileObjs == null) {
-                fileObjs = new LinkedList<Object>();
+                fileObjs = new LinkedList<>();
                 files.put(file, fileObjs);
             }
             fileObjs.add(obj);
@@ -188,6 +190,7 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
         return null;
     }
 
+    @Override
     public void serialize(File file, int flags) throws IOException {
         if (_log != null)
             _log.info(_loc.get("ser-file", file));
@@ -205,6 +208,7 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
         }
     }
 
+    @Override
     public void serialize(Writer out, int flags) throws IOException {
         try {
             if ((flags & PRETTY) > 0)

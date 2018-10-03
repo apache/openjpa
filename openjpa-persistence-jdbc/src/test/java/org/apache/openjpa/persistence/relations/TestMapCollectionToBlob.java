@@ -32,6 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestMapCollectionToBlob
     extends SingleEMTestCase {
 
+    @Override
     public void setUp() {
         setUp(HandlerToHandlerMapInstance.class, CLEAR_TABLES,
             "openjpa.Compatibility", "StoreMapCollectionInEntityAsBlob=true");

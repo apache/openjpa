@@ -17,7 +17,9 @@
  * under the License.
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 
 @Embeddable
 public class PropertyOwner {
@@ -42,7 +44,8 @@ public class PropertyOwner {
 		this.ssn = ssn;
 	}
 
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (o == this) return true;
 		if (!(o instanceof PropertyOwner)) return false;
 		PropertyOwner p = (PropertyOwner) o;
@@ -51,7 +54,8 @@ public class PropertyOwner {
 		return true;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		int ret = 0;
 		ret = ret + 31 * ssn.hashCode();
 		ret = ret + 31 * addr.hashCode();

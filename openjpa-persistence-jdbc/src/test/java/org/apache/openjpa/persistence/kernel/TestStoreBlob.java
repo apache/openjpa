@@ -29,9 +29,8 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import org.apache.openjpa.persistence.kernel.common.apps.BlobTest;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.kernel.common.apps.BlobTest;
 
 public class TestStoreBlob extends BaseKernelTest {
 
@@ -45,6 +44,7 @@ public class TestStoreBlob extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(BlobTest.class);
     }

@@ -46,121 +46,121 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
     /**
      * Hint key for specifying the number of rows to optimize for.
      */
-    public static final String HINT_RESULT_COUNT = QueryHints.HINT_RESULT_COUNT;
+    String HINT_RESULT_COUNT = QueryHints.HINT_RESULT_COUNT;
 
     /**
      * The owning entity manager.
      */
-    public OpenJPAEntityManager getEntityManager();
+    OpenJPAEntityManager getEntityManager();
 
     /**
      * Query language.
      */
-    public String getLanguage();
+    String getLanguage();
 
     /**
      * Query operation type.
      */
-    public QueryOperationType getOperation();
+    QueryOperationType getOperation();
 
     /**
      * Fetch plan for controlling the loading of results.
      */
-    public FetchPlan getFetchPlan();
+    FetchPlan getFetchPlan();
 
     /**
      * Query string.
      */
-    public String getQueryString();
+    String getQueryString();
 
     /**
      * Whether to ignore changes in the current transaction.
      */
-    public boolean getIgnoreChanges();
+    boolean getIgnoreChanges();
 
     /**
      * Whether to ignore changes in the current transaction.
      */
-    public OpenJPAQuery<X>setIgnoreChanges(boolean ignore);
+    OpenJPAQuery<X>setIgnoreChanges(boolean ignore);
 
     /**
      * Return the candidate collection, or <code>null</code> if an
      * extent was specified instead of a collection.
      */
-    public Collection getCandidateCollection();
+    Collection getCandidateCollection();
 
     /**
      * Set a collection of candidates.
      */
-    public OpenJPAQuery<X> setCandidateCollection(Collection coll);
+    OpenJPAQuery<X> setCandidateCollection(Collection coll);
 
     /**
      * Query result element type.
      */
-    public Class getResultClass();
+    Class getResultClass();
 
     /**
      * Query result element type.
      */
-    public OpenJPAQuery<X> setResultClass(Class type);
+    OpenJPAQuery<X> setResultClass(Class type);
 
     /**
      * Whether subclasses are included in the query results.
      */
-    public boolean hasSubclasses();
+    boolean hasSubclasses();
 
     /**
      * Whether subclasses are included in the query results.
      */
-    public OpenJPAQuery<X> setSubclasses(boolean subs);
+    OpenJPAQuery<X> setSubclasses(boolean subs);
 
     /**
      * Return the 0-based start index for the returned results.
      */
-    public int getFirstResult();
+    @Override int getFirstResult();
 
     /**
      * Return the maximum number of results to retrieve.
      * or {@link Integer#MAX_VALUE} for no limit.
      */
-    public int getMaxResults();
+    @Override int getMaxResults();
 
     /**
      * Compile the query.
      */
-    public OpenJPAQuery<X> compile();
+    OpenJPAQuery<X> compile();
 
     /**
      * Whether this query has positional parameters.
      */
-    public boolean hasPositionalParameters();
+    boolean hasPositionalParameters();
 
     /**
      * The positional parameters for the query; empty array if none or
      * if query uses named parameters.
      */
-    public Object[] getPositionalParameters();
+    Object[] getPositionalParameters();
 
     /**
      * The named parameters for the query; empty map if none or
      * if query uses positional parameters.
      */
-    public Map<String, Object> getNamedParameters();
+    Map<String, Object> getNamedParameters();
 
     /**
      * Set parameters.
      */
-    public OpenJPAQuery<X> setParameters(Map params);
+    OpenJPAQuery<X> setParameters(Map params);
 
     /**
      * Set parameters.
      */
-    public OpenJPAQuery<X> setParameters(Object... params);
+    OpenJPAQuery<X> setParameters(Object... params);
 
     /**
      * Close all open query results.
      */
-    public OpenJPAQuery<X>closeAll();
+    OpenJPAQuery<X>closeAll();
 
     /**
      * Returns a description of the commands that will be sent to
@@ -169,25 +169,25 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
      *
      * @param params the named parameter map for the query invocation
      */
-    public String[] getDataStoreActions(Map params);
+    String[] getDataStoreActions(Map params);
 
-    public OpenJPAQuery<X> setMaxResults(int maxResult);
+    @Override OpenJPAQuery<X> setMaxResults(int maxResult);
 
-    public OpenJPAQuery<X> setFirstResult(int startPosition);
+    @Override OpenJPAQuery<X> setFirstResult(int startPosition);
 
-    public OpenJPAQuery<X> setHint(String hintName, Object value);
+    @Override OpenJPAQuery<X> setHint(String hintName, Object value);
 
-    public OpenJPAQuery<X> setParameter(String name, Object value);
+    @Override OpenJPAQuery<X> setParameter(String name, Object value);
 
-    public OpenJPAQuery<X> setParameter(String name, Date value, TemporalType temporalType);
+    @Override OpenJPAQuery<X> setParameter(String name, Date value, TemporalType temporalType);
 
-    public OpenJPAQuery<X> setParameter(String name, Calendar value, TemporalType temporalType);
+    @Override OpenJPAQuery<X> setParameter(String name, Calendar value, TemporalType temporalType);
 
-    public OpenJPAQuery<X> setParameter(int position, Object value);
+    @Override OpenJPAQuery<X> setParameter(int position, Object value);
 
-    public OpenJPAQuery<X> setParameter(int position, Date value, TemporalType temporalType);
+    @Override OpenJPAQuery<X> setParameter(int position, Date value, TemporalType temporalType);
 
-    public OpenJPAQuery<X> setParameter(int position, Calendar value, TemporalType temporalType);
+    @Override OpenJPAQuery<X> setParameter(int position, Calendar value, TemporalType temporalType);
 
     /**
      * Sets whether the type of user-supplied bind parameter value and the type of target persistent
@@ -201,7 +201,7 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
      *
      * @param hint a String or Boolean value.
      */
-    public void setRelaxBindParameterTypeChecking(Object hint);
+    void setRelaxBindParameterTypeChecking(Object hint);
 
     /**
      * Gets whether the type of user-supplied bind parameter value and the type of target persistent
@@ -210,75 +210,75 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
      * @return the booelan state. False by default, i.e. the type of a bind parameter value is checked
      * strongly against the target property type.
      */
-    public boolean getRelaxBindParameterTypeChecking();
+    boolean getRelaxBindParameterTypeChecking();
 
 
-    public OpenJPAQuery<X> setFlushMode(FlushModeType flushMode);
+    @Override OpenJPAQuery<X> setFlushMode(FlushModeType flushMode);
 
     /**
      * Return the current flush mode.
 	 */
-	public FlushModeType getFlushMode ();
+	@Override FlushModeType getFlushMode ();
 
     /**
      * @deprecated use the {@link QueryOperationType} instead.
      */
-    public static final int OP_SELECT = QueryOperations.OP_SELECT;
+    @Deprecated int OP_SELECT = QueryOperations.OP_SELECT;
 
     /**
      * @deprecated use the {@link QueryOperationType} instead.
      */
-    public static final int OP_DELETE = QueryOperations.OP_DELETE;
+    @Deprecated int OP_DELETE = QueryOperations.OP_DELETE;
 
     /**
      * @deprecated use the {@link QueryOperationType} instead.
      */
-    public static final int OP_UPDATE = QueryOperations.OP_DELETE;
+    @Deprecated int OP_UPDATE = QueryOperations.OP_DELETE;
 
     /**
      * @deprecated use the {@link FlushModeType} enum instead.
      */
-    public static final int FLUSH_TRUE = QueryFlushModes.FLUSH_TRUE;
+    @Deprecated int FLUSH_TRUE = QueryFlushModes.FLUSH_TRUE;
 
     /**
      * @deprecated use the {@link FlushModeType} enum instead.
      */
-    public static final int FLUSH_FALSE = QueryFlushModes.FLUSH_FALSE;
+    @Deprecated int FLUSH_FALSE = QueryFlushModes.FLUSH_FALSE;
 
     /**
      * @deprecated use the {@link FlushModeType} enum instead.
      */
-    public static final int FLUSH_WITH_CONNECTION =
+    @Deprecated int FLUSH_WITH_CONNECTION =
         QueryFlushModes.FLUSH_WITH_CONNECTION;
 
     /**
      * @deprecated cast to {@link QueryImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public OpenJPAQuery<X> addFilterListener(org.apache.openjpa.kernel.exps.FilterListener listener);
+    @Deprecated OpenJPAQuery<X> addFilterListener(org.apache.openjpa.kernel.exps.FilterListener listener);
 
     /**
      * @deprecated cast to {@link QueryImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public OpenJPAQuery<X> removeFilterListener(org.apache.openjpa.kernel.exps.FilterListener listener);
+    @Deprecated OpenJPAQuery<X> removeFilterListener(org.apache.openjpa.kernel.exps.FilterListener listener);
 
     /**
      * @deprecated cast to {@link QueryImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public OpenJPAQuery<X> addAggregateListener(org.apache.openjpa.kernel.exps.AggregateListener listener);
+    @Deprecated OpenJPAQuery<X> addAggregateListener(org.apache.openjpa.kernel.exps.AggregateListener listener);
 
     /**
      * @deprecated cast to {@link QueryImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public OpenJPAQuery<X> removeAggregateListener(org.apache.openjpa.kernel.exps.AggregateListener listener);
+    @Deprecated OpenJPAQuery<X> removeAggregateListener(org.apache.openjpa.kernel.exps.AggregateListener listener);
 
     /**
      * Gets hints supported by this query.
      *
      * @since 2.0.0
      */
-    public Set<String> getSupportedHints();
+    Set<String> getSupportedHints();
 }

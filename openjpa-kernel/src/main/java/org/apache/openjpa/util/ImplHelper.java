@@ -25,12 +25,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.PCRegistry;
-import org.apache.openjpa.enhance.StateManager;
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.ManagedInstanceProvider;
+import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
+import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -38,7 +40,6 @@ import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.UUIDGenerator;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -46,8 +47,6 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
  * Helper for OpenJPA back-ends.
@@ -65,6 +64,7 @@ public class ImplHelper {
     public static final Map _unenhancedInstanceMap =
         new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD) {
 
+            @Override
             protected boolean eq(Object x, Object y) {
                 // the Entries in ConcurrentReferenceHashMap delegate back to
                 // eq() in their equals() impls
@@ -74,6 +74,7 @@ public class ImplHelper {
                     return x == y;
             }
 
+            @Override
             protected int hc(Object o) {
                 // the Entries in ConcurrentReferenceHashMap delegate back to
                 // hc() in their hashCode() impls

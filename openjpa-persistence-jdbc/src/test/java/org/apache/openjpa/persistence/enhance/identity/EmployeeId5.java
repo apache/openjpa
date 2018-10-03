@@ -23,6 +23,8 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class EmployeeId5 implements java.io.Serializable {
 
+    
+    private static final long serialVersionUID = 1L;
     String firstName;
     String lastName;
 
@@ -50,6 +52,7 @@ public class EmployeeId5 implements java.io.Serializable {
         return lastName;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof EmployeeId5))
             return false;
@@ -60,6 +63,7 @@ public class EmployeeId5 implements java.io.Serializable {
         return false;
     }
 
+    @Override
     public int hashCode() {
         int ret = 0;
         ret += firstName.hashCode();

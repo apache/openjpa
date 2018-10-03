@@ -22,15 +22,16 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import junit.framework.Assert;
 
 
 public class TestRelationFieldAsPrimaryKeyAndForeignKey
     extends SingleEMFTestCase {
 
-	public void setUp() {
+	@Override
+    public void setUp() {
 	    setUp(C.class, CM.class, D.class, E.class, VC.class,
 	        VCS.class, CLEAR_TABLES);
 
@@ -194,7 +195,8 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
 	    Assert.assertEquals(1, es.size());
 	}
 
-	public void tearDown() throws Exception {
+	@Override
+    public void tearDown() throws Exception {
 	    EntityManager em = emf.createEntityManager();
 	    em.getTransaction().begin();
 	    List<E> es = (List<E>) em.createQuery(

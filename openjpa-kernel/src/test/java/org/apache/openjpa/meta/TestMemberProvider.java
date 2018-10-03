@@ -20,12 +20,13 @@ package org.apache.openjpa.meta;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.IOException;
+
+import org.apache.openjpa.meta.FieldMetaData.MemberProvider;
 
 import junit.framework.TestCase;
-import org.apache.openjpa.meta.FieldMetaData.MemberProvider;
 
 public class TestMemberProvider
     extends TestCase {

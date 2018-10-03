@@ -47,6 +47,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
     public static final String DC_PROVIDER =
         "org.apache.openjpa.instrumentation.SimpleProvider(Instrument='DataCache')";
 
+    @Override
     public void setUp() throws Exception {
         super.setUp("openjpa.Instrumentation",
                     SINGLE_PROVIDER,

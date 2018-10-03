@@ -101,10 +101,12 @@ public class EmpressDictionary
         }));
     }
 
+    @Override
     public boolean isSystemIndex(String name, Table table) {
         return name.toUpperCase(Locale.ENGLISH).startsWith("SYS_");
     }
 
+    @Override
     public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
@@ -132,6 +134,7 @@ public class EmpressDictionary
         return buf;
     }
 
+    @Override
     public String[] getDropColumnSQL(Column column) {
         // empress wants dropped columns in the form: ALTER TABLE foo
         // DELETE columnToDrop
@@ -140,6 +143,7 @@ public class EmpressDictionary
             getColumnDBName(column) };
     }
 
+    @Override
     public void setFloat(PreparedStatement stmnt, int idx, float val,
         Column col)
         throws SQLException {
@@ -157,6 +161,7 @@ public class EmpressDictionary
         super.setFloat(stmnt, idx, val, col);
     }
 
+    @Override
     public void setDouble(PreparedStatement stmnt, int idx, double val,
         Column col)
         throws SQLException {

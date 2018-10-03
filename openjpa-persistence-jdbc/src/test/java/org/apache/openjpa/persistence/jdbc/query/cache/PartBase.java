@@ -36,7 +36,7 @@ public class PartBase extends Part  {
     int backOrder;
 
     @ManyToMany(mappedBy="supplies")
-    protected List<Supplier> suppliers = new ArrayList<Supplier>();
+    protected List<Supplier> suppliers = new ArrayList<>();
 
     public PartBase() {}
 
@@ -73,6 +73,7 @@ public class PartBase extends Part  {
         this.suppliers = suppliers;
     }
 
+    @Override
     public String toString() {
         String sup= "";
         if (getSuppliers()!=null)

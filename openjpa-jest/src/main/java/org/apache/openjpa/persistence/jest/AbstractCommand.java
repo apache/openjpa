@@ -58,13 +58,13 @@ abstract class AbstractCommand implements JESTCommand {
     public static final Collection<String> EMPTY_LIST = Collections.emptySet();
     protected ObjectFormatter<?> _formatter;
 
-    private Map<String, String> _qualifiers = new HashMap<String, String>();
-    private Map<String, String> _args = new HashMap<String, String>();
-    private Map<String, String> _margs = new HashMap<String, String>();
+    private Map<String, String> _qualifiers = new HashMap<>();
+    private Map<String, String> _args = new HashMap<>();
+    private Map<String, String> _margs = new HashMap<>();
     protected final JPAServletContext _ctx;
 
     private static PrototypeFactory<Format,ObjectFormatter<?>> _formatterFactory =
-        new PrototypeFactory<Format,ObjectFormatter<?>>();
+        new PrototypeFactory<>();
     protected static Localizer _loc = Localizer.forPackage(AbstractCommand.class);
 
     static {
@@ -76,6 +76,7 @@ abstract class AbstractCommand implements JESTCommand {
         _ctx = ctx;
     }
 
+    @Override
     public JPAServletContext getExecutionContext() {
         return _ctx;
     }
@@ -84,22 +85,27 @@ abstract class AbstractCommand implements JESTCommand {
         return get(key, _margs);
     }
 
+    @Override
     public String getArgument(String key) {
         return get(key, _args);
     }
 
+    @Override
     public boolean hasArgument(String key) {
         return has(key, _args);
     }
 
+    @Override
     public Map<String, String> getArguments() {
         return _args;
     }
 
+    @Override
     public String getQualifier(String key) {
         return get(key, _qualifiers);
     }
 
+    @Override
     public boolean hasQualifier(String key) {
         return has(key, _qualifiers);
     }
@@ -112,6 +118,7 @@ abstract class AbstractCommand implements JESTCommand {
         return false;
     }
 
+    @Override
     public Map<String, String> getQualifiers() {
         return _qualifiers;
     }
@@ -129,6 +136,7 @@ abstract class AbstractCommand implements JESTCommand {
      * <br>
      * The qualifiers and arguments are immutable after parse.
      */
+    @Override
     public void parse() throws ProcessingException {
         HttpServletRequest request = _ctx.getRequest();
         String path = request.getPathInfo();
@@ -275,7 +283,7 @@ abstract class AbstractCommand implements JESTCommand {
     }
 
     protected List<OpenJPAStateManager> toStateManager(Collection<?> objects) {
-        List<OpenJPAStateManager> sms = new ArrayList<OpenJPAStateManager>();
+        List<OpenJPAStateManager> sms = new ArrayList<>();
         for (Object o : objects) {
             OpenJPAStateManager sm = toStateManager(o);
             if (sm != null) sms.add(sm);

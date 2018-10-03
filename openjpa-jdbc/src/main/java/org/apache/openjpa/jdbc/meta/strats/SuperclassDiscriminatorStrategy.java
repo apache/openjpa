@@ -35,6 +35,10 @@ import org.apache.openjpa.jdbc.sql.Select;
 public class SuperclassDiscriminatorStrategy
     extends AbstractDiscriminatorStrategy {
 
+    
+    private static final long serialVersionUID = 1L;
+
+    @Override
     public void map(boolean adapt) {
         // if a superclass maps the discriminator value, so should we.
         // otherwise assume it's calculated
@@ -50,6 +54,7 @@ public class SuperclassDiscriminatorStrategy
         }
     }
 
+    @Override
     public void loadSubclasses(JDBCStore store)
         throws SQLException, ClassNotFoundException {
         disc.getClassMapping().getPCSuperclassMapping().
@@ -57,17 +62,20 @@ public class SuperclassDiscriminatorStrategy
         disc.setSubclassesLoaded(true);
     }
 
+    @Override
     public Class getClass(JDBCStore store, ClassMapping base, Result res)
         throws SQLException, ClassNotFoundException {
         return disc.getClassMapping().getPCSuperclassMapping().
             getDiscriminator().getClass(store, base, res);
     }
 
+    @Override
     public boolean hasClassConditions(ClassMapping base, boolean subclasses) {
         return disc.getClassMapping().getPCSuperclassMapping().
             getDiscriminator().hasClassConditions(base, subclasses);
     }
 
+    @Override
     public SQLBuffer getClassConditions(Select sel, Joins joins,
         ClassMapping base, boolean subclasses) {
         return disc.getClassMapping().getPCSuperclassMapping().

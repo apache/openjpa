@@ -29,6 +29,7 @@ package org.apache.openjpa.persistence.kernel;
 
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -48,6 +49,7 @@ public class TestStaticInnerClasses extends BaseKernelTest {
         super(name);
     }
 
+    @Override
     public void setUp()
         throws Exception {
         super.setUp(Inner.class);

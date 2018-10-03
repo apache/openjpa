@@ -43,6 +43,7 @@ public class EmpId {
         this.empType = empType;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof EmpId)) return false;
         if (((EmpId)o).empId == empId &&
@@ -50,6 +51,7 @@ public class EmpId {
         return false;
     }
 
+    @Override
     public int hashCode() {
         return empId *31 + empType.hashCode();
     }

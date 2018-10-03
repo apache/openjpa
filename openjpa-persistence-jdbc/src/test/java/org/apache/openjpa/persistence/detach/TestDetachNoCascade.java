@@ -36,8 +36,9 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
     Entity1 e1;
     Entity7 e7;
     Entity14 e14;
-    Collection<Object> allEntities = new HashSet<Object>();
+    Collection<Object> allEntities = new HashSet<>();
 
+    @Override
     public void setUp() throws Exception {
         setUp(Entity1.class,    // references Entity14
             Entity7.class,

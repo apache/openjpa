@@ -18,28 +18,28 @@
  */
 package org.apache.openjpa.persistence;
 
-import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.AggregateListener;
+import org.apache.openjpa.kernel.exps.FilterListener;
 
 public interface OpenJPAQuerySPI<X> extends OpenJPAQuery<X> {
 
     /**
      * Register a filter listener for the query.
      */
-    public OpenJPAQuery<X> addFilterListener(FilterListener listener);
+    @Override OpenJPAQuery<X> addFilterListener(FilterListener listener);
 
     /**
      * Remove a filter listener from the query.
      */
-    public OpenJPAQuery<X> removeFilterListener(FilterListener listener);
+    @Override OpenJPAQuery<X> removeFilterListener(FilterListener listener);
 
     /**
      * Register an aggregate listener for the query.
      */
-    public OpenJPAQuery<X> addAggregateListener(AggregateListener listener);
+    @Override OpenJPAQuery<X> addAggregateListener(AggregateListener listener);
 
     /**
      * Remove an aggregate listener from the query.
      */
-    public OpenJPAQuery<X> removeAggregateListener(AggregateListener listener);
+    @Override OpenJPAQuery<X> removeAggregateListener(AggregateListener listener);
 }

@@ -21,15 +21,15 @@ package org.apache.openjpa.persistence.jdbc.query.procedure;
 import java.util.List;
 
 public interface ProcedureList {
-    public List<String> getCreateProcedureList();
+    List<String> getCreateProcedureList();
 
-    public List<String> getDropProcedureList();
+    List<String> getDropProcedureList();
 
-    public String callAddXToCharlie();
+    String callAddXToCharlie();
 
-    public String callAddSuffixToName();
+    String callAddSuffixToName();
 
-    public String callGetAllApplicants();
+    String callGetAllApplicants();
 
-    public String callGetTwoApplicants();
+    String callGetTwoApplicants();
 }

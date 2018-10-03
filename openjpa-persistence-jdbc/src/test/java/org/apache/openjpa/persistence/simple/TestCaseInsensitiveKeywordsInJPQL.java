@@ -18,14 +18,15 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import javax.persistence.Query;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestCaseInsensitiveKeywordsInJPQL
     extends SingleEMFTestCase {
 
+    @Override
     public void setUp() {
         // expecting only data that is inserted in this test case
         setUp(AllFieldTypes.class, CLEAR_TABLES);

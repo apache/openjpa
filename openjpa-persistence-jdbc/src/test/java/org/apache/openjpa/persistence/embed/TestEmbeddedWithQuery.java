@@ -28,6 +28,7 @@ import javax.persistence.Query;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEmbeddedWithQuery extends SingleEMFTestCase {
+    @Override
     public void setUp() {
         setUp(EParent.class, EChild.class, EGeneric.class,
             "openjpa.MaxFetchDepth", "1",
@@ -50,7 +51,7 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
             List resultList = q1.getResultList();
             assertNotNull(resultList);
 
-            List <EParent> pList = new ArrayList<EParent>();
+            List <EParent> pList = new ArrayList<>();
             pList.addAll(resultList);
             em.clear();
             assertNotEquals(0, pList.size());
@@ -80,7 +81,7 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
             List resultList = q1.getResultList();
             assertNotNull(resultList);
 
-            List <EParent> pList = new ArrayList<EParent>();
+            List <EParent> pList = new ArrayList<>();
             pList.addAll(resultList);
             em.clear();
             assertNotEquals(0, pList.size());

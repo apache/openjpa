@@ -28,6 +28,8 @@ import org.apache.openjpa.kernel.StoreContext;
 class StringLength
     extends Val {
 
+    
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private Class _cast = null;
 
@@ -38,16 +40,19 @@ class StringLength
         _val = val;
     }
 
+    @Override
     public Class getType() {
         if (_cast != null)
             return _cast;
         return int.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
         _cast = type;
     }
 
+    @Override
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object eval = _val.eval(candidate, orig, ctx, params);
@@ -57,6 +62,7 @@ class StringLength
         return eval.toString().length();
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

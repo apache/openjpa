@@ -42,7 +42,6 @@ import javax.persistence.ValidationMode;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
@@ -63,6 +62,7 @@ import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -95,7 +95,7 @@ public class PersistenceProductDerivation
         (PersistenceProductDerivation.class);
 
     private HashMap<String, PUNameCollision> _puNameCollisions
-        = new HashMap<String,PUNameCollision>();
+        = new HashMap<>();
 
     public static final String PREFIX = "javax.persistence";
 
@@ -103,7 +103,7 @@ public class PersistenceProductDerivation
     private static final String[] _invalidPersistenceProperties =
         new String[] { PREFIX + ".cache.storeMode", PREFIX + ".cache.retrieveMode" };
 
-    private static Set<String> _hints = new HashSet<String>();
+    private static Set<String> _hints = new HashSet<>();
 
     // Provider name to filter out PUs that don't belong to this derivation.
     protected String _providerImplName;
@@ -156,9 +156,11 @@ public class PersistenceProductDerivation
 		_providerImplName = PersistenceProviderImpl.class.getName();
 	}
 
+    @Override
     public void putBrokerFactoryAliases(Map<String, String> m) {
     }
 
+    @Override
     public int getType() {
         return TYPE_SPEC;
     }
@@ -396,7 +398,7 @@ public class PersistenceProductDerivation
 
     private List<String> getUnitNames(ConfigurationParser parser) {
         List<PersistenceUnitInfoImpl> units = parser.getResults();
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (PersistenceUnitInfoImpl unit : units){
         	String provider = unit.getPersistenceProviderClassName();
 			// Only add the PU name if the provider it is ours or not specified.
@@ -571,7 +573,7 @@ public class PersistenceProductDerivation
     private PersistenceUnitInfoImpl parseResources(ConfigurationParser parser,
         List<URL> urls, String name, ClassLoader loader)
         throws IOException {
-        List<PersistenceUnitInfoImpl> pinfos = new ArrayList<PersistenceUnitInfoImpl>();
+        List<PersistenceUnitInfoImpl> pinfos = new ArrayList<>();
         for (URL url : urls) {
             parser.parse(url);
             pinfos.addAll((List<PersistenceUnitInfoImpl>) parser.getResults());
@@ -858,6 +860,7 @@ public class PersistenceProductDerivation
             _excludeUnlistedSet = false;
         }
 
+        @Override
         protected boolean startElement(String name, Attributes attrs)
             throws SAXException {
             if (currentDepth() == 1)
@@ -867,6 +870,7 @@ public class PersistenceProductDerivation
             return true;
         }
 
+        @Override
         protected void endElement(String name)
             throws SAXException {
             if (currentDepth() == 1) {
@@ -992,7 +996,7 @@ public class PersistenceProductDerivation
         private Set<String> _resources;
 
         PUNameCollision(String puName, String file1, String file2) {
-            _resources = new LinkedHashSet<String>();
+            _resources = new LinkedHashSet<>();
             _resources.add(file1);
             _resources.add(file2);
 

@@ -51,6 +51,9 @@ import org.apache.openjpa.persistence.jdbc.VersionColumn;
 @Table(name="DI_BOOK1")
 @VersionColumn
 public class Book1 implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     @EmbeddedId
     @AttributeOverrides({
         @AttributeOverride(name="name", column=@Column(name="BOOK_NAME")),
@@ -59,7 +62,7 @@ public class Book1 implements Serializable {
     private BookId1 bid;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "book")
-    private Set<Page1> pages = new HashSet<Page1>();
+    private Set<Page1> pages = new HashSet<>();
 
     @MapsId("library")
     @ManyToOne
@@ -106,6 +109,7 @@ public class Book1 implements Serializable {
 		this.author = author;
 	}
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Book1)) {
             return false;
@@ -120,6 +124,7 @@ public class Book1 implements Serializable {
         return true;
     }
 
+    @Override
     public int hashCode() {
         return getBid().hashCode();
     }

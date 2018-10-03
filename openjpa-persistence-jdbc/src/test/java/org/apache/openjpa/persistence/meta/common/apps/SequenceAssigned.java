@@ -44,6 +44,8 @@ public class SequenceAssigned {
 
     public static class Id implements java.io.Serializable {
 
+        
+        private static final long serialVersionUID = 1L;
         public long pk;
 
         public Id() {
@@ -53,14 +55,17 @@ public class SequenceAssigned {
             pk = Long.parseLong(str);
         }
 
+        @Override
         public int hashCode() {
             return (int) (pk % (long) Integer.MAX_VALUE);
         }
 
+        @Override
         public String toString() {
             return pk + "";
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o == null || !(o instanceof Id))
                 return false;

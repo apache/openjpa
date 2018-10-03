@@ -20,22 +20,22 @@ package org.apache.openjpa.persistence.property;
 
 public interface IAddress {
 
-    public String getCity();
-    public void setCity(String city);
+    String getCity();
+    void setCity(String city);
 
-    public String getCountry();
-    public void setCountry(String country);
+    String getCountry();
+    void setCountry(String country);
 
-    public String getLine1();
-    public void setLine1(String line1);
+    String getLine1();
+    void setLine1(String line1);
 
-    public String getLine2();
-    public void setLine2(String line2);
+    String getLine2();
+    void setLine2(String line2);
 
-    public String getState();
-    public void setState(String state);
+    String getState();
+    void setState(String state);
 
-    public String getZipCode();
-    public void setZipCode(String zipCode);
+    String getZipCode();
+    void setZipCode(String zipCode);
 
 }

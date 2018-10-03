@@ -65,7 +65,7 @@ public class PreparedStatementManagerImpl
     protected transient Log _log = null;
 
     // track exceptions
-    protected final Collection<Exception> _exceptions = new LinkedList<Exception>();
+    protected final Collection<Exception> _exceptions = new LinkedList<>();
 
     /**
      * Constructor. Supply connection.
@@ -78,10 +78,12 @@ public class PreparedStatementManagerImpl
             _log = store.getConfiguration().getLog(JDBCConfiguration.LOG_JDBC);
     }
 
+    @Override
     public Collection<Exception> getExceptions() {
         return _exceptions;
     }
 
+    @Override
     public void flush(RowImpl row) {
         try {
             if (!row.isFlushed())
@@ -228,7 +230,7 @@ public class PreparedStatementManagerImpl
         DBIdentifier[] autoAssignColNames)
         throws SQLException {
         ResultSet rs = stmnt.getGeneratedKeys();
-        List<Object> vals = new ArrayList<Object>();
+        List<Object> vals = new ArrayList<>();
         while (rs.next()) {
             for (int i = 0; i < autoAssignColNames.length; i++)
                 vals.add(rs.getObject(i + 1));
@@ -256,6 +258,7 @@ public class PreparedStatementManagerImpl
         return autoAssignColNames;
     }
 
+    @Override
     public void flush() {
     }
 

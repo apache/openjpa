@@ -32,7 +32,8 @@ public class TestEJBCustomMapping
 		super(name);
 	}
 
-	public void setUp ()
+	@Override
+    public void setUp ()
 	{
 		deleteAll(CustomMappingPC.class);
 

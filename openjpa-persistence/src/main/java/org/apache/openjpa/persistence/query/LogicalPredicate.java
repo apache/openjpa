@@ -26,6 +26,8 @@ package org.apache.openjpa.persistence.query;
  */
 public class LogicalPredicate extends AbstractVisitable
     implements Predicate, Visitable {
+    
+    private static final long serialVersionUID = 1L;
     private final Predicate _p1;
     private final Predicate _p2;
     private final ConditionalOperator _op;
@@ -39,18 +41,22 @@ public class LogicalPredicate extends AbstractVisitable
         _nop = nop;
     }
 
+    @Override
     public Predicate and(Predicate predicate) {
         return new AndPredicate(this, predicate);
     }
 
+    @Override
     public Predicate or(Predicate predicate) {
         return new OrPredicate(this, predicate);
     }
 
+    @Override
     public Predicate not() {
         return new LogicalPredicate(_p1.not(), _nop, _op, _p2.not());
     }
 
+    @Override
     public String asExpression(AliasContext ctx) {
         return OPEN_BRACE + ((Visitable)_p1).asExpression(ctx) + SPACE + _op +
                SPACE + ((Visitable)_p2).asExpression(ctx) + CLOSE_BRACE;

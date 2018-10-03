@@ -20,12 +20,12 @@ package org.apache.openjpa.persistence.proxy.entities;
 
 public interface IEquityAnnuity extends IAnnuity{
 
-	public String getFundNames();
+	String getFundNames();
 
-	public void setFundNames(String fundNames);
+	void setFundNames(String fundNames);
 
-	public Double getIndexRate();
+	Double getIndexRate();
 
-	public void setIndexRate(Double indexRate);
+	void setIndexRate(Double indexRate);
 
 }

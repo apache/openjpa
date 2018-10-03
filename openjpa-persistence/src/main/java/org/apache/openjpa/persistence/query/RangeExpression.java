@@ -25,7 +25,10 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class RangeExpression extends BinaryOperatorExpression {
-	public RangeExpression(Expression e1, Expression e2) {
+	
+    private static final long serialVersionUID = 1L;
+
+    public RangeExpression(Expression e1, Expression e2) {
 		super(e1, BinaryFunctionalOperator.RANGE, e2);
 	}
 

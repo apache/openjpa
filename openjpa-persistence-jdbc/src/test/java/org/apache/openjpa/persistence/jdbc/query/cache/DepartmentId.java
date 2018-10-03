@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence.jdbc.query.cache;
 import java.io.Serializable;
 
 public class DepartmentId implements Serializable {
-	private String name;
+	
+    private static final long serialVersionUID = 1L;
+    private String name;
 
 	public DepartmentId() {
 		this(null);
@@ -31,11 +33,13 @@ public class DepartmentId implements Serializable {
 		this.name = name;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return name.hashCode();
 	}
 
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}

@@ -55,19 +55,19 @@ public class LrsEntityA implements Serializable {
 
     public LrsEntityA() {
         this.name = "none";
-        this.entitybs = new ArrayList<LrsEntityB>();
+        this.entitybs = new ArrayList<>();
     }
 
     public LrsEntityA(String nam) {
         this.name = nam;
-        entitybs = new ArrayList<LrsEntityB>();
+        entitybs = new ArrayList<>();
     }
 
     public LrsEntityA(int id, String nam, int age) {
         this.id = id;
         this.name = nam;
         this.age = age;
-        entitybs = new ArrayList<LrsEntityB>();
+        entitybs = new ArrayList<>();
     }
 
     public Collection<LrsEntityB> getEntitybs() {

@@ -32,6 +32,7 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
         return "locking-test";
     }
 
+    @Override
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"

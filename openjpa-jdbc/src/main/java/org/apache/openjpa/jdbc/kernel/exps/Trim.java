@@ -39,6 +39,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 public class Trim
     extends AbstractVal {
 
+    private static final long serialVersionUID = 1L;
     private final Val _val;
     private final Val _trimChar;
     private final Boolean _where;
@@ -65,21 +66,26 @@ public class Trim
         return _where;
     }
 
+    @Override
     public ClassMetaData getMetaData() {
         return _meta;
     }
 
+    @Override
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
     }
 
+    @Override
     public Class getType() {
         return String.class;
     }
 
+    @Override
     public void setImplicitType(Class type) {
     }
 
+    @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         ExpState valueState =  _val.initialize(sel, ctx, 0);
         ExpState charState = _trimChar.initialize(sel, ctx, 0);
@@ -104,11 +110,13 @@ public class Trim
         }
     }
 
+    @Override
     public void select(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
+    @Override
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         TrimExpState tstate = (TrimExpState) state;
@@ -116,10 +124,12 @@ public class Trim
         _trimChar.selectColumns(sel, ctx, tstate.charState, true);
     }
 
+    @Override
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
+    @Override
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
         sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
@@ -132,12 +142,14 @@ public class Trim
         return buf;
     }
 
+    @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
+    @Override
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
         TrimExpState tstate = (TrimExpState) state;
@@ -145,10 +157,12 @@ public class Trim
         _trimChar.calculateValue(sel, ctx, tstate.charState, null, null);
     }
 
+    @Override
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
+    @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
         DBDictionary dict = ctx.store.getDBDictionary();
@@ -201,6 +215,7 @@ public class Trim
         }
     }
 
+    @Override
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);
@@ -208,6 +223,7 @@ public class Trim
         visitor.exit(this);
     }
 
+    @Override
     public int getId() {
         return Val.TRIM_VAL;
     }

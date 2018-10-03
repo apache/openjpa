@@ -22,12 +22,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 
-import org.apache.openjpa.persistence.jdbc.KeyColumn;
 import org.apache.openjpa.persistence.FetchAttribute;
 import org.apache.openjpa.persistence.FetchGroup;
 import org.apache.openjpa.persistence.FetchGroups;
@@ -44,6 +44,8 @@ import org.apache.openjpa.persistence.jdbc.KeyColumn;
     })
 public class AttachB extends AttachA {
 
+    
+    private static final long serialVersionUID = 1L;
     private String bstr;
     private int bint;
     private double bdbl;
@@ -53,7 +55,7 @@ public class AttachB extends AttachA {
 
     @PersistentMap
     @KeyColumn(name = "strngmap")
-    private Map<String, Integer> stringIntMap = new TreeMap<String, Integer>();
+    private Map<String, Integer> stringIntMap = new TreeMap<>();
 
     public AttachB() {
     }

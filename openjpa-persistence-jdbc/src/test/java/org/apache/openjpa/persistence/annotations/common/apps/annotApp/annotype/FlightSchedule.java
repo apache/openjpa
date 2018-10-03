@@ -19,9 +19,16 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
-import javax.persistence.*;
+import java.util.Calendar;
+import java.util.Date;
 
-import java.util.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
 @DiscriminatorValue("fsched")

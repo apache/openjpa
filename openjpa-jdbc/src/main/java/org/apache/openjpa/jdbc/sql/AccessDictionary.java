@@ -73,6 +73,7 @@ public class AccessDictionary
     }
 
 
+    @Override
     public void setLong(PreparedStatement stmnt, int idx, long val, Column col)
         throws SQLException {
         // the access driver disallows setLong for some reason; use

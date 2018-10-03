@@ -46,106 +46,133 @@ public class DummyPersistenceCapeable implements PersistenceCapable {
             "DummyPersistenceCapeable", new DummyPersistenceCapeable());
     }
 
+    @Override
     public int pcGetEnhancementContractVersion() {
         return PCEnhancer.ENHANCER_VERSION - 1;
     }
 
+    @Override
     public PersistenceCapable pcNewInstance(StateManager sm, boolean clear) {
         return new DummyPersistenceCapeable();
     }
 
+    @Override
     public void pcCopyFields(Object fromObject, int[] fields) {
 
     }
 
+    @Override
     public void pcCopyKeyFieldsFromObjectId(FieldConsumer consumer, Object obj) {
     }
 
+    @Override
     public void pcCopyKeyFieldsToObjectId(FieldSupplier supplier, Object obj) {
     }
 
+    @Override
     public void pcCopyKeyFieldsToObjectId(Object obj) {
     }
 
+    @Override
     public void pcDirty(String fieldName) {
     }
 
+    @Override
     public Object pcFetchObjectId() {
         return null;
     }
 
+    @Override
     public Object pcGetDetachedState() {
         return null;
     }
 
+    @Override
     public Object pcGetGenericContext() {
         return null;
     }
 
+    @Override
     public StateManager pcGetStateManager() {
         return null;
     }
 
+    @Override
     public Object pcGetVersion() {
         return null;
     }
 
+    @Override
     public boolean pcIsDeleted() {
         return false;
     }
 
+    @Override
     public Boolean pcIsDetached() {
         return null;
     }
 
+    @Override
     public boolean pcIsDirty() {
         return false;
     }
 
+    @Override
     public boolean pcIsNew() {
         return false;
     }
 
+    @Override
     public boolean pcIsPersistent() {
         return false;
     }
 
+    @Override
     public boolean pcIsTransactional() {
         return false;
     }
 
+    @Override
     public PersistenceCapable pcNewInstance(StateManager sm, Object obj, boolean clear) {
         return null;
     }
 
+    @Override
     public Object pcNewObjectIdInstance() {
         return null;
     }
 
+    @Override
     public Object pcNewObjectIdInstance(Object obj) {
         return null;
     }
 
+    @Override
     public void pcProvideField(int fieldIndex) {
 
     }
 
+    @Override
     public void pcProvideFields(int[] fieldIndices) {
 
     }
 
+    @Override
     public void pcReplaceField(int fieldIndex) {
 
     }
 
+    @Override
     public void pcReplaceFields(int[] fieldIndex) {
 
     }
 
+    @Override
     public void pcReplaceStateManager(StateManager sm) {
 
     }
 
+    @Override
     public void pcSetDetachedState(Object state) {
 
     }

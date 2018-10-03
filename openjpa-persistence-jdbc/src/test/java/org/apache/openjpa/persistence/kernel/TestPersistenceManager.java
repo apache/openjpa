@@ -34,14 +34,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.DelegatingBrokerFactory;
 import org.apache.openjpa.kernel.PCState;
@@ -49,6 +45,9 @@ import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
 import org.apache.openjpa.util.Id;
 
 public class TestPersistenceManager extends BaseKernelTest {
@@ -66,6 +65,7 @@ public class TestPersistenceManager extends BaseKernelTest {
     public TestPersistenceManager() {
     }
 
+    @Override
     public void setUp() throws Exception {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);
@@ -139,6 +139,7 @@ public class TestPersistenceManager extends BaseKernelTest {
         endEm(pm);
 
         new Thread() {
+            @Override
             public void run() {
                 try {
                     endEm(pm);
@@ -152,7 +153,10 @@ public class TestPersistenceManager extends BaseKernelTest {
         }.start();
 
         while (result.size() == 0)
-            Thread.currentThread().yield(); // wait for results
+         {
+            Thread.currentThread();
+            Thread.yield(); // wait for results
+        }
         Object ret = result.get(0);
 
         if (ret instanceof Exception)

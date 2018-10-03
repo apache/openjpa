@@ -38,9 +38,11 @@ public class PIdSTCDMSCRootEntity
     extends PrimitiveIDMappedSuperclass implements RootEntity {
     private String rootEntityData;
 
+    @Override
     public String getRootEntityData() {
         return rootEntityData;
     }
+    @Override
     public void setRootEntityData(String rootEntityData) {
         this.rootEntityData = rootEntityData;
     }
