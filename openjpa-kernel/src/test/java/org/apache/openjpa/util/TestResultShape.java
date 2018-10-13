@@ -27,11 +27,14 @@ import java.util.Map;
 
 import org.apache.openjpa.kernel.FillStrategy;
 import org.apache.openjpa.kernel.ResultShape;
+import org.junit.Test;
 
-import junit.framework.TestCase;
 
-public class TestResultShape extends TestCase {
+import static org.junit.Assert.*;
 
+public class TestResultShape {
+
+    @Test
     public void testPrimitiveShapeIsImmutable() {
         ResultShape<Object> shape = new ResultShape<>(Object.class, true);
         assertCategory(shape, true, false, false);
@@ -49,6 +52,7 @@ public class TestResultShape extends TestCase {
         }
     }
 
+    @Test
     public void testArrayIsMutable() {
         ResultShape<Object[]> shape = new ResultShape<>(Object[].class);
         assertCategory(shape, false, true, false);
@@ -68,6 +72,7 @@ public class TestResultShape extends TestCase {
         assertCategory(shape, false, true, true);
     }
 
+    @Test
     public void testMethodImpliesMapStrategy() {
         FillStrategy<Map> strategy = new FillStrategy.Map<>(method(Map.class, "put", Object.class, Object.class));
         ResultShape<Map> mapShape = new ResultShape<>(Map.class, strategy, true);
@@ -75,6 +80,7 @@ public class TestResultShape extends TestCase {
         assertEquals(FillStrategy.Map.class, mapShape.getStrategy().getClass());
     }
 
+    @Test
     public void testShapeWithConstrcutorStrategy() {
         FillStrategy<List> strategy = new FillStrategy.NewInstance<>(constructor(ArrayList.class, int.class));
         ResultShape<List> listShape = new ResultShape<>(List.class, strategy);
@@ -82,6 +88,7 @@ public class TestResultShape extends TestCase {
         assertEquals(FillStrategy.NewInstance.class, listShape.getStrategy().getClass());
     }
 
+    @Test
     public void testGetCompositeTypes() {
         ResultShape<Object[]> root  = new ResultShape<>(Object[].class);
         FillStrategy<Bar> strategy1 = new FillStrategy.NewInstance<>(Bar.class);
@@ -103,6 +110,7 @@ public class TestResultShape extends TestCase {
         assertEquals(4, root.length());
     }
 
+    @Test
     public void testRecursiveNestingIsNotAllowed() {
         ResultShape<Object[]> root = new ResultShape<>(Object[].class);
         ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
@@ -125,6 +133,7 @@ public class TestResultShape extends TestCase {
     }
 
 
+    @Test
     public void testFill() {
         //Fill this shape: Foo{short, Bar{String, Double}};
         ResultShape<Foo> foo = new ResultShape<Foo>(Foo.class, new FillStrategy.NewInstance(Foo.class), false);
@@ -141,8 +150,10 @@ public class TestResultShape extends TestCase {
         Foo result = foo.pack(values, types, aliases);
         assertEquals(200, result.shrt);
         assertEquals("bar1", result.b.string);
-        assertEquals(12.3, result.b.Dbl);
+        assertEquals(12.3, (double) result.b.Dbl, 0.1d);
     }
+
+    @Test
     public void testFill2() {
         //Fill this shape: Object[]{Foo, Object, Foo{short, Bar{String, Double}}, Bar{double}};
         ResultShape<Object[]> root = new ResultShape<>(Object[].class);
@@ -171,8 +182,8 @@ public class TestResultShape extends TestCase {
         assertEquals(Bar.class, result[3].getClass());
         assertEquals(200, ((Foo)result[2]).shrt);
         assertEquals("bar1", ((Foo)result[2]).b.string);
-        assertEquals(12.3, ((Foo)result[2]).b.Dbl);
-        assertEquals(45.6, ((Bar)result[3]).dbl);
+        assertEquals(12.3, (double)((Foo)result[2]).b.Dbl, 0.1d);
+        assertEquals(45.6, ((Bar)result[3]).dbl, 0.1d);
     }
 
     void assertCategory(ResultShape<?> s, boolean primitive, boolean compound, boolean nesting) {

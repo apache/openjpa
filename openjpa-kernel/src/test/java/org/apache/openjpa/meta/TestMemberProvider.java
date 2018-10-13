@@ -26,13 +26,16 @@ import java.io.ObjectOutputStream;
 
 import org.apache.openjpa.meta.FieldMetaData.MemberProvider;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TestMemberProvider
-    extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class TestMemberProvider {
+    // field gets accessed via reflection.
+    @SuppressWarnings("unused")
     private String field;
 
+    @Test
     public void testField()
         throws NoSuchFieldException, IOException, ClassNotFoundException {
         MemberProvider b = new MemberProvider(
@@ -41,6 +44,7 @@ public class TestMemberProvider
         assertEquals(b.getMember(), b2.getMember());
     }
 
+    @Test
     public void testMethod()
         throws NoSuchMethodException, IOException, ClassNotFoundException {
         MemberProvider b = new MemberProvider(

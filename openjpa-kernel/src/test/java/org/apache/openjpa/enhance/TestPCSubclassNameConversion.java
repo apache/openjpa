@@ -18,11 +18,13 @@
  */
 package org.apache.openjpa.enhance;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TestPCSubclassNameConversion
-    extends TestCase {
+import static org.junit.Assert.*;
 
+public class TestPCSubclassNameConversion {
+
+    @Test
     public void testPCSubclassNameConversion() {
         String name = PCEnhancer.toPCSubclassName(Object.class);
         assertTrue(PCEnhancer.isPCSubclassName(name));

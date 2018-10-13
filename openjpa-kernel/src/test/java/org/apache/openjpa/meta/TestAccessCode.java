@@ -19,6 +19,9 @@
 package org.apache.openjpa.meta;
 
 import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Access code is a 5-bit integer.
@@ -26,7 +29,7 @@ import junit.framework.TestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestAccessCode extends TestCase {
+public class TestAccessCode {
     public static final int UNKNOWN = AccessCode.UNKNOWN;
     public static final int FIELD = AccessCode.FIELD;
     public static final int PROPERTY = AccessCode.PROPERTY;
@@ -34,6 +37,7 @@ public class TestAccessCode extends TestCase {
     public static final int MIXED = AccessCode.MIXED;
 
     // Valid class codes are 0 2 4 10 12 26 28
+    @Test
     public void testValidClassCodes() {
         isValidClassCode(true,   0, UNKNOWN);
 
@@ -63,6 +67,7 @@ public class TestAccessCode extends TestCase {
     }
 
     // Valid field codes are 0 2 4 10 12
+    @Test
     public void testValidFieldCodes() {
         isValidClassCode(true,   0, UNKNOWN);
 
@@ -83,6 +88,7 @@ public class TestAccessCode extends TestCase {
         }
     }
 
+    @Test
     public void testProperty() {
         isProperty(false,  0, UNKNOWN);
         isProperty(false,  2, FIELD);
@@ -93,6 +99,7 @@ public class TestAccessCode extends TestCase {
         isProperty(true,  28, MIXED | EXPLICIT | PROPERTY);
     }
 
+    @Test
     public void testField() {
         isField(false,  0, UNKNOWN);
         isField(true,   2, FIELD);
@@ -104,6 +111,7 @@ public class TestAccessCode extends TestCase {
         isField(false,  28, MIXED | EXPLICIT | PROPERTY);
     }
 
+    @Test
     public void testExplicit() {
         isExplicit(false,  0, UNKNOWN);
         isExplicit(false,  2, FIELD);
@@ -115,6 +123,7 @@ public class TestAccessCode extends TestCase {
         isExplicit(true,  28, MIXED | EXPLICIT | PROPERTY);
     }
 
+    @Test
     public void testMixed() {
         isMixed(false,  0, UNKNOWN);
         isMixed(false,  2, FIELD);
@@ -126,6 +135,7 @@ public class TestAccessCode extends TestCase {
         isMixed(true,  28, MIXED | EXPLICIT | PROPERTY);
     }
 
+    @Test
     public void testCompatibleField() {
         assertCompatible(EXPLICIT|FIELD, PROPERTY, MIXED|EXPLICIT|FIELD);
         assertCompatible(EXPLICIT|FIELD, FIELD, EXPLICIT|FIELD);
@@ -163,6 +173,7 @@ public class TestAccessCode extends TestCase {
         }
     }
 
+    @Test
     public void testToString() {
         assertEquals("explicit property access", AccessCode.toClassString(12));
     }

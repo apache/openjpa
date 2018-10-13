@@ -19,14 +19,16 @@
 package org.apache.openjpa.ee;
 
 import org.apache.openjpa.lib.util.ClassUtil;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+
+import static org.junit.Assert.*;
 
 /**
  * Test class for build transformation performed by WASManagedRuntime.
  *
  */
-public class TestWASManagedRuntime extends TestCase {
+public class TestWASManagedRuntime {
 
     /**
      * This test will verify that the WASManagedRuntime$WASSynchronization
@@ -37,6 +39,7 @@ public class TestWASManagedRuntime extends TestCase {
      *
      * @throws ClassNotFoundException
      */
+    @Test
     public void testInterfaceAdded() throws ClassNotFoundException {
 
         String msg = null;

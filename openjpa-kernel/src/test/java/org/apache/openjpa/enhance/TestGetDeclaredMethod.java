@@ -18,19 +18,22 @@
  */
 package org.apache.openjpa.enhance;
 
+import org.junit.Test;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 /**
  * Tests that {@link Reflection#getDeclaredMethod(Class, String, Class)}
  * returns the most-derived class's method when called from a type hierarchy.
  * See OPENJPA-251.
  */
-public class TestGetDeclaredMethod extends TestCase {
+public class TestGetDeclaredMethod {
 
+    @Test
     public void testGetDeclaredMethod() {
         Method meth =
             Reflection.getDeclaredMethod(Impl.class, "getObject", null);
@@ -38,6 +41,7 @@ public class TestGetDeclaredMethod extends TestCase {
         assertEquals(String.class, meth.getReturnType());
     }
 
+    @Test
     public void testMostDerived() throws NoSuchMethodException {
         Method impl = Impl.class.getDeclaredMethod("getObject", null);
         Method iface = Iface.class.getDeclaredMethod("getObject", null);
@@ -54,6 +58,7 @@ public class TestGetDeclaredMethod extends TestCase {
         }
     }
 
+    @Test
     public void testGenerics() throws NoSuchMethodException {
         List<Method> meths = new ArrayList<>();
         for (Method meth : GenericsImpl.class.getDeclaredMethods()) {

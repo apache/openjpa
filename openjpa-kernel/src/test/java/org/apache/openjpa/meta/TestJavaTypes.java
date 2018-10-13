@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.meta;
 
-import junit.framework.TestCase;
 
-public class TestJavaTypes extends TestCase {
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+
+public class TestJavaTypes {
     TypesHolder _types = new TypesHolder();
 
+    @Test
     public void testIsPrimitiveDefault() {
         assertTrue(JavaTypes.isPrimitiveDefault(_types.getBoolean(), JavaTypes.BOOLEAN));
         assertTrue(JavaTypes.isPrimitiveDefault(_types.getChar(), JavaTypes.CHAR));

@@ -19,14 +19,19 @@
 package org.apache.openjpa.conf;
 
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
  * Test basics of Specification object.
  *
  * @author Pinaki Poddar
  *
  */
-public class TestSpecification extends TestCase {
+public class TestSpecification {
+
+    @Test
     public void testStaticConstruction() {
         Specification spec1 = new Specification("JPA 2.3");
         assertEquals("JPA", spec1.getName());
@@ -49,6 +54,7 @@ public class TestSpecification extends TestCase {
         assertEquals("5", spec4.getMinorVersion());
     }
 
+    @Test
     public void testEqualityByName() {
         Specification spec1 = new Specification("JPA 2.3");
         Specification spec2 = new Specification("JPA 1.0");
@@ -62,6 +68,7 @@ public class TestSpecification extends TestCase {
         assertFalse(spec1.isSame(spec3));
     }
 
+    @Test
     public void testVersionCompare() {
         Specification spec1 = new Specification("JPA 1.1");
         Specification spec2 = new Specification("JPA 2.2");

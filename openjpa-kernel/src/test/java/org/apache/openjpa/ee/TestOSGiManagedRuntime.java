@@ -34,6 +34,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import org.apache.openjpa.util.InternalException;
+import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -47,12 +48,13 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
+
+import static org.junit.Assert.*;
 
 /**
  * Test javax.transaction.TransactionManager OSGi service discovery.
  */
-public class TestOSGiManagedRuntime extends TestCase {
+public class TestOSGiManagedRuntime {
 
     private static final String TXN_MANAGER_CLASS_NAME = "javax.transaction.TransactionManager";
 
@@ -371,6 +373,7 @@ public class TestOSGiManagedRuntime extends TestCase {
      *
      * @throws Throwable
      */
+    @Test
     public void testTxnServiceDiscoveryPreStartPostStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
@@ -409,6 +412,7 @@ public class TestOSGiManagedRuntime extends TestCase {
      *
      * @throws Throwable
      */
+    @Test
     public void testTxnServiceDiscoveryPreStartPreStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
@@ -443,6 +447,7 @@ public class TestOSGiManagedRuntime extends TestCase {
      *
      * @throws Throwable
      */
+    @Test
     public void testTxnServiceDiscoveryPostStartPostStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
@@ -478,6 +483,7 @@ public class TestOSGiManagedRuntime extends TestCase {
      *
      * @throws Throwable
      */
+    @Test
     public void testTxnServiceDiscoveryPostStartPreStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
