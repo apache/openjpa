@@ -24,25 +24,21 @@ import java.util.MissingResourceException;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.testlocalizer.LocalizerTestHelper;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.Test;
+import org.junit.Before;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests the Localizer.
  *
  * @author Abe White
  */
-public class TestLocalizer extends TestCase {
+public class TestLocalizer {
 
     private Localizer _locals = null;
 
-    public TestLocalizer(String test) {
-        super(test);
-    }
-
-    @Override
+    @Before
     public void setUp() {
         _locals = Localizer.forPackage(LocalizerTestHelper.class);
     }
@@ -50,27 +46,30 @@ public class TestLocalizer extends TestCase {
     /**
      * Test getting a string for a class.
      */
+    @Test
     public void testForClass() {
-        assertEquals(Locale.getDefault().equals(Locale.GERMANY)
+        assertEqualsMSg(Locale.getDefault().equals(Locale.GERMANY)
             ? "value1_de" : "value1", _locals.get("test.local1"));
     }
 
     /**
      * Test getting a string for a non-default locale.
      */
+    @Test
     public void testForLocale() {
         Localizer locl = Localizer.forPackage(LocalizerTestHelper.class,
             Locale.GERMANY);
-        assertEquals("value1_de", locl.get("test.local1"));
+        assertEqualsMSg("value1_de", locl.get("test.local1"));
     }
 
     /**
      * Tests that if a locale is missing the system falls back to the default.
      */
+    @Test
     public void testFallbackLocale() {
         Localizer locl = Localizer.forPackage(LocalizerTestHelper.class,
             Locale.FRANCE);
-        assertEquals(Locale.getDefault().equals(Locale.GERMANY)
+        assertEqualsMSg(Locale.getDefault().equals(Locale.GERMANY)
             ? "value1_de" : "value1", locl.get("test.local1"));
     }
 
@@ -78,22 +77,24 @@ public class TestLocalizer extends TestCase {
      * Tests that a null class accesses the localizer.properties file
      * for the top-level(no package).
      */
+    @Test
     public void testTopLevel() {
         Localizer system = Localizer.forPackage(null);
-        assertEquals("systemvalue1", system.get("test.systemlocal"));
+        assertEqualsMSg("systemvalue1", system.get("test.systemlocal"));
     }
 
     /**
      * Test that the message formatting works correctly.
      */
+    @Test
     public void testMessageFormat() {
         String suffix = Locale.getDefault().equals(Locale.GERMANY) ? "_de" : "";
 
-        assertEquals("value2" + suffix + " x sep y", _locals.get("test.local2",
+        assertEqualsMSg("value2" + suffix + " x sep y", _locals.get("test.local2",
             new String[]{ "x", "y" }));
 
         // test that it treates single objects as single-element arrays
-        assertEquals("value2" + suffix + " x sep {1}",
+        assertEqualsMSg("value2" + suffix + " x sep {1}",
             _locals.get("test.local2", "x"));
     }
 
@@ -101,10 +102,11 @@ public class TestLocalizer extends TestCase {
      * Test that a {@link MissingResourceException} is thrown for missing
      * resource bundles.
      */
+    @Test
     public void testMissingBundle() {
         Localizer missing = Localizer.forPackage(String.class);
-        assertEquals("localized message key: foo.bar", missing.get("foo.bar"));
-        assertEquals("localized message key: foo.bar; substitutions: [baz, 1]", missing.get("foo.bar", "baz", 1));
+        assertEqualsMSg("localized message key: foo.bar", missing.get("foo.bar"));
+        assertEqualsMSg("localized message key: foo.bar; substitutions: [baz, 1]", missing.get("foo.bar", "baz", 1));
         try {
             missing.getFatal("foo.bar");
             fail("No exception for fatal get on missing bundle.");
@@ -115,9 +117,10 @@ public class TestLocalizer extends TestCase {
     /**
      * Test that a {@link MissingResourceException} is thrown for missing keys.
      */
+    @Test
     public void testMissingKey() {
-        assertEquals("localized message key: foo.bar", _locals.get("foo.bar"));
-        assertEquals("localized message key: foo.bar; substitutions: [baz, 1]", _locals.get("foo.bar", "baz", 1));
+        assertEqualsMSg("localized message key: foo.bar", _locals.get("foo.bar"));
+        assertEqualsMSg("localized message key: foo.bar; substitutions: [baz, 1]", _locals.get("foo.bar", "baz", 1));
         try {
             _locals.getFatal("foo.bar");
             fail("No exception for fatal get on missing key.");
@@ -125,15 +128,8 @@ public class TestLocalizer extends TestCase {
         }
     }
 
-    public static void assertEquals(String s, Message m) {
+    public static void assertEqualsMSg(String s, Message m) {
         assertEquals(s, m.getMessage());
     }
 
-    public static Test suite() {
-        return new TestSuite(TestLocalizer.class);
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(suite());
-    }
 }

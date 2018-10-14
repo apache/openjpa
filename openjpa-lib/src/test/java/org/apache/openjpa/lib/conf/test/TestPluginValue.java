@@ -23,6 +23,9 @@ import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.StringValue;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.test.AbstractTestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link Value}, {@link PluginValue}, and
@@ -32,10 +35,7 @@ import org.apache.openjpa.lib.test.AbstractTestCase;
  */
 public class TestPluginValue extends AbstractTestCase {
 
-    public TestPluginValue(String test) {
-        super(test);
-    }
-
+    @Test
     public void testDefault() {
         defaultTest(new StringValue("testKey"));
         defaultTest(new PluginValue("testKey", true));
@@ -74,6 +74,7 @@ public class TestPluginValue extends AbstractTestCase {
         assertEquals(null, val.get());
     }
 
+    @Test
     public void testAlias() {
         aliasTest(new StringValue("testKey"));
         aliasTest(new PluginValue("testKey", true));
@@ -131,6 +132,7 @@ public class TestPluginValue extends AbstractTestCase {
         assertTrue(((PluginListValue) val).getClassNames().length == 0);
     }
 
+    @Test
     public void testPluginListParsing() {
         PluginListValue val = new PluginListValue("testKey");
         assertEquals(0, val.getClassNames().length);
@@ -175,7 +177,4 @@ public class TestPluginValue extends AbstractTestCase {
     public void setTestKey(String key) {
     }
 
-    public static void main(String[] args) {
-        main();
-    }
 }

@@ -28,9 +28,6 @@ import java.util.List;
  */
 public class TestRangeResultObjectProvider extends ResultListTest {
 
-    public TestRangeResultObjectProvider(String test) {
-        super(test);
-    }
 
     @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
@@ -66,7 +63,4 @@ public class TestRangeResultObjectProvider extends ResultListTest {
         return ranges;
     }
 
-    public static void main(String[] args) {
-        main();
-    }
 }

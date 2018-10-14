@@ -25,16 +25,10 @@ package org.apache.openjpa.lib.rop;
  */
 public class TestWindowResultList extends ResultListTest {
 
-    public TestWindowResultList(String test) {
-        super(test);
-    }
 
     @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new WindowResultList(provider, 10);
     }
 
-    public static void main(String[] args) {
-        main();
-    }
 }

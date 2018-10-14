@@ -30,10 +30,6 @@ import java.util.List;
  */
 public class TestOrderedMergedResultObjectProvider extends ResultListTest {
 
-    public TestOrderedMergedResultObjectProvider(String test) {
-        super(test);
-    }
-
     @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new WindowResultList(provider, 10);
@@ -62,10 +58,6 @@ public class TestOrderedMergedResultObjectProvider extends ResultListTest {
         return new ResultObjectProvider[]{
             new MergedResultObjectProvider(rops, comp)
         };
-    }
-
-    public static void main(String[] args) {
-        main();
     }
 
     private static class IntValueComparator implements Comparator {

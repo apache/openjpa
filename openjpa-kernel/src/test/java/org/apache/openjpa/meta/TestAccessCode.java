@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.meta;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

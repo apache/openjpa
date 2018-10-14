@@ -20,17 +20,17 @@ package org.apache.openjpa.lib.util;
 
 import java.util.Properties;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 
 /**
  * Tests the {@link Options} type.
  *
  * @author Abe White
  */
-public class TestOptions extends TestCase {
+public class TestOptions {
 
     private Options _opts = null;
 
@@ -39,11 +39,7 @@ public class TestOptions extends TestCase {
         "-range2", "10", "-fieldVal", "20", "-FieldVal2", "30",
         "-inner.nullInner.range1", "10,100", "arg1", "arg2", "arg3" };
 
-    public TestOptions(String test) {
-        super(test);
-    }
-
-    @Override
+    @Before
     public void setUp() {
         Properties defs = new Properties();
         defs.setProperty("default", "value");
@@ -54,6 +50,7 @@ public class TestOptions extends TestCase {
     /**
      * Test command-line parsing.
      */
+    @Test
     public void testCmdLineParsing() {
         assertEquals(3, _args.length);
         assertEquals("arg1", _args[0]);
@@ -78,6 +75,7 @@ public class TestOptions extends TestCase {
     /**
      * Tests the setting of option values into bean objects.
      */
+    @Test
     public void testSetObject() {
         Inner inner = new Inner();
         _opts.setInto(inner);
@@ -108,14 +106,6 @@ public class TestOptions extends TestCase {
         opts.setInto(inner);
         assertEquals(1, inner.getInt());
         assertEquals("STR", inner.getString());
-    }
-
-    public static Test suite() {
-        return new TestSuite(TestOptions.class);
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(suite());
     }
 
     /**

@@ -25,8 +25,8 @@ package org.apache.openjpa.lib.rop;
  */
 public class TestEagerResultList extends ResultListTest {
 
-    public TestEagerResultList(String test) {
-        super(test, true);
+    public TestEagerResultList() {
+        super(true);
     }
 
     @Override
@@ -34,7 +34,4 @@ public class TestEagerResultList extends ResultListTest {
         return new EagerResultList(provider);
     }
 
-    public static void main(String[] args) {
-        main();
-    }
 }

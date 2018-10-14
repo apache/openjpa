@@ -20,27 +20,23 @@ package org.apache.openjpa.lib.util;
 
 import java.net.URL;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.Test;
+import org.junit.Before;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link MultiClassLoader}.
  *
  * @author Abe White
  */
-public class TestMultiClassLoader extends TestCase {
+public class TestMultiClassLoader {
 
     private ClassLoader SYSTEM_LOADER = MultiClassLoader.class.getClassLoader();
 
     private MultiClassLoader _loader = new MultiClassLoader();
 
-    public TestMultiClassLoader(String test) {
-        super(test);
-    }
-
-    @Override
+    @Before
     public void setUp() {
         _loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
         _loader.addClassLoader(SYSTEM_LOADER);
@@ -49,6 +45,7 @@ public class TestMultiClassLoader extends TestCase {
     /**
      * Tests basic add/remove functionality.
      */
+    @Test
     public void testBasic() {
         assertEquals(2, _loader.size());
         assertTrue(!_loader.isEmpty());
@@ -91,54 +88,17 @@ public class TestMultiClassLoader extends TestCase {
         assertEquals(foo2, loaders[2]);
     }
 
-    /**
-     * Test finding classes.
-     */
-/*
- public void testClassForName()
- throws Exception
- {
- assertEquals(MultiClassLoader.class,
- Class.forName(MultiClassLoader.class.getName(), true, _loader));
- assertTrue(_loader.removeClassLoader(SYSTEM_LOADER));
- assertTrue(_loader.removeClassLoader(MultiClassLoader.THREAD_LOADER));
- try
- {
- // have to switch classes here b/c other is now cached
- assertEquals(TestMultiClassLoader.class, Class.forName
- (TestMultiClassLoader.class.getName(), true, _loader));
- fail("System class laoder still working.");
- } catch (ClassNotFoundException cnfe)
- {
- }
- try
- {
- Class.forName("foo", true, _loader);
- fail("Somehow found 'foo'???");
- } catch (ClassNotFoundException cnfe)
- {
- }
- _loader.addClassLoader(new FooLoader());
- assertEquals(Integer.class, Class.forName("foo", true, _loader));
- }
-*/
 
     /**
      * Test finding resources.
      */
+    @Test
     public void testGetResource() {
         assertNull(_loader.getResource("foo"));
         _loader.addClassLoader(new FooLoader());
         assertNotNull(_loader.getResource("foo"));
     }
 
-    public static Test suite() {
-        return new TestSuite(TestMultiClassLoader.class);
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(suite());
-    }
 
     private static final class FooLoader extends ClassLoader {
 

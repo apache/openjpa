@@ -23,11 +23,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 
-public class TestXMLCaseConversions extends TestCase {
+public class TestXMLCaseConversions {
 
+    @Test
     public void testToXMLName() {
         assertEquals("easy-xml-conversion",
             ConfigurationImpl.toXMLName("easyXmlConversion"));

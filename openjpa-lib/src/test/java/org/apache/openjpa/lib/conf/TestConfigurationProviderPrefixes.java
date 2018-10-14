@@ -24,18 +24,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.fail;
 
 
-public class TestConfigurationProviderPrefixes
-    extends TestCase {
+public class TestConfigurationProviderPrefixes {
 
     private static final String CUSTOM_PREFIX =
         TestConfigurationProviderPrefixes.class.getName();
 
     private String[] _origPrefixes;
 
-    @Override
+    @Before
     public void setUp() {
         _origPrefixes = ProductDerivations.getConfigurationPrefixes();
         List l = new ArrayList(Arrays.asList(_origPrefixes));
@@ -44,45 +48,52 @@ public class TestConfigurationProviderPrefixes
             (String[]) l.toArray(new String[0]));
     }
 
-    @Override
+    @After
     public void tearDown() {
         ProductDerivations.setConfigurationPrefixes(_origPrefixes);
     }
 
+    @Test
     public void testPrefixContents() {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
-        assertEquals(CUSTOM_PREFIX, prefixes[prefixes.length - 1]);
-        assertEquals("openjpa", prefixes[0]);
+        Assert.assertEquals(CUSTOM_PREFIX, prefixes[prefixes.length - 1]);
+        Assert.assertEquals("openjpa", prefixes[0]);
     }
 
+    @Test
     public void testPartialKeyAndNullMap() {
         assertEquals("openjpa.Foo", "Foo", (Map) null, null);
     }
 
+    @Test
     public void testPartialKeyWithInvalidPrefix() {
         Map map = new HashMap();
         map.put("bar.Foo", "value");
         assertEquals("openjpa.Foo", "Foo", map, null);
     }
 
+    @Test
     public void testPartialKeyWithoutMatch() {
         Map map = new HashMap();
         map.put("bar.Baz", "value");
         assertEquals("openjpa.Foo", "Foo", map, null);
     }
 
+    @Test
     public void testPartialKeyWithOpenJPAMatch() {
         Map map = new HashMap();
         map.put("openjpa.Foo", "value");
         assertEquals("openjpa.Foo", "Foo", map, "value");
     }
 
+    @Test
     public void testPartialKeyWithCustomMatch() {
         Map map = new HashMap();
         map.put(CUSTOM_PREFIX + ".Foo", "value");
         assertEquals(CUSTOM_PREFIX + ".Foo", "Foo", map, "value");
     }
 
+    @Test
     public void testPartialKeyDuplicateFullKeys() {
         Map map = new HashMap();
         map.put(CUSTOM_PREFIX + ".Foo", "value");
@@ -97,9 +108,9 @@ public class TestConfigurationProviderPrefixes
 
     private static void assertEquals(String fullKey, String partialKey,
         Map map, Object value) {
-        assertEquals(fullKey, ProductDerivations.getConfigurationKey(
+        Assert.assertEquals(fullKey, ProductDerivations.getConfigurationKey(
             partialKey, map));
         if (map != null)
-            assertEquals(value, map.get(fullKey));
+            Assert.assertEquals(value, map.get(fullKey));
     }
 }

@@ -18,21 +18,23 @@
  */
 package org.apache.openjpa.lib.util;
 
-import junit.framework.TestCase;
-import junit.textui.TestRunner;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests simple regex for use in in-memory query execution.
  *
  * @author Greg Campbell
  */
-public class TestSimpleRegex extends TestCase {
+public class TestSimpleRegex  {
 
     private boolean matchExpr(String target, String expr, boolean caseInsens) {
         SimpleRegex re = new SimpleRegex(expr, caseInsens);
         return re.matches(target);
     }
 
+    @Test
     public void testWildcards() {
         assertTrue(matchExpr("Hello", "Hello", false));
         assertFalse(matchExpr("Hello", "Bye", false));
@@ -66,7 +68,4 @@ public class TestSimpleRegex extends TestCase {
         assertFalse(matchExpr("Hellow", ".*YoHello", false));
     }
 
-    public static void main(String[] args) {
-        TestRunner.run(TestSimpleRegex.class);
-    }
 }

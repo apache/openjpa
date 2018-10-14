@@ -27,6 +27,10 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link ResultList} implementations.
@@ -39,12 +43,12 @@ public abstract class ResultListTest extends AbstractTestCase {
 
     protected boolean subListSupported = false;
 
-    public ResultListTest(String test) {
-        super(test);
+
+    public ResultListTest() {
+        this(false);
     }
 
-    public ResultListTest(String test, boolean supportSubList) {
-        super(test);
+    public ResultListTest(boolean supportSubList) {
         subListSupported = supportSubList;
     }
 
@@ -63,7 +67,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         };
     }
 
-    @Override
+    @Before
     public void setUp() {
         List results = new ArrayList(100);
         for (int i = 0; i < 100; i++)
@@ -74,6 +78,7 @@ public abstract class ResultListTest extends AbstractTestCase {
             _lists[i] = getResultList(rops[i]);
     }
 
+    @Test
     public void testIterator() {
         for (int i = 0; i < _lists.length; i++) {
             Iterator itr = _lists[i].iterator();
@@ -90,6 +95,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testIteratorModification() {
         for (int i = 0; i < _lists.length; i++) {
             try {
@@ -102,6 +108,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testListIteratorForward() {
         for (int i = 0; i < _lists.length; i++) {
             ListIterator itr = _lists[i].listIterator();
@@ -120,6 +127,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testListIteratorIndex() {
         for (int i = 0; i < _lists.length; i++) {
             ListIterator itr = _lists[i].listIterator(50);
@@ -138,6 +146,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testListIteratorReverse() {
         for (int i = 0; i < _lists.length; i++) {
             ListIterator itr = _lists[i].listIterator(100);
@@ -156,6 +165,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testListIteratorModification() {
         for (int i = 0; i < _lists.length; i++) {
             try {
@@ -168,12 +178,14 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testMultipleIterations() {
         testListIteratorIndex();
         testListIteratorForward();
         testListIteratorReverse();
     }
 
+    @Test
     public void testContains() {
         for (int i = 0; i < _lists.length; i++) {
             assertTrue(_lists[i].contains("0"));
@@ -189,6 +201,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testModification() {
         for (int i = 0; i < _lists.length; i++) {
             try {
@@ -209,6 +222,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testGetBegin() {
         for (int i = 0; i < _lists.length; i++) {
             for (int j = 0; j < 10; j++)
@@ -222,12 +236,14 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testGetMiddle() {
         for (int i = 0; i < _lists.length; i++)
             for (int j = 50; j < 60; j++)
                 assertEquals(String.valueOf(j), _lists[i].get(j));
     }
 
+    @Test
     public void testGetEnd() {
         for (int i = 0; i < _lists.length; i++) {
             for (int j = 90; j < 100; j++)
@@ -241,12 +257,14 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testGetReverse() {
         for (int i = 0; i < _lists.length; i++)
             for (int j = 99; j > -1; j--)
                 assertEquals(String.valueOf(j), _lists[i].get(j));
     }
 
+    @Test
     public void testMultipleGet() {
         testGetMiddle();
         testGetBegin();
@@ -262,12 +280,14 @@ public abstract class ResultListTest extends AbstractTestCase {
         testGetEnd();
     }
 
+    @Test
     public void testSize() {
         for (int i = 0; i < _lists.length; i++)
             assertTrue(_lists[i].size() == 100
                 || _lists[i].size() == Integer.MAX_VALUE);
     }
 
+    @Test
     public void testEmpty() {
         ResultObjectProvider[] rops = getResultObjectProviders
             (Collections.EMPTY_LIST);
@@ -278,6 +298,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testSubList() {
         ResultObjectProvider[] rops = getResultObjectProviders
             (Collections.EMPTY_LIST);

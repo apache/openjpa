@@ -36,7 +36,9 @@ import java.util.Properties;
 import org.apache.openjpa.lib.util.FormatPreservingProperties.
         DuplicateKeyException;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 // things to test:
 // - delimiters in keys
@@ -45,10 +47,11 @@ import junit.framework.TestCase;
 // - non-String keys / vals
 // - list() method behavior
 
-public class TestPropertiesParser extends TestCase {
+public class TestPropertiesParser {
 
     private static final String LS = System.getProperty( "line.separator" );
 
+    @Test
     public void testSimpleProperties() throws IOException {
         StringBuffer buf = new StringBuffer();
         buf.append("key: value" + LS);
@@ -58,6 +61,7 @@ public class TestPropertiesParser extends TestCase {
             { "key", "value" }, { "key2", "value2" } }, p);
     }
 
+    @Test
     public void testComments() throws IOException {
         StringBuffer buf = new StringBuffer();
         buf.append("# this is a comment" + LS);
@@ -70,6 +74,7 @@ public class TestPropertiesParser extends TestCase {
         assertEquals(0, p.size());
     }
 
+    @Test
     public void testMixedContent() throws IOException {
         StringBuffer buf = new StringBuffer();
         buf.append("# this is a comment" + LS);
@@ -81,6 +86,7 @@ public class TestPropertiesParser extends TestCase {
         assertProperties(new String[][]{ { "foo", "bar#baz" } }, p);
     }
 
+    @Test
     public void testMultiLineInput() throws IOException {
         String s = "foo: bar\\" + LS + "more line goes here";
         Properties p = toProperties(s);
@@ -88,12 +94,14 @@ public class TestPropertiesParser extends TestCase {
             new String[][]{ { "foo", "barmore line goes here" } }, p);
     }
 
+    @Test
     public void testEmptyLines() throws IOException {
         Properties p = toProperties(LS + "foo: bar" + LS + LS + "baz: val");
         assertProperties(new String[][]{ { "foo", "bar" }, { "baz", "val" } },
             p);
     }
 
+    @Test
     public void testAddProperties() throws IOException {
         // intentionally left out the trailing end line
         String s = "foo: bar" + LS + "baz: val";
@@ -108,6 +116,7 @@ public class TestPropertiesParser extends TestCase {
             "another-new-key: val3" + LS, p);
     }
 
+    @Test
     public void testAddAndMutateProperties() throws IOException {
         // intentionally left out the trailing end line
         Properties p = toProperties("foo: bar" + LS + "baz: val");
@@ -120,11 +129,13 @@ public class TestPropertiesParser extends TestCase {
             + "new-key: new value" + LS, p);
     }
 
+    @Test
     public void testEscapedEquals() throws IOException {
         Properties p = toProperties("foo=bar\\=WARN,baz\\=TRACE");
         assertProperties(new String[][]{ { "foo", "bar=WARN,baz=TRACE" } }, p);
     }
 
+    @Test
     public void testLineTypes() throws IOException {
         StringBuffer buf = new StringBuffer();
         buf.append("   !comment" + LS + " \t  " + LS + "name = no" + LS + "    "
@@ -140,6 +151,7 @@ public class TestPropertiesParser extends TestCase {
         }, p);
     }
 
+    @Test
     public void testSpecialChars() throws Throwable {
         testSpecialChars(false, true);
         testSpecialChars(true, true);
@@ -155,7 +167,7 @@ public class TestPropertiesParser extends TestCase {
      * against a normal Properties instance(for validation of the test case).
      * @param value whether to test the key or the value
      */
-    public void testSpecialChars(boolean formattingProps, boolean value)
+    private void testSpecialChars(boolean formattingProps, boolean value)
         throws Throwable {
         List valueList = new ArrayList(Arrays.asList(new String[]{
             "xxyy", "xx\\yy", "xx" + LS + "yy", "xx\\nyy", "xx\tyy", "xx\\tyy",
@@ -246,6 +258,7 @@ public class TestPropertiesParser extends TestCase {
         return buf.toString();
     }
 
+    @Test
     public void testEquivalentStore() throws IOException {
         Properties p1 = new Properties();
         FormatPreservingProperties p2 = new FormatPreservingProperties();
@@ -308,6 +321,7 @@ public class TestPropertiesParser extends TestCase {
         return sbuf.toString();
     }
 
+    @Test
     public void testDuplicateProperties() throws IOException {
         FormatPreservingProperties p = new FormatPreservingProperties();
         try {
@@ -324,6 +338,7 @@ public class TestPropertiesParser extends TestCase {
         assertProperties(new String[][]{ { "foo", "baz" } }, p);
     }
 
+    @Test
     public void testMultipleLoads() throws IOException {
         String props = "foo=bar" + LS + "baz=quux";
         String props2 = "a=b" + LS + "c=d";
@@ -381,13 +396,6 @@ public class TestPropertiesParser extends TestCase {
         }
     }
 
-    public static void assertEquals(String expected, String actual) {
-        if (expected == actual)
-            return;
-
-        if (expected == null || !expected.equals(actual))
-            fail("Expected <" + expected + "> but was <" + actual + ">");
-    }
 
     private void assertPropertiesSame(Properties vanilla, Properties p) {
         assertEquals(vanilla, p);

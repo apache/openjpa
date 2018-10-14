@@ -20,24 +20,19 @@ package org.apache.openjpa.lib.util;
 
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link AbstractConcurrentEventManager}.
  *
  * @author Abe White
  */
-public class TestAbstractEventManager extends TestCase {
+public class TestAbstractEventManager {
 
     private EventManager _em = new EventManager();
 
-    public TestAbstractEventManager(String test) {
-        super(test);
-    }
-
+    @Test
     public void testReentrantAdd() {
         Listener l1 = new Listener(Listener.ADD);
         Listener l2 = new Listener(Listener.NONE);
@@ -49,6 +44,7 @@ public class TestAbstractEventManager extends TestCase {
         assertEquals(3, _em.getListeners().size());
     }
 
+    @Test
     public void testReentrantRemove() {
         Listener l1 = new Listener(Listener.REMOVE);
         Listener l2 = new Listener(Listener.NONE);
@@ -59,14 +55,6 @@ public class TestAbstractEventManager extends TestCase {
         assertTrue(l2.fired);
         assertEquals(1, _em.getListeners().size());
         assertFalse(_em.getListeners().contains(l1));
-    }
-
-    public static Test suite() {
-        return new TestSuite(TestAbstractEventManager.class);
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(suite());
     }
 
     private static class EventManager extends AbstractConcurrentEventManager {

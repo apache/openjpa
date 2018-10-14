@@ -18,24 +18,21 @@
  */
 package org.apache.openjpa.lib.util;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the {@link ParameterTemplate} utility class.
  *
  * @author Abe White
  */
-public class TestParameterTemplate extends TestCase {
+public class TestParameterTemplate {
 
     private ParameterTemplate templ = new ParameterTemplate();
 
-    public TestParameterTemplate(String test) {
-        super(test);
-    }
-
+    @Test
     public void testParameters() {
         templ.append("{foo$${foo}bar{${bar}}biz baz$");
         templ.append("{booz}booz${java.io.tmpdir}{ack}");
@@ -55,12 +52,5 @@ public class TestParameterTemplate extends TestCase {
             templ.toString());
     }
 
-    public static Test suite() {
-        return new TestSuite(TestParameterTemplate.class);
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(suite());
-    }
 }
 

@@ -22,9 +22,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TestTemporaryClassLoader extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class TestTemporaryClassLoader {
+
+    @Test
     public void testTemporaryClassLoader() throws Exception {
         Set s = new HashSet();
         for (int i = 0; i < 2; i++) {

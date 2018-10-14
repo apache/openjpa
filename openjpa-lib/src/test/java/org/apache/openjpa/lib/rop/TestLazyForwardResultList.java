@@ -25,16 +25,12 @@ package org.apache.openjpa.lib.rop;
  */
 public class TestLazyForwardResultList extends ResultListTest {
 
-    public TestLazyForwardResultList(String test) {
-        super(test, true);
+    public TestLazyForwardResultList() {
+        super(true);
     }
 
     @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new LazyForwardResultList(provider);
-    }
-
-    public static void main(String[] args) {
-        main();
     }
 }

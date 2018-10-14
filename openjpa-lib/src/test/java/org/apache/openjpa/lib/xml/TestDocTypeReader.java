@@ -26,15 +26,15 @@ import java.io.Writer;
 
 import javax.xml.parsers.SAXParser;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import static org.junit.Assert.*;
+
 
 /**
  * Tests the {@link DocTypeReader} by comparing the results of passing
@@ -42,7 +42,7 @@ import junit.textui.TestRunner;
  *
  * @author Abe White
  */
-public class TestDocTypeReader extends TestCase {
+public class TestDocTypeReader {
 
     private String _docType = null;
     private String _validXML = null;
@@ -52,11 +52,8 @@ public class TestDocTypeReader extends TestCase {
     private String _expectedHTML = null;
     private String _xmlWithDocType = null;
 
-    public TestDocTypeReader(String test) {
-        super(test);
-    }
 
-    @Override
+    @Before
     public void setUp() {
         StringBuffer docType = new StringBuffer();
         docType.append("<!DOCTYPE foo [\n");
@@ -110,6 +107,7 @@ public class TestDocTypeReader extends TestCase {
     /**
      * Test against expected doc type inclusion behavior.
      */
+    @Test
     public void testIncludesDocType() throws IOException {
         assertEquals(_validXML, getIncludedString(_validXML, null, 1));
         assertEquals(_validXML, getIncludedString(_validXML, null, 7));
@@ -131,6 +129,7 @@ public class TestDocTypeReader extends TestCase {
      * Test that the doc type declaration is not included in files with
      * doc types.
      */
+    @Test
     public void testStreamWithDocType() throws IOException {
         assertEquals(_xmlWithDocType, getIncludedString
             (_xmlWithDocType, null, 1));
@@ -176,6 +175,7 @@ public class TestDocTypeReader extends TestCase {
     /**
      * Test that validation occurs correctly.
      */
+    @Test
     public void testValidation() throws IOException, SAXException {
         SAXParser parser = XMLFactory.getSAXParser(false, false);
         InputSource source = new InputSource();
@@ -199,13 +199,6 @@ public class TestDocTypeReader extends TestCase {
         }
     }
 
-    public static Test suite() {
-        return new TestSuite(TestDocTypeReader.class);
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(suite());
-    }
 
     private static class Handler extends DefaultHandler {
 

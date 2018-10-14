@@ -25,16 +25,9 @@ package org.apache.openjpa.lib.rop;
  */
 public class TestRandomAccessResultList extends ResultListTest {
 
-    public TestRandomAccessResultList(String test) {
-        super(test);
-    }
-
     @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new RandomAccessResultList(provider);
     }
 
-    public static void main(String[] args) {
-        main();
-    }
 }

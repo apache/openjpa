@@ -23,6 +23,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 
 /**
  * <p>Tests the {@link DepthFirstAnalysis} type.</p>
@@ -34,7 +39,7 @@ public class TestDepthFirstAnalysis
 
     private DepthFirstAnalysis _dfa = null;
 
-    @Override
+    @Before
     public void setUp() {
         setUpGraph1();
     }
@@ -79,6 +84,7 @@ public class TestDepthFirstAnalysis
         _dfa = new DepthFirstAnalysis(graph);
     }
 
+    @Test
     public void testNodeSorting() {
         Collection nodes = _dfa.getSortedNodes();
         assertEquals(4, nodes.size());
@@ -92,6 +98,7 @@ public class TestDepthFirstAnalysis
         }
     }
 
+    @Test
     public void testEdgeTyping() {
         Collection edges = _dfa.getEdges(Edge.TYPE_BACK);
         assertEquals(2, edges.size());
@@ -102,6 +109,7 @@ public class TestDepthFirstAnalysis
                 || edge1.getTo().equals(edge1.getFrom()));
     }
 
+    @Test
     public void testBackEdges() {
         setUpGraph2();
         Collection edges = _dfa.getEdges(Edge.TYPE_BACK);
@@ -130,6 +138,7 @@ public class TestDepthFirstAnalysis
         }
     }
 
+    @Test
     public void testForwardEdges() {
         setUpGraph2();
         Collection edges = _dfa.getEdges(Edge.TYPE_FORWARD);
@@ -153,7 +162,4 @@ public class TestDepthFirstAnalysis
         }
     }
 
-    public static void main(String[] args) {
-        main(TestDepthFirstAnalysis.class);
-    }
 }

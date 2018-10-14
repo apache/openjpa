@@ -27,11 +27,10 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.openjpa.lib.util.StringUtil;
+import org.junit.Test;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests the {@link XMLWriter} by comparing the results of passing the
@@ -40,15 +39,12 @@ import junit.textui.TestRunner;
  *
  * @author Abe White
  */
-public class TestXMLWriter extends TestCase {
-
-    public TestXMLWriter(String test) {
-        super(test);
-    }
+public class TestXMLWriter {
 
     /**
      * Tests the formatting works.
      */
+    @Test
     public void testPrettyPrint() throws Exception {
         // get the raw xml from a file
         StreamSource source = new StreamSource
@@ -76,11 +72,4 @@ public class TestXMLWriter extends TestCase {
         return StringUtil.join(StringUtil.split(str, "\r\n", -1), "\n");
     }
 
-    public static Test suite() {
-        return new TestSuite(TestXMLWriter.class);
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(suite());
-    }
 }

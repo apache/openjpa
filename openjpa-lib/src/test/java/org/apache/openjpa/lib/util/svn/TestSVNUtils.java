@@ -18,50 +18,46 @@
  */
 package org.apache.openjpa.lib.util.svn;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
 
-public class TestSVNUtils extends TestCase {
-    public TestSVNUtils(String s) {
-        super(s);
-    }
+import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
+public class TestSVNUtils  {
+
+    @Test
     public void testNull() {
         assertEquals(-1, SVNUtils.svnInfoToInteger(null));
     }
 
+    @Test
     public void testBasic() {
         int i = 12345678;
         assertEquals(i, SVNUtils.svnInfoToInteger(i + ""));
     }
 
+    @Test
     public void testGoodTrailingString() {
         int i = 12345678;
         assertEquals(i, SVNUtils.svnInfoToInteger(i + "m"));
     }
 
+    @Test
     public void testMixedRevision() {
         int i = 12345678;
         assertEquals(i, SVNUtils.svnInfoToInteger("55555:" + i));
     }
 
+    @Test
     public void testMixedRevisionTrailingString() {
         int i = 12345678;
         assertEquals(i, SVNUtils.svnInfoToInteger("55555:" + i + "MS"));
     }
 
+    @Test
     public void testBad() {
         int i = 12345678;
         assertEquals(-1, SVNUtils.svnInfoToInteger("55555:aa" + i + "ms"));
     }
 
-    public static Test suite() {
-        return new TestSuite(TestSVNUtils.class);
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(suite());
-    }
 }

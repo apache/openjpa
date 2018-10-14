@@ -22,6 +22,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * <p>Tests the {@link Graph} type, and in so doing implicitly tests the
@@ -41,7 +45,7 @@ public class TestGraph
     private Edge _edge3 = new Edge(_node1, _node3, false);
     private Edge _edge4 = new Edge(_node2, _node2, false);
 
-    @Override
+    @Before
     public void setUp() {
         _graph.addNode(_node1);
         _graph.addNode(_node2);
@@ -55,6 +59,7 @@ public class TestGraph
     /**
      * Tests adding and retrieving nodes and edges.
      */
+    @Test
     public void testAddRetrieve() {
         assertEquals(3, _graph.getNodes().size());
         assertEquals(4, _graph.getEdges().size());
@@ -106,6 +111,7 @@ public class TestGraph
     /**
      * Test removing edges.
      */
+    @Test
     public void testRemoveEdges() {
         assertTrue(_graph.removeEdge(_edge2));
         Collection edges = _graph.getEdgesFrom(_node2);
@@ -127,6 +133,7 @@ public class TestGraph
     /**
      * Test removing nodes.
      */
+    @Test
     public void testRemoveNodes() {
         assertTrue(_graph.removeNode(_node3));
         Collection edges = _graph.getEdges();
@@ -143,7 +150,4 @@ public class TestGraph
         assertEquals(0, edges.size());
     }
 
-    public static void main(String[] args) {
-        main(TestGraph.class);
-	}
 }

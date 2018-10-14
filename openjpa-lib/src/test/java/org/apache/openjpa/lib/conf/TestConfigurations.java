@@ -23,6 +23,10 @@ import java.util.Map;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
 import org.apache.openjpa.lib.util.Options;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 
 /**
  * Tests the {@link Configurations} class.
@@ -31,10 +35,7 @@ import org.apache.openjpa.lib.util.Options;
  */
 public class TestConfigurations extends AbstractTestCase {
 
-    public TestConfigurations(String test) {
-        super(test);
-    }
-
+    @Test
     public void testParsePlugin() {
         String str = null;
         assertNull(Configurations.getClassName(str));
@@ -59,6 +60,7 @@ public class TestConfigurations extends AbstractTestCase {
         assertEquals("a='b,c d', c='d'", Configurations.getProperties(str));
     }
 
+    @Test
     public void testParseProperties() {
         Options opts = Configurations.parseProperties(null);
         assertEquals(0, opts.size());
@@ -86,6 +88,7 @@ public class TestConfigurations extends AbstractTestCase {
         assertEquals("baz baz", opts.getProperty("biz"));
     }
 
+    @Test
     public void testCombinePlugins() {
         assertPluginsCombined("jpa", null,
             null, null,
@@ -142,7 +145,4 @@ public class TestConfigurations extends AbstractTestCase {
         return map;
     }
 
-    public static void main(String[] args) {
-        main(TestConfigurations.class);
-    }
 }

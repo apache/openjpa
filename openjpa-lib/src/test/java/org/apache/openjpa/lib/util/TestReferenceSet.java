@@ -23,24 +23,23 @@ import java.util.Iterator;
 
 import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link ReferenceHashSet}.
  *
  * @author Abe White
  */
-public class TestReferenceSet extends TestCase {
+public class TestReferenceSet {
 
     private ReferenceHashSet _coll = new ReferenceHashSet(ReferenceStrength.WEAK);
 
     private Object _heldValue = new Integer(2);
 
-    public TestReferenceSet(String test) {
-        super(test);
-    }
-
-    @Override
+    @Before
     public void setUp() {
         _coll.add(_heldValue);
         _coll.add(new Integer(1));
@@ -49,6 +48,7 @@ public class TestReferenceSet extends TestCase {
     /**
      * Tests basic add/contains/remove functionality.
      */
+    @Test
     public void testBasics() {
         Collection coll = new ReferenceHashSet(ReferenceStrength.WEAK);
         assertEquals(0, coll.size());
@@ -69,6 +69,7 @@ public class TestReferenceSet extends TestCase {
     /**
      * Test that values with strong references are not gc'd.
      */
+    @Test
     public void testHeldReference() {
         if (JavaVersions.VERSION >= 5)
             return;
@@ -81,6 +82,7 @@ public class TestReferenceSet extends TestCase {
     /**
      * Test that weak references are gc'd.
      */
+    @Test
     public void testWeakReference() {
         if (JavaVersions.VERSION >= 5)
             return;
@@ -106,6 +108,7 @@ public class TestReferenceSet extends TestCase {
     /**
      * Test that values that have been replaced aren't expired.
      */
+    @Test
     public void testChangeValue() {
         if (JavaVersions.VERSION >= 5)
             return;

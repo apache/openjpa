@@ -18,9 +18,11 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TestValue extends TestCase {
+import static org.junit.Assert.*;
+
+public class TestValue  {
 
     private static class SimpleValue extends Value {
 
@@ -50,6 +52,7 @@ public class TestValue extends TestCase {
 
     }
 
+    @Test
     public void testSetAliasesByValue() {
         String alias = "alias";
         String aName = "Johnny";
@@ -64,6 +67,7 @@ public class TestValue extends TestCase {
         assertEquals("Array of aliases not set by value", aName, aStrings[1]);
     }
 
+    @Test
     public void testEquivalentValueCanBeSet() {
         SimpleValue v = new SimpleValue();
         v.setProperty("main");
@@ -79,6 +83,7 @@ public class TestValue extends TestCase {
         assertFalse(v.matches("eqivalent3"));
     }
 
+    @Test
     public void testEquivalentValuesAreUnmodifable() {
         SimpleValue v = new SimpleValue();
         v.setProperty("main");

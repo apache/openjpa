@@ -24,15 +24,18 @@ import java.security.PrivilegedExceptionAction;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test UUID generation.
  *
  * @author Abe White
  */
-public class TestUUIDGenerator extends TestCase {
+public class TestUUIDGenerator {
 
+    @Test
     public void testUniqueString() {
         Set seen = new HashSet();
         for (int i = 0; i < 10000; i++)
@@ -40,6 +43,7 @@ public class TestUUIDGenerator extends TestCase {
                 UUIDGenerator.nextString(UUIDGenerator.TYPE1)));
     }
 
+    @Test
     public void testUniqueHex() {
         Set seen = new HashSet();
         for (int i = 0; i < 10000; i++)
@@ -47,6 +51,7 @@ public class TestUUIDGenerator extends TestCase {
                 UUIDGenerator.nextHex(UUIDGenerator.TYPE1)));
     }
 
+    @Test
     public void testUniqueType4String() {
         Set seen = new HashSet();
         for (int i = 0; i < 10000; i++)
@@ -54,6 +59,7 @@ public class TestUUIDGenerator extends TestCase {
                 UUIDGenerator.nextString(UUIDGenerator.TYPE4)));
     }
 
+    @Test
     public void testUniqueType4Hex() {
         Set seen = new HashSet();
         for (int i = 0; i < 10000; i++)
@@ -61,6 +67,7 @@ public class TestUUIDGenerator extends TestCase {
                 UUIDGenerator.nextHex(UUIDGenerator.TYPE4)));
     }
 
+    @Test
     public void testUniqueMixedTypesHex() {
         Set seen = new HashSet();
         for (int i = 0; i < 10000; i++) {
@@ -71,6 +78,7 @@ public class TestUUIDGenerator extends TestCase {
         }
     }
 
+    @Test
     public void testGetTime() {
         long time = 0;
         for (int i = 0; i < 10000; i++) {
@@ -80,6 +88,7 @@ public class TestUUIDGenerator extends TestCase {
         }
     }
 
+    @Test
     public void testInitType1MultiThreaded() throws Exception {
         // This test method depends IP and RANDOM in UUIDGenerator to be null
         // and type1Initialized to be false. Using reflection to ensure that

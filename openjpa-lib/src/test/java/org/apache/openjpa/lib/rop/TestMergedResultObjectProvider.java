@@ -28,10 +28,6 @@ import java.util.List;
  */
 public class TestMergedResultObjectProvider extends ResultListTest {
 
-    public TestMergedResultObjectProvider(String test) {
-        super(test);
-    }
-
     @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new WindowResultList(provider, 10);
@@ -62,7 +58,4 @@ public class TestMergedResultObjectProvider extends ResultListTest {
         return merges;
     }
 
-    public static void main(String[] args) {
-        main();
-    }
 }

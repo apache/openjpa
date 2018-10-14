@@ -19,9 +19,13 @@
 package org.apache.openjpa.lib.identifier;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class TestIdentifiers extends AbstractTestCase {
 
+    @Test
     public void testIdentifierConversion() {
 
         // Create a naming configs used for testing.

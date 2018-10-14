@@ -18,26 +18,22 @@
  */
 package org.apache.openjpa.lib.util;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link TypedProperties} type.
  *
  * @author Abe White
  */
-public class TestTypedProperties extends TestCase {
+public class TestTypedProperties {
 
     private TypedProperties _props = null;
     private TypedProperties _defs = null;
 
-    public TestTypedProperties(String test) {
-        super(test);
-    }
-
-    @Override
+    @Before
     public void setUp() {
         _props = new TypedProperties();
         _props.setProperty("bool", "true");
@@ -52,6 +48,7 @@ public class TestTypedProperties extends TestCase {
     /**
      * Tests basic typed gets.
      */
+    @Test
     public void testTypes() {
         assertTrue(_props.getBooleanProperty("bool"));
         assertEquals(1, _props.getIntProperty("int"));
@@ -64,6 +61,7 @@ public class TestTypedProperties extends TestCase {
     /**
      * Tests the defaults returned for missing keys.
      */
+    @Test
     public void testNoDefaults() {
         assertTrue(!_props.getBooleanProperty("bool2"));
         assertEquals(0, _props.getIntProperty("int2"));
@@ -77,6 +75,7 @@ public class TestTypedProperties extends TestCase {
      * Tests the defaults returned by keys found in the default
      * backing properties instance.
      */
+    @Test
     public void testDefaults() {
         assertTrue(_defs.getBooleanProperty("bool"));
         assertEquals(1, _defs.getIntProperty("int"));
@@ -89,6 +88,7 @@ public class TestTypedProperties extends TestCase {
     /**
      * Tests that given defaults works.
      */
+    @Test
     public void testGivenDefaults() {
         assertTrue(_props.getBooleanProperty("bool2", true));
         assertEquals(1, _props.getIntProperty("int2", 1));
@@ -105,11 +105,4 @@ public class TestTypedProperties extends TestCase {
         assertEquals("2.2", _defs.getProperty("double", "3.3"));
     }
 
-    public static Test suite() {
-        return new TestSuite(TestTypedProperties.class);
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(suite());
-    }
 }

@@ -25,16 +25,9 @@ package org.apache.openjpa.lib.rop;
  */
 public class TestSimpleResultList extends ResultListTest {
 
-    public TestSimpleResultList(String test) {
-        super(test);
-    }
-
     @Override
     protected ResultList getResultList(ResultObjectProvider provider) {
         return new SimpleResultList(provider);
     }
 
-    public static void main(String[] args) {
-        main();
-    }
 }

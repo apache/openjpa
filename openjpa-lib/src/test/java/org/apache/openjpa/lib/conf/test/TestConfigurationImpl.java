@@ -32,6 +32,13 @@ import org.apache.openjpa.lib.conf.StringValue;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.test.AbstractTestCase;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+
 /**
  * Tests the {@link ConfigurationImpl} type. This needs to be placed
  * in a sub-package so that it can have its own localizer.properties
@@ -49,24 +56,20 @@ public class TestConfigurationImpl extends AbstractTestCase {
 
     private ConfigurationTest _conf = new ConfigurationTest();
 
-    public TestConfigurationImpl(String test) {
-        super(test);
-    }
-
-    @Override
+    @Before
     public void setUp() {
         System.setProperty("openjpatest.properties", "test.properties");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         System.setProperty("openjpatest.properties", "");
-    	super.tearDown();
     }
 
     /**
      * Test that global properties are found and loaded.
      */
+    @Test
     public void testGlobals() {
         System.setProperty("openjpa.sysKey", "sysvalue");
         assertNull(_conf.getTestKey());
@@ -103,6 +106,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
     /**
      * Test that the configuration is serialized to properties correctly.
      */
+    @Test
     public void testToProperties() {
         assertTrue(_conf.loadGlobals());
         assertEquals("testvalue", _conf.getTestKey());
@@ -121,6 +125,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
     /**
      * Tests properties caching.
      */
+    @Test
     public void testPropertiesCaching() {
         _conf.setTestKey("val");
         _conf.setPluginKey("java.lang.Object");
@@ -142,6 +147,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
     /**
      * Test the equals method.
      */
+    @Test
     public void testEquals() {
         ConfigurationTest conf = new ConfigurationTest();
         conf.setTestKey(_conf.getTestKey());
@@ -165,6 +171,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
     /**
      * Test using bean introspection.
      */
+    @Test
     public void testBeanAccessors() throws Exception {
         PropertyDescriptor[] pds = _conf.getPropertyDescriptors();
         for (int i = 0; i < pds.length; i++) {
@@ -201,6 +208,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
     /**
      * Test freezing.
      */
+    @Test
     public void testFreezing() {
         assertTrue(!_conf.isReadOnly());
         _conf.setReadOnly(Configuration.INIT_STATE_FROZEN);
@@ -222,6 +230,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
     /**
      * Test serialization.
      */
+    @Test
     public void testSerialization() throws Exception {
         assertTrue(_conf.loadGlobals());
         _conf.setTestKey("testvalue");
@@ -248,15 +257,12 @@ public class TestConfigurationImpl extends AbstractTestCase {
         assertEquals("", copy2.getPluginKeyInstance().toString());
     }
 
+    @Test
     public void testProductDerivationCloseCallback() {
         // toggle the static. This will be reset by the close invocation.
         ConfigurationTestProductDerivation.closed = false;
         _conf.close();
         assertTrue(ConfigurationTestProductDerivation.closed);
-    }
-
-    public static void main(String[] args) {
-        main();
     }
 
     private static class ConfigurationTest extends ConfigurationImpl {
