@@ -28,11 +28,13 @@ import org.apache.openjpa.kernel.DetachState;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.RestoreState;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TestEnumToKernelConstantMappings
-    extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class TestEnumToKernelConstantMappings {
+
+    @Test
     public void testConnectionRetainModes() {
         assertEquals(ConnectionRetainModes.CONN_RETAIN_ALWAYS,
             ConnectionRetainMode.ALWAYS.toKernelConstant());
@@ -62,6 +64,7 @@ public class TestEnumToKernelConstantMappings
             ConnectionRetainMode.values().length);
     }
 
+    @Test
     public void testDetachState() {
         assertEquals(DetachState.DETACH_ALL,
             DetachStateType.ALL.toKernelConstant());
@@ -90,6 +93,7 @@ public class TestEnumToKernelConstantMappings
             DetachStateType.values().length);
     }
 
+    @Test
     public void testRestoreState() {
         assertEquals(RestoreState.RESTORE_ALL,
             RestoreStateType.ALL.toKernelConstant());
@@ -117,6 +121,7 @@ public class TestEnumToKernelConstantMappings
             RestoreStateType.values().length);
     }
 
+    @Test
     public void testAutoClear() {
         assertEquals(AutoClear.CLEAR_ALL, AutoClearType.ALL.toKernelConstant());
         assertEquals(AutoClearType.ALL,
@@ -135,6 +140,7 @@ public class TestEnumToKernelConstantMappings
             AutoClearType.values().length);
     }
 
+    @Test
     public void testAutoDetach() {
         // Commenting out constant count test for now. Subtracting 2 is brittle.
         // assertEquals(getConstantCount(AutoDetach.class) - 2,
@@ -172,19 +178,20 @@ public class TestEnumToKernelConstantMappings
 
         assertEquals(EnumSet.allOf(AutoDetachType.class),
             AutoDetachType.toEnumSet(
-            		  AutoDetach.DETACH_NONE
+                    AutoDetach.DETACH_NONE
                     | AutoDetach.DETACH_CLOSE
                     | AutoDetach.DETACH_COMMIT
                     | AutoDetach.DETACH_NONTXREAD
                     | AutoDetach.DETACH_ROLLBACK));
         assertEquals( AutoDetach.DETACH_NONE
-        		    | AutoDetach.DETACH_CLOSE
+                    | AutoDetach.DETACH_CLOSE
                     | AutoDetach.DETACH_COMMIT
                     | AutoDetach.DETACH_NONTXREAD
                     | AutoDetach.DETACH_ROLLBACK,
             AutoDetachType.fromEnumSet(EnumSet.allOf(AutoDetachType.class)));
     }
 
+    @Test
     public void testCallbackMode() {
         assertEquals(getConstantCount(CallbackModes.class),
             CallbackMode.values().length);
@@ -239,6 +246,7 @@ public class TestEnumToKernelConstantMappings
             CallbackMode.fromEnumSet(EnumSet.allOf(CallbackMode.class)));
     }
 
+    @Test
     public void testQueryOperationTypes() {
         assertEquals(QueryOperations.OP_SELECT,
             QueryOperationType.SELECT.toKernelConstant());
