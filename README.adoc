@@ -1,0 +1,12 @@
+= Apache OpenJPA Readme
+
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+
+== Attention!
+----
+This branch is not maintained anymore!
+It reflects the status of the old SVN repo.
+Please use our master branch instead!
+----
+
+
