@@ -30,7 +30,6 @@
         <version>3.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-persistence-locking</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA Persistence Locking Tests</name>
@@ -836,7 +835,7 @@
                     <execution>
                         <phase>process-test-classes</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <ant antfile="src/test/ant/enhancer.xml" target="enhance" inheritRefs="true">
                                     <property name="maven.test.skip" value="${maven.test.skip}" />
                                     <property name="test" value="${test}" />
@@ -845,7 +844,7 @@
                                     <property name="openjpa.Log" value="${openjpa.Log}" />
                                     <property name="build.enhance" value="${build.enhance}" />
                                 </ant>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>

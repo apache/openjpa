@@ -31,7 +31,6 @@
         <version>3.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-jest</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA JEST</name>
@@ -63,16 +62,16 @@
             <version>${project.version}</version>
         </dependency>
 		<dependency>
-    		<groupId>httpunit</groupId>
-    		<artifactId>httpunit</artifactId>
-    		<version>1.7</version>
-            <scope>test</scope>
+			<groupId>org.httpunit</groupId>
+			<artifactId>httpunit</artifactId>
+			<version>1.7.3</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-jci-rhino</artifactId>
-		    <version>1.0</version>
-            <scope>test</scope>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-jci-rhino</artifactId>
+			<version>1.1</version>
+			<scope>test</scope>
 		</dependency>
     </dependencies>
 
@@ -85,7 +84,7 @@
                     <execution>
                         <phase>process-test-classes</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <ant antfile="src/main/ant/enhancer.xml" target="enhance" inheritRefs="true">
                                     <property name="maven.test.skip" value="${maven.test.skip}" />
                                     <property name="test" value="${test}" />
@@ -93,7 +92,7 @@
                                     <property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
                                     <property name="openjpa.Log" value="${openjpa.Log}" />
                                 </ant>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>

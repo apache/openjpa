@@ -30,7 +30,6 @@
         <version>3.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-lib</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA Utilities Library</name>
@@ -50,8 +49,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -96,7 +95,7 @@
                         <id>set subversion revision</id>
                         <phase>compile</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <property name="tmpdir" value="${java.io.tmpdir}/openjpamvntmp" />
                                 <condition property="outdir" value="${project.build.outputDirectory}">
                                     <available type="dir" file="${project.build.outputDirectory}" />
@@ -131,7 +130,7 @@ openjpa.version=${project.version}
 openjpa.enhancer.revision=${pcenhancer.LastChangedRev}
 </echo>
                                 <delete dir="${tmpdir}" />
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>

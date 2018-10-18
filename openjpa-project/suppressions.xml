@@ -10,4 +10,6 @@
 	<suppress checks="RegexpSinglelineJava" files=".*src\\test.*java" />
 	<suppress checks="RegexpSinglelineJava" files=".*src.test.*java" />
 	<suppress checks="RegexpSinglelineJava" files="Main.java" />
+	<suppress checks=".*" files=".*generated-sources.*[.]java" />
+	<suppress checks=".*" files=".*_[.]java" />
 </suppressions>

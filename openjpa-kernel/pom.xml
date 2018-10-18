@@ -30,7 +30,6 @@
         <version>3.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-kernel</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA Kernel</name>
@@ -56,8 +55,8 @@
         </dependency>
         <dependency>
             <groupId>com.ibm.websphere</groupId>
-            <artifactId>websphere_uow_api</artifactId>
-            <version>0.0.1</version>
+            <artifactId>uow_api</artifactId>
+            <version>6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -76,7 +75,7 @@
         <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-asm6-shaded</artifactId>
-            <version>4.8</version>
+            <version>4.10</version>
         </dependency>
     </dependencies>
 
@@ -92,7 +91,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <buildNodeFiles>false</buildNodeFiles>
-                            <jdkVersion>1.6</jdkVersion>
+                            <jdkVersion>${java.class.version}</jdkVersion>
                         </configuration>
                         <goals>
                             <goal>jjtree-javacc</goal>
@@ -108,9 +107,9 @@
                         <id>add-was-interfaces</id>
                         <phase>process-classes</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <java classname="org.apache.openjpa.ee.WASManagedRuntime" classpathref="maven.runtime.classpath" />
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -120,11 +119,11 @@
                         <id>generate-standard-sco-proxies</id>
                         <phase>process-classes</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <java classname="org.apache.openjpa.util.ProxyManagerImpl" classpathref="maven.runtime.classpath">
                                     <arg line="-utils 5" />
                                 </java>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -165,14 +164,10 @@
     </build>
 
     <repositories>
-        <!--
-            Internal (in SVN) repository which contains jar files that are not
-            publicly available and cannot be re-distributed.
-         -->
         <repository>
-            <id>openjpa-internal</id>
-            <name>Internal repository</name>
-            <url>file://${basedir}/internal-repository</url>
+            <id>seasar-repo</id>
+            <name>seasar repository</name>
+            <url>https://www.seasar.org/maven/maven2</url>
         </repository>
     </repositories>
 </project>

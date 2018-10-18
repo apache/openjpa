@@ -40,9 +40,13 @@
         Apache maven (see http://maven.apache.org).
     </description>
     <inceptionYear>2011</inceptionYear>
-
+    <properties>
+        <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
+        <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
+        <min.maven.version>3.3.9</min.maven.version>
+    </properties>
     <prerequisites>
-        <maven>2.0.6</maven>
+        <maven>${min.maven.version}</maven>
     </prerequisites>
 
     <developers>
@@ -71,23 +75,23 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>2.0.6</version>
+            <version>${min.maven.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-            <version>2.0.6</version>
+            <artifactId>maven-compat</artifactId>
+            <version>${min.maven.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.4</version>
+            <version>3.5.2</version>
             <scope>provided</scope> <!-- annotations are only needed to build the plugin -->
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
-            <version>1.5.7</version>
+            <version>3.1.0</version>
         </dependency>
 
         <!-- dependencies for OpenJPA itself -->
@@ -126,8 +130,8 @@
             <artifactId>org.apache.bval.bundle</artifactId>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
             <scope>runtime</scope>
         </dependency>
 
@@ -135,7 +139,7 @@
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
             <artifactId>maven-plugin-testing-harness</artifactId>
-            <version>1.2</version>
+            <version>3.3.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -153,7 +157,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.4</version>
                 <configuration>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
                 </configuration>
@@ -183,11 +186,10 @@
                     <pomIncludes>
                         <pomInclude>*/pom.xml</pomInclude>
                     </pomIncludes>
-                    <goals>
-                        <goal>install</goal>
-                    </goals>
                     <postBuildHookScript>verify</postBuildHookScript>
                 </configuration>
+                <dependencies>
+                </dependencies>
                 <executions>
                     <execution>
                         <id>integration-test</id>

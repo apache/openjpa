@@ -42,7 +42,6 @@
         <version>3.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.openjpa</groupId>
     <artifactId>apache-openjpa</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Project Docs and Assemblies</name>
@@ -135,13 +134,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
                 <executions>
                     <execution>
                         <id>bin</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>attached</goal>
+                            <goal>single</goal>
                         </goals>
                         <configuration>
                             <descriptors>
@@ -313,25 +311,11 @@
                         </executions>
                         <dependencies>
                         <dependency>
-                            <groupId>org.docbook</groupId>
+                            <groupId>net.sf.docbook</groupId>
                             <artifactId>docbook-xml</artifactId>
-                            <version>4.4</version>
+                            <version>5.0</version>
                             <scope>runtime</scope>
                         </dependency>
-<!-- As far as I did test we do not need JAI for generating our docs.
-                        <dependency>
-                            <groupId>${jai.groupId}</groupId>
-                            <artifactId>jai_core</artifactId>
-                            <version>${jai.version}</version>
-                            <scope>runtime</scope>
-                        </dependency>
-                        <dependency>
-                            <groupId>${jai.groupId}</groupId>
-                            <artifactId>jai_codec</artifactId>
-                            <version>${jai.version}</version>
-                            <scope>runtime</scope>
-                        </dependency>
--->
                         </dependencies>
                     </plugin>
                 </plugins>
@@ -366,7 +350,7 @@
                             <execution>
                                 <phase>package</phase>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <ant antfile="upload.xml" target="upload" inheritRefs="true">
                                             <property name="nightly.user.name" value="${nightly.user.name}" />
                                             <property name="nightly.password" value="${nightly.password}" />
@@ -375,7 +359,7 @@
                                             <property name="nightly.version" value="${nightly.version}" />
                                             <property name="project.version" value="${project.version}" />
                                         </ant>
-                                    </tasks>
+                                    </target>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>

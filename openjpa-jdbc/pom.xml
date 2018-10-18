@@ -30,7 +30,6 @@
         <version>3.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-jdbc</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA JDBC</name>
@@ -60,7 +59,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>provided</scope>
         </dependency>

@@ -78,7 +78,6 @@
         <version>3.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-integration-tck</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Integration Tests - JPA TCK</name>
@@ -109,7 +108,7 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>[1.6,)</version>
+                                    <version>[1.8,)</version>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
@@ -124,7 +123,7 @@
                   <id>tckinit</id>
                   <phase>pre-integration-test</phase>
                   <configuration>
-                    <tasks>
+                    <target>
                         <echo>Running Sun JPA 2.0 TCK Init</echo>
                         <property name="tck.base" value="${basedir}/target/tck" />
                         <property name="tck.dir" value="${tck.base}/jpatck" />
@@ -132,7 +131,7 @@
                         <ant antfile="${basedir}/tck2-${tck2.level}.xml">
                             <target name="init" />
                         </ant>
-                    </tasks>
+                    </target>
                   </configuration>
                   <goals>
                     <goal>run</goal>
@@ -142,7 +141,7 @@
                   <id>run-tck</id>
                   <phase>integration-test</phase>
                   <configuration>
-                    <tasks>
+                    <target>
                         <echo>Running Sun JPA 2.0 TCK</echo>
 
                         <property name="tck.base" value="${basedir}/target/tck" />
@@ -192,7 +191,7 @@
                             <property name="connection.username" value="${connection.username}" />
                             <property name="connection.password" value="${connection.password}" />
                         </ant>
-                    </tasks>
+                    </target>
                   </configuration>
                   <goals>
                     <goal>run</goal>
@@ -214,7 +213,7 @@
           <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>${slf4jVersion}</version>
+            <version>${slf4j.version}</version>
           </dependency>
         </dependencies>
 
@@ -240,7 +239,7 @@
                   <id>run-tck</id>
                   <phase>integration-test</phase>
                   <configuration>
-                    <tasks>
+                    <target>
                         <echo>Running Sun JPA 1.0b TCK</echo>
 
                         <property name="tck.zip" value="${settings.localRepository}/../privaterepos/jpa-1_0b-tck.zip" />
@@ -431,7 +430,7 @@ databaseName=${db.name}
                         <!-- else -->
                         <echo>JPA TCK Passed 100%!</echo>
 
-                    </tasks>
+                    </target>
                   </configuration>
                   <goals>
                     <goal>run</goal>
@@ -548,7 +547,6 @@ databaseName=${db.name}
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
-            <version>${derby.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

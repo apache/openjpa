@@ -31,7 +31,6 @@
 <!--        <relativePath>../pom.xml</relativePath>-->
     </parent>
 
-    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-tools</artifactId>
     <packaging>pom</packaging>
 

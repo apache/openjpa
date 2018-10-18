@@ -27,7 +27,7 @@
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
-      <version>18</version>
+      <version>21</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -73,23 +73,24 @@
         <createSource>none</createSource>
         <createSources>false</createSources>
         <!-- common JDBC driver versions -->
-        <derby.version>10.12.1.1</derby.version>
+        <derby.version>10.14.2.0</derby.version>
         <hsqldb.version>2.4.1</hsqldb.version>
-        <mysql.version>5.1.12</mysql.version>
-        <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
+        <mysql.version>8.0.12</mysql.version>
+        <postgresql.version>42.2.5</postgresql.version>
         <!-- other common versions -->
-        <slf4jVersion>1.7.21</slf4jVersion>
+        <slf4j.version>1.7.23</slf4j.version>
         <!-- Compile Java source/target class level -->
         <compile.class.source>${java.class.version}</compile.class.source>
         <compile.class.target>${java.class.version}</compile.class.target>
         <compile.testclass.source>${java.testclass.version}</compile.testclass.source>
         <compile.testclass.target>${java.testclass.version}</compile.testclass.target>
 
-        <maven.javadoc.version>2.10.3</maven.javadoc.version>
+        <maven.javadoc.version>3.0.1</maven.javadoc.version>
         <javadoc.additionalparam />
-        <maven.surefire.version>2.19.1</maven.surefire.version>
+        <maven.surefire.version>2.22.0</maven.surefire.version>
 
         <bval.version>1.1.2</bval.version>
+        <jmock.version>2.9.0</jmock.version>
     </properties>
 
     <licenses>
@@ -229,8 +230,6 @@
                                 <exclude>**/rat.txt</exclude>
                                 <exclude>release.properties</exclude>
                                 <exclude>DEPENDENCIES</exclude>
-                                <!-- Exclude internal build-only repository -->
-                                <exclude>**/internal-repository/**</exclude>
                             </excludes>
                         </configuration>
                     </plugin>
@@ -404,7 +403,6 @@
                 <dependency>
                     <groupId>org.apache.derby</groupId>
                     <artifactId>derby</artifactId>
-                    <version>${derby.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -475,7 +473,6 @@
                 <dependency>
                     <groupId>org.apache.derby</groupId>
                     <artifactId>derbyclient</artifactId>
-                    <version>${derby.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -554,6 +551,16 @@
                 <version>${derby.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbyclient</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
                 <version>2.5.0</version>
@@ -574,7 +581,7 @@
                 <version>${hsqldb.version}</version>
             </dependency>
             <dependency>
-                <groupId>postgresql</groupId>
+                <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
                 <scope>provided</scope>
@@ -585,14 +592,19 @@
                 <version>1.4</version>
             </dependency>
             <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.17</version>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.11.1</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4jVersion}</version>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.ant</groupId>
@@ -602,12 +614,12 @@
             <dependency>
                 <groupId>org.jmock</groupId>
                 <artifactId>jmock</artifactId>
-                <version>2.8.2</version>
+                <version>${jmock.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jmock</groupId>
                 <artifactId>jmock-junit4</artifactId>
-                <version>2.8.2</version>
+                <version>${jmock.version}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
@@ -615,9 +627,9 @@
                 <version>4.12</version>
             </dependency>
             <dependency>
-                <groupId>net.sourceforge.findbugs</groupId>
+                <groupId>com.google.code.findbugs</groupId>
                 <artifactId>annotations</artifactId>
-                <version>1.3.2</version>
+                <version>3.0.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -652,11 +664,10 @@
 
         <pluginManagement>
             <plugins>
-                <!-- apache-7.pom default of 2.0.2 fails for JDK5 testing -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.5.1</version>
+                    <version>3.8.0</version>
                     <configuration>
                         <source>${compile.class.source}</source>
                         <target>${compile.class.target}</target>
@@ -666,7 +677,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -753,7 +764,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>2.5.5</version>
+                    <version>3.0.5</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -777,12 +788,12 @@
                 <plugin>
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
-                    <version>0.11</version>
+                    <version>0.12</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.10</version>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -808,12 +819,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.3</version>
+                    <version>1.8</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.apache.ant</groupId>
                             <artifactId>ant-jsch</artifactId>
-                            <version>1.7.1</version>
+                            <version>1.10.5</version>
                         </dependency>
                         <dependency>
                             <groupId>ant-contrib</groupId>
@@ -837,24 +848,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>2.4.3</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>2.9</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.codehaus.plexus</groupId>
-                            <artifactId>plexus-velocity</artifactId>
-                            <version>1.1.5</version>
-                        </dependency>
-                    </dependencies>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.0</version>
                     <executions>
                         <execution>
                             <id>default-jar</id>
@@ -884,7 +888,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.2.0</version>
+                    <version>4.0.0</version>
                     <extensions>true</extensions>
                     <configuration>
                         <instructions>
@@ -897,7 +901,7 @@
                 <plugin>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
-                    <version>4.2.0</version>
+                    <version>4.2.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -1103,7 +1107,6 @@
                             <failsOnError>true</failsOnError>
                             <consoleOutput>true</consoleOutput>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <excludes>**/*_.java</excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -1120,10 +1123,10 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[2.2.1,)</version>
+                                    <version>[3.3.9,)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <version>[1.6,)</version>
+                                    <version>[1.8,)</version>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
@@ -1173,7 +1176,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.9</version>
+                <version>3.0.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
