@@ -52,7 +52,7 @@
             </activation>
             <properties>
                 <build.enhance>false</build.enhance>
-                <openjpa.dynamicEnhance>true</openjpa.dynamicEnhance>
+                <openjpa.DynamicEnhancementAgent>true</openjpa.DynamicEnhancementAgent>
                 <surefire.jvm.args>-Dopenjpa.RuntimeUnenhancedClasses=unsupported ${test.jvm.arguments}</surefire.jvm.args>
             </properties>
             <build>
@@ -73,59 +73,6 @@
             </build>
         </profile>
 
-        <!-- Profile for testing with HSQL DB -->
-        <profile>
-            <id>test-hsqldb</id>
-            <activation>
-                <property>
-                    <name>test-hsqldb</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.hsqldb</groupId>
-                    <artifactId>hsqldb</artifactId>
-                    <version>${hsqldb.version}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <properties>
-                <connection.driver.name>org.hsqldb.jdbcDriver</connection.driver.name>
-                <!--<connection.url>jdbc:hsqldb:target/database/openjpa-hsqldb-database;create=true</connection.url>-->
-                <connection.url>jdbc:hsqldb:mem:openjpa20-hsqldb-database</connection.url>
-                <connection.username>sa</connection.username>
-                <connection.password />
-                <jdbc.DBDictionary />
-            </properties>
-        </profile>
-
-        <!-- Profile for testing with MySQL DB -->
-        <profile>
-            <id>test-mysql</id>
-            <activation>
-                <property>
-                    <name>test-mysql</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
-                    <version>${mysql.version}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <properties>
-                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
-                <connection.url>${openjpa.mysql.url}</connection.url>
-                <connection.username>${openjpa.mysql.username}</connection.username>
-                <connection.password>${openjpa.mysql.password}</connection.password>
-                <!-- DBCP overrides for MySQL testing -->
-                <dbcp.maxIdle>0</dbcp.maxIdle>
-                <dbcp.minIdle>0</dbcp.minIdle>
-                <jdbc.DBDictionary />
-            </properties>
-        </profile>
 
         <!-- Profile for testing with MariaDB DB -->
         <profile>
@@ -145,13 +92,14 @@
             </dependencies>
             <properties>
                 <connection.driver.name>org.mariadb.jdbc.Driver</connection.driver.name>
+                <!--<connection.url>jdbc:mysql://localhost/OPENJPA</connection.url>-->
                 <connection.url>${openjpa.mariadb.url}</connection.url>
                 <connection.username>${openjpa.mariadb.username}</connection.username>
                 <connection.password>${openjpa.mariadb.password}</connection.password>
+                <jdbc.DBDictionary />
                 <!-- DBCP overrides for MariaDB testing -->
                 <dbcp.maxIdle>0</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
-                <jdbc.DBDictionary />
             </properties>
         </profile>
 
@@ -173,10 +121,15 @@
             </dependencies>
             <properties>
                 <connection.driver.name>org.postgresql.Driver</connection.driver.name>
+                <!--<connection.url>jdbc:postgresql://localhost/openjpa</connection.url>-->
                 <connection.url>${openjpa.postgresql.url}</connection.url>
                 <connection.username>${openjpa.postgresql.username}</connection.username>
                 <connection.password>${openjpa.postgresql.password}</connection.password>
                 <jdbc.DBDictionary />
+                <!-- DBCP overrides -->
+                <dbcp.maxIdle>0</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+                <dbcp.maxActive>20</dbcp.maxActive>
             </properties>
         </profile>
 
@@ -229,6 +182,7 @@
                 <mssql.artifactid>sqljdbc</mssql.artifactid>
                 <mssql.version>2.0</mssql.version>
                 <connection.driver.name>com.microsoft.sqlserver.jdbc.SQLServerDriver</connection.driver.name>
+                <!--<connection.url>jdbc:sqlserver://localhost/OPENJPA</connection.url>-->
                 <connection.url>${openjpa.mssql.url}</connection.url>
                 <connection.username>${openjpa.mssql.username}</connection.username>
                 <connection.password>${openjpa.mssql.password}</connection.password>
@@ -270,6 +224,7 @@
             <properties>
                 <jtds.version>1.2</jtds.version>
                 <connection.driver.name>net.sourceforge.jtds.jdbc.Driver</connection.driver.name>
+                <!--<connection.url>jdbc:jtds:sqlserver://localhost:1433/OPENJPA</connection.url>-->
                 <connection.url>${openjpa.sqlserver.url}</connection.url>
                 <connection.username>${openjpa.sqlserver.username}</connection.username>
                 <connection.password>${openjpa.sqlserver.password}</connection.password>
@@ -296,6 +251,28 @@
             <properties>
                 <jtds.version>1.2</jtds.version>
                 <connection.driver.name>net.sourceforge.jtds.jdbc.Driver</connection.driver.name>
+                <!--<connection.url>jdbc:jtds:sybase://localhost/OPENJPA</connection.url>-->
+                <connection.url>${openjpa.sybase.url}</connection.url>
+                <connection.username>${openjpa.sybase.username}</connection.username>
+                <connection.password>${openjpa.sybase.password}</connection.password>
+                <jdbc.DBDictionary />
+            </properties>
+        </profile>
+
+        <!-- Profile for testing with Sybase DB using the jConnect driver -->
+        <profile>
+            <id>test-sybase-jconnect</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${jconnect.groupId}</groupId>
+                    <artifactId>${jconnect.artifactId}</artifactId>
+                    <version>${jconnect.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>com.sybase.jdbc3.jdbc.SybDriver</connection.driver.name>
+                <!--<connection.url>jdbc:sybase:Tds:localhost:7100/OPENJPA</connection.url>-->
                 <connection.url>${openjpa.sybase.url}</connection.url>
                 <connection.username>${openjpa.sybase.username}</connection.username>
                 <connection.password>${openjpa.sybase.password}</connection.password>
@@ -322,6 +299,7 @@
             <properties>
                 <ingres.version>9.2-3.4.8</ingres.version>
                 <connection.driver.name>com.ingres.jdbc.IngresDriver</connection.driver.name>
+                <!--<connection.url>jdbc:ingres://localhost/OPENJPA</connection.url>-->
                 <connection.url>${openjpa.ingres.url}</connection.url>
                 <connection.username>${openjpa.ingres.username}</connection.username>
                 <connection.password>${openjpa.ingres.password}</connection.password>
@@ -337,7 +315,7 @@
           -Dopenjpa.custom.driverclass=oracle.jdbc.driver.OracleDriver \
           -Dopenjpa.custom.url=jdbc:oracle:thin:@HOST:PORT:DBNAME \
           -Dopenjpa.custom.username=USERNAME \
-            -Dopenjpa.custom.password=PASSWORD
+          -Dopenjpa.custom.password=PASSWORD
         -->
         <profile>
             <id>test-custom</id>
@@ -477,6 +455,7 @@
                 <db2.license.artifactid>jcc-license</db2.license.artifactid>
                 <db2.version>9.5</db2.version>
                 <connection.driver.name>com.ibm.db2.jcc.DB2Driver</connection.driver.name>
+                <!--<connection.url>jdbc:db2://localhost/openjpa</connection.url>-->
                 <connection.url>${openjpa.db2.url}</connection.url>
                 <connection.username>${openjpa.db2.username}</connection.username>
                 <connection.password>${openjpa.db2.password}</connection.password>
@@ -745,8 +724,9 @@
                 <oracle.maven.repo>http://not.a.real.repository</oracle.maven.repo>
                 <oracle.groupid>com.oracle</oracle.groupid>
                 <oracle.artifactid>jdbc-driver</oracle.artifactid>
-                <oracle.version>10g</oracle.version>
+                <oracle.version>11.2.0.1-jdbc6</oracle.version>
                 <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
+                <!--<connection.url>jdbc:oracle:thin:@localhost:1521:OPENJPA</connection.url>-->
                 <connection.url>${openjpa.oracle.url}</connection.url>
                 <connection.username>${openjpa.oracle.username}</connection.username>
                 <connection.password>${openjpa.oracle.password}</connection.password>
@@ -768,6 +748,52 @@
                 </repository>
             </repositories>
         </profile>
+
+        <!-- Profile for testing IBM SolidDB -->
+        <profile>
+            <id>test-soliddb</id>
+            <activation>
+                <property>
+                    <name>test-soliddb</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>${soliddb.groupid}</groupId>
+                    <artifactId>${soliddb.driver.artifactid}</artifactId>
+                    <version>${soliddb.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <soliddb.maven.repo>http://not.a.real.repository</soliddb.maven.repo>
+                <soliddb.groupid>com.ibm.soliddb</soliddb.groupid>
+                <soliddb.driver.artifactid>soliddb</soliddb.driver.artifactid>
+                <soliddb.version>6.5</soliddb.version>
+                <connection.driver.name>solid.jdbc.SolidDriver</connection.driver.name>
+                <!--<connection.url>jdbc:solid://localhost:2315</connection.url>-->
+                <connection.url>${openjpa.soliddb.url}</connection.url>
+                <connection.username>${openjpa.soliddb.username}</connection.username>
+                <connection.password>${openjpa.soliddb.password}</connection.password>
+                <jdbc.DBDictionary />
+            </properties>
+            <repositories>
+                <repository>
+                    <id>soliddb.repository</id>
+                    <name>SolidDB Repository</name>
+                    <url>${soliddb.maven.repo}</url>
+                    <layout>default</layout>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                        <checksumPolicy>ignore</checksumPolicy>
+                    </releases>
+                </repository>
+            </repositories>
+        </profile>
+
     </profiles>
 
     <dependencies>

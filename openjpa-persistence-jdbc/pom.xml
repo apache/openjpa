@@ -49,18 +49,18 @@
                 <surefire.jvm.args>-Dopenjpa.RuntimeUnenhancedClasses=unsupported ${test.jvm.arguments}</surefire.jvm.args>
             </properties>
             <build>
-            <plugins>
-              <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <include>org/apache/openjpa/persistence/enhance/DynamicEnhancementSuite.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
-          </plugins>
-          </build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>org/apache/openjpa/persistence/enhance/DynamicEnhancementSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <!-- Profile for testing with HSQL DB -->
@@ -116,6 +116,61 @@
                 <dbcp.maxIdle>0</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
             </properties>
+        </profile>
+
+        <!-- Profile for testing with MySQL DB -->
+        <profile>
+            <id>test-mysql-docker</id>
+            <activation>
+                <property>
+                    <name>test-mysql-docker</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>${mysql.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
+                <!--<connection.url>jdbc:mysql://localhost/OPENJPA</connection.url>-->
+                <connection.url>${openjpa.mysql.url}</connection.url>
+                <connection.username>${openjpa.mysql.username}</connection.username>
+                <connection.password>${openjpa.mysql.password}</connection.password>
+                <jdbc.DBDictionary />
+                <!-- DBCP overrides for MySQL testing -->
+                <dbcp.maxIdle>0</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>mysql/mysql-server:5.7</name>
+                                    <run>
+                                        <env>
+                                            <MYSQL_DATABASE>openjpatst</MYSQL_DATABASE>
+                                            <MYSQL_USER>openjpatst</MYSQL_USER>
+                                            <MYSQL_PASSWORD>openjpatst</MYSQL_PASSWORD>
+                                        </env>
+                                        <ports>
+                                            <port>3306:3306</port>
+                                        </ports>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <!-- Profile for testing with MariaDB DB -->
