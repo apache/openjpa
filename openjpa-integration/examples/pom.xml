@@ -40,7 +40,6 @@
         <version>3.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-integration-examples</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Integration Tests - Examples</name>
@@ -62,31 +61,30 @@
                         <id>run-examples</id>
                         <phase>integration-test</phase>
                         <configuration>
-                        <tasks>
-                        <echo>Running OpenJPA Examples</echo>
+                        <target>
+                            <echo>Running OpenJPA Examples</echo>
 
-                        <property name="examples.base" value="${basedir}/target/examples" />
-                        <delete dir="${examples.base}" quiet="true" />
-                        <mkdir dir="${examples.base}" />
+                            <property name="examples.base" value="${basedir}/target/examples" />
+                            <delete dir="${examples.base}" quiet="true" />
+                            <mkdir dir="${examples.base}" />
 
-                        <unzip overwrite="false" dest="${examples.base}" src="${settings.localRepository}/org/apache/openjpa/apache-openjpa/${project.version}/apache-openjpa-${project.version}-binary.zip" />
+                            <unzip overwrite="false" dest="${examples.base}" src="${settings.localRepository}/org/apache/openjpa/apache-openjpa/${project.version}/apache-openjpa-${project.version}-binary.zip" />
 
-                        <path id="assembly.classpath">
-                            <fileset dir="${examples.base}">
-                                <include name="**/openjpa-all-${project.version}.jar" />
-                            </fileset>
-                        </path>
-                        <available classname="org.apache.openjpa.conf.OpenJPAVersion" classpathref="assembly.classpath" property="unzip.success" />
-                        <fail unless="unzip.success">
-                            Could not extract assembly.
-                        </fail>
+                            <path id="assembly.classpath">
+                                <fileset dir="${examples.base}">
+                                    <include name="**/openjpa-all-${project.version}.jar" />
+                                </fileset>
+                            </path>
+                            <available classname="org.apache.openjpa.conf.OpenJPAVersion" classpathref="assembly.classpath" property="unzip.success" />
+                            <fail unless="unzip.success">
+                                Could not extract assembly.
+                            </fail>
 
-                        <!-- FIXME: Only tests simple examples for now -->
-                        <subant inheritAll="false" failonerror="true">
-                            <fileset dir="${examples.base}" includes="*/examples/simple/*/build.xml" />
-                        </subant>
-
-                        </tasks>
+                            <!-- FIXME: Only tests simple examples for now -->
+                            <subant inheritAll="false" failonerror="true">
+                                <fileset dir="${examples.base}" includes="*/examples/simple/*/build.xml" />
+                            </subant>
+                        </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>

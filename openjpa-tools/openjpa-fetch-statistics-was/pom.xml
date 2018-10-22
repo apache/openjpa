@@ -27,6 +27,10 @@
 	<description> OpenJPA tool to capture the fetching statistic data for the persistent fields .</description>
 	<inceptionYear>2012</inceptionYear>
 
+	<properties>
+		<checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.openjpa</groupId>
@@ -80,7 +84,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.7.1</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

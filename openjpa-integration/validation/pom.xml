@@ -30,7 +30,6 @@
         <version>3.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-integration-validation</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA Integration Tests - Bean Validation</name>
@@ -38,6 +37,7 @@
 
     <properties>
         <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
+        <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
     </properties>
 
     <profiles>
@@ -110,13 +110,13 @@
                 <dependency>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
-                    <version>1.5.6</version>
+                    <version>${slf4j.version}</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
-                    <version>1.5.6</version>
+                    <version>${slf4j.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -165,12 +165,10 @@
         <dependency>
             <groupId>org.apache.bval</groupId>
             <artifactId>org.apache.bval.bundle</artifactId>
-            <version>0.3-incubating</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>${slf4jVersion}</version>
         </dependency>
     </dependencies>
 
@@ -210,7 +208,7 @@
                     <execution>
                         <phase>process-test-classes</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <ant antfile="src/main/ant/enhancer.xml" target="enhance" inheritRefs="true">
                                     <property name="maven.test.skip" value="${maven.test.skip}" />
                                     <property name="test" value="${test}" />
@@ -219,7 +217,7 @@
                                     <property name="openjpa.Log" value="${openjpa.Log}" />
                                     <property name="build.enhance" value="${build.enhance}" />
                                 </ant>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>

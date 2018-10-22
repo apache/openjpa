@@ -50,8 +50,10 @@ import javax.persistence.Transient;
         @NamedQuery(name = "accountejb.findByLogoutcount", query = "SELECT a FROM accountejb a WHERE a.logoutCount = :logoutcount"),
         @NamedQuery(name = "accountejb.findByBalance", query = "SELECT a FROM accountejb a WHERE a.balance = :balance"),
         @NamedQuery(name = "accountejb.findByAccountid", query = "SELECT a FROM accountejb a WHERE a.accountID = :accountid"),
-        @NamedQuery(name = "accountejb.findByAccountid_eager", query = "SELECT a FROM accountejb a LEFT JOIN FETCH a.profile WHERE a.accountID = :accountid"),
-        @NamedQuery(name = "accountejb.findByAccountid_eagerholdings", query = "SELECT a FROM accountejb a LEFT JOIN FETCH a.holdings WHERE a.accountID = :accountid"),
+        @NamedQuery(name = "accountejb.findByAccountid_eager", query = "SELECT a FROM accountejb a LEFT JOIN FETCH a.profile"
+            + " WHERE a.accountID = :accountid"),
+        @NamedQuery(name = "accountejb.findByAccountid_eagerholdings", query = "SELECT a FROM accountejb a LEFT JOIN FETCH a.holdings"
+            + " WHERE a.accountID = :accountid"),
         @NamedQuery(name = "accountejb.findByLastlogin", query = "SELECT a FROM accountejb a WHERE a.lastLogin = :lastlogin"),
         @NamedQuery(name = "accountejb.findByLogincount", query = "SELECT a FROM accountejb a WHERE a.loginCount = :logincount")
     })

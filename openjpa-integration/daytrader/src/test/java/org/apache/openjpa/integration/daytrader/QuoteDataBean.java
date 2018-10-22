@@ -47,8 +47,8 @@ import javax.persistence.Table;
     @NamedQuery(name = "quoteejb.findByChange1", query = "SELECT q FROM quoteejb q WHERE q.change1 = :change1")
 })
 @NamedNativeQueries({
-    // @NamedNativeQuery(name="quoteejb.quoteForUpdate", query="select * from quoteejb q where q.symbol=? for update",resultClass=org.apache.geronimo.samples.daytrader.beans.QuoteDataBean.class)
-    @NamedNativeQuery(name="quoteejb.quoteForUpdate", query="select * from quoteejb q where q.symbol=? for update",resultClass=org.apache.openjpa.integration.daytrader.QuoteDataBean.class)
+    @NamedNativeQuery(name="quoteejb.quoteForUpdate", query="select * from quoteejb q where q.symbol=? for update"
+            , resultClass=org.apache.openjpa.integration.daytrader.QuoteDataBean.class)
 })
 public class QuoteDataBean implements Serializable {
 

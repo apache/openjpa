@@ -58,7 +58,6 @@
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>1.8.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -70,7 +69,6 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.12</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -124,14 +122,14 @@
                                 <id>genmodel</id>
                                 <phase>process-resources</phase>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <echo>Running OpenBooks genmodel</echo>
                                         <property name="openjpa.version" value="${project.version}" />
                                         <property name="maven.repos" value="${settings.localRepository}" />
                                         <ant antfile="${basedir}/build.xml">
                                             <target name="generate-canonical-model" />
                                         </ant>
-                                    </tasks>
+                                    </target>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>
@@ -141,14 +139,14 @@
                                 <id>enhance</id>
                                 <phase>process-classes</phase>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <echo>Running OpenBooks Enhance</echo>
                                         <property name="openjpa.version" value="${project.version}" />
                                         <property name="maven.repos" value="${settings.localRepository}" />
                                         <ant antfile="${basedir}/build.xml">
                                             <target name="enhance" />
                                         </ant>
-                                    </tasks>
+                                    </target>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>
@@ -158,7 +156,7 @@
                                 <id>generate-source</id>
                                 <phase>prepare-package</phase>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <echo>Running OpenBooks Generate Source</echo>
                                         <property name="openjpa.version" value="${project.version}" />
                                         <property name="maven.repos" value="${settings.localRepository}" />
@@ -170,7 +168,7 @@
                                             <fileset dir="${basedir}" includes="*.txt" />
                                             <fileset dir="${basedir}" includes="run.*" />
                                         </copy>
-                                    </tasks>
+                                    </target>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>
@@ -186,7 +184,7 @@
                                 <id>bin</id>
                                 <phase>package</phase>
                                 <goals>
-                                    <goal>attached</goal>
+                                    <goal>single</goal>
                                 </goals>
                                 <configuration>
                                     <descriptors>
@@ -213,14 +211,14 @@
                                 <id>run</id>
                                 <phase>test</phase>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <echo>Launching OpenBooks</echo>
                                         <property name="openjpa.version" value="${project.version}" />
                                         <property name="maven.repos" value="${settings.localRepository}" />
                                         <ant antfile="run.xml" dir="${basedir}/target">
                                             <target name="run" />
                                         </ant>
-                                    </tasks>
+                                    </target>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>

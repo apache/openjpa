@@ -457,3 +457,4 @@ public class TradeAction extends TradeJPADirect {
         }
     }
 }
+

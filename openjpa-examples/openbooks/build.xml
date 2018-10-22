@@ -211,7 +211,7 @@
 	<!-- accounted for by customizing Java2HTMLConverter accordingly         -->
 	<!-- see the respective target's options to notice the difference        -->
 	<target name="generate-source" depends="check-env" if="antlr.exists">
-		<javac srcdir="${src.dir}" destdir="${classes.dir}">
+		<javac fork="true" srcdir="${src.dir}" destdir="${classes.dir}">
 			<include name="openbook/tools/**/*.java"/>
 			<exclude name="openbook/tools/**/Test*.java"/>
 			<classpath refid="code.generation.classpath"/>

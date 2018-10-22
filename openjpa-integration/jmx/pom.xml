@@ -38,6 +38,7 @@
 
   <properties>
     <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
+    <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
     <!-- Enable the JMX platform MBean provider -->
     <test.jvm.jmxprovider>com.sun.management.jmxremote</test.jvm.jmxprovider>
     <!-- Disable JMX platform MBean authentication  -->
@@ -62,12 +63,10 @@
     <dependency>
       <groupId>org.apache.bval</groupId>
       <artifactId>org.apache.bval.bundle</artifactId>
-      <version>0.3-incubating</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>${slf4jVersion}</version>
     </dependency>
   </dependencies>
 

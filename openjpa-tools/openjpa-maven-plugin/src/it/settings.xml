@@ -22,7 +22,18 @@
             <repositories>
                 <repository>
                     <id>local.central</id>
-                    <url>file:///@localRepository@</url>
+                    <url>file:@localRepository@</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <!-- This repo is added to prevent download of snapshots -->
+                    <id>apache.snapshots</id>
+                    <url>file:@localRepository@</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
@@ -34,7 +45,7 @@
             <pluginRepositories>
                 <pluginRepository>
                     <id>local.central</id>
-                    <url>file:///@localRepository@</url>
+                    <url>file:@localRepository@</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
