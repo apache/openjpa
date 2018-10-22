@@ -28,14 +28,15 @@ import java.sql.SQLException;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Test for the {@link org.apache.openjpa.jdbc.sql.BooleanRepresentation} factory and default impls
  */
-public class TestBooleanRepresentation  extends TestCase {
+public class TestBooleanRepresentation {
 
 
+    @Test
     public void testBooleanRepresentation() throws Exception {
 
         checkBooleanRepresentation("BOOLEAN", Boolean.class, Boolean.TRUE, Boolean.FALSE);
@@ -145,6 +146,7 @@ public class TestBooleanRepresentation  extends TestCase {
         }
     }
 
+    @SuppressWarnings("unused") // used via configuration
     public static class DummyTestBooleanRepresentation implements BooleanRepresentation<String> {
         @Override
         public void setBoolean(PreparedStatement stmnt, int columnIndex, boolean val) throws SQLException {

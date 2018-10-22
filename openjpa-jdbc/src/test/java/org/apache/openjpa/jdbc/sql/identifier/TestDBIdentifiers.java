@@ -21,15 +21,17 @@ package org.apache.openjpa.jdbc.sql.identifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 /**
  * Test operations on DBIdentifier and QualifiedDBIdentifier.
  *
  */
-public class TestDBIdentifiers extends TestCase {
+public class TestDBIdentifiers {
 
+    @Test
     public void testSchemaOps() {
         // Use a schema name with punctuation.  It will get normalized with
         // delimiters.
@@ -53,6 +55,7 @@ public class TestDBIdentifiers extends TestCase {
         assertFalse(s2 instanceof QualifiedDBIdentifier);
     }
 
+    @Test
     public void testTableOps() {
         DBIdentifier name = DBIdentifier.newTable("table");
         assertEquals("table", name.getName());
@@ -105,6 +108,7 @@ public class TestDBIdentifiers extends TestCase {
         assertFalse(p1.equals(DBIdentifier.NULL));
     }
 
+    @Test
     public void testColumnOps() {
 
         DBIdentifier c0 = DBIdentifier.newColumn("\"col.1\"");
@@ -129,6 +133,7 @@ public class TestDBIdentifiers extends TestCase {
 
     }
 
+    @Test
     public void testDBIdentifierOps() {
 
         // Test truncate
@@ -187,6 +192,7 @@ public class TestDBIdentifiers extends TestCase {
 
     }
 
+    @Test
     public void testPathOps() {
 
         // Test equals operator with case insensitive names

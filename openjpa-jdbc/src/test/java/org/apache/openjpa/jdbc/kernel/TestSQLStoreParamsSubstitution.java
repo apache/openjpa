@@ -22,7 +22,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * <p>
@@ -30,12 +33,13 @@ import junit.framework.TestCase;
  * </p>
  */
 
-public class TestSQLStoreParamsSubstitution extends TestCase {
+public class TestSQLStoreParamsSubstitution {
 
     /**
      * Tests parameter substitution algorithm to make sure the input sql is NOT transformed
      * especially escape characters.
      */
+    @Test
     public void testParamSubstitute() {
 
         String sqlNrtns[][] = {
@@ -48,7 +52,7 @@ public class TestSQLStoreParamsSubstitution extends TestCase {
 //                    "[1]"
 //                },
                 {
-            		"SELECT 'TRUE' AS VAL FROM DUAL WHERE '\\' = ? AND 'Y' = 'Y'",
+                    "SELECT 'TRUE' AS VAL FROM DUAL WHERE '\\' = ? AND 'Y' = 'Y'",
                     "[1]"
                 },
                 {

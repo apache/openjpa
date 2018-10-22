@@ -23,18 +23,18 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TestMappingDefaultsImpl extends TestCase {
+import static org.junit.Assert.assertFalse;
 
-    @Override
-    public void setUp() {
-    }
+public class TestMappingDefaultsImpl {
+
 
     /**
      * For databases that accept only short column names, test avoidance of
      * duplicate column names when populating the table with long column names.
      */
+    @Test
     public void testPopulateWithLongColumnNames() {
         MappingDefaultsImpl mapping = new MappingDefaultsImpl();
         JDBCConfiguration conf = new JDBCConfigurationImpl(false, false);

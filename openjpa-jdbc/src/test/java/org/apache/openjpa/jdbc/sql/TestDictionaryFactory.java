@@ -20,9 +20,12 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.lang.reflect.Method;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TestDictionaryFactory extends TestCase {
+import static org.junit.Assert.*;
+
+public class TestDictionaryFactory {
 
     private String[][] testMatrix =  {
         // Generic url
@@ -172,7 +175,7 @@ public class TestDictionaryFactory extends TestCase {
 
     private static Method getProtocol;
 
-    @Override
+    @Before
     public void setUp() {
         try {
             getProtocol = DBDictionaryFactory.class.getDeclaredMethod(
@@ -190,6 +193,7 @@ public class TestDictionaryFactory extends TestCase {
      *
      * @author Albert Lee
      */
+    @Test
     public void testUrl2Dictionary() {
         for (int i = 0; i < testMatrix.length; ++i) {
             try {
