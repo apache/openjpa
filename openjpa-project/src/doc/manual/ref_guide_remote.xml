@@ -678,7 +678,7 @@ which notifications should be sent. No default value.
 purpose of transmitting events to peers. You should increase this value as the
 number of concurrent transactions increases. The maximum number of concurrent
 transactions is a function of the size of the connection pool. See the
-<literal>MaxActive</literal> property of <literal>
+<literal>MaxTotal</literal> property of <literal>
 openjpa.ConnectionFactoryProperties</literal> in
 <xref linkend="ref_guide_dbsetup_builtin"/>. Setting a value of 0 will
 result in behavior where the thread invoking <methodname>commit</methodname>
@@ -700,7 +700,7 @@ to each peer in the cluster for the transmission of events. Defaults to 2.
                     </listitem>
                     <listitem>
                         <para>
-<literal>MaxActive</literal>: The maximum allowed number of TCP sockets
+<literal>MaxTotal</literal>: Total allowed number of TCP sockets
 (channels) to open simultaneously between each peer in the cluster. Defaults to
 2.
                         </para>

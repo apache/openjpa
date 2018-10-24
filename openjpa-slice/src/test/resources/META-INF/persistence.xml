@@ -288,10 +288,10 @@
 
          <property name="openjpa.ConnectionUserName"        value="root"/>
          <property name="openjpa.ConnectionPassword"        value=""/>
-         <property name="openjpa.slice.S1.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S1,MaxActive=4"/>
-         <property name="openjpa.slice.S2.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S2,MaxActive=4"/>
-         <property name="openjpa.slice.S3.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S3,MaxActive=4"/>
-         <property name="openjpa.slice.S4.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S4,MaxActive=4"/>
+         <property name="openjpa.slice.S1.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S1,MaxTotal=4"/>
+         <property name="openjpa.slice.S2.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S2,MaxTotal=4"/>
+         <property name="openjpa.slice.S3.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S3,MaxTotal=4"/>
+         <property name="openjpa.slice.S4.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S4,MaxTotal=4"/>
 
          <property name="openjpa.jdbc.DBDictionary"        value="mysql"/>
          <property name="openjpa.Multithreaded" value="false"/>
@@ -311,7 +311,7 @@
 
          <property name="openjpa.ConnectionUserName"        value="root"/>
          <property name="openjpa.ConnectionPassword"        value=""/>
-         <property name="openjpa.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S,MaxActive=4"/>
+         <property name="openjpa.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S,MaxTotal=4"/>
 
          <property name="openjpa.jdbc.DBDictionary"        value="mysql"/>
          <property name="openjpa.Multithreaded" value="false"/>
@@ -335,10 +335,10 @@
 
          <property name="openjpa.ConnectionUserName"        value="root"/>
          <property name="openjpa.ConnectionPassword"        value=""/>
-         <property name="openjpa.slice.S1.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S1,MaxActive=4"/>
-         <property name="openjpa.slice.S2.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S2,MaxActive=4"/>
-         <property name="openjpa.slice.S3.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S3,MaxActive=4"/>
-         <property name="openjpa.slice.S4.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S4,MaxActive=4"/>
+         <property name="openjpa.slice.S1.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S1,MaxTotal=4"/>
+         <property name="openjpa.slice.S2.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S2,MaxTotal=4"/>
+         <property name="openjpa.slice.S3.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S3,MaxTotal=4"/>
+         <property name="openjpa.slice.S4.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S4,MaxTotal=4"/>
 
          <property name="openjpa.jdbc.DBDictionary"        value="mariadb"/>
          <property name="openjpa.Multithreaded" value="false"/>
@@ -358,7 +358,7 @@
 
          <property name="openjpa.ConnectionUserName"        value="root"/>
          <property name="openjpa.ConnectionPassword"        value=""/>
-         <property name="openjpa.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S,MaxActive=4"/>
+         <property name="openjpa.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S,MaxTotal=4"/>
 
          <property name="openjpa.jdbc.DBDictionary"        value="mariadb"/>
          <property name="openjpa.Multithreaded" value="false"/>

@@ -28,7 +28,7 @@
             <property name="openjpa.ConnectionDriverName"
                 value="org.apache.commons.dbcp.BasicDataSource"/>
             <property name="openjpa.ConnectionProperties"
-                value="DriverClassName=org.apache.derby.jdbc.EmbeddedDriver,Url=jdbc:derby:target/database/openjpa-test-database;create=true,MaxActive=100,MaxWait=10000,TestOnBorrow=true"/>
+                value="DriverClassName=org.apache.derby.jdbc.EmbeddedDriver,Url=jdbc:derby:target/database/openjpa-test-database;create=true,MaxTotal=100,MaxWait=10000,TestOnBorrow=true"/>
             -->
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>

@@ -69,7 +69,7 @@ public class TestTCPRemoteEventsDuration
         // transactions
         OpenJPAEntityManagerFactory senderFactory1TCP =
             createDistinctFactory(TCPRemoteCommitProvider.class,
-                "MaxActive=4, RecoveryTimeMillis=1000, Port=5636, " +
+                "MaxTotal=4, RecoveryTimeMillis=1000, Port=5636, " +
                     "Addresses=127.0.0.1:5636;127.0.0.1:6636");
         OpenJPAEntityManagerFactory factory2TCP = createDistinctFactory(
             TCPRemoteCommitProvider.class,

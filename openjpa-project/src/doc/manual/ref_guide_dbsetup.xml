@@ -290,7 +290,7 @@ false.
 Additional Commons DBCP arguments can be provided in
 <literal>openjpa.connectionProperties</literal>, such as:
 <programlisting>
-    MaxActive=10,MaxIdle=5,MinIdle=2,MaxWait=60000
+    MaxTotal=10,MaxIdle=5,MinIdle=2,MaxWait=60000
 </programlisting>
 Please visit the Commons DBCP website for the entire list of
 <ulink url="http://commons.apache.org/dbcp/configuration.html">configuration options</ulink> and explanations.

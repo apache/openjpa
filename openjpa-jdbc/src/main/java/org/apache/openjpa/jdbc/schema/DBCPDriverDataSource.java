@@ -194,8 +194,8 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         if (hasKey(dbcpProps, "minIdle") == null) {
             dbcpProps.setProperty("minIdle", "0");
         }
-        if (hasKey(dbcpProps, "maxActive") == null) {
-            dbcpProps.setProperty("maxActive", "10");
+        if (hasKey(dbcpProps, "maxTotal") == null) {
+            dbcpProps.setProperty("maxTotal", "10");
         }
 
         return dbcpProps;

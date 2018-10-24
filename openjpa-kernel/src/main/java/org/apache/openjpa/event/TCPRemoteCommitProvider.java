@@ -87,7 +87,7 @@ public class TCPRemoteCommitProvider
     private long _id;
     private byte[] _localhost;
     private int _port = DEFAULT_PORT;
-    private int _maxActive = 2;
+    private int _maxTotal = 2;
     private int _maxIdle = 2;
     private int _recoveryTimeMillis = 15000;
     private TCPPortListener _listener;
@@ -145,16 +145,16 @@ public class TCPRemoteCommitProvider
      * The maximum number of sockets that this provider can
      * simetaneously open to each peer in the cluster.
      */
-    public void setMaxActive(int maxActive) {
-        _maxActive = maxActive;
+    public void setMaxTotal(int maxTotal) {
+        _maxTotal = maxTotal;
     }
 
     /**
      * The maximum number of sockets that this provider can
      * simetaneously open to each peer in the cluster.
      */
-    public int getMaxActive() {
-        return _maxActive;
+    public int getMaxTotal() {
+        return _maxTotal;
     }
 
     /**
@@ -317,7 +317,7 @@ public class TCPRemoteCommitProvider
             for (Iterator iter = _addresses.iterator();
                 iter.hasNext();) {
                 curAddress = (HostAddress) iter.next();
-                curAddress.setMaxActive(_maxActive);
+                curAddress.setMaxTotal(_maxTotal);
                 curAddress.setMaxIdle(_maxIdle);
             }
         }
@@ -817,7 +817,7 @@ public class TCPRemoteCommitProvider
                 throw (UnknownHostException) pae.getException();
             }
             GenericObjectPoolConfig<Socket> cfg = new GenericObjectPoolConfig<>();
-            cfg.setMaxTotal(_maxActive);
+            cfg.setMaxTotal(_maxTotal);
             cfg.setBlockWhenExhausted(true);
             cfg.setMaxWaitMillis(-1L);
             // -1 max wait == as long as it takes
@@ -825,8 +825,8 @@ public class TCPRemoteCommitProvider
             _isAvailable = true;
         }
 
-        private void setMaxActive(int maxActive) {
-            _socketPool.setMaxTotal(maxActive);
+        private void setMaxTotal(int maxTotal) {
+            _socketPool.setMaxTotal(maxTotal);
         }
 
         private void setMaxIdle(int maxIdle) {
