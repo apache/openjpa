@@ -692,7 +692,7 @@
 
                 You must also set the following properties:
                     -Dopenjpa.mssql.url=jdbc:sqlserver://<HOST>:<PORT>;\
-                    	DataBaseName=<DBNAME>
+                        DataBaseName=<DBNAME>
                     -Dopenjpa.mssql.username=<mssql_uid>
                     -Dopenjpa.mssql.password=<mssql_pwd>
 
@@ -941,7 +941,7 @@
                 Example db2 profile. You can use this profile if you:
                 1) have the DB2 artifacts installed in a local repo and supply
                 the URL:
-	            -Ddb2.maven.repo=http://my.local.repo
+                -Ddb2.maven.repo=http://my.local.repo
                 2) have a copy of the DB2 JCC driver and run the following
                 commands :
                     mvn install:install-file -Dfile=${path to db2jcc.jar} \
@@ -1084,10 +1084,10 @@
                 Example Informix JCC profile. You can use this profile if you:
                 1a) have the DB2 JCC artifacts installed in a local repo and
                 supply the URL:
-	            -Dids.maven.repo=http://my.local.repo
+                -Dids.maven.repo=http://my.local.repo
                 1b) or have a copy of the DB2 JCC driver and run the commands
                 listed above in the test-db2-jcc profile.
-		2) have the DRDA service enabled on the IDS server, which
+        2) have the DRDA service enabled on the IDS server, which
                 is usually port 9089
 
                 You must also set the following properties:
@@ -1227,7 +1227,7 @@
                 Example oracle profile. You can use this profile if you:
                 1) have the Oracle artifacts installed in a local repo and
                 supply the URL:
-	            -Doracle.maven.repo=http://my.local.repo
+                -Doracle.maven.repo=http://my.local.repo
                 2) have a copy of the Oracle driver and run the following
                 command:
                     mvn install:install-file -Dfile=${path to ojdbc.jar} \
