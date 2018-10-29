@@ -24,7 +24,7 @@ import java.util.Properties;
 
 /**
  * Automatic Commons DBCP pooling or Simple non-pooling driver data source.
- * If the commons-dbcp packages are on the class path, then they will be used,
+ * If the commons-dbcp2 packages are on the class path, then they will be used,
  * else it will fall back to non-DBCP mode.
  */
 public class AutoDriverDataSource

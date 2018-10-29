@@ -82,7 +82,7 @@ public class TCPRemoteCommitProvider
     //	A map of listen ports to listeners in this JVM. We might
     //	want to look into allowing same port, different interface --
     //	that is not currently possible in a single JVM.
-    private static final Map s_portListenerMap = new HashMap();
+    private static final Map<String, TCPPortListener> s_portListenerMap = new HashMap<>();
 
     private long _id;
     private byte[] _localhost;
@@ -92,10 +92,10 @@ public class TCPRemoteCommitProvider
     private int _recoveryTimeMillis = 15000;
     private TCPPortListener _listener;
     private BroadcastQueue _broadcastQueue = new BroadcastQueue();
-    private final List _broadcastThreads = Collections.synchronizedList(
-        new LinkedList());
+    private final List<BroadcastWorkerThread> _broadcastThreads = Collections.synchronizedList(
+        new LinkedList<>());
 
-    private ArrayList _addresses = new ArrayList();
+    private List<HostAddress> _addresses = new ArrayList<>();
     private ReentrantLock _addressesLock;
 
     public TCPRemoteCommitProvider()
@@ -144,6 +144,18 @@ public class TCPRemoteCommitProvider
     /**
      * The maximum number of sockets that this provider can
      * simetaneously open to each peer in the cluster.
+     *
+     * @deprecated please use {@link TCPRemoteCommitProvider#setMaxTotal(int)} instead
+     */
+    @Deprecated
+    public void setMaxActive(int maxActive) {
+        log.warn("This method should not be used");
+        _maxTotal = maxActive;
+    }
+
+    /**
+     * The maximum total number of sockets that this provider can
+     * simetaneously open to each peer in the cluster.
      */
     public void setMaxTotal(int maxTotal) {
         _maxTotal = maxTotal;
@@ -184,8 +196,7 @@ public class TCPRemoteCommitProvider
                 // Notify the extra worker threads so they stop themselves
                 // Threads will not end until they send another pk.
                 for (int i = numBroadcastThreads; i < cur; i++) {
-                    BroadcastWorkerThread worker = (BroadcastWorkerThread)
-                        _broadcastThreads.remove(0);
+                    BroadcastWorkerThread worker = _broadcastThreads.remove(0);
                     worker.setRunning(false);
                 }
             } else if (cur < numBroadcastThreads) {
@@ -220,11 +231,11 @@ public class TCPRemoteCommitProvider
 
         _addressesLock.lock();
         try {
-            for (Iterator iter = _addresses.iterator(); iter.hasNext();) {
-                ((HostAddress) iter.next()).close();
+            for (Iterator<HostAddress> iter = _addresses.iterator(); iter.hasNext();) {
+                iter.next().close();
             }
             String[] toks = StringUtil.split(names, ";", 0);
-            _addresses = new ArrayList(toks.length);
+            _addresses = new ArrayList<>(toks.length);
 
             InetAddress localhost = InetAddress.getLocalHost();
             String localhostName = localhost.getHostName();
@@ -285,7 +296,7 @@ public class TCPRemoteCommitProvider
         super.endConfiguration();
         synchronized (s_portListenerMap) {
             // see if a listener exists for this port.
-            _listener = (TCPPortListener) s_portListenerMap.get
+            _listener = s_portListenerMap.get
                 (String.valueOf(_port));
 
             if (_listener == null ||
@@ -314,9 +325,9 @@ public class TCPRemoteCommitProvider
         _addressesLock.lock();
         try {
             HostAddress curAddress;
-            for (Iterator iter = _addresses.iterator();
+            for (Iterator<HostAddress> iter = _addresses.iterator();
                 iter.hasNext();) {
-                curAddress = (HostAddress) iter.next();
+                curAddress = iter.next();
                 curAddress.setMaxTotal(_maxTotal);
                 curAddress.setMaxIdle(_maxIdle);
             }
@@ -368,8 +379,8 @@ public class TCPRemoteCommitProvider
     private void sendUpdatePacket(byte[] bytes) {
         _addressesLock.lock();
         try {
-            for (Iterator iter = _addresses.iterator(); iter.hasNext();) {
-                ((HostAddress) iter.next()).sendUpdatePacket(bytes);
+            for (Iterator<HostAddress> iter = _addresses.iterator(); iter.hasNext();) {
+                iter.next().sendUpdatePacket(bytes);
             }
         } finally {
             _addressesLock.unlock();
@@ -396,8 +407,8 @@ public class TCPRemoteCommitProvider
 
         _addressesLock.lock();
         try {
-            for (Iterator iter = _addresses.iterator(); iter.hasNext();) {
-                ((HostAddress) iter.next()).close();
+            for (Iterator<HostAddress> iter = _addresses.iterator(); iter.hasNext();) {
+                iter.next().close();
             }
         } finally {
             _addressesLock.unlock();
@@ -411,7 +422,7 @@ public class TCPRemoteCommitProvider
      */
     private static class BroadcastQueue {
 
-        private LinkedList _packetQueue = new LinkedList();
+        private LinkedList<byte[]> _packetQueue = new LinkedList<>();
         private boolean _closed = false;
 
         public synchronized void close() {
@@ -443,7 +454,7 @@ public class TCPRemoteCommitProvider
             if (_packetQueue.isEmpty()) {
                 return null;
             } else {
-                return (byte[]) _packetQueue.removeFirst();
+                return _packetQueue.removeFirst();
             }
         }
     }
@@ -494,8 +505,8 @@ public class TCPRemoteCommitProvider
         private final Log _log;
         private ServerSocket _receiveSocket;
         private Thread _acceptThread;
-        private Set _receiverThreads = new HashSet();
-        private final Set _providers = new HashSet();
+        private Set<Thread> _receiverThreads = new HashSet<>();
+        private final Set<TCPRemoteCommitProvider> _providers = new HashSet<>();
 
         /**
          * Cache the local IP address
@@ -633,9 +644,9 @@ public class TCPRemoteCommitProvider
 
             // We are done listening. Interrupt any worker threads.
             Thread worker;
-            for (Iterator iter = _receiverThreads.iterator();
+            for (Iterator<Thread> iter = _receiverThreads.iterator();
                 iter.hasNext();) {
-                worker = (Thread) iter.next();
+                worker = iter.next();
                 // FYI, the worker threads are blocked
                 // reading from the socket's InputStream. InputStreams
                 // aren't interruptable, so this interrupt isn't
@@ -768,9 +779,9 @@ public class TCPRemoteCommitProvider
                 synchronized (_providers) {
                     // bleair: We're iterating, but currenlty there can really
                     // only be a single provider.
-                    for (Iterator iter = _providers.iterator();
+                    for (Iterator<TCPRemoteCommitProvider> iter = _providers.iterator();
                         iter.hasNext();) {
-                        provider = (TCPRemoteCommitProvider) iter.next();
+                        provider = iter.next();
                         if (senderId != provider._id || !fromSelf) {
                             provider.eventManager.fireEvent(rce);
                         }
