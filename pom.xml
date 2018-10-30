@@ -571,7 +571,7 @@
                 <!-- default settings for local docker -->
                 <docker.external.mysql.port>3306</docker.external.mysql.port>
                 <openjpa.mysql.dbname>openjpatst</openjpa.mysql.dbname>
-                <openjpa.mysql.url>jdbc:mysql://localhost:${docker.external.mysql.port}/${openjpa.mysql.dbname}</openjpa.mysql.url>
+                <openjpa.mysql.url>jdbc:mysql://localhost:${docker.external.mysql.port}/${openjpa.mysql.dbname}?useSSL=false</openjpa.mysql.url>
                 <openjpa.mysql.username>openjpatst</openjpa.mysql.username>
                 <openjpa.mysql.password>openjpatst</openjpa.mysql.password>
 
