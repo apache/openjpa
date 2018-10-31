@@ -75,7 +75,7 @@ public class MySQLDictionary
      * combined <code>DELETE FROM foo, bar, baz</code> syntax.
      * Defaults to false, since this may fail in the presence of InnoDB tables
      * with foreign keys.
-     * @see http://dev.mysql.com/doc/refman/5.0/en/delete.html
+     * @link http://dev.mysql.com/doc/refman/5.0/en/delete.html
      */
     public boolean optimizeMultiTableDeletes = false;
 
@@ -98,6 +98,8 @@ public class MySQLDictionary
         requiresTargetForDelete = true;
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
+
+
 
         concatenateFunction = "CONCAT({0},{1})";
 
@@ -195,11 +197,19 @@ public class MySQLDictionary
             allowsAliasInBulkClause = false;
             supportsForeignKeysComposite = false;
         }
-        if (maj > 5 || (maj == 5 && min >= 1))
+        if (maj > 5 || (maj == 5 && min >= 1)) {
             supportsXMLColumn = true;
+        }
+        if (maj > 5 || (maj == 5 && min >= 7)) {
+            // from this version on MySQL supports fractions of a second
+            timestampTypeName = "DATETIME{0}";
+            fixedSizeTypeNameSet.remove(timestampTypeName);
+            fractionalTypeNameSet.add(timestampTypeName);
+        }
 
-        if (metaData.getDriverMajorVersion() < 5)
+        if (metaData.getDriverMajorVersion() < 5) {
             driverDeserializesBlobs = true;
+        }
     }
 
     @Override

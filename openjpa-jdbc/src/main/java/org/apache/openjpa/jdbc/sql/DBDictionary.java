@@ -428,6 +428,24 @@ public class DBDictionary
     protected final Set<String> systemSchemaSet = new HashSet<>();
     protected final Set<String> systemTableSet = new HashSet<>();
     protected final Set<String> fixedSizeTypeNameSet = new HashSet<>();
+
+    /**
+     * set of types that only accept a single precision...
+     */
+    protected final Set<String> fractionalTypeNameSet = new HashSet<>();
+
+    /**
+     * Default amount of digits for fractional Types.
+     * This is not supported/required by every database.
+     *
+     * This value is only being used if no explicit {@code @Column(scale=n)} is set.
+     * Use {@code @Column(scale=-1)} to disable the scale
+     * @see #fractionalTypeNameSet
+     * @see #getFractionLength(Column, String)
+     */
+    protected int defaultFractionLength = 6;
+
+
     protected final Set<String> typeModifierSet = new HashSet<>();
 
     // NamingConfiguration properties
@@ -1838,15 +1856,32 @@ public class DBDictionary
      * subclasses.
      */
     protected String appendSize(Column col, String typeName) {
-        if (fixedSizeTypeNameSet.contains(typeName.toUpperCase(Locale.ENGLISH)))
+        String upperCaseTypeName = typeName.toUpperCase(Locale.ENGLISH);
+        if (fixedSizeTypeNameSet.contains(upperCaseTypeName)) {
             return typeName;
-        if (typeName.indexOf('(') != -1)
+        }
+        if (typeName.indexOf('(') != -1) {
             return typeName;
+        }
+
 
         String size = null;
-        if (col.getSize() > 0) {
+        int colSize = col.getSize();
+
+        if (colSize<=0  && fractionalTypeNameSet.contains(upperCaseTypeName)){
+            // special handling for types with fractions
+            // Attention! We abuse @Column(scale=n)
+            // One can disable all fractions with @Column(scale=-1)
+            if (col.getDecimalDigits() != 0) { // the default
+                colSize = col.getDecimalDigits() == -1 ? 0 : col.getDecimalDigits();
+            }
+            else {
+                colSize = getFractionLength(col, typeName);
+            }
+            size = "(" + colSize + ")";
+        } else if (colSize > 0) {
             StringBuilder buf = new StringBuilder(10);
-            buf.append("(").append(col.getSize());
+            buf.append("(").append(colSize);
             if (col.getDecimalDigits() > 0)
                 buf.append(", ").append(col.getDecimalDigits());
             buf.append(")");
@@ -1854,6 +1889,16 @@ public class DBDictionary
         }
 
         return insertSize(typeName, size);
+    }
+
+    /**
+     * Only get's used if no explicit scale is used.
+     * Attention! @{code @Column(scale=-1)} disables the scale of a column
+     * @return the fraction length of types which have a fraction
+     * @see #fractionalTypeNameSet
+     */
+    protected int getFractionLength(Column col, String typeName) {
+        return defaultFractionLength;
     }
 
     /**

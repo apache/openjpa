@@ -75,7 +75,7 @@
         <!-- common JDBC driver versions -->
         <derby.version>10.14.2.0</derby.version>
         <hsqldb.version>2.4.1</hsqldb.version>
-        <mysql.version>8.0.12</mysql.version>
+        <mysql.connector.version>8.0.13</mysql.connector.version>
         <postgresql.version>42.2.5</postgresql.version>
         <!-- other common versions -->
         <slf4j.version>1.7.23</slf4j.version>
@@ -532,7 +532,7 @@
                 <dependency>
                     <groupId>mysql</groupId>
                     <artifactId>mysql-connector-java</artifactId>
-                    <version>${mysql.version}</version>
+                    <version>${mysql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -561,7 +561,7 @@
                 <dependency>
                     <groupId>mysql</groupId>
                     <artifactId>mysql-connector-java</artifactId>
-                    <version>${mysql.version}</version>
+                    <version>${mysql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -1403,7 +1403,7 @@
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql.version}</version>
+                <version>${mysql.connector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
