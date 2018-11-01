@@ -27,6 +27,7 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -71,6 +72,15 @@ public class TestDateQueries extends BaseKernelTest {
         startTx(_pm);
         AllFieldTypesTest test = new AllFieldTypesTest();
         test.setTestDate(_date);
+
+        // prepare scale test fields
+        Timestamp tst = new Timestamp(1000000000L);
+        tst.setNanos(123456789);
+        test.setTestDateMaxScale(tst);
+        test.setTestDateScale0(tst);
+        test.setTestDateScale3(tst);
+        test.setTestDateScale6(tst);
+
         _pm.persist(test);
 
         test = new AllFieldTypesTest();
@@ -81,6 +91,8 @@ public class TestDateQueries extends BaseKernelTest {
         test.setTestDate(_after);
         _pm.persist(test);
         endTx(_pm);
+
+        _pm.clear();
     }
 
     public void testEquals() {
@@ -93,6 +105,21 @@ public class TestDateQueries extends BaseKernelTest {
     public void testNotEquals() {
         Collection vals = executeQuery("testDate <> :date");
         assertEquals(2, vals.size());
+    }
+
+    public void testDateScale() {
+        Timestamp referenceTst = new Timestamp(1000000000L);
+
+        Collection vals = executeQuery("testDate = :date");
+        AllFieldTypesTest aft = (AllFieldTypesTest) vals.iterator().next();
+        assertNotNull(aft);
+
+        long time = aft.getTestDateMaxScale().getTime();
+        long nanos = aft.getTestDateMaxScale().getNanos();
+
+        // cut of the ms
+        assertEquals(referenceTst, time - (time%1000));
+
     }
 
     public void testBefore() {

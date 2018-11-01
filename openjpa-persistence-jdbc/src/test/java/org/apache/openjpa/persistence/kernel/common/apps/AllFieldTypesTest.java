@@ -20,10 +20,12 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -55,10 +57,28 @@ public class AllFieldTypesTest {
     private char testchar;
     private String testString;
     private String testBigString;
+
     @Temporal(TemporalType.DATE)
     private Date testDate;
+
     @Temporal(TemporalType.DATE)
     private Calendar testCalendar;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(scale=-1)
+    private Timestamp testDateScale0;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(scale=3)
+    private Timestamp testDateScale3;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(scale=6)
+    private Timestamp testDateScale6;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp testDateMaxScale;
+
     private Object testObject;
     private BigInteger testBigInteger;
     private BigDecimal testBigDecimal;
@@ -187,6 +207,39 @@ public class AllFieldTypesTest {
     public void setTestBigDecimal(BigDecimal testBigDecimal) {
         this.testBigDecimal = testBigDecimal;
     }
+
+    public Timestamp getTestDateScale0() {
+        return testDateScale0;
+    }
+
+    public void setTestDateScale0(Timestamp testDateScale0) {
+        this.testDateScale0 = testDateScale0;
+    }
+
+    public Timestamp getTestDateScale3() {
+        return testDateScale3;
+    }
+
+    public void setTestDateScale3(Timestamp testDateScale3) {
+        this.testDateScale3 = testDateScale3;
+    }
+
+    public Timestamp getTestDateScale6() {
+        return testDateScale6;
+    }
+
+    public void setTestDateScale6(Timestamp testDateScale6) {
+        this.testDateScale6 = testDateScale6;
+    }
+
+    public Timestamp getTestDateMaxScale() {
+        return testDateMaxScale;
+    }
+
+    public void setTestDateMaxScale(Timestamp testDateMaxScale) {
+        this.testDateMaxScale = testDateMaxScale;
+    }
+
 
     public void randomize(boolean objects, boolean blobs) {
         testint = AbstractTestCase.randomInt().intValue();

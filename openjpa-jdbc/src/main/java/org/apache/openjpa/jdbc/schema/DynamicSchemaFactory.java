@@ -251,7 +251,7 @@ public class DynamicSchemaFactory
             setSize(size);
             if (typeName != null)
                 setTypeIdentifier(DBIdentifier.newColumnDefinition(typeName));
-            if (decimals >= 0)
+            if (decimals != 0)
                 setDecimalDigits(decimals);
             return true;
         }

@@ -99,7 +99,7 @@ public class MySQLDictionary
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
 
-
+        datePrecision = MICRO;
 
         concatenateFunction = "CONCAT({0},{1})";
 
