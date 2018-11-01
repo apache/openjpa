@@ -66,18 +66,31 @@ public class AllFieldTypesTest {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(scale=-1)
-    private Timestamp testDateScale0;
+    private Timestamp testTstScale0;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(scale=3)
-    private Timestamp testDateScale3;
+    private Timestamp testTstScale3;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(scale=6)
-    private Timestamp testDateScale6;
+    private Timestamp testTstScale6;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Timestamp testDateMaxScale;
+    private Timestamp testTstMaxScale;
+
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(scale=-1)
+    private Date testDateScale0;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(scale=3)
+    private Date testDateScale3;
+
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date testDateMaxScale;
 
     private Object testObject;
     private BigInteger testBigInteger;
@@ -208,38 +221,61 @@ public class AllFieldTypesTest {
         this.testBigDecimal = testBigDecimal;
     }
 
-    public Timestamp getTestDateScale0() {
-        return testDateScale0;
+    public Timestamp getTestTstScale0() {
+        return testTstScale0;
     }
 
-    public void setTestDateScale0(Timestamp testDateScale0) {
-        this.testDateScale0 = testDateScale0;
+    public void setTestTstScale0(Timestamp testTstScale0) {
+        this.testTstScale0 = testTstScale0;
     }
 
-    public Timestamp getTestDateScale3() {
-        return testDateScale3;
+    public Timestamp getTestTstScale3() {
+        return testTstScale3;
     }
 
-    public void setTestDateScale3(Timestamp testDateScale3) {
-        this.testDateScale3 = testDateScale3;
+    public void setTestTstScale3(Timestamp testTstScale3) {
+        this.testTstScale3 = testTstScale3;
     }
 
-    public Timestamp getTestDateScale6() {
-        return testDateScale6;
+    public Timestamp getTestTstScale6() {
+        return testTstScale6;
     }
 
-    public void setTestDateScale6(Timestamp testDateScale6) {
-        this.testDateScale6 = testDateScale6;
+    public void setTestTstScale6(Timestamp testTstScale6) {
+        this.testTstScale6 = testTstScale6;
     }
 
-    public Timestamp getTestDateMaxScale() {
+    public Timestamp getTestTstMaxScale() {
+        return testTstMaxScale;
+    }
+
+    public void setTestTstMaxScale(Timestamp testTstMaxScale) {
+        this.testTstMaxScale = testTstMaxScale;
+    }
+
+    public Date getTestDateMaxScale() {
         return testDateMaxScale;
     }
 
-    public void setTestDateMaxScale(Timestamp testDateMaxScale) {
+    public void setTestDateMaxScale(Date testDateMaxScale) {
         this.testDateMaxScale = testDateMaxScale;
     }
 
+    public Date getTestDateScale0() {
+        return testDateScale0;
+    }
+
+    public void setTestDateScale0(Date testDateScale0) {
+        this.testDateScale0 = testDateScale0;
+    }
+
+    public Date getTestDateScale3() {
+        return testDateScale3;
+    }
+
+    public void setTestDateScale3(Date testDateScale3) {
+        this.testDateScale3 = testDateScale3;
+    }
 
     public void randomize(boolean objects, boolean blobs) {
         testint = AbstractTestCase.randomInt().intValue();

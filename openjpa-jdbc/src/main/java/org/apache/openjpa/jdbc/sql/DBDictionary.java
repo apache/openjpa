@@ -432,7 +432,7 @@ public class DBDictionary
     /**
      * set of types that only accept a single precision...
      */
-    protected final Set<String> fractionalTypeNameSet = new HashSet<>();
+    public final Set<String> fractionalTypeNameSet = new HashSet<>();
 
     /**
      * Default amount of digits for fractional Types.
