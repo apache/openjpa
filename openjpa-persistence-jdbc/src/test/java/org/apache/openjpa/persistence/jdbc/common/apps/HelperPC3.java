@@ -23,6 +23,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 
 
 /**
@@ -31,6 +32,7 @@ import javax.persistence.InheritanceType;
  *	@author		Abe White
  */
 @Entity
+@Table(name="HELPERPC3")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class HelperPC3
 {

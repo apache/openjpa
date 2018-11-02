@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * <p>Class that uses eager outer joins for its collection fields.</p>
@@ -31,6 +32,7 @@ import javax.persistence.Entity;
  * @author Abe White
  */
 @Entity
+@Table(name="EAGEROUTERJOINPC")
 public class EagerOuterJoinPC {
 
     private String name = null;

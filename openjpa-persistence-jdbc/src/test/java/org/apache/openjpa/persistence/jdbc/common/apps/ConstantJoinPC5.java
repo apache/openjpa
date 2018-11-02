@@ -24,7 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="conjoinpc5")
+@Table(name="CONJOINPC5")
 public class ConstantJoinPC5
 {
 	@Id

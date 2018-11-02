@@ -27,6 +27,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 
 /**
@@ -35,6 +36,7 @@ import javax.persistence.OneToOne;
  *	@author		Abe White
  */
 @Entity
+@Table(name="HELPERPC2")
 public class HelperPC2
 {
 	@Column(name="strngfld", length=50)

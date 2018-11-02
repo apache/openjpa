@@ -59,9 +59,9 @@ public class TestMany2ManyMapEx1 extends SQLListenerTestCase {
             Employee.class,
             PhoneNumber.class);
         createObj(emf);
-       	rsAllPhones = getAll(PhoneNumber.class);
-       	rsAllEmps = getAll(Employee.class);
-       	rsAllDivisions = getAll(Division.class);
+        rsAllPhones = getAll(PhoneNumber.class);
+        rsAllEmps = getAll(Employee.class);
+        rsAllDivisions = getAll(Division.class);
     }
 
     @AllowFailure

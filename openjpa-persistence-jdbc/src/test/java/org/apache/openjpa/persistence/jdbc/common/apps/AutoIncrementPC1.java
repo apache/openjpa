@@ -33,75 +33,75 @@ import javax.persistence.Table;
 
 
 /**
- *	<p>Persistent type used in testing.</p>
+ *    <p>Persistent type used in testing.</p>
  *
- *	@author		Abe White
+ *    @author        Abe White
  */
 @Entity
-@Table(name="autoincpc1")
+@Table(name="AUTOINCPC1")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class AutoIncrementPC1
 {
 
     private Set setField = new HashSet ();
 
-	@Id
-	private int id;
+    @Id
+    private int id;
 
-	@Column(name="strngfld", length=50)
-	private String				stringField	= null;
+    @Column(name="strngfld", length=50)
+    private String stringField = null;
 
-	@OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})
-	private AutoIncrementPC1	oneOne		= null;
+    @OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+    private AutoIncrementPC1 oneOne = null;
 
-	public AutoIncrementPC1()
-	{
-	}
+    public AutoIncrementPC1()
+    {
+    }
 
-	public AutoIncrementPC1(int key)
-	{
-		this.id = key;
-	}
+    public AutoIncrementPC1(int key)
+    {
+        this.id = key;
+    }
 
-	public Set getSetField ()
-	{
-		return this.setField;
-	}
+    public Set getSetField ()
+    {
+        return this.setField;
+    }
 
-	public void setSetField (Set setField)
-	{
-		this.setField = setField;
-	}
-
-
-	public String getStringField ()
-	{
-		return this.stringField;
-	}
+    public void setSetField (Set setField)
+    {
+        this.setField = setField;
+    }
 
 
-	public void setStringField (String stringField)
-	{
-		this.stringField = stringField;
-	}
+    public String getStringField ()
+    {
+        return this.stringField;
+    }
 
 
-	public AutoIncrementPC1 getOneOne ()
-	{
-		return this.oneOne;
-	}
+    public void setStringField (String stringField)
+    {
+        this.stringField = stringField;
+    }
 
 
-	public void setOneOne (AutoIncrementPC1 oneOne)
-	{
-		this.oneOne = oneOne;
-	}
+    public AutoIncrementPC1 getOneOne ()
+    {
+        return this.oneOne;
+    }
 
-	public int getId() {
-		return id;
-	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setOneOne (AutoIncrementPC1 oneOne)
+    {
+        this.oneOne = oneOne;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }
