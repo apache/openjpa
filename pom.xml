@@ -76,7 +76,9 @@
         <derby.version>10.14.2.0</derby.version>
         <hsqldb.version>2.4.1</hsqldb.version>
         <mysql.connector.version>5.1.47</mysql.connector.version>
-        <postgresql.version>42.2.5</postgresql.version>
+
+        <postgresql.connector.version>42.2.5</postgresql.connector.version>
+
         <!-- other common versions -->
         <slf4j.version>1.7.23</slf4j.version>
         <!-- Compile Java source/target class level -->
@@ -654,9 +656,9 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>postgresql</groupId>
+                    <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>${postgresql.version}</version>
+                    <version>${postgresql.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -672,6 +674,75 @@
                 <dbcp.minIdle>0</dbcp.minIdle>
                 <dbcp.maxActive>20</dbcp.maxActive>
             </properties>
+        </profile>
+
+        <!-- Profile for testing with PostgreSQL DB via Docker -->
+        <profile>
+            <id>test-postgresql-docker</id>
+            <activation>
+                <property>
+                    <name>test-postgresql-docker</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <version>${postgresql.connector.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>org.postgresql.Driver</connection.driver.name>
+
+                <!-- default settings for local docker -->
+                <docker.external.postgresql.port>5432</docker.external.postgresql.port>
+                <openjpa.postgresql.dbname>openjpatst</openjpa.postgresql.dbname>
+                <openjpa.postgresql.username>postgres</openjpa.postgresql.username>
+                <openjpa.postgresql.password>postgres</openjpa.postgresql.password>
+                <openjpa.postgresql.url>jdbc:postgresql://localhost/${openjpa.postgresql.dbname}</openjpa.postgresql.url>
+
+                <!--<connection.url>jdbc:postgresql://localhost/openjpa</connection.url>-->
+                <connection.url>${openjpa.postgresql.url}</connection.url>
+                <connection.username>${openjpa.postgresql.username}</connection.username>
+                <connection.password>${openjpa.postgresql.password}</connection.password>
+                <jdbc.DBDictionary />
+
+                <!-- DBCP overrides -->
+                <dbcp.maxIdle>5</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+                <dbcp.maxActive>20</dbcp.maxActive>
+
+                <postgresql.server.version>11</postgresql.server.version>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>postgres:${postgresql.server.version}</name>
+                                    <run>
+                                        <env>
+                                            <PGDATA>/pg</PGDATA>
+                                            <POSTGRES_DB>${openjpa.postgresql.dbname}</POSTGRES_DB>
+                                            <POSTGRES_USER>${connection.username}</POSTGRES_USER>
+                                            <POSTGRES_PASSWORD>${connection.password}</POSTGRES_PASSWORD>
+                                        </env>
+                                        <ports>
+                                            <port>${docker.external.postgresql.port}:5432</port>
+                                        </ports>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
         </profile>
 
         <!-- Profile for testing with SQLServer DB using MS JDBC driver -->
@@ -1428,7 +1499,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>${postgresql.version}</version>
+                <version>${postgresql.connector.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
