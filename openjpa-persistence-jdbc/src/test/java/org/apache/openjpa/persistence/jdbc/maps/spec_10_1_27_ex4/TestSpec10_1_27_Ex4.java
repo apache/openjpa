@@ -77,7 +77,7 @@ public class TestSpec10_1_27_Ex4 extends SQLListenerTestCase {
             qi.setCandidateCollection(rsAllCompany);
     }
 
-    public void queryQualifiedId(boolean inMemory) throws Exception {
+    private void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
 
         String query = "select KEY(e) from Company c, " +
@@ -96,7 +96,8 @@ public class TestSpec10_1_27_Ex4 extends SQLListenerTestCase {
             setCandidate(q, Company.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
-        assertEquals(d, me.getKey());
+        assertEquals(d.getId(), ((Division) me.getKey()).getId());
+        assertEquals(d.getName(), ((Division) me.getKey()).getName());
 
         em.clear();
         query = "select KEY(e) from Company c " +

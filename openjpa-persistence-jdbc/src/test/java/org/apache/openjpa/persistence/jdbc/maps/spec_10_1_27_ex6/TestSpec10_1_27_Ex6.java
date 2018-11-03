@@ -96,7 +96,8 @@ public class TestSpec10_1_27_Ex6 extends SQLListenerTestCase {
             setCandidate(q, Company.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d.getId(), ((Division) me.getKey()).getId());
+        assertEquals(d.getName(), ((Division) me.getKey()).getName());
 
         em.clear();
         query = "select KEY(e) from Company c " +
