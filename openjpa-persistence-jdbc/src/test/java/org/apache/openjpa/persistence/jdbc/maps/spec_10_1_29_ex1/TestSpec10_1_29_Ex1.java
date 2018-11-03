@@ -125,7 +125,10 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
             setCandidate(q, Company.class);
         rs = q.getResultList();
         me = (Map.Entry) rs.get(0);
-        assertTrue(d.equals(me.getKey()));
+        Division other = (Division) me.getKey();
+        assertEquals(d.getId(), other.getId());
+        assertEquals(d.getName(), other.getName());
+
         assertEquals(v.getId(), ((VicePresident) me.getValue()).getId());
 
         em.close();

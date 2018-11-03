@@ -32,10 +32,17 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <validation-mode>CALLBACK</validation-mode>
         <properties>
+            <!--
+                this is only needed when not passing in the connection via
+                either passing in via EntityManagerFactory or
+                environment variable.
+                In our case this is already properly setup in the
+                OpenJPA parent pom.
           <property name="openjpa.ConnectionDriverName"
               value="org.apache.derby.jdbc.EmbeddedDriver" />
           <property name="openjpa.ConnectionURL"
               value="jdbc:derby:target/database/ImageDB;create=true" />
+            -->
           <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
           <property name="openjpa.DynamicEnhancementAgent" value="false"/>
 

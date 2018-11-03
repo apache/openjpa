@@ -122,7 +122,9 @@ public class TestSpec10_1_27_Ex8 extends SQLListenerTestCase {
             setCandidate(q, Company.class);
         rs = q.getResultList();
         me = (Map.Entry) rs.get(0);
+
         assertTrue(d.equals(me.getKey()));
+
         assertEquals(v.getId(), ((VicePresident) me.getValue()).getId());
 
         em.close();

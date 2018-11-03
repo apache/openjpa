@@ -114,7 +114,9 @@ public class TestMany2ManyMapEx1 extends SQLListenerTestCase {
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        Division other = (Division) me.getKey();
+        assertEquals(d.getId(), other.getId());
+        assertEquals(d.getName(), other.getName());
 
         // test navigation thru KEY
         em.clear();

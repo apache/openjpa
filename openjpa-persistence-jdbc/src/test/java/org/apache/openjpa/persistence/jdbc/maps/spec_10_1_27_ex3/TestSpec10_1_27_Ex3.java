@@ -99,7 +99,9 @@ public class TestSpec10_1_27_Ex3 extends SQLListenerTestCase {
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        Division other = (Division) me.getKey();
+        assertEquals(d.getId(), other.getId());
+        assertEquals(d.getName(), other.getName());
 
         em.clear();
         query = "select KEY(e) from Company c " +
