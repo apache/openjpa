@@ -26,6 +26,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  *	Used to test invert one-to-ones and stuff
@@ -33,6 +34,7 @@ import javax.persistence.OneToOne;
  *	@author		skim
  */
 @Entity
+@Table(name="INVERTA")
 public class InvertA implements Serializable
 {
     private static final long serialVersionUID = 1L;

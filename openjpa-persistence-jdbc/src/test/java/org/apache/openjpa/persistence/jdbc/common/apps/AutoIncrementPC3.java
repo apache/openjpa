@@ -38,7 +38,7 @@ import javax.persistence.Table;
  */
 @IdClass(AutoIncrementPC3Id.class)
 @Entity
-@Table(name="autoincpc3")
+@Table(name="AUTOINCPC3")
 public class AutoIncrementPC3
 {
 	@Id

@@ -24,6 +24,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
@@ -32,6 +33,7 @@ import javax.persistence.Transient;
  *	@author		Abe White
  */
 @Entity
+@Table(name="EAGERPCSUB")
 public class EagerPCSub	extends EagerPC
 {
 	private int 	intField;

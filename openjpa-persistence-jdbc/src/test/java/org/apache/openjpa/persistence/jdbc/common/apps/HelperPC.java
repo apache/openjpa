@@ -25,12 +25,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
 /**
  *	<p>Persistent type used in testing.</p>
  *
  *	@author		Abe White
  */
 @Entity
+@Table(name="HELPERPC")
 public class HelperPC implements Serializable
 {
     private static final long serialVersionUID = 1L;

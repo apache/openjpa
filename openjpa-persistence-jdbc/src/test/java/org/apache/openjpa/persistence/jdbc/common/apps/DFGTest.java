@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * <p>Persistent type used in testing.</p>
@@ -26,6 +27,7 @@ import javax.persistence.Entity;
  * @author Abe White
  */
 @Entity
+@Table(name="DFGTEST")
 public class DFGTest {
 
     private int dfgField;

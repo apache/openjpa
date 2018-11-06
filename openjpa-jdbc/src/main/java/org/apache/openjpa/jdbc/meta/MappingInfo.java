@@ -582,17 +582,17 @@ public abstract class MappingInfo implements Serializable {
             getMappingDefaults().defaultMissingInfo();
         if ((!given.isEmpty() || (!adapt && !fill))
             && given.size() != tmplates.length) {
-        	// also consider when this info has columns from multiple tables
-        	given = getColumns(table.getIdentifier());
-        	if ((!adapt && !fill) && given.size() != tmplates.length) {
-        		// try default table
-        		given = getColumns("");
+            // also consider when this info has columns from multiple tables
+            given = getColumns(table.getIdentifier());
+            if ((!adapt && !fill) && given.size() != tmplates.length) {
+                // try default table
+                given = getColumns("");
                 if ((!adapt && !fill) && given.size() != tmplates.length) {
                     throw new MetaDataException(_loc.get(prefix + "-num-cols",
                             context, String.valueOf(tmplates.length),
                             String.valueOf(given.size())));
-            	}
-        	}
+                }
+            }
         }
 
         Column[] cols = new Column[tmplates.length];
@@ -605,12 +605,6 @@ public abstract class MappingInfo implements Serializable {
             setIOFromColumnFlags(col, i);
         }
         return cols;
-    }
-
-    boolean canMerge(List<Column> given, Column[] templates, boolean adapt,
-            boolean fill) {
-    	return !((!given.isEmpty() || (!adapt && !fill))
-    			&& given.size() != templates.length);
     }
 
     /**

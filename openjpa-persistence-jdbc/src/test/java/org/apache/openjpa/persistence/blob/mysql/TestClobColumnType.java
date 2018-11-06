@@ -37,7 +37,7 @@ public class TestClobColumnType extends SingleEMFTestCase {
     private boolean _runTest = false; // only test with MySQL
 
     @Override
-	public void setUp() throws Exception {
+    public void setUp() throws Exception {
 
         // create EMF solely to obtain a DBDictionary.
         // need to do this without ClobColumnEntity.class since it contains a column definition which might
@@ -89,7 +89,7 @@ public class TestClobColumnType extends SingleEMFTestCase {
 
     public void testDefaultLob() {
         if (_runTest) {
-            assertEquals(getDBDictionary().blobTypeName, getCol("defaultLob").getTypeIdentifier().getName());
+            assertEquals(getDBDictionary().clobTypeName, getCol("defaultLob").getTypeIdentifier().getName());
         }
     }
 }

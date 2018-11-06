@@ -20,10 +20,12 @@ package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -55,10 +57,41 @@ public class AllFieldTypesTest {
     private char testchar;
     private String testString;
     private String testBigString;
+
     @Temporal(TemporalType.DATE)
     private Date testDate;
+
     @Temporal(TemporalType.DATE)
     private Calendar testCalendar;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(scale=-1)
+    private Timestamp testTstScale0;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(scale=3)
+    private Timestamp testTstScale3;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(scale=6)
+    private Timestamp testTstScale6;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp testTstMaxScale;
+
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(scale=-1)
+    private Date testDateScale0;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(scale=3)
+    private Date testDateScale3;
+
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date testDateMaxScale;
+
     private Object testObject;
     private BigInteger testBigInteger;
     private BigDecimal testBigDecimal;
@@ -186,6 +219,62 @@ public class AllFieldTypesTest {
 
     public void setTestBigDecimal(BigDecimal testBigDecimal) {
         this.testBigDecimal = testBigDecimal;
+    }
+
+    public Timestamp getTestTstScale0() {
+        return testTstScale0;
+    }
+
+    public void setTestTstScale0(Timestamp testTstScale0) {
+        this.testTstScale0 = testTstScale0;
+    }
+
+    public Timestamp getTestTstScale3() {
+        return testTstScale3;
+    }
+
+    public void setTestTstScale3(Timestamp testTstScale3) {
+        this.testTstScale3 = testTstScale3;
+    }
+
+    public Timestamp getTestTstScale6() {
+        return testTstScale6;
+    }
+
+    public void setTestTstScale6(Timestamp testTstScale6) {
+        this.testTstScale6 = testTstScale6;
+    }
+
+    public Timestamp getTestTstMaxScale() {
+        return testTstMaxScale;
+    }
+
+    public void setTestTstMaxScale(Timestamp testTstMaxScale) {
+        this.testTstMaxScale = testTstMaxScale;
+    }
+
+    public Date getTestDateMaxScale() {
+        return testDateMaxScale;
+    }
+
+    public void setTestDateMaxScale(Date testDateMaxScale) {
+        this.testDateMaxScale = testDateMaxScale;
+    }
+
+    public Date getTestDateScale0() {
+        return testDateScale0;
+    }
+
+    public void setTestDateScale0(Date testDateScale0) {
+        this.testDateScale0 = testDateScale0;
+    }
+
+    public Date getTestDateScale3() {
+        return testDateScale3;
+    }
+
+    public void setTestDateScale3(Date testDateScale3) {
+        this.testDateScale3 = testDateScale3;
     }
 
     public void randomize(boolean objects, boolean blobs) {

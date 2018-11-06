@@ -31,7 +31,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="conjoinpc4")
+@Table(name="CONJOINPC4")
 public class ConstantJoinPC4
 {
 	@Column(length=50)

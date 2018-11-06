@@ -29,7 +29,7 @@ import javax.persistence.Table;
  */
 
 @Entity
-@Table(name="custmappc")
+@Table(name="CUSTMAPPC")
 public class CustomMappingPC
 {
 
