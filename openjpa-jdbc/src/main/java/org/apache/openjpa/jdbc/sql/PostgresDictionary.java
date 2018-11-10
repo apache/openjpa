@@ -753,9 +753,12 @@ public class PostgresDictionary
         if ((maj >= 9 || (maj == 8 && min >= 3))) {
             supportsXMLColumn = true;
         }
+
+        // PostgreSQL requires to escape search strings
+        requiresSearchStringEscapeForLike = true;
+
         // Old PostgreSQL requires double-escape for strings.
         if ((maj <= 8 || (maj == 9 && min == 0))) {
-            requiresSearchStringEscapeForLike = true;
             searchStringEscape = "\\\\";
         }
     }
