@@ -154,9 +154,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/trunk</developerConnection>
-        <url>http://svn.apache.org/repos/asf/openjpa/trunk</url>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/openjpa.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/openjpa.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf/openjpa.git</url>
     </scm>
 
     <modules>
@@ -1735,6 +1735,10 @@
                         <goals>deploy</goals>
                         <arguments>-Papache-release,docbook-profile,test-derby,bval</arguments>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
+
+                        <!-- special config for git -->
+                        <pushChanges>false</pushChanges>
+                        <localCheckout>true</localCheckout>
                     </configuration>
                 </plugin>
                 <plugin>
