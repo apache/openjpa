@@ -3665,9 +3665,7 @@ the
 <ulink url="../../apidocs/org/apache/openjpa/jdbc/schema/DriverDataSource.html">
 <classname>org.apache.openjpa.jdbc.schema.DriverDataSource</classname></ulink>
 implementation to use to wrap JDBC Driver classes with javax.sql.DataSource
-instances.  The <classname>org.apache.openjpa.jdbc.schema.AutoDriverDataSource</classname> implementation is the default and will select either the DBCPDriverDataSource or SimpleDriverDataSource based on if Apache Commons DBCP is available
-on the classpath.
-The <classname>org.apache.openjpa.jdbc.schema.DBCPDriverDataSource</classname> implementation requires Apache Commons DBCP to be available on the classpath and uses <classname>org.apache.commons.dbcp.BasicDataSource</classname> to provide connection pooling.
+instances.
             </para>
         </section>
         <section id="openjpa.jdbc.EagerFetchMode">
