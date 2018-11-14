@@ -486,7 +486,7 @@ public interface JDBCConfiguration
      * Create an instance of the {@link DriverDataSource} to use
      * for creating a {@link DataSource} from a JDBC {@link Driver}.
      */
-    DriverDataSource newDriverDataSourceInstance();
+    DataSource newDriverDataSourceInstance();
 
     /**
      * The plugin string for the {@link SchemaFactory} to use to provide

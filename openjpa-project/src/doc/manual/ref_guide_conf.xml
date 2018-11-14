@@ -3666,6 +3666,7 @@ the
 <classname>org.apache.openjpa.jdbc.schema.DriverDataSource</classname></ulink>
 implementation to use to wrap JDBC Driver classes with javax.sql.DataSource
 instances.
+The <classname>org.apache.commons.dbcp2.BasicDataSource</classname> Apache Commons DBCP2 to be available on the classpath and provides connection pooling.
             </para>
         </section>
         <section id="openjpa.jdbc.EagerFetchMode">

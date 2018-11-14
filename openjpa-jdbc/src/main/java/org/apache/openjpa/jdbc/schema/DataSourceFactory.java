@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -85,27 +86,47 @@ public class DataSourceFactory {
             }
 
             if (Driver.class.isAssignableFrom(driverClass)) {
-                DriverDataSource ds = conf.newDriverDataSourceInstance();
-                ds.setClassLoader(loader);
-                ds.setConnectionDriverName(driver);
-                ds.setConnectionProperties(Configurations.
-                    parseProperties(props));
+                DataSource rawDs = conf.newDriverDataSourceInstance();
+                if (rawDs instanceof DriverDataSource) {
+                    DriverDataSource ds = (DriverDataSource)rawDs;
+                    ds.setClassLoader(loader);
+                    ds.setConnectionDriverName(driver);
+                    ds.setConnectionProperties(Configurations.
+                        parseProperties(props));
 
-                if (!factory2) {
-                    ds.setConnectionFactoryProperties(Configurations.
-                        parseProperties(conf.getConnectionFactoryProperties()));
-                    ds.setConnectionURL(conf.getConnectionURL());
-                    ds.setConnectionUserName(conf.getConnectionUserName());
-                    ds.setConnectionPassword(conf.getConnectionPassword());
-                } else {
-                    ds.setConnectionFactoryProperties
-                        (Configurations.parseProperties(conf.
-                        getConnectionFactory2Properties()));
-                    ds.setConnectionURL(conf.getConnection2URL());
-                    ds.setConnectionUserName(conf.getConnection2UserName());
-                    ds.setConnectionPassword(conf.getConnection2Password());
+                    if (!factory2) {
+                        ds.setConnectionFactoryProperties(Configurations.
+                            parseProperties(conf.getConnectionFactoryProperties()));
+                        ds.setConnectionURL(conf.getConnectionURL());
+                        ds.setConnectionUserName(conf.getConnectionUserName());
+                        ds.setConnectionPassword(conf.getConnectionPassword());
+                    } else {
+                        ds.setConnectionFactoryProperties
+                            (Configurations.parseProperties(conf.
+                            getConnectionFactory2Properties()));
+                        ds.setConnectionURL(conf.getConnection2URL());
+                        ds.setConnectionUserName(conf.getConnection2UserName());
+                        ds.setConnectionPassword(conf.getConnection2Password());
+                    }
+                    return ds;
+                } else if (rawDs instanceof BasicDataSource) {
+                    BasicDataSource ds = (BasicDataSource)rawDs;
+                    ds.setDriverClassLoader(loader);
+                    ds.setDriverClassName(driver);
+                    ds.setConnectionProperties(props);
+
+                    if (!factory2) {
+                        ds.setUrl(conf.getConnectionURL());
+                        ds.setUsername(conf.getConnectionUserName());
+                        ds.setPassword(conf.getConnectionPassword());
+                    } else {
+                        ds.setUrl(conf.getConnection2URL());
+                        ds.setUsername(conf.getConnection2UserName());
+                        ds.setPassword(conf.getConnection2Password());
+                    }
+                    return ds;
                 }
-                return ds;
+
             }
 
             // see if their driver name is actually a data source

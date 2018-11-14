@@ -82,6 +82,12 @@ provided implementations.
 <literal>openjpa.jdbc.DriverDataSource=simple</literal>, will make
 OpenJPA to use <classname>org.apache.openjpa.jdbc.schema.SimpleDriverDataSource</classname>
             </para>
+            <para>
+To force usage of Apache Commons DBCP2, which will cause a fatal exception to
+be thrown if it cannot be loaded from the classpath, set
+<literal>openjpa.jdbc.DriverDataSource=dbcp</literal>, which will cause
+OpenJPA to use <classname>org.apache.commons.dbcp2.BasicDataSource</classname>
+            </para>
         </section>
         <section id="ref_guide_dbsetup_config">
             <title>

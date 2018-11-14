@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.jdbc.query.domain.Game;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Tests "openjpa.jdbc.DriverDataSource=simple" option.
+ * Tests "openjpa.jdbc.DriverDataSource=dbcp" option.
  *
  * Further details can be found in
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2153">OPENJPA-2153</A>
@@ -39,7 +39,7 @@ public class TestNewJavaObjectQuery extends SingleEMFTestCase {
     public void setUp() {
         super.setUp(CLEAR_TABLES, Game.class,
                 DtaSrc.class, DtaSrcField.class,
-                "openjpa.jdbc.DriverDataSource", "simple");
+                "openjpa.jdbc.DriverDataSource", "dbcp");
     }
 
 //	void createData() throws Exception {
