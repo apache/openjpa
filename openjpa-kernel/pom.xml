@@ -74,8 +74,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-asm6-shaded</artifactId>
-            <version>4.10</version>
+            <artifactId>xbean-asm7-shaded</artifactId>
+            <version>4.12</version>
         </dependency>
     </dependencies>
 

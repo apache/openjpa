@@ -24,6 +24,7 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.apache.openjpa.util.ExceptionInfo;
@@ -38,7 +39,10 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
     static Ent1 expectedFailedObject;
     static Ent1 expectedFailedObjectOracle;
+
     static boolean isOracle = false;
+    static boolean isPostgres = false;
+
     final String expectedFailureMsg =
         "INSERT INTO Ent1 (pk, name) VALUES (?, ?) [params=(int) 200, (String) twohundred]";
     final String expectedFailureMsg18 =
@@ -58,6 +62,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         isOracle = dict instanceof OracleDictionary;
+        isPostgres = dict instanceof PostgresDictionary;
         return emf;
     }
 
@@ -348,7 +353,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
             Ent1 failedObject = (Ent1) e.getFailedObject();
 
             assertNotNull("Failed object was null.", failedObject);
-            if (!isOracle) {
+            if (!isOracle && !isPostgres) {
                 assertEquals(expectedFailedObject, failedObject);
             } else {
                 // special case, as Oracle returns all statements in the batch
@@ -362,7 +367,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
     public void verifyExMsg(String msg) {
         assertNotNull("Exception message was null.", msg);
-        if (!isOracle) {
+        if (!isOracle && !isPostgres) {
             assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsg + "> but was " +
                 msg, msg.contains(expectedFailureMsg));
         } else {

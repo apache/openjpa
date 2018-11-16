@@ -30,10 +30,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 
-import org.apache.xbean.asm6.ClassReader;
-import org.apache.xbean.asm6.ClassVisitor;
-import org.apache.xbean.asm6.ClassWriter;
-import org.apache.xbean.asm6.Opcodes;
+import org.apache.xbean.asm7.ClassReader;
+import org.apache.xbean.asm7.ClassVisitor;
+import org.apache.xbean.asm7.ClassWriter;
+import org.apache.xbean.asm7.Opcodes;
 
 import serp.bytecode.BCClass;
 
@@ -117,7 +117,7 @@ public final class AsmAdaptor {
         final ClassReader cr = new ClassReader(b);
         try
         {
-            cr.accept(new ClassVisitor(Opcodes.ASM6)
+            cr.accept(new ClassVisitor(Opcodes.ASM7)
             {
                 @Override
                 public void visit(final int i, final int i1,

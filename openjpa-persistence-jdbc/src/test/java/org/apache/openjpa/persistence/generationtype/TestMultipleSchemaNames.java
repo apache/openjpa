@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.generationtype;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
@@ -58,11 +59,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
             return;
         }
 
-        // Create schemas when database requires this and we are about
-        // to execute the first test.
-        if ("testGeneratedAUTO".equals(getName())) {
-            createSchemas();
-        }
+        createSchemas();
 
         setUp(Dog1.class, Dog2.class, Dog3.class, Dog4.class,
             DogTable.class, DogTable2.class, DogTable3.class, DogTable4.class);

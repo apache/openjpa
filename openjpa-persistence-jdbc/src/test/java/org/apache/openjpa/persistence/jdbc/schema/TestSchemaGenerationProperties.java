@@ -30,6 +30,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.MappingTool;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -139,13 +141,23 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     public void testSchemaGenScriptCreate() throws Exception {
+
         testSchemaGenMetadataDrop();
+
+        JDBCConfiguration conf = (JDBCConfiguration) getPM().getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+
+        String createSql =
+                dict instanceof PostgresDictionary
+                        ? "org/apache/openjpa/persistence/jdbc/schema/create-postgresql.sql"
+                        : "org/apache/openjpa/persistence/jdbc/schema/create.sql";
+
 
         Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "create");
         properties.put("javax.persistence.schema-generation.create-source", "script");
         properties.put("javax.persistence.schema-generation.create-script-source",
-                       "org/apache/openjpa/persistence/jdbc/schema/create.sql");
+                       createSql);
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
@@ -158,6 +170,14 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     public void testSchemaGenScriptDropAndCreate() throws Exception {
         testSchemaGenMetadataCreate();
 
+        JDBCConfiguration conf = (JDBCConfiguration) getPM().getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+
+        String createSql =
+                dict instanceof PostgresDictionary
+                        ? "org/apache/openjpa/persistence/jdbc/schema/create-postgresql.sql"
+                        : "org/apache/openjpa/persistence/jdbc/schema/create.sql";
+
         Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.schema-generation.database.action", "drop-and-create");
         properties.put("javax.persistence.schema-generation.drop-source", "script");
@@ -165,7 +185,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
                        "org/apache/openjpa/persistence/jdbc/schema/drop.sql");
         properties.put("javax.persistence.schema-generation.create-source", "script");
         properties.put("javax.persistence.schema-generation.create-script-source",
-                       "org/apache/openjpa/persistence/jdbc/schema/create.sql");
+                       createSql);
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
