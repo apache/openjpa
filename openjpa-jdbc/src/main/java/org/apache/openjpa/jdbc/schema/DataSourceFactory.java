@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -29,7 +30,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -57,7 +57,7 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  */
 public class DataSourceFactory {
-
+    private static final String DBCPBASICDATASOURCENAME = "org.apache.commons.dbcp2.BasicDataSource";
     private static final Localizer _loc = Localizer.forPackage(DataSourceFactory.class);
     protected static Localizer _eloc = Localizer.forPackage(DelegatingDataSource.class);
 
@@ -109,24 +109,19 @@ public class DataSourceFactory {
                         ds.setConnectionPassword(conf.getConnection2Password());
                     }
                     return ds;
-                } else if (rawDs instanceof BasicDataSource) {
-                    BasicDataSource ds = (BasicDataSource)rawDs;
-                    ds.setDriverClassLoader(loader);
-                    ds.setDriverClassName(driver);
-                    ds.setConnectionProperties(props);
+                } else if (DBCPBASICDATASOURCENAME.equals(rawDs.getClass().getName())) {
+                    reflectiveCall(rawDs, "setDriverClassLoader", ClassLoader.class, loader);
+                    reflectiveCall(rawDs, "setDriverClassName", String.class, driver);
+                    reflectiveCall(rawDs, "setConnectionProperties", String.class, props);
 
-                    if (!factory2) {
-                        ds.setUrl(conf.getConnectionURL());
-                        ds.setUsername(conf.getConnectionUserName());
-                        ds.setPassword(conf.getConnectionPassword());
-                    } else {
-                        ds.setUrl(conf.getConnection2URL());
-                        ds.setUsername(conf.getConnection2UserName());
-                        ds.setPassword(conf.getConnection2Password());
-                    }
-                    return ds;
+                    reflectiveCall(rawDs, "setUrl", String.class, factory2
+                            ? conf.getConnection2URL() : conf.getConnectionURL());
+                    reflectiveCall(rawDs, "setUsername", String.class, factory2
+                            ? conf.getConnection2UserName() : conf.getConnectionUserName());
+                    reflectiveCall(rawDs, "setPassword", String.class, factory2
+                            ? conf.getConnection2Password() : conf.getConnectionPassword());
+                    return rawDs;
                 }
-
             }
 
             // see if their driver name is actually a data source
@@ -145,6 +140,12 @@ public class DataSourceFactory {
 
         // not a driver or a data source; die
         throw new UserException(_loc.get("bad-driver", driver)).setFatal(true);
+    }
+
+    private static void reflectiveCall(Object obj, String meth, Class<?> valClass, Object value) throws Exception {
+        Class<?> clazz = obj.getClass();
+        Method method = clazz.getMethod(meth, valClass);
+        method.invoke(obj, value);
     }
 
     /**
