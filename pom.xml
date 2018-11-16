@@ -76,6 +76,7 @@
         <derby.version>10.14.2.0</derby.version>
         <hsqldb.version>2.4.1</hsqldb.version>
         <mysql.connector.version>5.1.47</mysql.connector.version>
+        <mariadb.connector.version>2.3.0</mariadb.connector.version>
 
         <postgresql.connector.version>42.2.5</postgresql.connector.version>
 
@@ -627,9 +628,9 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>mariadb</groupId>
-                    <artifactId>mariadb-connector-java</artifactId>
-                    <version>${mariadb.version}</version>
+                    <groupId>org.mariadb.jdbc</groupId>
+                    <artifactId>mariadb-java-client</artifactId>
+                    <version>${mariadb.connector.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -644,6 +645,76 @@
                 <dbcp.maxIdle>0</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
             </properties>
+        </profile>
+
+        <!-- Profile for testing with MariaDB DB on Docker-->
+        <profile>
+            <id>test-mariadb-docker</id>
+            <activation>
+                <property>
+                    <name>test-mariadb-docker</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.mariadb.jdbc</groupId>
+                    <artifactId>mariadb-java-client</artifactId>
+                    <version>${mariadb.connector.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>org.mariadb.jdbc.Driver</connection.driver.name>
+
+                <!-- default settings for local docker -->
+                <docker.external.mariadb.port>3306</docker.external.mariadb.port>
+                <openjpa.mariadb.dbname>openjpatst</openjpa.mariadb.dbname>
+                <openjpa.mariadb.url>jdbc:mariadb://localhost:${docker.external.mariadb.port}/${openjpa.mariadb.dbname}</openjpa.mariadb.url>
+                <openjpa.mariadb.username>root</openjpa.mariadb.username>
+                <openjpa.mariadb.password>openjpatst</openjpa.mariadb.password>
+
+                <!--<connection.url>jdbc:mariadb://localhost/OPENJPA</connection.url>-->
+                <connection.url>${openjpa.mariadb.url}</connection.url>
+                <connection.username>${openjpa.mariadb.username}</connection.username>
+                <connection.password>${openjpa.mariadb.password}</connection.password>
+                <jdbc.DBDictionary />
+
+                <!-- DBCP overrides for mariadb testing -->
+                <dbcp.maxIdle>0</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+
+                <mariadb.server.version>10.3</mariadb.server.version>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>mariadb/server:${mariadb.server.version}</name>
+                                    <run>
+                                        <env>
+                                            <!-- mariadb still uses the old mysql env variables -->
+                                            <MYSQL_DATABASE>${openjpa.mariadb.dbname}</MYSQL_DATABASE>
+                                            <MYSQL_ROOT_PASSWORD>${connection.password}</MYSQL_ROOT_PASSWORD>
+
+                                            <!-- seems to get ignored -->
+                                            <MYSQL_USER>${connection.username}</MYSQL_USER>
+                                        </env>
+                                        <ports>
+                                            <port>${docker.external.mariadb.port}:3306</port>
+                                        </ports>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
         </profile>
 
         <!-- Profile for testing with PostgreSQL DB -->
