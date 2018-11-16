@@ -39,11 +39,11 @@
         <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
         <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
         <daytrader.version>2.2-SNAPSHOT</daytrader.version>
-        <dbcp.maxActive>10</dbcp.maxActive>
+        <dbcp.maxTotal>10</dbcp.maxTotal>
         <dbcp.maxIdle>5</dbcp.maxIdle>
         <dbcp.minIdle>2</dbcp.minIdle>
         <dbcp.maxWait>10000</dbcp.maxWait>
-        <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
+        <dbcp.args>MaxTotal=${dbcp.maxTotal},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
     </properties>
 
     <dependencies>

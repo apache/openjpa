@@ -79,27 +79,14 @@ provided implementations.
                 </seealso>
             </indexterm>
             <para>
-Starting with OpenJPA 2.1, a new <classname>org.apache.openjpa.jdbc.schema.AutoDriverDataSource</classname> is provided as the default, which will automatically
-select between the old <classname>SimpleDriverDataSource</classname> and a new
-<classname>DBCPDriverDataSource</classname> implementation based on if
-<ulink url="http://commons.apache.org/dbcp/">Apache Commons DBCP</ulink>
-has been provided on the classpath and OpenJPA is not running in a container
-managed mode or with managed transactions.  Note, that only the
-<literal>openjpa-all.jar</literal> includes Commons DBCP, so you will need to
-include the <literal>commons-dbcp2.jar</literal> from the OpenJPA binary
-distribution if you are using the normal <literal>openjpa.jar</literal>.
+<literal>openjpa.jdbc.DriverDataSource=simple</literal>, will make
+OpenJPA to use <classname>org.apache.openjpa.jdbc.schema.SimpleDriverDataSource</classname>
             </para>
             <para>
-To disable the automatic usage of Apache Commons DBCP when it is discovered
-on the classpath, set
-<literal>openjpa.jdbc.DriverDataSource=simple</literal>, which will revert
-OpenJPA to the prior behavior of using <classname>org.apache.openjpa.jdbc.schema.SimpleDriverDataSource</classname>
-            </para>
-            <para>
-To force usage of Apache Commons DBCP, which will cause a fatal exception to
+To force usage of Apache Commons DBCP2, which will cause a fatal exception to
 be thrown if it cannot be loaded from the classpath, set
 <literal>openjpa.jdbc.DriverDataSource=dbcp</literal>, which will cause
-OpenJPA to use <classname>org.apache.openjpa.jdbc.schema.DBCPDriverDataSource</classname>
+OpenJPA to use <classname>org.apache.commons.dbcp2.BasicDataSource</classname>
             </para>
         </section>
         <section id="ref_guide_dbsetup_config">
@@ -290,7 +277,7 @@ false.
 Additional Commons DBCP arguments can be provided in
 <literal>openjpa.connectionProperties</literal>, such as:
 <programlisting>
-    MaxActive=10,MaxIdle=5,MinIdle=2,MaxWait=60000
+    MaxTotal=10,MaxIdle=5,MinIdle=2,MaxWait=60000
 </programlisting>
 Please visit the Commons DBCP website for the entire list of
 <ulink url="http://commons.apache.org/dbcp/configuration.html">configuration options</ulink> and explanations.

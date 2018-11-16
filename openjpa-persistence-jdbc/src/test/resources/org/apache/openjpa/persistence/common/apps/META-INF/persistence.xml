@@ -37,7 +37,7 @@
 		<class>org.apache.openjpa.persistence.common.apps.Address</class>
 		<class>org.apache.openjpa.persistence.common.apps.FemaleUser</class>
 		<properties>
-			<property name="openjpa.ConnectionFactoryProperties" value="MaxActive=110, MaxIdle=10, ValidationTimeout=50000,
+			<property name="openjpa.ConnectionFactoryProperties" value="MaxTotal=110, MaxIdle=10, ValidationTimeout=50000,
                                                                      MaxCachedStatements=10, ValidationSQL='', MaxWait=10000, TestOnBorrow=true" />
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>

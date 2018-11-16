@@ -70,7 +70,7 @@
             <property name="openjpa.ConnectionDriverName"
                 value="org.apache.commons.dbcp.BasicDataSource"/>
             <property name="openjpa.ConnectionProperties"
-                value="DriverClassName=org.apache.derby.jdbc.EmbeddedDriver,Url=jdbc:derby:target/database/openjpa-test-database;create=true,MaxActive=100,MaxWait=10000,TestOnBorrow=true"/>
+                value="DriverClassName=org.apache.derby.jdbc.EmbeddedDriver,Url=jdbc:derby:target/database/openjpa-test-database;create=true,MaxTotal=100,MaxWait=10000,TestOnBorrow=true"/>
             -->
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
@@ -526,7 +526,7 @@
         <class>org.apache.openjpa.persistence.cascade.pudefault.AnEmbeddable</class>
         <class>org.apache.openjpa.persistence.cascade.pudefault.EmbeddableWithRelationships</class>
         <properties>
-            <property name="openjpa.ConnectionFactoryProperties" value="MaxActive=110, MaxIdle=10, ValidationTimeout=50000,
+            <property name="openjpa.ConnectionFactoryProperties" value="MaxTotal=110, MaxIdle=10, ValidationTimeout=50000,
                                                                      MaxCachedStatements=10, ValidationSQL='', MaxWait=10000, TestOnBorrow=true" />
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
         </properties>

@@ -57,11 +57,11 @@
         <!-- Setting for openjpa.DynamicEnhancementAgent usage -->
         <openjpa.DynamicEnhancementAgent>false</openjpa.DynamicEnhancementAgent>
         <!-- Commons DBCP settings passed in as openjpa.ConnectionProperties -->
-        <dbcp.maxActive>10</dbcp.maxActive>
+        <dbcp.maxTotal>10</dbcp.maxTotal>
         <dbcp.maxIdle>5</dbcp.maxIdle>
         <dbcp.minIdle>2</dbcp.minIdle>
         <dbcp.maxWait>10000</dbcp.maxWait>
-        <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
+        <dbcp.args>MaxTotal=${dbcp.maxTotal},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
         <derby.locks.waitTimeout>10</derby.locks.waitTimeout>
         <derby.locks.deadlockTimeout>5</derby.locks.deadlockTimeout>
         <!-- Testcase @AllowFailure options:  ignore = silently skip test,
@@ -672,7 +672,7 @@
                 <!-- DBCP overrides -->
                 <dbcp.maxIdle>0</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
-                <dbcp.maxActive>20</dbcp.maxActive>
+                <dbcp.maxTotal>20</dbcp.maxTotal>
             </properties>
         </profile>
 
