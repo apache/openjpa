@@ -45,8 +45,8 @@
         <openjpa.version>${project.version}</openjpa.version>
         <openjpa.Log>DefaultLevel=INFO</openjpa.Log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
-        <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
+        <checkstyle.config.location>openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
+        <checkstyle.suppressions.location>openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
 
         <site.deploy.url>scp://people.apache.org/home/${site.deploy.user.name}/public_html/openjpa/${project.version}/staging-site</site.deploy.url>
         <!-- the test settings can be overridden my specific profiles -->

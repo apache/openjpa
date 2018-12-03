@@ -114,6 +114,7 @@
         <!-- authentication for nightly uploads -->
         <nightly.user.name>${user.name}</nightly.user.name>
         <nightly.password>passw0rd</nightly.password>
+        <checkstyle.suppressions.location>suppressions.xml</checkstyle.suppressions.location>
     </properties>
 
     <build>
@@ -314,6 +315,7 @@
                             <groupId>net.sf.docbook</groupId>
                             <artifactId>docbook-xml</artifactId>
                             <version>5.0</version>
+                            <type>pom</type>
                             <scope>runtime</scope>
                         </dependency>
                         </dependencies>
