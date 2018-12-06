@@ -150,6 +150,7 @@
                             </descriptors>
                             <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
                             <workDirectory>target/work</workDirectory>
+                            <skipAssembly>${skip-bin-assembly}</skipAssembly>
                         </configuration>
                     </execution>
                 </executions>

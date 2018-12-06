@@ -291,6 +291,9 @@
                     mvn process-classes -Dtest=false -Pjavadoc-profile
             -->
             <id>javadoc-profile</id>
+            <properties>
+                <skip-bin-assembly>true</skip-bin-assembly>
+            </properties>
             <build>
                 <plugins>
                     <plugin>

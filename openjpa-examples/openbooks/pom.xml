@@ -39,6 +39,10 @@
     <name>OpenJPA Examples - OpenBooks</name>
     <description>Apache OpenJPA Examples - OpenBooks</description>
 
+    <properties>
+        <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
+        <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
@@ -190,6 +194,7 @@
                                     <descriptors>
                                         <descriptor>assembly.xml</descriptor>
                                     </descriptors>
+                                    <skipAssembly>${skip-bin-assembly}</skipAssembly>
                                 </configuration>
                             </execution>
                         </executions>
