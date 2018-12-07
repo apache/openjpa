@@ -42,6 +42,8 @@
         <java.class.version>1.8</java.class.version>
         <java.testclass.version>1.8</java.testclass.version>
 
+	<doclint>none</doclint>
+
         <openjpa.version>${project.version}</openjpa.version>
         <openjpa.Log>DefaultLevel=INFO</openjpa.Log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -313,7 +315,6 @@
                                 <link>http://download.oracle.com/javaee/8/api/</link>
                                 <link>http://commons.apache.org/collections/api-release/</link>
                             </links>
-			    <doclint>none</doclint>
                         </configuration>
                         <executions>
                             <execution>
