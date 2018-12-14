@@ -82,8 +82,8 @@
     <build>
         <plugins>
             <!--
-                get the svn revision number and set it in the
-                subversion.revision setting - disabled for now
+                create o.a.openjpa.revision.properties with all version
+                including git hash - disabled for now
                 since we need to be able to build from sources
                 zip (when there is no .svn/ metadata)
             -->
@@ -103,10 +103,6 @@
 
                                 <property name="outdir" value="${tmpdir}" />
 
-                                <property name="svnversion.executable" value="svnversion" />
-                                <exec outputproperty="subversion.revision" failonerror="false" failifexecutionfails="false" executable="${svnversion.executable}">
-                                    <arg line="-c ${basedir}/.." />
-                                </exec>
                                 # Write the svn info to a temp file
                                 <echo file="pcenhancer.revision.file" />
                                 <exec output="pcenhancer.revision.file" failonerror="false" failifexecutionfails="false" executable="svn" append="false">
@@ -119,13 +115,12 @@
                                 <property prefix="pcenhancer" file="pcenhancer.revision.file" />
                                 <delete file="pcenhancer.revision.file" />
 
-                                <property name="subversion.revision" value="unknown" />
                                 <property name="pcenhancer.LastChangedRev" value="-1" />
-                                <echo>Revision: ${subversion.revision}</echo>
+                                <echo>Revision: ${buildNumber}</echo>
                                 <echo>OpenJPA version: ${project.version}</echo>
 
                                 <mkdir dir="${outdir}/META-INF" />
-                                <echo file="${outdir}/META-INF/org.apache.openjpa.revision.properties">revision.number=${subversion.revision}
+                                <echo file="${outdir}/META-INF/org.apache.openjpa.revision.properties">revision.number=${buildNumber}
 openjpa.version=${project.version}
 openjpa.enhancer.revision=${pcenhancer.LastChangedRev}
 </echo>
