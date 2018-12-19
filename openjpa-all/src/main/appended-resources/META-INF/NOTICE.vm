@@ -25,7 +25,7 @@ openjpa-all includes software developed by the:
     Apache Commons Logging project
     Apache Commons Pool project
     Apache Geronimo project
-        Java EE Specs - JMS 1.1, JTA 1.1, Bean Validation 1.0 and JPA 2.0
+        Java EE Specs - JMS 2.0, JTA 1.1, Bean Validation 1.0 and JPA 2.0
     SERP project
 
 
