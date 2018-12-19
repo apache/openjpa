@@ -74,7 +74,7 @@ The openjpa-all aggregate JAR includes software developed by the:
     Apache Commons Pool project
                 </para></listitem>
                 <listitem><para>
-    Apache Geronimo project (JMS 1.1, JTA 1.1 and JPA 2.0 spec APIs)
+    Apache Geronimo project (JMS 2.0, JTA 1.1 and JPA 2.0 spec APIs)
                 </para></listitem>
                 <listitem><para>
     JCP JSR-317 JPA 2.0 schemas

@@ -85,6 +85,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jms_2.0_spec</artifactId>
+            <version>1.0-alpha-2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>jakarta-regexp</groupId>
             <artifactId>jakarta-regexp</artifactId>
             <scope>test</scope>
