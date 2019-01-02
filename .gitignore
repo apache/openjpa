@@ -7,3 +7,5 @@ derby.log
 *.iml
 dependency-reduced-pom.xml
 .idea
+nb-configuration.xml
+nbactions*.xml
