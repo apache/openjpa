@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
-import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -57,7 +56,7 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  */
 public class DataSourceFactory {
-    private static final String DBCPBASICDATASOURCENAME = "org.apache.commons.dbcp2.BasicDataSource";
+
     private static final Localizer _loc = Localizer.forPackage(DataSourceFactory.class);
     protected static Localizer _eloc = Localizer.forPackage(DelegatingDataSource.class);
 
@@ -86,42 +85,27 @@ public class DataSourceFactory {
             }
 
             if (Driver.class.isAssignableFrom(driverClass)) {
-                DataSource rawDs = conf.newDriverDataSourceInstance();
-                if (rawDs instanceof DriverDataSource) {
-                    DriverDataSource ds = (DriverDataSource)rawDs;
-                    ds.setClassLoader(loader);
-                    ds.setConnectionDriverName(driver);
-                    ds.setConnectionProperties(Configurations.
-                        parseProperties(props));
+                DriverDataSource ds = conf.newDriverDataSourceInstance();
+                ds.setClassLoader(loader);
+                ds.setConnectionDriverName(driver);
+                ds.setConnectionProperties(Configurations.
+                    parseProperties(props));
 
-                    if (!factory2) {
-                        ds.setConnectionFactoryProperties(Configurations.
-                            parseProperties(conf.getConnectionFactoryProperties()));
-                        ds.setConnectionURL(conf.getConnectionURL());
-                        ds.setConnectionUserName(conf.getConnectionUserName());
-                        ds.setConnectionPassword(conf.getConnectionPassword());
-                    } else {
-                        ds.setConnectionFactoryProperties
-                            (Configurations.parseProperties(conf.
-                            getConnectionFactory2Properties()));
-                        ds.setConnectionURL(conf.getConnection2URL());
-                        ds.setConnectionUserName(conf.getConnection2UserName());
-                        ds.setConnectionPassword(conf.getConnection2Password());
-                    }
-                    return ds;
-                } else if (DBCPBASICDATASOURCENAME.equals(rawDs.getClass().getName())) {
-                    reflectiveCall(rawDs, "setDriverClassLoader", ClassLoader.class, loader);
-                    reflectiveCall(rawDs, "setDriverClassName", String.class, driver);
-                    reflectiveCall(rawDs, "setConnectionProperties", String.class, props);
-
-                    reflectiveCall(rawDs, "setUrl", String.class, factory2
-                            ? conf.getConnection2URL() : conf.getConnectionURL());
-                    reflectiveCall(rawDs, "setUsername", String.class, factory2
-                            ? conf.getConnection2UserName() : conf.getConnectionUserName());
-                    reflectiveCall(rawDs, "setPassword", String.class, factory2
-                            ? conf.getConnection2Password() : conf.getConnectionPassword());
-                    return rawDs;
+                if (!factory2) {
+                    ds.setConnectionFactoryProperties(Configurations.
+                        parseProperties(conf.getConnectionFactoryProperties()));
+                    ds.setConnectionURL(conf.getConnectionURL());
+                    ds.setConnectionUserName(conf.getConnectionUserName());
+                    ds.setConnectionPassword(conf.getConnectionPassword());
+                } else {
+                    ds.setConnectionFactoryProperties
+                        (Configurations.parseProperties(conf.
+                        getConnectionFactory2Properties()));
+                    ds.setConnectionURL(conf.getConnection2URL());
+                    ds.setConnectionUserName(conf.getConnection2UserName());
+                    ds.setConnectionPassword(conf.getConnection2Password());
                 }
+                return ds;
             }
 
             // see if their driver name is actually a data source
@@ -140,12 +124,6 @@ public class DataSourceFactory {
 
         // not a driver or a data source; die
         throw new UserException(_loc.get("bad-driver", driver)).setFatal(true);
-    }
-
-    private static void reflectiveCall(Object obj, String meth, Class<?> valClass, Object value) throws Exception {
-        Class<?> clazz = obj.getClass();
-        Method method = clazz.getMethod(meth, valClass);
-        method.invoke(obj, value);
     }
 
     /**
@@ -277,7 +255,7 @@ public class DataSourceFactory {
 
             return ds;
         } catch (Exception e) {
-        	throw newConnectException(conf, factory2, e);
+            throw newConnectException(conf, factory2, e);
         } finally {
             if (conn != null)
                 try {
@@ -290,13 +268,13 @@ public class DataSourceFactory {
     }
 
     static OpenJPAException newConnectException(JDBCConfiguration conf,
-    		boolean factory2, Exception cause) {
-    	return new UserException(_eloc.get("poolds-null", factory2
-          	  ? new Object[]{conf.getConnection2DriverName(),
-          			         conf.getConnection2URL()}
-          	  : new Object[]{conf.getConnectionDriverName(),
-          		             conf.getConnectionURL()}),
-          		             cause).setFatal(true);
+                                                boolean factory2, Exception cause) {
+        return new UserException(_eloc.get("poolds-null", factory2
+                ? new Object[]{conf.getConnection2DriverName(),
+                conf.getConnection2URL()}
+                : new Object[]{conf.getConnectionDriverName(),
+                conf.getConnectionURL()}),
+                cause).setFatal(true);
     }
 
     /**

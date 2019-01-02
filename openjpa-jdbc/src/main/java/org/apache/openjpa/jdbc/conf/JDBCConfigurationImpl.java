@@ -36,6 +36,7 @@ import org.apache.openjpa.jdbc.kernel.UpdateManager;
 import org.apache.openjpa.jdbc.meta.MappingDefaults;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.schema.DataSourceFactory;
+import org.apache.openjpa.jdbc.schema.DriverDataSource;
 import org.apache.openjpa.jdbc.schema.SchemaFactory;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionaryFactory;
@@ -245,8 +246,9 @@ public class JDBCConfigurationImpl
 
         driverDataSourcePlugin = addPlugin("jdbc.DriverDataSource", false);
         aliases = new String[]{
+            "auto", "org.apache.openjpa.jdbc.schema.AutoDriverDataSource",
             "simple", "org.apache.openjpa.jdbc.schema.SimpleDriverDataSource",
-            "dbcp", "org.apache.commons.dbcp2.BasicDataSource"
+            "dbcp", "org.apache.openjpa.jdbc.schema.DBCPDriverDataSource"
         };
         driverDataSourcePlugin.setAliases(aliases);
         driverDataSourcePlugin.setDefault(aliases[0]);
@@ -686,9 +688,9 @@ public class JDBCConfigurationImpl
     }
 
     @Override
-    public DataSource newDriverDataSourceInstance() {
-        return (DataSource) driverDataSourcePlugin.
-            instantiate(DataSource.class, this);
+    public DriverDataSource newDriverDataSourceInstance() {
+        return (DriverDataSource) driverDataSourcePlugin.
+            instantiate(DriverDataSource.class, this);
     }
 
     @Override

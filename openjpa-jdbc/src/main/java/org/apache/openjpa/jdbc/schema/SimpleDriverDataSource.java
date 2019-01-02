@@ -83,15 +83,15 @@ public class SimpleDriverDataSource
     }
 
     protected Connection getSimpleConnection(Properties props) throws SQLException {
-		Properties conProps = new Properties();
-		if (props != null) {
-			conProps.putAll(props);
-		}
-		if (_connectionProperties != null) {
-			conProps.putAll(_connectionProperties);
-		}
-    	Connection con = getSimpleDriver().connect(_connectionURL, conProps);
-    	if (con == null) {
+        Properties conProps = new Properties();
+        if (props != null) {
+            conProps.putAll(props);
+        }
+        if (_connectionProperties != null) {
+            conProps.putAll(_connectionProperties);
+        }
+        Connection con = getSimpleDriver().connect(_connectionURL, conProps);
+        if (con == null) {
             throw new SQLException(_eloc.get("poolds-null",
                     _connectionDriverName, _connectionURL).getMessage());
         }
