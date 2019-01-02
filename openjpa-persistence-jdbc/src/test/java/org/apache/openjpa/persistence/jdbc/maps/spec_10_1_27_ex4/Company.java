@@ -33,8 +33,7 @@ public class Company {
     int id;
 
     @OneToMany
-    Map<Division, VicePresident> organization =
-        new HashMap<>();
+    Map<Division, VicePresident> organization = new HashMap<>();
 
     public int getId() {
         return id;

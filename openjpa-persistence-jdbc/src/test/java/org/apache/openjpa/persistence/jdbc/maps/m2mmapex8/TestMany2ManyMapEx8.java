@@ -89,7 +89,7 @@ public class TestMany2ManyMapEx8 extends SQLListenerTestCase {
     public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
         String query = "select KEY(e) from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         Query q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
@@ -97,7 +97,7 @@ public class TestMany2ManyMapEx8 extends SQLListenerTestCase {
         String d = (String) rs.get(0);
 
         query = "select KEY(p) from Employee e, " +
-            " in (e.phones) p";
+            " in (e.phones) p order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Employee.class);
@@ -106,19 +106,19 @@ public class TestMany2ManyMapEx8 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         // test KEY(e) of basic type in conditional expression
         sql.clear();
         query = "select KEY(e) from PhoneNumber p, " +
-            " in (p.emps) e where KEY(e) like '%1'";
+            " in (p.emps) e where KEY(e) like '%1' order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);

@@ -92,7 +92,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         // test ORDER BY qualified path
         query = "select KEY(e), KEY(e).fName from Department d, " +

@@ -78,7 +78,7 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
 
         String query = "select KEY(e), e from Student s, " +
-            " in (s.enrollment) e order by s.id";
+            " in (s.enrollment) e order by s.id, KEY(e).id";
         Query q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Student.class);
@@ -88,19 +88,19 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from Student s, " +
-            " in (s.enrollment) e order by s.id";
+            " in (s.enrollment) e order by s.id, KEY(e).id";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Student.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(c.equals(me.getKey()));
+        assertEquals(c, me.getKey());
         assertEquals(s.getId(), ((Semester) me.getValue()).getId());
 
         em.clear();
         query = "select KEY(e), e from Student s " +
-            " left join s.enrollment e order by s.id";
+            " left join s.enrollment e order by s.id, KEY(e).id";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Student.class);
@@ -110,18 +110,18 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from Student s " +
-            " left join s.enrollment e order by s.id";
+            " left join s.enrollment e order by s.id, KEY(e).id";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Student.class);
         rs = q.getResultList();
         me = (Map.Entry) rs.get(0);
 
-        assertTrue(c.equals(me.getKey()));
+        assertEquals(c, me.getKey());
         assertEquals(s.getId(), ((Semester) me.getValue()).getId());
 
         query = "select KEY(e) from Student s " +
-            " join s.enrollment e WHERE KEY(e).id = 1 order by s.id";
+            " join s.enrollment e WHERE KEY(e).id = 1 order by s.id, KEY(e).id";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Student.class);

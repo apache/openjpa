@@ -74,10 +74,6 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
 
     public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
-        String query1 = "select d.deptId, KEY(e), VALUE(e).empId " +
-        "from Department d, in (d.empMap) e";
-List rs1 = em.createQuery(query1).getResultList();
-System.out.println("rs size="+rs1.size());
 
         String query = "select KEY(e) from Department d, " +
             " in (d.empMap) e order by d.deptId, e.empId";
@@ -96,12 +92,12 @@ System.out.println("rs size="+rs1.size());
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         // test KEY(e) of basic type in conditional expression
         sql.clear();
         query = "select KEY(e) from Department d, " +
-            " in (d.empMap) e where KEY(e) > 1";
+            " in (d.empMap) e where KEY(e) > 1 order by d.deptId, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Department.class);

@@ -33,6 +33,8 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 import junit.framework.Assert;
+import static junit.framework.TestCase.assertEquals;
+import org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex6.Division;
 
 
 public class TestSpec10_1_27_Ex8 extends SQLListenerTestCase {
@@ -85,7 +87,7 @@ public class TestSpec10_1_27_Ex8 extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
 
         String query = "select KEY(e), e from Company c, " +
-            " in (c.orgs) e order by c.id";
+            " in (c.orgs) e order by c.id, e.id";
         Query q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Company.class);
@@ -95,18 +97,18 @@ public class TestSpec10_1_27_Ex8 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from Company c, " +
-            " in (c.orgs) e order by c.id";
+            " in (c.orgs) e order by c.id, e.id";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Company.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
         assertEquals(v.getId(), ((VicePresident) me.getValue()).getId());
 
         em.clear();
         query = "select KEY(e), e from Company c " +
-            " left join c.orgs e order by c.id";
+            " left join c.orgs e order by c.id, e.id";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Company.class);
@@ -116,14 +118,15 @@ public class TestSpec10_1_27_Ex8 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from Company c " +
-            " left join c.orgs e order by c.id";
+            " left join c.orgs e order by c.id, e.id";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Company.class);
         rs = q.getResultList();
         me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d.getFName(), ((FileName) me.getKey()).getFName());
+        assertEquals(d.getLName(), ((FileName) me.getKey()).getLName());
 
         assertEquals(v.getId(), ((VicePresident) me.getValue()).getId());
 

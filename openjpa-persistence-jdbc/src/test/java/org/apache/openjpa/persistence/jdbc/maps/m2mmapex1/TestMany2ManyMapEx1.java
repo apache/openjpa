@@ -89,7 +89,7 @@ public class TestMany2ManyMapEx1 extends SQLListenerTestCase {
     public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
         String query = "select KEY(e), p from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         Query q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
@@ -98,7 +98,7 @@ public class TestMany2ManyMapEx1 extends SQLListenerTestCase {
         PhoneNumber p = (PhoneNumber) ((Object[]) rs.get(0))[1];
 
         query = "select KEY(p) from Employee e, " +
-                " in (e.phones) p";
+                " in (e.phones) p order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Employee.class);
@@ -107,7 +107,7 @@ public class TestMany2ManyMapEx1 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
@@ -121,7 +121,7 @@ public class TestMany2ManyMapEx1 extends SQLListenerTestCase {
         // test navigation thru KEY
         em.clear();
         query = "select KEY(e), KEY(e).name from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
@@ -132,7 +132,7 @@ public class TestMany2ManyMapEx1 extends SQLListenerTestCase {
 
         em.clear();
         query = "select KEY(p), KEY(p).name from Employee e, " +
-            " in (e.phones) p";
+            " in (e.phones) p order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Employee.class);

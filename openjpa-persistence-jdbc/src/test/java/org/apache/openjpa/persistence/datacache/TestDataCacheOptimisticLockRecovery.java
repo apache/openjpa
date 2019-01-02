@@ -94,11 +94,7 @@ public class TestDataCacheOptimisticLockRecovery
         // via direct SQL in a separate transaction
         int secondOpLockValue = firstOpLockValue + 1;
 
-        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
-            OpenJPAPersistence.cast(em).getEntityManagerFactory();
-        DataSource ds = (DataSource) emf.getConfiguration()
-            .getConnectionFactory();
-        Connection c = ds.getConnection();
+        Connection c = (Connection)OpenJPAPersistence.cast(em).getConnection();
         c.setAutoCommit(false);
         PreparedStatement ps = c.prepareStatement(
             "UPDATE OPTIMISTIC_LOCK_INSTANCE SET OPLOCK = ? WHERE PK = ?");

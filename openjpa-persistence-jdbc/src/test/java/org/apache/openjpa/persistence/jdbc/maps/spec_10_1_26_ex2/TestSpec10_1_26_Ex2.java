@@ -73,7 +73,7 @@ public class TestSpec10_1_26_Ex2 extends SQLListenerTestCase {
     public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
         String query = "select KEY(e), KEY(e).name from Department d, " +
-            " in (d.empMap) e where d.deptId = 1";
+            " in (d.empMap) e where d.deptId = 1 order by d.deptId, e.empPK";
         Query q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Department.class);
@@ -84,14 +84,14 @@ public class TestSpec10_1_26_Ex2 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from Department d, " +
-            " in (d.empMap) e  where d.deptId = 1";
+            " in (d.empMap) e  where d.deptId = 1 order by d.deptId, e.empPK";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Department.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         // test GROUP BY qualified path
         sql.clear();

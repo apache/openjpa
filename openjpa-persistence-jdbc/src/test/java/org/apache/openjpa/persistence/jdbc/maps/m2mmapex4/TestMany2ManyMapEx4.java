@@ -96,7 +96,7 @@ public class TestMany2ManyMapEx4 extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         // a collection valued path thru KEY in FROM clause
         String query = "select o.address.city from PhoneNumber p, " +
-            " in (p.emps) e, in(KEY(e).offices) o";
+            " in (p.emps) e, in(KEY(e).offices) o order by o.address.city";
         Query q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
@@ -113,14 +113,14 @@ public class TestMany2ManyMapEx4 extends SQLListenerTestCase {
         // a path thru KEY nagivation apprear in WHERE clause
         query = "select o.address.city as city from PhoneNumber p, " +
             " in (p.emps) e, in(KEY(e).offices) o " +
-            " where o.address.city like '%1'";
+            " where o.address.city like '%1' order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
 
         query = "select KEY(e) from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
@@ -128,7 +128,7 @@ public class TestMany2ManyMapEx4 extends SQLListenerTestCase {
         Division d = (Division) rs.get(0);
 
         query = "select KEY(p) from Employee e, " +
-            " in (e.phones) p";
+            " in (e.phones) p order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Employee.class);
@@ -137,14 +137,14 @@ public class TestMany2ManyMapEx4 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         em.close();
     }

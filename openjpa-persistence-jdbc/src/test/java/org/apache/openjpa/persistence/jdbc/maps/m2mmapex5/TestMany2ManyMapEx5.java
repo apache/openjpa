@@ -114,7 +114,7 @@ public class TestMany2ManyMapEx5 extends SQLListenerTestCase {
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         query = "select p from PhoneNumber p," +
             " in (p.emps) e where Key(e) = 'String2' order by p.number";

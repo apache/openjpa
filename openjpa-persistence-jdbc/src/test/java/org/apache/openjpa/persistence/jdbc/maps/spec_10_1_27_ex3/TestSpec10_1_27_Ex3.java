@@ -121,7 +121,7 @@ public class TestSpec10_1_27_Ex3 extends SQLListenerTestCase {
         rs = q.getResultList();
         me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         em.close();
     }

@@ -54,8 +54,8 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         super.setUp(CLEAR_TABLES, Division.class,
             Employee.class, PhoneNumber.class);
         createObj();
-       	rsAllPhones = getAll(PhoneNumber.class);
-       	rsAllEmps = getAll(Employee.class);
+        rsAllPhones = getAll(PhoneNumber.class);
+        rsAllEmps = getAll(Employee.class);
     }
     @AllowFailure
     public void testQueryInMemoryQualifiedId() throws Exception {
@@ -81,7 +81,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
 
         // test navigation thru VALUE
         String query = "select VALUE(e).empId from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         Query q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
@@ -89,7 +89,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
 
         // test navigation thru KEY
         query = "select KEY(e), KEY(e).name from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
@@ -99,7 +99,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         assertEquals(d0.getName(), name);
 
         query = "select KEY(e) from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
@@ -107,7 +107,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         Division d = (Division) rs.get(0);
 
         query = "select KEY(p) from Employee e, " +
-            " in (e.phones) p";
+            " in (e.phones) p order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Employee.class);
@@ -115,7 +115,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         Division d2 = (Division) rs.get(0);
 
         query = "select VALUE(e) from PhoneNumber p, " +
-            " in (p.emps) e";
+            " in (p.emps) e order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
@@ -123,17 +123,17 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         Employee e = (Employee) rs.get(0);
         em.clear();
         query = "select ENTRY(e) from PhoneNumber p, " +
-            " in (p.emps) e order by e.empId";
+            " in (p.emps) e order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         query = "select TYPE(KEY(p)) from Employee e, " +
-            " in (e.phones) p";
+            " in (e.phones) p  order by p.number, e.empId";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Employee.class);

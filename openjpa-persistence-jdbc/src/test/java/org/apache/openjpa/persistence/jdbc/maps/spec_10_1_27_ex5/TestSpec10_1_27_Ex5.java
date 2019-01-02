@@ -83,7 +83,7 @@ public class TestSpec10_1_27_Ex5 extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
 
         String query = "select KEY(e) from Company c, " +
-            " in (c.orgs) e order by c.id";
+            " in (c.orgs) e order by c.id, e.id";
         Query q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Company.class);
@@ -92,18 +92,18 @@ public class TestSpec10_1_27_Ex5 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from Company c, " +
-            " in (c.orgs) e order by c.id";
+            " in (c.orgs) e order by c.id, e.id";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Company.class);
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         em.clear();
         query = "select KEY(e) from Company c " +
-            " left join c.orgs e order by c.id";
+            " left join c.orgs e order by c.id, e.id";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Company.class);
@@ -112,13 +112,13 @@ public class TestSpec10_1_27_Ex5 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from Company c " +
-            " left join c.orgs e order by c.id";
+            " left join c.orgs e order by c.id, e.id";
         q = em.createQuery(query);
         if (inMemory)
             setCandidate(q, Company.class);
         rs = q.getResultList();
         me = (Map.Entry) rs.get(0);
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         em.close();
     }

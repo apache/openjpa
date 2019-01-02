@@ -112,7 +112,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
 
         // test navigation thru KEY
         em.clear();
