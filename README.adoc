@@ -14,10 +14,47 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 The following files can be found in the openjpa-project subdirectory:
 
-* BUILDING.txt
-* CHANGES.txt
-* RELEASE-NOTES.html
+* openjpa-project/BUILDING.txt
+* openjpa-project/CHANGES.txt
+* openjpa-project/RELEASE-NOTES.html
 
 For documentation and project information, please visit our project site:
     http://openjpa.apache.org/
+
+
+== Compiling
+
+The best way to compile Apache OpenJPA yourself is to run the build against the default derby database.
+
+ $> mvn clean install -Dsurefire.excludes.locking=**/*
+
+== Testing against different Databases
+
+The Apache OpenJPA project also contains a setup for testing against multiple databases.
+The easiest way is to use Docker.
+We assume that Docker is installed to be used from your current user.
+The respective database imagehas to be started manually bofore starting the build.
+The reason for not starting it as part of the build itself is to be able to look at the database content after the build did run.
+
+To start e.g. a PostgreSQL Docker image you can simply invoke the following command.
+Note the -N Maven option which stands for 'non-recursive'.
+This is used because the docker container is configured only at the root project but not at his children.
+
+ mvn -N -Ptest-mysql-docker docker:start
+
+After that you can execute your tests with the respective Maven profile
+
+ mvn clean install -Ptest-mysql-docker
+
+Once the Docker image for the database is not needed any longer one can stop and remove it:
+
+ mvn -N -Ptest-mysql-docker docker:stop
+ mvn -N -Ptest-mysql-docker docker:remove
+
+
+The following Maven profiles do exist so far:
+
+* test-mysql-docker
+* test-mariadb-docker
+* test-postgresql-docker
 
