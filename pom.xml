@@ -776,7 +776,7 @@
                 <openjpa.postgresql.dbname>openjpatst</openjpa.postgresql.dbname>
                 <openjpa.postgresql.username>postgres</openjpa.postgresql.username>
                 <openjpa.postgresql.password>postgres</openjpa.postgresql.password>
-                <openjpa.postgresql.url>jdbc:postgresql://localhost/${openjpa.postgresql.dbname}</openjpa.postgresql.url>
+                <openjpa.postgresql.url>jdbc:postgresql://localhost:${docker.external.postgresql.port}/${openjpa.postgresql.dbname}</openjpa.postgresql.url>
 
                 <!--<connection.url>jdbc:postgresql://localhost/openjpa</connection.url>-->
                 <connection.url>${openjpa.postgresql.url}</connection.url>
@@ -785,7 +785,7 @@
                 <jdbc.DBDictionary />
 
                 <!-- DBCP overrides -->
-                <dbcp.maxIdle>5</dbcp.maxIdle>
+                <dbcp.maxIdle>20</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
                 <dbcp.maxTotal>20</dbcp.maxTotal>
 
