@@ -787,7 +787,7 @@
                 <!-- DBCP overrides -->
                 <dbcp.maxIdle>5</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
-                <dbcp.maxActive>20</dbcp.maxActive>
+                <dbcp.maxTotal>20</dbcp.maxTotal>
 
                 <postgresql.server.version>11</postgresql.server.version>
             </properties>
