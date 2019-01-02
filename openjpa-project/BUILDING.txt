@@ -198,4 +198,4 @@ For running against a MySQL Docker installation:
 -ea -Dopenjpa.ConnectionDriverName=com.mysql.jdbc.Driver -Dopenjpa.ConnectionURL=jdbc:mysql://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=openjpatst -Dopenjpa.ConnectionPassword=openjpatst
 
 Running against a PostgreSQL Docker installation:
--ea -Dopenjpa.ConnectionDriverName=org.postgresql.Driver -Dopenjpa.ConnectionURL=jdbc:postgresql://localhost/openjpatst -Dopenjpa.ConnectionUserName=postgres -Dopenjpa.ConnectionPassword=postgres
+-ea -Dopenjpa.ConnectionDriverName=org.postgresql.Driver -Dopenjpa.ConnectionURL=jdbc:postgresql:5432//localhost/openjpatst -Dopenjpa.ConnectionUserName=postgres -Dopenjpa.ConnectionPassword=postgres
