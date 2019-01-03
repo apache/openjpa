@@ -33,7 +33,7 @@ The best way to compile Apache OpenJPA yourself is to run the build against the 
 The Apache OpenJPA project also contains a setup for testing against multiple databases.
 The easiest way is to use Docker.
 We assume that Docker is installed to be used from your current user.
-The respective database imagehas to be started manually bofore starting the build.
+The respective database image has to be started manually bofore starting the build.
 The reason for not starting it as part of the build itself is to be able to look at the database content after the build did run.
 
 To start e.g. a PostgreSQL Docker image you can simply invoke the following command.
