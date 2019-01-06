@@ -1849,12 +1849,12 @@ public class OpenJPAConfigurationImpl
 
     @Override
     public boolean isInitializeEagerly() {
-    	return eagerInitialization.get();
+        return eagerInitialization.get();
     }
 
     @Override
     public void setInitializeEagerly(boolean retry) {
-    	eagerInitialization.set(retry);
+        eagerInitialization.set(retry);
     }
 
     @Override
@@ -1960,8 +1960,8 @@ public class OpenJPAConfigurationImpl
         getAuditorInstance();
         cacheMarshallerPlugins.initialize();
         if (isInitializeEagerly()) {
-        	getConnectionFactory();
-        	getConnectionFactory2();
+            getConnectionFactory();
+            getConnectionFactory2();
         }
     }
 

@@ -1368,6 +1368,110 @@
             </repositories>
         </profile>
 
+        <!--
+            Profile for testing with Oracle DB against a Docker image
+
+            Attention: This might requiere a manual download of the Oracle JDBC driver.
+            This driver (ojdbc6.jar) can be downloaded at the Oracle homepage.
+
+            Then determine which version you got
+            $> unzip -p ojdbc6.jar META-INF/MANIFEST.MF
+            This will contain something like
+            "Implementation-Version: 11.2.0.4.0"
+            Use this version to install the JDBC driver into your local Maven repository
+            with
+            $> mvn install:file ...
+
+            By default we use a ojdbc6 version hosted at Atlassian.
+            For this to work we also need to add a repository section.
+            We only use it for the ojdbc driver though.
+        -->
+        <profile>
+            <id>test-oracle-docker</id>
+            <activation>
+                <property>
+                    <name>test-oracle-docker</name>
+                </property>
+            </activation>
+            <properties>
+                <!-- by default we use the Atlassian 3rd Party repo, which contains the dependency -->
+                <oracle.maven.repo>https://packages.atlassian.com/maven-3rdparty/</oracle.maven.repo>
+
+                <oracle.groupid>com.oracle</oracle.groupid>
+                <oracle.artifactid>ojdbc6</oracle.artifactid>
+                <oracle.version>11.2.0.4.0-atlassian-hosted</oracle.version>
+
+                <oracle.server.version>16.04</oracle.server.version>
+                <docker.external.oracle.port>1521</docker.external.oracle.port>
+
+                <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
+                <openjpa.oracle.database>openjpatst</openjpa.oracle.database>
+                <openjpa.oracle.username>openjpatst</openjpa.oracle.username>
+                <openjpa.oracle.password>openjpatst</openjpa.oracle.password>
+                <openjpa.oracle.SID>xe</openjpa.oracle.SID>
+                <openjpa.oracle.url>jdbc:oracle:thin:@localhost:${docker.external.oracle.port}:${openjpa.oracle.SID}</openjpa.oracle.url>
+
+                <connection.url>${openjpa.oracle.url}</connection.url>
+                <connection.username>${openjpa.oracle.username}</connection.username>
+                <connection.password>${openjpa.oracle.password}</connection.password>
+                <jdbc.DBDictionary />
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>${oracle.groupid}</groupId>
+                    <artifactId>${oracle.artifactid}</artifactId>
+                    <version>${oracle.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <repositories>
+                <repository>
+                    <id>oracle.repository</id>
+                    <name>Oracle Repository</name>
+                    <url>${oracle.maven.repo}</url>
+                    <layout>default</layout>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                </repository>
+            </repositories>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>wnameless/oracle-xe-11g:${oracle.server.version}</name>
+                                    <run>
+<!--
+                                        <env>
+                                            <ORACLE_DISABLE_ASYNCH_IO>true</ORACLE_DISABLE_ASYNCH_IO>
+                                        </env>
+-->
+                                        <volumes>
+                                            <bind>
+                                                <volume>${project.basedir}/src/test/sql/oracle-docker:/docker-entrypoint-initdb.d/</volume>
+                                            </bind>
+                                        </volumes>
+                                        <ports>
+                                            <port>${docker.external.oracle.port}:1521</port>
+                                        </ports>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <!-- Profile for testing with Oracle DB -->
         <profile>
             <!--
@@ -1751,7 +1855,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.27.2</version>
+                    <version>0.28.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

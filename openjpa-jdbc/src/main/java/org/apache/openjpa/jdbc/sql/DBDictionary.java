@@ -550,9 +550,9 @@ public class DBDictionary
                 supportsGetGeneratedKeys =  (isJDBC3) ? metaData.supportsGetGeneratedKeys() : false;
             }
             if (log.isInfoEnabled()) {
-            	log.info(_loc.get("dict-info", new Object[] {
-            		metaData.getDatabaseProductName(), getMajorVersion(), getMinorVersion(),
-            		metaData.getDriverName(), metaData.getDriverVersion()}));
+                log.info(_loc.get("dict-info", new Object[] {
+                        metaData.getDatabaseProductName(), getMajorVersion(), getMinorVersion(),
+                        metaData.getDriverName(), metaData.getDriverVersion()}));
             }
         }
         connected = true;

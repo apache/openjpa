@@ -1004,12 +1004,12 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
 
     @Override
     public boolean generatedKeyAlwaysReturned() throws SQLException {
-    	throw new UnsupportedOperationException();
+        return _metaData.generatedKeyAlwaysReturned();
     }
 
     @Override
     public ResultSet getPseudoColumns(String catalog, String schemaPattern,
-    	String tableNamepattern, String columnNamePattern) throws SQLException {
-    	throw new UnsupportedOperationException();
+            String tableNamepattern, String columnNamePattern) throws SQLException {
+        return _metaData.getPseudoColumns(catalog, schemaPattern, tableNamepattern, columnNamePattern);
     }
 }
