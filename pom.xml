@@ -1415,6 +1415,12 @@
                 <connection.username>${openjpa.oracle.username}</connection.username>
                 <connection.password>${openjpa.oracle.password}</connection.password>
                 <jdbc.DBDictionary />
+
+                <!-- DBCP overrides -->
+                <dbcp.maxIdle>20</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+                <dbcp.maxTotal>20</dbcp.maxTotal>
+
             </properties>
             <dependencies>
                 <dependency>
@@ -1450,11 +1456,6 @@
                                 <image>
                                     <name>wnameless/oracle-xe-11g:${oracle.server.version}</name>
                                     <run>
-<!--
-                                        <env>
-                                            <ORACLE_DISABLE_ASYNCH_IO>true</ORACLE_DISABLE_ASYNCH_IO>
-                                        </env>
--->
                                         <volumes>
                                             <bind>
                                                 <volume>${project.basedir}/src/test/sql/oracle-docker:/docker-entrypoint-initdb.d/</volume>
