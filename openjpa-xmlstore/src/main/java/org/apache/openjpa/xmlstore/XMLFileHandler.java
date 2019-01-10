@@ -357,52 +357,49 @@ public class XMLFileHandler {
 
         private void startElement(String qName, Attributes attrs)
             throws Exception {
-            switch (qName.charAt(0)) {
-                case 'o': // object
-                    // get the metadata for the type we're reading
-                    String type = attrs.getValue("class");
-                    ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
+
+            if ("object".equals(qName)) { // object
+                // get the metadata for the type we're reading
+                String type = attrs.getValue("class");
+                ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
                         getMetaData(classForName(type), null, true);
 
-                    // construct the oid object
-                    Object oid;
-                    if (meta.getIdentityType() == ClassMetaData.ID_DATASTORE)
-                        oid = new Id(attrs.getValue("oid"), _conf, null);
-                    else
-                        oid = PCRegistry.newObjectId(meta.getDescribedType(),
+                // construct the oid object
+                Object oid;
+                if (meta.getIdentityType() == ClassMetaData.ID_DATASTORE)
+                    oid = new Id(attrs.getValue("oid"), _conf, null);
+                else
+                    oid = PCRegistry.newObjectId(meta.getDescribedType(),
                             attrs.getValue("oid"));
 
-                    // create an ObjectData that will contain the information
-                    // for this instance, and set the version
-                    _object = new ObjectData(oid, meta);
-                    _object.setVersion(new Long(attrs.getValue("version")));
-                    break;
+                // create an ObjectData that will contain the information
+                // for this instance, and set the version
+                _object = new ObjectData(oid, meta);
+                _object.setVersion(new Long(attrs.getValue("version")));
+            }
+            else if ("field".equals(qName)) { // field
+                // start parsing a field element: for container types,
+                // initialize the container; for other types, initialize a
+                // buffer
+                _fmd = _object.getMetaData().getField(attrs.getValue("name"));
+                switch (_fmd.getTypeCode()) {
+                    case JavaTypes.COLLECTION:
+                    case JavaTypes.ARRAY:
+                        _fieldVal = new ArrayList();
+                        break;
+                    case JavaTypes.MAP:
+                        _fieldVal = new HashMap();
+                        break;
+                    default:
+                        _buf = new StringBuffer();
+                }
+            }
+            else if ("element".equals(qName) ||
+                     "key".equals(qName)     ||
+                     "value".equals(qName) ) { // field
 
-                case 'f': // field
-                    // start parsing a field element: for container types,
-                    // initialize the container; for other types, initialize a
-                    // buffer
-                    _fmd =
-                        _object.getMetaData().getField(attrs.getValue("name"));
-                    switch (_fmd.getTypeCode()) {
-                        case JavaTypes.COLLECTION:
-                        case JavaTypes.ARRAY:
-                            _fieldVal = new ArrayList();
-                            break;
-                        case JavaTypes.MAP:
-                            _fieldVal = new HashMap();
-                            break;
-                        default:
-                            _buf = new StringBuffer();
-                    }
-                    break;
-
-                case 'e': // element
-                case 'k': // key
-                case 'v': // value
                     // initialize a buffer for the element value
                     _buf = new StringBuffer();
-                    break;
             }
         }
 
@@ -411,7 +408,7 @@ public class XMLFileHandler {
             throws SAXException {
             try {
                 endElement(qName);
-            } catch (RuntimeException re) {
+                } catch (RuntimeException re) {
                 throw re;
             } catch (SAXException se) {
                 throw se;
@@ -423,49 +420,44 @@ public class XMLFileHandler {
         private void endElement(String qName)
             throws Exception {
             Object val;
-            switch (qName.charAt(0)) {
-                case 'o': // object
-                    // add the object to our results
-                    _extent.add(_object);
-
-                case 'f': // field
-                    switch (_fmd.getTypeCode()) {
-                        case JavaTypes.COLLECTION:
-                        case JavaTypes.ARRAY:
-                        case JavaTypes.MAP:
-                            // field value already constructed
-                            break;
-                        default:
-                            // construct the field value from text within the
-                            // element
-                            _fieldVal = fromXMLString(_fmd.getTypeCode(),
+            if ("object".equals(qName)) {
+                // add the object to our results
+                _extent.add(_object);
+            }
+            else if ("field".equals(qName)) {
+                switch (_fmd.getTypeCode()) {
+                    case JavaTypes.COLLECTION:
+                    case JavaTypes.ARRAY:
+                    case JavaTypes.MAP:
+                        // field value already constructed
+                        break;
+                    default:
+                        // construct the field value from text within the
+                        // element
+                        _fieldVal = fromXMLString(_fmd.getTypeCode(),
                                 _fmd.getTypeMetaData(), _buf.toString());
-                    }
+                }
 
-                    // set the field value into the object being parsed
-                    _object.setField(_fmd.getIndex(), _fieldVal);
-                    break;
-
-                case 'e': // element
-                    // cache element value
-                    val = fromXMLString(_fmd.getElement().getTypeCode(),
+                // set the field value into the object being parsed
+                _object.setField(_fmd.getIndex(), _fieldVal);
+            }
+            else if ("element".equals(qName)) {
+                // cache element value
+                val = fromXMLString(_fmd.getElement().getTypeCode(),
                         _fmd.getElement().getTypeMetaData(), _buf.toString());
-                    ((Collection) _fieldVal).add(val);
-                    break;
-
-                case 'k': // key
-                    // cache key value
-                    _keyVal = fromXMLString(_fmd.getKey().getTypeCode(),
+                ((Collection) _fieldVal).add(val);
+            }
+            else if ("key".equals(qName)) {
+                // cache key value
+                _keyVal = fromXMLString(_fmd.getKey().getTypeCode(),
                         _fmd.getKey().getTypeMetaData(), _buf.toString());
-                    break;
-
-                case 'v': // value
-                    // create value and put cached key and value into map
-                    val = fromXMLString(_fmd.getElement().getTypeCode(),
-                        _fmd.getElement().getTypeMetaData(), _buf.toString());
-                    Map map = (Map) _fieldVal;
-                    map.put(_keyVal, val);
-                    break;
+            }
+            else if ("value".equals(qName)) {
+                // create value and put cached key and value into map
+                val = fromXMLString(_fmd.getElement().getTypeCode(),
+                    _fmd.getElement().getTypeMetaData(), _buf.toString());
+                Map map = (Map) _fieldVal;
+                map.put(_keyVal, val);
             }
 
             // don't cache text between elements

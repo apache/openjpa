@@ -51,8 +51,8 @@ public class XMLStoreManager
     private XMLStore _store;
 
     // changed data within the current transaction
-    private Collection _updates;
-    private Collection _deletes;
+    private Collection<ObjectData> _updates;
+    private Collection<ObjectData> _deletes;
 
     @Override
     protected Collection getUnsupportedOptions() {
@@ -201,8 +201,8 @@ public class XMLStoreManager
     }
 
     @Override
-    protected Collection flush(Collection pNew, Collection pNewUpdated,
-        Collection pNewFlushedDeleted, Collection pDirty, Collection pDeleted) {
+    protected Collection flush(Collection<OpenJPAStateManager> pNew, Collection<OpenJPAStateManager> pNewUpdated,
+        Collection<OpenJPAStateManager> pNewFlushedDeleted, Collection<OpenJPAStateManager> pDirty, Collection<OpenJPAStateManager> pDeleted) {
         // we don't support incremental flushing, so pNewUpdated and
         // pNewFlushedDeleted should be empty; we ignore them here
 
@@ -210,8 +210,8 @@ public class XMLStoreManager
         Collection exceps = new LinkedList();
 
         // convert instances to ObjectDatas
-        _updates = new ArrayList(pNew.size() + pDirty.size());
-        _deletes = new ArrayList(pDeleted.size());
+        _updates = new ArrayList<>(pNew.size() + pDirty.size());
+        _deletes = new ArrayList<>(pDeleted.size());
 
         // convert additions
         for (Iterator itr = pNew.iterator(); itr.hasNext();) {

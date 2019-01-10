@@ -118,8 +118,8 @@ public class XMLStore {
      * @param updates {@link ObjectData} instances to insert or update
      * @param deletes {@link ObjectData} instances to delete
      */
-    public synchronized void endTransaction(Collection updates,
-        Collection deletes) {
+    public synchronized void endTransaction(Collection<ObjectData> updates,
+                                            Collection<ObjectData> deletes) {
         // track dirty types
         Set dirty = new HashSet();
         try {
@@ -154,6 +154,6 @@ public class XMLStore {
             // unlock store
             notify();
             _locked = false;
-		}
-	}
+        }
+    }
 }
