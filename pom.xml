@@ -1401,7 +1401,7 @@
                 <oracle.artifactid>ojdbc6</oracle.artifactid>
                 <oracle.version>11.2.0.4.0-atlassian-hosted</oracle.version>
 
-                <oracle.server.version>16.04</oracle.server.version>
+                <oracle.server.version>latest</oracle.server.version>
                 <docker.external.oracle.port>1521</docker.external.oracle.port>
 
                 <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
@@ -1454,7 +1454,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>wnameless/oracle-xe-11g:${oracle.server.version}</name>
+                                    <name>sath89/oracle-12c:${oracle.server.version}</name>
                                     <run>
                                         <volumes>
                                             <bind>
