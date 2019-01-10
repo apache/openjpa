@@ -766,7 +766,8 @@ public class Column extends ReferenceCounter {
                     default:
                         return false;
                 }
-            case 2007:  // Oracle-defined opaque type code for XMLType
+            case Types.SQLXML:  // All XML Types
+            case 2007:          // Oracle-defined opaque type code for XMLType treated the same way
                 switch (type) {
                     case Types.CHAR:
                     case Types.LONGVARCHAR:
@@ -777,6 +778,8 @@ public class Column extends ReferenceCounter {
                      default:
                          return false;
                 }
+
+
 
             default:
                 return type == getType();
