@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.xmlstore.simple;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
@@ -29,6 +34,19 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
  * Simple XMLStore test case to get an EntityManager and perform some basic operations.
  */
 public class TestPersistence extends AbstractPersistenceTestCase {
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        // delete previous DB
+        Path dbDir = Paths.get("target/openjpa-xmlstore-db");
+        if (dbDir.toFile().exists()) {
+            Files.walk(dbDir)
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        }
+    }
 
     public void testCreateEntityManager() {
         OpenJPAEntityManagerFactorySPI emf = createNamedEMF("xmlstore-simple");

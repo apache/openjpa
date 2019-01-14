@@ -42,7 +42,7 @@
         <java.class.version>1.8</java.class.version>
         <java.testclass.version>1.8</java.testclass.version>
 
-	<doclint>none</doclint>
+        <doclint>none</doclint>
 
         <openjpa.version>${project.version}</openjpa.version>
         <openjpa.Log>DefaultLevel=INFO</openjpa.Log>
