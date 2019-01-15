@@ -43,7 +43,8 @@
           <property name="openjpa.ConnectionURL"
               value="jdbc:derby:target/database/ImageDB;create=true" />
             -->
-          <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+            <!-- we synchronise the table schema and delete their table contents for repeatable tests -->
+          <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true,SchemaAction='add,deleteTableContents')"/>
           <property name="openjpa.DynamicEnhancementAgent" value="false"/>
 
           <property name="javax.persistence.validation.group.pre-persist"

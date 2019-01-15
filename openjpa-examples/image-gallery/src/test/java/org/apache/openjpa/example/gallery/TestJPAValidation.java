@@ -29,13 +29,18 @@ import javax.validation.ConstraintViolationException;
 
 import org.apache.openjpa.example.gallery.model.Image;
 import org.apache.openjpa.example.gallery.model.Location;
+import org.junit.Test;
 
-public class TestJPAValidation extends junit.framework.TestCase {
+import static org.junit.Assert.fail;
+
+public class TestJPAValidation {
+
 
     /**
      * Shows usage of BV constraints with JPA at pre-update, pre-remove,
      * and pre-persist lifecycle events.
      */
+    @Test
     public void testValidation() {
         EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("BeanValidation");
