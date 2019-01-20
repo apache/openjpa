@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.simple;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -35,6 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestBasicAnnotation extends SingleEMFTestCase {
     private static String VAL_LOCAL_DATE = "2019-01-01";
+    private static String VAL_LOCAL_TIME = "14:57:15";
 
     @Override
     public void setUp() {
@@ -61,6 +63,7 @@ public class TestBasicAnnotation extends SingleEMFTestCase {
         aft.setWDoubleField(new Double(1));
 
         aft.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
+        aft.setLocalTimeField(LocalTime.parse(VAL_LOCAL_TIME));
 
 
         em.persist(aft);
@@ -87,6 +90,7 @@ public class TestBasicAnnotation extends SingleEMFTestCase {
         assertNotNull(aftQuery.getWDoubleField());
 
         assertEquals(LocalDate.parse(VAL_LOCAL_DATE), aftQuery.getLocalDateField());
+        assertEquals(LocalTime.parse(VAL_LOCAL_TIME), aftQuery.getLocalTimeField());
 
         em.close();
     }

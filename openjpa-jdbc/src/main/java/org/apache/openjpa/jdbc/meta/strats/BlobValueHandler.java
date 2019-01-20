@@ -29,8 +29,7 @@ import org.apache.openjpa.meta.JavaTypes;
  * Handler for blob values.
  *
  */
-public class BlobValueHandler
-    extends AbstractValueHandler {
+public class BlobValueHandler extends AbstractValueHandler {
 
     
     private static final long serialVersionUID = 1L;
@@ -43,10 +42,6 @@ public class BlobValueHandler
         return _instance;
     }
 
-    /**
-     * @deprecated
-     */
-    @Deprecated
     @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {

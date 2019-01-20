@@ -87,6 +87,11 @@ public class ImmutableValueHandler extends AbstractValueHandler {
             case JavaTypes.SHORT_OBJ:
             case JavaTypes.STRING:
             case JavaTypes.DATE:
+            case JavaTypes.LOCAL_DATE:
+            case JavaTypes.LOCAL_TIME:
+            case JavaTypes.LOCAL_DATETIME:
+            case JavaTypes.OFFSET_TIME:
+            case JavaTypes.OFFSET_DATETIME:
             case JavaTypes.BIGINTEGER:
             case JavaTypes.LOCALE:
                 return true;

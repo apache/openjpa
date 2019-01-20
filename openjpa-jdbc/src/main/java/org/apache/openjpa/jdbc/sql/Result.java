@@ -29,6 +29,9 @@ import java.sql.Ref;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -280,6 +283,24 @@ public interface Result
      * Return the value stored in the given column or id.
      */
     Calendar getCalendar(Object obj)
+        throws SQLException;
+
+    /**
+     * Return the value stored in the given column or id.
+     */
+    LocalDate getLocalDate(Object obj)
+        throws SQLException;
+
+    /**
+     * Return the value stored in the given column or id.
+     */
+    LocalTime getLocalTime(Object obj)
+        throws SQLException;
+
+    /**
+     * Return the value stored in the given column or id.
+     */
+    LocalDateTime getLocalDateTime(Object obj)
         throws SQLException;
 
     /**
