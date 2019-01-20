@@ -192,10 +192,15 @@ The generated PDF is available under ./target/docbook/manual.pdf
 Running unit tests in the Debugger
 ==================================
 TODO: finish!
--Dopenjpa.ConnectionURL=jdbc:derby:target/database/openjpa-derby-database;create=true -Dopenjpa.ConnectionDriverName=org.apache.derby.jdbc.EmbeddedDriver
+By default all tests run against a derby database.
+To run the tests in the debugger simply add the following JVM properties
+
+ -Dopenjpa.ConnectionURL=jdbc:derby:target/database/openjpa-derby-database;create=true -Dopenjpa.ConnectionDriverName=org.apache.derby.jdbc.EmbeddedDriver
 
 For running against a MySQL Docker installation:
--ea -Dopenjpa.ConnectionDriverName=com.mysql.jdbc.Driver -Dopenjpa.ConnectionURL=jdbc:mysql://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=openjpatst -Dopenjpa.ConnectionPassword=openjpatst
+
+ -ea -Dopenjpa.ConnectionDriverName=com.mysql.jdbc.Driver -Dopenjpa.ConnectionURL=jdbc:mysql://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=openjpatst -Dopenjpa.ConnectionPassword=openjpatst
 
 Running against a PostgreSQL Docker installation:
--ea -Dopenjpa.ConnectionDriverName=org.postgresql.Driver -Dopenjpa.ConnectionURL=jdbc:postgresql:5432//localhost/openjpatst -Dopenjpa.ConnectionUserName=postgres -Dopenjpa.ConnectionPassword=postgres
+
+ -ea -Dopenjpa.ConnectionDriverName=org.postgresql.Driver -Dopenjpa.ConnectionURL=jdbc:postgresql:5432//localhost/openjpatst -Dopenjpa.ConnectionUserName=postgres -Dopenjpa.ConnectionPassword=postgres
