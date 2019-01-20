@@ -33,8 +33,7 @@ import org.apache.openjpa.meta.JavaTypes;
  * Handler for simple type and string values.
  *
  */
-public class ImmutableValueHandler
-    extends AbstractValueHandler {
+public class ImmutableValueHandler extends AbstractValueHandler {
 
     
     private static final long serialVersionUID = 1L;

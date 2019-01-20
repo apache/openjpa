@@ -757,7 +757,7 @@ public abstract class MappingInfo implements Serializable {
             if (given.isRelationId())
                 relationId = true;
             if (given.isImplicitRelation())
-            	implicitRelation = true;
+                implicitRelation = true;
         }
 
         // default char column size if original type is char (test original

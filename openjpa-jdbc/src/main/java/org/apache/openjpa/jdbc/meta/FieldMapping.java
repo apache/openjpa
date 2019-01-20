@@ -462,12 +462,15 @@ public class FieldMapping
     @Override
     public boolean resolve(int mode) {
         int cur = getResolve();
-        if (super.resolve(mode))
+        if (super.resolve(mode)) {
             return true;
-        if ((mode & MODE_MAPPING) != 0 && (cur & MODE_MAPPING) == 0)
+        }
+        if ((mode & MODE_MAPPING) != 0 && (cur & MODE_MAPPING) == 0) {
             resolveMapping();
-        if ((mode & MODE_MAPPING_INIT) != 0 && (cur & MODE_MAPPING_INIT) == 0)
+        }
+        if ((mode & MODE_MAPPING_INIT) != 0 && (cur & MODE_MAPPING_INIT) == 0) {
             initializeMapping();
+        }
         return false;
     }
 

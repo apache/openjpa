@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
+import org.apache.openjpa.jdbc.meta.strats.LocalDateValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.UntypedPCValueHandler;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -521,16 +522,26 @@ public class MappingDefaultsImpl
     @Override
     public Object getStrategy(ValueMapping vm, Class<?> type, boolean adapt) {
         Object ret = _fieldMap.get(type.getName());
-        if (ret != null)
+        if (ret != null) {
             return ret;
+        }
+
         if (_stringifyUnmapped && vm.getTypeMapping() != null
-            && !vm.getTypeMapping().isMapped())
+            && !vm.getTypeMapping().isMapped()) {
             return UntypedPCValueHandler.getInstance();
+        }
+
         if (type.isEnum() && !vm.isSerialized()) {
             EnumValueHandler enumHandler = new EnumValueHandler();
             enumHandler.setStoreOrdinal(_ordinalEnum);
             return enumHandler;
         }
+
+        if (java.time.LocalDate.class == type) {
+            // we can compare with == since LocalDate is final
+            return new LocalDateValueHandler();
+        }
+
         return null;
     }
 

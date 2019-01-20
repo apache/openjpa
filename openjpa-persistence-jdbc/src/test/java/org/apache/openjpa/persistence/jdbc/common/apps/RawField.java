@@ -18,10 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.meta.ValueMapping;
-import org.apache.openjpa.jdbc.meta.strats.ImmutableValueHandler;
-import org.apache.openjpa.jdbc.sql.Raw;
 
 public class RawField {
 
@@ -35,16 +31,4 @@ public class RawField {
         return str;
     }
 
-    public static class RawMapping
-        extends ImmutableValueHandler {
-
-        
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public Object toDataStoreValue(ValueMapping vm, Object val,
-            JDBCStore store) {
-            return new Raw("'" + val + "FOO'");
-        }
-    }
 }

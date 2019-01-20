@@ -63,8 +63,9 @@ public class RuntimeStrategyInstaller
     public void installStrategy(FieldMapping field) {
         FieldStrategy strategy = null;
         ClassMapping owner = getOutermostDefiningMapping(field);
-        if (owner != null && !owner.isEmbeddable() && !owner.isAbstract())
+        if (owner != null && !owner.isEmbeddable() && !owner.isAbstract()) {
             strategy = repos.namedStrategy(field, true);
+        }
         if (strategy == null) {
             try {
                 strategy = repos.defaultStrategy(field, true, false);

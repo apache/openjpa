@@ -97,7 +97,8 @@ public class EnumValueHandler extends AbstractValueHandler {
         return new Column[]{ col };
     }
 
-    public boolean isVersionable() {
+    @Override
+    public boolean isVersionable(ValueMapping vm) {
         return true;
     }
 

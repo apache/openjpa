@@ -920,12 +920,13 @@ public class ClassMapping
         // also being resolved.  don't use getDefinedFields b/c it relies on
         // whether fields are mapped, which isn't known yet
         fms = getFieldMappings();
-        for (int i = 0; i < fms.length; i++)
+        for (int i = 0; i < fms.length; i++) {
             if (fms[i].getDefiningMetaData() == this
-                && !fms[i].isTypePC() && !fms[i].getKey().isTypePC()
-                && !fms[i].getElement().isTypePC())
+                    && !fms[i].isTypePC() && !fms[i].getKey().isTypePC()
+                    && !fms[i].getElement().isTypePC()) {
                 fms[i].resolve(MODE_MAPPING);
-
+            }
+        }
         _discrim.resolve(MODE_MAPPING);
         _version.resolve(MODE_MAPPING);
     }

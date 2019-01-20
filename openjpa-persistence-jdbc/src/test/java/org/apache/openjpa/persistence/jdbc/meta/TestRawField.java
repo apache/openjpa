@@ -29,15 +29,14 @@ package org.apache.openjpa.persistence.jdbc.meta;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.RawField;
+import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
 
 
-public class TestRawField
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestRawField extends BaseJDBCTest {
 
     /** Creates a new instance of TestRawField */
-    public TestRawField(String name)
-    {
-    	super(name);
+    public TestRawField(String name) {
+        super(name);
     }
 
     @Override

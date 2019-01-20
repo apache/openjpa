@@ -120,11 +120,11 @@ public class DerbyDictionary
 
     @Override
     public void connectedConfiguration(Connection conn) throws SQLException {
-    	super.connectedConfiguration(conn);
-    	if (versionEqualOrLaterThan(10, 5)) {
-    		supportsSelectStartIndex = true;
-    		supportsSelectEndIndex   = true;
-    	}
+        super.connectedConfiguration(conn);
+        if (versionEqualOrLaterThan(10, 5)) {
+            supportsSelectStartIndex = true;
+            supportsSelectEndIndex   = true;
+        }
     }
 
     /**
@@ -136,7 +136,7 @@ public class DerbyDictionary
      * and {@link DBDictionary#supportsSelectEndIndex limit} on queries then the
      * syntax is <pre>
      * [ OFFSET {start} ROWS ]
-	 * [ FETCH NEXT {end-start} ROWS ONLY ]
+     * [ FETCH NEXT {end-start} ROWS ONLY ]
      * </pre>
      * Otherwise, the offset is not used and the syntax is <pre>
      * [ FETCH FIRST {end} ROWS ONLY ]
@@ -149,18 +149,18 @@ public class DerbyDictionary
     @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end, boolean subselect) {
         // do not generate FETCH FIRST clause for subselect
-    	if (subselect)
-    		return;
-    	if (supportsSelectStartIndex && supportsSelectEndIndex) {
-	    	if (isUsingOffset(start))
-	    		buf.append(" OFFSET ").append(Long.toString(start)).append(" ROWS ");
-	    	if (isUsingLimit(end)) {
-	    		long rowCount = end - start;
-	    		buf.append(" FETCH NEXT ").append(Long.toString(rowCount)).append(" ROWS ONLY");
-	    	}
-    	} else if (isUsingLimit(end)) {
-             buf.append(" FETCH FIRST ").append(Long.toString(end)).append(" ROWS ONLY");
-    	}
+        if (subselect)
+            return;
+        if (supportsSelectStartIndex && supportsSelectEndIndex) {
+            if (isUsingOffset(start))
+                buf.append(" OFFSET ").append(Long.toString(start)).append(" ROWS ");
+            if (isUsingLimit(end)) {
+                long rowCount = end - start;
+                buf.append(" FETCH NEXT ").append(Long.toString(rowCount)).append(" ROWS ONLY");
+            }
+        } else if (isUsingLimit(end)) {
+            buf.append(" FETCH FIRST ").append(Long.toString(end)).append(" ROWS ONLY");
+        }
     }
 
     @Override
@@ -198,29 +198,29 @@ public class DerbyDictionary
         return super.isFatalException(subtype, ex);
     }
 
-	/**
-	 * Applies range calculation on the actual number of rows selected by a
-	 * {@code COUNT(*)} query. A range query may use either only the limit or
-	 * both offset and limit based on database dictionary support and
-	 * accordingly the number of rows in the result set needs to be modified.
-	 *
-	 * @param select
-	 * @param count
-	 * @return
-	 */
+    /**
+     * Applies range calculation on the actual number of rows selected by a
+     * {@code COUNT(*)} query. A range query may use either only the limit or
+     * both offset and limit based on database dictionary support and
+     * accordingly the number of rows in the result set needs to be modified.
+     *
+     * @param select
+     * @param count
+     * @return
+     */
 
-	@Override
+    @Override
     public int applyRange(Select select, int count) {
-		long start = select.getStartIndex();
-		long end = select.getEndIndex();
-		if (supportsSelectStartIndex) {
-			if (start > 0)
-				count -= start;
-			if (end != Long.MAX_VALUE) {
-				long size = end - start;
-				count = (int) Math.min(count, size);
-			}
-		}
-		return count;
-	}
+        long start = select.getStartIndex();
+        long end = select.getEndIndex();
+        if (supportsSelectStartIndex) {
+            if (start > 0)
+                count -= start;
+            if (end != Long.MAX_VALUE) {
+                long size = end - start;
+                count = (int) Math.min(count, size);
+            }
+        }
+        return count;
+    }
 }

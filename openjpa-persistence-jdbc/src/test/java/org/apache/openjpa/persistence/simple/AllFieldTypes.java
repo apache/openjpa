@@ -21,6 +21,11 @@ package org.apache.openjpa.persistence.simple;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,7 +42,7 @@ import org.apache.openjpa.persistence.PersistentCollection;
 @Entity
 public class AllFieldTypes {
 
-    public static enum EnumType {Value1, Value2};
+    public enum EnumType {Value1, Value2};
 
     // @Basic types
     private short shortField;
@@ -83,6 +88,14 @@ public class AllFieldTypes {
     private AllFieldTypes selfOneOne;
     @OneToMany
     private List<AllFieldTypes> selfOneMany = new ArrayList<>();
+
+    // Java8 DateTime types which are required by the JPA-2.2 spec
+    private LocalDate localDateField;
+    private LocalTime localTimeField;
+    private LocalDateTime localDateTimeField;
+    private OffsetTime offsetTimeField;
+    private OffsetDateTime offsetDateTimeField;
+
 
     public void setShortField(short shortField) {
         this.shortField = shortField;
@@ -362,6 +375,47 @@ public class AllFieldTypes {
 
     public void setSelfOneMany(List<AllFieldTypes> selfOneMany) {
         this.selfOneMany = selfOneMany;
+    }
+
+
+    public LocalDate getLocalDateField() {
+        return localDateField;
+    }
+
+    public void setLocalDateField(LocalDate localDateField) {
+        this.localDateField = localDateField;
+    }
+
+    public LocalTime getLocalTimeField() {
+        return localTimeField;
+    }
+
+    public void setLocalTimeField(LocalTime localTimeField) {
+        this.localTimeField = localTimeField;
+    }
+
+    public LocalDateTime getLocalDateTimeField() {
+        return localDateTimeField;
+    }
+
+    public void setLocalDateTimeField(LocalDateTime localDateTimeField) {
+        this.localDateTimeField = localDateTimeField;
+    }
+
+    public OffsetTime getOffsetTimeField() {
+        return offsetTimeField;
+    }
+
+    public void setOffsetTimeField(OffsetTime offsetTimeField) {
+        this.offsetTimeField = offsetTimeField;
+    }
+
+    public OffsetDateTime getOffsetDateTimeField() {
+        return offsetDateTimeField;
+    }
+
+    public void setOffsetDateTimeField(OffsetDateTime offsetDateTimeField) {
+        this.offsetDateTimeField = offsetDateTimeField;
     }
 }
 

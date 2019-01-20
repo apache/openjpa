@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.simple;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -26,16 +27,14 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import junit.textui.TestRunner;
-
 /**
  * Simple test case to test the default values associated with the @Basic
  * annotation.
  *
  * @author Kevin Sutter
  */
-public class TestBasicAnnotation
-    extends SingleEMFTestCase {
+public class TestBasicAnnotation extends SingleEMFTestCase {
+    private static String VAL_LOCAL_DATE = "2019-01-01";
 
     @Override
     public void setUp() {
@@ -61,6 +60,9 @@ public class TestBasicAnnotation
         aft.setWByteLob(new Byte[1]);
         aft.setWDoubleField(new Double(1));
 
+        aft.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
+
+
         em.persist(aft);
         em.getTransaction().commit();
         em.clear();
@@ -84,11 +86,9 @@ public class TestBasicAnnotation
         assertNotNull(aftQuery.getWByteLob());
         assertNotNull(aftQuery.getWDoubleField());
 
-        em.close();
-    }
+        assertEquals(LocalDate.parse(VAL_LOCAL_DATE), aftQuery.getLocalDateField());
 
-    public static void main(String[] args) {
-        TestRunner.run(TestBasicAnnotation.class);
+        em.close();
     }
 }
 

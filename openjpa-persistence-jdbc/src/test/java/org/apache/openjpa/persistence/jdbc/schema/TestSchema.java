@@ -34,10 +34,10 @@ import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
 
 
-public class TestSchema
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestSchema extends BaseJDBCTest {
 
     private Schema _schema = new SchemaGroup().addSchema("schema");
 
@@ -313,9 +313,5 @@ public class TestSchema
         assertEquals(1, idx2.getColumns().length);
         assertEquals(0, table.getForeignKeys().length);
     }
-
-    public static void main(String[] args) {
-        //main(TestSchema.class);
-	}
 
 }
