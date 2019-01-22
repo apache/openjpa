@@ -34,6 +34,8 @@ import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -559,6 +561,36 @@ public abstract class AbstractResult
             return (LocalDateTime) val;
 
         return LocalDateTime.parse(val.toString());
+    }
+
+    @Override
+    public OffsetTime getOffsetTime(Object obj) throws SQLException {
+        return getOffsetTimeInternal(translate(obj, null), null);
+    }
+
+    protected OffsetTime getOffsetTimeInternal(Object obj, Joins joins) throws SQLException {
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.OFFSET_TIME, null, joins));
+        if (val == null)
+            return null;
+        if (val instanceof OffsetTime)
+            return (OffsetTime) val;
+
+        return OffsetTime.parse(val.toString());
+    }
+
+    @Override
+    public OffsetDateTime getOffsetDateTime(Object obj) throws SQLException {
+        return getOffsetDateTimeInternal(translate(obj, null), null);
+    }
+
+    protected OffsetDateTime getOffsetDateTimeInternal(Object obj, Joins joins) throws SQLException {
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.OFFSET_DATETIME, null, joins));
+        if (val == null)
+            return null;
+        if (val instanceof OffsetDateTime)
+            return (OffsetDateTime) val;
+
+        return OffsetDateTime.parse(val.toString());
     }
 
     @Override

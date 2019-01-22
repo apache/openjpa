@@ -32,6 +32,8 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -352,6 +354,16 @@ public class MergedResult implements Result {
     @Override
     public LocalDateTime getLocalDateTime(Object obj) throws SQLException {
         return _res[_idx].getLocalDateTime(obj);
+    }
+
+    @Override
+    public OffsetTime getOffsetTime(Object obj) throws SQLException {
+        return _res[_idx].getOffsetTime(obj);
+    }
+
+    @Override
+    public OffsetDateTime getOffsetDateTime(Object obj) throws SQLException {
+        return _res[_idx].getOffsetDateTime(obj);
     }
 
     @Override

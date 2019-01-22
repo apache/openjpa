@@ -23,6 +23,8 @@ import javax.persistence.Id;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Date;
 
 /**
@@ -39,6 +41,8 @@ public class Java8TimeTypes {
     private LocalTime localTimeField;
     private LocalDate localDateField;
     private LocalDateTime localDateTimeField;
+    private OffsetTime offsetTimeField;
+    private OffsetDateTime offsetDateTimeField;
 
     public int getId() {
         return id;
@@ -78,5 +82,21 @@ public class Java8TimeTypes {
 
     public void setLocalDateTimeField(LocalDateTime localDateTimeField) {
         this.localDateTimeField = localDateTimeField;
+    }
+
+    public OffsetTime getOffsetTimeField() {
+        return offsetTimeField;
+    }
+
+    public void setOffsetTimeField(OffsetTime offsetTimeField) {
+        this.offsetTimeField = offsetTimeField;
+    }
+
+    public OffsetDateTime getOffsetDateTimeField() {
+        return offsetDateTimeField;
+    }
+
+    public void setOffsetDateTimeField(OffsetDateTime offsetDateTimeField) {
+        this.offsetDateTimeField = offsetDateTimeField;
     }
 }

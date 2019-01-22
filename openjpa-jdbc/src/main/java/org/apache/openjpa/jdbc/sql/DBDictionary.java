@@ -48,6 +48,10 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -805,6 +809,24 @@ public class DBDictionary
         return tst != null ? tst.toLocalDateTime() : null;
     }
 
+    /**
+     * Retrieve the specified column of the SQL ResultSet to the proper
+     * {@link OffsetTime} java type.
+     */
+    public OffsetTime getOffsetTime(ResultSet rs, int column) throws SQLException {
+        java.sql.Time time = rs.getTime(column);
+        return time != null ? time.toLocalTime().atOffset(OffsetDateTime.now().getOffset()) : null;
+    }
+
+    /**
+     * Retrieve the specified column of the SQL ResultSet to the proper
+     * {@link OffsetDateTime} java type.
+     */
+    public OffsetDateTime getOffsetDateTime(ResultSet rs, int column) throws SQLException {
+        Timestamp tst = rs.getTimestamp(column);
+        return tst != null ? tst.toLocalDateTime().atOffset(OffsetDateTime.now().getOffset()) : null;
+    }
+
     private ProxyManager getProxyManager() {
         if (_proxyManager == null) {
             _proxyManager = conf.getProxyManagerInstance();
@@ -1242,6 +1264,31 @@ public class DBDictionary
         setTimestamp(stmnt, idx, java.sql.Timestamp.valueOf(val), null, col);
     }
 
+
+    /**
+     * Set the given LocalTime value as a parameter to the statement.
+     *
+     */
+    public void setOffsetTime(PreparedStatement stmnt, int idx, OffsetTime val, Column col)
+            throws SQLException {
+        // adjust to the default timezone right now.
+        // This is an ugly hack and cries for troubles in case the daylight saving changes...
+        // Which is also the reason why we cannot cache the offset.
+        // According to the Oracle docs the JDBC driver always assumes 'local time' ...
+        LocalTime localTime = val.withOffsetSameInstant(OffsetDateTime.now().getOffset()).toLocalTime();
+        setLocalTime(stmnt, idx, localTime, col);
+    }
+
+    /**
+     * Set the given LocalTime value as a parameter to the statement.
+     *
+     */
+    public void setOffsetDateTime(PreparedStatement stmnt, int idx, OffsetDateTime val, Column col)
+            throws SQLException {
+        LocalDateTime localdt = val.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+        setLocalDateTime(stmnt, idx, localdt, col);
+    }
+
     /**
      * Set the given value as a parameter to the statement.
      */
@@ -1460,6 +1507,12 @@ public class DBDictionary
                 break;
             case JavaTypes.LOCAL_DATETIME:
                 setLocalDateTime(stmnt, idx, (LocalDateTime) val, col);
+                break;
+            case JavaTypes.OFFSET_TIME:
+                setOffsetTime(stmnt, idx, (OffsetTime) val, col);
+                break;
+            case JavaTypes.OFFSET_DATETIME:
+                setOffsetDateTime(stmnt, idx, (OffsetDateTime) val, col);
                 break;
             case JavaTypes.BIGDECIMAL:
                 setBigDecimal(stmnt, idx, (BigDecimal) val, col);

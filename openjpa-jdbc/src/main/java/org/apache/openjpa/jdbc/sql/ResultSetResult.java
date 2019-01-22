@@ -36,6 +36,8 @@ import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -338,6 +340,17 @@ public class ResultSetResult
         return _dict.getLocalDateTime(_rs, ((Number) obj).intValue());
     }
 
+    @Override
+    protected OffsetTime getOffsetTimeInternal(Object obj, Joins joins)
+            throws SQLException {
+        return _dict.getOffsetTime(_rs, ((Number) obj).intValue());
+    }
+
+    @Override
+    protected OffsetDateTime getOffsetDateTimeInternal(Object obj, Joins joins)
+            throws SQLException {
+        return _dict.getOffsetDateTime(_rs, ((Number) obj).intValue());
+    }
 
     @Override
     protected char getCharInternal(Object obj, Joins joins)
@@ -466,6 +479,10 @@ public class ResultSetResult
                 return getLocalTimeInternal(obj, joins);
             case JavaTypes.LOCAL_DATETIME:
                 return getLocalDateTimeInternal(obj, joins);
+            case JavaTypes.OFFSET_TIME:
+                return getOffsetTimeInternal(obj, joins);
+            case JavaTypes.OFFSET_DATETIME:
+                return getOffsetDateTimeInternal(obj, joins);
             case JavaTypes.BIGDECIMAL:
                 return getBigDecimalInternal(obj, joins);
             case JavaTypes.NUMBER:

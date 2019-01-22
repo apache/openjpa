@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 /**
@@ -31,7 +32,7 @@ import java.util.Date;
  */
 public class TestJava8TimeTypes extends SingleEMFTestCase {
     private static String VAL_LOCAL_DATE = "2019-01-01";
-    private static String VAL_LOCAL_TIME = "14:57:15";
+    private static String VAL_LOCAL_TIME = "04:57:15";
     private static String VAL_LOCAL_DATETIME = "2019-01-01T01:00:00";
 
     @Override
@@ -48,6 +49,8 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         e.setLocalTimeField(LocalTime.parse(VAL_LOCAL_TIME));
         e.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
         e.setLocalDateTimeField(LocalDateTime.parse(VAL_LOCAL_DATETIME));
+        e.setOffsetTimeField(e.getLocalTimeField().atOffset(ZoneOffset.ofHours(-9)));
+        e.setOffsetDateTimeField(e.getLocalDateTimeField().atOffset(ZoneOffset.ofHours(-9)));
 
         em.persist(e);
         em.getTransaction().commit();
@@ -60,6 +63,8 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         assertEquals(LocalTime.parse(VAL_LOCAL_TIME), eRead.getLocalTimeField());
         assertEquals(LocalDate.parse(VAL_LOCAL_DATE), eRead.getLocalDateField());
         assertEquals(LocalDateTime.parse(VAL_LOCAL_DATETIME), eRead.getLocalDateTimeField());
+        assertEquals(e.getOffsetTimeField(), eRead.getOffsetTimeField());
+        assertEquals(e.getOffsetDateTimeField(), eRead.getOffsetDateTimeField());
     }
 
 }
