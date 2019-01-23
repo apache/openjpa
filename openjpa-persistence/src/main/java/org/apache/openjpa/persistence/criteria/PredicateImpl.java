@@ -45,6 +45,9 @@ import org.apache.openjpa.kernel.exps.Literal;
  * @since 2.0.0
  */
 abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate {
+    static final Expression<?> TRUE_CONSTANT = new Expressions.Constant<>(true);
+    static final Expression<?> FALSE_CONSTANT = new Expressions.Constant<>(false);
+
     private static Predicate TRUE;
     private static Predicate FALSE;
 

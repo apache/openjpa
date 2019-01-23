@@ -76,6 +76,16 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q.where(cb.literal(Boolean.FALSE)), FALSE_JPQL);
     }
 
+    public void testBooleanLiteralInEquals() {
+        CriteriaQuery<Order> q = cb.createQuery(Order.class);
+        Root<Order> root = q.from(Order.class);
+        Path<Object> path = root.get("delivered");
+        Expression<Boolean> literal = cb.literal(Boolean.FALSE);
+        assertEquals( // we don't want o.delivered = 1 <> 1 but o.delivered = false
+                "SELECT o FROM Order o WHERE o.delivered = false",
+                ((OpenJPACriteriaQuery<?>) q.select(root).where(cb.equal(path, literal))).toCQL());
+    }
+
     public void testDefaultAndIsTrue() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         q.from(Person.class);

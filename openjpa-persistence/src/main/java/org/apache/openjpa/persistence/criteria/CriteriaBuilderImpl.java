@@ -264,19 +264,19 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     @Override
     public <N extends Number> Expression<N> diff(Expression<? extends N> x,
         Expression<? extends N> y) {
-        return new Expressions.Diff<>(x, y);
+        return new Expressions.Diff<>(replaceExpressionForBinaryOperator(x), replaceExpressionForBinaryOperator(y));
     }
 
     @Override
     public <N extends Number> Expression<N> diff(
         Expression<? extends N> x, N y) {
-        return new Expressions.Diff<>(x, y);
+        return new Expressions.Diff<>(replaceExpressionForBinaryOperator(x), y);
     }
 
     @Override
     public <N extends Number> Expression<N> diff(N x,
         Expression<? extends N> y) {
-        return new Expressions.Diff<>(x, y);
+        return new Expressions.Diff<>(x, replaceExpressionForBinaryOperator(y));
     }
 
     @Override
@@ -288,7 +288,17 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     public Predicate equal(Expression<?> x, Expression<?> y) {
         if (y == null)
             return new Expressions.IsNull((ExpressionImpl<?> )x);
-        return new Expressions.Equal(x, y);
+        return new Expressions.Equal(replaceExpressionForBinaryOperator(x), replaceExpressionForBinaryOperator(y));
+    }
+
+    private <T> Expression<T> replaceExpressionForBinaryOperator(final Expression<T> expression) {
+        if (expression == PredicateImpl.TRUE()) {
+            return (Expression<T>) PredicateImpl.TRUE_CONSTANT;
+        }
+        if (expression == PredicateImpl.FALSE()) {
+            return (Expression<T>) PredicateImpl.FALSE_CONSTANT;
+        }
+        return expression;
     }
 
     @Override
