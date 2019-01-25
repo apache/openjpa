@@ -366,10 +366,21 @@ public class MySQLDictionary
 
     @Override
     public int getPreferredType(int type) {
-        if (type == Types.CLOB && !useClobs)
+        if (type == Types.CLOB && !useClobs) {
             return Types.LONGVARCHAR;
+        }
+        else if (type == Types.TIME_WITH_TIMEZONE) {
+            // MySQL doesn't support SQL-2003 'WITH TIMEZONE' nor the respective JDBC types.
+            return Types.TIME;
+        }
+        else if (type == Types.TIMESTAMP_WITH_TIMEZONE) {
+            // MySQL doesn't support SQL-2003 'WITH TIMEZONE' nor the respective JDBC types.
+            return Types.TIMESTAMP;
+        }
+
         return super.getPreferredType(type);
     }
+
 
     /**
      * Append XML comparison.
