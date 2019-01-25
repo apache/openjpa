@@ -27,42 +27,42 @@ import org.apache.openjpa.meta.JavaTypes;
 
 public class ValueStrategyHandler extends AbstractValueHandler {
 
-	private static final long serialVersionUID = 8371304701543038775L;
+    private static final long serialVersionUID = 8371304701543038775L;
 
-	private static final ValueStrategyHandler _instance = new ValueStrategyHandler();
+    private static final ValueStrategyHandler _instance = new ValueStrategyHandler();
 
-	public static ValueStrategyHandler getInstance(){
-		return _instance;
-	}
+    public static ValueStrategyHandler getInstance(){
+        return _instance;
+    }
 
-	@Override
-	public Column[] map(ValueMapping arg0, String name, ColumnIO arg2,
-			boolean arg3) {
+    @Override
+    public Column[] map(ValueMapping arg0, String name, ColumnIO arg2,
+                        boolean arg3) {
 
-		Column col = new Column();
-		col.setName(name);
-		col.setJavaType(JavaTypes.STRING);
+        Column col = new Column();
+        col.setName(name);
+        col.setJavaType(JavaTypes.STRING);
 
-		return new Column[]{col};
-	}
+        return new Column[]{col};
+    }
 
-	@Override
+    @Override
     public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store){
 
-		if(val == null){
-			return null;
-		}
+        if(val == null){
+            return null;
+        }
 
-		return val.toString();
-	}
+        return val.toString();
+    }
 
-	@Override
+    @Override
     public Object toObjectValue(ValueMapping vm, Object val){
-		if(val == null){
-			return null;
-		}
+        if(val == null){
+            return null;
+        }
 
-		return val.toString();
-	}
+        return val.toString();
+    }
 
 }

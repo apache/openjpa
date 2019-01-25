@@ -1356,6 +1356,11 @@ public class MappingRepository extends MetaDataRepository {
             case JavaTypes.DATE:
             case JavaTypes.CALENDAR:
             case JavaTypes.LOCALE:
+            case JavaTypes.LOCAL_DATE:
+            case JavaTypes.LOCAL_TIME:
+            case JavaTypes.LOCAL_DATETIME:
+            case JavaTypes.OFFSET_TIME:
+            case JavaTypes.OFFSET_DATETIME:
                 return ImmutableValueHandler.getInstance();
             case JavaTypes.STRING:
                 if (isClob(val, true))

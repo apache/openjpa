@@ -227,6 +227,11 @@ public class PersistenceMetaDataDefaults
             case JavaTypes.BIGDECIMAL:
             case JavaTypes.BIGINTEGER:
             case JavaTypes.DATE:
+            case JavaTypes.LOCAL_DATE:
+            case JavaTypes.LOCAL_TIME:
+            case JavaTypes.LOCAL_DATETIME:
+            case JavaTypes.OFFSET_TIME:
+            case JavaTypes.OFFSET_DATETIME:
                 return BASIC;
             case JavaTypes.OBJECT:
                 if (Enum.class.isAssignableFrom(type))

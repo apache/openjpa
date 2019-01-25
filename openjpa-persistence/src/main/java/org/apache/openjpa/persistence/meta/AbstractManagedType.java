@@ -20,6 +20,11 @@ package org.apache.openjpa.persistence.meta;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -136,6 +141,21 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                 break;
             case JavaTypes.DATE:
                 attrs.add(new Members.SingularAttributeImpl<X, Date>(this, f));
+                break;
+            case JavaTypes.LOCAL_DATE:
+                attrs.add(new Members.SingularAttributeImpl<X, LocalDate>(this, f));
+                break;
+            case JavaTypes.LOCAL_TIME:
+                attrs.add(new Members.SingularAttributeImpl<X, LocalTime>(this, f));
+                break;
+            case JavaTypes.LOCAL_DATETIME:
+                attrs.add(new Members.SingularAttributeImpl<X, LocalDateTime>(this, f));
+                break;
+            case JavaTypes.OFFSET_TIME:
+                attrs.add(new Members.SingularAttributeImpl<X, OffsetTime>(this, f));
+                break;
+            case JavaTypes.OFFSET_DATETIME:
+                attrs.add(new Members.SingularAttributeImpl<X, OffsetDateTime>(this, f));
                 break;
             case JavaTypes.CALENDAR:
                 attrs.add(new Members.SingularAttributeImpl<X, Calendar>(this, f));

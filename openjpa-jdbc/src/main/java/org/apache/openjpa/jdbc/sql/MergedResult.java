@@ -29,6 +29,11 @@ import java.sql.Ref;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -49,8 +54,7 @@ import org.apache.openjpa.util.UnsupportedException;
  *
  * @author Abe White
  */
-public class MergedResult
-    implements Result {
+public class MergedResult implements Result {
 
     private static final byte NEXT = 0;
     private static final byte CURRENT = 1;
@@ -335,6 +339,31 @@ public class MergedResult
     public Calendar getCalendar(Object obj)
         throws SQLException {
         return _res[_idx].getCalendar(obj);
+    }
+
+    @Override
+    public LocalDate getLocalDate(Object obj) throws SQLException {
+        return _res[_idx].getLocalDate(obj);
+    }
+
+    @Override
+    public LocalTime getLocalTime(Object obj) throws SQLException {
+        return _res[_idx].getLocalTime(obj);
+    }
+
+    @Override
+    public LocalDateTime getLocalDateTime(Object obj) throws SQLException {
+        return _res[_idx].getLocalDateTime(obj);
+    }
+
+    @Override
+    public OffsetTime getOffsetTime(Object obj) throws SQLException {
+        return _res[_idx].getOffsetTime(obj);
+    }
+
+    @Override
+    public OffsetDateTime getOffsetDateTime(Object obj) throws SQLException {
+        return _res[_idx].getOffsetDateTime(obj);
     }
 
     @Override

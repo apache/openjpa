@@ -31,6 +31,11 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -502,8 +507,7 @@ public abstract class AbstractResult
 
     protected Calendar getCalendarInternal(Object obj, Joins joins)
         throws SQLException {
-        Object val = checkNull(getObjectInternal(obj, JavaTypes.CALENDAR,
-            null, joins));
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.CALENDAR, null, joins));
         if (val == null)
             return null;
         if (val instanceof Calendar)
@@ -512,6 +516,81 @@ public abstract class AbstractResult
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date(val.toString()));
         return cal;
+    }
+
+    @Override
+    public LocalDate getLocalDate(Object obj) throws SQLException {
+        return getLocalDateInternal(translate(obj, null), null);
+    }
+
+    protected LocalDate getLocalDateInternal(Object obj, Joins joins) throws SQLException {
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.LOCAL_DATE, null, joins));
+        if (val == null)
+            return null;
+        if (val instanceof LocalDate)
+            return (LocalDate) val;
+
+        return LocalDate.parse(val.toString());
+    }
+
+    @Override
+    public LocalTime getLocalTime(Object obj) throws SQLException {
+        return getLocalTimeInternal(translate(obj, null), null);
+    }
+
+    protected LocalTime getLocalTimeInternal(Object obj, Joins joins) throws SQLException {
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.LOCAL_TIME, null, joins));
+        if (val == null)
+            return null;
+        if (val instanceof LocalTime)
+            return (LocalTime) val;
+
+        return LocalTime.parse(val.toString());
+    }
+
+    @Override
+    public LocalDateTime getLocalDateTime(Object obj) throws SQLException {
+        return getLocalDateTimeInternal(translate(obj, null), null);
+    }
+
+    protected LocalDateTime getLocalDateTimeInternal(Object obj, Joins joins) throws SQLException {
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.LOCAL_DATETIME, null, joins));
+        if (val == null)
+            return null;
+        if (val instanceof LocalDateTime)
+            return (LocalDateTime) val;
+
+        return LocalDateTime.parse(val.toString());
+    }
+
+    @Override
+    public OffsetTime getOffsetTime(Object obj) throws SQLException {
+        return getOffsetTimeInternal(translate(obj, null), null);
+    }
+
+    protected OffsetTime getOffsetTimeInternal(Object obj, Joins joins) throws SQLException {
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.OFFSET_TIME, null, joins));
+        if (val == null)
+            return null;
+        if (val instanceof OffsetTime)
+            return (OffsetTime) val;
+
+        return OffsetTime.parse(val.toString());
+    }
+
+    @Override
+    public OffsetDateTime getOffsetDateTime(Object obj) throws SQLException {
+        return getOffsetDateTimeInternal(translate(obj, null), null);
+    }
+
+    protected OffsetDateTime getOffsetDateTimeInternal(Object obj, Joins joins) throws SQLException {
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.OFFSET_DATETIME, null, joins));
+        if (val == null)
+            return null;
+        if (val instanceof OffsetDateTime)
+            return (OffsetDateTime) val;
+
+        return OffsetDateTime.parse(val.toString());
     }
 
     @Override
@@ -594,8 +673,7 @@ public abstract class AbstractResult
 
     protected Date getDateInternal(Object obj, Joins joins)
         throws SQLException {
-        Object val = checkNull(getObjectInternal(obj, JavaTypes.DATE,
-            null, joins));
+        Object val = checkNull(getObjectInternal(obj, JavaTypes.DATE, null, joins));
         if (val == null)
             return null;
         if (val instanceof Date)
@@ -615,8 +693,7 @@ public abstract class AbstractResult
         return getDateInternal(translate(col, joins), cal, joins);
     }
 
-    protected java.sql.Date getDateInternal(Object obj, Calendar cal,
-        Joins joins)
+    protected java.sql.Date getDateInternal(Object obj, Calendar cal, Joins joins)
         throws SQLException {
         return (java.sql.Date) checkNull(getObjectInternal(obj,
             JavaSQLTypes.SQL_DATE, cal, joins));

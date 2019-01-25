@@ -1,0 +1,118 @@
+= Supported Java8 Time types
+
+This is a temporary document to describe the state of the java.time.* integration in Apache OpenJPA.
+
+== JPA-2.2 required types
+
+The following java.time types have to be supported mandatorily in JPA-2.2:
+
+* java.time.LocalDate
+* java.time.LocalTime
+* java.time.LocalDateTime
+* java.time.OffsetTime
+* java.time.OffsetDateTime
+
+Apache OpenJPA additionally supports the following types:
+
+* TODO java.time.Instant etc
+
+Not every database supports all those types natively though.
+Some cannot store them at all, others have a mode which e.g. doesn't store the Offset part.
+
+For our example we assume we live in Europe (+1 timezone).
+If you store 04:12-9 then you might actually end up with 14:12+1 when retrieving the value from the database.
+That means that OpenJPA tries to at least keep the instant correct if the database doesn't support zones natively.
+
+== Database Support matrix:
+
+
+[cols=6*,options=header]
+|===
+| DBName
+| LocalDate
+| LocalTime
+| LocalDateTime
+| OffsetTime
+| OffsetDateTime
+
+| Derby
+| DATE
+| TIME
+| TIMESTAMP
+| not natively supported
+| not natively supported
+
+| PostgreSQL
+| DATE
+| TIME
+| TIMESTAMP
+| TIME WITH TIME ZONE
+| TIMESTAMP WITH TIME ZONE
+
+| MySQL
+| DATE
+| TIME
+| DATETIME
+| not natively supported, fallback to TIME
+| not natively supported, fallback to DATETIME
+
+| MariaDB
+| DATE
+| TIME
+| DATETIME
+| not natively supported, fallback to TIME
+| not natively supported, fallback to DATETIME
+
+| Microsoft SQLServer
+| DATE
+| TIME
+| DATETIME2
+|
+|
+
+| Oracle
+| DATE
+| TIME
+| DATE
+| TIME WITH TIME ZONE
+| TIMESTAMP WITH TIME ZONE
+
+| H2
+| DATE
+| TIME
+| DATE
+|
+|
+
+
+...
+|===
+
+
+=== Notes
+
+==== PostgreSQL
+
+PostgreSQL supports some of the types natively in the JDBC driver:
+* LocalDate
+* LocalTime
+* LocalDateTime
+* OffsetDateTime
+
+Note that `OffsetTime` is not supported in `setObject/getObject`.
+
+Also note that PostgreSQL always stores DateTime values internally as UTC.
+Thus when retrieving the date back from the Database again you will get the same Instant representation, but in a the local TimeZone!
+
+
+
+==== MySQL & MariaDB
+
+MySQL supports LocalDate, LocalTime and LocalDateTime in `setObject/getObject`.
+It also supports OffsetTime and OffsetDateTime in `setObject/getObject`, but only via conversion.
+So the MySQL JDBC driver will effectively convert them to the local timezone and keep the 'Instant'.
+
+MariaDB does basically the same.
+
+==== Oracle
+

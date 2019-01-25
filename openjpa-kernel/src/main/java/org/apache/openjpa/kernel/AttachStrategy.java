@@ -181,6 +181,11 @@ abstract class AttachStrategy
                 break;
             case JavaTypes.DATE:
             case JavaTypes.CALENDAR:
+            case JavaTypes.LOCAL_DATE:
+            case JavaTypes.LOCAL_TIME:
+            case JavaTypes.LOCAL_DATETIME:
+            case JavaTypes.OFFSET_TIME:
+            case JavaTypes.OFFSET_DATETIME:
             case JavaTypes.NUMBER:
             case JavaTypes.BOOLEAN_OBJ:
             case JavaTypes.BYTE_OBJ:
@@ -219,7 +224,7 @@ abstract class AttachStrategy
                         if (cpy != null) {
                             frmpc = cpy;
                         } else {
-                        	frmpc = getReference(manager, frmpc, sm, fmd);
+                            frmpc = getReference(manager, frmpc, sm, fmd);
                         }
                     }
                     else {

@@ -33,6 +33,11 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -318,6 +323,36 @@ public class ResultSetResult
     }
 
     @Override
+    protected LocalDate getLocalDateInternal(Object obj, Joins joins)
+            throws SQLException {
+        return _dict.getLocalDate(_rs, ((Number) obj).intValue());
+    }
+
+    @Override
+    protected LocalTime getLocalTimeInternal(Object obj, Joins joins)
+            throws SQLException {
+        return _dict.getLocalTime(_rs, ((Number) obj).intValue());
+    }
+
+    @Override
+    protected LocalDateTime getLocalDateTimeInternal(Object obj, Joins joins)
+            throws SQLException {
+        return _dict.getLocalDateTime(_rs, ((Number) obj).intValue());
+    }
+
+    @Override
+    protected OffsetTime getOffsetTimeInternal(Object obj, Joins joins)
+            throws SQLException {
+        return _dict.getOffsetTime(_rs, ((Number) obj).intValue());
+    }
+
+    @Override
+    protected OffsetDateTime getOffsetDateTimeInternal(Object obj, Joins joins)
+            throws SQLException {
+        return _dict.getOffsetDateTime(_rs, ((Number) obj).intValue());
+    }
+
+    @Override
     protected char getCharInternal(Object obj, Joins joins)
         throws SQLException {
         return _dict.getChar(_rs, ((Number) obj).intValue());
@@ -385,8 +420,7 @@ public class ResultSetResult
     }
 
     @Override
-    protected Object getObjectInternal(Object obj, int metaTypeCode,
-        Object arg, Joins joins)
+    protected Object getObjectInternal(Object obj, int metaTypeCode, Object arg, Joins joins)
         throws SQLException {
         if (metaTypeCode == -1 && obj instanceof Column)
             metaTypeCode = ((Column) obj).getJavaType();
@@ -439,6 +473,16 @@ public class ResultSetResult
                 return getDateInternal(obj, joins);
             case JavaTypes.CALENDAR:
                 return getCalendarInternal(obj, joins);
+            case JavaTypes.LOCAL_DATE:
+                return getLocalDateInternal(obj, joins);
+            case JavaTypes.LOCAL_TIME:
+                return getLocalTimeInternal(obj, joins);
+            case JavaTypes.LOCAL_DATETIME:
+                return getLocalDateTimeInternal(obj, joins);
+            case JavaTypes.OFFSET_TIME:
+                return getOffsetTimeInternal(obj, joins);
+            case JavaTypes.OFFSET_DATETIME:
+                return getOffsetDateTimeInternal(obj, joins);
             case JavaTypes.BIGDECIMAL:
                 return getBigDecimalInternal(obj, joins);
             case JavaTypes.NUMBER:

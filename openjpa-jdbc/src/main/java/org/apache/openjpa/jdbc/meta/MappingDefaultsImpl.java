@@ -27,7 +27,6 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
-import org.apache.openjpa.jdbc.meta.strats.LocalDateValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.UntypedPCValueHandler;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -535,11 +534,6 @@ public class MappingDefaultsImpl
             EnumValueHandler enumHandler = new EnumValueHandler();
             enumHandler.setStoreOrdinal(_ordinalEnum);
             return enumHandler;
-        }
-
-        if (java.time.LocalDate.class == type) {
-            // we can compare with == since LocalDate is final
-            return new LocalDateValueHandler();
         }
 
         return null;

@@ -2464,7 +2464,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
         Object failedObject = null;
         if (t[0] instanceof OpenJPAException){
-        	failedObject = ((OpenJPAException)t[0]).getFailedObject();
+            failedObject = ((OpenJPAException)t[0]).getFailedObject();
         }
 
         return new StoreException(_loc.get("rolled-back")).

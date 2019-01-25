@@ -24,6 +24,11 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -84,6 +89,15 @@ public class JavaTypes {
     public static final int INPUT_READER = 31;
     public static final int ENUM = 32;
 
+    // Java8 time API
+    public static final int LOCAL_DATE = 33;
+    public static final int LOCAL_TIME = 34;
+    public static final int LOCAL_DATETIME = 35;
+    public static final int OFFSET_TIME = 36;
+    public static final int OFFSET_DATETIME = 37;
+
+
+
     private static final Localizer _loc = Localizer.forPackage(JavaTypes.class);
 
     private static final Map<Class<?>, Integer> _typeCodes = new HashMap<>();
@@ -110,6 +124,13 @@ public class JavaTypes {
         _typeCodes.put(PersistenceCapable.class, PC_UNTYPED);
         _typeCodes.put(Properties.class, MAP);
         _typeCodes.put(Calendar.class, CALENDAR);
+
+        // Java8 time API
+        _typeCodes.put(LocalDate.class, LOCAL_DATE);
+        _typeCodes.put(LocalTime.class, LOCAL_TIME);
+        _typeCodes.put(LocalDateTime.class, LOCAL_DATETIME);
+        _typeCodes.put(OffsetTime.class, OFFSET_TIME);
+        _typeCodes.put(OffsetDateTime.class, OFFSET_DATETIME);
     }
 
     /**
@@ -139,9 +160,10 @@ public class JavaTypes {
             }
         }
 
-        Integer code = (Integer) _typeCodes.get(type);
-        if (code != null)
+        Integer code = _typeCodes.get(type);
+        if (code != null) {
             return code.intValue();
+        }
 
         // have to do this first to catch custom collection and map types;
         // on resolve we figure out if these custom types are
@@ -238,7 +260,7 @@ public class JavaTypes {
      */
     private static Class<?> classForName(String name, ClassMetaData meta,
             Class<?> dec, ValueMetaData vmd, ClassLoader loader) {
-    	return classForName(name, meta, dec, vmd,  loader, true);
+        return classForName(name, meta, dec, vmd,  loader, true);
     }
 
     /**
