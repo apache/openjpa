@@ -34,6 +34,10 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -64,11 +68,9 @@ import org.postgresql.largeobject.LargeObjectManager;
 /**
  * Dictionary for PostgreSQL.
  */
-public class PostgresDictionary
-    extends DBDictionary {
+public class PostgresDictionary extends DBDictionary {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (PostgresDictionary.class);
+    private static final Localizer _loc = Localizer.forPackage(PostgresDictionary.class);
 
 
     private Method dbcpGetDelegate;
@@ -121,6 +123,13 @@ public class PostgresDictionary
      * parm 2: '<column_name>'
      */
     public String isOwnedSequenceSQL = "SELECT pg_get_serial_sequence(?, ?)";
+
+
+    /**
+     * Since PostgreSQL
+     */
+    private boolean supportsTimezone;
+
 
     public PostgresDictionary() {
         platform = "PostgreSQL";
@@ -411,14 +420,15 @@ public class PostgresDictionary
                     }
                 }
             } catch (Throwable t) {
-                if (log.isWarnEnabled())
+                if (log.isWarnEnabled()) {
                     log.warn(_loc.get("psql-owned-seq-warning"), t);
+                }
                 return isOwnedSequence(strName);
             }
         } else {
             if(log.isTraceEnabled()) {
                 log.trace(String.format("Unable to query ownership for sequence %s using the connection. " +
-                		"Falling back to simpler detection based on the name",
+                                "Falling back to simpler detection based on the name",
                     name.getName()));
             }
 
@@ -723,6 +733,47 @@ public class PostgresDictionary
         }
     }
 
+
+    @Override
+    public LocalDate getLocalDate(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, LocalDate.class);
+    }
+
+    @Override
+    public LocalTime getLocalTime(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, LocalTime.class);
+    }
+
+    @Override
+    public LocalDateTime getLocalDateTime(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, LocalDateTime.class);
+    }
+
+    @Override
+    public OffsetDateTime getOffsetDateTime(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, OffsetDateTime.class);
+    }
+
+    @Override
+    public void setLocalDate(PreparedStatement stmnt, int idx, LocalDate val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public void setLocalTime(PreparedStatement stmnt, int idx, LocalTime val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public void setLocalDateTime(PreparedStatement stmnt, int idx, LocalDateTime val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public void setOffsetDateTime(PreparedStatement stmnt, int idx, OffsetDateTime val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
     /**
      * Determine XML column support and backslash handling.
      */
@@ -967,8 +1018,7 @@ public class PostgresDictionary
     /**
      * Connection wrapper to work around the postgres empty result set bug.
      */
-    protected static class PostgresConnection
-        extends DelegatingConnection {
+    protected static class PostgresConnection extends DelegatingConnection {
 
         private final PostgresDictionary _dict;
 
@@ -996,8 +1046,7 @@ public class PostgresDictionary
     /**
      * Statement wrapper to work around the postgres empty result set bug.
      */
-    protected static class PostgresPreparedStatement
-        extends DelegatingPreparedStatement {
+    protected static class PostgresPreparedStatement extends DelegatingPreparedStatement {
 
         private final PostgresDictionary _dict;
 

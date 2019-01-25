@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence.simple;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import javax.persistence.EntityManager;
+
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -35,12 +37,13 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     private static String VAL_LOCAL_TIME = "04:57:15";
     private static String VAL_LOCAL_DATETIME = "2019-01-01T01:00:00";
 
+
     @Override
     public void setUp() {
         setUp(CLEAR_TABLES, Java8TimeTypes.class);
     }
 
-    public void testJava8Types() throws Exception {
+    public void testJava8Types() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Java8TimeTypes e = new Java8TimeTypes();
@@ -63,8 +66,17 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         assertEquals(LocalTime.parse(VAL_LOCAL_TIME), eRead.getLocalTimeField());
         assertEquals(LocalDate.parse(VAL_LOCAL_DATE), eRead.getLocalDateField());
         assertEquals(LocalDateTime.parse(VAL_LOCAL_DATETIME), eRead.getLocalDateTimeField());
-        assertEquals(e.getOffsetTimeField(), eRead.getOffsetTimeField());
-        assertEquals(e.getOffsetDateTimeField(), eRead.getOffsetDateTimeField());
+
+
+        // Many databases do not support WITH TIMEZONE syntax.
+        // Thus we can only portably ensure tha the same instant is used at least.
+        assertEquals(Instant.from(e.getOffsetDateTimeField()),
+                Instant.from(eRead.getOffsetDateTimeField()));
+
+        assertEquals(e.getOffsetTimeField().withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()),
+                eRead.getOffsetTimeField());
     }
+
+
 
 }

@@ -51,7 +51,6 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -370,6 +369,8 @@ public class DBDictionary
     public String structTypeName = "STRUCT";
     public String timeTypeName = "TIME";
     public String timestampTypeName = "TIMESTAMP";
+    public String timeWithZoneTypeName = "TIME WITH TIME ZONE";
+    public String timestampWithZoneTypeName = "TIMESTAMP WITH TIME ZONE";
     public String tinyintTypeName = "TINYINT";
     public String varbinaryTypeName = "VARBINARY";
     public String varcharTypeName = "VARCHAR";
@@ -1222,10 +1223,12 @@ public class DBDictionary
      */
     public void setDate(PreparedStatement stmnt, int idx, java.sql.Date val, Calendar cal, Column col)
         throws SQLException {
-        if (cal == null)
+        if (cal == null) {
             stmnt.setDate(idx, val);
-        else
+        }
+        else {
             stmnt.setDate(idx, val, cal);
+        }
     }
 
     /**
@@ -1292,8 +1295,7 @@ public class DBDictionary
     /**
      * Set the given value as a parameter to the statement.
      */
-    public void setDouble(PreparedStatement stmnt, int idx, double val,
-        Column col)
+    public void setDouble(PreparedStatement stmnt, int idx, double val, Column col)
         throws SQLException {
         stmnt.setDouble(idx, val);
     }
@@ -1301,8 +1303,7 @@ public class DBDictionary
     /**
      * Set the given value as a parameter to the statement.
      */
-    public void setFloat(PreparedStatement stmnt, int idx, float val,
-        Column col)
+    public void setFloat(PreparedStatement stmnt, int idx, float val, Column col)
         throws SQLException {
         stmnt.setFloat(idx, val);
     }
@@ -1326,8 +1327,7 @@ public class DBDictionary
     /**
      * Set the given value as a parameter to the statement.
      */
-    public void setLocale(PreparedStatement stmnt, int idx, Locale val,
-        Column col)
+    public void setLocale(PreparedStatement stmnt, int idx, Locale val, Column col)
         throws SQLException {
         setString(stmnt, idx, val.getLanguage() + "_" + val.getCountry()
             + "_" + val.getVariant(), col);
@@ -1337,8 +1337,7 @@ public class DBDictionary
      * Set null as a parameter to the statement. The column
      * type will come from {@link Types}.
      */
-    public void setNull(PreparedStatement stmnt, int idx, int colType,
-        Column col)
+    public void setNull(PreparedStatement stmnt, int idx, int colType, Column col)
         throws SQLException {
         stmnt.setNull(idx, colType);
     }
@@ -1346,8 +1345,7 @@ public class DBDictionary
     /**
      * Set the given value as a parameter to the statement.
      */
-    public void setNumber(PreparedStatement stmnt, int idx, Number num,
-        Column col)
+    public void setNumber(PreparedStatement stmnt, int idx, Number num, Column col)
         throws SQLException {
         // check for known floating point types to give driver a chance to
         // handle special numbers like NaN and infinity; bug #1053
@@ -1363,8 +1361,7 @@ public class DBDictionary
      * Set the given value as a parameter to the statement. The column
      * type will come from {@link Types}.
      */
-    public void setObject(PreparedStatement stmnt, int idx, Object val,
-        int colType, Column col)
+    public void setObject(PreparedStatement stmnt, int idx, Object val, int colType, Column col)
         throws SQLException {
         if (colType == -1 || colType == Types.OTHER)
             stmnt.setObject(idx, val);
@@ -1383,8 +1380,7 @@ public class DBDictionary
     /**
      * Set the given value as a parameter to the statement.
      */
-    public void setShort(PreparedStatement stmnt, int idx, short val,
-        Column col)
+    public void setShort(PreparedStatement stmnt, int idx, short val, Column col)
         throws SQLException {
         stmnt.setShort(idx, val);
     }
@@ -1392,8 +1388,7 @@ public class DBDictionary
     /**
      * Set the given value as a parameter to the statement.
      */
-    public void setString(PreparedStatement stmnt, int idx, String val,
-        Column col)
+    public void setString(PreparedStatement stmnt, int idx, String val, Column col)
         throws SQLException {
         stmnt.setString(idx, val);
     }
@@ -1401,8 +1396,7 @@ public class DBDictionary
     /**
      * Set the given value as a parameter to the statement.
      */
-    public void setTime(PreparedStatement stmnt, int idx, Time val,
-        Calendar cal, Column col)
+    public void setTime(PreparedStatement stmnt, int idx, Time val, Calendar cal, Column col)
         throws SQLException {
         if (cal == null)
             stmnt.setTime(idx, val);
@@ -1413,8 +1407,7 @@ public class DBDictionary
     /**
      * Set the given value as a parameter to the statement.
      */
-    public void setTimestamp(PreparedStatement stmnt, int idx,
-        Timestamp val, Calendar cal, Column col)
+    public void setTimestamp(PreparedStatement stmnt, int idx, Timestamp val, Calendar cal, Column col)
         throws SQLException {
 
         val = StateManagerImpl.roundTimestamp(val, datePrecision);
@@ -1435,8 +1428,7 @@ public class DBDictionary
      * @param type the field mapping type code for the value
      * @param store the store manager for the current context
      */
-    public void setTyped(PreparedStatement stmnt, int idx, Object val,
-        Column col, int type, JDBCStore store)
+    public void setTyped(PreparedStatement stmnt, int idx, Object val, Column col, int type, JDBCStore store)
         throws SQLException {
         if (val == null) {
             setNull(stmnt, idx, (col == null) ? Types.OTHER : col.getType(),
@@ -1857,9 +1849,9 @@ public class DBDictionary
             case JavaTypes.LOCAL_DATETIME:
                 return getPreferredType(Types.TIMESTAMP);
             case JavaTypes.OFFSET_TIME:
-                return getPreferredType(Types.TIME);
+                return getPreferredType(Types.TIME_WITH_TIMEZONE);
             case JavaTypes.OFFSET_DATETIME:
-                return getPreferredType(Types.TIMESTAMP);
+                return getPreferredType(Types.TIMESTAMP_WITH_TIMEZONE);
             case JavaSQLTypes.SQL_ARRAY:
                 return getPreferredType(Types.ARRAY);
             case JavaSQLTypes.BINARY_STREAM:
@@ -1962,6 +1954,10 @@ public class DBDictionary
                 return timeTypeName;
             case Types.TIMESTAMP:
                 return timestampTypeName;
+            case Types.TIME_WITH_TIMEZONE:
+                return timeWithZoneTypeName;
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                return timestampWithZoneTypeName;
             case Types.TINYINT:
                 return tinyintTypeName;
             case Types.VARBINARY:

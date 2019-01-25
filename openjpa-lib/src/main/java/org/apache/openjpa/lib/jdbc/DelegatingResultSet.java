@@ -1077,12 +1077,12 @@ public class DelegatingResultSet implements ResultSet, Closeable {
 
     @Override
     public <T>T getObject(String columnLabel, Class<T> type) throws SQLException{
-    	throw new UnsupportedOperationException();
+        return _rs.getObject(columnLabel, type);
     }
 
     @Override
     public <T>T getObject(int columnIndex, Class<T> type) throws SQLException{
-    	throw new UnsupportedOperationException();
+        return _rs.getObject(columnIndex, type);
     }
 }
 

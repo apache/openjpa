@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.sql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 
 import javax.sql.DataSource;
@@ -68,6 +69,8 @@ public class DerbyDictionary
         supportsNullUniqueColumn = false;
 
         supportsComments = true;
+
+        // Derby does still not support 'WITH TIMEZONE' from the SQL92 standard
 
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BIGINT", "INTEGER", "TEXT"
@@ -222,5 +225,20 @@ public class DerbyDictionary
             }
         }
         return count;
+    }
+
+    /**
+     * Derby doesn't support SQL-2003 'WITH TIMEZONE' nor the respective JDBC types.
+     */
+    @Override
+    public int getPreferredType(int type) {
+        switch (type) {
+            case Types.TIME_WITH_TIMEZONE:
+                return Types.TIME;
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                return Types.TIMESTAMP;
+            default:
+                return type;
+        }
     }
 }
