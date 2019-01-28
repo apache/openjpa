@@ -74,7 +74,7 @@ public class MariaDBDictionary extends DBDictionary {
      * combined <code>DELETE FROM foo, bar, baz</code> syntax.
      * Defaults to false, since this may fail in the presence of InnoDB tables
      * with foreign keys.
-     * @see http://dev.mysql.com/doc/refman/5.0/en/delete.html
+     * @link http://dev.mysql.com/doc/refman/5.0/en/delete.html
      */
     public boolean optimizeMultiTableDeletes = false;
 
@@ -97,6 +97,8 @@ public class MariaDBDictionary extends DBDictionary {
         requiresTargetForDelete = true;
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
+
+        datePrecision = MICRO;
 
         concatenateFunction = "CONCAT({0},{1})";
 
@@ -153,11 +155,11 @@ public class MariaDBDictionary extends DBDictionary {
         }));
 
         requiresSearchStringEscapeForLike = true;
+
         // MariaDB requires double-escape for strings
         searchStringEscape = "\\\\";
 
-        typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED",
-            "ZEROFILL" }));
+        typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED", "ZEROFILL" }));
 
         setLeadingDelimiter(DELIMITER_BACK_TICK);
         setTrailingDelimiter(DELIMITER_BACK_TICK);
@@ -186,6 +188,13 @@ public class MariaDBDictionary extends DBDictionary {
         }
 
         supportsXMLColumn = true;
+
+        if (maj > 10 || (maj == 10 && min > 1)) {
+            // MariaDB supports fraction of a second
+            timestampTypeName = "DATETIME{0}";
+            fixedSizeTypeNameSet.remove(timestampTypeName);
+            fractionalTypeNameSet.add(timestampTypeName);
+        }
     }
 
     @Override
