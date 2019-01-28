@@ -330,8 +330,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     }
 
     public void testLowerFunc2() {
-        String query = "select e.age From CompUser e where LOWER(e.name)" +
-        		" ='ugo'";
+        String query = "select e.age From CompUser e where LOWER(e.name) ='ugo'";
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<CompUser> e = q.from(CompUser.class);
         q.where(cb.equal(cb.lower(e.get(CompUser_.name)), "ugo"));
@@ -342,7 +341,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     public void testUpperFunc1() {
         String query = "select UPPER(e.name) From CompUser e WHERE " +
-        		"e.computerName='PC'";
+                       "e.computerName='PC'";
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<CompUser> e = q.from(CompUser.class);
         q.select(cb.upper(e.get(CompUser_.name)));

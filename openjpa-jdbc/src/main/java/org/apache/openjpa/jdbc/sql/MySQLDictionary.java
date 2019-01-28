@@ -156,11 +156,11 @@ public class MySQLDictionary
         }));
 
         requiresSearchStringEscapeForLike = true;
+
         // MySQL requires double-escape for strings
         searchStringEscape = "\\\\";
 
-        typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED",
-            "ZEROFILL" }));
+        typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED", "ZEROFILL" }));
 
         setLeadingDelimiter(DELIMITER_BACK_TICK);
         setTrailingDelimiter(DELIMITER_BACK_TICK);
@@ -356,8 +356,7 @@ public class MySQLDictionary
         throws SQLException {
         // if the user has set a get-blob strategy explicitly or the driver
         // does not automatically deserialize, delegate to super
-        if (useGetBytesForBlobs || useGetObjectForBlobs
-            || !driverDeserializesBlobs)
+        if (useGetBytesForBlobs || useGetObjectForBlobs || !driverDeserializesBlobs)
             return super.getBlobObject(rs, column, store);
 
         // most mysql drivers deserialize on getObject
