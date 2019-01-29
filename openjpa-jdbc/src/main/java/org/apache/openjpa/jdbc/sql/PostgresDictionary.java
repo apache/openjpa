@@ -125,12 +125,6 @@ public class PostgresDictionary extends DBDictionary {
     public String isOwnedSequenceSQL = "SELECT pg_get_serial_sequence(?, ?)";
 
 
-    /**
-     * Since PostgreSQL
-     */
-    private boolean supportsTimezone;
-
-
     public PostgresDictionary() {
         platform = "PostgreSQL";
         validationSQL = "SELECT NOW()";
