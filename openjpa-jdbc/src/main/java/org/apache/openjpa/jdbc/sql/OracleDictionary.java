@@ -34,6 +34,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -192,6 +197,7 @@ public class OracleDictionary
         varbinaryTypeName = "BLOB";
         longVarbinaryTypeName = "BLOB";
         timeTypeName = "DATE";
+        timeWithZoneTypeName = "DATE";
         varcharTypeName = "VARCHAR2{0}";
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "LONG RAW", "RAW", "LONG", "REF",
@@ -540,8 +546,9 @@ public class OracleDictionary
      */
     private boolean requiresSubselectForRange(long start, long end,
         boolean distinct, SQLBuffer order) {
-    	if (!isUsingRange(start, end))
-    		return false;
+        if (!isUsingRange(start, end)) {
+            return false;
+        }
         return isUsingOffset(start) || distinct || isUsingOrderBy(order);
     }
 
@@ -763,8 +770,7 @@ public class OracleDictionary
      * Convert an object from its proprietary Oracle type to the standard
      * Java type.
      */
-    private static Object convertFromOracleType(Object obj,
-        String convertMethod)
+    private static Object convertFromOracleType(Object obj, String convertMethod)
         throws SQLException {
         try {
             Method m = obj.getClass().getMethod(convertMethod, (Class[]) null);
@@ -819,6 +825,22 @@ public class OracleDictionary
         }
         return cols;
     }
+
+    /**
+     * Oracle JDBC is still Java7 at most :(
+     */
+    @Override
+    public int getPreferredType(int type) {
+        switch (type) {
+            case Types.TIME_WITH_TIMEZONE:
+                return Types.TIME;
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                return Types.TIMESTAMP;
+            default:
+                return type;
+        }
+    }
+
 
     @Override
     public PrimaryKey[] getPrimaryKeys(DatabaseMetaData meta,
