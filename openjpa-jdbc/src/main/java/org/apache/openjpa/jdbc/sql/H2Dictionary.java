@@ -69,6 +69,9 @@ public class H2Dictionary extends DBDictionary {
         supportsLockingWithOuterJoin = false;
         supportsLockingWithInnerJoin = false;
 
+        // no timezone support for time in h2
+        timeWithZoneTypeName = "TIME";
+
         reservedWordSet.addAll(Arrays.asList(new String[] {
             "CURRENT_TIMESTAMP", "CURRENT_TIME", "CURRENT_DATE", "CROSS",
             "DISTINCT", "EXCEPT", "EXISTS", "FROM", "FOR", "FALSE", "FULL",

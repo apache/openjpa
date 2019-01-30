@@ -4755,6 +4755,9 @@ public class DBDictionary
      * from {@link DatabaseMetaData}.
      */
     protected String getTableNameForMetadata(DBIdentifier tableName) {
+        if (tableName == null) {
+            return null;
+        }
         return convertSchemaCase(tableName.getUnqualifiedName());
     }
 
