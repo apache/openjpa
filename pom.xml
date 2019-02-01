@@ -439,7 +439,7 @@
                 </property>
             </activation>
             <properties>
-                <h2.version>1.4.197</h2.version>
+                <h2.version>1.4.196</h2.version>
                 <connection.driver.name>org.h2.Driver</connection.driver.name>
                 <connection.url>jdbc:h2:./target/database/openjpa-h2-database</connection.url>
                 <connection.username />
