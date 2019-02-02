@@ -33,7 +33,7 @@ public class TestEJBQueryInterface extends BaseQueryTest {
 
     @Override
     public void setUp() throws Exception {
-        super.setUp(Entity1.class, Entity2.class, Order.class, OrderItem.class, "openjpa.Log", "SQL=Trace");
+        super.setUp(Entity1.class, Entity2.class, Order.class, OrderItem.class);
 
         int instNum = 10;
 
