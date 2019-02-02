@@ -37,11 +37,16 @@ public class TestEJBQueryInterface extends AbstractTestCase {
 
     @Override
     public void setUp() {
-        deleteAll(Entity1.class);
 
         int instNum = 10;
 
         EntityManager em = currentEntityManager();
+
+        startTx(em);
+        deleteAll(Entity1.class, em);
+        deleteAll(Entity2.class, em);
+        endTx(em);
+
         startTx(em);
 
         //create and persist multiple entity1 instances

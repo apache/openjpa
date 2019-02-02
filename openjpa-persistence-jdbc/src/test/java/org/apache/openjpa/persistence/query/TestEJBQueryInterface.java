@@ -33,11 +33,17 @@ public class TestEJBQueryInterface extends BaseQueryTest {
 
     @Override
     public void setUp() throws Exception {
-        super.setUp(Entity1.class, Entity2.class, Order.class, OrderItem.class);
+        super.setUp(Entity1.class, Entity2.class, Order.class, OrderItem.class, "openjpa.Log", "SQL=Trace");
 
         int instNum = 10;
 
         EntityManager em = currentEntityManager();
+
+        startTx(em);
+        deleteAll(Entity1.class, em);
+        deleteAll(Entity2.class, em);
+        endTx(em);
+
         startTx(em);
 
         //create and persist multiple entity1 instances
