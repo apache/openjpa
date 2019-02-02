@@ -79,13 +79,50 @@ public class H2Dictionary extends DBDictionary {
         timeWithZoneTypeName = "TIME";
 
         reservedWordSet.addAll(Arrays.asList(new String[] {
-            "CURRENT_TIMESTAMP", "CURRENT_TIME", "CURRENT_DATE", "CROSS",
-            "DISTINCT", "EXCEPT", "EXISTS", "FROM", "FOR", "FALSE", "FULL",
-            "GROUP", "HAVING", "INNER", "INTERSECT", "IS", "JOIN", "LIKE",
-            "MINUS", "NATURAL", "NOT", "NULL", "ON", "ORDER", "PRIMARY",
-            "ROWNUM", "SELECT", "SYSDATE", "SYSTIME", "SYSTIMESTAMP", "TODAY",
-            "TRUE", "UNION", "WHERE"
-            }));
+                "ALL",
+                "CHECK",
+                "CONSTRAINT",
+                "CROSS",
+                "CURRENT_DATE",
+                "CURRENT_TIME",
+                "CURRENT_TIMESTAMP",
+                "DISTINCT",
+                "EXCEPT",
+                "EXISTS",
+                "FALSE",
+                "FETCH",
+                "FOR",
+                "FOREIGN",
+                "FROM",
+                "FULL",
+                "GROUP",
+                "HAVING",
+                "INNER",
+                "INTERSECT",
+                "IS",
+                "JOIN",
+                "LIKE",
+                "LIMIT",
+                "MINUS",
+                "NATURAL",
+                "NOT",
+                "NULL",
+                "OFFSET",
+                "ON",
+                "ORDER",
+                "PRIMARY",
+                "ROWNUM",
+                "SELECT",
+                "SYSDATE",
+                "SYSTIME",
+                "SYSTIMESTAMP",
+                "TODAY",
+                "TRUE",
+                "UNION",
+                "UNIQUE",
+                "WHERE",
+                "WITH"
+        }));
 
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
