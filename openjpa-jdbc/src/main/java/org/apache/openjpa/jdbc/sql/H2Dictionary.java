@@ -20,8 +20,14 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -217,6 +223,50 @@ public class H2Dictionary extends DBDictionary {
         Column[] cols = super.getColumns(meta, catalog, schemaName, tableName,
             columnName, conn);
         return cols;
+    }
+
+    @Override
+    public void setLocalDate(PreparedStatement stmnt, int idx, LocalDate val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public LocalDate getLocalDate(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, LocalDate.class);
+    }
+
+    @Override
+    public void setLocalTime(PreparedStatement stmnt, int idx, LocalTime val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public LocalTime getLocalTime(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, LocalTime.class);
+    }
+
+    @Override
+    public void setLocalDateTime(PreparedStatement stmnt, int idx, LocalDateTime val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    @Override
+    public LocalDateTime getLocalDateTime(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, LocalDateTime.class);
+    }
+
+    @Override
+    public void setOffsetDateTime(PreparedStatement stmnt, int idx, OffsetDateTime val, Column col) throws SQLException {
+        stmnt.setObject(idx, val);
+    }
+
+    /**
+     * h2 does intentionally not support {@code getTimestamp()} for 'TIME WITH TIME ZONE' columns.
+     * See h2 ticket #413.
+     */
+    @Override
+    public OffsetDateTime getOffsetDateTime(ResultSet rs, int column) throws SQLException {
+        return rs.getObject(column, OffsetDateTime.class);
     }
 
     @Override
