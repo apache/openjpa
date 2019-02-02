@@ -27,12 +27,16 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.RollbackException;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
+/**
+ * Test only works in Derby due to the simple-JNDI setup
+ */
 public class TestSwitchConnection extends SingleEMFTestCase {
     private String defaultJndiName = "jdbc/mocked";
     private String[] jndiNames = { "jdbc/mocked1" };
@@ -52,8 +56,7 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         super.setUp(Person.class, CLEAR_TABLES);
         OpenJPAEntityManager em = emf.createEntityManager();
         JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
-        String user = conf.getConnectionUserName();
-        if (user != null && !user.equals("")) {
+        if (!(conf.getDBDictionaryInstance() instanceof DerbyDictionary)) {
             // Disable for non-Derby, due to connectionUserName to schema mapping failures
             setTestsDisabled(true);
             getLog().trace("TestOverrideNonJtaDataSource can only be executed against Derby w/o a schema");
