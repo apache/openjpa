@@ -30,82 +30,83 @@ import org.apache.openjpa.persistence.QueryImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestOutOfBoundsEx extends SingleEMFTestCase {
-	private EntityManager em = null;
-	private Lookup lookup;
+    private EntityManager em = null;
+    private Lookup lookup;
 
-	@Override
+    @Override
     public void setUp() throws Exception {
-		super.setUp(Lookup.class, Case.class, Role.class, ScheduledAssignment.class, ScheduleDay.class,
-        DROP_TABLES);
-		em = emf.createEntityManager();
-		insertLookups();
-	}
+        super.setUp(DROP_TABLES, Lookup.class, Case.class, Role.class,
+                ScheduledAssignment.class, ScheduleDay.class,
+                "openjpa.Log", "SQL=Trace");
+        em = emf.createEntityManager();
+        insertLookups();
+    }
 
-	public void testOutOfBounds() throws Exception {
-		Calendar cal = Calendar.getInstance();
-		final Date date = cal.getTime();
-		ScheduleDay sd = insertScheduleDay(date);
+    public void testOutOfBounds() throws Exception {
+        Calendar cal = Calendar.getInstance();
+        final Date date = cal.getTime();
+        ScheduleDay sd = insertScheduleDay(date);
 
-		Role role1 = insertJob();
-		Role role2 = insertJob();
-		Case kase1 = insertCase(sd);
-		Case kase2 = insertCase(sd);
-		insertScheduledAssignmentInCase(role1, kase2);
+        Role role1 = insertJob();
+        Role role2 = insertJob();
+        Case kase1 = insertCase(sd);
+        Case kase2 = insertCase(sd);
+        insertScheduledAssignmentInCase(role1, kase2);
 
-		// simulate new web transaction on different em
-		em.close();
-		em = emf.createEntityManager();
+        // simulate new web transaction on different em
+        em.close();
+        em = emf.createEntityManager();
 
-		Query query = em.createQuery("select o from Case as o" +
-				" where o.scheduleDay = :sd");
-		query.setParameter("sd", sd);
-		FetchPlan fetchPlan = ((QueryImpl) query).getFetchPlan();
-		fetchPlan.addField(Case.class, "scheduledAssignments");
+        Query query = em.createQuery("select o from Case as o" +
+                " where o.scheduleDay = :sd");
+        query.setParameter("sd", sd);
+        FetchPlan fetchPlan = ((QueryImpl) query).getFetchPlan();
+        fetchPlan.addField(Case.class, "scheduledAssignments");
 
-		//Without the changes of OJ1424, this next call would cause an
-		//ArrayIndexOutOfBoundsException.
-		List<Case> allCases = query.getResultList();
-	}
+        //Without the changes of OJ1424, this next call would cause an
+        //ArrayIndexOutOfBoundsException.
+        List<Case> allCases = query.getResultList();
+    }
 
-	public void insertLookups() {
-		lookup = new Lookup();
-		lookup.setName("XYZ");
-		lookup.setId(1);
-		save(lookup);
-	}
+    public void insertLookups() {
+        lookup = new Lookup();
+        lookup.setName("XYZ");
+        lookup.setId(1);
+        save(lookup);
+    }
 
-	public void save(Object obj) {
-		em.getTransaction().begin();
-		em.persist(obj);
-		em.getTransaction().commit();
-	}
+    public void save(Object obj) {
+        em.getTransaction().begin();
+        em.persist(obj);
+        em.getTransaction().commit();
+    }
 
-	public Role insertJob() {
-		Role role = new Role();
-		role.setLookup(lookup);
-		save(role);
-		return role;
-	}
+    public Role insertJob() {
+        Role role = new Role();
+        role.setLookup(lookup);
+        save(role);
+        return role;
+    }
 
-	public Case insertCase(ScheduleDay sd) throws Exception {
-		Case kase = new Case();
-		kase.setScheduleDay(sd);
-		save(kase);
-		return kase;
-	}
+    public Case insertCase(ScheduleDay sd) throws Exception {
+        Case kase = new Case();
+        kase.setScheduleDay(sd);
+        save(kase);
+        return kase;
+    }
 
-	public void insertScheduledAssignmentInCase(Role job, Case kase) {
-		ScheduledAssignment sa = new ScheduledAssignment();
-		sa.setRole(job);
-		sa.setCase(kase);
-		sa.setScheduleDay(kase.getScheduleDay());
-		save(sa);
-	}
+    public void insertScheduledAssignmentInCase(Role job, Case kase) {
+        ScheduledAssignment sa = new ScheduledAssignment();
+        sa.setRole(job);
+        sa.setCase(kase);
+        sa.setScheduleDay(kase.getScheduleDay());
+        save(sa);
+    }
 
-	public ScheduleDay insertScheduleDay(Date date) {
-		ScheduleDay sd = new ScheduleDay();
-		sd.setDate(date);
-		save(sd);
-		return sd;
-	}
+    public ScheduleDay insertScheduleDay(Date date) {
+        ScheduleDay sd = new ScheduleDay();
+        sd.setDate(date);
+        save(sd);
+        return sd;
+    }
 }
