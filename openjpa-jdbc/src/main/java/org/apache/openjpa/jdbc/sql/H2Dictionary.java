@@ -225,8 +225,6 @@ public class H2Dictionary extends DBDictionary {
         if (end != Long.MAX_VALUE)
             buf.append(" LIMIT ").appendValue(end - start);
         if (start != 0) {
-            if(end == Long.MAX_VALUE)
-                buf.append(" LIMIT 0");
             buf.append(" OFFSET ").appendValue(start);
         }
     }
