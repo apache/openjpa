@@ -18,20 +18,33 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMultiEmEntityListeners extends SingleEMFTestCase {
+    private boolean skipped = false;
 
     @Override
     public void setUp() {
         setUp(CLEAR_TABLES, ListenerInEntity.class, AddListenerEntity.class
 //                , "openjpa.Compatibility", "SingletonLifecycleEventManager=true"
             );
+        DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
+        if (dict instanceof HSQLDictionary) {
+            getLog().warn("Skipping test " + getClass().getSimpleName() + " because of a known bug in the Database");
+            skipped = true;
+        }
     }
 
     public void testListenerInEntity1() {
+        if (skipped) {
+            return;
+        }
+
         OpenJPAEntityManager em1 = null;
         OpenJPAEntityManager em2 = null;
         try {
@@ -133,6 +146,10 @@ public class TestMultiEmEntityListeners extends SingleEMFTestCase {
     }
 
     public void testAddListenerEntity1() {
+        if (skipped) {
+            return;
+        }
+
         OpenJPAEntityManager em1 = null;
         OpenJPAEntityManager em2 = null;
         try {
