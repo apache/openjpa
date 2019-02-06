@@ -209,6 +209,9 @@ For running against a MariaDB Docker installation:
 For running against a h2 based installation:
  -ea -Dopenjpa.ConnectionDriverName=org.h2.Driver -Dopenjpa.ConnectionURL=jdbc:h2:./target/database/openjpa-h2-database -Dopenjpa.ConnectionUserName=root -Dopenjpa.ConnectionPassword=openjpatst
 
+For running against a hsqldb based installation:
+ -ea -Dopenjpa.ConnectionDriverName=org.hsqldb.Driver -Dopenjpa.ConnectionURL=jdbc:hsqldb:mem:openjpa20-hsqldb-database -Dopenjpa.ConnectionUserName=sa -Dopenjpa.ConnectionPassword=
+
 TODO: finish!
 
 For starting tests in `openjpa-persistence-jdbc` inside a compiler you can also trigger all the enhancement manually via:
