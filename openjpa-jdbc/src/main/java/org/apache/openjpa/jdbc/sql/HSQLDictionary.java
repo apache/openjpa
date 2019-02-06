@@ -82,8 +82,8 @@ public class HSQLDictionary extends DBDictionary {
 
         doubleTypeName = "NUMERIC";
 
-        supportsNullTableForGetPrimaryKeys = true;
-        supportsNullTableForGetIndexInfo = true;
+        supportsNullTableForGetPrimaryKeys = false;
+        supportsNullTableForGetIndexInfo = false;
 
         requiresCastForMathFunctions = true;
         requiresCastForComparisons = true;
