@@ -73,6 +73,7 @@ public abstract class AbstractSQLServerDictionary
         dateTypeName = "DATETIME";
         timeTypeName = "DATETIME";
         timestampTypeName = "DATETIME";
+        timestampWithZoneTypeName = "DATETIMEOFFSET";
         floatTypeName = "FLOAT(16)";
         doubleTypeName = "FLOAT(32)";
         integerTypeName = "INT";
