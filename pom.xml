@@ -79,8 +79,8 @@
         <hsqldb.version>2.4.1</hsqldb.version>
         <mysql.connector.version>5.1.47</mysql.connector.version>
         <mariadb.connector.version>2.2.0</mariadb.connector.version>
-
         <postgresql.connector.version>42.2.5</postgresql.connector.version>
+        <mssql.connector.version>7.2.0.jre8</mssql.connector.version>
 
         <!-- other common versions -->
         <slf4j.version>1.7.23</slf4j.version>
@@ -918,6 +918,74 @@
                     </releases>
                 </repository>
             </repositories>
+        </profile>
+
+        <!-- Profile for testing with Microsoft SQLServer DB via Docker -->
+        <profile>
+            <id>test-mssql-docker</id>
+            <activation>
+                <property>
+                    <name>test-mssql-docker</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.microsoft.sqlserver</groupId>
+                    <artifactId>mssql-jdbc</artifactId>
+                    <version>${mssql.connector.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>com.microsoft.sqlserver.jdbc.SQLServerDriver</connection.driver.name>
+
+                <!-- default settings for local docker -->
+                <docker.external.mssql.port>1433</docker.external.mssql.port>
+                <openjpa.mssql.dbname>openjpatst</openjpa.mssql.dbname>
+                <openjpa.mssql.username>SA</openjpa.mssql.username>
+                <openjpa.mssql.password>OpenJP8tst</openjpa.mssql.password>
+                <openjpa.mssql.url>jdbc:sqlserver://localhost:${docker.external.mssql.port}</openjpa.mssql.url>
+
+                <!--<connection.url>jdbc:postgresql://localhost/openjpa</connection.url>-->
+                <connection.url>${openjpa.mssql.url}</connection.url>
+                <connection.username>${openjpa.mssql.username}</connection.username>
+                <connection.password>${openjpa.mssql.password}</connection.password>
+                <jdbc.DBDictionary />
+
+                <!-- DBCP overrides -->
+                <dbcp.maxIdle>20</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+                <dbcp.maxTotal>20</dbcp.maxTotal>
+
+                <mssql.server.version>2017-CU12-ubuntu</mssql.server.version>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>mcr.microsoft.com/mssql/server:${mssql.server.version}</name>
+                                    <run>
+                                        <env>
+                                            <!-- For more info on the EULA see https://go.microsoft.com/fwlink/?LinkId=746388 -->
+                                            <ACCEPT_EULA>Y</ACCEPT_EULA>
+                                            <SA_PASSWORD>${connection.password}</SA_PASSWORD>
+                                        </env>
+                                        <ports>
+                                            <port>${docker.external.mssql.port}:1433</port>
+                                        </ports>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
         </profile>
 
         <!-- Profile for testing with SQLServer DB using the jTDS driver -->
