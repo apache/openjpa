@@ -548,7 +548,7 @@
             <properties>
                 <connection.driver.name>org.hsqldb.jdbcDriver</connection.driver.name>
                 <!--<connection.url>jdbc:hsqldb:target/database/openjpa-hsqldb-database;create=true</connection.url>-->
-                <connection.url>jdbc:hsqldb:mem:openjpa20-hsqldb-database</connection.url>
+                <connection.url>jdbc:hsqldb:mem:openjpa22-hsqldb-database</connection.url>
                 <connection.username>sa</connection.username>
                 <connection.password />
                 <jdbc.DBDictionary />
