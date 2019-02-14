@@ -43,6 +43,7 @@ import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
@@ -78,14 +79,18 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     SubqueryImpl(Class<T> cls, AbstractQuery<?> parent) {
         super(cls);
         _parent = parent;
+        OrderedMap params;
         if (parent instanceof CriteriaQueryImpl) {
             _model = ((CriteriaQueryImpl<?>)parent).getMetamodel();
+            params = ((CriteriaQueryImpl<?>)parent).getParameterTypes();
         } else if (parent instanceof SubqueryImpl) {
             _model = ((SubqueryImpl<?>)parent).getMetamodel();
+            params = ((SubqueryImpl<?>)parent).getInnermostParent().getParameterTypes();
         } else {
             _model = null;
+            params = null;
         }
-        _delegate = new CriteriaQueryImpl<>(_model, this);
+        _delegate = new CriteriaQueryImpl<>(_model, this, params);
     }
 
     /**

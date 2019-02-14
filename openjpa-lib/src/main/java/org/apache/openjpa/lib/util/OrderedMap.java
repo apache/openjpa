@@ -61,6 +61,7 @@ public class OrderedMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public void clear() {
+        _del.clear();
     }
 
 

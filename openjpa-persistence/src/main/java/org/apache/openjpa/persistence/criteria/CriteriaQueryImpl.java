@@ -115,11 +115,14 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * @param model the metamodel defines the scope of all persistent entity references.
      * @param delegator the subquery which will delegate to this receiver.
      */
-    CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<T> delegator) {
+    CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<T> delegator, OrderedMap params) {
         this._model = model;
         this._resultClass = delegator.getJavaType();
         _delegator = delegator;
         _aliases = getAliases();
+        if (params != null) {
+            this._params = params;
+        }
     }
 
     /**
@@ -225,8 +228,6 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * Registers the given parameter.
      */
     void registerParameter(ParameterExpressionImpl<?> p) {
-        if (_params == null)
-            _params = new OrderedMap/*<ParameterExpression<?>, Class<?>*/();
         if (!_params.containsKey(p)) {
             p.setIndex(_params.size());
             _params.put(p, p.getJavaType());
@@ -431,7 +432,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      */
     public OrderedMap<Object, Class<?>> getParameterTypes() {
         collectParameters(new CriteriaExpressionVisitor.ParameterVisitor(this));
-        return _params == null ? StoreQuery.EMPTY_ORDERED_PARAMS : _params;
+        return _params;
     }
 
     /**
@@ -654,7 +655,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
 
     void invalidateCompilation() {
         _compiled = false;
-        _params   = null;
+        _params.clear();
     }
 
     /**
