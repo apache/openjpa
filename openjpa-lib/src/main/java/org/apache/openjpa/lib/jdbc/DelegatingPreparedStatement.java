@@ -59,7 +59,7 @@ public class DelegatingPreparedStatement
     private /*final*/ Connection _conn;
 
     public DelegatingPreparedStatement(PreparedStatement stmnt, Connection conn) {
-    	initialize(stmnt, conn);
+        initialize(stmnt, conn);
     }
 
     public void initialize(PreparedStatement stmnt, Connection conn) {
@@ -664,11 +664,11 @@ public class DelegatingPreparedStatement
 
     @Override
     public boolean isCloseOnCompletion() throws SQLException{
-    	throw new UnsupportedOperationException();
+        return _stmnt.isCloseOnCompletion();
     }
 
     @Override
     public void closeOnCompletion() throws SQLException{
-    	throw new UnsupportedOperationException();
+        _stmnt.closeOnCompletion();
     }
 }
