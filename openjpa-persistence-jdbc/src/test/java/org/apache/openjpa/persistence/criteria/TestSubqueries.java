@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Parameter;
 import javax.persistence.Tuple;
@@ -582,35 +583,9 @@ public class TestSubqueries extends CriteriaTest {
     }
 
     public void testSubquery24() {
-
         em.getTransaction().begin();
 
-        em.createQuery("delete from Order o where o.customer.name = 'Capricorn'").executeUpdate();
-        em.createQuery("delete from Order o").executeUpdate();
-        em.createQuery("delete from Customer c where c.name = 'Capricorn'").executeUpdate();
-
-        em.flush();
-
-        Customer c1 = new Customer();
-        c1.setAccountNum(156);
-        c1.setFirstName("John");
-        c1.setLastName("Doe");
-        c1.setName("Capricorn");
-        em.persist(c1);
-
-        Order o1 = new Order();
-        o1.setCustomer(c1);
-        em.persist(o1);
-        o1 = new Order();
-        o1.setCustomer(c1);
-        em.persist(o1);
-
-        em.flush();
-
-        // em.getTransaction().commit();
-
-        // System.out.println("CUSTOMERS: "+em.createQuery("select count(c) from Customer c").getFirstResult());
-        // System.out.println("ORDERS: "+em.createQuery("select count(c) from Order c").getFirstResult());
+        freshCustomerAndOrder();
 
         CriteriaQuery<Long> q = cb.createQuery(Long.class);
         Root<Customer> root = q.from(Customer.class);
@@ -640,6 +615,79 @@ public class TestSubqueries extends CriteriaTest {
 
         em.getTransaction().rollback();
 
+        cleanCustomerAndOrder();
+    }
+
+    public void testSubquery25() {
+        em.getTransaction().begin();
+
+        freshCustomerAndOrder();
+
+        CriteriaQuery<Long> q = cb.createQuery(Long.class);
+        Root<Customer> root = q.from(Customer.class);
+        q.select(root.get(Customer_.accountNum));
+
+        ParameterExpression<String> testParam = cb.parameter(String.class, "param1");
+        ParameterExpression<String> testParam2 = cb.parameter(String.class, "param1");
+
+        Subquery<Customer> sq = q.subquery(Customer.class);
+        Root<Order> sqRoot = sq.from(Order.class);
+        sq.where(cb.and(
+                cb.equal(cb.parameter(String.class, "param2"), sqRoot.get(Order_.customer).get(Customer_.lastName)),
+                cb.equal(testParam, sqRoot.get(Order_.customer).get(Customer_.name))
+                ));
+        sq.select(sqRoot.get(Order_.customer));
+
+        q.where(cb.and(
+                cb.equal(testParam2, root.get(Customer_.name)),
+                cb.in(root).value(sq)
+        ));
+
+        // em.createQuery(q).getResultList();
+        TypedQuery<Long> tq = em.createQuery(q);
+        tq.setParameter("param1", "Capricorn");
+        tq.setParameter("param2", "Doe");
+
+        assertEquals(1, tq.getResultList().size());
+
+        em.getTransaction().rollback();
+
+        cleanCustomerAndOrder();
+    }
+
+    private void freshCustomerAndOrder() {
+        cleanCustomerAndOrder();
+
+        Customer c1 = new Customer();
+        c1.setAccountNum(156);
+        c1.setFirstName("John");
+        c1.setLastName("Doe");
+        c1.setName("Capricorn");
+        em.persist(c1);
+
+        Order o1 = new Order();
+        o1.setCustomer(c1);
+        em.persist(o1);
+        o1 = new Order();
+        o1.setCustomer(c1);
+        em.persist(o1);
+
+        em.flush();
+    }
+
+    private void cleanCustomerAndOrder() {
+        boolean txActive = em.getTransaction().isActive();
+        if (!txActive) {
+            em.getTransaction().begin();
+        }
+        em.createQuery("delete from Order o where o.customer.name = 'Capricorn'").executeUpdate();
+        em.createQuery("delete from Order o").executeUpdate();
+        em.createQuery("delete from Customer c where c.name = 'Capricorn'").executeUpdate();
+
+        em.flush();
+        if (!txActive) {
+            em.getTransaction().commit();
+        }
     }
 
 }

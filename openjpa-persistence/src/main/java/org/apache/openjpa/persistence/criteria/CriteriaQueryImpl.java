@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -44,7 +43,6 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 
-import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
@@ -74,7 +72,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     private Set<Root<?>>        _roots;
     private PredicateImpl       _where;
     private List<Order>         _orders;
-    private OrderedMap<Object, Class<?>> _params; /*<ParameterExpression<?>, Class<?>>*/
+    private OrderedMap<Object, Class<?>> _params = new OrderedMap<>();
     private Selection<? extends T> _selection;
     private List<Selection<?>>  _selections;
     private List<Expression<?>> _groups;
@@ -115,14 +113,12 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * @param model the metamodel defines the scope of all persistent entity references.
      * @param delegator the subquery which will delegate to this receiver.
      */
-    CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<T> delegator, OrderedMap params) {
+    CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<T> delegator, OrderedMap<Object, Class<?>> params) {
         this._model = model;
         this._resultClass = delegator.getJavaType();
         _delegator = delegator;
         _aliases = getAliases();
-        if (params != null) {
-            this._params = params;
-        }
+        _params = params;
     }
 
     /**
@@ -237,7 +233,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     @Override
     public Set<ParameterExpression<?>> getParameters() {
         collectParameters(new CriteriaExpressionVisitor.ParameterVisitor(this));
-        return _params == null ? Collections.EMPTY_SET : (Set) _params.keySet();
+        return (Set) _params.keySet();
     }
 
     /**
@@ -266,9 +262,11 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
             _groups = null;
             return this;
         }
+
         _groups = new ArrayList<>();
-        for (Expression<?> e : grouping)
+        for (Expression<?> e : grouping) {
             _groups.add(e);
+        }
         return this;
     }
 
@@ -720,14 +718,14 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     }
 
     private void renderList(StringBuilder buffer, String clause, Collection<?> coll) {
-    	if (coll == null || coll.isEmpty())
-    		return;
+        if (coll == null || coll.isEmpty())
+            return;
 
-    	buffer.append(clause);
-    	for (Iterator<?> i = coll.iterator(); i.hasNext(); ) {
-    		buffer.append(((CriteriaExpression)i.next()).asValue(this));
-    		if (i.hasNext()) buffer.append(", ");
-    	}
+        buffer.append(clause);
+        for (Iterator<?> i = coll.iterator(); i.hasNext(); ) {
+            buffer.append(((CriteriaExpression)i.next()).asValue(this));
+            if (i.hasNext()) buffer.append(", ");
+        }
     }
 
     private void renderJoins(StringBuilder buffer, Collection<Join<?,?>> joins) {

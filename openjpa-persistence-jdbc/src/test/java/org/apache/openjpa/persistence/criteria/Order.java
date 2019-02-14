@@ -37,16 +37,18 @@ public class Order {
     private int id;
 
     private int quantity;
-	private double totalCost;
-	@Column(name="CNT")
-	private int count;
-	private String name;
+    private double totalCost;
 
-	@ManyToOne
-	private Customer customer;
+    @Column(name="CNT")
+    private int count;
 
-	@OneToMany(mappedBy="order")
-	private List<LineItem> lineItems;
+    private String name;
+
+    @ManyToOne
+    private Customer customer;
+
+    @OneToMany(mappedBy="order")
+    private List<LineItem> lineItems;
 
     private boolean delivered;
 

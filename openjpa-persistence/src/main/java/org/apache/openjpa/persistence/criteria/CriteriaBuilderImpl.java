@@ -674,7 +674,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     @Override
     public Predicate or(Expression<Boolean> x, Expression<Boolean> y) {
-    	return new PredicateImpl.Or(x,y);
+        return new PredicateImpl.Or(x,y);
     }
 
     /**

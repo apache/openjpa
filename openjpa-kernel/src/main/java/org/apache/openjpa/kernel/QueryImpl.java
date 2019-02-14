@@ -919,7 +919,7 @@ public class QueryImpl implements Query {
                 throw ke;
             } catch (Exception e) {
                 throw new UserException(_loc.get("query-execution-error",
-                		_query), e);
+                        _query), e);
             } finally {
                 _broker.endOperation();
             }
@@ -1306,7 +1306,7 @@ public class QueryImpl implements Query {
         boolean detach = (_broker.getAutoDetach() &
             AutoDetach.DETACH_NONTXREAD) > 0 && !_broker.isActive();
         boolean lrs = range.lrs && !ex.isAggregate(q) && !ex.hasGrouping(q);
-        ResultList<?> res = new ListResultList(Collections.emptyList());
+        ResultList<?> res;
         try {
             res = (!detach && lrs) ? _fc.newResultList(rop) : new EagerResultList(rop);
             res.setUserObject(new Object[]{rop,ex});

@@ -32,6 +32,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
@@ -79,7 +80,7 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     SubqueryImpl(Class<T> cls, AbstractQuery<?> parent) {
         super(cls);
         _parent = parent;
-        OrderedMap params;
+        OrderedMap<Object, Class<?>> params;
         if (parent instanceof CriteriaQueryImpl) {
             _model = ((CriteriaQueryImpl<?>)parent).getMetamodel();
             params = ((CriteriaQueryImpl<?>)parent).getParameterTypes();

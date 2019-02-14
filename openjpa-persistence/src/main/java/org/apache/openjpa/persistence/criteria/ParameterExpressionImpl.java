@@ -107,7 +107,11 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         org.apache.openjpa.kernel.exps.Parameter param = isCollectionValued
             ? factory.newCollectionValuedParameter(paramKey, clzz)
             : factory.newParameter(paramKey, clzz);
-        param.setIndex(_index);
+
+        int index = _name != null
+            ? q.getParameterTypes().indexOf(this)
+            : _index;
+        param.setIndex(index);
 
         return param;
     }
@@ -120,5 +124,40 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     @Override
     public Class<T> getParameterType() {
         return getJavaType();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        ParameterExpressionImpl<?> that = (ParameterExpressionImpl<?>) o;
+
+        if (_name != null ? !_name.equals(that._name) : that._name != null)
+            return false;
+
+        // if name is given, then we ignore the index
+        if (_name == null && _index != that._index)
+            return false;
+
+        if (getParameterType() != ((ParameterExpressionImpl<?>) o).getParameterType() )
+            return false;
+
+        return value != null ? value.equals(that.value) : that.value == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = _name != null ? _name.hashCode() : 0;
+        if (_name == null) {
+            // if name is given, then we ignore the index
+            result = 31 * result + _index;
+        }
+        result = 31 * result + (getParameterType() != null ? getParameterType().hashCode() : 0);
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
     }
 }
