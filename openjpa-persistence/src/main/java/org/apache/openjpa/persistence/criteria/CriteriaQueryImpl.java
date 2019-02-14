@@ -246,13 +246,14 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
 
     @Override
     public CriteriaQuery<T> groupBy(Expression<?>... grouping) {
-    	if (grouping == null) {
-    	    _groups = null;
-    	    return this;
-    	}
+        if (grouping == null) {
+            _groups = null;
+            return this;
+        }
         _groups = new ArrayList<>();
-    	for (Expression<?> e : grouping)
-    		_groups.add(e);
+        for (Expression<?> e : grouping) {
+            _groups.add(e);
+        }
         return this;
     }
 
@@ -284,8 +285,9 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
             return this;
         }
         _having = new PredicateImpl.And();
-        for (Predicate p : restrictions)
-        	_having.add(p);
+        for (Predicate p : restrictions) {
+            _having.add(p);
+        }
         return this;
     }
 
@@ -718,8 +720,9 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     }
 
     private void renderList(StringBuilder buffer, String clause, Collection<?> coll) {
-        if (coll == null || coll.isEmpty())
+        if (coll == null || coll.isEmpty()) {
             return;
+        }
 
         buffer.append(clause);
         for (Iterator<?> i = coll.iterator(); i.hasNext(); ) {
@@ -729,7 +732,10 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     }
 
     private void renderJoins(StringBuilder buffer, Collection<Join<?,?>> joins) {
-        if (joins == null) return;
+        if (joins == null) {
+            return;
+        }
+
         for (Join j : joins) {
             buffer.append(((CriteriaExpression)j).asVariable(this)).append(" ");
             renderJoins(buffer, j.getJoins());
@@ -738,7 +744,9 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     }
 
     private void renderRoots(StringBuilder buffer, Collection<Root<?>> roots) {
-        if (roots == null) return;
+        if (roots == null) {
+            return;
+        }
         int i = 0;
         for (Root r : roots) {
             buffer.append(((ExpressionImpl<?>)r).asVariable(this));
@@ -748,7 +756,9 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         }
     }
     private void renderFetches(StringBuilder buffer, Set<Fetch> fetches) {
-        if (fetches == null) return;
+        if (fetches == null) {
+            return;
+        }
         for (Fetch j : fetches) {
             buffer.append(((ExpressionImpl<?>)j).asValue(this)).append(" ");
         }

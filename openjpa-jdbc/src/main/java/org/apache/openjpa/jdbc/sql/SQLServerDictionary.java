@@ -60,6 +60,15 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
      */
     public boolean uniqueIdentifierAsVarbinary = true;
 
+    /**
+     * Whether to send Time values as DateTime or as Time.
+     * This affects how the Database actually looks like.
+     * sendTimeAsDatetime is supported as of SQLServer2008 and
+     * is only to be used with TIME columns.
+     * Previous to that a DATETIME column had to be used with a fixed 1970-01-01 date.
+     */
+    public Boolean sendTimeAsDatetime = null;
+
     public SQLServerDictionary() {
         platform = "Microsoft SQL Server";
         // SQLServer locks on a table-by-table basis
@@ -69,10 +78,8 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         requiresAliasForSubselect = true;
         stringLengthFunction = "LEN({0})";
 
-        timeTypeName = "TIME";
         timeWithZoneTypeName = "TIME";
         timestampWithZoneTypeName = "DATETIMEOFFSET";
-
     }
 
     @Override
@@ -84,13 +91,17 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         String url = meta.getURL();
         if (driverVendor == null) {
             // serverMajorVersion of 8==2000, 9==2005, 10==2008,  11==2012
-            if (meta.getDatabaseMajorVersion() >= 9)
+            if (meta.getDatabaseMajorVersion() >= 9) {
                 setSupportsXMLColumn(true);
+                if (sendTimeAsDatetime == null) {
+                    sendTimeAsDatetime = Boolean.TRUE;
+                }
+            }
             if (meta.getDatabaseMajorVersion() >= 10) {
                 // MSSQL 2008 supports new date, time and datetime2 types
                 // Use DATETIME2 which has 100ns vs. 3.333msec precision
-                dateTypeName = "DATETIME2";
-                timeTypeName = "DATETIME2";
+                dateTypeName = "DATE";
+                timeTypeName = "TIME";
                 timestampTypeName = "DATETIME2";
                 datePrecision = MICRO / 10;
             }
@@ -402,7 +413,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         if (start != null) {
             buf.append(", ");
             start.appendTo(buf);
-p        }
+        }
         buf.append(")");
     }
 
