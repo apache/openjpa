@@ -41,6 +41,9 @@
     but you can also test against prior levels by setting:
         -Dtck2.level=20091209
 
+    As of JakartaEE you can freely download the TCK jars from here:
+        https://download.eclipse.org/ee4j/jakartaee-tck/8.0.1/nightly/
+
     To set the TCK run time limit, use the "jpatck.run.tmo" system property to
     specify the timeout value in milliseconds. Default to 7200000 (2 hours).
 
