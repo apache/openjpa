@@ -617,9 +617,7 @@ public class AnnotationPersistenceMappingParser
         }
         addUniqueConstraints(tName.getName(), cm, cm.getMappingInfo(),
             table.uniqueConstraints());
-        for (javax.persistence.Index idx : table.indexes()) {
-            parseIndex(cm.getMappingInfo(), idx);
-        }
+        addIndices(tName.getName(), cm, cm.getMappingInfo(), table.indexes());
     }
 
     Unique createUniqueConstraint(MetaDataContext ctx, UniqueConstraint anno) {
@@ -1718,7 +1716,7 @@ public class AnnotationPersistenceMappingParser
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)
                     // column maps to xml type
-                    ((Column) cols.get(i)).setTypeIdentifier(DBIdentifier.newColumnDefinition(dict.xmlTypeName));
+                    cols.get(i).setTypeIdentifier(DBIdentifier.newColumnDefinition(dict.xmlTypeName));
             }
 
             unique |= (pcols[i].unique()) ? TRUE : FALSE;
