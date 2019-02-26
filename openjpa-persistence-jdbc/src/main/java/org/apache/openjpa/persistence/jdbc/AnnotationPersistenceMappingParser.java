@@ -49,6 +49,7 @@ import static org.apache.openjpa.persistence.jdbc.MappingTag.ENUMERATED;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.FIELD_RESULT;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.FK;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.INDEX;
+import static org.apache.openjpa.persistence.jdbc.MappingTag.J_INDEX;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.INHERITANCE;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_COL;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_COLS;
@@ -262,6 +263,7 @@ public class AnnotationPersistenceMappingParser
         _tags.put(EmbeddedMapping.class, EMBEDDED_MAPPING);
         _tags.put(ForeignKey.class, FK);
         _tags.put(Index.class, INDEX);
+        _tags.put(javax.persistence.Index.class, J_INDEX);
         _tags.put(MappingOverride.class, MAPPING_OVERRIDE);
         _tags.put(MappingOverrides.class, MAPPING_OVERRIDES);
         _tags.put(Nonpolymorphic.class, NONPOLY);
@@ -615,6 +617,9 @@ public class AnnotationPersistenceMappingParser
         }
         addUniqueConstraints(tName.getName(), cm, cm.getMappingInfo(),
             table.uniqueConstraints());
+        for (javax.persistence.Index idx : table.indexes()) {
+            parseIndex(cm.getMappingInfo(), idx);
+        }
     }
 
     Unique createUniqueConstraint(MetaDataContext ctx, UniqueConstraint anno) {
@@ -643,9 +648,43 @@ public class AnnotationPersistenceMappingParser
             Unique unique = createUniqueConstraint(ctx, anno);
             unique.setTableIdentifier(DBIdentifier.newTable(table, delimit()));
             if (info instanceof ClassMappingInfo)
-                ((ClassMappingInfo) info).addUnique(table, unique);
+                ((ClassMappingInfo) info).addUnique(DBIdentifier.newTable(table), unique);
             else if (info instanceof FieldMappingInfo)
                 ((FieldMappingInfo) info).addJoinTableUnique(unique);
+            else
+                throw new InternalException();
+        }
+    }
+
+
+    org.apache.openjpa.jdbc.schema.Index createIndex(MetaDataContext ctx, javax.persistence.Index anno) {
+        String columnNames = anno.columnList();
+        if (StringUtil.isEmpty(columnNames))
+            throw new UserException(_loc.get("index-no-column", ctx));
+        DBIdentifier[] sColNames = DBIdentifier.toArray(columnNames.split(","), DBIdentifierType.COLUMN, delimit());
+        org.apache.openjpa.jdbc.schema.Index indx = new org.apache.openjpa.jdbc.schema.Index();
+        for (int i = 0; i < sColNames.length; i++) {
+            if (DBIdentifier.isEmpty(sColNames[i]))
+                throw new UserException(_loc.get("index-empty-column",
+                        Arrays.toString(sColNames), ctx));
+            Column column = new Column();
+            column.setIdentifier(sColNames[i]);
+            indx.addColumn(column);
+        }
+        indx.setUnique(anno.unique());
+        if (!StringUtil.isEmpty(anno.name())) {
+            indx.setIdentifier(DBIdentifier.newConstraint(anno.name(), delimit()));
+        }
+        return indx;
+    }
+
+    void addIndices(String table, MetaDataContext ctx,
+        MappingInfo info, javax.persistence.Index... indices) {
+        for (javax.persistence.Index anno : indices) {
+            org.apache.openjpa.jdbc.schema.Index idx = createIndex(ctx, anno);
+            idx.setTableIdentifier(DBIdentifier.newTable(table, delimit()));
+            if (info instanceof ClassMappingInfo)
+                ((ClassMappingInfo) info).addIndex(DBIdentifier.newTable(table), idx);
             else
                 throw new InternalException();
         }
@@ -875,6 +914,13 @@ public class AnnotationPersistenceMappingParser
             default:
                 throw new InternalException();
         }
+    }
+
+    /**
+     * Parse the given index.
+     */
+    private void parseIndex(MappingInfo info, javax.persistence.Index idx) {
+        parseIndex(info, idx.name(), true, idx.unique());
     }
 
     /**
@@ -1306,6 +1352,9 @@ public class AnnotationPersistenceMappingParser
                 case INDEX:
                     parseIndex(fm.getValueInfo(), (Index) anno);
                     break;
+                case J_INDEX:
+                    parseIndex(fm.getValueInfo(), (javax.persistence.Index) anno);
+                    break;
                 case NONPOLY:
                     fm.setPolymorphic(toPolymorphicConstant
                         (((Nonpolymorphic) anno).value()));
@@ -1644,7 +1693,7 @@ public class AnnotationPersistenceMappingParser
 
         // cache the JAXB XmlRootElement class if it is present so we do not
         // have a hard-wired dependency on JAXB here
-        Class xmlRootElementClass = null;
+        Class<?> xmlRootElementClass = null;
         try {
             xmlRootElementClass = Class.forName("javax.xml.bind.annotation.XmlRootElement");
         } catch (Exception e) {

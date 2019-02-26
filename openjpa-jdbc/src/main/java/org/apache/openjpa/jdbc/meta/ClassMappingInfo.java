@@ -34,6 +34,7 @@ import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
@@ -77,6 +78,7 @@ public class ClassMappingInfo
     // Unique constraints indexed by primary or secondary table name
     private Map<DBIdentifier,List<Unique>> _uniques;
 
+    private Map<DBIdentifier,List<Index>> _indices = new HashMap<>();
     /**
      * The described class name.
      */
@@ -452,13 +454,21 @@ public class ClassMappingInfo
             }
         }
         if (cinfo._uniques != null) {
-        	if (_uniques == null)
-        		_uniques = new HashMap<>();
-        for (Entry<DBIdentifier, List<Unique>> entry : cinfo._uniques.entrySet())
-        		if (!_uniques.containsKey(entry.getKey()))
-        			_uniques.put(entry.getKey(), entry.getValue());
+            if (_uniques == null) {
+                _uniques = new HashMap<>();
+            }
+            for (Entry<DBIdentifier, List<Unique>> entry : cinfo._uniques.entrySet()) {
+                if (!_uniques.containsKey(entry.getKey())) {
+                    _uniques.put(entry.getKey(), entry.getValue());
+                }
+            }
         }
-
+        _indices.clear();
+        for (Entry<DBIdentifier, List<Index>> entry : cinfo._indices.entrySet()) {
+            if (!_indices.containsKey(entry.getKey())) {
+                _indices.put(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     /**
@@ -480,24 +490,50 @@ public class ClassMappingInfo
      * @param unique the unique constraint. null means no-op.
      */
     public void addUnique(DBIdentifier table, Unique unique) {
-    	if (!DBIdentifier.equal(_tableName, table) &&
-    	   (_seconds == null || !_seconds.containsKey(table))) {
+        if (!DBIdentifier.equal(_tableName, table) &&
+            (_seconds == null || !_seconds.containsKey(table))) {
             throw new UserException(_loc.get("unique-no-table",
                     new Object[]{table, _className, _tableName,
                     ((_seconds == null) ? "" : _seconds.keySet())}));
-    	}
-    	if (unique == null)
-    		return;
+        }
+        if (unique == null)
+            return;
         if (_uniques == null)
             _uniques = new HashMap<>();
         unique.setTableIdentifier(table);
         List<Unique> uniques = _uniques.get(table);
         if (uniques == null) {
-        	uniques = new ArrayList<>();
-        	uniques.add(unique);
-        	_uniques.put(table, uniques);
+            uniques = new ArrayList<>();
+            uniques.add(unique);
+            _uniques.put(table, uniques);
         } else {
-        	uniques.add(unique);
+            uniques.add(unique);
+        }
+    }
+
+    /**
+     * Add index for the given table.
+     * @param table must be primary table or secondary table name added a
+     * priori to this receiver.
+     * @param idx the index. null means no-op.
+     */
+    public void addIndex(DBIdentifier table, Index idx) {
+        if (!DBIdentifier.equal(_tableName, table) &&
+           (_seconds == null || !_seconds.containsKey(table))) {
+            throw new UserException(_loc.get("unique-no-table",
+                    new Object[]{table, _className, _tableName,
+                    ((_seconds == null) ? "" : _seconds.keySet())}));
+        }
+        if (idx == null)
+            return;
+        idx.setTableIdentifier(table);
+        List<Index> indices = _indices.get(table);
+        if (indices == null) {
+            indices = new ArrayList<>();
+            indices.add(idx);
+            _indices.put(table, indices);
+        } else {
+            indices.add(idx);
         }
     }
 
@@ -531,29 +567,63 @@ public class ClassMappingInfo
             return new Unique[0];
         List<Unique> result = new ArrayList<>();
         for (DBIdentifier tableName : _uniques.keySet()) {
-        	List<Unique> uniqueConstraints = _uniques.get(tableName);
-        	for (Unique template : uniqueConstraints) {
-        		Column[] templateColumns = template.getColumns();
+            List<Unique> uniqueConstraints = _uniques.get(tableName);
+            for (Unique template : uniqueConstraints) {
+                Column[] templateColumns = template.getColumns();
                 Column[] uniqueColumns = new Column[templateColumns.length];
                 Table table = getTable((ClassMapping)cm, tableName, adapt);
-        		for (int i=0; i<uniqueColumns.length; i++) {
+                for (int i=0; i<uniqueColumns.length; i++) {
                     DBIdentifier columnName = templateColumns[i].getIdentifier();
-        			if (!table.containsColumn(columnName)) {
+                    if (!table.containsColumn(columnName)) {
                         throw new UserException(_loc.get(
                                 "unique-missing-column",
                                 new Object[]{cm, columnName, tableName,
                                 Arrays.toString(table.getColumnNames())}));
-        			}
+                    }
                     Column uniqueColumn = table.getColumn(columnName);
-        			uniqueColumns[i] = uniqueColumn;
-        		}
-        		Unique unique = createUnique(cm, "unique", template,
-        				uniqueColumns, adapt);
-        		if (unique != null)
-        			result.add(unique);
-        	}
+                    uniqueColumns[i] = uniqueColumn;
+                }
+                Unique unique = createUnique(cm, "unique", template,
+                        uniqueColumns, adapt);
+                if (unique != null)
+                    result.add(unique);
+            }
         }
         return result.toArray(new Unique[result.size()]);
+    }
+
+    /**
+     * Get all indices associated with both the primary and/or
+     * secondary tables.
+     *
+     */
+    public Index[] getIndices(MetaDataContext cm, boolean adapt) {
+        if (_indices.isEmpty())
+            return new Index[0];
+        List<Index> result = new ArrayList<>();
+        for (DBIdentifier tableName : _indices.keySet()) {
+            List<Index> indices = _indices.get(tableName);
+            for (Index template : indices) {
+                Column[] templateColumns = template.getColumns();
+                Column[] columns = new Column[templateColumns.length];
+                Table table = getTable((ClassMapping)cm, tableName, adapt);
+                for (int i = 0; i < columns.length; i++) {
+                    DBIdentifier columnName = templateColumns[i].getIdentifier();
+                    if (!table.containsColumn(columnName)) {
+                        throw new UserException(_loc.get(
+                                "unique-missing-column",
+                                new Object[]{cm, columnName, tableName,
+                                Arrays.toString(table.getColumnNames())}));
+                    }
+                    Column column = table.getColumn(columnName);
+                    columns[i] = column;
+                }
+                Index idx = createIndex(cm, "index", template, columns, adapt);
+                if (idx != null)
+                    result.add(idx);
+            }
+        }
+        return result.toArray(new Index[result.size()]);
     }
 
     @Override

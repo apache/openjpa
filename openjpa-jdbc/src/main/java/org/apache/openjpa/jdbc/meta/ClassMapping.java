@@ -903,6 +903,7 @@ public class ClassMapping
         // once columns are resolved, resolve unique constraints as they need
         // the columns be resolved
         _info.getUniques(this, true);
+        _info.getIndices(this, true);
     }
 
     /**
