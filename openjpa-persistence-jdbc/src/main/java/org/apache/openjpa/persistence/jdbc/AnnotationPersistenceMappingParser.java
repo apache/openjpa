@@ -49,7 +49,6 @@ import static org.apache.openjpa.persistence.jdbc.MappingTag.ENUMERATED;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.FIELD_RESULT;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.FK;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.INDEX;
-import static org.apache.openjpa.persistence.jdbc.MappingTag.J_INDEX;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.INHERITANCE;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_COL;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.JOIN_COLS;
@@ -263,7 +262,6 @@ public class AnnotationPersistenceMappingParser
         _tags.put(EmbeddedMapping.class, EMBEDDED_MAPPING);
         _tags.put(ForeignKey.class, FK);
         _tags.put(Index.class, INDEX);
-        _tags.put(javax.persistence.Index.class, J_INDEX);
         _tags.put(MappingOverride.class, MAPPING_OVERRIDE);
         _tags.put(MappingOverrides.class, MAPPING_OVERRIDES);
         _tags.put(Nonpolymorphic.class, NONPOLY);
@@ -917,13 +915,6 @@ public class AnnotationPersistenceMappingParser
     /**
      * Parse the given index.
      */
-    private void parseIndex(MappingInfo info, javax.persistence.Index idx) {
-        parseIndex(info, idx.name(), true, idx.unique());
-    }
-
-    /**
-     * Parse the given index.
-     */
     private void parseIndex(MappingInfo info, Index idx) {
         parseIndex(info, idx.name(), idx.enabled(), idx.unique());
     }
@@ -1349,9 +1340,6 @@ public class AnnotationPersistenceMappingParser
                     break;
                 case INDEX:
                     parseIndex(fm.getValueInfo(), (Index) anno);
-                    break;
-                case J_INDEX:
-                    parseIndex(fm.getValueInfo(), (javax.persistence.Index) anno);
                     break;
                 case NONPOLY:
                     fm.setPolymorphic(toPolymorphicConstant

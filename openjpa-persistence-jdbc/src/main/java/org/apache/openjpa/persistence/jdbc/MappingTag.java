@@ -82,7 +82,6 @@ enum MappingTag {
     FK_COL_NAMES,
     FK_COL_NAME,
     INDEX,
-    J_INDEX,
     KEY_COL,
     KEY_COLS,
     KEY_CLASS_CRIT,
