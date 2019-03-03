@@ -520,7 +520,7 @@ public class ClassMappingInfo
     public void addIndex(DBIdentifier table, Index idx) {
         if (!DBIdentifier.equal(_tableName, table) &&
            (_seconds == null || !_seconds.containsKey(table))) {
-            throw new UserException(_loc.get("unique-no-table",
+            throw new UserException(_loc.get("index-no-table",
                     new Object[]{table, _className, _tableName,
                     ((_seconds == null) ? "" : _seconds.keySet())}));
         }
@@ -611,7 +611,7 @@ public class ClassMappingInfo
                     DBIdentifier columnName = templateColumns[i].getIdentifier();
                     if (!table.containsColumn(columnName)) {
                         throw new UserException(_loc.get(
-                                "unique-missing-column",
+                                "index-missing-column",
                                 new Object[]{cm, columnName, tableName,
                                 Arrays.toString(table.getColumnNames())}));
                     }
