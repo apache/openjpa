@@ -25,7 +25,7 @@
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/1.1.1</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-el_1.0_spec/1.0.1</bundle>
         <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.6.0</bundle>
-        <bundle dependency="true">mvn:org.apache.commons/commons-dbcp2/2.5.0</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-dbcp2/2.6.0</bundle>
         <bundle dependency="true">mvn:commons-collections/commons-collections4/4.3</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.serp/1.14.1_1</bundle>
         <bundle dependency="true">mvn:org.apache.xbean/xbean-asm7-shaded/4.12</bundle>
