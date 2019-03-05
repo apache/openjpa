@@ -615,6 +615,7 @@ public class AnnotationPersistenceMappingParser
         }
         addUniqueConstraints(tName.getName(), cm, cm.getMappingInfo(),
             table.uniqueConstraints());
+        addIndices(tName.getName(), cm, cm.getMappingInfo(), table.indexes());
     }
 
     Unique createUniqueConstraint(MetaDataContext ctx, UniqueConstraint anno) {
@@ -643,9 +644,43 @@ public class AnnotationPersistenceMappingParser
             Unique unique = createUniqueConstraint(ctx, anno);
             unique.setTableIdentifier(DBIdentifier.newTable(table, delimit()));
             if (info instanceof ClassMappingInfo)
-                ((ClassMappingInfo) info).addUnique(table, unique);
+                ((ClassMappingInfo) info).addUnique(DBIdentifier.newTable(table), unique);
             else if (info instanceof FieldMappingInfo)
                 ((FieldMappingInfo) info).addJoinTableUnique(unique);
+            else
+                throw new InternalException();
+        }
+    }
+
+
+    org.apache.openjpa.jdbc.schema.Index createIndex(MetaDataContext ctx, javax.persistence.Index anno) {
+        String columnNames = anno.columnList();
+        if (StringUtil.isEmpty(columnNames))
+            throw new UserException(_loc.get("index-no-column", ctx));
+        DBIdentifier[] sColNames = DBIdentifier.toArray(columnNames.split(","), DBIdentifierType.COLUMN, delimit());
+        org.apache.openjpa.jdbc.schema.Index indx = new org.apache.openjpa.jdbc.schema.Index();
+        for (int i = 0; i < sColNames.length; i++) {
+            if (DBIdentifier.isEmpty(sColNames[i]))
+                throw new UserException(_loc.get("index-empty-column",
+                        Arrays.toString(sColNames), ctx));
+            Column column = new Column();
+            column.setIdentifier(sColNames[i]);
+            indx.addColumn(column);
+        }
+        indx.setUnique(anno.unique());
+        if (!StringUtil.isEmpty(anno.name())) {
+            indx.setIdentifier(DBIdentifier.newConstraint(anno.name(), delimit()));
+        }
+        return indx;
+    }
+
+    void addIndices(String table, MetaDataContext ctx,
+        MappingInfo info, javax.persistence.Index... indices) {
+        for (javax.persistence.Index anno : indices) {
+            org.apache.openjpa.jdbc.schema.Index idx = createIndex(ctx, anno);
+            idx.setTableIdentifier(DBIdentifier.newTable(table, delimit()));
+            if (info instanceof ClassMappingInfo)
+                ((ClassMappingInfo) info).addIndex(DBIdentifier.newTable(table), idx);
             else
                 throw new InternalException();
         }
@@ -1644,7 +1679,7 @@ public class AnnotationPersistenceMappingParser
 
         // cache the JAXB XmlRootElement class if it is present so we do not
         // have a hard-wired dependency on JAXB here
-        Class xmlRootElementClass = null;
+        Class<?> xmlRootElementClass = null;
         try {
             xmlRootElementClass = Class.forName("javax.xml.bind.annotation.XmlRootElement");
         } catch (Exception e) {
@@ -1669,7 +1704,7 @@ public class AnnotationPersistenceMappingParser
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)
                     // column maps to xml type
-                    ((Column) cols.get(i)).setTypeIdentifier(DBIdentifier.newColumnDefinition(dict.xmlTypeName));
+                    cols.get(i).setTypeIdentifier(DBIdentifier.newColumnDefinition(dict.xmlTypeName));
             }
 
             unique |= (pcols[i].unique()) ? TRUE : FALSE;
