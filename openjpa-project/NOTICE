@@ -13,7 +13,7 @@ The OpenJPA binary assembly and openjpa-all includes software developed by the:
     Apache Commons Pool project
     Apache Derby project
     Apache Geronimo project
-        Java EE Specs - JMS 1.1, JTA 1.1, Bean Validation 1.0 and JPA 2.0
+        Java EE Specs - JMS 2.0, JTA 1.1, Bean Validation 1.0 and JPA 2.0
     Apache Incubtor - Bean Validation project
     SERP project
 
