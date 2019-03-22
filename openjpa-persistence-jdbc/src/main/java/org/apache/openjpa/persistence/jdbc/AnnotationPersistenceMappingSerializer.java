@@ -267,7 +267,7 @@ public class AnnotationPersistenceMappingSerializer
         AnnotationBuilder ab) {
         List<Column> cols = null;
         if (secondaryInfo != null)
-            cols = (List<Column>) secondaryInfo.getSecondaryTableJoinColumns
+            cols = secondaryInfo.getSecondaryTableJoinColumns
                 (table);
 
         boolean print = (cols != null && cols.size() > 0) ||
@@ -322,11 +322,11 @@ public class AnnotationPersistenceMappingSerializer
             return true;
 
         ValueMappingInfo info = field.getValueInfo();
-        List<Column> cols = (List<Column>) info.getColumns();
+        List<Column> cols = info.getColumns();
         if (cols == null || cols.size() == 0)
             return false;
         ValueMappingInfo info2 = field2.getValueInfo();
-        List<Column> cols2 = (List<Column>) info2.getColumns();
+        List<Column> cols2 = info2.getColumns();
         if (cols2 == null || cols2.size() != cols.size())
             return true;
         if (cols.size() != 1)
@@ -467,7 +467,7 @@ public class AnnotationPersistenceMappingSerializer
      * Determine if the field is a lob.
      */
     private boolean isLob(FieldMapping field) {
-        for (Column col : (List<Column>) field.getValueInfo().getColumns())
+        for (Column col : field.getValueInfo().getColumns())
             if (col.getType() == Types.BLOB || col.getType() == Types.CLOB)
                 return true;
         return false;
@@ -479,14 +479,17 @@ public class AnnotationPersistenceMappingSerializer
     private TemporalType getTemporal(FieldMapping field) {
         if (field.getDeclaredTypeCode() != JavaTypes.DATE
             && field.getDeclaredTypeCode() != JavaTypes.CALENDAR)
+        {
             return null;
+        }
 
         DBDictionary dict = ((JDBCConfiguration) getConfiguration())
             .getDBDictionaryInstance();
         int def = dict.getJDBCType(field.getTypeCode(), false);
-        for (Column col : (List<Column>) field.getValueInfo().getColumns()) {
-            if (col.getType() == def)
+        for (Column col : field.getValueInfo().getColumns()) {
+            if (col.getType() == def) {
                 continue;
+            }
             switch (col.getType()) {
                 case Types.DATE:
                     return TemporalType.DATE;
@@ -503,10 +506,14 @@ public class AnnotationPersistenceMappingSerializer
      * Return enum type for the field.
      */
     protected EnumType getEnumType(FieldMapping field) {
-        if (field.getDeclaredTypeCode() != JavaTypes.OBJECT)
+        if (field.getDeclaredTypeCode() != JavaTypes.OBJECT
+                && field.getDeclaredTypeCode() != JavaTypes.ENUM)
+        {
             return null;
-        if (!(field.getHandler() instanceof EnumValueHandler))
+        }
+        if (!(field.getHandler() instanceof EnumValueHandler)) {
             return null;
+        }
         return ((EnumValueHandler) field.getHandler()).getStoreOrdinal()
             ? EnumType.ORDINAL : EnumType.STRING;
     }
@@ -516,24 +523,27 @@ public class AnnotationPersistenceMappingSerializer
      */
     private void serializeColumns(MappingInfo info, ColType type,
         String secondary, AnnotationBuilder ab, Object meta) {
-        List<Column> cols = (List<Column>) info.getColumns();
-        if (cols == null)
+        List<Column> cols = info.getColumns();
+        if (cols == null) {
             return;
+        }
         AnnotationBuilder abContainer = ab;
         if (cols.size() > 1) {
-            Class grpType = type.getColumnGroupAnnotationType();
+            Class<? extends Annotation> grpType = type.getColumnGroupAnnotationType();
             if (null != grpType) {
                 AnnotationBuilder abGrp = newAnnotationBuilder(grpType);
-                if (null == ab)
+                if (null == ab) {
                     addAnnotation(abGrp, meta);
-                else
+                } else {
                     ab.add(null, abGrp);
+                }
                 abContainer = abGrp;
             }
         }
-        for (Column col : cols)
+        for (Column col : cols) {
             serializeColumn(col, type, secondary,
                 info.getUnique() != null, abContainer, meta);
+        }
     }
 
     /**
@@ -637,7 +647,7 @@ public class AnnotationPersistenceMappingSerializer
      */
     private List<QueryResultMapping> getQueryResultMappings(ClassMetaData cm) {
         if (_results == null || _results.isEmpty())
-            return (List<QueryResultMapping>) Collections.EMPTY_LIST;
+            return Collections.EMPTY_LIST;
 
         List<QueryResultMapping> result = null;
         for (int i = 0; i < _results.size(); i++) {
@@ -779,7 +789,7 @@ public class AnnotationPersistenceMappingSerializer
     protected class MappingSerializationComparator
         extends SerializationComparator {
 
-        
+
         private static final long serialVersionUID = 1L;
 
         @Override
