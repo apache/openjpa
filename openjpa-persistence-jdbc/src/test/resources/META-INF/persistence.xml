@@ -487,6 +487,11 @@
 			<property name="openjpa.jdbc.Schemas" value="USCHEMA.USCHANTBL"/>
 		</properties>
 	</persistence-unit>
+	<persistence-unit name="rev-mapping-jira2780-pu">
+		<properties>
+			<property name="openjpa.jdbc.Schemas" value="JIRA2780.ABC"/>
+		</properties>
+	</persistence-unit>
 
     <persistence-unit name="puDefault" transaction-type="RESOURCE_LOCAL">
         <mapping-file>META-INF/pudefaults-orm.xml</mapping-file>
