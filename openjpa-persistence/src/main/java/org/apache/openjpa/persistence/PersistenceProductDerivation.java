@@ -775,8 +775,8 @@ public class PersistenceProductDerivation
     public static class ConfigurationParser
         extends XMLMetaDataParser {
 
-        private static final String PERSISTENCE_XSD_1_0 = "persistence_1_0.xsd";
         private static final String PERSISTENCE_XSD_2_0 = "persistence_2_0.xsd";
+        private static final String PERSISTENCE_XSD_2_1 = "persistence_2_1.xsd";
 
         private static final Localizer _loc = Localizer.forPackage
             (ConfigurationParser.class);
@@ -829,8 +829,7 @@ public class PersistenceProductDerivation
                 _persistenceVersion = vp.getVersion();
                 _schemaLocation = vp.getSchemaLocation();
             } catch (Throwable t) {
-                    log(_loc.get("version-check-error",
-                        _source.toString()).toString());
+                log(_loc.get("version-check-error", _source.toString()).toString());
             }
             super.parse(file);
         }
@@ -845,9 +844,14 @@ public class PersistenceProductDerivation
             String persistencexsd = "persistence-xsd.rsrc";
             // if the version and/or schema location is for 1.0, use the 1.0
             // schema
-            if (_persistenceVersion != null && _persistenceVersion.equals(XMLVersionParser.VERSION_2_0)
-            || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1)) {
+            if (XMLVersionParser.VERSION_2_0.equals(_persistenceVersion)
+                    || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1))
+            {
                 persistencexsd = "persistence_2_0-xsd.rsrc";
+            } else if (XMLVersionParser.VERSION_2_1.equals(_persistenceVersion)
+                    || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_1) != -1))
+            {
+                persistencexsd = "persistence_2_1-xsd.rsrc";
             }
             return getClass().getResourceAsStream(persistencexsd);
         }
@@ -959,7 +963,7 @@ public class PersistenceProductDerivation
 
             if (_source != null)
                 _info.setPersistenceXmlFileUrl(_source);
-		}
+        }
 
         private void endPersistenceUnit() {
             if (!_excludeUnlistedSet) {
