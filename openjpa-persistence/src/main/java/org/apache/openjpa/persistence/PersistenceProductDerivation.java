@@ -773,8 +773,8 @@ public class PersistenceProductDerivation
     public static class ConfigurationParser
         extends XMLMetaDataParser {
 
-        private static final String PERSISTENCE_XSD_1_0 = "persistence_1_0.xsd";
         private static final String PERSISTENCE_XSD_2_0 = "persistence_2_0.xsd";
+        private static final String PERSISTENCE_XSD_2_1 = "persistence_2_1.xsd";
 
         private static final Localizer _loc = Localizer.forPackage
             (ConfigurationParser.class);
@@ -825,10 +825,9 @@ public class PersistenceProductDerivation
             try {
                 vp.parse(file);
                 _persistenceVersion = vp.getVersion();
-                _schemaLocation = vp.getSchemaLocation();                
+                _schemaLocation = vp.getSchemaLocation();
             } catch (Throwable t) {
-                    log(_loc.get("version-check-error", 
-                        _source.toString()).toString());
+                    log(_loc.get("version-check-error", _source.toString()).toString());
             }            
             super.parse(file);
         }
@@ -843,9 +842,14 @@ public class PersistenceProductDerivation
             String persistencexsd = "persistence-xsd.rsrc";
             // if the version and/or schema location is for 1.0, use the 1.0 
             // schema
-            if (_persistenceVersion != null && _persistenceVersion.equals(XMLVersionParser.VERSION_2_0) 
-            || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1)) {
+            if (XMLVersionParser.VERSION_2_0.equals(_persistenceVersion)
+                    || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1))
+            {
                 persistencexsd = "persistence_2_0-xsd.rsrc";
+            } else if (XMLVersionParser.VERSION_2_1.equals(_persistenceVersion)
+                    || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_1) != -1))
+            {
+                persistencexsd = "persistence_2_1-xsd.rsrc";
             }
             return getClass().getResourceAsStream(persistencexsd);
         }
@@ -929,9 +933,9 @@ public class PersistenceProductDerivation
                     excludeUnlisted = !("false".equalsIgnoreCase(value));
                 } else {
                     excludeUnlisted = "true".equalsIgnoreCase(value);
-                }                    
+                }
                 _info.setExcludeUnlistedClasses(excludeUnlisted);
-                _excludeUnlistedSet = true;            
+                _excludeUnlistedSet = true;
             }
         }
 
@@ -940,7 +944,7 @@ public class PersistenceProductDerivation
          */
         private void startPersistenceUnit(Attributes attrs)
             throws SAXException {
-            _excludeUnlistedSet = false;            
+            _excludeUnlistedSet = false;
             _info = new PersistenceUnitInfoImpl();
             _info.setPersistenceUnitName(attrs.getValue("name"));
             _info.setPersistenceXMLSchemaVersion(_persistenceVersion);
@@ -955,8 +959,8 @@ public class PersistenceProductDerivation
 
             if (_source != null)
                 _info.setPersistenceXmlFileUrl(_source);
-		}
-        
+        }
+
         private void endPersistenceUnit() {
             if (!_excludeUnlistedSet) {
                 setExcludeUnlistedClasses(null);
