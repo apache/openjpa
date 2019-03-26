@@ -4214,7 +4214,8 @@ public class DBDictionary
 
     /**
      * Reflect on the schema to find tables matching the given name pattern.
-     * @deprecated
+     * @deprecated not used by openjpa internally anymore
+     * @see #getTables(DatabaseMetaData, DBIdentifier, DBIdentifier, DBIdentifier, Connection)
      */
     @Deprecated
     public Table[] getTables(DatabaseMetaData meta, String catalog,
@@ -4248,16 +4249,19 @@ public class DBDictionary
         try {
             tables = meta.getTables(getCatalogNameForMetadata(sqlCatalog),
                 schemaName, getTableNameForMetadata(sqlTableName), types);
-            List tableList = new ArrayList();
-            while (tables != null && tables.next())
+            List<Table> tableList = new ArrayList<>();
+            while (tables != null && tables.next()) {
                 tableList.add(newTable(tables));
-            return (Table[]) tableList.toArray(new Table[tableList.size()]);
+            }
+            return tableList.toArray(new Table[tableList.size()]);
         } finally {
-            if (tables != null)
+            if (tables != null) {
                 try {
                     tables.close();
-                } catch (Exception e) {
                 }
+                catch (Exception e) {
+                }
+            }
         }
     }
 
