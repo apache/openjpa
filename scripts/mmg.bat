@@ -40,7 +40,7 @@ set JAVAC=%JAVA_HOME%\bin\javac
 @rem Compiler classpath shown for a typical OpenJPA development environment in Windows.
 @rem The essential aspect is openjpa libraries must be in the compiler's classpath.
 set M_REPO="%USERPROFILE%\.m2\repository"
-set SPEC=geronimo-jpa_2.1_spec
+set SPEC=geronimo-jpa_2.2_spec
 set VERSION=1.0-EA9-SNAPSHOT
 set JPA_LIB=%M_REPO%\org\apache\geronimo\specs\%SPEC%\%VERSION%\%SPEC%-%VERSION%.jar
 
