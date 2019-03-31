@@ -825,7 +825,7 @@ public class DBDictionary
      */
     public OffsetDateTime getOffsetDateTime(ResultSet rs, int column) throws SQLException {
         Timestamp tst = rs.getTimestamp(column);
-        return tst != null ? tst.toLocalDateTime().atOffset(OffsetDateTime.now().getOffset()) : null;
+        return tst != null ? tst.toLocalDateTime().atZone(ZoneId.systemDefault()).toOffsetDateTime() : null;
     }
 
     private ProxyManager getProxyManager() {
