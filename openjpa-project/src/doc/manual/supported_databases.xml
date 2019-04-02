@@ -85,7 +85,7 @@ users, but may not support every feature of this release, please refer to the
                         <link linkend="dbsupport_derby">Apache Derby</link>
                     </entry>
                     <entry colname="dbversion">
-                        10.2.2.0, 10.3.3.0, 10.4.2.0, 10.5.3.0, 10.8.2.2
+                        10.2.2.0, 10.3.3.0, 10.4.2.0, 10.5.3.0, 10.8.2.2, 10.14.2.0
                     </entry>
                     <entry colname="drivname">
                         Apache Derby Embedded JDBC Driver
@@ -127,7 +127,7 @@ users, but may not support every feature of this release, please refer to the
                         <link linkend="dbsupport_sqlserver">Microsoft SQL Server</link>
                     </entry>
                     <entry colname="dbversion">
-                        2005 (9.00), 2008 (10.00)
+                        2005 (9.00), 2008 (10.00), 2017
                     </entry>
                     <entry colname="drivname">
                         Microsoft SQL Server JDBC Driver
@@ -141,13 +141,13 @@ users, but may not support every feature of this release, please refer to the
                         <link linkend="dbsupport_mysql">MySQL</link>
                     </entry>
                     <entry colname="dbversion">
-                        5.0.26, 5.1.6
+                        5.0.26, 5.1.6, 5.7
                     </entry>
                     <entry colname="drivname">
                         MySQL Driver
                     </entry>
                     <entry colname="drivversion">
-                        5.1.6
+                        5.1.6, 5.1.47
                     </entry>
                 </row>
                 <row>
@@ -155,13 +155,13 @@ users, but may not support every feature of this release, please refer to the
                         <link linkend="dbsupport_oracle">Oracle</link>
                     </entry>
                     <entry colname="dbversion">
-                        10g (10.1, 10.2), 11g (11.1, 11.2)
+                        10g (10.1, 10.2), 11g (11.1, 11.2), 12c, 18c
                     </entry>
                     <entry colname="drivname">
                         Oracle JDBC driver
                     </entry>
                     <entry colname="drivversion">
-                        11.2.0.1
+                        11.2.0.1, 11.2.0.4
                     </entry>
                 </row>
                 <row>
@@ -169,13 +169,13 @@ users, but may not support every feature of this release, please refer to the
                         <link linkend="dbsupport_postgresql">PostgreSQL</link>
                     </entry>
                     <entry colname="dbversion">
-                        8.3.5, 8.4
+                        8.3.5, 8.4, 9, 11
                     </entry>
                     <entry colname="drivname">
                         PostgreSQL Native Driver
                     </entry>
                     <entry colname="drivversion">
-                        8.3 JDBC3 (build 603), 8.4 JDBC3 (build 701)
+                        8.3 JDBC3 (build 603), 8.4 JDBC3 (build 701), 42.2.5
                     </entry>
                 </row>
                 <row>
