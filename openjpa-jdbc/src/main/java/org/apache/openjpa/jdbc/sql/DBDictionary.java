@@ -438,7 +438,9 @@ public class DBDictionary
     protected final Set<String> fixedSizeTypeNameSet = new HashSet<>();
 
     /**
-     * set of types that only accept a single precision...
+     * set of types that might have an optional fraction (sub-second) part.
+     * @{code @Column(scale=-1)} sets the fraction to zero.
+     * @{code @Column(scale=0)} will use the default behaviour (no fraction information generated)
      */
     public final Set<String> fractionalTypeNameSet = new HashSet<>();
 
@@ -446,8 +448,8 @@ public class DBDictionary
      * Default amount of digits for fractional Types.
      * This is not supported/required by every database.
      *
-     * This value is only being used if no explicit {@code @Column(scale=n)} is set.
-     * Use {@code @Column(scale=-1)} to disable the scale
+     * This value is only being used if no explicit {@code @Column(scale=n)} is set or n is zero.
+     * Use {@code @Column(scale=-1)} to disable the explicit fraction part in the SQL generator.
      * @see #fractionalTypeNameSet
      * @see #getFractionLength(Column, String)
      */
@@ -2023,7 +2025,7 @@ public class DBDictionary
     }
 
     /**
-     * Only get's used if no explicit scale is used.
+     * Only get's used if no explicit scale is used (@{code @Column(scale=0)} which is the default).
      * Attention! @{code @Column(scale=-1)} disables the scale of a column
      * @return the fraction length of types which have a fraction
      * @see #fractionalTypeNameSet
