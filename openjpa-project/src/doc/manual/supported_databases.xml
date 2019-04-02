@@ -1176,6 +1176,37 @@ When reading LOB data from the database, the MySQL JDBC driver will actually
 load all the data into memory at the same time.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+As of MySQL 5.7 the <code>DATETIME</code> data type supports sub-second fractions.
+The default of MySQL is to use no fractions.
+The number of fractions can be explicitly set via scale:
+<code>@Column(scale=3)</code> will lead to a <code>DATETIME(3)</code> column.
+                    </para>
+                </listitem>
+
+            </itemizedlist>
+        </section>
+    </section>
+
+    <section id="dbsupport_mariadb">
+        <title>
+            MariaDB
+        </title>
+        <section id="dbsupport_mariadb_issues">
+            <title>
+                Known issues with MariaDB
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        As of MariaDB 10.2 the <code>DATETIME</code> data type supports sub-second fractions.
+                        The default of MariaDB is to use no fractions.
+                        The number of fractions can be explicitly set via scale:
+                        <code>@Column(scale=3)</code> will lead to a <code>DATETIME(3)</code> column.
+                    </para>
+                </listitem>
+
             </itemizedlist>
         </section>
     </section>
