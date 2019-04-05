@@ -119,9 +119,16 @@ public class TestSetParameter extends SingleEMFTestCase {
     public void testNativeSQL() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
+
+        // make sure that the ID we want to insert does not exist.
+        int proposedId;
+        do {
+            proposedId = (int) System.currentTimeMillis() % 10000;
+        } while (em.find(Address.class, proposedId) != null);
+
         int count = em.createNativeQuery("INSERT INTO Address (id, city,"
           + " country, streetAd, zipcode) VALUES (?,?,?,?,?)")
-          .setParameter(1, System.currentTimeMillis()%10000)
+          .setParameter(1, proposedId)
           .setParameter(2, "Some City")
           .setParameter(3, "Some Country")
           .setParameter(4, "Some Street")
