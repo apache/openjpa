@@ -38,7 +38,9 @@ public class TestHintedQuery extends SQLListenerTestCase {
 
     @Override
     public void setUp() {
-        super.setUp(CLEAR_TABLES, TimeKeeper.class);
+        super.setUp(CLEAR_TABLES,
+                "openjpa.jdbc.DBDictionary", "(defaultFractionLength=6)",
+                TimeKeeper.class);
     }
 
     public void testHintedQuery() {

@@ -453,7 +453,7 @@ public class DBDictionary
      * @see #fractionalTypeNameSet
      * @see #getFractionLength(Column, String)
      */
-    protected int defaultFractionLength = 6;
+    public int defaultFractionLength = 6;
 
 
     protected final Set<String> typeModifierSet = new HashSet<>();

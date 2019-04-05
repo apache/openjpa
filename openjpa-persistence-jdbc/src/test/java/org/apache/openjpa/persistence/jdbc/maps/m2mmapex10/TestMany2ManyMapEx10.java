@@ -59,8 +59,10 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
 
     @Override
     public void setUp() {
-        super.setUp(DROP_TABLES,EmployeePK.class, PhonePK.class,
-            Employee.class, PhoneNumber.class);
+        super.setUp(DROP_TABLES,
+                "openjpa.jdbc.DBDictionary", "(defaultFractionLength=6)",
+                EmployeePK.class, PhonePK.class,
+                Employee.class, PhoneNumber.class);
         createObj();
         rsAllPhones = getAll(PhoneNumber.class);
         rsAllEmps = getAll(Employee.class);

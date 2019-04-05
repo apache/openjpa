@@ -165,6 +165,8 @@ public class MariaDBDictionary extends DBDictionary {
         setTrailingDelimiter(DELIMITER_BACK_TICK);
 
         fixedSizeTypeNameSet.remove("NUMERIC");
+
+        defaultFractionLength = 0;
     }
 
     @Override

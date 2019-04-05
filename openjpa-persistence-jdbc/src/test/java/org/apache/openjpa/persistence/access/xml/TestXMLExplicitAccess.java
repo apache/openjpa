@@ -33,13 +33,10 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
 
     @Override
     public void setUp() throws Exception {
-        super.setUp();
+        super.setUp(CLEAR_TABLES,
+                "openjpa.jdbc.DBDictionary", "(defaultFractionLength=6)");
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     @Override
     protected String getPersistenceUnitName() {

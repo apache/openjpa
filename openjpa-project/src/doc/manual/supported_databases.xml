@@ -1193,6 +1193,15 @@ The number of fractions can be explicitly set via scale:
         <title>
             MariaDB
         </title>
+        <example id="example_props_mariadb">
+            <title>
+                Example properties for MariaDB
+            </title>
+            <programlisting>
+                openjpa.ConnectionDriverName: org.mariadb.jdbc.Driver
+                openjpa.ConnectionURL: jdbc:mariadb://SERVER_NAME/DB_NAME
+            </programlisting>
+        </example>
         <section id="dbsupport_mariadb_issues">
             <title>
                 Known issues with MariaDB
@@ -1201,9 +1210,10 @@ The number of fractions can be explicitly set via scale:
                 <listitem>
                     <para>
                         As of MariaDB 10.2 the <code>DATETIME</code> data type supports sub-second fractions.
-                        The default of MariaDB is to use no fractions.
+                        The default of MariaDB internally is to use no fractions.
                         The number of fractions can be explicitly set via scale:
-                        <code>@Column(scale=3)</code> will lead to a <code>DATETIME(3)</code> column.
+                        <code>@Column(scale=6)</code> will lead to a <code>DATETIME(6)</code> column and able to store microseconds.
+                        A value of <code>@Column(scale=-1)</code> will explicitly turn off all fractions.
                     </para>
                 </listitem>
 

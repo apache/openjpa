@@ -41,6 +41,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
     @Override
     public void setUp() {
         setUp(CLEAR_TABLES,
+            "openjpa.jdbc.DBDictionary", "(defaultFractionLength=6)",
             PropAccess.class, FieldAccess.class,
             DefFieldMixedPropAccess.class , DefPropMixedFieldAccess.class,
             AbstractMappedSuperField.class, PropertySub.class,
