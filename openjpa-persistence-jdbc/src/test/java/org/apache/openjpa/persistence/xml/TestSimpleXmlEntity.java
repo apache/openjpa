@@ -27,7 +27,7 @@ public class TestSimpleXmlEntity
     @Override
     public void setUp() {
         setUp(CLEAR_TABLES,
-                "openjpa.jdbc.DBDictionary", "(defaultFractionLength=6)",
+                "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
                 org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed.class);
     }
 

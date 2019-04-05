@@ -33,7 +33,7 @@ public class TestMixedMappingLocation extends SingleEMFTestCase {
     @Override
     public void setUp() {
         setUp(DROP_TABLES,
-                "openjpa.jdbc.DBDictionary", "(defaultFractionLength=6)",
+                "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
                 MixedMappingLocationEmbeddedId.class, MixedMappingLocation.class);
     }
     /**

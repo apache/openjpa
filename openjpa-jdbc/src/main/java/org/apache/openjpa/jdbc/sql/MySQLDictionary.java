@@ -167,7 +167,7 @@ public class MySQLDictionary
 
         fixedSizeTypeNameSet.remove("NUMERIC");
 
-        defaultFractionLength = 0;
+        dateFractionDigits = 0;
     }
 
     @Override

@@ -166,7 +166,7 @@ public class MariaDBDictionary extends DBDictionary {
 
         fixedSizeTypeNameSet.remove("NUMERIC");
 
-        defaultFractionLength = 0;
+        dateFractionDigits = 0;
     }
 
     @Override

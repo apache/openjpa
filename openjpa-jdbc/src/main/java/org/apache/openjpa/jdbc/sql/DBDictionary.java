@@ -451,9 +451,9 @@ public class DBDictionary
      * This value is only being used if no explicit {@code @Column(scale=n)} is set or n is zero.
      * Use {@code @Column(scale=-1)} to disable the explicit fraction part in the SQL generator.
      * @see #fractionalTypeNameSet
-     * @see #getFractionLength(Column, String)
+     * @see #getDateFractionDigits(Column, String)
      */
-    public int defaultFractionLength = 6;
+    public int dateFractionDigits = 6;
 
 
     protected final Set<String> typeModifierSet = new HashSet<>();
@@ -2009,7 +2009,7 @@ public class DBDictionary
                 colSize = col.getDecimalDigits() == -1 ? 0 : col.getDecimalDigits();
             }
             else {
-                colSize = getFractionLength(col, typeName);
+                colSize = getDateFractionDigits(col, typeName);
             }
             size = "(" + colSize + ")";
         } else if (colSize > 0) {
@@ -2030,8 +2030,8 @@ public class DBDictionary
      * @return the fraction length of types which have a fraction
      * @see #fractionalTypeNameSet
      */
-    protected int getFractionLength(Column col, String typeName) {
-        return defaultFractionLength;
+    protected int getDateFractionDigits(Column col, String typeName) {
+        return dateFractionDigits;
     }
 
     /**

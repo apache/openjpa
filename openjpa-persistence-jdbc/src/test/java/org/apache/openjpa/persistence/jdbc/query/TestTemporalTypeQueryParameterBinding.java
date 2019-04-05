@@ -64,7 +64,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES,
-                "openjpa.jdbc.DBDictionary", "(defaultFractionLength=6)",
+                "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
                 TimeKeeper.class, TimeEntity.class);
         em = emf.createEntityManager();
 
