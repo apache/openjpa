@@ -1423,6 +1423,27 @@ The SQL function call to obtain the current timestamp from the database.
 Defaults to <literal>"CURRENT_TIMESTAMP"</literal>.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.DateFractionDigits">
+                    <para>
+                        <indexterm>
+                            <primary>
+                                JDBC
+                            </primary>
+                            <secondary>
+                                DateFractionDigits
+                            </secondary>
+                        </indexterm>
+                        <literal>DateFractionDigits</literal>
+                        Some databases support to store sub-second fraction values.
+                        The digits to store can sometimes be configured.
+                        This value defines the default number of digits to store in the database.
+                        A <code>dateFractionDigits=3</code> will e.g. lead to a <code>DATETIME(3)</code> on some databases.
+
+                        Note that this default can be overwritten to an integer value n per column via
+                        <code>@Column(scale=n)</code>.
+                        A <code>@Column(scale=-1)</code> will set the fraction digits to zero.
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.DatePrecision">
                     <para>
                     <indexterm>
@@ -3897,6 +3918,26 @@ The <literal>mysql</literal> dictionary also understands the following
 properties:
             </para>
             <itemizedlist>
+                <listitem id="MySQLDictionary.DateFractionDigits">
+                    <para>
+                        <indexterm>
+                            <primary>
+                                MySQL
+                            </primary>
+                            <secondary>
+                                DateFractionDigits
+                            </secondary>
+                        </indexterm>
+                        <literal>DateFractionDigits</literal>:
+                        Since MySQL 5.8 a timestamp (<code>DATETIME</code>) can store up to 6 sub-second fractions.
+                        The default in MySQL and OpenJPA is 0 for backward compatibility reasons.
+                        This default can be changed by setting <literal>DateFractionDigits</literal> to the number of
+                        sub-second fraction digits to be stored. This will e.g. result in a <code>DATETIME(6)</code> column.
+                        The number of fraction digits to be generated can also be tweaked via the
+                        <code>@Column(scale=n)</code> annotation, where n is the number of digits.
+                        This setting has primarily an impact on the generated SQL.
+                    </para>
+                </listitem>
                 <listitem id="MySQLDictionary.DriverDeserializesBlobs">
                     <para>
                     <indexterm>
