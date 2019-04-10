@@ -24,6 +24,7 @@ import javax.persistence.criteria.ParameterExpression;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.util.InternalException;
 
 /**
@@ -109,11 +110,23 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
             : factory.newParameter(paramKey, clzz);
 
         int index = _name != null
-            ? q.getParameterTypes().indexOf(this)
+            ? findIndexWithSameName(q)
             : _index;
         param.setIndex(index);
 
         return param;
+    }
+
+    private int findIndexWithSameName(CriteriaQueryImpl<?> q) {
+        OrderedMap<Object, Class<?>> parameterTypes = q.getParameterTypes();
+        int i = 0;
+        for (Object k : parameterTypes.keySet()) {
+            if (paramEquals(k)) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
     }
 
     @Override
@@ -126,8 +139,7 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         return getJavaType();
     }
 
-    @Override
-    public boolean equals(Object o) {
+    public boolean paramEquals(Object o) {
         if (this == o)
             return true;
 
@@ -150,14 +162,15 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     }
 
     @Override
-    public int hashCode() {
-        int result = _name != null ? _name.hashCode() : 0;
-        if (_name == null) {
-            // if name is given, then we ignore the index
-            result = 31 * result + _index;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-        result = 31 * result + (getParameterType() != null ? getParameterType().hashCode() : 0);
-        result = 31 * result + (value != null ? value.hashCode() : 0);
-        return result;
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

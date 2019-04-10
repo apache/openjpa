@@ -618,6 +618,10 @@ public class TestSubqueries extends CriteriaTest {
         cleanCustomerAndOrder();
     }
 
+    /**
+     * Test 2 different ParameterExpression instances which both have the same name.
+     * They should
+     */
     public void testSubquery25() {
         em.getTransaction().begin();
 
