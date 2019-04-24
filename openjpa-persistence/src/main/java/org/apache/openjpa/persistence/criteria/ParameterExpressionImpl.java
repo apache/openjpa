@@ -109,24 +109,10 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
             ? factory.newCollectionValuedParameter(paramKey, clzz)
             : factory.newParameter(paramKey, clzz);
 
-        int index = _name != null
-            ? findIndexWithSameName(q)
-            : _index;
+        int index = _name != null ? q.getParameterTypes().indexOf(this) : _index;
         param.setIndex(index);
 
         return param;
-    }
-
-    private int findIndexWithSameName(CriteriaQueryImpl<?> q) {
-        OrderedMap<Object, Class<?>> parameterTypes = q.getParameterTypes();
-        int i = 0;
-        for (Object k : parameterTypes.keySet()) {
-            if (paramEquals(k)) {
-                return i;
-            }
-            i++;
-        }
-        return -1;
     }
 
     @Override
@@ -139,7 +125,8 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         return getJavaType();
     }
 
-    public boolean paramEquals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
 
@@ -158,19 +145,20 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         if (getParameterType() != ((ParameterExpressionImpl<?>) o).getParameterType() )
             return false;
 
-        return value != null ? value.equals(that.value) : that.value == null;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
+        if (_name == null && that._name == null) {
+            return super.equals(o);
+        } else {
+            return _name.equals(that._name);
         }
-        return false;
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        int result = _name != null ? _name.hashCode() : 0;
+        if (_name == null) {
+            result = 31 * result + super.hashCode();
+        }
+        result = 31 * result + (getParameterType() != null ? getParameterType().hashCode() : 0);
+        return result;
     }
 }

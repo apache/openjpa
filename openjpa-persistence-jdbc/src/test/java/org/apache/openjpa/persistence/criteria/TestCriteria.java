@@ -20,6 +20,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -27,7 +28,10 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.Parameter;
 
+import org.apache.openjpa.persistence.AbstractQuery;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.query.DomainObject;
 import org.apache.openjpa.persistence.query.Expression;
@@ -645,6 +649,24 @@ public class TestCriteria extends SingleEMFTestCase {
         for (int i = 0; i < p.length; i += 2) {
             q.setParameter(p[i].toString(), p[i+1]);
         }
+    }
+
+    public void testInCriteriaWithAnonymousParameters() {
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+
+        CriteriaQuery<Customer> criteria = builder.createQuery(Customer.class);
+        Root<Customer> root = criteria.from(Customer.class);
+        ParameterExpression<String> p1 = builder.parameter(String.class);
+        ParameterExpression<String> p2 = builder.parameter(String.class);
+        // qdef.where(customer.get("status").equal(qdef.param("status")));
+        criteria.where(builder.equal(root.get("firstName"), p1), builder.equal(root.get("lastName"), p2));
+        assertEquals("SELECT * FROM Customer c WHERE (c.firstName = :param AND c.lastName = :param)",
+                     criteria.toString());
+        TypedQuery<Customer> query = em.createQuery(criteria);
+        Map<Object, Parameter<?>> declaredParameters = ((AbstractQuery<?>) query).getDeclaredParameters();
+        assertEquals(2, declaredParameters.size());
     }
 }
 

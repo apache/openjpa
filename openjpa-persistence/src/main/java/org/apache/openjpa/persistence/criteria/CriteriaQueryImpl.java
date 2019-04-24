@@ -224,18 +224,10 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * Registers the given parameter.
      */
     void registerParameter(ParameterExpressionImpl<?> p) {
-        for (Object k : _params.keySet()) {
-            if (p.paramEquals(k)) {
-                // If a named ParameterExpressin did already get registered
-                // with that exact name, then we do ignore it.
-                // If we do a query.setParameter("someParamName", Bla)
-                // then it must uniquely identify a Parameter.
-                return;
-            }
-        }
-
+        if (!_params.containsKey(p)) {
         p.setIndex(_params.size());
         _params.put(p, p.getJavaType());
+    }
     }
 
     @Override
