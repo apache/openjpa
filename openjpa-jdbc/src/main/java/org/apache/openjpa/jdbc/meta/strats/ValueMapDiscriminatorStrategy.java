@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -48,7 +50,10 @@ public class ValueMapDiscriminatorStrategy
     private static final Localizer _loc = Localizer.forPackage
         (ValueMapDiscriminatorStrategy.class);
 
-    private Map _vals = null;
+    private Map<String, Class<?>> _vals;
+    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true);
+    private final Lock _readLock = rwl.readLock();
+    private final Lock _writeLock = rwl.writeLock();
 
     public String getAlias() {
         return ALIAS;
@@ -62,8 +67,8 @@ public class ValueMapDiscriminatorStrategy
         // if the user wants the type to be null, we need a jdbc-type
         // on the column or an existing column to figure out the java type
         DiscriminatorMappingInfo info = disc.getMappingInfo();
-        List cols = info.getColumns();
-        Column col = (cols.isEmpty()) ? null : (Column) cols.get(0);
+        List<Column> cols = info.getColumns();
+        Column col = (cols.isEmpty()) ? null : cols.get(0);
         if (col != null) {
             if (col.getJavaType() != JavaTypes.OBJECT)
                 return col.getJavaType();
@@ -81,29 +86,67 @@ public class ValueMapDiscriminatorStrategy
 
     protected Class getClass(Object val, JDBCStore store)
         throws ClassNotFoundException {
-        if (_vals == null) {
-            ClassMapping cls = disc.getClassMapping();
-            ClassMapping[] subs = cls.getJoinablePCSubclassMappings();
-            Map map = new HashMap((int) ((subs.length + 1) * 1.33 + 1));
-            mapDiscriminatorValue(cls, map);
-            for (int i = 0; i < subs.length; i++)
-                mapDiscriminatorValue(subs[i], map);
-            _vals = map;
+
+        if(_vals == null) {
+            _writeLock.lock();
+            try {
+                if(_vals == null) {
+                    _vals = constructCache(disc);
+                }
+            } finally {
+                _writeLock.unlock();
+            }
         }
 
-        String str = (val == null) ? null : val.toString();
-        Class cls = (Class) _vals.get(str);
-        if (cls != null)
-            return cls;
-        throw new ClassNotFoundException(_loc.get("unknown-discrim-value",
-            new Object[]{ str, disc.getClassMapping().getDescribedType().
-            getName(), new TreeSet(_vals.keySet()) }).getMessage());
+        String className = (val == null) ? null : val.toString();
+        _readLock.lock();
+        try {
+            Class<?> clz = _vals.get(className);
+            if (clz != null)
+                return clz;
+        } finally {
+            _readLock.unlock();
+        }
+
+        _writeLock.lock();
+        try {
+            Class<?> clz = _vals.get(className);
+            if (clz != null)
+                return clz;
+
+            //Rebuild the cache to check for updates
+            _vals = constructCache(disc);
+
+            //Try get again
+            clz = _vals.get(className);
+            if (clz != null)
+                return clz;
+            throw new ClassNotFoundException(_loc.get("unknown-discrim-value",
+                    new Object[]{ className, disc.getClassMapping().getDescribedType().
+                    getName(), new TreeSet<String>(_vals.keySet()) }).getMessage());
+        } finally {
+            _writeLock.unlock();
+        }
+    }
+
+    /**
+     * Build a class cache map from the discriminator
+     */
+    private static Map<String, Class<?>> constructCache(Discriminator disc) {
+        //Build the cache map
+        ClassMapping cls = disc.getClassMapping();
+        ClassMapping[] subs = cls.getJoinablePCSubclassMappings();
+        Map<String, Class<?>> map = new HashMap<String, Class<?>>((int) ((subs.length + 1) * 1.33 + 1));
+        mapDiscriminatorValue(cls, map);
+        for (int i = 0; i < subs.length; i++)
+            mapDiscriminatorValue(subs[i], map);
+        return map;
     }
 
     /**
      * Map the stringified version of the discriminator value of the given type.
      */
-    private static void mapDiscriminatorValue(ClassMapping cls, Map map) {
+    private static void mapDiscriminatorValue(ClassMapping cls, Map<String, Class<?>> map) {
         // possible that some types will never be persisted and therefore
         // can have no discriminator value
         Object val = cls.getDiscriminator().getValue();
@@ -111,7 +154,7 @@ public class ValueMapDiscriminatorStrategy
             return;
 
         String str = (val == Discriminator.NULL) ? null : val.toString();
-        Class exist = (Class) map.get(str);
+        Class<?> exist = map.get(str);
         if (exist != null)
             throw new MetaDataException(_loc.get("dup-discrim-value",
                 str, exist, cls));
