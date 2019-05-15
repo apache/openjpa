@@ -42,7 +42,7 @@
 
     <profiles>
         <!-- Default profile for testing with Apache BVAL provider -->
-        <!-- See http://incubator.apache.org/projects/beanvalidation.html -->
+        <!-- See http://bval.apache.org/ -->
         <profile>
             <id>bval</id>
             <activation>
@@ -124,7 +124,7 @@
                 <repository>
                     <id>repository.jboss.org</id>
                     <name>JBoss Nexus Repository</name>
-                    <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+                    <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
                     <layout>default</layout>
                     <snapshots>
                         <enabled>false</enabled>

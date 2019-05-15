@@ -100,7 +100,7 @@
 
     <licenses>
         <license>
-            <name>Apache Software License 2.0</name>
+            <name>Apache License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
@@ -115,7 +115,7 @@
 
     <issueManagement>
         <system>jira</system>
-        <url>http://issues.apache.org/jira/browse/OPENJPA</url>
+        <url>https://issues.apache.org/jira/browse/OPENJPA</url>
     </issueManagement>
 
     <ciManagement>
@@ -131,21 +131,21 @@
             <subscribe>dev-subscribe@openjpa.apache.org</subscribe>
             <unsubscribe>dev-unsubscribe@openjpa.apache.org</unsubscribe>
             <post>dev@openjpa.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/openjpa-dev/</archive>
+            <archive>https://lists.apache.org/list.html?dev@openjpa.apache.org</archive>
         </mailingList>
         <mailingList>
             <name>OpenJPA Users List</name>
             <subscribe>users-subscribe@openjpa.apache.org</subscribe>
             <unsubscribe>users-unsubscribe@openjpa.apache.org</unsubscribe>
             <post>users@openjpa.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/openjpa-users/</archive>
+            <archive>https://lists.apache.org/list.html?users@openjpa.apache.org</archive>
         </mailingList>
         <mailingList>
             <name>OpenJPA Commits List</name>
             <subscribe>commits-subscribe@openjpa.apache.org</subscribe>
             <unsubscribe>commits-unsubscribe@openjpa.apache.org</unsubscribe>
             <post>commits@openjpa.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/openjpa-commits/</archive>
+            <archive>https://lists.apache.org/list.html?commits@openjpa.apache.org</archive>
         </mailingList>
     </mailingLists>
 
@@ -312,9 +312,8 @@
                             <verbose>false</verbose>
                             <maxmemory>1024m</maxmemory>
                             <links>
-                                <link>http://download.oracle.com/javase/8/docs/api/</link>
-                                <link>http://download.oracle.com/javaee/8/api/</link>
-                                <link>http://commons.apache.org/collections/api-release/</link>
+                                <link>https://download.oracle.com/javase/8/docs/api/</link>
+                                <link>https://download.oracle.com/javaee/8/api/</link>
                             </links>
                         </configuration>
                         <executions>
@@ -2389,9 +2388,8 @@
                     <quiet>true</quiet>
                     <source>${java.class.version}</source>
                     <links>
-                        <link>http://download.oracle.com/javase/8/docs/api/</link>
-                        <link>http://download.oracle.com/javaee/8/api/</link>
-                        <link>http://commons.apache.org/collections/api-release/</link>
+                        <link>https://download.oracle.com/javase/8/docs/api/</link>
+                        <link>https://download.oracle.com/javaee/8/api/</link>
                     </links>
                 </configuration>
                 <reportSets>
