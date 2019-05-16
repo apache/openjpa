@@ -126,7 +126,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private Map<Class<?>, Class<?>> _metamodel = Collections.synchronizedMap(new HashMap<Class<?>, Class<?>>());
 
     // map of classes to lists of their subclasses
-    private Map<Class<?>, List<Class<?>>> _subs = Collections.synchronizedMap(new HashMap<Class<?>, List<Class<?>>>());
+    private Map<Class<?>, Collection<Class<?>>> _subs =
+            Collections.synchronizedMap(new HashMap<Class<?>, Collection<Class<?>>>());
 
     // xml mapping
     protected final XMLMetaData[] EMPTY_XMLMETAS;
@@ -1625,19 +1626,20 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     }
 
     /**
-     * Updates our datastructures with the latest registered classes.
+     * Updates our data structures with the latest registered classes.
+     * 
+     * This method is synchronized to make sure that all data structures are fully updated
+     *  before other threads attempt to call this method
      */
-    Class<?>[] processRegisteredClasses(ClassLoader envLoader) {
-        if (_registered.isEmpty())
+    synchronized Class<?>[] processRegisteredClasses(ClassLoader envLoader) {
+        if (_registered.isEmpty()) {
             return EMPTY_CLASSES;
+        }
 
         // copy into new collection to avoid concurrent mod errors on reentrant
         // registrations
-        Class<?>[] reg;
-        synchronized (_registered) {
-            reg = _registered.toArray(new Class[_registered.size()]);
-            _registered.clear();
-        }
+        Class<?>[] reg = _registered.toArray(new Class[_registered.size()]);
+        _registered.clear();
 
         Collection<String> pcNames = getPersistentTypeNames(false, envLoader);
         Collection<Class<?>> failed = null;
@@ -1652,8 +1654,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             if (_filterRegisteredClasses) {
                 Log log = (_conf == null) ? null : _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
                 ClassLoader loadCL = (envLoader != null) ?
-                        envLoader :
-                        AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+                    envLoader :
+                    AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
 
                 try {
                     Class<?> classFromAppClassLoader = Class.forName(reg[i].getName(), true, loadCL);
@@ -1840,7 +1842,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Add the given value to the collection cached in the given map under the given key.
      */
-    private void addToCollection(Map map, Class<?> key, Class<?> value, boolean inheritance) {
+    private void addToCollection(Map<Class<?>, Collection<Class<?>>> map, Class<?> key, Class<?> value, boolean inheritance) {
         if (_locking) {
             synchronized (map) {
                 addToCollectionInternal(map, key, value, inheritance);
@@ -1850,8 +1852,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private void addToCollectionInternal(Map map, Class<?> key, Class<?> value, boolean inheritance) {
-        Collection coll = (Collection) map.get(key);
+    private void addToCollectionInternal(Map<Class<?>, Collection<Class<?>>> map, Class<?> key, Class<?> value, boolean inheritance) {
+        Collection<Class<?>> coll = map.get(key);
         if (coll == null) {
             if (inheritance) {
                 InheritanceComparator comp = new InheritanceComparator();
@@ -1927,8 +1929,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     @Override
     public void endConfiguration() {
         initializeMetaDataFactory();
-		if (_implGen == null)
-			_implGen = new InterfaceImplGenerator(this);
+        if (_implGen == null)
+            _implGen = new InterfaceImplGenerator(this);
         if (_preload == true) {
             _oids = new HashMap<>();
             _impls = new HashMap<>();
