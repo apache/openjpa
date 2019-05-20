@@ -1839,7 +1839,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Add the given value to the collection cached in the given map under the given key.
      */
-    private void addToCollection(Map<Class<?>, Collection<Class<?>>> map, Class<?> key, Class<?> value, boolean inheritance) {
+    private void addToCollection(Map<Class<?>, Collection<Class<?>>> map, 
+            Class<?> key, Class<?> value, boolean inheritance) {
         if (_locking) {
             synchronized (map) {
                 addToCollectionInternal(map, key, value, inheritance);
@@ -1849,7 +1850,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private  void addToCollectionInternal(Map<Class<?>, Collection<Class<?>>> map, Class<?> key, Class<?> value, boolean inheritance) {
+    private  void addToCollectionInternal(Map<Class<?>, Collection<Class<?>>> map, 
+            Class<?> key, Class<?> value, boolean inheritance) {
         Collection<Class<?>> coll = map.get(key);
         if (coll == null) {
             if (inheritance) {
