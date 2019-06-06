@@ -62,7 +62,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.lib.util.Localizer.Message;
-import org.apache.openjpa.lib.util.svn.SVNUtils;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -181,8 +180,7 @@ public class PCEnhancer {
                     in.close();
                 }
             }
-            String prop = revisionProps.getProperty("openjpa.enhancer.revision");
-            rev = SVNUtils.svnInfoToInteger(prop);
+            rev = Integer.parseInt(revisionProps.getProperty("openjpa.enhancer.revision"));
         } catch (Exception e) {
         }
         if (rev > 0) {

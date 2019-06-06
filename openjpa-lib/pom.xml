@@ -84,55 +84,43 @@
     <build>
         <plugins>
             <!--
-                get the svn revision number and set it in the
-                subversion.revision setting - disabled for now
-                since we need to be able to build from sources
-                zip (when there is no .svn/ metadata)
+                get the git revision number and set it in the git.revision setting - disabled for now
+                since we need to be able to build from sources zip (when there is no .git/config)
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <executions>                   
+                <executions>
                     <execution>
-                        <id>set subversion revision</id>
+                        <id>set git version</id>
                         <phase>compile</phase>
                         <configuration>
-                            <tasks>
-                                <property name="tmpdir" value="${java.io.tmpdir}/openjpamvntmp" />
-                                <condition property="outdir" value="${project.build.outputDirectory}">
+                            <target>
+                                <echo>Getting the 'GIT' revision value</echo>
+                                <exec outputproperty="git.revision" failonerror="false" failifexecutionfails="false" executable="git">
+                                    <arg line="rev-parse --short HEAD" />
+                                </exec>
+                                <echo>Revision: ${git.revision}</echo>
+
+                                <echo>Getting the 'PCEnhancer' revision value</echo>
+                                <exec outputproperty="pcenhancer.git.revision" failonerror="false" failifexecutionfails="false" executable="git" append="false">
+                                    <arg line="rev-parse --short HEAD:./../openjpa-kernel/src/main/java/org/apache/openjpa/enhance/PCEnhancer.java" />
+                                </exec>
+                                <echo>openjpa.enhancer.revision=${pcenhancer.git.revision}</echo>
+
+                                <echo>OpenJPA version: ${project.version}</echo>
+
+                                <condition property="outdir" value="${project.build.outputDirectory}" else="${java.io.tmpdir}/openjpamvntmp">
                                     <available type="dir" file="${project.build.outputDirectory}" />
                                 </condition>
 
-                                <property name="outdir" value="${tmpdir}" />
-
-                                <property name="svnversion.executable" value="svnversion" />
-                                <exec outputproperty="subversion.revision" failonerror="false" failifexecutionfails="false" executable="${svnversion.executable}">
-                                    <arg line="-c ${basedir}/.." />
-                                </exec>
-                                # Write the svn info to a temp file 
-                                <echo file="pcenhancer.revision.file" /> 
-                                <exec output="pcenhancer.revision.file" failonerror="false" failifexecutionfails="false" executable="svn" append="false">
-                                    <arg line="info ../openjpa-kernel/src/main/java/org/apache/openjpa/enhance/PCEnhancer.java" />
-                                </exec>
-
-                                # Remove all spaces so we can have a proper key
-                                <replace file="pcenhancer.revision.file" token=" " value="" />
-                                # Load the property file
-                                <property prefix="pcenhancer" file="pcenhancer.revision.file" />
-                                <delete file="pcenhancer.revision.file" />
-
-                                <property name="subversion.revision" value="unknown" />
-                                <property name="pcenhancer.LastChangedRev" value="-1" />
-                                <echo>Revision: ${subversion.revision}</echo>
-                                <echo>OpenJPA version: ${project.version}</echo>
-                                    
                                 <mkdir dir="${outdir}/META-INF" />
-                                <echo file="${outdir}/META-INF/org.apache.openjpa.revision.properties">revision.number=${subversion.revision}
+                                <echo file="${outdir}/META-INF/org.apache.openjpa.revision.properties">
+revision.number=${git.revision}
 openjpa.version=${project.version}
-openjpa.enhancer.revision=${pcenhancer.LastChangedRev}
-</echo>
-                                <delete dir="${tmpdir}" />
-                            </tasks>
+openjpa.enhancer.revision=${pcenhancer.git.revision}
+                                </echo>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
