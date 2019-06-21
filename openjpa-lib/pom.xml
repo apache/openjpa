@@ -96,17 +96,34 @@
                         <phase>compile</phase>
                         <configuration>
                             <target>
+                                <!-- SVN would have appended 'M' to the end of the revision number if there were
+                                     uncommitted changes.  Git doesn't do that, so we have to work a bit to
+                                     emulate that behavior.  -->
+                                <echo>Determining if there are uncommitted changes...</echo>
+                                <exec outputproperty="git.diff.exitval" resultproperty="diff.state" failonerror="false" failifexecutionfails="false" executable="git">
+                                    <arg line="diff --quiet HEAD" />
+                                </exec>
+                                <exec outputproperty="git.diff.cached.exitval" resultproperty="diff.state.cached" failonerror="false" failifexecutionfails="false" executable="git">
+                                    <arg line="diff --cached --quiet HEAD" />
+                                </exec>
+                                <condition property="uncommitted.changes" value="M" else="">
+                                    <or>
+                                        <equals arg1="${diff.state}" arg2="1"/>
+                                        <equals arg1="${diff.state.cached}" arg2="1"/>
+                                    </or>
+                                </condition>
+                                
                                 <echo>Getting the 'GIT' revision value</echo>
                                 <exec outputproperty="git.revision" failonerror="false" failifexecutionfails="false" executable="git">
-                                    <arg line="rev-parse --short HEAD" />
+                                    <arg line="rev-parse --short=7 HEAD" />
                                 </exec>
-                                <echo>Revision: ${git.revision}</echo>
+                                <echo>Revision: ${git.revision}${uncommitted.changes}</echo>
 
                                 <echo>Getting the 'PCEnhancer' revision value</echo>
                                 <exec outputproperty="pcenhancer.git.revision" failonerror="false" failifexecutionfails="false" executable="git" append="false">
-                                    <arg line="rev-parse --short HEAD:./../openjpa-kernel/src/main/java/org/apache/openjpa/enhance/PCEnhancer.java" />
+                                    <arg line="rev-parse --short=7 HEAD:./../openjpa-kernel/src/main/java/org/apache/openjpa/enhance/PCEnhancer.java" />
                                 </exec>
-                                <echo>openjpa.enhancer.revision=${pcenhancer.git.revision}</echo>
+                                <echo>openjpa.enhancer.revision=${pcenhancer.git.revision}${uncommitted.changes}</echo>
 
                                 <echo>OpenJPA version: ${project.version}</echo>
 
@@ -116,9 +133,9 @@
 
                                 <mkdir dir="${outdir}/META-INF" />
                                 <echo file="${outdir}/META-INF/org.apache.openjpa.revision.properties">
-revision.number=${git.revision}
+revision.number=${git.revision}${uncommitted.changes}
 openjpa.version=${project.version}
-openjpa.enhancer.revision=${pcenhancer.git.revision}
+openjpa.enhancer.revision=${pcenhancer.git.revision}${uncommitted.changes}
                                 </echo>
                             </target>
                         </configuration>
