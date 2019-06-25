@@ -61,6 +61,7 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.Services;
+import org.apache.openjpa.lib.util.git.GitUtils;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -180,7 +181,7 @@ public class PCEnhancer {
                     in.close();
                 }
             }
-            rev = Integer.parseInt(revisionProps.getProperty("openjpa.enhancer.revision"));
+            rev = GitUtils.convertGitInfoToPCEnhancerVersion(revisionProps.getProperty("openjpa.enhancer.revision"));
         } catch (Exception e) {
         }
         if (rev > 0) {
