@@ -940,7 +940,7 @@ public class OracleDictionary
             if (!DBIdentifier.isNull(schemaName))
                 setString(stmnt, idx++, convertSchemaCase(schemaName), null);
             if (!DBIdentifier.isNull(tableName))
-                setString(stmnt, idx++, convertSchemaCase(tableName), null);
+                setString(stmnt, idx++, convertSchemaCase(tableName.getUnqualifiedName()), null);
 
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
@@ -1019,7 +1019,7 @@ public class OracleDictionary
             if (!DBIdentifier.isNull(schemaName))
                 setString(stmnt, idx++, convertSchemaCase(schemaName), null);
             if (!DBIdentifier.isNull(tableName))
-                setString(stmnt, idx++, convertSchemaCase(tableName), null);
+                setString(stmnt, idx++, convertSchemaCase(tableName.getUnqualifiedName()), null);
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
             List<ForeignKey> fkList = new ArrayList<>();
