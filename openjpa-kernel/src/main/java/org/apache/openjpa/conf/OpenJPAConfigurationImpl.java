@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.conf;
 
+import static java.util.Arrays.asList;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -54,6 +56,7 @@ import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.conf.BooleanValue;
+import org.apache.openjpa.lib.conf.ClassListValue;
 import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.IntValue;
@@ -178,6 +181,7 @@ public class OpenJPAConfigurationImpl
     public BooleanValue postLoadOnMerge;
     public BooleanValue optimizeIdCopy;
     public BooleanValue useTcclForSelectNew;
+    public ClassListValue typesWithoutEnhancement;
 
     // JPA Properties
     public IntValue databaseAction;
@@ -671,6 +675,8 @@ public class OpenJPAConfigurationImpl
         useTcclForSelectNew = addBoolean("UseTCCLinSelectNew");
         useTcclForSelectNew.setDefault("false");
         useTcclForSelectNew.set(false);
+
+        typesWithoutEnhancement = new ClassListValue();
 
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
@@ -2277,6 +2283,16 @@ public class OpenJPAConfigurationImpl
         if (useTcclForSelectNew != null) {
             setUseTCCLinSelectNew(useTcclForSelectNew.booleanValue());
         }
+    }
+
+    @Override
+    public Collection<Class<?>> getTypesWithoutEnhancement() {
+        return asList(typesWithoutEnhancement.get());
+    }
+
+    @Override
+    public void setTypesWithoutEnhancement(Collection<Class<?>> value) {
+        typesWithoutEnhancement.set(value.toArray(new Class[value.size()]));
     }
 }
 

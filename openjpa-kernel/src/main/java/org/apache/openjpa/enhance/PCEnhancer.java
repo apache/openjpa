@@ -530,6 +530,10 @@ public class PCEnhancer {
     public int run() {
         Class<?> type = _managedType.getType();
         try {
+            // if enum, skip, no need of any meta
+            if (_pc.isEnum())
+                return ENHANCE_NONE;
+
             // if managed interface, skip
             if (_pc.isInterface())
                 return ENHANCE_INTERFACE;

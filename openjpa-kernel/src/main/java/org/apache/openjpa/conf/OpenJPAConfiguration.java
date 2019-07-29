@@ -2009,5 +2009,9 @@ public interface OpenJPAConfiguration
     String getDropScriptTarget();
 
     String getLoadScriptSource();
+
+    Collection<Class<?>> getTypesWithoutEnhancement();
+
+    void setTypesWithoutEnhancement(Collection<Class<?>> value);
 }
 

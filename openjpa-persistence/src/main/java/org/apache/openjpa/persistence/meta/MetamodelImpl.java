@@ -83,6 +83,10 @@ public class MetamodelImpl implements Metamodel, Resolver {
         this.repos = repos;
         Collection<Class<?>> classes = repos.loadPersistentTypes(true, null);
         for (Class<?> cls : classes) {
+            if (repos.skipMetadata(cls)) { // AttributeConverters, enums etc....
+                continue;
+            }
+
         	ClassMetaData meta = repos.getMetaData(cls, null, true);
             PersistenceType type = getPersistenceType(meta);
             switch (type) {

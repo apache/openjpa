@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import static java.util.Collections.singleton;
+
 import java.security.AccessController;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javax.persistence.AttributeConverter;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
@@ -95,6 +99,8 @@ public class JDBCPersistenceProductDerivation
             PersistenceMappingDefaults.class.getName());
 
         conf.lockManagerPlugin.setAlias("mixed", "org.apache.openjpa.jdbc.kernel.MixedLockManager");
+
+        conf.typesWithoutEnhancement.set(new Class<?>[]{ AttributeConverter.class });
 
         return true;
     }

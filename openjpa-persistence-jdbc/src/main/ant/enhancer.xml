@@ -74,6 +74,7 @@
         <fileset id="enhance.path.ref"
                  dir="${project.build.testOutputDirectory}">
             <include name="**/*.class" />
+            <include name="org/apache/openjpa/persistence/meta/TestMetamodelWithEnum$Main.class" />
             <exclude name="**/inheritance/serializable/*.class" />
             <exclude name="**/detach/serializable/*.class" />
             <exclude name="**/proxy/entities/*.class" />

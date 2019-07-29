@@ -167,6 +167,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     // A boolean used to decide whether to filter Class<?> objects submitted by the PCRegistry listener system
     private boolean _filterRegisteredClasses = false;
 
+    // we should skip these types for the enhancement
+    private Collection<Class<?>> _typesWithoutEnhancement;
+
     /**
      * Default constructor. Configure via {@link Configurable}.
      */
@@ -992,7 +995,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     /**
      * Create an {@link Order} for the given field and declaration. This method delegates to
-     * {@link #newRelatedFieldOrder} and {@link #newValueFieldOrder} by default.
+     * {@link #newRelatedFieldOrder} and {@link #newValueOrder(FieldMetaData, boolean)} by default.
      */
     protected Order newOrder(FieldMetaData owner, String name, boolean asc) {
         // paths can start with (or equal) '#element'
@@ -1298,6 +1301,16 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         return _pawares.get(cls);
     }
 
+    public boolean skipMetadata(final Class<?> cls) {
+        if (cls == null || cls.isEnum()) {
+            return true;
+        }
+        if (_typesWithoutEnhancement == null) {
+            return false;
+        }
+        return _typesWithoutEnhancement.stream().anyMatch(it -> it.isAssignableFrom(cls));
+    }
+
     /**
      * Gets all the metadatas for persistence-aware classes
      *
@@ -1537,6 +1550,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 cls = classForName(className, clsLoader);
                 if (_factory.isMetaClass(cls)) {
                     setMetaModel(cls);
+                    continue;
+                }
+                if (skipMetadata(cls)) {
                     continue;
                 }
                 if (cls != null) {
@@ -1922,6 +1938,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         _conf = (OpenJPAConfiguration) conf;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_METADATA);
         _filterRegisteredClasses = _conf.getCompatibilityInstance().getFilterPCRegistryClasses();
+        _typesWithoutEnhancement = _conf.getTypesWithoutEnhancement();
+        if (_typesWithoutEnhancement == null || _typesWithoutEnhancement.isEmpty()) {
+            _typesWithoutEnhancement = null;
+        }
     }
 
     @Override
