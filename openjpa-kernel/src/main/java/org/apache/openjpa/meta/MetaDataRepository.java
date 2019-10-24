@@ -1629,14 +1629,21 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      *  before other threads attempt to call this method
      */
     synchronized Class<?>[] processRegisteredClasses(ClassLoader envLoader) {
-        if (_registered.isEmpty()) {
-            return EMPTY_CLASSES;
-        }
 
-        // copy into new collection to avoid concurrent mod errors on reentrant
-        // registrations
-        Class<?>[] reg = _registered.toArray(new Class[_registered.size()]);
-        _registered.clear();
+        Class<?>[] reg;
+        /*Synchronize `_registered` cache to block MetaDataRepository.register() from adding
+         * to the cache while we copy, causing a ConcurrentModificationException
+         */
+        synchronized (_registered) {
+            if (_registered.isEmpty()) {
+                return EMPTY_CLASSES;
+            }
+
+            // copy into new collection to avoid concurrent mod errors on reentrant
+            // registrations
+            reg = _registered.toArray(new Class[_registered.size()]);
+            _registered.clear();
+        }
 
         Collection<String> pcNames = getPersistentTypeNames(false, envLoader);
         Collection<Class<?>> failed = null;
