@@ -44,6 +44,7 @@
         <dbcp.minIdle>2</dbcp.minIdle>
         <dbcp.maxWait>10000</dbcp.maxWait>
         <dbcp.args>MaxTotal=${dbcp.maxTotal},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
+        <automatic-module-name>org.apache.openjpa.integration.daytrader</automatic-module-name>
     </properties>
 
     <dependencies>

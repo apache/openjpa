@@ -35,6 +35,9 @@
     <packaging>jar</packaging>
     <name>OpenJPA JEST</name>
 
+    <properties>
+        <automatic-module-name>org.apache.openjpa.jest</automatic-module-name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>

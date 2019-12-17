@@ -35,6 +35,9 @@
     <name>OpenJPA JDBC</name>
     <description>OpenJPA JDBC</description>
 
+    <properties>
+        <automatic-module-name>org.apache.openjpa.jdbc</automatic-module-name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
