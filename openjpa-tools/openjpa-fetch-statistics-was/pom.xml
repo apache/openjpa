@@ -30,7 +30,7 @@
     <properties>
         <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
         <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
-        <automatic-module-name>org.apache.openjpa.tools.stats.was</automatic-module-name>
+        <automatic-module-name>org.apache.openjpa.tools.statistics.was</automatic-module-name>
     </properties>
 
     <dependencies>
