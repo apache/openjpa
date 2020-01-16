@@ -38,6 +38,7 @@
     <properties>
         <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
         <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
+        <automatic-module-name>org.apache.openjpa.integration.validation</automatic-module-name>
     </properties>
 
     <profiles>
@@ -95,7 +96,7 @@
                     <version>4.0.2.GA</version>
                     <scope>test</scope>
                     <exclusions>
-                        <!-- force usage of the geronimo-jpa_2.1_spec -->
+                        <!-- force usage of own jpa -->
                         <exclusion>
                             <groupId>org.hibernate.java-persistence</groupId>
                             <artifactId>jpa-api</artifactId>

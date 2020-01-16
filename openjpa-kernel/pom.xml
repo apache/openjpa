@@ -35,6 +35,9 @@
     <name>OpenJPA Kernel</name>
     <description>OpenJPA Kernel</description>
 
+    <properties>
+        <automatic-module-name>org.apache.openjpa.kernel</automatic-module-name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>

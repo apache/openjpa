@@ -35,6 +35,9 @@
     <name>OpenJPA Persistence</name>
     <description>OpenJPA Persistence</description>
 
+    <properties>
+        <automatic-module-name>org.apache.openjpa.persistence</automatic-module-name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
@@ -42,8 +45,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_2.2_spec</artifactId>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>jakarta.persistence</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
