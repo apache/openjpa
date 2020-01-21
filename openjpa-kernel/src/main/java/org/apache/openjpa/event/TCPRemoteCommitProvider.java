@@ -38,10 +38,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -75,8 +75,7 @@ public class TCPRemoteCommitProvider
 
     private static final int DEFAULT_PORT = 5636;
 
-    private static final Localizer s_loc = Localizer.forPackage
-        (TCPRemoteCommitProvider.class);
+    protected static final Localizer s_loc = Localizer.forPackage(TCPRemoteCommitProvider.class);
     private static long s_idSequence = System.currentTimeMillis();
 
     //	A map of listen ports to listeners in this JVM. We might
@@ -84,22 +83,20 @@ public class TCPRemoteCommitProvider
     //	that is not currently possible in a single JVM.
     private static final Map<String, TCPPortListener> s_portListenerMap = new HashMap<>();
 
-    private long _id;
-    private byte[] _localhost;
-    private int _port = DEFAULT_PORT;
+    private final long _id;
+    private final byte[] _localhost;
+    protected int _port = DEFAULT_PORT;
     private int _maxTotal = 2;
     private int _maxIdle = 2;
     private int _recoveryTimeMillis = 15000;
     private TCPPortListener _listener;
-    private BroadcastQueue _broadcastQueue = new BroadcastQueue();
-    private final List<BroadcastWorkerThread> _broadcastThreads = Collections.synchronizedList(
-        new LinkedList<>());
+    private final BroadcastQueue _broadcastQueue = new BroadcastQueue();
+    private final List<BroadcastWorkerThread> _broadcastThreads = Collections.synchronizedList(new LinkedList<>());
 
-    private List<HostAddress> _addresses = new ArrayList<>();
-    private ReentrantLock _addressesLock;
+    protected List<HostAddress> _addresses = new ArrayList<>();
+    protected final ReentrantLock _addressesLock;
 
-    public TCPRemoteCommitProvider()
-        throws UnknownHostException {
+    public TCPRemoteCommitProvider() throws UnknownHostException {
         // obtain a unique ID.
         synchronized (TCPRemoteCommitProvider.class) {
             _id = s_idSequence++;
@@ -112,84 +109,90 @@ public class TCPRemoteCommitProvider
     }
 
     /**
-     * The port that this provider should listen on.
+     * @return the port that this provider should listen on.
      */
     public int getPort() {
         return _port;
     }
 
     /**
-     * The port that this provider should listen on. Set once only.
+     * Set the port that this provider should listen on. Set once only.
+     *
+     * @param port the port that this provider should listen on
      */
-    public void setPort(int port) {
+    public void setPort(final int port) {
         _port = port;
     }
 
     /**
-     * The number of milliseconds to wait before retrying
-     * to reconnect to a peer after it becomes unreachable.
+     * Set the number of milliseconds to wait before retrying to reconnect to a peer after it becomes unreachable.
+     * 
+     * @param recoverytime the number of milliseconds to wait before retrying to reconnect to a peer after it becomes
+     * unreachable
      */
-    public void setRecoveryTimeMillis(int recoverytime) {
+    public void setRecoveryTimeMillis(final int recoverytime) {
         _recoveryTimeMillis = recoverytime;
     }
 
     /**
-     * The number of milliseconds to wait before retrying
-     * to reconnect to a peer after it becomes unreachable.
+     * @return the number of milliseconds to wait before retrying to reconnect to a peer after it becomes unreachable.
      */
     public int getRecoveryTimeMillis() {
         return _recoveryTimeMillis;
     }
 
     /**
-     * The maximum number of sockets that this provider can
-     * simetaneously open to each peer in the cluster.
+     * Set the maximum number of sockets that this provider can simultaneously open to each peer in the cluster.
      *
-     * @deprecated please use {@link TCPRemoteCommitProvider#setMaxTotal(int)} instead
+     * @param maxActive the maximum total number of sockets that this provider can simultaneously open to each peer in
+     * the cluster.     * @deprecated please use {@link TCPRemoteCommitProvider#setMaxTotal(int)} instead
      */
     @Deprecated
-    public void setMaxActive(int maxActive) {
+    public void setMaxActive(final int maxActive) {
         log.warn("This method should not be used");
         _maxTotal = maxActive;
     }
 
     /**
-     * The maximum total number of sockets that this provider can
-     * simetaneously open to each peer in the cluster.
+     * Set the maximum total number of sockets that this provider can simultaneously open to each peer in the cluster.
+     * 
+     * @param maxTotal the maximum total number of sockets that this provider can simultaneously open to each peer in
+     * the cluster.
      */
-    public void setMaxTotal(int maxTotal) {
+    public void setMaxTotal(final int maxTotal) {
         _maxTotal = maxTotal;
     }
 
     /**
-     * The maximum number of sockets that this provider can
-     * simetaneously open to each peer in the cluster.
+     * @return the maximum number of sockets that this provider can simultaneously open to each peer in the cluster.
      */
     public int getMaxTotal() {
         return _maxTotal;
     }
 
     /**
-     * The number of idle sockets that this provider can keep open
-     * to each peer in the cluster.
+     * Set the number of idle sockets that this provider can keep open to each peer in the cluster.
+     * 
+     * @param maxIdle the number of idle sockets that this provider can keep open to each peer in the cluster
      */
-    public void setMaxIdle(int maxIdle) {
+    public void setMaxIdle(final int maxIdle) {
         _maxIdle = maxIdle;
     }
 
     /**
-     * The number of idle sockets that this provider can keep open
-     * to each peer in the cluster.
+     * @return the number of idle sockets that this provider can keep open to each peer in the cluster.
      */
     public int getMaxIdle() {
         return _maxIdle;
     }
 
     /**
-     * The number of worker threads that are used for
-     * transmitting packets to peers in the cluster.
+     * Set the number of worker threads that are used for transmitting packets to peers in the cluster.
+     * 
+     * @param numBroadcastThreads the number of worker threads that are used for transmitting packets to peers in the
+     * cluster
      */
-    public void setNumBroadcastThreads(int numBroadcastThreads) {
+    public void setNumBroadcastThreads(final int numBroadcastThreads) {
         synchronized (_broadcastThreads) {
             int cur = _broadcastThreads.size();
             if (cur > numBroadcastThreads) {
@@ -212,36 +215,33 @@ public class TCPRemoteCommitProvider
     }
 
     /**
-     * The number of worker threads that are used for
-     * transmitting packets to peers in the cluster.
+     * @return the number of worker threads that are used for transmitting packets to peers in the cluster.
      */
     public int getNumBroadcastThreads() {
         return _broadcastThreads.size();
     }
 
     /**
-     * Sets the list of addresses of peers to which this provider will
-     * send events to. The peers are semicolon-separated <code>names</code>
-     * list in the form of "myhost1:portA;myhost2:portB".
+     * Sets the list of addresses of peers to which this provider will send events to.
+     * The peers are semicolon-separated <code>names</code> list in the form of "myhost1:portA;myhost2:portB".
+     * 
+     * @param names the list of addresses of peers to which this provider will send events to
+     * @throws UnknownHostException in case peer name cannot be resolved
      */
-    public void setAddresses(String names)
-        throws UnknownHostException {
-        // NYI. Could look for equivalence of addresses and avoid
-        // changing those that didn't change.
+    public void setAddresses(final String names) throws UnknownHostException {
+        // NYI. Could look for equivalence of addresses and avoid changing those that didn't change.
 
         _addressesLock.lock();
         try {
-            for (Iterator<HostAddress> iter = _addresses.iterator(); iter.hasNext();) {
-                iter.next().close();
-            }
+            _addresses.forEach(HostAddress::close);
+
             String[] toks = StringUtil.split(names, ";", 0);
             _addresses = new ArrayList<>(toks.length);
 
             InetAddress localhost = InetAddress.getLocalHost();
             String localhostName = localhost.getHostName();
 
-            for (int i = 0; i < toks.length; i++) {
-                String host = toks[i];
+            for (String host : toks) {
                 String hostname;
                 int tmpPort;
                 int colon = host.indexOf(':');
@@ -252,9 +252,8 @@ public class TCPRemoteCommitProvider
                     hostname = host;
                     tmpPort = DEFAULT_PORT;
                 }
-                InetAddress tmpAddress = AccessController
-                    .doPrivileged(J2DoPrivHelper.getByNameAction(hostname));
-
+                InetAddress tmpAddress = AccessController.doPrivileged(J2DoPrivHelper.getByNameAction(hostname));
+                
                 // bleair: For each address we would rather make use of
                 // the jdk1.4 isLinkLocalAddress () || isLoopbackAddress ().
                 // (Though in practice on win32 they don't work anyways!)
@@ -265,16 +264,14 @@ public class TCPRemoteCommitProvider
                     // This string matches the hostname for for ourselves, we
                     // don't actually need to send ourselves messages.
                     if (log.isTraceEnabled()) {
-                        log.trace(s_loc.get("tcp-address-asself",
-                            tmpAddress.getHostName() + ":" + tmpPort));
+                        log.trace(s_loc.get("tcp-address-asself", tmpAddress.getHostName() + ":" + tmpPort));
                     }
                 } else {
                     HostAddress newAddress = new HostAddress(host);
                     _addresses.add(newAddress);
                     if (log.isTraceEnabled()) {
-                        log.trace(s_loc.get("tcp-address-set",
-                            newAddress._address.getHostName() + ":"
-                                + newAddress._port));
+                        log.trace(s_loc.get("tcp-address-set", 
+                                newAddress._address.getHostName() + ":" + newAddress._port));
                     }
                 }
             }
@@ -296,25 +293,21 @@ public class TCPRemoteCommitProvider
         super.endConfiguration();
         synchronized (s_portListenerMap) {
             // see if a listener exists for this port.
-            _listener = s_portListenerMap.get
-                (String.valueOf(_port));
+            _listener = s_portListenerMap.get(String.valueOf(_port));
 
-            if (_listener == null ||
-                (!_listener.isRunning() && _listener._port == _port)) {
+            if (_listener == null || (!_listener.isRunning() && _listener._port == _port)) {
                 try {
                     _listener = new TCPPortListener(_port, log);
                     _listener.listen();
                     s_portListenerMap.put(String.valueOf(_port), _listener);
                 } catch (Exception e) {
-                    throw new GeneralException(s_loc.get("tcp-init-exception",
-                        String.valueOf(_port)), e).setFatal(true);
+                    throw new GeneralException(s_loc.get("tcp-init-exception", String.valueOf(_port)), e).
+                            setFatal(true);
                 }
             } else if (_listener.isRunning()) {
                 if (_listener._port != _port) {
                     // this really shouldn't be able to happen.
-                    throw new GeneralException(s_loc.get
-                        ("tcp-not-equal", String.valueOf(_port))).
-                        setFatal(true);
+                    throw new GeneralException(s_loc.get("tcp-not-equal", String.valueOf(_port))).setFatal(true);
                 }
             } else {
                 throw new InternalException(s_loc.get("tcp-listener-broken"));
@@ -324,15 +317,11 @@ public class TCPRemoteCommitProvider
 
         _addressesLock.lock();
         try {
-            HostAddress curAddress;
-            for (Iterator<HostAddress> iter = _addresses.iterator();
-                iter.hasNext();) {
-                curAddress = iter.next();
+            _addresses.forEach(curAddress -> {
                 curAddress.setMaxTotal(_maxTotal);
                 curAddress.setMaxIdle(_maxIdle);
-            }
-        }
-        finally {
+            });
+        } finally {
             _addressesLock.unlock();
         }
     }
@@ -345,11 +334,10 @@ public class TCPRemoteCommitProvider
     private static final long PROTOCOL_VERSION = 0x1428acff;
 
     @Override
-    public void broadcast(RemoteCommitEvent event) {
-        try {
-            // build a packet notifying other JVMs of object changes.
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
+    public void broadcast(final RemoteCommitEvent event) {
+        // build a packet notifying other JVMs of object changes.
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);) {
 
             oos.writeLong(PROTOCOL_VERSION);
             oos.writeLong(_id);
@@ -376,12 +364,10 @@ public class TCPRemoteCommitProvider
      * Sends a change notification packet to other machines in this
      * provider cluster.
      */
-    private void sendUpdatePacket(byte[] bytes) {
+    private void sendUpdatePacket(final byte[] bytes) {
         _addressesLock.lock();
         try {
-            for (Iterator<HostAddress> iter = _addresses.iterator(); iter.hasNext();) {
-                iter.next().sendUpdatePacket(bytes);
-            }
+            _addresses.forEach(address -> address.sendUpdatePacket(bytes));
         } finally {
             _addressesLock.unlock();
         }
@@ -407,9 +393,7 @@ public class TCPRemoteCommitProvider
 
         _addressesLock.lock();
         try {
-            for (Iterator<HostAddress> iter = _addresses.iterator(); iter.hasNext();) {
-                iter.next().close();
-            }
+            _addresses.forEach(HostAddress::close);
         } finally {
             _addressesLock.unlock();
         }
@@ -422,7 +406,7 @@ public class TCPRemoteCommitProvider
      */
     private static class BroadcastQueue {
 
-        private LinkedList<byte[]> _packetQueue = new LinkedList<>();
+        private final LinkedList<byte[]> _packetQueue = new LinkedList<>();
         private boolean _closed = false;
 
         public synchronized void close() {
@@ -434,7 +418,7 @@ public class TCPRemoteCommitProvider
             return _closed;
         }
 
-        public synchronized void addPacket(byte[] bytes) {
+        public synchronized void addPacket(final byte[] bytes) {
             _packetQueue.addLast(bytes);
             notify();
         }
@@ -443,8 +427,7 @@ public class TCPRemoteCommitProvider
          * @return the bytes defining the packet to process, or
          * <code>null</code> if the queue is empty.
          */
-        public synchronized byte[] removePacket()
-            throws InterruptedException {
+        public synchronized byte[] removePacket() throws InterruptedException {
             // only wait if the queue is still open. This allows processing
             // of events in the queue to continue, while avoiding sleeping
             // during shutdown.
@@ -487,7 +470,7 @@ public class TCPRemoteCommitProvider
             remove();
         }
 
-        public void setRunning(boolean keepRunning) {
+        public void setRunning(final boolean keepRunning) {
             _keepRunning = keepRunning;
         }
 
@@ -499,8 +482,7 @@ public class TCPRemoteCommitProvider
     /**
      * Responsible for listening for incoming packets and processing them.
      */
-    private static class TCPPortListener
-        implements Runnable {
+    private static final class TCPPortListener implements Runnable {
 
         private final Log _log;
         private ServerSocket _receiveSocket;
@@ -511,7 +493,7 @@ public class TCPRemoteCommitProvider
         /**
          * Cache the local IP address
          */
-        private byte[] _localhost;
+        private final byte[] _localhost;
 
         /**
          * The port that this listener should listen on. Configured
@@ -527,21 +509,18 @@ public class TCPRemoteCommitProvider
         /**
          * Construct a new TCPPortListener configured to use the specified port.
          */
-        private TCPPortListener(int port, Log log)
-            throws IOException {
+        private TCPPortListener(final int port, final Log log) throws IOException {
             _port = port;
             _log = log;
             try {
-                _receiveSocket = AccessController
-                    .doPrivileged(J2DoPrivHelper.newServerSocketAction(_port));
+                _receiveSocket = AccessController.doPrivileged(J2DoPrivHelper.newServerSocketAction(_port));
             } catch (PrivilegedActionException pae) {
                 throw (IOException) pae.getException();
             }
             _localhost = InetAddress.getLocalHost().getAddress();
 
             if (_log.isTraceEnabled()) {
-                _log.info(s_loc.get("tcp-start-listener",
-                    String.valueOf(_port)));
+                _log.info(s_loc.get("tcp-start-listener", String.valueOf(_port)));
             }
         }
 
@@ -552,30 +531,26 @@ public class TCPRemoteCommitProvider
         }
 
         /**
-         * All providers added here will be notified of any incoming
-         * provider messages. There will be one of these per
+         * All providers added here will be notified of any incoming provider messages. There will be one of these per
          * BrokerFactory in a given JVM.
-         * {@link TCPRemoteCommitProvider#endConfiguration} invokes
-         * <code>addProvider</code> with <code>this</code> upon
+         * {@link TCPRemoteCommitProvider#endConfiguration} invokes <code>addProvider</code> with <code>this</code> upon
          * completion of configuration.
          */
-        private void addProvider(TCPRemoteCommitProvider provider) {
+        private void addProvider(final TCPRemoteCommitProvider provider) {
             synchronized (_providers) {
                 _providers.add(provider);
             }
         }
 
         /**
-         * Remove a provider from the list of providers to notify of
-         * commit events.
+         * Remove a provider from the list of providers to notify of commit events.
          */
-        private synchronized void removeProvider
-            (TCPRemoteCommitProvider provider) {
+        private synchronized void removeProvider(final TCPRemoteCommitProvider provider) {
             synchronized (_providers) {
                 _providers.remove(provider);
 
                 // if the provider list is empty, shut down the thread.
-                if (_providers.size() == 0) {
+                if (_providers.isEmpty()) {
                     _isRunning = false;
                     try {
                         _receiveSocket.close();
@@ -606,12 +581,10 @@ public class TCPRemoteCommitProvider
                 try {
                     s = null;
                     // Block, waiting to accept new connection from a peer
-                    s = AccessController.doPrivileged(J2DoPrivHelper
-                        .acceptAction(_receiveSocket));
+                    s = AccessController.doPrivileged(J2DoPrivHelper.acceptAction(_receiveSocket));
                     if (_log.isTraceEnabled()) {
                         _log.trace(s_loc.get("tcp-received-connection",
-                            s.getInetAddress().getHostAddress()
-                                + ":" + s.getPort()));
+                            s.getInetAddress().getHostAddress() + ":" + s.getPort()));
                     }
                     ReceiveSocketHandler sh = new ReceiveSocketHandler(s);
                     Thread receiverThread = new Thread(sh);
@@ -643,17 +616,8 @@ public class TCPRemoteCommitProvider
             }
 
             // We are done listening. Interrupt any worker threads.
-            Thread worker;
-            for (Iterator<Thread> iter = _receiverThreads.iterator();
-                iter.hasNext();) {
-                worker = iter.next();
-                // FYI, the worker threads are blocked
-                // reading from the socket's InputStream. InputStreams
-                // aren't interruptable, so this interrupt isn't
-                // really going to be delivered until something breaks
-                // the InputStream.
-                worker.interrupt();
-            }
+            _receiverThreads.forEach(Thread::interrupt);
+
             synchronized (_providers) {
                 try {
                     if (_isRunning) {
@@ -666,8 +630,7 @@ public class TCPRemoteCommitProvider
                 }
                 _isRunning = false;
                 if (_log.isTraceEnabled()) {
-                    _log.trace(s_loc.get("tcp-close-listener",
-                        _port + ""));
+                    _log.trace(s_loc.get("tcp-close-listener", _port + ""));
                 }
             }
         }
@@ -676,13 +639,12 @@ public class TCPRemoteCommitProvider
          * Utility class that acts as a worker thread to receive Events
          * from broadcasters.
          */
-        private class ReceiveSocketHandler
-            implements Runnable {
+        private final class ReceiveSocketHandler implements Runnable {
 
             private InputStream _in;
             private Socket _s;
 
-            private ReceiveSocketHandler(Socket s) {
+            private ReceiveSocketHandler(final Socket s) {
                 // We are the receiving end and we don't send any messages
                 // back to the broadcaster. Turn off Nagle's so that
                 // we will send ack packets without waiting.
@@ -718,8 +680,7 @@ public class TCPRemoteCommitProvider
                         // closing its end.
                         if (_log.isTraceEnabled()) {
                             _log.trace(s_loc.get("tcp-close-socket",
-                                _s.getInetAddress().getHostAddress()
-                                    + ":" + _s.getPort()));
+                                    _s.getInetAddress().getHostAddress() + ":" + _s.getPort()));
                         }
                         break;
                     } catch (Throwable e) {
@@ -738,8 +699,7 @@ public class TCPRemoteCommitProvider
                     }
                 } catch (IOException e) {
                     _log.warn(s_loc.get("tcp-close-socket-error",
-                        _s.getInetAddress().getHostAddress() + ":"
-                            + _s.getPort()), e);
+                        _s.getInetAddress().getHostAddress() + ":" + _s.getPort()), e);
                 }
             }
 
@@ -747,18 +707,15 @@ public class TCPRemoteCommitProvider
              * Process an {@link InputStream} containing objects written
              * by {@link TCPRemoteCommitProvider#broadcast(RemoteCommitEvent)}.
              */
-            private void handle(InputStream in)
-                throws IOException, ClassNotFoundException {
+            private void handle(final InputStream in) throws IOException, ClassNotFoundException {
                 // This will block waiting for the next
-                ObjectInputStream ois =
-                    new Serialization.ClassResolvingObjectInputStream(in);
+                ObjectInputStream ois = new Serialization.ClassResolvingObjectInputStream(in);
 
                 long protocolVersion = ois.readLong();
                 if (protocolVersion != PROTOCOL_VERSION) {
                     if (_log.isWarnEnabled()) {
                         _log.warn(s_loc.get("tcp-wrong-version-error",
-                            _s.getInetAddress().getHostAddress() + ":"
-                                + _s.getPort()));
+                            _s.getInetAddress().getHostAddress() + ":" + _s.getPort()));
                         return;
                     }
                 }
@@ -773,19 +730,12 @@ public class TCPRemoteCommitProvider
                             + _s.getPort()));
                 }
 
-                boolean fromSelf = senderPort == _port &&
-                    Arrays.equals(senderAddress, _localhost);
-                TCPRemoteCommitProvider provider;
+                boolean fromSelf = senderPort == _port && Arrays.equals(senderAddress, _localhost);
                 synchronized (_providers) {
                     // bleair: We're iterating, but currenlty there can really
                     // only be a single provider.
-                    for (Iterator<TCPRemoteCommitProvider> iter = _providers.iterator();
-                        iter.hasNext();) {
-                        provider = iter.next();
-                        if (senderId != provider._id || !fromSelf) {
-                            provider.eventManager.fireEvent(rce);
-                        }
-                    }
+                    _providers.stream().filter(provider -> senderId != provider._id || !fromSelf).
+                            forEach(provider -> provider.eventManager.fireEvent(rce));
                 }
             }
         }
@@ -796,32 +746,29 @@ public class TCPRemoteCommitProvider
      * InetSocketAddress because it's a JDK1.4 API. This also
      * provides a wrapper around the socket(s) associated with this address.
      */
-    private class HostAddress {
+    protected class HostAddress {
 
-        private InetAddress _address;
-        private int _port;
-        private long _timeLastError; // millis
-        private boolean _isAvailable; // is peer thought to be up
-        private int _infosIssued = 0; // limit log entries
+        protected InetAddress _address;
+        protected int _port;
+        protected long _timeLastError; // millis
+        protected boolean _isAvailable; // is peer thought to be up
+        protected int _infosIssued = 0; // limit log entries
 
-        private GenericObjectPool<Socket> _socketPool; // reusable open sockets
+        protected final GenericObjectPool<Socket> _socketPool; // reusable open sockets
 
         /**
-         * Construct a new host address from a string of the form
-         * "host:port" or of the form "host".
+         * Construct a new host address from a string of the form "host:port" or of the form "host".
+         * @param host host name
          */
-        private HostAddress(String host)
-            throws UnknownHostException {
+        public HostAddress(final String host) throws UnknownHostException {
             int colon = host.indexOf(':');
             try {
                 if (colon != -1) {
                     _address = AccessController
-                        .doPrivileged(J2DoPrivHelper.getByNameAction(host
-                            .substring(0, colon)));
+                        .doPrivileged(J2DoPrivHelper.getByNameAction(host.substring(0, colon)));
                     _port = Integer.parseInt(host.substring(colon + 1));
                 } else {
-                    _address = AccessController
-                        .doPrivileged(J2DoPrivHelper.getByNameAction(host));
+                    _address = AccessController.doPrivileged(J2DoPrivHelper.getByNameAction(host));
                     _port = DEFAULT_PORT;
                 }
             } catch (PrivilegedActionException pae) {
@@ -836,12 +783,20 @@ public class TCPRemoteCommitProvider
             _isAvailable = true;
         }
 
-        private void setMaxTotal(int maxTotal) {
+        protected void setMaxTotal(final int maxTotal) {
             _socketPool.setMaxTotal(maxTotal);
         }
 
-        private void setMaxIdle(int maxIdle) {
+        protected void setMaxIdle(final int maxIdle) {
             _socketPool.setMaxIdle(maxIdle);
+        }
+
+        public InetAddress getAddress() {
+            return _address;
+        }
+
+        public int getPort() {
+            return _port;
         }
 
         public void close() {
@@ -856,7 +811,7 @@ public class TCPRemoteCommitProvider
             }
         }
 
-        private void sendUpdatePacket(byte[] bytes) {
+        protected void sendUpdatePacket(byte[] bytes) {
             if (!_isAvailable) {
                 long now = System.currentTimeMillis();
                 if (now - _timeLastError < _recoveryTimeMillis) {
@@ -872,9 +827,8 @@ public class TCPRemoteCommitProvider
                 os.flush();
 
                 if (log.isTraceEnabled()) {
-                    log.trace(s_loc.get("tcp-sent-update",
-                        _address.getHostAddress() + ":" + _port,
-                        String.valueOf(s.getLocalPort())));
+                    log.trace(s_loc.get("tcp-sent-update", 
+                            _address.getHostAddress() + ":" + _port, String.valueOf(s.getLocalPort())));
                 }
                 _isAvailable = true;
                 _infosIssued = 0;
@@ -893,8 +847,7 @@ public class TCPRemoteCommitProvider
                 if (_isAvailable) {
                     // Log a warning, the peer was up and has now gone down
                     if (log.isWarnEnabled()) {
-                        log.warn(s_loc.get("tcp-send-error",
-                            _address.getHostAddress() + ":" + _port), e);
+                        log.warn(s_loc.get("tcp-send-error", _address.getHostAddress() + ":" + _port), e);
                     }
                     _isAvailable = false;
                     // Once enough time has passed we will log another warning
@@ -910,9 +863,7 @@ public class TCPRemoteCommitProvider
                             // lower severity. This log will occur periodically
                             // for 5 times until the peer comes back.
                             if (log.isInfoEnabled()) {
-                                log.info(s_loc.get("tcp-send-still-error",
-                                    _address.getHostAddress() + ":"
-                                        + _port), e);
+                                log.info(s_loc.get("tcp-send-still-error", _address.getHostAddress() + ":" + _port), e);
                             }
                             _infosIssued++;
                         }
@@ -921,21 +872,19 @@ public class TCPRemoteCommitProvider
             }
         }
 
-        private Socket getSocket()
-            throws Exception {
+        protected Socket getSocket() throws Exception {
             return _socketPool.borrowObject();
         }
 
-        private void returnSocket(Socket s)
-            throws Exception {
+        protected void returnSocket(final Socket s) throws Exception {
             _socketPool.returnObject(s);
         }
 
-        private void clearAllSockets() {
+        protected void clearAllSockets() {
             _socketPool.clear();
         }
 
-        private void closeSocket(Socket s) {
+        protected void closeSocket(final Socket s) {
             // All sockets come from the pool.
             // This socket is no longer usable, so delete it from the
             // pool.
@@ -948,16 +897,13 @@ public class TCPRemoteCommitProvider
         /**
          * Factory for pooled sockets.
          */
-        private class SocketPoolableObjectFactory extends BasePooledObjectFactory<Socket> {
+        protected class SocketPoolableObjectFactory extends BasePooledObjectFactory<Socket> {
             @Override
             public Socket create() throws Exception {
                 try {
-                    Socket s = AccessController
-                        .doPrivileged(J2DoPrivHelper.newSocketAction(_address,
-                            _port));
+                    Socket s = AccessController.doPrivileged(J2DoPrivHelper.newSocketAction(_address, _port));
                     if (log.isTraceEnabled()) {
-                        log.trace(s_loc.get("tcp-open-connection", _address
-                            + ":" + _port, "" + s.getLocalPort()));
+                        log.trace(s_loc.get("tcp-open-connection", _address + ":" + _port, "" + s.getLocalPort()));
                     }
                     return s;
                 } catch (PrivilegedActionException pae) {
@@ -966,24 +912,46 @@ public class TCPRemoteCommitProvider
             }
 
             @Override
-            public PooledObject<Socket> wrap(Socket obj) {
+            public PooledObject<Socket> wrap(final Socket obj) {
                 return new DefaultPooledObject<>(obj);
             }
 
             @Override
-            public void destroyObject(PooledObject<Socket> p) throws Exception {
-                try {
-                    Socket s = p.getObject();
+            public void destroyObject(final PooledObject<Socket> p) throws Exception {
+                try (Socket s = p.getObject()) {
                     if (log.isTraceEnabled()) {
-                        log.trace(s_loc.get("tcp-close-sending-socket",
-                            _address + ":" + _port, "" + s.getLocalPort()));
+                        log.trace(s_loc.get("tcp-close-sending-socket", _address + ":" + _port, "" + s.getLocalPort()));
                     }
-                    s.close();
                 } catch (Exception e) {
-                    log.warn(s_loc.get("tcp-close-socket-error",
-                        _address.getHostAddress() + ":" + _port), e);
+                    log.warn(s_loc.get("tcp-close-socket-error", _address.getHostAddress() + ":" + _port), e);
                 }
             }
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 37 * hash + Objects.hashCode(this._address);
+            hash = 37 * hash + this._port;
+            return hash;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final HostAddress other = (HostAddress) obj;
+            if (this._port != other._port) {
+                return false;
+            }
+            return Objects.equals(this._address, other._address);
         }
     }
 }

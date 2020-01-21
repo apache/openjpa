@@ -83,6 +83,7 @@
         <mssql.connector.version>7.2.1</mssql.connector.version>
 
         <!-- other common versions -->
+        <kubernetes-client.version>4.7.0</kubernetes-client.version>
         <slf4j.version>1.7.23</slf4j.version>
         <!-- Compile Java source/target class level -->
         <compile.class.source>${java.class.version}</compile.class.source>
@@ -174,6 +175,7 @@
         <module>openjpa-xmlstore</module>
         <module>openjpa-slice</module>
         <module>openjpa-jest</module>
+        <module>openjpa-kubernetes</module>
         <module>openjpa</module>
         <module>openjpa-project</module>
         <module>openjpa-examples</module>
@@ -1788,6 +1790,16 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
                 <version>2.11.1</version>
+            </dependency>
+            <dependency>
+              <groupId>io.fabric8</groupId>
+              <artifactId>kubernetes-client</artifactId>
+              <version>${kubernetes-client.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>io.fabric8</groupId>
+              <artifactId>kubernetes-server-mock</artifactId>
+              <version>${kubernetes-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
