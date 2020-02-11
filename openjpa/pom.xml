@@ -83,7 +83,6 @@
                                     <include>org.apache.openjpa:openjpa-persistence-jdbc</include>
                                     <include>org.apache.openjpa:openjpa-xmlstore</include>
                                     <include>org.apache.openjpa:openjpa-slice</include>
-                                    <include>org.apache.openjpa:openjpa-kubernetes</include>
                                 </includes>
                             </artifactSet>
                             <!-- OpenJPA unique META-INF setup -->
@@ -139,7 +138,6 @@
                             serp.*;resolution:=optional,
                             org.apache.commons.dbcp2.*;resolution:=optional,
                             org.apache.commons.pool2.*;resolution:=optional,
-                            io.fabric8.kubernetes.*;resolution:=optional,
                             javax.persistence.*;version="[1.1.0,2.2)",
                             *
                         </Import-Package>
@@ -236,11 +234,6 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-slice</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-kubernetes</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
