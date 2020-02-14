@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>3.1.1-SNAPSHOT</version>
+        <version>3.1.1</version>
     </parent>
 
     <artifactId>openjpa-lib</artifactId>
@@ -109,8 +109,8 @@
                                 </exec>
                                 <condition property="uncommitted.changes" value="M" else="">
                                     <or>
-                                        <equals arg1="${diff.state}" arg2="1"/>
-                                        <equals arg1="${diff.state.cached}" arg2="1"/>
+                                        <equals arg1="${diff.state}" arg2="1" />
+                                        <equals arg1="${diff.state.cached}" arg2="1" />
                                     </or>
                                 </condition>
                                 
