@@ -35,9 +35,6 @@
     <name>OpenJPA Utilities Library</name>
     <description>OpenJPA Utilities Library</description>
 
-    <properties>
-        <automatic-module-name>org.apache.openjpa.lib</automatic-module-name>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>jakarta-regexp</groupId>

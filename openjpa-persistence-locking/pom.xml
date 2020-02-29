@@ -41,7 +41,6 @@
         <derby.locks.deadlockTimeout>5</derby.locks.deadlockTimeout>
         <!-- set this =** on cmdline to skip all tests -->
         <surefire.excludes.locking />
-        <automatic-module-name>org.apache.openjpa.persistence.locking</automatic-module-name>
     </properties>
 
     <profiles>

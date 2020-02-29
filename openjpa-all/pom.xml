@@ -35,9 +35,6 @@
     <packaging>jar</packaging>
     <name>OpenJPA Aggregate Jar with Dependencies</name>
 
-    <properties>
-        <automatic-module-name>org.apache.openjpa.all</automatic-module-name>
-    </properties>
     <build>
         <plugins>
             <!-- disable creating javadoc for this module -->

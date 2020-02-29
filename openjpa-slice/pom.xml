@@ -35,9 +35,6 @@
     <name>OpenJPA Slice</name>
     <description>OpenJPA Slice</description>
 
-    <properties>
-        <automatic-module-name>org.apache.openjpa.slice</automatic-module-name>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
@@ -50,8 +47,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>jakarta.persistence</artifactId>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.2_spec</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

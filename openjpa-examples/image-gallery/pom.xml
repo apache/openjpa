@@ -44,7 +44,6 @@
     <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
     <test.jvm.arguments>-Xmx${test.jvm.maxheapsize}</test.jvm.arguments>
     <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
-    <automatic-module-name>org.apache.openjpa.examples.gallery</automatic-module-name>
   </properties>
 
   <dependencies>

@@ -97,7 +97,6 @@
 
         <bval.version>1.1.2</bval.version>
         <jmock.version>2.9.0</jmock.version>
-        <automatic-module-name>-SUBMODULES-NEED-TO-OVERRIDE-THIS-</automatic-module-name>
     </properties>
 
     <licenses>
@@ -1716,9 +1715,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>jakarta.persistence</artifactId>
-                <version>2.2.3</version>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jpa_2.2_spec</artifactId>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
@@ -2087,7 +2086,6 @@
                                     <manifestEntries>
                                         <Implementation-Build>${buildNumber}</Implementation-Build>
                                         <Implementation-Date>${timestamp}</Implementation-Date>
-                                        <Automatic-Module-Name>${automatic-module-name}</Automatic-Module-Name>
                                     </manifestEntries>
                                 </archive>
                             </configuration>
