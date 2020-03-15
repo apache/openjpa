@@ -38,6 +38,7 @@
     <properties>
         <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
         <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
+        <automatic-module-name>org.apache.openjpa.integration.validation</automatic-module-name>
     </properties>
 
     <profiles>

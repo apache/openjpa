@@ -35,6 +35,9 @@
     <name>OpenJPA Persistence</name>
     <description>OpenJPA Persistence</description>
 
+    <properties>
+        <automatic-module-name>org.apache.openjpa.persistence</automatic-module-name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>

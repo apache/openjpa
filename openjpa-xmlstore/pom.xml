@@ -35,6 +35,9 @@
     <name>OpenJPA XML Store</name>
     <description>OpenJPA XML Store</description>
 
+    <properties>
+        <automatic-module-name>org.apache.openjpa.xmlstore</automatic-module-name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>

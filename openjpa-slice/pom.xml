@@ -35,6 +35,9 @@
     <name>OpenJPA Slice</name>
     <description>OpenJPA Slice</description>
 
+    <properties>
+        <automatic-module-name>org.apache.openjpa.slice</automatic-module-name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
