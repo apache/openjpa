@@ -87,7 +87,6 @@
     <description>OpenJPA Integration Tests - JPA TCK</description>
 
     <properties>
-        <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
         <tck2.level>20110815</tck2.level>
     </properties>
     <profiles>

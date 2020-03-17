@@ -37,8 +37,6 @@
     <description>OpenJPA Integration Tests - JMX Platform MBeans</description>
 
   <properties>
-    <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
-    <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
     <!-- Enable the JMX platform MBean provider -->
     <test.jvm.jmxprovider>com.sun.management.jmxremote</test.jvm.jmxprovider>
     <!-- Disable JMX platform MBean authentication  -->

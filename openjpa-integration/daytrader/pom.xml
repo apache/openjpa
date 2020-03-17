@@ -36,8 +36,6 @@
     <description>OpenJPA Integration Tests - Daytrader</description>
 
     <properties>
-        <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
-        <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
         <daytrader.version>2.2-SNAPSHOT</daytrader.version>
         <dbcp.maxTotal>10</dbcp.maxTotal>
         <dbcp.maxIdle>5</dbcp.maxIdle>

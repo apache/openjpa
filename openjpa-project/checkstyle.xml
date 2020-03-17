@@ -21,21 +21,23 @@
     <module name="NewlineAtEndOfFile">
         <property name="lineSeparator" value="lf"/>
     </module>
+    <module name="LineLength">
+        <property name="max" value="150"/>
+    </module>
     <module name="TreeWalker">
-        <module name="FileContentsHolder"/>
-        <module name="LineLength">
-            <property name="max" value="150"/>
-        </module>
         <module name="RegexpSinglelineJava">
             <property name="format" value="System\.(out|err)\.print(ln)?\("/>
             <property name="ignoreComments" value="true"/>
         </module>
-    </module>
-    <module name="SuppressionCommentFilter">
-        <property name="offCommentFormat" value="// START - ALLOW PRINT STATEMENTS"/>
-        <property name="onCommentFormat" value="// STOP - ALLOW PRINT STATEMENTS"/>
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="// START - ALLOW PRINT STATEMENTS"/>
+            <property name="onCommentFormat" value="// STOP - ALLOW PRINT STATEMENTS"/>
+        </module>
     </module>
 
     <!-- File location is specified in root pom.xml via ${checkstyle.suppressions.location} -->
-    <module name="SuppressionFilter"/>
+    <module name="SuppressionFilter">
+        <property name="file" value="${checkstyle.suppressions.location}"/>
+        <property name="optional" value="true"/>
+    </module>
 </module>

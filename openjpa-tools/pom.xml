@@ -36,10 +36,6 @@
 
     <name>OpenJPA tools</name>
 
-    <properties>
-        <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
-    </properties>
-
     <modules>
         <module>openjpa-maven-plugin</module>
         <module>openjpa-fetch-statistics</module>

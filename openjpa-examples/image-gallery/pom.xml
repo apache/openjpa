@@ -38,8 +38,6 @@
   <description>Apache OpenJPA Examples - image-gallery</description>
 
   <properties>
-    <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
-    <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
     <test.jvm.maxpermsize>256m</test.jvm.maxpermsize>
     <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
     <test.jvm.arguments>-Xmx${test.jvm.maxheapsize}</test.jvm.arguments>

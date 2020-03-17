@@ -45,9 +45,6 @@
     <name>OpenJPA Integration Tests - Examples</name>
     <description>OpenJPA Integration Tests - Examples</description>
 
-    <properties>
-        <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
-    </properties>
     <profiles>
     <profile>
     <id>examples-profile</id>
