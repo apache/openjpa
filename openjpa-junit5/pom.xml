@@ -39,8 +39,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_2.1_spec</artifactId>
-            <version>1.0-alpha-1</version>
+            <artifactId>geronimo-jpa_2.2_spec</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
