@@ -39,6 +39,7 @@ import org.junit.platform.commons.util.AnnotationUtils;
 import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import java.io.ByteArrayInputStream;
@@ -191,6 +192,7 @@ public class OpenJPAExtension implements BeforeAllCallback {
     private static class OpenJpaClassLoader extends BaseClassLoader {
         private static final String PERSITENCE_CAPABLE = Type.getDescriptor(PersistenceCapable.class);
         private static final String ENTITY = Type.getDescriptor(Entity.class);
+        private static final String EMBEDDABLE = Type.getDescriptor(Embeddable.class);
         private static final String MAPPED_SUPERCLASS = Type.getDescriptor(MappedSuperclass.class);
 
         private final MetaDataRepository repos;
@@ -280,7 +282,9 @@ public class OpenJPAExtension implements BeforeAllCallback {
 
                     @Override
                     public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
-                        if (ENTITY.equals(descriptor) || MAPPED_SUPERCLASS.equals(descriptor)) {
+                        if (ENTITY.equals(descriptor) ||
+                                EMBEDDABLE.equals(descriptor) ||
+                                MAPPED_SUPERCLASS.equals(descriptor)) {
                             throw new MissingEnhancement(); // we already went into visit() so we miss the enhancement
                         }
                         return new EmptyVisitor().visitAnnotation(descriptor, visible);
