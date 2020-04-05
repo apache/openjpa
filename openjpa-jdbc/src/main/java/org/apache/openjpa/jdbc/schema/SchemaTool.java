@@ -971,21 +971,21 @@ public class SchemaTool {
                         continue;
                     fks = tabs[j].getForeignKeys();
                     dbTable = db.findTable(tabs[j]);
+                    if (dbTable == null) {
+                        continue;
+                    }
                     for (int k = 0; k < fks.length; k++) {
                         if (fks[k].isLogical())
                             continue;
 
-                        fk = null;
-                        if (dbTable != null)
-                            fk = findForeignKey(dbTable, fks[k]);
-                        if (dbTable == null || fk == null)
+                        fk = findForeignKey(dbTable, fks[k]);
+                        if (fk == null) {
                             continue;
+                        }
 
-                        if (dropForeignKey(fks[k]))
-                            if (dbTable != null)
-                                dbTable.removeForeignKey(fk);
-                            else
-                                _log.warn(_loc.get("drop-fk", fks[k], tabs[j]));
+                        if (dropForeignKey(fks[k])) {
+                            dbTable.removeForeignKey(fk);
+                        }
                     }
                 }
             }
@@ -1004,6 +1004,47 @@ public class SchemaTool {
                         dbTable.removeForeignKey(fks[i]);
                     else
                         _log.warn(_loc.get("drop-fk", fks[i], dbTable));
+                }
+            }
+        }
+
+        if (_indexes) {
+            Index idx;
+            for (int i = 0; i < schemas.length; ++i) {
+                tabs = schemas[i].getTables();
+                for (Table tab : schemas[i].getTables()) {
+                    if (!isDroppable(tab)) {
+                        continue;
+                    }
+                    dbTable = db.findTable(tab);
+                    if (dbTable == null) {
+                        continue;
+                    }
+                    for (Index index : tab.getIndexes()) {
+                        idx = findIndex(dbTable, index);
+                        if (idx == null) {
+                            continue;
+                        }
+                        if (dropIndex(index)) {
+                            dbTable.removeIndex(idx);
+                        }
+                    }
+                }
+            }
+
+            // also drop imported indicies for tables that will be dropped
+            for (Table tab: drops) {
+                dbTable = db.findTable(tab);
+                if (dbTable == null) {
+                    continue;
+                }
+                for (Index index : tab.getIndexes()) {
+                    idx = findIndex(dbTable, index);
+                    if (dropIndex(index)) {
+                        dbTable.removeIndex(idx);
+                    } else {
+                        _log.warn(_loc.get("drop-index", index, dbTable));
+                    }
                 }
             }
         }
