@@ -5999,7 +5999,7 @@ public class DBDictionary
 	 * Gets minor version of the database server.
 	 */
 	public final int getMinorVersion() {
-		return major;
+		return minor;
 	}
 
 	/**
