@@ -4662,11 +4662,9 @@ public class DBDictionary
             return null;
 
         beforeMetadataOperation(conn);
-        ResultSet keys = null;
-        try {
-            keys = meta.getImportedKeys(getCatalogNameForMetadata(catalog),
+        try (ResultSet keys = meta.getImportedKeys(getCatalogNameForMetadata(catalog),
                 getSchemaNameForMetadata(schemaName),
-                getTableNameForMetadata(tableName));
+                getTableNameForMetadata(tableName))) {
 
             List<ForeignKey> importedKeyList = new ArrayList<>();
             Map<FKMapKey, ForeignKey> fkMap = new HashMap<>();
@@ -4685,13 +4683,6 @@ public class DBDictionary
             }
             return (ForeignKey[]) importedKeyList.toArray
                 (new ForeignKey[importedKeyList.size()]);
-        } finally {
-            if (keys != null) {
-                try {
-                    keys.close();
-                } catch (Exception e) {
-                }
-            }
         }
     }
 
