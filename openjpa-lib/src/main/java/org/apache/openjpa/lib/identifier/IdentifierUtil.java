@@ -50,7 +50,7 @@ public interface IdentifierUtil {
 
     /**
      * Delimit the name if it requires delimiters
-     * @param the rule to use for delimiting
+     * @param rule the rule to use for delimiting
      * @param name the name to delimit
      * @return the delimited name, if delimiting was necessary.
      */
@@ -58,7 +58,7 @@ public interface IdentifierUtil {
 
     /**
      * Delimit the name if it requires delimiters
-     * @param the rule to use for delimiting
+     * @param rule the rule to use for delimiting
      * @param name the name to delimit
      * @return the delimited name, if delimiting was necessary.
      */
@@ -68,7 +68,7 @@ public interface IdentifierUtil {
      * Delimit the string with the option to force delimiting.  If force is
      * true, the name will delimited without checking to see if it
      * requires delimiters.
-     * @param the rule to use for delimiting
+     * @param rule the rule to use for delimiting
      * @param name the name to delimit
      * @param force add delimiters even if delimiting is not required
      * @return the delimited name, if delimiting was necessary.
@@ -79,7 +79,7 @@ public interface IdentifierUtil {
      * Delimit the string with the option to force delimiting.  If force is
      * true, the name will delimited without checking to see if it
      * requires delimiters.
-     * @param the rule to use for delimiting
+     * @param rule the rule to use for delimiting
      * @param name the name to delimit
      * @param force add delimiters even if delimiting is not required
      * @return the delimited name, if delimiting was necessary.
@@ -89,35 +89,35 @@ public interface IdentifierUtil {
 
     /**
      * Remove delimiters from a delimited name
-     * @param the rule to use for removing delimiters
+     * @param rule the rule to use for removing delimiters
      * @param name the name from which to remove delimiters
      */
     String removeDelimiters(String rule, String name);
 
     /**
      * Remove delimiters from a delimited name
-     * @param the rule to use for removing delimiters
+     * @param rule the rule to use for removing delimiters
      * @param name the name from which to remove delimiters
      */
     String removeDelimiters(IdentifierConfiguration config, String rule, String name);
 
     /**
      * Remove delimiters from a delimited name
-     * @param the rule to use for removing delimiters
+     * @param rule the rule to use for removing delimiters
      * @param name the name from which to remove delimiters
      */
     String removeDelimiters(IdentifierRule rule, String name);
 
     /**
      * Determines whether a name is delimited.
-     * @param the rule to use for removing delimiters
+     * @param rule the rule to use for removing delimiters
      * @param name the name to examine for delimiters
      */
     boolean isDelimited(String rule, String name);
 
     /**
      * Determines whether a name is delimited.
-     * @param the rule to use for removing delimiters
+     * @param rule the rule to use for removing delimiters
      * @param name the name to examine for delimiters
      */
     boolean isDelimited(IdentifierRule rule, String name);
@@ -128,7 +128,7 @@ public interface IdentifierUtil {
      * <li> The SQL-92 Reference definition of a valid unquoted name</li>
      * <li> The naming rule specified</li>
      * </ul>
-     * @param the rule to use for removing delimiters
+     * @param rule the rule to use for removing delimiters
      * @param name the name to examine for delimiting requirements
      */
     boolean requiresDelimiters(String rule, String name);
@@ -139,7 +139,7 @@ public interface IdentifierUtil {
      * <li> The SQL-92 Reference definition of a valid unquoted name</li>
      * <li> The naming rule specified</li>
      * </ul>
-     * @param the rule to use for removing delimiters
+     * @param rule the rule to use for removing delimiters
      * @param name the name to examine for delimiting requirements
      */
     boolean requiresDelimiters(IdentifierRule rule, String name);

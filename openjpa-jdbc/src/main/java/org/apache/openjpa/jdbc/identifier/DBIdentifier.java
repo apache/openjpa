@@ -418,7 +418,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Converts the provided set of names to an array of identifiers of the
      * provided type, optionally delimiting the names.
-     * @param columnNames
+     * @param names columnNames or other DB identifier names
      * @param id
      */
     public static DBIdentifier[] toArray(String[] names, DBIdentifierType id, boolean delimit) {
@@ -427,7 +427,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         }
         DBIdentifier[] sNames = new DBIdentifier[names.length];
         for (int i = 0; i < names.length; i++) {
-            sNames[i] = new DBIdentifier(names[i], id, delimit);
+            sNames[i] = new DBIdentifier(names[i].trim(), id, delimit);
         }
         return sNames;
     }

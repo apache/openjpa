@@ -253,8 +253,6 @@ public class Normalizer {
 
     /**
      * Removes default delimiters from a string.
-     * @param name1
-     * @param name2
      */
     public static String removeDelimiters(String name) {
         return normalizer.removeDelimiters(defaultRule, name);
@@ -263,8 +261,6 @@ public class Normalizer {
     /**
      * Delimits a string if necessary, optionally forcing it to be
      * delimited.
-     * @param name1
-     * @param name2
      */
     public static String delimit(String name, boolean force) {
         return normalizer.delimit(defaultRule, name, force);
@@ -272,8 +268,6 @@ public class Normalizer {
 
     /**
      * Determines whether a name can be split into multiple components.
-     * @param name1
-     * @param name2
      */
     public static boolean canSplit(String name) {
         return normalizer.canSplit(defaultRule, name);
@@ -282,8 +276,6 @@ public class Normalizer {
     /**
      * Determines whether a name can be split into multiple components, taking
      * into account the specified delimiter.
-     * @param name1
-     * @param name2
      */
     public static boolean canSplit(String name, String delim) {
         return normalizer.canSplit(defaultRule, name, delim);

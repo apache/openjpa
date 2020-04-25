@@ -655,8 +655,10 @@ public class AnnotationPersistenceMappingParser
 
     org.apache.openjpa.jdbc.schema.Index createIndex(MetaDataContext ctx, javax.persistence.Index anno) {
         String columnNames = anno.columnList();
-        if (StringUtil.isEmpty(columnNames))
+        if (StringUtil.isEmpty(columnNames)) {
             throw new UserException(_loc.get("index-no-column", ctx));
+        }
+
         DBIdentifier[] sColNames = DBIdentifier.toArray(columnNames.split(","), DBIdentifierType.COLUMN, delimit());
         org.apache.openjpa.jdbc.schema.Index indx = new org.apache.openjpa.jdbc.schema.Index();
         for (int i = 0; i < sColNames.length; i++) {
