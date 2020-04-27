@@ -94,7 +94,7 @@
         <javadoc.additionalparam />
         <maven.surefire.version>3.0.0-M4</maven.surefire.version>
 
-        <xbean.version>4.16</xbean.version>
+        <xbean.version>4.17</xbean.version>
         <bval.version>1.1.2</bval.version>
         <jmock.version>2.9.0</jmock.version>
         <automatic-module-name>-SUBMODULES-NEED-TO-OVERRIDE-THIS-</automatic-module-name>
