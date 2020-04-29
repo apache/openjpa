@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +38,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.PCClassFileTransformer;
 import org.apache.openjpa.enhance.PCEnhancerAgent;
+import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
@@ -223,13 +226,56 @@ public class PersistenceProviderImpl
     }
 
     @Override
-    public void generateSchema(PersistenceUnitInfo info, Map map) {
-        throw new UnsupportedOperationException("JPA 2.1");
+    public void generateSchema(final PersistenceUnitInfo info, final Map map) {
+        final Map runMap = map == null ? new HashMap<>() : new HashMap<>(map);
+        runMap.put("javax.persistence.schema-generation.database.action", "create");
+        final OpenJPAEntityManagerFactory factory = createContainerEntityManagerFactory(info, runMap);
+        try {
+            synchronizeMappings(factory);
+        } finally {
+            factory.close();
+        }
     }
 
     @Override
-    public boolean generateSchema(String persistenceUnitName, Map map) {
-        throw new UnsupportedOperationException("JPA 2.1");
+    public boolean generateSchema(final String persistenceUnitName, final Map map) {
+        final Map runMap = map == null ? new HashMap<>() : new HashMap<>(map);
+        runMap.put("javax.persistence.schema-generation.database.action", "create");
+        final OpenJPAEntityManagerFactory factory = createEntityManagerFactory(persistenceUnitName, runMap);
+        try {
+            final Object obj = synchronizeMappings(factory);
+            return Boolean.class.cast(obj) ? Boolean.class.cast(obj) : true;
+        } finally {
+            factory.close();
+        }
+    }
+
+    private Object synchronizeMappings(final OpenJPAEntityManagerFactory factory) {
+        if (EntityManagerFactoryImpl.class.isInstance(factory)) {
+            final EntityManagerFactoryImpl entityManagerFactory = EntityManagerFactoryImpl.class.cast(factory);
+            final BrokerFactory brokerFactory = entityManagerFactory.getBrokerFactory();
+            if (!AbstractBrokerFactory.class.isInstance(brokerFactory)) {
+                throw new IllegalArgumentException("expected AbstractBrokerFactory but got " + brokerFactory);
+            }
+            try {
+                final Method synchronizeMappings = brokerFactory.getClass()
+                        .getDeclaredMethod("synchronizeMappings", ClassLoader.class);
+                if (!synchronizeMappings.isAccessible()) {
+                    synchronizeMappings.setAccessible(true);
+                }
+                return synchronizeMappings.invoke(brokerFactory, Thread.currentThread().getContextClassLoader());
+            } catch (final NoSuchMethodException | IllegalAccessException e) {
+                throw new IllegalStateException(e);
+            } catch (final InvocationTargetException e) {
+                final Throwable targetException = e.getTargetException();
+                if (RuntimeException.class.isInstance(targetException)) {
+                    throw RuntimeException.class.cast(targetException);
+                }
+                throw new IllegalStateException(targetException);
+            }
+        } else {
+            throw new IllegalArgumentException("expected EntityManagerFactoryImpl but got " + factory);
+        }
     }
 
     public void setPersistenceEnvironmentInfo(OpenJPAConfiguration conf, PersistenceUnitInfo pui) {

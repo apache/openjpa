@@ -147,17 +147,17 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
     /**
      * Synchronize the mappings of the classes listed in the configuration.
      */
-    protected void synchronizeMappings(ClassLoader loader,
+    protected boolean synchronizeMappings(ClassLoader loader,
         JDBCConfiguration conf) {
         mapSchemaGenerationToSynchronizeMappings(conf);
         String action = conf.getSynchronizeMappings();
         if (StringUtil.isEmpty(action))
-            return;
+            return false;
 
         MappingRepository repo = conf.getMappingRepositoryInstance();
         Collection<Class<?>> classes = repo.loadPersistentTypes(false, loader);
         if (classes.isEmpty())
-            return;
+            return false;
 
         String props = Configurations.getProperties(action);
         action = Configurations.getClassName(action);
@@ -175,10 +175,11 @@ public class JDBCBrokerFactory extends AbstractBrokerFactory {
             }
         }
         tool.record();
+        return true; // todo: check?
     }
 
-    protected void synchronizeMappings(ClassLoader loader) {
-        synchronizeMappings(loader, (JDBCConfiguration) getConfiguration());
+    protected boolean synchronizeMappings(ClassLoader loader) {
+        return synchronizeMappings(loader, (JDBCConfiguration) getConfiguration());
     }
 
     private void mapSchemaGenerationToSynchronizeMappings(JDBCConfiguration conf) {

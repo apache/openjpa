@@ -120,11 +120,13 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
     }
 
     @Override
-    protected void synchronizeMappings(ClassLoader loader) {
+    protected boolean synchronizeMappings(ClassLoader loader) {
         List<Slice> slices = getConfiguration().getSlices(Slice.Status.ACTIVE);
+        boolean result = false;
         for (Slice slice : slices) {
-            synchronizeMappings(loader, (JDBCConfiguration) slice.getConfiguration());
+            result = synchronizeMappings(loader, (JDBCConfiguration) slice.getConfiguration()) || result;
         }
+        return result;
     }
 
     @Override
