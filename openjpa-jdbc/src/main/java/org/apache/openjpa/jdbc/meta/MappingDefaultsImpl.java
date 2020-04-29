@@ -630,14 +630,22 @@ public class MappingDefaultsImpl
      * Correct the given column's name.
      */
     protected void correctName(Table table, Column col) {
+        DBIdentifier name = col.getIdentifier();
+        boolean corrected = false;
+        if (dict.javaToDbColumnNameProcessing != null) {
+            name = dict.processDBColumnName(name);
+            corrected = true;
+        }
         if (!_defMissing || _removeHungarianNotation)
         {
-            DBIdentifier name = col.getIdentifier();
             if (_removeHungarianNotation)
                 name = DBIdentifier.removeHungarianNotation(name);
-            DBIdentifier correctedName = dict.getValidColumnName(name, table);
-            col.setIdentifier(correctedName);
-            table.addCorrectedColumnName(correctedName, true);
+            corrected = true;
+        }
+        if (corrected) {
+            name = dict.getValidColumnName(name, table, false);
+            col.setIdentifier(name);
+            table.addCorrectedColumnName(name, true);
         }
     }
 

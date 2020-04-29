@@ -135,6 +135,8 @@ import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
+import static java.util.Locale.ROOT;
+
 
 /**
  * Class which allows the creation of SQL dynamically, in a
@@ -223,6 +225,7 @@ public class DBDictionary
     public String selectWords = null;
     public String fixedSizeTypeNames = null;
     public String schemaCase = SCHEMA_CASE_UPPER;
+    public String javaToDbColumnNameProcessing;
     public boolean setStringRightTruncationOn = true;
     public boolean fullResultCollectionInOrderByRelation = false;
     public boolean disableSchemaFactoryColumnTypeErrors = false; //OPENJPA-2627
@@ -3292,6 +3295,32 @@ public class DBDictionary
         return toDBName(getColumnIdentifier(column));
     }
 
+    public String toSnakeCase(final String name) {
+        final StringBuilder out = new StringBuilder(name.length() + 3);
+        final boolean isDelimited = name.startsWith(getLeadingDelimiter()) && name.endsWith(getTrailingDelimiter());
+        final String toConvert;
+        if (isDelimited) {
+            toConvert = name.substring(2, name.length() - 1);
+            out.append(name.substring(0, 2).toLowerCase(ROOT));
+        } else {
+            toConvert = name.substring(1);
+            out.append(Character.toLowerCase(name.charAt(0)));
+        }
+        for (final char c : toConvert.toCharArray()) {
+            if (!Character.isLetter(c)) { // delimiter
+                out.append(c);
+            } else if (Character.isUpperCase(c)) {
+                out.append('_').append(Character.toLowerCase(c));
+            } else {
+                out.append(c);
+            }
+        }
+        if (toConvert.length() != name.length() - 1) {
+            out.append(name.charAt(name.length() - 1));
+        }
+        return out.toString();
+    }
+
     /**
      * Returns the full name of the table, including the schema (delimited
      * by {@link #catalogSeparator}).
@@ -3387,6 +3416,14 @@ public class DBDictionary
     @Deprecated
     public String getValidColumnName(String name, Table table) {
         return getValidColumnName(DBIdentifier.newColumn(name), table, true).getName();
+    }
+
+    public DBIdentifier processDBColumnName(final DBIdentifier name) {
+        if ("snake_case".equalsIgnoreCase(javaToDbColumnNameProcessing)) {
+            return DBIdentifier.newColumn(toSnakeCase(name.getName()));
+        }
+        throw new IllegalArgumentException(
+                "Unsupported javaToDbColumnNameProcessing value: '" + javaToDbColumnNameProcessing + "'");
     }
 
     /**
