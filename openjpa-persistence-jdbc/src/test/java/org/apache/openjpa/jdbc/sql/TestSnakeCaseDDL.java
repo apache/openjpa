@@ -57,7 +57,6 @@ public class TestSnakeCaseDDL {
         ds.setUrl("jdbc:derby:memory:ddlInSnakeCase;create=true");
         persistenceUnitInfo.setJtaDataSource(ds);
         persistenceUnitInfo.setProperty("openjpa.jdbc.DBDictionary", "derby(javaToDbColumnNameProcessing=snake_case)");
-        persistenceUnitInfo.setProperty("openjpa.RuntimeUnenhancedClasses", "supported");
         new PersistenceProviderImpl().generateSchema(persistenceUnitInfo, new HashMap<>());
         final Collection<String> createdTables = new HashSet<>();
         final Map<String, Collection<String>> columns = new HashMap<>();
@@ -95,7 +94,9 @@ public class TestSnakeCaseDDL {
                     em.persist(entity);
                     em.getTransaction().commit();
                 } catch (final RuntimeException re) {
-                    em.getTransaction().rollback();
+                    if (em.getTransaction().isActive()) {
+                        em.getTransaction().rollback();
+                    }
                     throw re;
                 } finally {
                     em.close();

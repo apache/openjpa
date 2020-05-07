@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 public class TestMappingDefaultsImpl {
 
@@ -52,11 +53,8 @@ public class TestMappingDefaultsImpl {
         mr.setConfiguration(conf);
         Version version = new Version(new ClassMapping(String.class,mr));
         mapping.populateColumns(version, table, cols);
-        assertFalse("column names are conflicted : " + cols[0].getName(),
-                cols[0].getName().equals(cols[1].getName()));
-        assertFalse("column names are conflicted : " + cols[0].getName(),
-                cols[0].getName().equals(cols[2].getName()));
-        assertFalse("column names are conflicted : " + cols[1].getName(),
-                cols[1].getName().equals(cols[2].getName()));
+        assertNotEquals("column names are conflicted : " + cols[0].getName(), cols[0].getName(), cols[1].getName());
+        assertNotEquals("column names are conflicted : " + cols[0].getName(), cols[0].getName(), cols[2].getName());
+        assertNotEquals("column names are conflicted : " + cols[1].getName(), cols[1].getName(), cols[2].getName());
     }
 }

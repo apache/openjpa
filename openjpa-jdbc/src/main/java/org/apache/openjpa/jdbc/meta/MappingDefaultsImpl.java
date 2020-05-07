@@ -643,7 +643,7 @@ public class MappingDefaultsImpl
             corrected = true;
         }
         if (corrected) {
-            name = dict.getValidColumnName(name, table, false);
+            name = dict.getValidColumnName(name, table, true);
             col.setIdentifier(name);
             table.addCorrectedColumnName(name, true);
         }
