@@ -147,7 +147,7 @@ public class PrimaryRow
      * Return the I/O information for the given set foreign key.
      */
     public ColumnIO getForeignKeyIO(ForeignKey fk) {
-        return (_fkIO == null) ? null : _fkIO[fk.getIndex()];
+        return _fkIO == null ? null : _fkIO.length <= fk.getIndex() ? null : _fkIO[fk.getIndex()];
     }
 
     /**
@@ -155,7 +155,7 @@ public class PrimaryRow
      * constraint analyses are not recorded.
      */
     public OpenJPAStateManager getForeignKeySet(ForeignKey fk) {
-        return (_fkSet == null) ? null : _fkSet[fk.getIndex()];
+        return _fkSet == null ? null : _fkSet.length <= fk.getIndex() ? null : _fkSet[fk.getIndex()];
     }
 
     /**
@@ -163,7 +163,7 @@ public class PrimaryRow
      * constraint analyses are not recorded.
      */
     public OpenJPAStateManager getForeignKeyWhere(ForeignKey fk) {
-        return (_fkWhere == null) ? null : _fkWhere[fk.getIndex()];
+        return _fkWhere == null ? null : _fkWhere.length <= fk.getIndex() ? null : _fkWhere[fk.getIndex()];
     }
 
     @Override
@@ -195,9 +195,9 @@ public class PrimaryRow
     public void clearForeignKey(ForeignKey fk)
         throws SQLException {
         super.clearForeignKey(fk);
-        if (_fkSet != null)
+        if (_fkSet != null && _fkSet.length > fk.getIndex())
             _fkSet[fk.getIndex()] = null;
-        if (_fkIO != null)
+        if (_fkIO != null && _fkIO.length > fk.getIndex())
             _fkIO[fk.getIndex()] = null;
     }
 
