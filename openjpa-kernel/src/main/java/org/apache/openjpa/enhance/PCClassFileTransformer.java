@@ -49,6 +49,7 @@ public class PCClassFileTransformer
 
     private static final Localizer _loc = Localizer.forPackage
         (PCClassFileTransformer.class);
+    private static final ThreadLocal<Boolean> _isTransformingInLocalThread = new ThreadLocal(); // OJ-2817
 
     private final MetaDataRepository _repos;
     private final PCEnhancer.Flags _flags;
@@ -120,12 +121,17 @@ public class PCClassFileTransformer
         // prevent re-entrant calls, which can occur if the enhancing
         // loader is used to also load OpenJPA libraries; this is to prevent 
         // recursive enhancement attempts for internal openjpa libraries
-        if (_transforming)
+        Boolean transforming = _isTransformingInLocalThread.get();
+        if (transforming != null) {
             return null;
-
-        _transforming = true;
+        }
+        _isTransformingInLocalThread.set(Boolean.TRUE);
         
-        return transform0(className, redef, bytes);
+        try {
+            return transform0(className, redef, bytes);
+        } finally {
+            _isTransformingInLocalThread.remove();
+        }
     }
 
     /**
