@@ -245,6 +245,7 @@ public class OracleDictionary
         oracleBlob_empty_lob_Method = getMethodByReflection("oracle.sql.BLOB", "getEmptyBLOB");
         oracleClob_isEmptyLob_Method = getMethodByReflection("oracle.sql.CLOB", "isEmptyLob");
 
+        indexPhysicalForeignKeys = true; // Oracle does not automatically create an index for a foreign key so we will
     }
 
     private Method getMethodByReflection(String className, String methodName, Class<?>... paramTypes) {

@@ -63,6 +63,8 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         supportsNullTableForGetColumns = false;
         requiresAliasForSubselect = true;
         stringLengthFunction = "LEN({0})";
+
+        indexPhysicalForeignKeys = true; // MS-SQLServer does not automatically create an index for a foreign key so we will
     }
 
     public void connectedConfiguration(Connection conn) throws SQLException {
