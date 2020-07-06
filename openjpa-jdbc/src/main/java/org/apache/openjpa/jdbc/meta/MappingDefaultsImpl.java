@@ -61,7 +61,8 @@ public class MappingDefaultsImpl
     private int _joinFKAction = ForeignKey.ACTION_NONE;
     private int _fkAction = ForeignKey.ACTION_NONE;
     private boolean _defer = false;
-    private boolean _indexFK = true;
+    private boolean _indexLogicalFK = true;
+    private boolean _indexPhysicalFK = false;
     private boolean _indexDisc = true;
     private boolean _indexVers = false;
     private boolean _orderLists = true;
@@ -248,14 +249,30 @@ public class MappingDefaultsImpl
      * Whether to index logical foreign keys by default. Defaults to true.
      */
     public boolean getIndexLogicalForeignKeys() {
-        return _indexFK;
+        return _indexLogicalFK;
     }
 
     /**
      * Whether to index logical foreign keys by default. Defaults to true.
      */
     public void setIndexLogicalForeignKeys(boolean indexFK) {
-        _indexFK = indexFK;
+        _indexLogicalFK = indexFK;
+    }
+
+    /**
+     * Whether to use DbDictionary specific index on real foreign keys by default.
+     * Defaults to false i.e. old compatibility behaviour (i.e. no foreign key indices for FKs)
+     */
+    public boolean getIndexPhysicalForeignKeys() {
+        return _indexPhysicalFK;
+    }
+
+    /**
+     * Whether to use DbDictionary specific index on real foreign keys by default.
+     * Defaults to false i.e. old compatibility behaviour (i.e. no foreign key indices for FKs)
+     */
+    public void setIndexPhysicalForeignKeys(boolean indexPhysFKCompat) {
+        _indexPhysicalFK = indexPhysFKCompat;
     }
 
     /**
@@ -812,15 +829,23 @@ public class MappingDefaultsImpl
 
     @Override
     public Index getJoinIndex(FieldMapping fm, Table table, Column[] cols) {
-        if (!_indexFK || fm.getJoinForeignKey() == null
-            || !fm.getJoinForeignKey().isLogical())
+        if (!needsFkIndex(fm.getJoinForeignKey())) {
             return null;
-        if (areAllPrimaryKeyColumns(cols))
+        }
+        if (areAllPrimaryKeyColumns(cols)) {
             return null;
+        }
 
         Index idx = new Index();
         idx.setIdentifier(getIndexName(DBIdentifier.NULL, table, cols));
         return idx;
+    }
+
+    private boolean needsFkIndex(ForeignKey fk) {
+        if (fk == null)
+            return false;
+        boolean fkIsLogical = fk.isLogical();
+        return (_indexLogicalFK && fkIsLogical) || (_indexPhysicalFK && !fkIsLogical && dict.indexPhysicalForeignKeys);
     }
 
     /**
@@ -868,9 +893,9 @@ public class MappingDefaultsImpl
     @Override
     public Index getIndex(ValueMapping vm, DBIdentifier name, Table table,
         Column[] cols) {
-        if (!_indexFK || vm.getForeignKey() == null
-            || !vm.getForeignKey().isLogical())
+        if (!needsFkIndex(vm.getForeignKey())) {
             return null;
+        }
         if (areAllPrimaryKeyColumns(cols))
             return null;
 

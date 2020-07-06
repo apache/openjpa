@@ -345,6 +345,16 @@ public class DBDictionary
      */
     protected BooleanRepresentation booleanRepresentation = BooleanRepresentationFactory.INT_10;
 
+    /**
+     * Whether an index is generated for a relation that is also a foreign key.
+     * Some database systems (e.g. MySQL) will automatically create an index for a foreign key,
+     * others (e.g. Oracle, MS-SQL-Server) do not.
+     *
+     * See also {@link org.apache.openjpa.jdbc.meta.MappingDefaultsImpl#_indexPhysicalFK}
+     * which may disable this feature for backwards compatibility.
+     */
+    public boolean indexPhysicalForeignKeys = false;
+
     public int characterColumnSize = 255;
     public String arrayTypeName = "ARRAY";
     public String bigintTypeName = "BIGINT";

@@ -80,6 +80,8 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
 
         timeWithZoneTypeName = "TIME";
         timestampWithZoneTypeName = "DATETIMEOFFSET";
+
+        indexPhysicalForeignKeys = true; // MS-SQLServer does not automatically create an index for a foreign key so we will
     }
 
     @Override
