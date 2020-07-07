@@ -36,7 +36,7 @@
     <name>OpenJPA Parent POM</name>
     <description>Apache OpenJPA implementation of JSR-338 JPA 2.1</description>
 
-    <version>3.1.2-SNAPSHOT</version>
+    <version>3.1.2</version>
 
     <properties>
         <java.class.version>1.8</java.class.version>
@@ -162,7 +162,7 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/openjpa.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/openjpa.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf/openjpa.git</url>
-      <tag>HEAD</tag>
+      <tag>3.1.2</tag>
   </scm>
 
     <modules>
@@ -2328,26 +2328,26 @@
                             <checkstyleRules>
                                 <module name="Checker">
                                     <module name="NewlineAtEndOfFile">
-                                        <property name="lineSeparator" value="lf"/>
+                                        <property name="lineSeparator" value="lf" />
                                     </module>
                                     <module name="LineLength">
-                                        <property name="max" value="150"/>
+                                        <property name="max" value="150" />
                                     </module>
                                     <module name="TreeWalker">
                                         <module name="RegexpSinglelineJava">
-                                            <property name="format" value="System\.(out|err)\.print(ln)?\("/>
-                                            <property name="ignoreComments" value="true"/>
+                                            <property name="format" value="System\.(out|err)\.print(ln)?\(" />
+                                            <property name="ignoreComments" value="true" />
                                         </module>
                                         <module name="SuppressionCommentFilter">
-                                            <property name="offCommentFormat" value="// START - ALLOW PRINT STATEMENTS"/>
-                                            <property name="onCommentFormat" value="// STOP - ALLOW PRINT STATEMENTS"/>
+                                            <property name="offCommentFormat" value="// START - ALLOW PRINT STATEMENTS" />
+                                            <property name="onCommentFormat" value="// STOP - ALLOW PRINT STATEMENTS" />
                                         </module>
                                     </module>
 
                                     <!-- File location is specified in root pom.xml via ${checkstyle.suppressions.location} -->
                                     <module name="SuppressionFilter">
-                                        <property name="file" value="${checkstyle.suppressions.location}"/>
-                                        <property name="optional" value="true"/>
+                                        <property name="file" value="${checkstyle.suppressions.location}" />
+                                        <property name="optional" value="true" />
                                     </module>
                                 </module>
                             </checkstyleRules>
