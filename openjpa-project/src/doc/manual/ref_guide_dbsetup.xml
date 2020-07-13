@@ -4353,6 +4353,17 @@ dictionaries provided by OpenJPA are in the following table.
                     			]
                     		</entry>
                     	</row>
+                        <row>
+                    		<entry colname="dict">
+                    			HerdDBDictionary
+                    		</entry>
+                    		<entry colname="lead" align="center">
+                    			`
+                    		</entry>
+                    		<entry colname="trail" align="center">
+                    			`
+                    		</entry>
+                    	</row>
                     </tbody>
         		</tgroup>
         	</table>
