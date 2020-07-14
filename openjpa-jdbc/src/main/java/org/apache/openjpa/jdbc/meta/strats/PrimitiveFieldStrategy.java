@@ -30,7 +30,6 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
@@ -81,9 +80,7 @@ public class PrimitiveFieldStrategy
         vinfo.assertNoJoin(field, true);
         vinfo.assertNoForeignKey(field, !adapt);
 
-        // Determine whether to delimit the base field name
-        DBDictionary dict = field.getMappingRepository().getDBDictionary();
-        DBIdentifier fieldName = DBIdentifier.newColumn(field.getName(), dict != null ? dict.delimitAll() : false);
+        DBIdentifier fieldName = DBIdentifier.newColumn(field.getName(), false);
         // get value columns
         Column tmpCol = new Column();
         tmpCol.setIdentifier(fieldName);

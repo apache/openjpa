@@ -28,7 +28,6 @@ import org.apache.openjpa.jdbc.meta.RelationId;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
@@ -66,8 +65,7 @@ public class UntypedPCValueHandler
     @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
-        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
-        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        DBIdentifier colName = DBIdentifier.newColumn(name, false);
         return map(vm, colName, io, adapt);
     }
 

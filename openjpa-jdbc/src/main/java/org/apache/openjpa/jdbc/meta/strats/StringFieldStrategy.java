@@ -77,7 +77,7 @@ public class StringFieldStrategy
         vinfo.assertNoForeignKey(field, !adapt);
 
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
-        DBIdentifier fieldName = DBIdentifier.newColumn(field.getName(), dict != null ? dict.delimitAll() : false);
+        DBIdentifier fieldName = DBIdentifier.newColumn(field.getName(), false);
 
         // get value columns
         Column tmpCol = new Column();

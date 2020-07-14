@@ -28,7 +28,6 @@ import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -82,8 +81,7 @@ public class FullClassStrategy
         Column[] pkCols = null;
         if (cls.getIdentityType() == ClassMetaData.ID_DATASTORE) {
             Column id = new Column();
-            DBDictionary dict = cls.getMappingRepository().getDBDictionary();
-            DBIdentifier idName = DBIdentifier.newColumn("id", dict != null ? dict.delimitAll() : false);
+            DBIdentifier idName = DBIdentifier.newColumn("id", false);
             id.setIdentifier(idName);
             id.setJavaType(JavaTypes.LONG);
             id.setComment("datastore id");

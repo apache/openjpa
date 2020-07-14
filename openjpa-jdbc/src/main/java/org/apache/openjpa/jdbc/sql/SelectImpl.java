@@ -2711,7 +2711,7 @@ public class SelectImpl
                 return alias + "_" + col;
             }
             alias = SelectImpl.toAlias(_sel.getTableIndex(col.getTable(), pj, false));
-            return (alias == null) ? null : alias + "." + col;
+            return (alias == null) ? null : alias + "." + _sel._dict.getNamingUtil().toDBName(col.toString());
         }
 
         ////////////////////////////
