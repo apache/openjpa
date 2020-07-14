@@ -143,7 +143,8 @@ public class PCClassFileTransformer
         if (className.startsWith("org/apache/")) {
             final String sub = className.substring("org/apache/".length());
             if (sub.startsWith("openjpa/") ||
-                    sub.startsWith("commons/")) {
+                    sub.startsWith("commons/") ||
+                    sub.startsWith("xbean/")) {
                 return true;
             }
         }
