@@ -604,6 +604,9 @@ public class SchemaTool {
                 for (int k = 0; k < cols.length; k++) {
                     if (dbTable != null) {
                         DBIdentifier colName = cols[k].getIdentifier();
+                        if (_dict.getDelimitIdentifiers()) {
+                            colName = DBIdentifier.removeDelimiters(colName);
+                        }
                         col = dbTable.getColumn(colName);
                         if (col == null) {
                             if (addColumn(cols[k]))
