@@ -170,7 +170,7 @@ public abstract class ColumnVersionStrategy
            Column tmplate = new Column();
            tmplate.setJavaType(getJavaType());
            DBDictionary dict = vers.getMappingRepository().getDBDictionary();
-           DBIdentifier versName = DBIdentifier.newColumn("versn", dict != null ? dict.delimitAll() : false);
+           DBIdentifier versName = DBIdentifier.newColumn("versn", false);
            tmplate.setIdentifier(versName);
 
            Column[] cols = info.getColumns(vers, new Column[]{ tmplate },

@@ -63,8 +63,7 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         ValueMappingInfo vinfo = field.getValueInfo();
         vinfo.assertNoJoin(field, true);
         vinfo.assertNoForeignKey(field, !adapt);
-        DBDictionary dict = field.getMappingRepository().getDBDictionary();
-        DBIdentifier fieldName = DBIdentifier.newColumn(field.getName(), dict != null ? dict.delimitAll() : false);
+        DBIdentifier fieldName = DBIdentifier.newColumn(field.getName(), false);
 
         Column tmpCol = new Column();
         tmpCol.setIdentifier(fieldName);

@@ -84,8 +84,7 @@ public abstract class InValueDiscriminatorStrategy
 
         Column tmplate = new Column();
         tmplate.setJavaType(getJavaType());
-        DBDictionary dict = cls.getMappingRepository().getDBDictionary();
-        DBIdentifier typName = DBIdentifier.newColumn("typ", dict != null ? dict.delimitAll() : false);
+        DBIdentifier typName = DBIdentifier.newColumn("typ", false);
         tmplate.setIdentifier(typName);
 
         Column[] cols = info.getColumns(disc, new Column[]{ tmplate }, adapt);
