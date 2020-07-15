@@ -24,7 +24,6 @@ import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 
 /**
  * Handler for byte array values.
@@ -33,7 +32,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 public class ByteArrayValueHandler
     extends AbstractValueHandler {
 
-    
+
     private static final long serialVersionUID = 1L;
     private static final ByteArrayValueHandler _instance =
         new ByteArrayValueHandler();
@@ -52,8 +51,7 @@ public class ByteArrayValueHandler
     @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
-        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
-        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        DBIdentifier colName = DBIdentifier.newColumn(name, false);
         return map(vm, colName, io, adapt);
     }
 

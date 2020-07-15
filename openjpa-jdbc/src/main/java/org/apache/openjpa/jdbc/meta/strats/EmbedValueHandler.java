@@ -34,7 +34,6 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
@@ -64,8 +63,7 @@ public abstract class EmbedValueHandler
     @Deprecated
     protected void map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt, List cols, List args) {
-        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
-        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        DBIdentifier colName = DBIdentifier.newColumn(name, false);
         map(vm, colName, io, adapt, cols, args);
     }
 

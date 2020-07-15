@@ -33,7 +33,6 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
 
@@ -56,8 +55,7 @@ public class XMLValueHandler
     @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
-        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
-        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        DBIdentifier colName = DBIdentifier.newColumn(name, false);
         return map(vm, colName, io, adapt);
     }
 

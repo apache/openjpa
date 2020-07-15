@@ -31,7 +31,6 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -68,8 +67,7 @@ public class ElementEmbedValueHandler
     @Override
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
-        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
-        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        DBIdentifier colName = DBIdentifier.newColumn(name, false);
         return map(vm, colName, io, adapt);
     }
 

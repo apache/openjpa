@@ -30,7 +30,6 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
@@ -58,8 +57,7 @@ public class HandlerStrategies {
         vinfo.assertNoJoin(vm, true);
         vinfo.assertNoForeignKey(vm, !adapt);
 
-        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
-        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        DBIdentifier colName = DBIdentifier.newColumn(name, false);
         Column[] cols = vm.getHandler().map(vm, colName.getName(), io, adapt);
         if (cols.length > 0 && cols[0].getTable() == null) {
             cols = vinfo.getColumns(vm, colName, cols,
