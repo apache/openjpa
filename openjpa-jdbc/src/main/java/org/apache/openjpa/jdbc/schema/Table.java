@@ -327,8 +327,7 @@ public class Table
                 .values()
                 .stream()
                 .map(Column::getIdentifier)
-                .collect(Collectors.toList())
-                .toArray(new DBIdentifier[0]);
+                .toArray(DBIdentifier[]::new);
         return DBIdentifier.toStringArray(sNames);
     }
 
