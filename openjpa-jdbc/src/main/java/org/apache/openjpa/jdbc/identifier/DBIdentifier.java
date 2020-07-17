@@ -30,7 +30,7 @@ import org.apache.openjpa.lib.util.StringUtil;
  */
 public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifier, Serializable {
 
-    
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -754,16 +754,17 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         if (DBIdentifier.isNull(name)) {
             return name;
         }
-        DBIdentifier sName = name.clone();
-        if (sName.getNameInternal() == null) {
-            return sName;
+        if (name.getNameInternal() == null) {
+            return name;
         }
         // Do not convert delimited names to upper case.  They may have
         // been delimited to preserve case.
-        if (force || !Normalizer.isDelimited(sName.getNameInternal())) {
+        if (force || !Normalizer.isDelimited(name.getNameInternal())) {
+            DBIdentifier sName = name.clone();
             sName.setNameInternal(sName.getNameInternal().toUpperCase());
+            return sName;
         }
-        return sName;
+        return name;
     }
 
     /**
