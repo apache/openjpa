@@ -270,6 +270,9 @@ public class DBDictionaryFactory {
         if (prod.indexOf("sapdb") != -1) {
             return dbdictionaryPlugin.unalias("maxdb");
         }
+        if (prod.indexOf("herddb") != -1) {
+            return dbdictionaryPlugin.unalias("herddb");
+        }
         // test h2 in a special way, because there's a decent chance the string
         // h2 could appear in the URL of another database
         if (prod.indexOf("jdbc:h2:") != -1)

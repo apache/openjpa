@@ -40,6 +40,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -604,9 +606,6 @@ public class SchemaTool {
                 for (int k = 0; k < cols.length; k++) {
                     if (dbTable != null) {
                         DBIdentifier colName = cols[k].getIdentifier();
-                        if (_dict.getDelimitIdentifiers()) {
-                            colName = DBIdentifier.removeDelimiters(colName);
-                        }
                         col = dbTable.getColumn(colName);
                         if (col == null) {
                             if (addColumn(cols[k]))
@@ -957,7 +956,7 @@ public class SchemaTool {
                     if (!dbCols[k].getIdentifier().getName().equals(_dict.getIdentityColumnName()) &&
                         !tabs[j].containsColumn(dbCols[k]))
                         continue tables;
-                }
+                    }
                 drops.add(tabs[j]);
             }
         }
@@ -1033,10 +1032,7 @@ public class SchemaTool {
                             continue;
 
                         if (dropColumn(cols[k])) {
-                            if (dbTable != null)
-                                dbTable.removeColumn(col);
-                            else
-                                _log.warn(_loc.get("drop-col", cols[k], tabs[j]));
+                           dbTable.removeColumn(col);
                         }
                     }
                 }
