@@ -36,8 +36,8 @@ jobs:
        uses: actions/cache@v2
        with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+          key: 'cache'
+          restore-keys: 'cache'
       - name: Build with Maven
         run: mvn -B package --file pom.xml
       - name: Remove Snapshots Before Caching
