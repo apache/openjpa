@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static junit.framework.TestCase.assertEquals;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
@@ -111,11 +112,16 @@ public class TestDelimitIdentifiers {
                 .createContainerEntityManagerFactory(persistenceUnitInfo, new HashMap());
         try {
             final AllFieldTypes entity = new AllFieldTypes();
+            final AllFieldTypes entity2 = new AllFieldTypes();
             {
                 final EntityManager em = entityManagerFactory.createEntityManager();
                 em.getTransaction().begin();
                 try {
+                    em.persist(entity2);
                     entity.setArrayOfStrings(new String[]{"a", "b"});
+                    entity.setStringField("foo");
+                    entity.setIntField(10);
+                    entity.setSelfOneOne(entity2);
                     em.persist(entity);
                     em.getTransaction().commit();
                 } catch (final RuntimeException re) {
@@ -130,9 +136,14 @@ public class TestDelimitIdentifiers {
             {
                 final EntityManager em = entityManagerFactory.createEntityManager();
                 try {
-                    final AllFieldTypes myEntity1 = em.createQuery("SELECT a FROM TestDelimitIdentifiers$AllFieldTypes a",
-                            AllFieldTypes.class).getSingleResult();
-                    assertNotNull(myEntity1);
+                    assertEquals(2, em.createQuery("select x from TestDelimitIdentifiers$AllFieldTypes x").
+                            getResultList().size());
+                    assertEquals(1, em.createQuery("select x from TestDelimitIdentifiers$AllFieldTypes x where x.stringField = 'foo'").
+                            getResultList().size());
+                    assertEquals(0, em.createQuery("select x from TestDelimitIdentifiers$AllFieldTypes x where x.stringField = 'bar'").
+                            getResultList().size());
+                    assertEquals(1, em.createQuery("select x from TestDelimitIdentifiers$AllFieldTypes x where x.intField >= 10").
+                            getResultList().size());
                 } finally {
                     em.close();
                 }
