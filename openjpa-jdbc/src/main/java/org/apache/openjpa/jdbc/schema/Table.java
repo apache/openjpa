@@ -356,10 +356,6 @@ public class Table
         return DBIdentifier.removeDelimiters(DBIdentifier.toUpper(name, true));
     }
 
-    public Set<DBIdentifier> getColumnKeys() {
-        return _colMap.keySet();
-    }
-
     public Column getColumn(DBIdentifier name, boolean create) {
         return getColumn(name);
     }
@@ -372,11 +368,11 @@ public class Table
      * @deprecated
      */
     @Deprecated
-    public final boolean containsColumn(String name) {
+    public boolean containsColumn(String name) {
         return containsColumn(DBIdentifier.newColumn(name), null);
     }
 
-    public final boolean containsColumn(DBIdentifier name) {
+    public boolean containsColumn(DBIdentifier name) {
         return containsColumn(name, null);
     }
 
@@ -389,21 +385,21 @@ public class Table
      * @deprecated
      */
     @Deprecated
-    public final boolean containsColumn(String name, DBDictionary dict) {
+    public boolean containsColumn(String name, DBDictionary dict) {
         if (name == null || _colMap == null) {
             return false;
         }
         return containsColumn(DBIdentifier.newIdentifier(name, DBIdentifierType.COLUMN, true));
     }
 
-    public final boolean containsColumn(DBIdentifier name, DBDictionary dict) {
+    public boolean containsColumn(DBIdentifier name, DBDictionary dict) {
         if (DBIdentifier.isNull(name) || _colMap == null) {
             return false;
         }
         return _colMap.containsKey(normalizeColumnKey(name));
     }
 
-    public final boolean containsColumn(Column col) {
+    public boolean containsColumn(Column col) {
         DBIdentifier colName = col.getIdentifier();
         if (DBIdentifier.isNull(colName) || _colMap == null) {
             return false;
@@ -423,11 +419,11 @@ public class Table
      * @deprecated
      */
     @Deprecated
-    public final Column addColumn(String name) {
+    public Column addColumn(String name) {
         return addColumn(DBIdentifier.newColumn(name));
     }
 
-    public final Column addColumn(DBIdentifier name) {
+    public Column addColumn(DBIdentifier name) {
         addName(name, true);
         Schema schema = getSchema();
         Column col;

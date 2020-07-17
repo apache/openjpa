@@ -956,7 +956,7 @@ public class SchemaTool {
                     if (!dbCols[k].getIdentifier().getName().equals(_dict.getIdentityColumnName()) &&
                         !tabs[j].containsColumn(dbCols[k]))
                         continue tables;
-                    }
+                }
                 drops.add(tabs[j]);
             }
         }
