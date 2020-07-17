@@ -861,12 +861,11 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         if (DBIdentifier.isNull(name)) {
             return name;
         }
-        DBIdentifier sName = name.clone();
-        if (isEmpty(sName)) {
-            return sName;
+        if (!name.isDelimited()) {
+            return name;
         }
-        String strName = sName.getNameInternal();
-        strName = Normalizer.removeDelimiters(strName);
+        String strName = Normalizer.removeDelimiters(name.getNameInternal());
+        DBIdentifier sName = name.clone();
         sName.setNameInternal(strName);
         return sName;
     }
