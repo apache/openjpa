@@ -217,7 +217,7 @@ public class DBDictionaryFactory {
     /**
      * Guess the dictionary class name to use based on the product string.
      */
-    private static String dictionaryClassForString(String prod, JDBCConfiguration conf) {
+    static String dictionaryClassForString(String prod, JDBCConfiguration conf) {
         if (StringUtil.isEmpty(prod))
             return null;
         prod = prod.toLowerCase(Locale.ENGLISH);
