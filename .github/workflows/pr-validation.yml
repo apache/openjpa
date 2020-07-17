@@ -28,17 +28,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
+      - name: 'Set up JDK 1.8'
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
-     - name: Cache Maven packages
+          java-version: '1.8'
+     - name: 'Cache Maven packages'
        uses: actions/cache@v2
        with:
           path: ~/.m2
           key: 'cache'
           restore-keys: 'cache'
-      - name: Build with Maven
+      - name: 'Build with Maven'
         run: mvn -B package --file pom.xml
-      - name: Remove Snapshots Before Caching
+      - name: 'Remove Snapshots Before Caching'
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
