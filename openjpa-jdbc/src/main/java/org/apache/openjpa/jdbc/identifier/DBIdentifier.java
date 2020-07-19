@@ -872,6 +872,26 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     }
 
     /**
+     * Combine {@link #removeDelimiters(org.apache.openjpa.jdbc.identifier.DBIdentifier) }
+     * with {@link #toUpper(org.apache.openjpa.jdbc.identifier.DBIdentifier, boolean) }
+     * in order to save allocations and CPU cycles.
+     * @param name
+     * @return
+     */
+    public static DBIdentifier removeDelimitersAndMakeUpper(DBIdentifier name) {
+        if (DBIdentifier.isNull(name) || name.getNameInternal() == null) {
+            return name;
+        }
+        if (!name.isDelimited()) {
+            return toUpper(name, true);
+        }
+        String strName = Normalizer.removeDelimiters(name.getNameInternal());
+        DBIdentifier sName = name.clone();
+        sName.setNameInternal(strName.toUpperCase());
+        return sName;
+    }
+
+    /**
      * Returns a new delimiter with leading and trailing spaces removed.
      * @param name
      */

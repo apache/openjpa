@@ -24,10 +24,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
-import java.util.stream.Collectors;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
@@ -351,8 +349,8 @@ public class Table
         return internalGetColumn(name);
     }
 
-    private DBIdentifier normalizeColumnKey(DBIdentifier name) {
-        return DBIdentifier.removeDelimiters(DBIdentifier.toUpper(name, true));
+    private static DBIdentifier normalizeColumnKey(DBIdentifier name) {
+        return DBIdentifier.removeDelimitersAndMakeUpper(name);
     }
 
     public Column getColumn(DBIdentifier name, boolean create) {
