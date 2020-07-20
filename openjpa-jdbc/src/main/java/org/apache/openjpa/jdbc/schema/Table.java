@@ -38,6 +38,7 @@ import org.apache.openjpa.lib.meta.SourceTracker;
  * @author Abe White
  * @author Stephen Kim
  */
+
 public class Table
     extends NameSet
     implements Comparable<Object>, SourceTracker {
@@ -321,12 +322,12 @@ public class Table
         if (_colMap == null) {
             return new String[0];
         }
-        DBIdentifier[] sNames = _colMap
+        return _colMap
                 .values()
                 .stream()
                 .map(Column::getIdentifier)
-                .toArray(DBIdentifier[]::new);
-        return DBIdentifier.toStringArray(sNames);
+                .map(DBIdentifier::getName)
+                .toArray(String[]::new);
     }
 
     /**
