@@ -38,6 +38,7 @@ import org.apache.openjpa.lib.meta.SourceTracker;
  * @author Abe White
  * @author Stephen Kim
  */
+
 public class Table
     extends NameSet
     implements Comparable<Object>, SourceTracker {
@@ -45,6 +46,7 @@ public class Table
     private static final long serialVersionUID = 1L;
     private DBIdentifier _name = DBIdentifier.NULL;
     private DBIdentifier _schemaName = DBIdentifier.NULL;
+    // all keys must be normalized with normalizeColumnKey
     private Map<DBIdentifier, Column> _colMap = null;
     private Map<DBIdentifier, Index> _idxMap = null;
     private Collection<ForeignKey> _fkList = null;
@@ -312,12 +314,20 @@ public class Table
         return _rels;
     }
 
+    /**
+     * Return the list of column names, used only for informative (error) messages.
+     * @return
+     */
     public String[] getColumnNames() {
         if (_colMap == null) {
             return new String[0];
         }
-        DBIdentifier[] sNames = _colMap.keySet().toArray(new DBIdentifier[_colMap.size()]);
-        return DBIdentifier.toStringArray(sNames);
+        return _colMap
+                .values()
+                .stream()
+                .map(Column::getIdentifier)
+                .map(DBIdentifier::getName)
+                .toArray(String[]::new);
     }
 
     /**
@@ -329,10 +339,19 @@ public class Table
         return getColumn(DBIdentifier.newIdentifier(name, DBIdentifierType.COLUMN, true));
     }
 
-    public Column getColumn(DBIdentifier name) {
+    private Column internalGetColumn(DBIdentifier name) {
         if (DBIdentifier.isNull(name) || _colMap == null)
             return null;
-        return _colMap.get(DBIdentifier.toUpper(name));
+        DBIdentifier key = normalizeColumnKey(name);
+        return _colMap.get(key);
+    }
+
+    public Column getColumn(DBIdentifier name) {
+        return internalGetColumn(name);
+    }
+
+    private static DBIdentifier normalizeColumnKey(DBIdentifier name) {
+        return DBIdentifier.removeDelimitersAndMakeUpper(name);
     }
 
     public Column getColumn(DBIdentifier name, boolean create) {
@@ -375,8 +394,7 @@ public class Table
         if (DBIdentifier.isNull(name) || _colMap == null) {
             return false;
         }
-        DBIdentifier sName = DBIdentifier.toUpper(name);
-        return _colMap.containsKey(sName);
+        return _colMap.containsKey(normalizeColumnKey(name));
     }
 
     public boolean containsColumn(Column col) {
@@ -414,8 +432,7 @@ public class Table
         }
         if (_colMap == null)
             _colMap = new LinkedHashMap<>();
-        DBIdentifier sName = DBIdentifier.toUpper(name);
-        _colMap.put(sName, col);
+        _colMap.put(normalizeColumnKey(name), col);
         _cols = null;
         return col;
     }
@@ -440,8 +457,7 @@ public class Table
             col = new Column(validName, this);
         if (_colMap == null)
             _colMap = new LinkedHashMap<>();
-        DBIdentifier sName = DBIdentifier.toUpper(name);
-        _colMap.put(sName, col);
+        _colMap.put(normalizeColumnKey(name), col);
         _cols = null;
         return col;
     }
@@ -469,7 +485,7 @@ public class Table
         if (col == null || _colMap == null)
             return false;
 
-        DBIdentifier sName = DBIdentifier.toUpper(col.getIdentifier());
+        DBIdentifier sName = normalizeColumnKey(col.getIdentifier());
         Column cur = _colMap.get(sName);
         if (!col.equals(cur))
             return false;

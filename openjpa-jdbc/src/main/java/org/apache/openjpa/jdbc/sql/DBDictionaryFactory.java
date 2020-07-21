@@ -217,7 +217,7 @@ public class DBDictionaryFactory {
     /**
      * Guess the dictionary class name to use based on the product string.
      */
-    private static String dictionaryClassForString(String prod, JDBCConfiguration conf) {
+    static String dictionaryClassForString(String prod, JDBCConfiguration conf) {
         if (StringUtil.isEmpty(prod))
             return null;
         prod = prod.toLowerCase(Locale.ENGLISH);
@@ -269,6 +269,9 @@ public class DBDictionaryFactory {
             return dbdictionaryPlugin.unalias("derby");
         if (prod.indexOf("sapdb") != -1) {
             return dbdictionaryPlugin.unalias("maxdb");
+        }
+        if (prod.indexOf("herddb") != -1) {
+            return dbdictionaryPlugin.unalias("herddb");
         }
         // test h2 in a special way, because there's a decent chance the string
         // h2 could appear in the URL of another database

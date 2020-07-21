@@ -2154,7 +2154,7 @@ public class SelectImpl
      * Return the alias for the given table under the given joins.
      * NOTE: WE RELY ON THESE INDEXES BEING MONOTONICALLY INCREASING FROM 0
      */
-    private int getTableIndex(Table table, PathJoins pj, boolean create) {
+    int getTableIndex(Table table, PathJoins pj, boolean create) {
         // if we have a from select, then there are no table aliases
         if (_from != null)
             return -1;
@@ -2699,7 +2699,7 @@ public class SelectImpl
          * Return the alias used to key on the column data, considering the
          * given joins.
          */
-        private String getColumnAlias(Column col, PathJoins pj) {
+        String getColumnAlias(Column col, PathJoins pj) {
             String alias;
             if (_sel._from != null) {
                 alias = SelectImpl.toAlias(_sel._from.getTableIndex
@@ -2711,7 +2711,7 @@ public class SelectImpl
                 return alias + "_" + col;
             }
             alias = SelectImpl.toAlias(_sel.getTableIndex(col.getTable(), pj, false));
-            return (alias == null) ? null : alias + "." + col;
+            return (alias == null) ? null : alias + "." + _sel._dict.getNamingUtil().toDBName(col.toString());
         }
 
         ////////////////////////////

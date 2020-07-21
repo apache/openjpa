@@ -40,6 +40,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -1030,10 +1032,7 @@ public class SchemaTool {
                             continue;
 
                         if (dropColumn(cols[k])) {
-                            if (dbTable != null)
-                                dbTable.removeColumn(col);
-                            else
-                                _log.warn(_loc.get("drop-col", cols[k], tabs[j]));
+                           dbTable.removeColumn(col);
                         }
                     }
                 }
