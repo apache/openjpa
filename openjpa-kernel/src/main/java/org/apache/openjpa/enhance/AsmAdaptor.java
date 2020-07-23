@@ -81,6 +81,20 @@ public final class AsmAdaptor {
         }
     }
 
+    public static void write(BCClass bc, OutputStream os) throws IOException {
+        if (bc.getMajorVersion() < Java7_MajorVersion) {
+            bc.write(os);
+        }
+        else {
+            try {
+                writeJava7(bc, os);
+            } finally {
+                os.flush();
+                os.close();
+            }
+        }
+    }
+
     public static byte[] toByteArray(BCClass bc, byte[] returnBytes) throws IOException {
         if (bc.getMajorVersion() >= Java7_MajorVersion) {
             returnBytes = toJava7ByteArray(bc, returnBytes);

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.enhance;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -142,6 +143,8 @@ public class ManagedClassSubclasser {
             if (redefine) {
                 enhancer.setRedefine(true);
             }
+
+            // we need to create subclasses because class retransform doesn't allow to change the interfaces of a previously loaded class
             enhancer.setCreateSubclass(true);
             enhancer.setAddDefaultConstructor(true);
 
@@ -276,7 +279,9 @@ public class ManagedClassSubclasser {
             if (enhancer.isAlreadyRedefined())
                 ints.add(bc.getType());
             else {
-                map.put(bc.getType(), bc.toByteArray());
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                AsmAdaptor.write(bc, baos);
+                map.put(bc.getType(), baos.toByteArray());
                 debugBytecodes(bc);
             }
         } else {
