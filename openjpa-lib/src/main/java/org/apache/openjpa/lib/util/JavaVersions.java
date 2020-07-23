@@ -53,8 +53,12 @@ public class JavaVersions {
             VERSION = 5;
         else if ("1.6".equals(specVersion))
             VERSION = 6;
+        else if ("1.7".equals(specVersion))
+            VERSION = 7;
+        else if ("1.8".equals(specVersion))
+            VERSION = 8;
         else
-            VERSION = 7; // maybe someday...
+            VERSION = 9; // maybe someday...
     }
 
     /**
