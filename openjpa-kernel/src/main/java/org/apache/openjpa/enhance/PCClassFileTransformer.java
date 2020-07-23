@@ -64,8 +64,7 @@ public class PCClassFileTransformer
      * @param opts enhancer configuration options
      * @param loader temporary class loader for loading intermediate classes
      */
-    public PCClassFileTransformer(MetaDataRepository repos, Options opts,
-        ClassLoader loader) {
+    public PCClassFileTransformer(MetaDataRepository repos, Options opts, ClassLoader loader) {
         this(repos, toFlags(opts), loader, opts.removeBooleanProperty
             ("scanDevPath", "ScanDevPath", false));
     }
@@ -93,8 +92,7 @@ public class PCClassFileTransformer
      * @param devscan whether to scan the dev classpath for persistent types
      * if none are configured
      */
-    public PCClassFileTransformer(MetaDataRepository repos,
-        PCEnhancer.Flags flags, ClassLoader tmpLoader, boolean devscan) {
+    public PCClassFileTransformer(MetaDataRepository repos, PCEnhancer.Flags flags, ClassLoader tmpLoader, boolean devscan) {
         _repos = repos;
         _tmpLoader = tmpLoader;
 
@@ -108,9 +106,9 @@ public class PCClassFileTransformer
     }
 
     @Override
-    public byte[] transform(ClassLoader loader, String className,
-        Class redef, ProtectionDomain domain, byte[] bytes)
+    public byte[] transform(ClassLoader loader, String className, Class redef, ProtectionDomain domain, byte[] bytes)
         throws IllegalClassFormatException {
+
         if (loader == _tmpLoader)
             return null;
 
@@ -183,12 +181,9 @@ public class PCClassFileTransformer
      * Return whether the given class needs enhancement.
      */
     private Boolean needsEnhance(String clsName, Class redef, byte[] bytes) {
-        if (redef != null) {
-            Class[] intfs = redef.getInterfaces();
-            for (int i = 0; i < intfs.length; i++)
-                if (PersistenceCapable.class.getName().
-                    equals(intfs[i].getName()))
-                    return Boolean.valueOf(!isEnhanced(bytes));
+        if (redef != null && PersistenceCapable.class.isAssignableFrom(redef)) {
+            // if the original class is already enhanced (implements PersistenceCapable)
+            // then we don't need to do any further processing.
             return null;
         }
 
@@ -198,10 +193,13 @@ public class PCClassFileTransformer
             return null;
         }
 
-        if (clsName.startsWith("java/") || clsName.startsWith("javax/"))
+        if (clsName.startsWith("java/") || clsName.startsWith("javax/") || clsName.startsWith("jakarta/")) {
             return null;
-        if (isEnhanced(bytes))
+        }
+
+        if (isEnhanced(bytes)) {
             return Boolean.FALSE;
+        }
 
         try {
             Class c = Class.forName(clsName.replace('/', '.'), false,
