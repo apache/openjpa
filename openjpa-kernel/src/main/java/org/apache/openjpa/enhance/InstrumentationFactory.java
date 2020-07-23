@@ -40,7 +40,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.JavaVendors;
-import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 
 
@@ -88,14 +87,6 @@ public class InstrumentationFactory {
         }
         if ( _inst != null || !_dynamicallyInstall)
             return _inst;
-
-        // dynamic loading of the agent is only available in JDK 1.6+
-        if (JavaVersions.VERSION < 6) {
-            if (log.isTraceEnabled() == true) {
-                log.trace(_name + ".getInstrumentation() Dynamic loading only supported on Java SE 6 or later");
-            }
-            return null;
-        }
 
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             @Override

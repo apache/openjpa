@@ -18,10 +18,8 @@
  */
 package org.apache.openjpa.enhance;
 
-import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
-import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
@@ -47,7 +45,7 @@ public class ClassRedefiner {
     /**
      * For each element in <code>classes</code>, this method will redefine
      * all the element's methods such that field accesses are intercepted
-     * in-line. If {@link #canRedefineClasses()} returns <code>false</code>,
+     * in-line. If {@link #canRedefineClasses(Log)} returns <code>false</code>,
      * this method is a no-op.
      */
     public static void redefineClasses(OpenJPAConfiguration conf,
@@ -62,37 +60,19 @@ public class ClassRedefiner {
             inst = InstrumentationFactory.getInstrumentation(log);
 
             Class<?>[] array = classes.keySet().toArray(new Class[classes.size()]);
-            if (JavaVersions.VERSION >= 6) {
-                log.trace(_loc.get("retransform-types", classes.keySet()));
+            log.trace(_loc.get("retransform-types", classes.keySet()));
 
-                t = new ClassFileTransformer() {
-                    @Override
-                    public byte[] transform(ClassLoader loader, String clsName,
-                        Class<?> classBeingRedefined, ProtectionDomain pd,
-                        byte[] classfileBuffer) {
-                        return classes.get(classBeingRedefined);
-                    }
-                };
+            t = new ClassFileTransformer() {
+                @Override
+                public byte[] transform(ClassLoader loader, String clsName,
+                    Class<?> classBeingRedefined, ProtectionDomain pd,
+                    byte[] classfileBuffer) {
+                    return classes.get(classBeingRedefined);
+                }
+            };
 
-                // these are Java 6 methods, and we don't have a Java 6 build
-                // module yet. The cost of reflection here is negligible
-                // compared to the redefinition / enhancement costs in total,
-                // so this should not be a big problem.
-                Method meth = inst.getClass().getMethod("addTransformer",
-                    new Class[] { ClassFileTransformer.class, boolean.class });
-                meth.invoke(inst, new Object[] { t, true });
-                meth = inst.getClass().getMethod("retransformClasses",
-                    new Class[] { array.getClass() });
-                meth.invoke(inst, new Object[] { array });
-            } else {
-                log.trace(_loc.get("redefine-types", classes.keySet()));
-                // in a Java 5 context, we can use class redefinition instead
-                ClassDefinition[] defs = new ClassDefinition[array.length];
-                for (int i = 0; i < defs.length; i++)
-                    defs[i] = new ClassDefinition(array[i],
-                        classes.get(array[i]));
-                inst.redefineClasses(defs);
-            }
+            inst.addTransformer(t, true);
+            inst.retransformClasses(array);
         } catch (Exception e) {
             throw new InternalException(e);
         } finally {
