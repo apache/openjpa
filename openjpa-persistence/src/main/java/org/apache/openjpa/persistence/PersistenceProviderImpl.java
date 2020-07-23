@@ -373,8 +373,6 @@ public class PersistenceProviderImpl
      * This private worker method will attempt to setup the proper
      * LifecycleEventManager type based on if the javax.validation APIs are
      * available and a ValidatorImpl is required by the configuration.
-     * @param log
-     * @param conf
      * @throws if validation setup failed and was required by the config
      */
     private void loadValidator(BrokerFactory factory) {
