@@ -23,10 +23,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.util.AnnotationUtils;
 
-import java.util.logging.Logger;
-
 public class OpenJPAExtension implements BeforeAllCallback {
-    private static final Logger LOGGER = Logger.getLogger(OpenJPAExtension.class.getName());
 
     @Override
     public void beforeAll(final ExtensionContext context) {

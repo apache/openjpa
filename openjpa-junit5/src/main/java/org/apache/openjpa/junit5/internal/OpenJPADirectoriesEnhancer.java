@@ -53,6 +53,7 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -64,6 +65,8 @@ import static org.apache.xbean.asm8.ClassReader.SKIP_FRAMES;
 public class OpenJPADirectoriesEnhancer implements Runnable {
     private static final Logger LOGGER = Logger.getLogger(OpenJPADirectoriesEnhancer.class.getName());
     public static final StackTraceElement[] NO_STACK_TRACE = new StackTraceElement[0];
+
+    private static final AtomicBoolean AUTO_DONE = new AtomicBoolean(false);
 
     private final boolean auto;
     private final String[] entities;
@@ -84,22 +87,24 @@ public class OpenJPADirectoriesEnhancer implements Runnable {
         thread.setContextClassLoader(enhancementClassLoader);
         try {
             if (auto) {
-                try {
-                    ClassLoaders.findUrls(enhancementClassLoader.getParent()).stream()
-                            .map(org.apache.xbean.finder.util.Files::toFile)
-                            .filter(File::isDirectory)
-                            .map(File::toPath)
-                            .forEach(dir -> {
-                                LOGGER.fine(() -> "Enhancing folder '" + dir + "'");
-                                try {
-                                    enhanceDirectory(enhancementClassLoader, dir);
-                                } catch (final IOException e) {
-                                    throw new IllegalStateException(e);
-                                }
-                            });
-                } catch (final IOException e) {
-                    throw new IllegalStateException(e);
-                }
+                if (AUTO_DONE.compareAndSet(false, true)) {
+                    try {
+                        ClassLoaders.findUrls(enhancementClassLoader.getParent()).stream()
+                                .map(org.apache.xbean.finder.util.Files::toFile)
+                                .filter(File::isDirectory)
+                                .map(File::toPath)
+                                .forEach(dir -> {
+                                    LOGGER.fine(() -> "Enhancing folder '" + dir + "'");
+                                    try {
+                                        enhanceDirectory(enhancementClassLoader, dir);
+                                    } catch (final IOException e) {
+                                        throw new IllegalStateException(e);
+                                    }
+                                });
+                    } catch (final IOException e) {
+                        throw new IllegalStateException(e);
+                    }
+                } // else: already done, skip useless work
             } else {
                 Stream.of(entities).forEach(e -> {
                     try {
