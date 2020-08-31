@@ -209,6 +209,8 @@ public class PostgresDictionary extends DBDictionary {
         _timestampTypes.add("ABSTIME");
         _timestampTypes.add("TIMESTAMP");
         _timestampTypes.add(timestampTypeName.toUpperCase(Locale.ENGLISH)); // handle user configured timestamp types.
+
+        indexPhysicalForeignKeys = true; // PostgreSQL does not automatically create an index for a foreign key so we will
     }
 
     @Override
