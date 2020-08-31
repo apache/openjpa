@@ -1788,6 +1788,27 @@ works around cases where the limit is exceeded.  Defaults to -1 meaning
 no limit.
                     </para>
                 </listitem>
+
+                <listitem id="DBDictionary.IndexPhysicalForeignKeys">
+                    <para>
+                        <indexterm>
+                            <primary>
+                                DDL
+                            </primary>
+                            <secondary>
+                                IndexPhysicalForeignKeys
+                            </secondary>
+                        </indexterm>
+                        <literal>IndexPhysicalForeignKeys</literal>:
+                        Whether a search Index should automatically get created on a physical foreign key.
+                        Some databases, like MySQL, handle this internally, so we do not need to generate
+                        an explicit Index in our DDL. Other databases need an explicit serach index
+                        on foreign key columns to improve performance.
+
+                        IndexPhysicalForeignKeys defaults to true for Oracle, MS-SQL and PostgreSQL.
+                    </para>
+                </listitem>
+
                 <listitem id="DBDictionary.InitializationSQL">
                     <para>
                     <indexterm>
