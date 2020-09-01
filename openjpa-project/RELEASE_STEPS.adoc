@@ -14,17 +14,14 @@ These instructions describe how perform an official release of the Apache OpenJP
 
 * You need a valid Apache account and
 * Maven installed on your box
-* Java 6 or 7
-* Do NOT Release with Java 8 yet!
-* TODO probably we require a ~/.m2/toolchains.xml set up correctly in the future
-
+* Java 8
 
 
 == Manual Release Preparation Steps
 
 * Make sure you have the latest version checked out and no local modifications
- $> svn up
- $> svn st
+ $> git pull --rebase
+ $> git status
  This should not show any dirty files
 
 * Run a full build
