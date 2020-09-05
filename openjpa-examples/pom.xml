@@ -45,7 +45,6 @@
     <modules>
         <module>simple</module>
         <module>image-gallery</module>
-        <module>openbooks</module>
     </modules>
 
     <profiles>
