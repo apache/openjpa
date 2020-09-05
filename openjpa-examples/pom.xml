@@ -39,7 +39,7 @@
 
     <properties>
         <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
-        <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
+        <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
     </properties>
 
     <modules>
