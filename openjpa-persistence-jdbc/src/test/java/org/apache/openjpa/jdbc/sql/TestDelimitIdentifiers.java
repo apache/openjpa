@@ -20,7 +20,6 @@ package org.apache.openjpa.jdbc.sql;
 
 import static junit.framework.TestCase.assertEquals;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.derby.jdbc.EmbeddedDriver;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.PersistenceUnitInfoImpl;
 import org.junit.Test;
@@ -28,12 +27,13 @@ import org.junit.Test;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+
+import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertNotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -68,14 +68,26 @@ public class TestDelimitIdentifiers {
             setSupportsDelimitedIdentifiers(true);
         }
     }
-    
+
     @Test
     public void testDelimitIdentifiers() throws SQLException {
+
+        Driver derbyDriver;
+        try {
+            Class derbyClazz = Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+            derbyDriver = (Driver) derbyClazz.newInstance();
+        }
+        catch (Exception e) {
+            // all fine
+            System.out.println("Skipping Derby specific test because Derby cannot be found in ClassPath");
+            return;
+        }
+
         final PersistenceUnitInfoImpl persistenceUnitInfo = new PersistenceUnitInfoImpl();
         persistenceUnitInfo.setExcludeUnlistedClasses(true);
         persistenceUnitInfo.addManagedClassName(AllFieldTypes.class.getName());
         final BasicDataSource ds = new BasicDataSource();
-        ds.setDriver(new EmbeddedDriver());
+        ds.setDriver(derbyDriver);
         ds.setUrl("jdbc:derby:memory:TestDelimitIdentifiers;create=true");
         persistenceUnitInfo.setNonJtaDataSource(ds);
         // reproducer for OPENJPA-2818 delimitIdentifiers=true,delimitedCase=lower,schemaCase=lower

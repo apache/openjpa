@@ -19,7 +19,6 @@
 package org.apache.openjpa.jdbc.sql;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.derby.jdbc.EmbeddedDriver;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.PersistenceUnitInfoImpl;
 import org.junit.Test;
@@ -29,6 +28,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Id;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -46,14 +46,27 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class TestSnakeCaseDDL {
+
     @Test
     public void ddlInSnakeCase() throws SQLException {
+
+        Driver derbyDriver;
+        try {
+            Class derbyClazz = Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+            derbyDriver = (Driver) derbyClazz.newInstance();
+        }
+        catch (Exception e) {
+            // all fine
+            System.out.println("Skipping Derby specific test because Derby cannot be found in ClassPath");
+            return;
+        }
+
         final PersistenceUnitInfoImpl persistenceUnitInfo = new PersistenceUnitInfoImpl();
         persistenceUnitInfo.setExcludeUnlistedClasses(true);
         persistenceUnitInfo.addManagedClassName(MyEntity1.class.getName());
         persistenceUnitInfo.addManagedClassName(MyEntity2.class.getName());
         final BasicDataSource ds = new BasicDataSource();
-        ds.setDriver(new EmbeddedDriver());
+        ds.setDriver(derbyDriver);
         ds.setUrl("jdbc:derby:memory:ddlInSnakeCase;create=true");
         persistenceUnitInfo.setJtaDataSource(ds);
         persistenceUnitInfo.setProperty("openjpa.jdbc.DBDictionary", "derby(javaToDbColumnNameProcessing=snake_case)");
