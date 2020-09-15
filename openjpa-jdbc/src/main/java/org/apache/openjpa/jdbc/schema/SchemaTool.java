@@ -529,6 +529,9 @@ public class SchemaTool {
                 if (semiColonPosition != -1) {
                     sql = sql.substring(0, semiColonPosition);
                 }
+                if (sql.isEmpty()) {
+                    continue;
+                }
                 script.add(sql);
             }
 
