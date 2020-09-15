@@ -525,9 +525,9 @@ public class SchemaTool {
                     continue;
                 }
 
-                int semiColonPosition = sql.indexOf(";");
-                if (semiColonPosition != -1) {
-                    sql = sql.substring(0, semiColonPosition);
+                int semiColonPosition = sql.indexOf(";"); // ';' can be in string, don't blindly drop it
+                if (sql.endsWith(";")) {
+                    sql = sql.substring(0, sql.length() - 1);
                 }
                 if (sql.isEmpty()) {
                     continue;
