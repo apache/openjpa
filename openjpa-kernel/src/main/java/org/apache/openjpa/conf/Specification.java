@@ -94,8 +94,8 @@ public class Specification {
         if (other == null || !this.getClass().isInstance(other))
             return false;
         Specification that = (Specification)other;
-        return Objects.equals(_name, this._name) && _major == that._major
-            && Objects.equals(_minor, this._minor);
+        return Objects.equals(_name, that._name) && _major == that._major
+            && Objects.equals(_minor, that._minor);
     }
 
     /**
