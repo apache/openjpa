@@ -33,10 +33,6 @@ public class TestAsmAdaptor
     @Test
     public void isEnhanced()
     {
-        if (!AsmAdaptor.use())
-        {
-            return;
-        }
         assertTrue(AsmAdaptor.isEnhanced(bytes(Enhanced.class)));
         assertTrue(AsmAdaptor.isEnhanced(bytes(TransitivelyEnhanced.class)));
         assertFalse(AsmAdaptor.isEnhanced(bytes(NotEnhanced.class)));

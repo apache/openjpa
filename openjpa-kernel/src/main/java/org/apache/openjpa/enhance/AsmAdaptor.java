@@ -43,7 +43,6 @@ import serp.bytecode.BCClass;
  * Serp.
  */
 public final class AsmAdaptor {
-    private static final boolean USE_ASM = System.getProperty("java.version").compareTo("1.6") > 0;
     private static final int Java7_MajorVersion = 51;
 
     @SuppressWarnings("deprecation")
@@ -115,11 +114,6 @@ public final class AsmAdaptor {
         ClassReader cr = new ClassReader(bis);
         cr.accept(cw, 0);
         return cw.toByteArray();
-    }
-
-    public static boolean use()
-    {
-        return USE_ASM;
     }
 
     public static boolean isEnhanced(final byte[] b)

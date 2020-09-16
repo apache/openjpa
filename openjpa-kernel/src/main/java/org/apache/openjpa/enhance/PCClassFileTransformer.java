@@ -35,7 +35,6 @@ import org.apache.openjpa.util.GeneralException;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.Project;
-import serp.bytecode.lowlevel.ConstantPoolTable;
 
 
 /**
@@ -227,26 +226,6 @@ public class PCClassFileTransformer
      * {@link PersistenceCapable}.
      */
     private static boolean isEnhanced(byte[] b) {
-        if (AsmAdaptor.use())
-        {
-            return AsmAdaptor.isEnhanced(b);
-        }
-
-        ConstantPoolTable table = new ConstantPoolTable(b);
-        int idx = table.getEndIndex();
-
-        idx += 6; // skip access, cls, super
-        int ifaces = table.readUnsignedShort(idx);
-        int clsEntry, utfEntry;
-        String name;
-        for (int i = 0; i < ifaces; i++) {
-            idx += 2;
-            clsEntry = table.readUnsignedShort(idx);
-            utfEntry = table.readUnsignedShort(table.get(clsEntry));
-            name = table.readString(table.get(utfEntry));
-            if ("org/apache/openjpa/enhance/PersistenceCapable".equals(name))
-                return true;
-        }
-        return false;
+        return AsmAdaptor.isEnhanced(b);
     }
 }
