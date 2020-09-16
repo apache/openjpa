@@ -25,13 +25,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.iterators.FilterIterator;
-import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.collections.FilterIterator;
+import org.apache.openjpa.lib.util.collections.IteratorChain;
 
 /**
  * A collection proxy designed for collections backed by extremely large
@@ -318,7 +318,7 @@ public abstract class AbstractLRSProxyCollection
     ////////////////////////////
 
     @Override
-    public boolean evaluate(Object o) {
+    public boolean test(Object o) {
         return !_ct.getRemoved().contains(o);
     }
 

@@ -21,10 +21,10 @@ package org.apache.openjpa.kernel;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.util.OrderedMap;
+import org.apache.openjpa.lib.util.collections.LinkedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 

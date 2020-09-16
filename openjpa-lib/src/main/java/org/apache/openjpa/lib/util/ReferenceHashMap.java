@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.lib.util;
 
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -29,7 +31,7 @@ import java.io.ObjectOutputStream;
  * @since 0.4.0
  */
 public class ReferenceHashMap
-    extends org.apache.commons.collections4.map.ReferenceMap
+    extends org.apache.openjpa.lib.util.collections.ReferenceMap
     implements ReferenceMap, SizedMap {
 
     
@@ -124,9 +126,8 @@ public class ReferenceHashMap
     private static class AccessibleEntry extends ReferenceEntry {
         private final ReferenceHashMap parent;
 
-        public AccessibleEntry(org.apache.commons.collections4.map.
-            AbstractReferenceMap map, HashEntry next,
-            int hashCode, Object key, Object value) {
+        public AccessibleEntry(AbstractReferenceMap map, HashEntry next,
+                               int hashCode, Object key, Object value) {
             super(map, next, hashCode, key, value);
             parent = (ReferenceHashMap)map;
         }

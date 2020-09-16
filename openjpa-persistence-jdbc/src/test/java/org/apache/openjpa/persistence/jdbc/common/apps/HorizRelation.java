@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
+import org.apache.openjpa.lib.util.collections.LinkedMap;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,8 +28,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.persistence.Entity;
-
-import org.apache.commons.collections4.map.LinkedMap;
 
 /**
  * Normal class that has relations to and from various horizontal

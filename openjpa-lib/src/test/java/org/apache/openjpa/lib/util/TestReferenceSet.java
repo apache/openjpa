@@ -21,7 +21,7 @@ package org.apache.openjpa.lib.util;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap.ReferenceStrength;
 
 import org.junit.Before;
 import org.junit.Test;

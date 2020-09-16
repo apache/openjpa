@@ -18,13 +18,13 @@
  */
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.collections.MapBackedSet;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
-
-import org.apache.commons.collections4.set.MapBackedSet;
 
 /**
  * Base class that provides utilities to change trackers.

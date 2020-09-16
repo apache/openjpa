@@ -21,7 +21,7 @@ package org.apache.openjpa.lib.conf;
 import java.security.AccessController;
 import java.util.Objects;
 
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;

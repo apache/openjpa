@@ -20,13 +20,13 @@ package org.apache.openjpa.kernel;
 
 import java.util.Map;
 
-import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.util.OrderedMap;
+import org.apache.openjpa.lib.util.collections.LinkedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.InternalException;

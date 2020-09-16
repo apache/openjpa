@@ -44,10 +44,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 
-import org.apache.commons.collections4.iterators.IteratorChain;
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
-import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.commons.collections4.set.MapBackedSet;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;
@@ -73,6 +69,10 @@ import org.apache.openjpa.lib.util.ReferenceHashMap;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap;
+import org.apache.openjpa.lib.util.collections.IteratorChain;
+import org.apache.openjpa.lib.util.collections.LinkedMap;
+import org.apache.openjpa.lib.util.collections.MapBackedSet;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -432,7 +432,8 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
      * {@link ReferenceMap} with soft values.
      */
     protected Map<?,?> newManagedObjectCache() {
-        return new ReferenceHashMap(ReferenceStrength.HARD, ReferenceStrength.SOFT);
+        return new ReferenceHashMap(
+                AbstractReferenceMap.ReferenceStrength.HARD, AbstractReferenceMap.ReferenceStrength.SOFT);
     }
 
     //////////////////////////////////
@@ -3872,7 +3873,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         try {
             ExtentImpl extent = new ExtentImpl(this, type, subclasses, fetch);
             if (_extents == null)
-                _extents = new ReferenceHashSet(ReferenceStrength.WEAK);
+                _extents = new ReferenceHashSet(AbstractReferenceMap.ReferenceStrength.WEAK);
             _extents.add(extent);
 
             return extent;
@@ -3926,7 +3927,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
             // track queries
             if (_queries == null)
-                _queries = new ReferenceHashSet(ReferenceStrength.WEAK);
+                _queries = new ReferenceHashSet(AbstractReferenceMap.ReferenceStrength.WEAK);
             _queries.add(q);
             return q;
         } catch (OpenJPAException ke) {
@@ -5075,7 +5076,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
         private boolean addCleanInternal(StateManagerImpl sm) {
             if (_clean == null)
-                _clean = new ReferenceHashSet(ReferenceStrength.SOFT);
+                _clean = new ReferenceHashSet(AbstractReferenceMap.ReferenceStrength.SOFT);
             return _clean.add(sm);
         }
 

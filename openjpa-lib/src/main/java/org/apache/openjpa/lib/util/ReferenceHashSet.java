@@ -24,8 +24,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
-import org.apache.commons.collections4.set.MapBackedSet;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap;
+import org.apache.openjpa.lib.util.collections.MapBackedSet;
+import org.apache.openjpa.lib.util.collections.ReferenceMap;
 
 /**
  * A set whose values may be stored as weak or soft references.
@@ -51,12 +52,11 @@ public class ReferenceHashSet implements Set, Serializable {
     /**
      * Construct a set with the given reference type.
      */
-    public ReferenceHashSet(ReferenceStrength refType) {
-        if (refType == ReferenceStrength.HARD)
+    public ReferenceHashSet(AbstractReferenceMap.ReferenceStrength refType) {
+        if (refType == AbstractReferenceMap.ReferenceStrength.HARD)
             _set = new HashSet();
         else {
-            _set = MapBackedSet.mapBackedSet(new org.apache.commons.
-                collections4.map.ReferenceMap(refType, ReferenceStrength.HARD), DUMMY_VAL);
+            _set = MapBackedSet.mapBackedSet(new ReferenceMap(refType, AbstractReferenceMap.ReferenceStrength.HARD), DUMMY_VAL);
         }
     }
 

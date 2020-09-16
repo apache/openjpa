@@ -28,13 +28,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.iterators.FilterIterator;
-import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.collections.FilterIterator;
+import org.apache.openjpa.lib.util.collections.IteratorChain;
 
 /**
  * A map proxy designed for maps backed by extremely large result sets in
@@ -367,7 +367,7 @@ public abstract class AbstractLRSProxyMap<K,V>
         _iterated = true;
 
         // have to copy the entry set of _map to prevent concurrent mod errors
-        IteratorChain chain = new IteratorChain();
+        IteratorChain chain = new IteratorChain<>();
         if (_map != null)
             chain.addIterator(new ArrayList(_map.entrySet()).iterator());
         chain.addIterator(new FilterIterator(itr(), this));
@@ -379,7 +379,7 @@ public abstract class AbstractLRSProxyMap<K,V>
     ////////////////////////////
 
     @Override
-    public boolean evaluate(Object obj) {
+    public boolean test(Object obj) {
         Map.Entry entry = (Map.Entry) obj;
         return (_ct.getTrackKeys()
             && !_ct.getRemoved().contains(entry.getKey())

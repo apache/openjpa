@@ -27,9 +27,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.UserException;
 
@@ -109,7 +109,7 @@ class ManagedCache implements Serializable {
 
         if (!sm.isPersistent() || sm.isEmbedded()) {
             if (_embeds == null)
-                _embeds = new ReferenceHashSet(ReferenceStrength.WEAK);
+                _embeds = new ReferenceHashSet(AbstractReferenceMap.ReferenceStrength.WEAK);
             _embeds.add(sm);
             return;
         }

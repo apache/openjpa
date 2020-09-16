@@ -38,7 +38,6 @@ import java.util.SortedMap;
 import java.util.Stack;
 import java.util.TreeMap;
 
-import org.apache.commons.collections4.iterators.EmptyIterator;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -63,6 +62,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.InternalException;
+
+import static java.util.Collections.emptyIterator;
 
 /**
  * Standard {@link Select} implementation. Usage note: though this class
@@ -750,7 +751,7 @@ public class SelectImpl
     @Override
     public Iterator getJoinIterator() {
         if (_joins == null || _joins.isEmpty())
-            return EmptyIterator.INSTANCE;
+            return emptyIterator();
         return _joins.joins().joinIterator();
     }
 

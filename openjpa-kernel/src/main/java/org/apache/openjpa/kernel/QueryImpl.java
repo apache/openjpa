@@ -33,8 +33,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
-import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.exps.AggregateListener;
@@ -47,7 +45,6 @@ import org.apache.openjpa.kernel.exps.Val;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.BatchedResultObjectProvider;
 import org.apache.openjpa.lib.rop.EagerResultList;
-import org.apache.openjpa.lib.rop.ListResultList;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultList;
@@ -58,6 +55,8 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap;
+import org.apache.openjpa.lib.util.collections.LinkedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -128,7 +127,7 @@ public class QueryImpl implements Query {
     // remember the list of all the results we have returned so we
     // can free their resources when close or closeAll is called
     private transient final Collection<RemoveOnCloseResultList> _resultLists =
-        new ReferenceHashSet(ReferenceStrength.WEAK);
+        new ReferenceHashSet(AbstractReferenceMap.ReferenceStrength.WEAK);
 
     private boolean _printParameters = false;
     /**

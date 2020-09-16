@@ -72,7 +72,6 @@
                 <include>net.sourceforge.serp:serp</include>
                 <include>org.apache.derby:derby</include>
 
-                <include>org.apache.commons:commons-collections4</include>
                 <include>org.apache.commons:commons-pool2</include>
                 <include>commons-logging:commons-logging</include>
                 <include>org.apache.commons:commons-dbcp2</include>

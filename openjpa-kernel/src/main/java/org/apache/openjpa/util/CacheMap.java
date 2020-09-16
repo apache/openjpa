@@ -27,13 +27,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.iterators.FilterIterator;
-import org.apache.commons.collections4.iterators.IteratorChain;
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.LRUMap;
 import org.apache.openjpa.lib.util.SizedMap;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap;
+import org.apache.openjpa.lib.util.collections.FilterIterator;
+import org.apache.openjpa.lib.util.collections.IteratorChain;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
@@ -112,8 +112,8 @@ public class CacheMap
         if (size < 0)
             size = 500;
 
-        softMap = new ConcurrentReferenceHashMap(ReferenceStrength.HARD,
-            ReferenceStrength.SOFT, size, load) {
+        softMap = new ConcurrentReferenceHashMap(AbstractReferenceMap.ReferenceStrength.HARD,
+            AbstractReferenceMap.ReferenceStrength.SOFT, size, load) {
             @Override
             public void overflowRemoved(Object key, Object value) {
                 softMapOverflowRemoved(key, value);
@@ -672,7 +672,7 @@ public class CacheMap
         }
 
         @Override
-        public boolean evaluate(Object obj) {
+        public boolean test(Object obj) {
             switch (_type) {
                 case ENTRY:
                     return ((Map.Entry) obj).getValue() != null;

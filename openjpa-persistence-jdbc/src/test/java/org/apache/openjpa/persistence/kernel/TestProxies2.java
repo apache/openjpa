@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.collections4.comparators.ComparableComparator;
+import org.apache.openjpa.lib.util.collections.ComparableComparator;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.ProxiesPC;
 import org.apache.openjpa.util.Proxy;

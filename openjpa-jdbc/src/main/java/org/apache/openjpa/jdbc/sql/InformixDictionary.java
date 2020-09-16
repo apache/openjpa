@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
@@ -42,6 +41,7 @@ import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 
@@ -85,7 +85,7 @@ public class InformixDictionary
     protected boolean useJCC = false;
     // weak set of connections we've already executed lock mode sql on
     private final Collection _seenConnections = Collections.synchronizedSet(
-            new ReferenceHashSet(ReferenceStrength.WEAK));
+            new ReferenceHashSet(AbstractReferenceMap.ReferenceStrength.WEAK));
 
     public boolean disableRetainUpdateLocksSQL=false;
 

@@ -23,15 +23,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.iterators.FilterIterator;
-import org.apache.commons.collections4.iterators.IteratorChain;
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProviderIterator;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap;
+import org.apache.openjpa.lib.util.collections.FilterIterator;
+import org.apache.openjpa.lib.util.collections.IteratorChain;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
@@ -162,7 +162,7 @@ public class ExtentImpl<T>
         lock();
         try {
             if (_openItrs == null)
-                _openItrs = new ReferenceHashSet(ReferenceStrength.WEAK);
+                _openItrs = new ReferenceHashSet(AbstractReferenceMap.ReferenceStrength.WEAK);
             _openItrs.add(citr);
         } finally {
             unlock();
@@ -339,7 +339,7 @@ public class ExtentImpl<T>
         }
 
         @Override
-        public boolean evaluate(Object o) {
+        public boolean test(Object o) {
             return !_extent._broker.isDeleted(o);
         }
     }
@@ -362,7 +362,7 @@ public class ExtentImpl<T>
         }
 
         @Override
-        public boolean evaluate(Object o) {
+        public boolean test(Object o) {
             if (!_broker.isNew(o))
                 return false;
 

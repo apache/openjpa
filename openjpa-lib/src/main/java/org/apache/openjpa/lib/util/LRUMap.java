@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author Abe White
  */
-public class LRUMap extends org.apache.commons.collections4.map.LRUMap
+public class LRUMap extends org.apache.openjpa.lib.util.collections.LRUMap
     implements SizedMap {
 
     
