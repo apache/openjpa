@@ -43,14 +43,5 @@ public class HerdDBDictionary
         setLeadingDelimiter(DELIMITER_BACK_TICK);
         setTrailingDelimiter(DELIMITER_BACK_TICK);
     }
-
-    @Override
-    public int fromDBType(int i) {
-        if (i == Types.DOUBLE) {
-            return Types.REAL;
-        }
-        return i;
-    }
-
 }
 
