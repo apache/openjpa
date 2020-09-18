@@ -4462,7 +4462,7 @@ public class DBDictionary
         c.setSchemaIdentifier(fromDBName(colMeta.getString("TABLE_SCHEM"), DBIdentifierType.SCHEMA));
         c.setTableIdentifier(fromDBName(colMeta.getString("TABLE_NAME"), DBIdentifierType.TABLE));
         c.setIdentifier(fromDBName(colMeta.getString("COLUMN_NAME"), DBIdentifierType.COLUMN));
-        c.setType(colMeta.getInt("DATA_TYPE"));
+        c.setType(fromDBType(colMeta.getInt("DATA_TYPE")));
         c.setTypeIdentifier(fromDBName(colMeta.getString("TYPE_NAME"), DBIdentifierType.COLUMN_DEFINITION));
         c.setSize(colMeta.getInt("COLUMN_SIZE"));
         c.setDecimalDigits(colMeta.getInt("DECIMAL_DIGITS"));
@@ -5900,7 +5900,14 @@ public class DBDictionary
             return getNamingUtil().toDBName(name, delimit);
     }
 
+    public int fromDBType(int type) {
+        return type;
+    }
+
     public DBIdentifier fromDBName(String name, DBIdentifierType id) {
+        if (delimitAll()) {
+            name = Normalizer.delimit(name, true);
+        }
         return getNamingUtil().fromDBName(name, id);
     }
 

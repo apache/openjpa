@@ -375,8 +375,9 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      */
     protected Column addPrimaryKeyColumn(Table table) {
         DBDictionary dict = _conf.getDBDictionaryInstance();
+        DBIdentifier delimitedColumnName = dict.fromDBName(getPrimaryKeyColumn(), DBIdentifier.DBIdentifierType.COLUMN);
         Column pkColumn = table.addColumn(dict.getValidColumnName
-            (getPrimaryKeyColumnIdentifier(), table));
+            (delimitedColumnName, table));
         pkColumn.setType(dict.getPreferredType(Types.TINYINT));
         pkColumn.setJavaType(JavaTypes.INT);
         return pkColumn;
@@ -417,8 +418,10 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
         pk.addColumn(_pkColumn);
 
         DBDictionary dict = _conf.getDBDictionaryInstance();
+        DBIdentifier _delimitedSeqColumnName = dict.delimitAll() ?
+                DBIdentifier.newColumn(this._seqColumnName.getName(), true) : this._seqColumnName;
         _seqColumn = table.addColumn(dict.getValidColumnName
-            (_seqColumnName, table));
+            (_delimitedSeqColumnName, table));
         _seqColumn.setType(dict.getPreferredType(Types.BIGINT));
         _seqColumn.setJavaType(JavaTypes.LONG);
 

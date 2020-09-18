@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -115,8 +116,9 @@ public class ClassTableJDBCSeq
     @Override
     protected Column addPrimaryKeyColumn(Table table) {
         DBDictionary dict = getConfiguration().getDBDictionaryInstance();
-        Column pkColumn = table.addColumn(dict.getValidColumnName(
-            getPrimaryKeyColumnIdentifier(), table));
+        DBIdentifier delimitedColumnName = dict.fromDBName(getPrimaryKeyColumn(), DBIdentifier.DBIdentifierType.COLUMN);
+        Column pkColumn = table.addColumn(dict.getValidColumnName
+            (delimitedColumnName, table));
         pkColumn.setType(dict.getPreferredType(Types.VARCHAR));
         pkColumn.setJavaType(JavaTypes.STRING);
         pkColumn.setSize(dict.characterColumnSize);
