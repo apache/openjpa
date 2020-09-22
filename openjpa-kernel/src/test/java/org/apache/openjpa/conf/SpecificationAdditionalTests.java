@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package apache.openjpa.conf;
+package org.apache.openjpa.conf;
 
 
 import org.junit.Test;
