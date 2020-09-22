@@ -27,7 +27,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.junit.Assert;
 import org.apache.openjpa.conf.*;
 
-public class SpecificationTest {
+public class SpecificationAdditionalTests {
 
 	String myString = "JPA";
 	String myCompleteString = "JPA 2.0-draft";
