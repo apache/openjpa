@@ -5901,6 +5901,9 @@ public class DBDictionary
     }
 
     public DBIdentifier fromDBName(String name, DBIdentifierType id) {
+        if (delimitAll()) {
+            name = Normalizer.delimit(name, true);
+        }
         return getNamingUtil().fromDBName(name, id);
     }
 

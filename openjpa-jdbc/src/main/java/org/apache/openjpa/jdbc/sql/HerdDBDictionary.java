@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.sql.Types;
+
 /**
  * Dictionary for HerdDB.
  */
@@ -33,7 +35,7 @@ public class HerdDBDictionary
         supportsUniqueConstraints = false;
         supportsCascadeDeleteAction = false;
         schemaCase = SCHEMA_CASE_LOWER;
-        delimitedCase = SCHEMA_CASE_PRESERVE;
+        delimitedCase = SCHEMA_CASE_LOWER;
 
         // make OpenJPA escape everything, because Apache Calcite has a lot of reserved words, like 'User', 'Value'...
         setDelimitIdentifiers(true);
@@ -41,6 +43,5 @@ public class HerdDBDictionary
         setLeadingDelimiter(DELIMITER_BACK_TICK);
         setTrailingDelimiter(DELIMITER_BACK_TICK);
     }
-
 }
 
