@@ -30,10 +30,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 
-import org.apache.xbean.asm8.ClassReader;
-import org.apache.xbean.asm8.ClassVisitor;
-import org.apache.xbean.asm8.ClassWriter;
-import org.apache.xbean.asm8.Opcodes;
+import org.apache.xbean.asm9.ClassReader;
+import org.apache.xbean.asm9.ClassVisitor;
+import org.apache.xbean.asm9.ClassWriter;
+import org.apache.xbean.asm9.Opcodes;
 
 import serp.bytecode.BCClass;
 
