@@ -2121,6 +2121,7 @@ public class EntityManagerImpl
      */
     @Override
     public void setProperty(String prop, Object value) {
+        properties = null;
         if (!setKernelProperty(this, prop, value)) {
             if (!setKernelProperty(this.getFetchPlan(), prop, value)) {
                 Log log = getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);

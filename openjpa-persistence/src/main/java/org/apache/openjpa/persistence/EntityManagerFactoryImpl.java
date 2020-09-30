@@ -281,9 +281,11 @@ public class EntityManagerFactoryImpl
         OpenJPAEntityManagerSPI em = newEntityManagerImpl(broker);
 
         // allow setting of other bean properties of EM
-        Set<Map.Entry> entrySet = props.entrySet();
-        for (Map.Entry entry : entrySet) {
-            em.setProperty(entry.getKey().toString(), entry.getValue());
+        if (!props.isEmpty()) {
+            Set<Map.Entry> entrySet = props.entrySet();
+            for (Map.Entry entry : entrySet) {
+                em.setProperty(entry.getKey().toString(), entry.getValue());
+            }
         }
         if (canCacheGetProperties) {
             if (emEmptyPropsProperties == null) {
