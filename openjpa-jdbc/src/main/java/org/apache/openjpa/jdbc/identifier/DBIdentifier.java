@@ -142,6 +142,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         if (DBIdentifierType.CONSTANT != getType() && DBIdentifierType.COLUMN_DEFINITION != getType()) {
             if (delimit) {
                 name = Normalizer.delimit(name, true);
+                setNameDelimited(true);
              } else {
                  name = Normalizer.normalizeString(name);
              }
@@ -325,6 +326,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         sName.setNameInternal(getNameInternal());
         sName.setType(getType());
         sName.setIgnoreCase(getIgnoreCase());
+        sName.setNameDelimited(isNameDelimited());
         return sName;
     }
 
@@ -859,7 +861,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * @param name
      */
     public static DBIdentifier removeDelimiters(DBIdentifier name) {
-        if (DBIdentifier.isNull(name)) {
+        if (DBIdentifier.isNull(name) || !name.isDelimited()) {
             return name;
         }
         if (!name.isDelimited()) {
@@ -927,7 +929,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         if (DBIdentifier.isEmpty(this)) {
             return false;
         }
-        return Normalizer.isDelimited(getNameInternal());
+        return isNameDelimited() || Normalizer.isDelimited(getNameInternal());
     }
 
     /**
