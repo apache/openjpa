@@ -182,7 +182,7 @@ public class PCEnhancerAgent {
     		conf.setReadOnly(Configuration.INIT_STATE_FREEZING);
     		conf.instantiateAll(); // avoid threading issues
 
-    		PCClassFileTransformer transformer = new PCClassFileTransformer
+    		PCClassFileTransformer transformer = PCClassFileTransformer.newInstance
     		    (conf.newMetaDataRepositoryInstance(), clonedOptions,
     		    tmpLoader);
     		inst.addTransformer(transformer);

@@ -2023,6 +2023,9 @@ public class OpenJPAConfigurationImpl
 
     @Override
     public FinderCache getFinderCacheInstance() {
+        if (finderCachePlugin == null) { // xmlstore case
+            return null;
+        }
         if (finderCachePlugin.get() == null) {
             finderCachePlugin.instantiate(FinderCache.class, this);
         }

@@ -54,7 +54,6 @@ public class PCClassFileTransformer
     private final ClassLoader _tmpLoader;
     private final Log _log;
     private final Set _names;
-    private boolean _transforming = false;
 
     /**
      * Constructor.
@@ -104,6 +103,13 @@ public class PCClassFileTransformer
             _log.info(_loc.get("runtime-enhance-pcclasses"));
     }
 
+    public static PCClassFileTransformer newInstance(final MetaDataRepository repos, final Options parseProperties,
+                                                     final ClassLoader tmpLoader) {
+        return parseProperties != null && parseProperties.getBooleanProperty("Reentrant") ?
+                new PCClassFileTransformer.Reentrant(repos, parseProperties, tmpLoader) :
+                new PCClassFileTransformer(repos, parseProperties, tmpLoader);
+    }
+
     @Override
     public byte[] transform(ClassLoader loader, String className, Class redef, ProtectionDomain domain, byte[] bytes)
         throws IllegalClassFormatException {
@@ -115,14 +121,6 @@ public class PCClassFileTransformer
         if (className == null) {
             return null;
         }
-        // prevent re-entrant calls, which can occur if the enhancing
-        // loader is used to also load OpenJPA libraries; this is to prevent
-        // recursive enhancement attempts for internal openjpa libraries
-        if (_transforming)
-            return null;
-
-        _transforming = true;
-
         return transform0(className, redef, bytes);
     }
 
@@ -131,7 +129,7 @@ public class PCClassFileTransformer
      * ClassCircularityError when executing method using pure-JIT JVMs
      * such as JRockit.
      */
-    private byte[] transform0(String className, Class redef, byte[] bytes)
+    protected byte[] transform0(String className, Class redef, byte[] bytes)
         throws IllegalClassFormatException {
 
         byte[] returnBytes = null;
@@ -169,7 +167,6 @@ public class PCClassFileTransformer
                 throw (IllegalClassFormatException) t;
             throw new GeneralException(t);
         } finally {
-            _transforming = false;
             if (returnBytes != null && _log.isTraceEnabled())
                 _log.trace(_loc.get("runtime-enhance-complete", className,
                     bytes.length, returnBytes.length));
@@ -227,5 +224,31 @@ public class PCClassFileTransformer
      */
     private static boolean isEnhanced(byte[] b) {
         return AsmAdaptor.isEnhanced(b);
+    }
+
+    public static class Reentrant extends PCClassFileTransformer {
+        private final ThreadLocal<Boolean> transforming = new ThreadLocal<>();
+
+        public Reentrant(final MetaDataRepository repos, final Options opts, final ClassLoader loader) {
+            super(repos, opts, loader);
+        }
+
+        public Reentrant(final MetaDataRepository repos, final PCEnhancer.Flags flags,
+                         final ClassLoader tmpLoader, final boolean devscan) {
+            super(repos, flags, tmpLoader, devscan);
+        }
+
+        @Override
+        protected byte[] transform0(String className, Class redef, byte[] bytes) throws IllegalClassFormatException {
+            if (transforming.get() != null) {
+                return bytes;
+            }
+            transforming.set(true);
+            try {
+                return super.transform0(className, redef, bytes);
+            } finally {
+                transforming.remove();
+            }
+        }
     }
 }

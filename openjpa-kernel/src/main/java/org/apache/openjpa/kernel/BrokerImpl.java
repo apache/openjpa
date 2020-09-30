@@ -791,7 +791,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     public Map<String, Object> getProperties() {
         Map<String, Object> props = _conf.toProperties(true);
         for (String s : _supportedPropertyNames) {
-            props.put("openjpa." + s, Reflection.getValue(this, s, true));
+            final Object value = Reflection.getValue(this, s, !"CacheFinderQuery".equals(s));
+            if (value != null) {
+                props.put("openjpa." + s, value);
+            }
         }
         return props;
     }

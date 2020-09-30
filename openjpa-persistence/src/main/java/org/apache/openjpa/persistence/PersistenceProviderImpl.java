@@ -342,7 +342,7 @@ public class PersistenceProviderImpl
 
             MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
             repos.setResolve(MetaDataModes.MODE_MAPPING, false);
-            _trans = new PCClassFileTransformer(repos,
+            _trans = PCClassFileTransformer.newInstance(repos,
                 Configurations.parseProperties(props), tmpLoader);
         }
 
