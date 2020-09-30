@@ -122,6 +122,7 @@ public class EntityManagerImpl
     protected RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
     private boolean _convertPositionalParams = false;
     private boolean _isJoinedToTransaction;
+    private Map<String, Object> properties;
 
     public EntityManagerImpl() {
         // for Externalizable
@@ -1792,6 +1793,10 @@ public class EntityManagerImpl
         }
     }
 
+    public void setProperties(final Map<String, Object> emEmptyPropsProperties) {
+        this.properties = emEmptyPropsProperties;
+    }
+
     private static class BrokerBytesInputStream extends ObjectInputStream {
 
         private OpenJPAConfiguration conf;
@@ -1935,6 +1940,9 @@ public class EntityManagerImpl
      */
     @Override
     public Map<String, Object> getProperties() {
+        if (properties != null) {
+            return properties;
+        }
         Map<String,Object> props = _broker.getProperties();
         for (String s : _broker.getSupportedProperties()) {
             String kernelKey = getBeanPropertyName(s);
