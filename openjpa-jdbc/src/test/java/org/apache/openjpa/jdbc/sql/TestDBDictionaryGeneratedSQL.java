@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifierUtilImpl;
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.util.UserException;
 import org.jmock.Expectations;
@@ -191,5 +192,36 @@ public class TestDBDictionaryGeneratedSQL {
         assertEquals(1, sqls.length);
         assertTrue(sqls[0].contains("NameIsRight"));
         assertTrue(sqls[0].contains("schema"));
+    }
+
+    @Test
+    public void testDropColumnWithDelimiters() {
+        final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
+        final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
+
+        context.checking(new Expectations()
+        {
+            {
+                allowing(mockConfiguration).getIdentifierUtilInstance();
+                will(returnValue(idImpl));
+
+                allowing(mockConfiguration);
+            }
+        });
+
+        DBDictionary dict = new DBDictionary();
+        dict.setDelimitIdentifiers(true);
+        dict.setSupportsDelimitedIdentifiers(true);
+        dict.setLeadingDelimiter("`");
+        dict.setTrailingDelimiter("`");
+        dict.setConfiguration(mockConfiguration);
+        Table table = new Table();
+        table.setIdentifier(dict.fromDBName("NameIsRight", DBIdentifier.DBIdentifierType.TABLE));
+
+        Column column = new Column(dict.fromDBName("MyColumn", DBIdentifier.DBIdentifierType.COLUMN), table);
+
+        String[] sqls = dict.getDropColumnSQL(column);
+        assertEquals(1, sqls.length);
+        assertEquals(sqls[0], "ALTER TABLE `NameIsRight` DROP COLUMN `MyColumn`");
     }
 }

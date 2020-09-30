@@ -3840,7 +3840,7 @@ public class DBDictionary
             return new String[0];
         return new String[]{ "ALTER TABLE "
             + getFullName(column.getTable(), false)
-            + " DROP COLUMN " + column };
+            + " DROP COLUMN " + toDBName(column.getIdentifier()) };
     }
 
     /**
