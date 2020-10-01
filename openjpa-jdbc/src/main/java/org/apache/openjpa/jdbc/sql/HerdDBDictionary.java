@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import java.sql.Types;
-
 /**
  * Dictionary for HerdDB.
  */
