@@ -1965,6 +1965,7 @@ public class EntityManagerImpl
                 props.put(userKey.equals(kernelKey) ? s : userKey, JPAProperties.convertToUserValue(userKey, kvalue));
             }
         }
+        properties = props; // no need to synchronize, we don't care of the actual ref, we just want it as value
         return props;
     }
 
