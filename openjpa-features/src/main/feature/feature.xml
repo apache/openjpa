@@ -27,7 +27,7 @@
         <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.6.0</bundle>
         <bundle dependency="true">mvn:org.apache.commons/commons-dbcp2/2.7.0</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.serp/1.14.1_1</bundle>
-        <bundle dependency="true">mvn:org.apache.xbean/xbean-asm8-shaded/${xbean.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.xbean/xbean-asm9-shaded/${xbean.version}</bundle>
         <bundle>mvn:org.apache.openjpa/openjpa/${project.version}</bundle>
         <capability>
             osgi.service;objectClass=javax.persistence.spi.PersistenceProvider;effective:=active;javax.persistence.provider=org.apache.openjpa.persistence.PersistenceProviderImpl
