@@ -262,6 +262,7 @@ public class EntityManagerImpl
     public void setMultithreaded(boolean multithreaded) {
         assertNotCloseInvoked();
         _broker.setMultithreaded(multithreaded);
+        properties = null;
     }
 
     @Override
@@ -273,6 +274,7 @@ public class EntityManagerImpl
     public void setIgnoreChanges(boolean val) {
         assertNotCloseInvoked();
         _broker.setIgnoreChanges(val);
+        properties = null;
     }
 
     @Override
@@ -284,6 +286,7 @@ public class EntityManagerImpl
     public void setNontransactionalRead(boolean val) {
         assertNotCloseInvoked();
         _broker.setNontransactionalRead(val);
+        properties = null;
     }
 
     @Override
@@ -295,6 +298,7 @@ public class EntityManagerImpl
     public void setNontransactionalWrite(boolean val) {
         assertNotCloseInvoked();
         _broker.setNontransactionalWrite(val);
+        properties = null;
     }
 
     @Override
@@ -306,6 +310,7 @@ public class EntityManagerImpl
     public void setOptimistic(boolean val) {
         assertNotCloseInvoked();
         _broker.setOptimistic(val);
+        properties = null;
     }
 
     @Override
@@ -317,12 +322,14 @@ public class EntityManagerImpl
     public void setRestoreState(RestoreStateType val) {
         assertNotCloseInvoked();
         _broker.setRestoreState(val.toKernelConstant());
+        properties = null;
     }
 
     @Override
     public void setRestoreState(int restore) {
         assertNotCloseInvoked();
         _broker.setRestoreState(restore);
+        properties = null;
     }
 
     @Override
@@ -334,6 +341,7 @@ public class EntityManagerImpl
     public void setRetainState(boolean val) {
         assertNotCloseInvoked();
         _broker.setRetainState(val);
+        properties = null;
     }
 
     @Override
@@ -345,12 +353,14 @@ public class EntityManagerImpl
     public void setAutoClear(AutoClearType val) {
         assertNotCloseInvoked();
         _broker.setAutoClear(val.toKernelConstant());
+        properties = null;
     }
 
     @Override
     public void setAutoClear(int autoClear) {
         assertNotCloseInvoked();
         _broker.setAutoClear(autoClear);
+        properties = null;
     }
 
     @Override
@@ -362,12 +372,14 @@ public class EntityManagerImpl
     public void setDetachState(DetachStateType type) {
         assertNotCloseInvoked();
         _broker.setDetachState(type.toKernelConstant());
+        properties = null;
     }
 
     @Override
     public void setDetachState(int detach) {
         assertNotCloseInvoked();
         _broker.setDetachState(detach);
+        properties = null;
     }
 
     @Override
@@ -379,30 +391,35 @@ public class EntityManagerImpl
     public void setAutoDetach(AutoDetachType flag) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(AutoDetachType.fromEnumSet(EnumSet.of(flag)));
+        properties = null;
     }
 
     @Override
     public void setAutoDetach(EnumSet<AutoDetachType> flags) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(AutoDetachType.fromEnumSet(flags));
+        properties = null;
     }
 
     @Override
     public void setAutoDetach(int autoDetachFlags) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(autoDetachFlags);
+        properties = null;
     }
 
     @Override
     public void setAutoDetach(AutoDetachType value, boolean on) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(AutoDetachType.fromEnumSet(EnumSet.of(value)),on);
+        properties = null;
     }
 
     @Override
     public void setAutoDetach(int flag, boolean on) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(flag, on);
+        properties = null;
     }
 
     @Override
@@ -414,6 +431,7 @@ public class EntityManagerImpl
     public void setEvictFromStoreCache(boolean evict) {
         assertNotCloseInvoked();
         _broker.setEvictFromDataCache(evict);
+        properties = null;
     }
 
     @Override
@@ -425,6 +443,7 @@ public class EntityManagerImpl
     public void setPopulateStoreCache(boolean cache) {
         assertNotCloseInvoked();
         _broker.setPopulateDataCache(cache);
+        properties = null;
     }
 
     @Override
@@ -436,6 +455,7 @@ public class EntityManagerImpl
     public void setTrackChangesByType(boolean trackByType) {
         assertNotCloseInvoked();
         _broker.setTrackChangesByType(trackByType);
+        properties = null;
     }
 
     @Override
@@ -1349,6 +1369,7 @@ public class EntityManagerImpl
         _broker.assertOpen();
         _broker.getFetchConfiguration().setFlushBeforeQueries
             (toFlushBeforeQueries(flushMode));
+        properties = null;
     }
 
     @Override
@@ -2150,6 +2171,7 @@ public class EntityManagerImpl
             kType  = setter.getParameterTypes()[0];
             kValue = convertUserValue(original, value, kType);
             Reflection.set(target, setter, kValue);
+            properties = null;
             return true;
         } else {
             Field field = Reflection.findField(target.getClass(), beanProp, false);
@@ -2157,6 +2179,7 @@ public class EntityManagerImpl
                 kType  = field.getType();
                 kValue = convertUserValue(original, value, kType);
                 Reflection.set(target, field, kValue);
+                properties = null;
                 return true;
             }
         }
