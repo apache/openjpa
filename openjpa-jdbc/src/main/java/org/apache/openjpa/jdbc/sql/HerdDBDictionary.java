@@ -32,6 +32,8 @@ public class HerdDBDictionary
         schemaCase = SCHEMA_CASE_LOWER;
         delimitedCase = SCHEMA_CASE_LOWER;
 
+        supportsCascadeUpdateAction = false;
+
         // make OpenJPA escape everything, because Apache Calcite has a lot of reserved words, like 'User', 'Value'...
         setDelimitIdentifiers(true);
         setSupportsDelimitedIdentifiers(true);
