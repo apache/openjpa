@@ -29,9 +29,6 @@ public class HerdDBDictionary
     public HerdDBDictionary() {
         platform = "HerdDB";
         databaseProductName = "HerdDB";
-        supportsForeignKeys = false;
-        supportsUniqueConstraints = false;
-        supportsCascadeDeleteAction = false;
         schemaCase = SCHEMA_CASE_LOWER;
         delimitedCase = SCHEMA_CASE_LOWER;
 
