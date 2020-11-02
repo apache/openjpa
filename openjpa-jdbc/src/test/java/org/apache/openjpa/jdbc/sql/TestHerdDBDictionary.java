@@ -30,8 +30,6 @@ import javax.sql.DataSource;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
-import org.apache.openjpa.jdbc.identifier.DBIdentifierUtilImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Schema;
@@ -57,7 +55,16 @@ public class TestHerdDBDictionary {
     final StoreContext sc = null;
 
     @Test
-    public void testBootDBDictionary() throws Exception {
+    public void testBootDBDictionaryWithUserSchemaName() throws Exception {
+        testBootDBDictionary(true);
+    }
+
+    @Test
+    public void testBootDBDictionaryWithoutUserSchemaName() throws Exception {
+        testBootDBDictionary(false);
+    }
+
+    private void testBootDBDictionary(boolean useSchemaName) throws Exception {
         // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
         // an exception will be thrown and the test will fail.
@@ -119,12 +126,16 @@ public class TestHerdDBDictionary {
         assertNull(dict.getDefaultSchemaName());
         dict.connectedConfiguration(mockConnection);
 
+        // default value
+        assertFalse(dict.useSchemaName);
         assertTrue(dict.supportsForeignKeys);
         assertTrue(dict.supportsUniqueConstraints);
         assertTrue(dict.supportsCascadeDeleteAction);
         assertFalse(dict.supportsCascadeUpdateAction);
         assertFalse(dict.supportsDeferredConstraints);
-        assertFalse(dict.useSchemaName);
+
+        dict.useSchemaName = useSchemaName;
+        String schemaPrefix = useSchemaName ? "`herddb`." : "";
 
         SchemaGroup schemaGroup = new SchemaGroup();
         Schema schema = new Schema(DBIdentifier.newSchema("herddb", true), schemaGroup);
@@ -148,17 +159,17 @@ public class TestHerdDBDictionary {
         fk1.join(n1, p1);
 
         String[] createTableSQL = dict.getCreateTableSQL(childTable);
-        assertEquals("CREATE TABLE `childTable` (`k1` VARCHAR NOT NULL, `n1` INTEGER, "
+        assertEquals("CREATE TABLE " + schemaPrefix + "`childTable` (`k1` VARCHAR NOT NULL, `n1` INTEGER, "
                 + "PRIMARY KEY (`k1`), CONSTRAINT `un1` UNIQUE (`n1`))", createTableSQL[0]);
         assertEquals(1, createTableSQL.length);
 
         String[] addForeignKeySQL = dict.getAddForeignKeySQL(fk1);
-        assertEquals("ALTER TABLE `childTable` ADD CONSTRAINT `fk1` "
-                + "FOREIGN KEY (`n1`) REFERENCES `parentTable` (`p1`) ON DELETE CASCADE", addForeignKeySQL[0]);
+        assertEquals("ALTER TABLE " + schemaPrefix + "`childTable` ADD CONSTRAINT `fk1` "
+                + "FOREIGN KEY (`n1`) REFERENCES " + schemaPrefix + "`parentTable` (`p1`) ON DELETE CASCADE", addForeignKeySQL[0]);
         assertEquals(1, addForeignKeySQL.length);
 
         String[] dropForeignKeySQL = dict.getDropForeignKeySQL(fk1, mockConnection);
-        assertEquals("ALTER TABLE `childTable` DROP CONSTRAINT `fk1`", dropForeignKeySQL[0]);
+        assertEquals("ALTER TABLE " + schemaPrefix + "`childTable` DROP CONSTRAINT `fk1`", dropForeignKeySQL[0]);
         assertEquals(1, dropForeignKeySQL.length);
 
 
@@ -175,8 +186,8 @@ public class TestHerdDBDictionary {
         // ON DELETE RESTRICT is the default behaviour, so no need to write it in DDL
         fk2.setUpdateAction(ForeignKey.ACTION_NULL);
         String[] addForeignKeySQL3 = dict.getAddForeignKeySQL(fk2);
-        assertEquals("ALTER TABLE `childTable` ADD CONSTRAINT `fk2` "
-                + "FOREIGN KEY (`n1`) REFERENCES `parentTable` (`p1`) ON UPDATE SET NULL", addForeignKeySQL3[0]);
+        assertEquals("ALTER TABLE " + schemaPrefix + "`childTable` ADD CONSTRAINT `fk2` "
+                + "FOREIGN KEY (`n1`) REFERENCES " + schemaPrefix + "`parentTable` (`p1`) ON UPDATE SET NULL", addForeignKeySQL3[0]);
         assertEquals(1, addForeignKeySQL3.length);
     }
 
