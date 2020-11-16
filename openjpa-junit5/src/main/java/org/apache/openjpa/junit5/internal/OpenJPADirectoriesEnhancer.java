@@ -22,6 +22,7 @@ import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.AsmAdaptor;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.lib.log.JULLogFactory;
 import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.lib.log.SLF4JLogFactory;
@@ -125,7 +126,11 @@ public class OpenJPADirectoriesEnhancer implements Runnable {
                 try {
                     return new SLF4JLogFactory();
                 } catch (final Error | Exception e) {
-                    return new LogFactoryImpl();
+                    try {
+                        return new LogFactoryImpl();
+                    } catch (final Error | Exception e2) {
+                        return new JULLogFactory();
+                    }
                 }
             }
             return logFactory.asSubclass(LogFactory.class).getConstructor().newInstance();

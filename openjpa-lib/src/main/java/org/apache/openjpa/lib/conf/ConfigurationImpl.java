@@ -158,6 +158,7 @@ public class ConfigurationImpl
             "commons", "org.apache.openjpa.lib.log.CommonsLogFactory",
             "log4j", "org.apache.openjpa.lib.log.Log4JLogFactory",
             "slf4j", "org.apache.openjpa.lib.log.SLF4JLogFactory",
+            "jul", "org.apache.openjpa.lib.log.JULLogFactory",
             "none", NoneLogFactory.class.getName(),
             "false", NoneLogFactory.class.getName(),
         };
