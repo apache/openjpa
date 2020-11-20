@@ -18,24 +18,15 @@
  */
 package org.apache.openjpa.enhance;
 
-import static java.util.Arrays.asList;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLDecoder;
-
-import org.apache.xbean.asm9.ClassReader;
-import org.apache.xbean.asm9.ClassVisitor;
-import org.apache.xbean.asm9.ClassWriter;
-import org.apache.xbean.asm9.Opcodes;
-
+import org.apache.openjpa.enhance.asm.AsmSpi;
+import org.apache.openjpa.enhance.asm.AsmSpi9;
 import serp.bytecode.BCClass;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ServiceLoader;
+import java.util.stream.StreamSupport;
 
 
 /**
@@ -43,179 +34,46 @@ import serp.bytecode.BCClass;
  * Serp.
  */
 public final class AsmAdaptor {
-    private static final int Java7_MajorVersion = 51;
+    private final static AsmSpi impl;
+    static {
+        impl = StreamSupport.stream(ServiceLoader.load(AsmSpi.class).spliterator(), false).min((a, b) -> {
+            final int v1;
+            try {
+                v1 = Integer.parseInt(a.getClass().getName().replace("AsmSpi", ""));
+            } catch (final Exception e) {
+                // not matching our default naming so an user impl so let's use it
+                return -1;
+            }
+            final int v2;
+            try {
+                v2 = Integer.parseInt(b.getClass().getName().replace("AsmSpi", ""));
+            } catch (final Exception e) {
+                // not matching our default naming so an user impl so let's use it
+                return 1;
+            }
+            return v2 - v1; // reverse since we want the higher
+        }).orElseGet(AsmSpi9::new);
+    }
 
     @SuppressWarnings("deprecation")
     public static void write(BCClass bc) throws IOException {
-        if (bc.getMajorVersion() < Java7_MajorVersion) {
-            bc.write();
-        } else {
-            String name = bc.getName();
-            int dotIndex = name.lastIndexOf('.') + 1;
-            name = name.substring(dotIndex);
-            Class<?> type = bc.getType();
-
-            OutputStream out = new FileOutputStream(
-                    URLDecoder.decode(type.getResource(name + ".class").getFile()));
-            try {
-                writeJava7(bc, out);
-            } finally {
-                out.flush();
-                out.close();
-            }
-        }
+        impl.write(bc);
     }
 
     public static void write(BCClass bc, File outFile) throws IOException {
-        if (bc.getMajorVersion() < Java7_MajorVersion) {
-            bc.write(outFile);
-        } else {
-            OutputStream out = new FileOutputStream(outFile);
-            try {
-                writeJava7(bc, out);
-            } finally {
-                out.flush();
-                out.close();
-            }
-        }
+        impl.write(bc, outFile);
     }
 
     public static void write(BCClass bc, OutputStream os) throws IOException {
-        if (bc.getMajorVersion() < Java7_MajorVersion) {
-            bc.write(os);
-        }
-        else {
-            try {
-                writeJava7(bc, os);
-            } finally {
-                os.flush();
-                os.close();
-            }
-        }
+        impl.write(bc, os);
     }
 
     public static byte[] toByteArray(BCClass bc, byte[] returnBytes) throws IOException {
-        if (bc.getMajorVersion() >= Java7_MajorVersion) {
-            returnBytes = toJava7ByteArray(bc, returnBytes);
-        }
-        return returnBytes;
-    }
-
-    private static void writeJava7(BCClass bc, OutputStream out) throws IOException {
-        byte[] java7Bytes = toJava7ByteArray(bc, bc.toByteArray());
-        out.write(java7Bytes);
-    }
-
-    private static byte[] toJava7ByteArray(BCClass bc, byte[] classBytes) throws IOException {
-        ByteArrayInputStream bais = new ByteArrayInputStream(classBytes);
-        BufferedInputStream bis = new BufferedInputStream(bais);
-
-        ClassWriter cw = new BCClassWriter(ClassWriter.COMPUTE_FRAMES, bc.getClassLoader());
-        ClassReader cr = new ClassReader(bis);
-        cr.accept(cw, 0);
-        return cw.toByteArray();
+        return impl.toByteArray(bc, returnBytes);
     }
 
     public static boolean isEnhanced(final byte[] b)
     {
-        if (b == null)
-        {
-            return false;
-        }
-        final ClassReader cr = new ClassReader(b);
-        try
-        {
-            cr.accept(new ClassVisitor(Opcodes.ASM8)
-            {
-                @Override
-                public void visit(final int i, final int i1,
-                                  final String name, final String s,
-                                  final String parent, final String[] interfaces)
-                {
-                    boolean enhanced = interfaces != null && interfaces.length > 0 &&
-                        asList(interfaces).contains("org/apache/openjpa/enhance/PersistenceCapable");
-                    if (!enhanced && name != null && parent != null &&
-                        !"java/lang/Object".equals(parent) && !name.equals(parent)) {
-                        enhanced = isEnhanced(bytes(parent));
-                    }
-                    throw new EnhancedStatusException(enhanced);
-                }
-            }, 0);
-            return false;
-        } catch (final EnhancedStatusException e) {
-            return e.status;
-        } catch (final Exception e) {
-            return false;
-        }
-    }
-
-    private static byte[] bytes(final String type)
-    {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-        final InputStream stream = Thread.currentThread().getContextClassLoader()
-            .getResourceAsStream(type + ".class");
-        if (stream == null) {
-            return null;
-        }
-        try {
-            int c;
-            byte[] buffer = new byte[1024];
-            while ((c = stream.read(buffer)) >= 0) {
-                baos.write(buffer, 0, c);
-            }
-        } catch (IOException e) {
-            return null;
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                // no-op
-            }
-        }
-        return baos.toByteArray();
-    }
-
-    private static class BCClassWriter extends ClassWriter {
-        private final ClassLoader _loader;
-
-        BCClassWriter(int flags, ClassLoader loader) {
-            super(flags);
-            _loader = loader;
-        }
-
-        @Override
-        protected String getCommonSuperClass(String type1, String type2) {
-            Class<?> class1;
-            Class<?> class2;
-            try {
-                class1 = _loader.loadClass(type1.replace('/', '.'));
-                class2 = _loader.loadClass(type2.replace('/', '.'));
-            } catch (ClassNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
-            if (class1.isAssignableFrom(class2)) {
-                return type1;
-            }
-            if (class2.isAssignableFrom(class1)) {
-                return type2;
-            }
-            if (class1.isInterface() || class2.isInterface()) {
-                return "java/lang/Object";
-            }
-            do {
-                class1 = class1.getSuperclass();
-            } while (!class1.isAssignableFrom(class2));
-            return class1.getName().replace('.', '/');
-        }
-    }
-
-    private static class EnhancedStatusException extends RuntimeException {
-        
-        private static final long serialVersionUID = 1L;
-        private final boolean status;
-
-        private EnhancedStatusException(final boolean status) {
-            this.status = status;
-        }
+        return impl.isEnhanced(b);
     }
 }
