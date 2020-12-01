@@ -96,6 +96,8 @@
 
         <xbean.version>4.18</xbean.version>
         <bval.version>1.1.2</bval.version>
+        <log4j2.version>2.14.0</log4j2.version>
+
         <jmock.version>2.9.0</jmock.version>
         <automatic-module-name>-SUBMODULES-NEED-TO-OVERRIDE-THIS-</automatic-module-name>
     </properties>
@@ -1782,8 +1784,15 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
-                <version>2.11.1</version>
+                <version>${log4j2.version}</version>
             </dependency>
+            <dependency>
+                <!-- for compiling against log4j-1.2.x we use the compat layer from log4j2 -->
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-1.2-api</artifactId>
+                <version>${log4j2.version}</version>
+            </dependency>
+
             <dependency>
               <groupId>io.fabric8</groupId>
               <artifactId>kubernetes-client</artifactId>
