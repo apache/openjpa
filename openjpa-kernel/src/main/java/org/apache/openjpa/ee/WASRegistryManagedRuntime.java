@@ -18,11 +18,9 @@
  */
 package org.apache.openjpa.ee;
 
-import com.ibm.websphere.uow.UOWSynchronizationRegistry;
 import com.ibm.wsspi.uow.UOWAction;
-import com.ibm.wsspi.uow.UOWActionException;
-import com.ibm.wsspi.uow.UOWException;
-import com.ibm.wsspi.uow.UOWManagerFactory;
+
+import java.lang.reflect.Method;
 
 /**
  * WASRegistryManagedRuntime provides WebSphere specific extensions to
@@ -30,6 +28,26 @@ import com.ibm.wsspi.uow.UOWManagerFactory;
  * the WebSphere UOWManager interface to submit non transactional work.
  */
 public class WASRegistryManagedRuntime extends RegistryManagedRuntime {
+
+    // value taken from com.ibm.websphere.uow.UOWSynchronizationRegistry
+    private static final int WEBSPHERE_UOW_TYPE_LOCAL_TRANSACTION = 0;
+
+    private final Method getUOWManager;
+    private final Method runUnderUOW;
+
+    public WASRegistryManagedRuntime() {
+        try {
+            Class classUOWManagerFactory = Class.forName("com.ibm.wsspi.uow.UOWManagerFactory");
+            getUOWManager = classUOWManagerFactory.getMethod("getUOWManager");
+
+            Class classUOWManager = Class.forName("com.ibm.wsspi.uow.UOWManager");
+            runUnderUOW = classUOWManager.getMethod("runUnderUOW");
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Problem while creating WASManagedRuntime", e);
+        }
+    }
+
     /**
      * <P>
      * RegistryManagedRuntime cannot suspend transactions, but WebSphere
@@ -40,16 +58,12 @@ public class WASRegistryManagedRuntime extends RegistryManagedRuntime {
     public void doNonTransactionalWork(Runnable runnable)
             throws RuntimeException, UnsupportedOperationException {
         try {
-            UOWManagerFactory.getUOWManager().runUnderUOW(
-                UOWSynchronizationRegistry.UOW_TYPE_LOCAL_TRANSACTION, false,
-                new DelegatingUOWAction(runnable));
+            Object uowManager = getUOWManager.invoke(null);
+
+            runUnderUOW.invoke(uowManager, WEBSPHERE_UOW_TYPE_LOCAL_TRANSACTION, false, new DelegatingUOWAction(runnable));
+
         }
-        catch(UOWActionException e ) {
-            RuntimeException re = new RuntimeException(e.getMessage());
-            re.initCause(e);
-            throw re;
-        }
-        catch(UOWException e ) {
+        catch(Exception e ) {
             RuntimeException re = new RuntimeException(e.getMessage());
             re.initCause(e);
             throw re;

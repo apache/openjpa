@@ -57,12 +57,6 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.ibm.websphere</groupId>
-            <artifactId>uow_api</artifactId>
-            <version>6</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
             <scope>provided</scope>
@@ -144,6 +138,11 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
+                            <excludes>
+                                <!-- do not include com/ibm UOW classes in the jar! -->
+                                <exclude>com</exclude>
+                                <exclude>com/**/*</exclude>
+                            </excludes>
                             <archive>
                                 <manifest>
                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -166,11 +165,4 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>seasar-repo</id>
-            <name>seasar repository</name>
-            <url>https://www.seasar.org/maven/maven2</url>
-        </repository>
-    </repositories>
 </project>
