@@ -41,7 +41,7 @@ public class WASRegistryManagedRuntime extends RegistryManagedRuntime {
             getUOWManager = classUOWManagerFactory.getMethod("getUOWManager");
 
             Class classUOWManager = Class.forName("com.ibm.wsspi.uow.UOWManager");
-            runUnderUOW = classUOWManager.getMethod("runUnderUOW");
+            runUnderUOW = classUOWManager.getMethod("runUnderUOW", new Class[]{int.class, boolean.class, UOWAction.class});
         }
         catch (Exception e) {
             throw new RuntimeException("Problem while creating WASManagedRuntime", e);
