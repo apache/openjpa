@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.persistence.Parameter;
 import javax.persistence.Query;
@@ -578,6 +579,36 @@ public class TestTypesafeCriteria extends CriteriaTest {
                 q.setParameter("name", "test");
             }
         }, q, jpql);
+    }
+
+    public void testParameters_wo_paramName() {
+        final int rand = new Random().nextInt();
+        final String name = "testName_" + rand;
+        final String lastName = "lastName_" + rand;
+        em.getTransaction().begin();
+        Customer cNew = new Customer();
+        cNew.setName(name);
+        cNew.setLastName(lastName);
+        cNew.setStatus(4711);
+        em.persist(cNew);
+        em.getTransaction().commit();
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Customer> c = q.from(Customer.class);
+        Parameter<String> paramName = cb.parameter(String.class);
+        Parameter<String> paramLastName = cb.parameter(String.class);
+        q.select(c).where(cb.and(cb.equal(c.get(Customer_.lastName), paramLastName),
+                cb.equal(c.get(Customer_.name), paramName)));
+
+        final TypedQuery<Customer> query = em.createQuery(q);
+        query.setParameter(paramName, name);
+        query.setParameter(paramLastName, lastName);
+
+        System.err.println("CQ: " + query.toString());
+
+        final List<Customer> customers = query.getResultList();
+        assertNotNull(customers);
+        assertEquals(1, customers.size());
     }
 
     public void testParameters3() {
@@ -1608,10 +1639,9 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
     public void testIdClass() {
         String jpql = "select p from EntityWithIdClass p";
-
-    	CriteriaQuery<EntityWithIdClass> cq = cb.createQuery(EntityWithIdClass.class);
-    	Root<EntityWithIdClass> c = cq.from(EntityWithIdClass.class);
-    	em.createQuery(cq).getResultList();
+        CriteriaQuery<EntityWithIdClass> cq = cb.createQuery(EntityWithIdClass.class);
+        Root<EntityWithIdClass> c = cq.from(EntityWithIdClass.class);
+        em.createQuery(cq).getResultList();
 
         assertEquivalence(cq, jpql);
     }

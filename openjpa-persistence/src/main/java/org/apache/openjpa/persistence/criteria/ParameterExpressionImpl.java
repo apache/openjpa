@@ -41,7 +41,7 @@ import org.apache.openjpa.util.InternalException;
  */
 class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     implements ParameterExpression<T>, BindableParameter {
-    private String _name;
+    private final String _name;
     private int _index = 0; // index of the parameter as seen by the kernel, not position
     private Object value;
 
@@ -53,8 +53,10 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
      */
     public ParameterExpressionImpl(Class<T> cls, String name) {
         super(cls);
-        if (name != null)
+        if (name != null) {
             assertValidName(name);
+        }
+
         _name = name;
     }
 
@@ -148,8 +150,12 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
 
         ParameterExpressionImpl<?> that = (ParameterExpressionImpl<?>) o;
 
-        if (_name != null ? !_name.equals(that._name) : that._name != null)
+        // we treat parameters the same ONLY if they are
+        // * either the same instance (tested above)
+        // * or have the same parameter name in the same tree
+        if (_name == null || !_name.equals(that._name)) {
             return false;
+        }
 
         // if name is given, then we ignore the index
         if (_name == null && _index != that._index)
@@ -161,16 +167,4 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         return value != null ? value.equals(that.value) : that.value == null;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }
