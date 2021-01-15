@@ -135,9 +135,8 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
             LineItem item = new LineItem(String.valueOf(i), 10);
             item.setInvoice(invoice);
             invoice.getLineItems().add(item);
-            em.persist(invoice);
         }
-        em.flush();
+        em.persist(invoice);
         tran.commit();
         em.close();
     }
