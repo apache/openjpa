@@ -918,9 +918,7 @@ public class SchemaTool {
                             dbSeq.getSchema().removeSequence(dbSeq);
                         else
                             _log.warn(_loc.get("drop-seq", seqs[j]));
-                    }
-
-                    if (_writer != null) {
+                    } else if (_writer != null) {
                         dropSequence(seqs[j]);
                     }
                 }
