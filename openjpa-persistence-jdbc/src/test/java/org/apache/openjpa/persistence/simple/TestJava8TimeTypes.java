@@ -21,11 +21,15 @@ package org.apache.openjpa.persistence.simple;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
 
@@ -75,6 +79,67 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
 
         assertEquals(e.getOffsetTimeField().withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()),
                 eRead.getOffsetTimeField());
+
+        // we've got reports from various functions not properly working with Java8 Dates.
+
+        // max function
+        {
+            final TypedQuery<LocalDate> qry = em.createQuery("select max(t.localDateField) from Java8TimeTypes AS t", LocalDate.class);
+            final LocalDate max = qry.getSingleResult();
+            assertEquals(LocalDate.parse(VAL_LOCAL_DATE), max);
+        }
+        {
+            final TypedQuery<LocalDateTime> qry = em.createQuery("select max(t.localDateTimeField) from Java8TimeTypes AS t", LocalDateTime.class);
+            final LocalDateTime max = qry.getSingleResult();
+            assertEquals(LocalDateTime.parse(VAL_LOCAL_DATETIME), max);
+        }
+        {
+            final TypedQuery<LocalTime> qry = em.createQuery("select max(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
+            final LocalTime max = qry.getSingleResult();
+            assertEquals(LocalTime.parse(VAL_LOCAL_TIME), max);
+        }
+        {
+            final TypedQuery<OffsetTime> qry = em.createQuery("select max(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
+            final OffsetTime max = qry.getSingleResult();
+            assertEquals(e.getOffsetTimeField().withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()),
+                    max.withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()));
+        }
+        {
+            final TypedQuery<OffsetDateTime> qry = em.createQuery("select max(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
+            final OffsetDateTime max = qry.getSingleResult();
+            assertEquals(Instant.from(e.getOffsetDateTimeField()),
+                    Instant.from(max));
+        }
+
+        // min function
+        {
+            final TypedQuery<LocalDate> qry = em.createQuery("select min(t.localDateField) from Java8TimeTypes AS t", LocalDate.class);
+            final LocalDate min = qry.getSingleResult();
+            assertEquals(LocalDate.parse(VAL_LOCAL_DATE), min);
+        }
+        {
+            final TypedQuery<LocalDateTime> qry = em.createQuery("select min(t.localDateTimeField) from Java8TimeTypes AS t", LocalDateTime.class);
+            final LocalDateTime min = qry.getSingleResult();
+            assertEquals(LocalDateTime.parse(VAL_LOCAL_DATETIME), min);
+        }
+        {
+            final TypedQuery<LocalTime> qry = em.createQuery("select min(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
+            final LocalTime min = qry.getSingleResult();
+            assertEquals(LocalTime.parse(VAL_LOCAL_TIME), min);
+        }
+        {
+            final TypedQuery<OffsetTime> qry = em.createQuery("select min(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
+            final OffsetTime min = qry.getSingleResult();
+            assertEquals(e.getOffsetTimeField().withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()),
+                    min.withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()));
+        }
+        {
+            final TypedQuery<OffsetDateTime> qry = em.createQuery("select min(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
+            final OffsetDateTime min = qry.getSingleResult();
+            assertEquals(Instant.from(e.getOffsetDateTimeField()),
+                    Instant.from(min));
+        }
+
     }
 
 
