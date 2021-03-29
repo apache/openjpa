@@ -913,6 +913,66 @@ public class ForeignKey extends Constraint {
         return new Column[] { fkCol, pkCol };
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        ForeignKey that = (ForeignKey) o;
+
+        if (_seq != that._seq) return false;
+        if (_delAction != that._delAction) return false;
+        if (_upAction != that._upAction) return false;
+        if (_index != that._index) return false;
+        if (_pkTableName != null ? !_pkTableName.equals(that._pkTableName) : that._pkTableName != null) return false;
+        if (_pkSchemaName != null ? !_pkSchemaName.equals(that._pkSchemaName) : that._pkSchemaName != null) return false;
+        if (_pkColumnName != null ? !_pkColumnName.equals(that._pkColumnName) : that._pkColumnName != null) return false;
+        if (_joins != null ? !_joins.equals(that._joins) : that._joins != null) return false;
+        if (_joinsPK != null ? !_joinsPK.equals(that._joinsPK) : that._joinsPK != null) return false;
+        if (_consts != null ? !_consts.equals(that._consts) : that._consts != null) return false;
+        if (_constsPK != null ? !_constsPK.equals(that._constsPK) : that._constsPK != null) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(_locals, that._locals)) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(_pks, that._pks)) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(_constVals, that._constVals)) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(_constCols, that._constCols)) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(_constValsPK, that._constValsPK)) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(_constColsPK, that._constColsPK)) return false;
+        if (_pkTable != null ? !_pkTable.equals(that._pkTable) : that._pkTable != null) return false;
+        return _autoAssign != null ? _autoAssign.equals(that._autoAssign) : that._autoAssign == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (_pkTableName != null ? _pkTableName.hashCode() : 0);
+        result = 31 * result + (_pkSchemaName != null ? _pkSchemaName.hashCode() : 0);
+        result = 31 * result + (_pkColumnName != null ? _pkColumnName.hashCode() : 0);
+        result = 31 * result + _seq;
+        result = 31 * result + (_joins != null ? _joins.hashCode() : 0);
+        result = 31 * result + (_joinsPK != null ? _joinsPK.hashCode() : 0);
+        result = 31 * result + (_consts != null ? _consts.hashCode() : 0);
+        result = 31 * result + (_constsPK != null ? _constsPK.hashCode() : 0);
+        result = 31 * result + _delAction;
+        result = 31 * result + _upAction;
+        result = 31 * result + _index;
+        result = 31 * result + Arrays.hashCode(_locals);
+        result = 31 * result + Arrays.hashCode(_pks);
+        result = 31 * result + Arrays.hashCode(_constVals);
+        result = 31 * result + Arrays.hashCode(_constCols);
+        result = 31 * result + Arrays.hashCode(_constValsPK);
+        result = 31 * result + Arrays.hashCode(_constColsPK);
+        result = 31 * result + (_pkTable != null ? _pkTable.hashCode() : 0);
+        result = 31 * result + (_autoAssign != null ? _autoAssign.hashCode() : 0);
+        return result;
+    }
+
     /*
      * ForeignKey utility class which determines equality based upon the
      * non-column state of the keys.

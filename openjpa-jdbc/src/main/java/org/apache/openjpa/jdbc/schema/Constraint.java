@@ -249,4 +249,32 @@ public abstract class Constraint extends ReferenceCounter {
         name = name.substring(name.lastIndexOf('.') + 1);
         return "<" + name.toLowerCase() + ">";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Constraint that = (Constraint) o;
+
+        if (_deferred != that._deferred) return false;
+        if (_name != null ? !_name.equals(that._name) : that._name != null) return false;
+        if (_fullPath != null ? !_fullPath.equals(that._fullPath) : that._fullPath != null) return false;
+        if (_table != null ? !_table.equals(that._table) : that._table != null) return false;
+        if (_tableName != null ? !_tableName.equals(that._tableName) : that._tableName != null) return false;
+        if (_schemaName != null ? !_schemaName.equals(that._schemaName) : that._schemaName != null) return false;
+        return _columnName != null ? _columnName.equals(that._columnName) : that._columnName == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = _name != null ? _name.hashCode() : 0;
+        result = 31 * result + (_fullPath != null ? _fullPath.hashCode() : 0);
+        result = 31 * result + (_table != null ? _table.hashCode() : 0);
+        result = 31 * result + (_tableName != null ? _tableName.hashCode() : 0);
+        result = 31 * result + (_schemaName != null ? _schemaName.hashCode() : 0);
+        result = 31 * result + (_columnName != null ? _columnName.hashCode() : 0);
+        result = 31 * result + (_deferred ? 1 : 0);
+        return result;
+    }
 }
