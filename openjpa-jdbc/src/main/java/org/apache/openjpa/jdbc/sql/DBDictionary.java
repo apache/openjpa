@@ -4221,8 +4221,7 @@ public class DBDictionary
      * @deprecated
      */
     @Deprecated
-    public boolean isSystemSequence(String name, String schema,
-        boolean targetSchema) {
+    public boolean isSystemSequence(String name, String schema, boolean targetSchema) {
         return isSystemSequence(DBIdentifier.newSequence(name),
             DBIdentifier.newSchema(schema), targetSchema);
     }
@@ -4238,8 +4237,7 @@ public class DBDictionary
      * @param targetSchema if true, then the given schema was listed by
      * the user as one of his schemas
      */
-    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
-        boolean targetSchema) {
+    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema, boolean targetSchema) {
         return !targetSchema && !DBIdentifier.isNull(schema)
             && systemSchemaSet.contains(DBIdentifier.toUpper(schema).getName());
     }
@@ -5029,13 +5027,10 @@ public class DBDictionary
     @Override
     public void endConfiguration() {
         // initialize the set of reserved SQL92 words from resource
-        InputStream in = DBDictionary.class.getResourceAsStream
-            ("sql-keywords.rsrc");
+        InputStream in = DBDictionary.class.getResourceAsStream("sql-keywords.rsrc");
         try {
-            String keywords = new BufferedReader(new InputStreamReader(in)).
-                readLine();
-            reservedWordSet.addAll(Arrays.asList(StringUtil.split
-                (keywords, ",", 0)));
+            String keywords = new BufferedReader(new InputStreamReader(in)).readLine();
+            reservedWordSet.addAll(Arrays.asList(StringUtil.split(keywords, ",", 0)));
         } catch (IOException ioe) {
             throw new GeneralException(ioe);
         } finally {
@@ -5064,6 +5059,10 @@ public class DBDictionary
 
         if (selectWords != null)
             selectWordSet.addAll(Arrays.asList(StringUtil.split(selectWords.toUpperCase(Locale.ENGLISH), ",", 0)));
+
+        if (invalidColumnWordSet.isEmpty()) {
+            invalidColumnWordSet.addAll(reservedWordSet);
+        }
 
         // initialize the error codes
         SQLErrorCodeReader codeReader = new SQLErrorCodeReader();

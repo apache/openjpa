@@ -38,7 +38,6 @@ public abstract class AbstractSQLServerDictionary
 
     public AbstractSQLServerDictionary() {
         reservedWordSet.addAll(Arrays.asList(new String[]{ "FILE", "INDEX" }));
-        invalidColumnWordSet.addAll(reservedWordSet);
         systemTableSet.add("DTPROPERTIES");
         validationSQL = "SELECT GETDATE()";
         rangePosition = RANGE_POST_DISTINCT;
