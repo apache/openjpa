@@ -81,6 +81,11 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         timeWithZoneTypeName = "TIME";
         timestampWithZoneTypeName = "DATETIMEOFFSET";
 
+        // MS SQL Server uses those types for BLOBs
+        blobTypeName = "VARBINARY(MAX)";
+        longVarbinaryTypeName = "VARBINARY(MAX)";
+
+
         indexPhysicalForeignKeys = true; // MS-SQLServer does not automatically create an index for a foreign key so we will
     }
 

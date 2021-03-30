@@ -79,7 +79,7 @@
         <mysql.connector.version>5.1.47</mysql.connector.version>
         <mariadb.connector.version>2.2.0</mariadb.connector.version>
         <postgresql.connector.version>42.2.5</postgresql.connector.version>
-        <mssql.connector.version>7.2.1</mssql.connector.version>
+        <mssql.connector.version>7.4.1.jre8</mssql.connector.version>
 
         <!-- other common versions -->
         <kubernetes-client.version>4.7.0</kubernetes-client.version>
