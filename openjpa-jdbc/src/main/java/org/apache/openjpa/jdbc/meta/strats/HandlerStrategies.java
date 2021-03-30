@@ -221,8 +221,7 @@ public class HandlerStrategies {
         if (cols.length == 0)
             return null;
         if (cols.length == 1)
-            return res.getObject(cols[0], vm.getHandler().
-                getResultArgument(vm), joins);
+            return res.getObject(cols[0], vm.getHandler().getResultArgument(vm), joins);
 
         Object[] vals = new Object[cols.length];
         Object[] args = (Object[]) vm.getHandler().getResultArgument(vm);

@@ -32,6 +32,7 @@ import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Test for JPA-2.2 java.time.* functionality
@@ -81,6 +82,12 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
                 eRead.getOffsetTimeField());
 
         // we've got reports from various functions not properly working with Java8 Dates.
+
+        {
+            final TypedQuery<LocalDate> qry = em.createQuery("select t.localDateField from Java8TimeTypes AS t", LocalDate.class);
+            final LocalDate date = qry.getSingleResult();
+            assertNotNull(date);
+        }
 
         // max function
         {

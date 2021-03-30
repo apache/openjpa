@@ -22,6 +22,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 
 import org.apache.openjpa.meta.JavaTypes;
 
@@ -76,6 +81,17 @@ public class JavaSQLTypes
             return TIMESTAMP;
         if (dtype == Time.class)
             return TIME;
+        if (dtype == LocalDate.class)
+            return LOCAL_DATE;
+        if (dtype == LocalDateTime.class)
+            return LOCAL_DATETIME;
+        if (dtype == LocalTime.class)
+            return LOCAL_TIME;
+        if (dtype == OffsetTime.class)
+            return OFFSET_TIME;
+        if (dtype == OffsetDateTime.class)
+            return OFFSET_DATETIME;
+
         return OBJECT;
     }
 

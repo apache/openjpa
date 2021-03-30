@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 
 /**
  * Value produced by a unary operation on a value.
@@ -129,8 +130,9 @@ abstract class UnaryOp
     @Override
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
-        Object value = res.getObject(this, JavaSQLTypes.JDBC_DEFAULT, null);
         Class<?> type = getType();
+        int typeCode = type != null ? JavaTypes.getTypeCode(type) : JavaSQLTypes.JDBC_DEFAULT;
+        Object value = res.getObject(this, typeCode, null);
         if (value == null) {
             if (nullableValue(ctx, state)) {  // OPENJPA-1794
                 return null;
