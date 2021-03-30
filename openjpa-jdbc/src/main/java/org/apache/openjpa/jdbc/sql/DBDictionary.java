@@ -516,7 +516,19 @@ public class DBDictionary
             "TINYINT",
         }));
 
+        // initialize the set of reserved SQL92 words from resource
+        reservedWordSet.addAll(loadFromResource("sql-keywords.rsrc"));
+
         selectWordSet.add("SELECT");
+    }
+
+    private Collection<String> loadFromResource(String resourcename) {
+        try (InputStream in = DBDictionary.class.getResourceAsStream(resourcename)) {
+            String keywords = new BufferedReader(new InputStreamReader(in)).readLine();
+            return Arrays.asList(StringUtil.split(keywords, ",", 0));
+        } catch (IOException ioe) {
+            throw new GeneralException(ioe);
+        }
     }
 
     /**
@@ -598,7 +610,7 @@ public class DBDictionary
         // Disable delimiting of column definition.  DB platforms are very
         // picky about delimiters in column definitions. Base column types
         // do not require delimiters and will cause failures if delimited.
-        DBIdentifierRule cdRule = new ColumnDefIdentifierRule();
+        DBIdentifierRule cdRule = new ColumnDefIdentifierRule(invalidColumnWordSet);
         cdRule.setCanDelimit(false);
         namingRules.put(cdRule.getName(), cdRule);
     }
@@ -5026,17 +5038,6 @@ public class DBDictionary
 
     @Override
     public void endConfiguration() {
-        // initialize the set of reserved SQL92 words from resource
-        InputStream in = DBDictionary.class.getResourceAsStream("sql-keywords.rsrc");
-        try {
-            String keywords = new BufferedReader(new InputStreamReader(in)).readLine();
-            reservedWordSet.addAll(Arrays.asList(StringUtil.split(keywords, ",", 0)));
-        } catch (IOException ioe) {
-            throw new GeneralException(ioe);
-        } finally {
-            try { in.close(); } catch (IOException e) {}
-        }
-
         // add additional reserved words set by user
         if (reservedWords != null)
             reservedWordSet.addAll(Arrays.asList(StringUtil.split(reservedWords.toUpperCase(Locale.ENGLISH), ",", 0)));
@@ -5061,7 +5062,7 @@ public class DBDictionary
             selectWordSet.addAll(Arrays.asList(StringUtil.split(selectWords.toUpperCase(Locale.ENGLISH), ",", 0)));
 
         if (invalidColumnWordSet.isEmpty()) {
-            invalidColumnWordSet.addAll(reservedWordSet);
+            invalidColumnWordSet.addAll(loadFromResource("sql-invalid-column-names.rsrc"));
         }
 
         // initialize the error codes

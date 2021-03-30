@@ -232,7 +232,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
         for (Column column : columns) {
             assertTrue(column.getName().length() > 0);
             assertTrue(column.getName().length() <= dict.maxColumnNameLength);
-            assertFalse(dict.getInvalidColumnWordSet().
+            assertFalse("Column" + column.getName(), dict.getInvalidColumnWordSet().
                 contains(column.getName().toUpperCase()));
         }
     }

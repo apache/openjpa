@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.identifier;
 
+import java.util.Set;
+
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 
 /**
@@ -30,9 +32,8 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
  */
 public class ColumnDefIdentifierRule extends DBIdentifierRule {
 
-    public ColumnDefIdentifierRule() {
-        super();
-        setName(DBIdentifierType.COLUMN_DEFINITION.toString());
+    public ColumnDefIdentifierRule(Set<String> reservedWords) {
+        super(DBIdentifierType.COLUMN, reservedWords);
         // Disable auto delimiting of column definition.
         setCanDelimit(false);
     }
