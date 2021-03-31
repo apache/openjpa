@@ -57,4 +57,5 @@ The following Maven profiles do exist so far:
 * test-mysql-docker
 * test-mariadb-docker
 * test-postgresql-docker
-
+* test-mssql-docker
+* test-oracle-docker
