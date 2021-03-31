@@ -947,7 +947,11 @@
                 <openjpa.mssql.dbname>openjpatst</openjpa.mssql.dbname>
                 <openjpa.mssql.username>SA</openjpa.mssql.username>
                 <openjpa.mssql.password>OpenJP8tst</openjpa.mssql.password>
-                <openjpa.mssql.url>jdbc:sqlserver://localhost:${docker.external.mssql.port}</openjpa.mssql.url>
+                <!--
+                  * sendTimeAsDatetime=false is important to make SQLServer understand java.sql.Time parameters.
+                  * Alternatively you can set the SQLServerDictionary parameter sendTimeAsString=true
+                 -->
+                <openjpa.mssql.url>jdbc:sqlserver://localhost:${docker.external.mssql.port};sendTimeAsDatetime=false</openjpa.mssql.url>
 
                 <!--<connection.url>jdbc:postgresql://localhost/openjpa</connection.url>-->
                 <connection.url>${openjpa.mssql.url}</connection.url>

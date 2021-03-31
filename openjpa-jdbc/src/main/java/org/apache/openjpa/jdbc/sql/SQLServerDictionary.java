@@ -25,11 +25,13 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.util.Calendar;
 import java.util.Locale;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -61,13 +63,12 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
     public boolean uniqueIdentifierAsVarbinary = true;
 
     /**
-     * Whether to send Time values as DateTime or as Time.
-     * This affects how the Database actually looks like.
-     * sendTimeAsDatetime is supported as of SQLServer2008 and
-     * is only to be used with TIME columns.
-     * Previous to that a DATETIME column had to be used with a fixed 1970-01-01 date.
+     * SQLServer doesn't like a java.sql.Time as default.
+     * So either we send it as String or people configure sendTimeAsDatetime=false on the Connection.
+     * This is depending how the Database actually is setup.
+     * To mitigate misconfiguration we can work around by sending the time as String to the JDBC driver.
      */
-    public Boolean sendTimeAsDatetime = null;
+    public Boolean sendTimeAsString = null;
 
     public SQLServerDictionary() {
         platform = "Microsoft SQL Server";
@@ -95,8 +96,8 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
             // serverMajorVersion of 8==2000, 9==2005, 10==2008,  11==2012
             if (meta.getDatabaseMajorVersion() >= 9) {
                 setSupportsXMLColumn(true);
-                if (sendTimeAsDatetime == null) {
-                    sendTimeAsDatetime = Boolean.TRUE;
+                if (sendTimeAsString == null) {
+                    sendTimeAsString = Boolean.FALSE;
                 }
             }
             if (meta.getDatabaseMajorVersion() >= 10) {
@@ -404,6 +405,16 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         return rs.getObject(column, OffsetDateTime.class);
     }
 
+    @Override
+    public void setTime(PreparedStatement stmnt, int idx, Time val, Calendar cal, Column col) throws SQLException {
+        if (sendTimeAsString) {
+            stmnt.setString(idx, val.toString());
+        }
+        else {
+            // use Time
+            super.setTime(stmnt, idx, val, cal, col);
+        }
+    }
 
     @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,

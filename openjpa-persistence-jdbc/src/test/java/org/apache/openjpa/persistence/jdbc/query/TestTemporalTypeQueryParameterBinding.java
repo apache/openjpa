@@ -133,6 +133,15 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
         assertEquals(1, q.getResultList().size());
     }
 
+    public void testNamedTimeParam() {
+        Date d2 = new Date(T2);
+
+        Query q = em.createQuery("SELECT p FROM TimeKeeper p WHERE p.time=:t");
+        q.setParameter("t",  d2, TemporalType.TIME);
+
+        assertEquals(1, q.getResultList().size());
+    }
+
     public void testPositionalParameterConvertedFromDateValue() {
         Date d1 = new Date(T1);
         Date d2 = new Date(T2);
