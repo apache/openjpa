@@ -34,7 +34,8 @@ import org.apache.openjpa.lib.util.Options;
  * @version $Id$
  * @since 1.0
  */
-@Mojo(name="sql", defaultPhase=LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution=ResolutionScope.COMPILE)
+@Mojo(name="sql", defaultPhase=LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution=ResolutionScope.COMPILE,
+        threadSafe = true)
 public class OpenJpaSqlMojo extends AbstractOpenJpaMappingToolMojo {
 
     /**

@@ -34,7 +34,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * @since 1.1
  */
 @Mojo(name="test-enhance", defaultPhase=LifecyclePhase.PROCESS_TEST_CLASSES,
-      requiresDependencyResolution=ResolutionScope.TEST)
+      requiresDependencyResolution=ResolutionScope.TEST, threadSafe = true)
 public class OpenJpaTestEnhancerMojo extends AbstractOpenJpaEnhancerMojo {
 
     /**
