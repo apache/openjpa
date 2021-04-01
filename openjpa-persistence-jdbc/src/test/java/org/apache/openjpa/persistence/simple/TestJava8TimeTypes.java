@@ -192,7 +192,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     public void testCurrentDateLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
-                = em.createQuery("select j from Java8TimeTypes AS j where j.localDateTimeField < CURRENT_DATE", Java8TimeTypes.class);
+                = em.createQuery("select j from Java8TimeTypes AS j where j.localDateTimeField < CURRENT_TIMESTAMP", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
         assertNotNull(times);
         assertTrue(!times.isEmpty());
