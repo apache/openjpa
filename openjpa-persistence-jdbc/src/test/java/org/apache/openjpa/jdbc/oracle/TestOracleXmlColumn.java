@@ -32,6 +32,7 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
+
 public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
 
     private static String projectStr = "project";
@@ -62,14 +63,13 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         // the mapping tool doesn't handle creating XML columns that map to strings
         // build table manually
         Connection con = ((DataSource) conf.getConnectionFactory()).getConnection();
+        con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         String ddl = "DROP TABLE XmlColEntity";
         try {
             stmt.execute(ddl);
-            con.commit();
         } catch (SQLException se) {
             // assume the table did not exist.
-            con.rollback();
         }
 
         ddl =
@@ -78,7 +78,6 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         stmt.execute(ddl);
         String insertSql = "INSERT into XmlColEntity (ID, XMLCOLUMN, VERSION) VALUES (42, '" + xmlData + "', 1)";
         stmt.execute(insertSql);
-        con.commit();
 
         stmt.close();
         con.close();
