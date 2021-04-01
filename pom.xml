@@ -78,7 +78,7 @@
         <hsqldb.version>2.4.1</hsqldb.version>
         <mysql.connector.version>5.1.47</mysql.connector.version>
         <mariadb.connector.version>2.2.0</mariadb.connector.version>
-        <postgresql.connector.version>42.2.5</postgresql.connector.version>
+        <postgresql.connector.version>42.2.9</postgresql.connector.version>
         <mssql.connector.version>9.2.1.jre8</mssql.connector.version>
 
         <!-- other common versions -->
@@ -1496,12 +1496,9 @@
                 </property>
             </activation>
             <properties>
-                <!-- by default we use the Atlassian 3rd Party repo, which contains the dependency -->
-                <oracle.maven.repo>https://packages.atlassian.com/maven-3rdparty/</oracle.maven.repo>
-
-                <oracle.groupid>com.oracle</oracle.groupid>
-                <oracle.artifactid>ojdbc6</oracle.artifactid>
-                <oracle.version>11.2.0.4.0-atlassian-hosted</oracle.version>
+                <oracle.groupid>com.oracle.ojdbc</oracle.groupid>
+                <oracle.artifactid>ojdbc8</oracle.artifactid>
+                <oracle.version>19.3.0.0</oracle.version>
 
                 <oracle.server.version>latest</oracle.server.version>
                 <docker.external.oracle.port>1521</docker.external.oracle.port>
@@ -1533,20 +1530,6 @@
                 </dependency>
             </dependencies>
 
-            <repositories>
-                <repository>
-                    <id>oracle.repository</id>
-                    <name>Oracle Repository</name>
-                    <url>${oracle.maven.repo}</url>
-                    <layout>default</layout>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                </repository>
-            </repositories>
 
             <build>
                 <plugins>
@@ -1556,7 +1539,8 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>sath89/oracle-12c:${oracle.server.version}</name>
+                                    <!--<name>oracledb19c/oracle.19.3.0-ee:oracle19.3.0-ee</name>-->
+                                    <name>oracleinanutshell/oracle-xe-11g</name>
                                     <run>
                                         <volumes>
                                             <bind>

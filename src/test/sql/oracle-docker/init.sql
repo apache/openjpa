@@ -26,3 +26,6 @@ CREATE USER openjpatst IDENTIFIED BY openjpatst;
 GRANT CONNECT, RESOURCE, DBA TO openjpatst;
 GRANT CREATE SESSION GRANT ANY PRIVILEGE TO openjpatst;
 GRANT UNLIMITED TABLESPACE TO  openjpatst;
+
+-- to avoid ORA-12519, TNS:no appropriate service handler found
+alter system set processes=250 scope=spfile;
