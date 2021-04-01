@@ -50,8 +50,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     protected static boolean firstTestExecuted;
 
     protected List<Class<?>> supportedDatabases =
-        new ArrayList<>
-            (Arrays.asList(MySQLDictionary.class, OracleDictionary.class, DB2Dictionary.class));
+        new ArrayList<>(Arrays.asList(MySQLDictionary.class, DB2Dictionary.class));
 
     @Override
     public void setUp() throws Exception {
