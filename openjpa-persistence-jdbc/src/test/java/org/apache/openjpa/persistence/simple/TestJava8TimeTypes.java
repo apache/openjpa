@@ -29,7 +29,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
@@ -42,30 +41,33 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     private static String VAL_LOCAL_TIME = "04:57:15";
     private static String VAL_LOCAL_DATETIME = "2019-01-01T01:00:00";
 
+    private Java8TimeTypes insertedEntity = new Java8TimeTypes();
 
     @Override
     public void setUp() {
         setUp(CLEAR_TABLES, Java8TimeTypes.class);
-    }
 
-    public void testJava8Types() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Java8TimeTypes e = new Java8TimeTypes();
-        e.setId(1);
-        e.setOldDateField(new Date());
-        e.setLocalTimeField(LocalTime.parse(VAL_LOCAL_TIME));
-        e.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
-        e.setLocalDateTimeField(LocalDateTime.parse(VAL_LOCAL_DATETIME));
-        e.setOffsetTimeField(e.getLocalTimeField().atOffset(ZoneOffset.ofHours(-9)));
-        e.setOffsetDateTimeField(e.getLocalDateTimeField().atOffset(ZoneOffset.ofHours(-9)));
+        
+        insertedEntity.setId(1);
+        insertedEntity.setOldDateField(new Date());
+        insertedEntity.setLocalTimeField(LocalTime.parse(VAL_LOCAL_TIME));
+        insertedEntity.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
+        insertedEntity.setLocalDateTimeField(LocalDateTime.parse(VAL_LOCAL_DATETIME));
+        insertedEntity.setOffsetTimeField(insertedEntity.getLocalTimeField().atOffset(ZoneOffset.ofHours(-9)));
+        insertedEntity.setOffsetDateTimeField(insertedEntity.getLocalDateTimeField().atOffset(ZoneOffset.ofHours(-9)));
 
-        em.persist(e);
+        em.persist(insertedEntity);
         em.getTransaction().commit();
         em.close();
 
+    }
+
+    public void testReadJava8Types() {
+
         // now read it back.
-        em = emf.createEntityManager();
+        EntityManager em = emf.createEntityManager();
         Java8TimeTypes eRead = em.find(Java8TimeTypes.class, 1);
 
         assertEquals(LocalTime.parse(VAL_LOCAL_TIME), eRead.getLocalTimeField());
@@ -75,80 +77,123 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
 
         // Many databases do not support WITH TIMEZONE syntax.
         // Thus we can only portably ensure tha the same instant is used at least.
-        assertEquals(Instant.from(e.getOffsetDateTimeField()),
+        assertEquals(Instant.from(insertedEntity.getOffsetDateTimeField()),
                 Instant.from(eRead.getOffsetDateTimeField()));
 
-        assertEquals(e.getOffsetTimeField().withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()),
+        assertEquals(insertedEntity.getOffsetTimeField().withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()),
                 eRead.getOffsetTimeField());
-
+        em.close();
+    }
+    
         // we've got reports from various functions not properly working with Java8 Dates.
-
-        {
-            final TypedQuery<LocalDate> qry = em.createQuery("select t.localDateField from Java8TimeTypes AS t", LocalDate.class);
-            final LocalDate date = qry.getSingleResult();
-            assertNotNull(date);
-        }
-
-        // max function
-        {
-            final TypedQuery<LocalDate> qry = em.createQuery("select max(t.localDateField) from Java8TimeTypes AS t", LocalDate.class);
-            final LocalDate max = qry.getSingleResult();
-            assertEquals(LocalDate.parse(VAL_LOCAL_DATE), max);
-        }
-        {
-            final TypedQuery<LocalDateTime> qry = em.createQuery("select max(t.localDateTimeField) from Java8TimeTypes AS t", LocalDateTime.class);
-            final LocalDateTime max = qry.getSingleResult();
-            assertEquals(LocalDateTime.parse(VAL_LOCAL_DATETIME), max);
-        }
-        {
-            final TypedQuery<LocalTime> qry = em.createQuery("select max(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
-            final LocalTime max = qry.getSingleResult();
-            assertEquals(LocalTime.parse(VAL_LOCAL_TIME), max);
-        }
-        {
-            final TypedQuery<OffsetTime> qry = em.createQuery("select max(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
-            final OffsetTime max = qry.getSingleResult();
-            assertEquals(e.getOffsetTimeField().withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()),
-                    max.withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()));
-        }
-        {
-            final TypedQuery<OffsetDateTime> qry = em.createQuery("select max(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
-            final OffsetDateTime max = qry.getSingleResult();
-            assertEquals(Instant.from(e.getOffsetDateTimeField()),
-                    Instant.from(max));
-        }
-
-        // min function
-        {
-            final TypedQuery<LocalDate> qry = em.createQuery("select min(t.localDateField) from Java8TimeTypes AS t", LocalDate.class);
-            final LocalDate min = qry.getSingleResult();
-            assertEquals(LocalDate.parse(VAL_LOCAL_DATE), min);
-        }
-        {
-            final TypedQuery<LocalDateTime> qry = em.createQuery("select min(t.localDateTimeField) from Java8TimeTypes AS t", LocalDateTime.class);
-            final LocalDateTime min = qry.getSingleResult();
-            assertEquals(LocalDateTime.parse(VAL_LOCAL_DATETIME), min);
-        }
-        {
-            final TypedQuery<LocalTime> qry = em.createQuery("select min(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
-            final LocalTime min = qry.getSingleResult();
-            assertEquals(LocalTime.parse(VAL_LOCAL_TIME), min);
-        }
-        {
-            final TypedQuery<OffsetTime> qry = em.createQuery("select min(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
-            final OffsetTime min = qry.getSingleResult();
-            assertEquals(e.getOffsetTimeField().withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()),
-                    min.withOffsetSameInstant(eRead.getOffsetTimeField().getOffset()));
-        }
-        {
-            final TypedQuery<OffsetDateTime> qry = em.createQuery("select min(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
-            final OffsetDateTime min = qry.getSingleResult();
-            assertEquals(Instant.from(e.getOffsetDateTimeField()),
-                    Instant.from(min));
-        }
-
+    public void testReadLocalDate() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<LocalDate> qry = em.createQuery("select t.localDateField from Java8TimeTypes AS t", LocalDate.class);
+        final LocalDate date = qry.getSingleResult();
+        assertNotNull(date);
+        em.close();
     }
 
+    // max function
+    public void testMaxLocalDate() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<LocalDate> qry = em.createQuery("select max(t.localDateField) from Java8TimeTypes AS t", LocalDate.class);
+        final LocalDate max = qry.getSingleResult();
+        assertEquals(LocalDate.parse(VAL_LOCAL_DATE), max);
+        em.close();
+    }
 
+    public void testMaxLocalDateTime() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<LocalDateTime> qry = em.createQuery("select max(t.localDateTimeField) from Java8TimeTypes AS t", LocalDateTime.class);
+        final LocalDateTime max = qry.getSingleResult();
+        assertEquals(LocalDateTime.parse(VAL_LOCAL_DATETIME), max);
+        em.close();
+    }
+
+    public void testMaxLocalTime() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<LocalTime> qry = em.createQuery("select max(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
+        final LocalTime max = qry.getSingleResult();
+        assertEquals(LocalTime.parse(VAL_LOCAL_TIME), max);
+        em.close();
+    }
+
+    public void testMaxOffsetTime() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<OffsetTime> qry = em.createQuery("select max(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
+        final OffsetTime max = qry.getSingleResult();
+        assertEquals(insertedEntity.getOffsetTimeField().withOffsetSameInstant(insertedEntity.getOffsetTimeField().getOffset()),
+                max.withOffsetSameInstant(insertedEntity.getOffsetTimeField().getOffset()));
+        em.close();
+    }
+
+    public void testMaxOffsetDateTime() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<OffsetDateTime> qry = em.createQuery("select max(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
+        final OffsetDateTime max = qry.getSingleResult();
+        assertEquals(Instant.from(insertedEntity.getOffsetDateTimeField()),
+                Instant.from(max));
+        em.close();
+    }
+
+    // min function
+    public void testMinLocalDate() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<LocalDate> qry = em.createQuery("select min(t.localDateField) from Java8TimeTypes AS t", LocalDate.class);
+        final LocalDate min = qry.getSingleResult();
+        assertEquals(LocalDate.parse(VAL_LOCAL_DATE), min);
+    }
+
+    public void testMinLocalDateTime() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<LocalDateTime> qry = em.createQuery("select min(t.localDateTimeField) from Java8TimeTypes AS t", LocalDateTime.class);
+        final LocalDateTime min = qry.getSingleResult();
+        assertEquals(LocalDateTime.parse(VAL_LOCAL_DATETIME), min);
+        em.close();
+    }
+
+    public void testMinLocalTime() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<LocalTime> qry = em.createQuery("select min(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
+        final LocalTime min = qry.getSingleResult();
+        assertEquals(LocalTime.parse(VAL_LOCAL_TIME), min);
+        em.close();
+    }
+
+    public void testMinOffsetTime() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<OffsetTime> qry = em.createQuery("select min(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
+        final OffsetTime min = qry.getSingleResult();
+        assertEquals(insertedEntity.getOffsetTimeField().withOffsetSameInstant(insertedEntity.getOffsetTimeField().getOffset()),
+                min.withOffsetSameInstant(insertedEntity.getOffsetTimeField().getOffset()));
+        em.close();
+    }
+
+    public void testMinOffsetDateTime() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<OffsetDateTime> qry = em.createQuery("select min(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
+        final OffsetDateTime min = qry.getSingleResult();
+        assertEquals(Instant.from(insertedEntity.getOffsetDateTimeField()),
+                Instant.from(min));
+        em.close();
+    }
+
+    public void testCurrentDateLocalDate() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<Java8TimeTypes> qry = em.createQuery("select j from Java8TimeTypes AS j where j.localDateField < CURRENT_DATE", Java8TimeTypes.class);
+        final List<Java8TimeTypes> times = qry.getResultList();
+        assertNotNull(times);
+        assertTrue(!times.isEmpty());
+        em.close();
+    }
+    public void testCurrentDateLocalDateTime() {
+        EntityManager em = emf.createEntityManager();
+        final TypedQuery<Java8TimeTypes> qry = em.createQuery("select j from Java8TimeTypes AS j where j.localDateTimeField < CURRENT_DATE", Java8TimeTypes.class);
+        final List<Java8TimeTypes> times = qry.getResultList();
+        assertNotNull(times);
+        assertTrue(!times.isEmpty());
+        em.close();
+    }
 
 }

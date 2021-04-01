@@ -1074,7 +1074,12 @@ public class Filters {
             && (Date.class.isAssignableFrom(c)
              || Time.class.isAssignableFrom(c)
              || Timestamp.class.isAssignableFrom(c)
-             || Calendar.class.isAssignableFrom(c));
+             || Calendar.class.isAssignableFrom(c)
+             || LocalDate.class.isAssignableFrom(c)
+             || LocalDateTime.class.isAssignableFrom(c)
+             || LocalTime.class.isAssignableFrom(c)
+             || OffsetTime.class.isAssignableFrom(c)
+             || OffsetDateTime.class.isAssignableFrom(c));
     }
 
     public static Object getDefaultForNull(Class<?> nType) {
