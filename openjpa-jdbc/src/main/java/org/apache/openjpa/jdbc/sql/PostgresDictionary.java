@@ -38,6 +38,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -748,6 +750,30 @@ public class PostgresDictionary extends DBDictionary {
     @Override
     public OffsetDateTime getOffsetDateTime(ResultSet rs, int column) throws SQLException {
         return rs.getObject(column, OffsetDateTime.class);
+    }
+
+    /**
+     * default column type for OffsetTime is 'time with time zone'.
+     * But opposed to the name PostgreSQL internally stores those values in UTC time
+     * without any timezone.
+     */
+    @Override
+    public void setOffsetTime(PreparedStatement stmnt, int idx, OffsetTime val, Column col) throws SQLException {
+        // this is really a whacky hack somehow
+        // PostgreSQL doesn't support OffsetTime natively.
+        // The JDBC driver will automatically convert this to UTC which is the
+        // internal normalised TimeZone PostgreSQL uses.
+        LocalTime utcTime = val.withOffsetSameInstant(OffsetDateTime.now().getOffset()).toLocalTime();
+        stmnt.setTime(idx, java.sql.Time.valueOf(utcTime));
+    }
+
+    @Override
+    public OffsetTime getOffsetTime(ResultSet rs, int column) throws SQLException {
+        final java.sql.Time utcTime = rs.getTime(column);
+        if (utcTime != null) {
+            return utcTime.toLocalTime().atOffset(OffsetDateTime.now().getOffset());
+        }
+        return null;
     }
 
     @Override
