@@ -172,7 +172,8 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
 
     public void testMinOffsetDateTime() {
         EntityManager em = emf.createEntityManager();
-        final TypedQuery<OffsetDateTime> qry = em.createQuery("select min(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
+        final TypedQuery<OffsetDateTime> qry
+                = em.createQuery("select min(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
         final OffsetDateTime min = qry.getSingleResult();
         assertEquals(Instant.from(insertedEntity.getOffsetDateTimeField()),
                 Instant.from(min));
@@ -181,7 +182,8 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
 
     public void testCurrentDateLocalDate() {
         EntityManager em = emf.createEntityManager();
-        final TypedQuery<Java8TimeTypes> qry = em.createQuery("select j from Java8TimeTypes AS j where j.localDateField < CURRENT_DATE", Java8TimeTypes.class);
+        final TypedQuery<Java8TimeTypes> qry
+                = em.createQuery("select j from Java8TimeTypes AS j where j.localDateField < CURRENT_DATE", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
         assertNotNull(times);
         assertTrue(!times.isEmpty());
@@ -189,7 +191,8 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
     public void testCurrentDateLocalDateTime() {
         EntityManager em = emf.createEntityManager();
-        final TypedQuery<Java8TimeTypes> qry = em.createQuery("select j from Java8TimeTypes AS j where j.localDateTimeField < CURRENT_DATE", Java8TimeTypes.class);
+        final TypedQuery<Java8TimeTypes> qry
+                = em.createQuery("select j from Java8TimeTypes AS j where j.localDateTimeField < CURRENT_DATE", Java8TimeTypes.class);
         final List<Java8TimeTypes> times = qry.getResultList();
         assertNotNull(times);
         assertTrue(!times.isEmpty());
