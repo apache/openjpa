@@ -1075,11 +1075,11 @@ public class Filters {
              || Time.class.isAssignableFrom(c)
              || Timestamp.class.isAssignableFrom(c)
              || Calendar.class.isAssignableFrom(c)
-             || LocalDate.class.isAssignableFrom(c)
-             || LocalDateTime.class.isAssignableFrom(c)
-             || LocalTime.class.isAssignableFrom(c)
-             || OffsetTime.class.isAssignableFrom(c)
-             || OffsetDateTime.class.isAssignableFrom(c));
+             || LocalDate.class == c  // java.time classes are final, so we can compare with ==
+             || LocalDateTime.class == c
+             || LocalTime.class == c
+             || OffsetTime.class ==c
+             || OffsetDateTime.class == c);
     }
 
     public static Object getDefaultForNull(Class<?> nType) {
