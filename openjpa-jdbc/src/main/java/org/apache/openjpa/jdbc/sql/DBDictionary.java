@@ -72,6 +72,7 @@ import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.ColumnDefIdentifierRule;
+import org.apache.openjpa.jdbc.identifier.ColumnIdentifierRule;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.identifier.DBIdentifierRule;
@@ -610,9 +611,11 @@ public class DBDictionary
         // Disable delimiting of column definition.  DB platforms are very
         // picky about delimiters in column definitions. Base column types
         // do not require delimiters and will cause failures if delimited.
-        DBIdentifierRule cdRule = new ColumnDefIdentifierRule(invalidColumnWordSet);
-        cdRule.setCanDelimit(false);
-        namingRules.put(cdRule.getName(), cdRule);
+        DBIdentifierRule columnDefinitionNamingRule = new ColumnDefIdentifierRule();
+        namingRules.put(columnDefinitionNamingRule.getName(), columnDefinitionNamingRule);
+
+        DBIdentifierRule columnNamingRule = new ColumnIdentifierRule(invalidColumnWordSet);
+        namingRules.put(columnNamingRule.getName(), columnNamingRule);
     }
 
     //////////////////////

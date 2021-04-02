@@ -42,7 +42,13 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         SCHEMA,
         CATALOG,
         DATABASE,
+        /**
+         * used for column names
+         */
         COLUMN,
+        /**
+         * used for column type definition
+         */
         COLUMN_DEFINITION,
         SEQUENCE,
         CONSTRAINT,

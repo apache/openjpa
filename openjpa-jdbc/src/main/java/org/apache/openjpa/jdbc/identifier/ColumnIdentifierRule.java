@@ -23,19 +23,13 @@ import java.util.Set;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 
 /**
- * Default rule for column definition.  This rule disables delimiting of
- * column definitions.  Column definitions can be extremely tricky to
- * delimit correctly.  Blindly delimiting them causes failures on most
- * databases.  Where user defined types are concerned, generally they don't
- * need to be delimited and if so, they are more appropriately delimited
- * when they are specified.
+ * Default rule for column names.
+ * Column names which are forbidden as column names will get detected properly.
+ * Those reserved words might differ from the general reserved words.
  */
-public class ColumnDefIdentifierRule extends DBIdentifierRule {
+public class ColumnIdentifierRule extends DBIdentifierRule {
 
-    public ColumnDefIdentifierRule() {
-        super();
-        setName(DBIdentifierType.COLUMN_DEFINITION.toString());
-        // Disable auto delimiting of column definition.
-        setCanDelimit(false);
+    public ColumnIdentifierRule(Set<String> reservedWords) {
+        super(DBIdentifierType.COLUMN, reservedWords);
     }
 }
