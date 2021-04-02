@@ -51,8 +51,7 @@ extends AbstractCachedEMFTestCase {
         OpenJPAEntityManagerFactorySPI emf =
         (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("persistence_1_0",
-                "org/apache/openjpa/persistence/compat/" +
-                "persistence_1_0.xml");
+                "org/apache/openjpa/persistence/compat/persistence_1_0.xml");
 
         try {
             Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
@@ -193,9 +192,6 @@ extends AbstractCachedEMFTestCase {
             crudUni1MJT(em);
             crudBi1MFK(em);
             crudBi1MJT(em);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("OneToMany mapping failed with exception message: " + e.getMessage());
         } finally {
             em.close();
             closeEMF(emf);
@@ -422,9 +418,6 @@ extends AbstractCachedEMFTestCase {
             crudBi1MMapJT(em);
             crudUni1MMapRelKeyFK(em);
             crudBi1MMapRelKeyJT(em);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("OneToMany mapping failed with exception message: " + e.getMessage());
         } finally {
             em.close();
             emf.close();
@@ -433,6 +426,7 @@ extends AbstractCachedEMFTestCase {
 
     public void crudUni1MMapFK(EntityManager em) {
         //create
+        em.getTransaction().begin();
         Uni_1ToM_Map_FK u = new Uni_1ToM_Map_FK();
         u.setName("u");
         Map<String, EntityC_U1M_Map_FK> cs = new HashMap<>();
@@ -447,7 +441,6 @@ extends AbstractCachedEMFTestCase {
         em.persist(u);
         em.persist(c1);
         em.persist(c2);
-        em.getTransaction().begin();
         em.getTransaction().commit();
 
         //update by adding a new C
@@ -676,9 +669,6 @@ extends AbstractCachedEMFTestCase {
             em.getTransaction().commit();
             assertSQLFragnments(sql, "CREATE TABLE UniM1JT_C", "U_ID", "C_ID");
             crudUniM1JT(em);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("ManyToOne mapping failed with exception message: " + e.getMessage());
         } finally {
             em.close();
             emf.close();
@@ -752,9 +742,6 @@ extends AbstractCachedEMFTestCase {
             assertSQLFragnments(sql, "CREATE TABLE Uni11JT_C", "U_ID", "C_ID");
             crudBi11JT(em);
             crudUni11JT(em);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("OneToOne mapping failed with exception message: " + e.getMessage());
         } finally {
             em.close();
             emf.close();

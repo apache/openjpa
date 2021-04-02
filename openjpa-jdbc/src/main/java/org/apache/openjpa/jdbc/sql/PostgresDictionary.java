@@ -199,7 +199,7 @@ public class PostgresDictionary extends DBDictionary {
             "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE",
             "DESC", "DISTINCT", "DO", "ELSE", "END", "END", "EXCEPT", "FALSE",
             "FOR", "FOREIGN", "FROM", "FULL", "GRANT", "GROUP", "HAVING", "IN",
-            "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN",
+            "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "KEY",
             "LEADING", "LEFT", "LIKE", "NATURAL", "NOT", "NOTNULL", "NULL",
             "ON", "ONLY", "OR", "ORDER", "OUTER", "OVERLAPS", "PRIMARY",
             "REFERENCES", "RIGHT", "SELECT", "SESSION_USER", "SOME", "TABLE",

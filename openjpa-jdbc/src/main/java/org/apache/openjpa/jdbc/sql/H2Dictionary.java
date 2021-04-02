@@ -127,7 +127,7 @@ public class H2Dictionary extends DBDictionary {
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
         invalidColumnWordSet.addAll(Arrays.asList(new String[]{
-            "ORDER",
+            "ORDER", "KEY",
         }));
 
     }
