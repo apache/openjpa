@@ -32,7 +32,7 @@ import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import static junit.framework.TestCase.assertEquals;
 import org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex6.Division;
 

@@ -27,7 +27,7 @@ import javax.persistence.Query;
 import org.apache.openjpa.persistence.RollbackException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class TestExternalValues extends SingleEMFTestCase {
 

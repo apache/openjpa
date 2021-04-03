@@ -27,7 +27,7 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class TestAssocOverrides  extends SQLListenerTestCase {
     public int numEmployees = 2;
@@ -229,7 +229,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
     public void findObj2() {
         EntityManager em = emf.createEntityManager();
         PartTimeEmployee p = em.find(PartTimeEmployee.class, 1);
-        Assert.assertEquals(p.getHourlyWage(), (float)100);
+        Assert.assertEquals(p.getHourlyWage(), (float)100, 0.001f);
         em.close();
     }
 

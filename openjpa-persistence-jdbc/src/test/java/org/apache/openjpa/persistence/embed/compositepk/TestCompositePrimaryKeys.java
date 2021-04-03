@@ -34,7 +34,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 

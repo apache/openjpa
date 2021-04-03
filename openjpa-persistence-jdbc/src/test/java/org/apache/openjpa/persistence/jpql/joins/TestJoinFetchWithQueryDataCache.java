@@ -30,7 +30,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Tests JQPL and Criteria API equivalent using left join fetch with QueryCache and DataCache enabled.

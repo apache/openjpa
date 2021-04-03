@@ -33,7 +33,7 @@ import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Test JDBC escape syntax for date, time, and timestamp literals

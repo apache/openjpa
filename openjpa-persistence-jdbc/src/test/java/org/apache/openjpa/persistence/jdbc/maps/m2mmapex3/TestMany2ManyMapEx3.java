@@ -31,7 +31,7 @@ import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
 

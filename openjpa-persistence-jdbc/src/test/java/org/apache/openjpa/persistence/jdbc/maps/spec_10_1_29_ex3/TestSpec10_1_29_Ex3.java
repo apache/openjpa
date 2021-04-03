@@ -30,7 +30,7 @@ import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
     public int numStudents = 2;

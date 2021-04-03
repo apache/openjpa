@@ -18,13 +18,14 @@
  */
 package org.apache.openjpa.tools.maven.test;
 
-import junit.framework.TestCase;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class ItDropSchemaTest extends TestCase {
+public class ItDropSchemaTest {
 
     /** contains the directory where all generated results are placed */
     private final static String TARGET_DIR = "target";
@@ -39,6 +40,7 @@ public class ItDropSchemaTest extends TestCase {
      * check if the generated SQL script is correct.
      * @throws Exception
      */
+    @Test
     public void testSqlGeneration() throws Exception
     {
         File sqlFile = new File( TARGET_DIR, SQL_FILE );

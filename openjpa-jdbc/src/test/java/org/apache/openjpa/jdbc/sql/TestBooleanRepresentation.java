@@ -27,7 +27,7 @@ import java.sql.SQLException;
 
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**

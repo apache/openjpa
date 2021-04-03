@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.entity.EntityB;
 import org.apache.openjpa.persistence.entity.EntityC;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 
 public class TestOpenJPA2330 extends SingleEMFTestCase {

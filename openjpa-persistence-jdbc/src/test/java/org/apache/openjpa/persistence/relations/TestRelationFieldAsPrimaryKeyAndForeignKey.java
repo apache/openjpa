@@ -24,7 +24,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 
 public class TestRelationFieldAsPrimaryKeyAndForeignKey
