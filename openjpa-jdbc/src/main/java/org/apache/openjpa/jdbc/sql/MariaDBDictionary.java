@@ -469,7 +469,8 @@ public class MariaDBDictionary extends DBDictionary {
 
     @Override
     public boolean isFatalException(int subtype, SQLException ex) {
-        if ((subtype == StoreException.LOCK  && ex.getErrorCode() == 1205)
+        if ((subtype == StoreException.LOCK  && ex.getErrorCode() == 1205) // ER_LOCK_WAIT_TIMEOUT
+          ||(subtype == StoreException.LOCK  && ex.getErrorCode() == 1969) // general ER_STATEMENT_TIMEOUT
           ||(subtype == StoreException.LOCK  && "JZ0002".equalsIgnoreCase(ex.getSQLState()))
           ||(subtype == StoreException.QUERY && ex.getErrorCode() == 1317)) {
             return false;
