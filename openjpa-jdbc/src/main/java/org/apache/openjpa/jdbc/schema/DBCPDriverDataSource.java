@@ -48,7 +48,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
     private static RuntimeException _dbcpEx;
 
     protected JDBCConfiguration conf;
-    private DataSource _ds;
+    private volatile DataSource _ds;
 
     @Override
     public Connection getConnection(Properties props) throws SQLException {
