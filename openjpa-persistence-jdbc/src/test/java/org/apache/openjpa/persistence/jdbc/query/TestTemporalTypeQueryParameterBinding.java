@@ -67,6 +67,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
                 "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
                 TimeKeeper.class, TimeEntity.class);
         em = emf.createEntityManager();
+        em.getTransaction().begin();
 
         TimeKeeper pc = new TimeKeeper();
         pc.setDate(VALUE_DATE);
@@ -83,7 +84,6 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
         te.setUDate2Time(VALUE_DATE);
         te.setUDate2Timestamp(VALUE_DATE);
 
-        em.getTransaction().begin();
         em.persist(pc);
         em.persist(te);
         em.getTransaction().commit();

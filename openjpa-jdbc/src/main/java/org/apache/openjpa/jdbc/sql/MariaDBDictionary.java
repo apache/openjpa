@@ -20,11 +20,15 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -196,6 +200,13 @@ public class MariaDBDictionary extends DBDictionary {
             timestampTypeName = "DATETIME{0}";
             fixedSizeTypeNameSet.remove(timestampTypeName);
             fractionalTypeNameSet.add(timestampTypeName);
+
+            // also TIME type now has optional fraction digits
+
+            if (dateFractionDigits > 0 ) {
+                timeTypeName = "TIME{0}";
+                fractionalTypeNameSet.add(timeTypeName);
+            }
         }
     }
 
@@ -515,5 +526,17 @@ public class MariaDBDictionary extends DBDictionary {
             start.appendTo(buf);
         }
         buf.append(")");
+    }
+
+    @Override
+    public void setTime(PreparedStatement stmnt, int idx, Time val, Calendar cal, Column col) throws SQLException {
+        // nail down to Jan 1st 1970, because MariaDB uses getTime LONG  and freaks out.
+        final Date date = new Date(val.getTime());
+        date.setYear(70);
+        date.setMonth(0);
+        date.setDate(1);
+        val = new Time(date.getTime());
+
+        super.setTime(stmnt, idx, val, cal, col);
     }
 }
