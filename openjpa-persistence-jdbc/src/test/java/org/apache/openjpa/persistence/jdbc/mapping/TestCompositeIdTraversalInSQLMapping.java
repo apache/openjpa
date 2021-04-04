@@ -63,7 +63,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 	public void testTraversalWhenSQLSelectsBothEndOfTheRelation ()
 	{
 		EntityManager em = currentEntityManager();
-        Integer uid  = new Integer((int) (System.currentTimeMillis()%100000));
+        Integer uid  = (int) (System.currentTimeMillis() % 100000);
 		String uName = "P"+uid;
 		String rName = "R"+uName;
 
@@ -105,7 +105,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 	public void testTraversalWhenSQLSelectsOnlyOneEndOfTheRelation ()
 	{
 		EntityManager em = currentEntityManager();
-        Integer uid  = new Integer((int) (System.currentTimeMillis()%100000));
+        Integer uid  = (int) (System.currentTimeMillis() % 100000);
 		String uName = "P"+uid;
 		String rName = "R"+uName;
 
@@ -138,8 +138,8 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 	public void testTraversalWhenSQLSelectsUnrelatedInstances ()
 	{
 		EntityManager em = currentEntityManager();
-        Integer uid1  = new Integer((int) (System.currentTimeMillis()%100000));
-		Integer uid2  = new Integer(uid1.intValue()+1);
+        Integer uid1  = (int) (System.currentTimeMillis() % 100000);
+		Integer uid2  = uid1.intValue() + 1;
 		String uName1 = "P"+uid1;
 		String rName1 = "R"+uName1;
 		String uName2 = "P"+uid2;
@@ -184,7 +184,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 
 	public void testRecursiveTraversal ()
 	{
-        Integer rootId  = new Integer((int)(System.currentTimeMillis()%100000));
+        Integer rootId  = (int) (System.currentTimeMillis() % 100000);
 
 		int depth = 3;
 		persistChainedRelative(rootId, depth);

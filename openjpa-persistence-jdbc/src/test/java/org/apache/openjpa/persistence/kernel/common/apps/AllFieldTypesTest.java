@@ -278,14 +278,14 @@ public class AllFieldTypesTest {
     }
 
     public void randomize(boolean objects, boolean blobs) {
-        testint = AbstractTestCase.randomInt().intValue();
-        testlong = AbstractTestCase.randomLong().longValue();
-        testshort = AbstractTestCase.randomShort().shortValue();
-        testfloat = AbstractTestCase.randomFloat().floatValue();
-        testdouble = AbstractTestCase.randomDouble().doubleValue();
-        testbyte = AbstractTestCase.randomByte().byteValue();
-        testboolean = AbstractTestCase.randomBoolean().booleanValue();
-        testchar = AbstractTestCase.randomChar().charValue();
+        testint = AbstractTestCase.randomInt();
+        testlong = AbstractTestCase.randomLong();
+        testshort = AbstractTestCase.randomShort();
+        testfloat = AbstractTestCase.randomFloat();
+        testdouble = AbstractTestCase.randomDouble();
+        testbyte = AbstractTestCase.randomByte();
+        testboolean = AbstractTestCase.randomBoolean();
+        testchar = AbstractTestCase.randomChar();
 
         if (objects) {
             testString = AbstractTestCase.randomString();

@@ -198,7 +198,7 @@ public class TestResultShapes extends AbstractTestCase {
                 arrayResultHelper(iter.next(), recordClasses, inCache);
         }
 
-        CacheTestHelper.assertInCache(this, q, new Boolean(inCache));
+        CacheTestHelper.assertInCache(this, q, inCache);
 
         if (unique) {
             arrayResultHelper(q.execute(), recordClasses, inCache);
@@ -242,7 +242,7 @@ public class TestResultShapes extends AbstractTestCase {
                 mapResultHelper(iter.next(), recordClasses, results, inCache);
         }
 
-        CacheTestHelper.assertInCache(this, q, new Boolean(inCache));
+        CacheTestHelper.assertInCache(this, q, inCache);
 
         if (unique) {
             mapResultHelper(q.execute(), recordClasses, results, inCache);
@@ -282,7 +282,7 @@ public class TestResultShapes extends AbstractTestCase {
                 assertEquals(recordClass, iter.next().getClass());
         }
 
-        CacheTestHelper.assertInCache(this, q, new Boolean(inCache));
+        CacheTestHelper.assertInCache(this, q, inCache);
 
         if (unique) {
             assertEquals(recordClass, q.execute().getClass());

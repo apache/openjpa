@@ -43,7 +43,7 @@ public class TestVersion extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 test1 = new AnnoTest1();
-        test1.setPk(new Long(5));
+        test1.setPk(5L);
         test1.setBasic(50);
         test1.setTransient(500);
         em.persist(test1);
@@ -55,7 +55,7 @@ public class TestVersion extends SingleEMFTestCase {
         em.persist(test2);
 
         AnnoTest3 test3 = new AnnoTest3();
-        test3.setPk(new Long(3));
+        test3.setPk(3L);
         test3.setBasic2(50);
         em.persist(test3);
         em.getTransaction().commit();
@@ -68,8 +68,8 @@ public class TestVersion extends SingleEMFTestCase {
         EntityManager em2 = emf.createEntityManager();
         em2.getTransaction().begin();
 
-        AnnoTest1 pc1 = em1.find(AnnoTest1.class, new Long(5));
-        AnnoTest1 pc2 = em2.find(AnnoTest1.class, new Long(5));
+        AnnoTest1 pc1 = em1.find(AnnoTest1.class, 5L);
+        AnnoTest1 pc2 = em2.find(AnnoTest1.class, 5L);
         assertEquals(1, pc1.getVersion());
         assertEquals(1, pc2.getVersion());
         assertEquals(0, pc1.getTransient());
@@ -79,7 +79,7 @@ public class TestVersion extends SingleEMFTestCase {
         em1.close();
 
         em1 = emf.createEntityManager();
-        pc1 = em1.find(AnnoTest1.class, new Long(5));
+        pc1 = em1.find(AnnoTest1.class, 5L);
         assertEquals(2, pc1.getVersion());
         em1.close();
         try {
@@ -139,8 +139,8 @@ public class TestVersion extends SingleEMFTestCase {
         EntityManager em2 = emf.createEntityManager();
         em2.getTransaction().begin();
 
-        AnnoTest3 pc1 = em1.find(AnnoTest3.class, new Long(3));
-        AnnoTest3 pc2 = em2.find(AnnoTest3.class, new Long(3));
+        AnnoTest3 pc1 = em1.find(AnnoTest3.class, 3L);
+        AnnoTest3 pc2 = em2.find(AnnoTest3.class, 3L);
         assertEquals(1, pc1.getVersion());
         assertEquals(1, pc2.getVersion());
         pc1.setBasic2(75);
@@ -149,7 +149,7 @@ public class TestVersion extends SingleEMFTestCase {
         em1.close();
 
         em1 = emf.createEntityManager();
-        pc1 = em1.find(AnnoTest3.class, new Long(3));
+        pc1 = em1.find(AnnoTest3.class, 3L);
         assertEquals(2, pc1.getVersion());
         em1.close();
         try {
@@ -165,7 +165,7 @@ public class TestVersion extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        AnnoTest1 pc = em.find(AnnoTest1.class, new Long(5));
+        AnnoTest1 pc = em.find(AnnoTest1.class, 5L);
         assertEquals(1, pc.getVersion());
         assertEquals(0, pc.getTransient());
         pc.setTransient(750);
@@ -173,7 +173,7 @@ public class TestVersion extends SingleEMFTestCase {
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(5));
+        pc = em.find(AnnoTest1.class, 5L);
         assertEquals(1, pc.getVersion());
         assertEquals(0, pc.getTransient());
         em.close();

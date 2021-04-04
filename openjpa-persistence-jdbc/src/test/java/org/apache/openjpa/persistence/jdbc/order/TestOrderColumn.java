@@ -952,7 +952,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             objMap.put(idx, objVal);
         }
         for (int i = 0; i < objs.length; i++) {
-            Object val = objMap.get((new Long(base + i)));
+            Object val = objMap.get(((long) (base + i)));
             assertEquals(val, objs[i]);
         }
     }
@@ -979,7 +979,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
         objMap.put(idx, objVal);
     }
     for (int i = 0; i < objs.length; i++) {
-        Object val = objMap.get((new Long(base + i)));
+        Object val = objMap.get(((long) (base + i)));
         assertEquals(val, objs[i]);
     }
 }

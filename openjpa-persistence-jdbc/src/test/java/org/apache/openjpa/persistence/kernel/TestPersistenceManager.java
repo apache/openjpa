@@ -143,7 +143,7 @@ public class TestPersistenceManager extends BaseKernelTest {
             public void run() {
                 try {
                     endEm(pm);
-                    result.add(new Integer(0));
+                    result.add(0);
                 } catch (Exception jdoe) {
                     result.add(jdoe);
                 } catch (Throwable t) {

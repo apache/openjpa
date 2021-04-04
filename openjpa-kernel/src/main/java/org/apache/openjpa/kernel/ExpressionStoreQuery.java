@@ -448,7 +448,7 @@ public class ExpressionStoreQuery
             for(Entry<?, Class<?>> entry : paramTypes.entrySet()){
                 Object key = entry.getKey();
                 int idx = (key instanceof Integer)
-                    ? ((Integer)key).intValue() - base
+                    ? (Integer) key - base
                     : paramTypes.indexOf(key);
                 if (idx >= arr.length || idx < 0)
                         throw new UserException(_loc.get("gap-query-param",

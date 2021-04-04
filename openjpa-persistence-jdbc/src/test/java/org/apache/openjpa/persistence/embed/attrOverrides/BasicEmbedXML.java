@@ -26,7 +26,7 @@ public class BasicEmbedXML {
     }
 
     public BasicEmbedXML(int integerValue) {
-        this.intValue = new Integer(integerValue);
+        this.intValue = integerValue;
     }
 
     public Integer getIntegerValue() {

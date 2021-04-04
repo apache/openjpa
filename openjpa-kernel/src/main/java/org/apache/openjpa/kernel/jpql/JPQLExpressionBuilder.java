@@ -1035,7 +1035,7 @@ public class JPQLExpressionBuilder
                         ? node.text.substring(0, node.text.length() - 1)
                         : node.text).
                     multiply(new BigDecimal(negative(node)));
-                return factory.newLiteral(Long.valueOf(intlit.longValue()),
+                return factory.newLiteral(intlit.longValue(),
                     Literal.TYPE_NUMBER);
 
             case JJTDECIMALLITERAL:
@@ -1322,7 +1322,7 @@ public class JPQLExpressionBuilder
             case JJTCONCAT:
                 if (node.children.length < 2)
                 	throw parseException(EX_USER, "less-child-count",
-                        new Object[]{ Integer.valueOf(2), node,
+                        new Object[]{2, node,
                             Arrays.asList(node.children) }, null);
 
                 val1 = getValue(firstChild(node));
@@ -1485,7 +1485,7 @@ public class JPQLExpressionBuilder
             ? node.text.substring(0, node.text.length() - 1)
             : node.text).
         multiply(new BigDecimal(negative(node)));
-        return factory.newLiteral(Integer.valueOf(bigdec.intValue()),
+        return factory.newLiteral(bigdec.intValue(),
                 Literal.TYPE_NUMBER);
     }
 
@@ -2209,7 +2209,7 @@ public class JPQLExpressionBuilder
     private JPQLNode child(JPQLNode node, int childNum, int assertCount) {
         if (node.children.length != assertCount)
             throw parseException(EX_USER, "wrong-child-count",
-                new Object[]{ Integer.valueOf(assertCount), node,
+                new Object[]{assertCount, node,
                     Arrays.asList(node.children) }, null);
 
         return node.children[childNum];

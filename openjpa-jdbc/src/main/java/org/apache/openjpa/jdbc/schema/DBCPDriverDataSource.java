@@ -137,7 +137,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
                 // save exception details for later instead of throwing here
                 _dbcpEx = new RuntimeException(_eloc.get("driver-null", DBCPBASICDATASOURCENAME).getMessage(), e);
             }
-            return _dbcpAvail.booleanValue();
+            return _dbcpAvail;
         }
     }
 

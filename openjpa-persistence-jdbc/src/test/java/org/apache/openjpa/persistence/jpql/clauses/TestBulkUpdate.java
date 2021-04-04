@@ -91,7 +91,7 @@ public class TestBulkUpdate extends AbstractTestCase {
             + " where e.stringField = :val"
             + " and e.intField = 999").
             setParameter("val", "value4").
-            setParameter("intval", new Integer(987)).
+            setParameter("intval", 987).
             setParameter("nullval", null);
         assertEquals(num, updateQuery4.executeUpdate());
         assertEquals(0, updateQuery4.executeUpdate()); // should be updated

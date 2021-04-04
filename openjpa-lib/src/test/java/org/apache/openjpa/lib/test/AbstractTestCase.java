@@ -95,7 +95,7 @@ public abstract class AbstractTestCase {
      * Support method to get a random Integer for testing.
      */
     public static Integer randomInt() {
-        return new Integer((int) (Math.random() * Integer.MAX_VALUE));
+        return (int) (Math.random() * Integer.MAX_VALUE);
     }
 
     /**
@@ -108,15 +108,15 @@ public abstract class AbstractTestCase {
             's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1',
             '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        return new Character(TEST_CHAR_ARRAY[
-            (int) (Math.random() * TEST_CHAR_ARRAY.length)]);
+        return TEST_CHAR_ARRAY[
+                (int) (Math.random() * TEST_CHAR_ARRAY.length)];
     }
 
     /**
      * Support method to get a random Long for testing.
      */
     public static Long randomLong() {
-        return new Long((long) (Math.random() * Long.MAX_VALUE));
+        return (long) (Math.random() * Long.MAX_VALUE);
     }
 
 

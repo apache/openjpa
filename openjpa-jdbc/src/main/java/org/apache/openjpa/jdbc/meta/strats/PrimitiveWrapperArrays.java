@@ -36,7 +36,7 @@ class PrimitiveWrapperArrays {
         if (vm.getType().getComponentType() == Character.class) {
             Character[] objectArray = new Character[array.length];
             for (int i = 0; i < array.length; i++)
-                objectArray[i] = Character.valueOf(array[i]);
+                objectArray[i] = array[i];
             return objectArray;
         }
         return array;
@@ -50,7 +50,7 @@ class PrimitiveWrapperArrays {
             Character[] charOb = (Character[]) ob;
             char[] chars = new char[charOb.length];
             for (int i = 0; i < charOb.length; i++)
-                chars[i] = charOb[i] == null ? 0 : charOb[i].charValue();
+                chars[i] = charOb[i] == null ? 0 : charOb[i];
             return chars;
         }
         return (char[]) ob;
@@ -65,7 +65,7 @@ class PrimitiveWrapperArrays {
         if (vm.getType().getComponentType() == Byte.class) {
             Byte[] objectArray = new Byte[array.length];
             for (int i = 0; i < array.length; i++)
-                objectArray[i] = Byte.valueOf(array[i]);
+                objectArray[i] = array[i];
             return objectArray;
         }
         return array;
@@ -79,7 +79,7 @@ class PrimitiveWrapperArrays {
             Byte[] byteOb = (Byte[]) ob;
             byte[] bytes = new byte[byteOb.length];
             for (int i = 0; i < byteOb.length; i++)
-                bytes[i] = byteOb[i] == null ? 0 : byteOb[i].byteValue();
+                bytes[i] = byteOb[i] == null ? 0 : byteOb[i];
             return bytes;
         }
         return (byte[]) ob;

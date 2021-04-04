@@ -83,7 +83,7 @@ public abstract class AppIdSubA
         @Override
         StringTokenizer fromString(String idString) {
             StringTokenizer tok = super.fromString(idString);
-            pka = new Integer(tok.nextToken()).intValue();
+            pka = new Integer(tok.nextToken());
             return tok; // return the tokenizer for subclasses to use
         }
     }

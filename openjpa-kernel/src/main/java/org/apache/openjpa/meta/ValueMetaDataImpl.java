@@ -182,7 +182,7 @@ public class ValueMetaDataImpl
                     _embedded = Boolean.TRUE;
             }
         }
-        return _embedded.booleanValue();
+        return _embedded;
     }
 
     @Override

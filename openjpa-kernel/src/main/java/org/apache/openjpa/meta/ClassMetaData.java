@@ -595,7 +595,7 @@ public class ClassMetaData
      */
     public boolean isObjectIdTypeShared() {
         if (_objectIdShared != null)
-            return _objectIdShared.booleanValue();
+            return _objectIdShared;
         if (_super != null)
             return getPCSuperclassMetaData().isObjectIdTypeShared();
         return isOpenJPAIdentity();
@@ -612,7 +612,7 @@ public class ClassMetaData
             _openjpaId = (OpenJPAId.class.isAssignableFrom(cls)) ? Boolean.TRUE
                 : Boolean.FALSE;
         }
-        return _openjpaId.booleanValue();
+        return _openjpaId;
     }
 
     /**
@@ -769,7 +769,7 @@ public class ClassMetaData
             else
                 _extent = Boolean.TRUE;
         }
-        return _extent.booleanValue();
+        return _extent;
     }
 
     /**
@@ -791,7 +791,7 @@ public class ClassMetaData
             else
                 _embedded = Boolean.FALSE;
         }
-        return _embedded.booleanValue();
+        return _embedded;
     }
 
     /**
@@ -831,7 +831,7 @@ public class ClassMetaData
     public boolean isManagedInterface() {
         if (!_type.isInterface())
             return false;
-        return _interface == null ? false : _interface.booleanValue();
+        return _interface == null ? false : _interface;
     }
 
     /**
@@ -1584,7 +1584,7 @@ public class ClassMetaData
             else
                 _detachable = Boolean.FALSE;
         }
-        return _detachable.booleanValue();
+        return _detachable;
     }
 
     /**
@@ -2143,7 +2143,7 @@ public class ClassMetaData
                 }
             }
         }
-        return _useIdClassFromParent.booleanValue();
+        return _useIdClassFromParent;
     }
 
     /**
@@ -2705,7 +2705,7 @@ public class ClassMetaData
      */
     public boolean hasAbstractPKField() {
         if (_hasAbstractPKField != null) {
-            return _hasAbstractPKField.booleanValue();
+            return _hasAbstractPKField;
         }
 
         // Default to false, set to true only if this type is abstract and
@@ -2725,7 +2725,7 @@ public class ClassMetaData
         }
         _hasAbstractPKField = temp;
 
-        return _hasAbstractPKField.booleanValue();
+        return _hasAbstractPKField;
     }
 
     /**
@@ -2740,7 +2740,7 @@ public class ClassMetaData
      */
     public boolean hasPKFieldsFromAbstractClass() {
         if (_hasPKFieldsFromAbstractClass != null) {
-            return _hasPKFieldsFromAbstractClass.booleanValue();
+            return _hasPKFieldsFromAbstractClass;
         }
 
         // Default to FALSE, until proven true.
@@ -2766,7 +2766,7 @@ public class ClassMetaData
         }
         _hasPKFieldsFromAbstractClass = temp;
 
-        return _hasPKFieldsFromAbstractClass.booleanValue();
+        return _hasPKFieldsFromAbstractClass;
     }
 
     /**
@@ -2804,7 +2804,7 @@ public class ClassMetaData
             int idsSize = ids.size();
             int[] temp = new int[idsSize];
             for (int i = 0; i < idsSize; i++) {
-                temp[i] = ids.get(i).intValue();
+                temp[i] = ids.get(i);
             }
             _pkAndNonPersistentManagedFmdIndexes = temp;
         }
@@ -2822,7 +2822,7 @@ public class ClassMetaData
             }
             inverseManagedFields = res;
         }
-        return inverseManagedFields.booleanValue();
+        return inverseManagedFields;
     }
 
     public List<FieldMetaData> getMappyedByIdFields() {

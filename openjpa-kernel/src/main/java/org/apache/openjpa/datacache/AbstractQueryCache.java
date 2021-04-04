@@ -120,7 +120,7 @@ public abstract class AbstractQueryCache
             // Pre-load all the entity types into the HashMap to handle
             // synchronization on the map efficiently
             for (Object o : perTypes)
-                entityTimestampMap.put((String)o, Long.valueOf(0));
+                entityTimestampMap.put((String)o, 0L);
         }
     }
 
@@ -153,7 +153,7 @@ public abstract class AbstractQueryCache
             Collection changedTypes = ev.getTypes();
             HashMap<String,Long> changedClasses =
                 new HashMap<>();
-            Long tstamp = Long.valueOf(System.currentTimeMillis());
+            Long tstamp = System.currentTimeMillis();
             for (Object o: changedTypes) {
                 String name = ((Class) o).getName();
                 if(!changedClasses.containsKey(name)) {

@@ -222,8 +222,8 @@ public class TestSQLQueries
         q.closeAll();
 
         Map params = new HashMap();
-        params.put(new Integer(1), "foo");
-        params.put(new Integer(2), new Integer(2));
+        params.put(1, "foo");
+        params.put(2, 2);
         //FIXME jthomas
         /*itr = ((Collection) q.executeWithMap(params)).iterator();
         assertTrue(itr.hasNext());

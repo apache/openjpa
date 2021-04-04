@@ -81,10 +81,10 @@ public class XMLFileHandler {
      */
     public Collection load(ClassMetaData meta) {
         File f = getFile(meta);
-        if (!(AccessController.doPrivileged(
-            J2DoPrivHelper.existsAction(f))).booleanValue() ||
-            (AccessController.doPrivileged(
-            J2DoPrivHelper.lengthAction(f))).longValue() == 0)
+        if (!AccessController.doPrivileged(
+                J2DoPrivHelper.existsAction(f)) ||
+                AccessController.doPrivileged(
+                        J2DoPrivHelper.lengthAction(f)) == 0)
             return Collections.EMPTY_SET;
         try {
             return read(f);
@@ -137,8 +137,8 @@ public class XMLFileHandler {
             throw new InternalException();
 
         File f = getFile(meta);
-        if (!(AccessController.doPrivileged(
-            J2DoPrivHelper.existsAction(f.getParentFile()))).booleanValue())
+        if (!AccessController.doPrivileged(
+                J2DoPrivHelper.existsAction(f.getParentFile())))
             AccessController.doPrivileged(
                 J2DoPrivHelper.mkdirsAction(f.getParentFile()));
 
@@ -277,7 +277,7 @@ public class XMLFileHandler {
             case JavaTypes.CHAR_OBJ:
                 // quote chars so we can distinguish whitespace chars; special
                 // case for \0
-                char c = ((Character) val).charValue();
+                char c = (Character) val;
                 out.write("'");
                 if (c == '\0')
                     out.write("0x0");
@@ -493,8 +493,8 @@ public class XMLFileHandler {
                     // strip quotes; special case for 0x0
                     str = str.substring(1, str.length() - 1);
                     if (str.equals("0x0"))
-                        return new Character('\0');
-                    return new Character(XMLEncoder.decode(str).charAt(0));
+                        return '\0';
+                    return XMLEncoder.decode(str).charAt(0);
 
                 case JavaTypes.DOUBLE:
                 case JavaTypes.DOUBLE_OBJ:

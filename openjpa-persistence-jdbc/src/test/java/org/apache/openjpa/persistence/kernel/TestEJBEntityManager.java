@@ -99,7 +99,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
             public void run() {
                 try {
                     em.close();
-                    result.add(new Integer(0));
+                    result.add(0);
                 }
                 catch (Exception jdoe) {
                     result.add(jdoe);

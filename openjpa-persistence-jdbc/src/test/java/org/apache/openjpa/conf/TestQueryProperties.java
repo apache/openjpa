@@ -66,8 +66,8 @@ public class TestQueryProperties extends SingleEMFTestCase {
             OpenJPAQuery q;
             Map<String, Object> hints;
             Integer timeout;
-            Integer lTime = new Integer(0);
-            Integer qTime = new Integer(0);
+            Integer lTime = 0;
+            Integer qTime = 0;
 
             // create our PU without properties
             emf1 = OpenJPAPersistence.createEntityManagerFactory(
@@ -190,8 +190,8 @@ public class TestQueryProperties extends SingleEMFTestCase {
             OpenJPAQuery q;
             Map<String, Object> hints;
             Integer timeout;
-            Integer lTime = new Integer(10000);
-            Integer qTime = new Integer(5000);
+            Integer lTime = 10000;
+            Integer qTime = 5000;
 
             // create our PU with properties
             emf1 = OpenJPAPersistence.createEntityManagerFactory(

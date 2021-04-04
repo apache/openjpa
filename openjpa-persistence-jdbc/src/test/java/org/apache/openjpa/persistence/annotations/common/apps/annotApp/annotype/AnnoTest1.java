@@ -164,7 +164,7 @@ public class AnnoTest1 {
     }
 
     public AnnoTest1(long pk) {
-        this.pk = new Long(pk);
+        this.pk = pk;
     }
 
     public void setPk(Long val) {

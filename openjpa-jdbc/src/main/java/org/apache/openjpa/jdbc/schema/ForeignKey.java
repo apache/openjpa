@@ -183,7 +183,7 @@ public class ForeignKey extends Constraint {
      */
     public boolean isPrimaryKeyAutoAssigned() {
         if (_autoAssign != null)
-            return _autoAssign.booleanValue();
+            return _autoAssign;
         return isPrimaryKeyAutoAssigned(new ArrayList(3));
     }
 
@@ -199,7 +199,7 @@ public class ForeignKey extends Constraint {
      */
     private boolean isPrimaryKeyAutoAssigned(List seen) {
         if (_autoAssign != null)
-            return _autoAssign.booleanValue();
+            return _autoAssign;
 
         Column[] cols = getPrimaryKeyColumns();
         if (cols.length == 0) {

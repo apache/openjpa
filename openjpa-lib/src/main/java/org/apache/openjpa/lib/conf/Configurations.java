@@ -341,13 +341,13 @@ public class Configurations {
             String anchor = result.get(CONFIG_RESOURCE_ANCHOR);
 
             File file = new File(path);
-            if ((AccessController.doPrivileged(J2DoPrivHelper
-                .isFileAction(file))).booleanValue())
+            if (AccessController.doPrivileged(J2DoPrivHelper
+                    .isFileAction(file)))
                 provider = ProductDerivations.load(file, anchor, null);
             else {
                 file = new File("META-INF" + File.separatorChar + path);
-                if ((AccessController.doPrivileged(J2DoPrivHelper
-                    .isFileAction(file))).booleanValue())
+                if (AccessController.doPrivileged(J2DoPrivHelper
+                        .isFileAction(file)))
                     provider = ProductDerivations.load(file, anchor, null);
                 else
                     provider = ProductDerivations.load(path, anchor, null);

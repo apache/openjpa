@@ -213,9 +213,9 @@ public abstract class AbstractChangeTracker
         else
             _identity = Boolean.FALSE;
 
-        add = switchStructure(add, _identity.booleanValue());
-        rem = switchStructure(rem, _identity.booleanValue());
-        change = switchStructure(change, _identity.booleanValue());
+        add = switchStructure(add, _identity);
+        rem = switchStructure(rem, _identity);
+        change = switchStructure(change, _identity);
     }
 
     /**

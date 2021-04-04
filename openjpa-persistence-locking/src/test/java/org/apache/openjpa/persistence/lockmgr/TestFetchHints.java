@@ -2426,8 +2426,8 @@ public class TestFetchHints extends SequencedActionsTest {
         }
 
         try {
-            fPlan.setHint("openjpa.FetchPlan.Isolation", new Integer(13));
-            fPlan.setHint("openjpa.FetchPlan.Isolation", new Integer(14));
+            fPlan.setHint("openjpa.FetchPlan.Isolation", 13);
+            fPlan.setHint("openjpa.FetchPlan.Isolation", 14);
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",

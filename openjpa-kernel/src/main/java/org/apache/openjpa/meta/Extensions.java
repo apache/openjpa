@@ -220,7 +220,7 @@ public abstract class Extensions
      */
     public boolean getBooleanExtension(String vendor, String key) {
         String str = getStringExtension(vendor, key);
-        return (str == null) ? false : Boolean.valueOf(str).booleanValue();
+        return (str == null) ? false : Boolean.valueOf(str);
     }
 
     /**

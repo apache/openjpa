@@ -58,9 +58,9 @@ class Abs
         if (c == Integer.class)
             return Math.abs(((Number) o).intValue());
         if (c == Float.class)
-            return Float.valueOf(Math.abs(((Number) o).floatValue()));
+            return Math.abs(((Number) o).floatValue());
         if (c == Double.class)
-            return Double.valueOf(Math.abs(((Number) o).doubleValue()));
+            return Math.abs(((Number) o).doubleValue());
         if (c == Long.class)
             return Math.abs(((Number) o).longValue());
         if (c == BigDecimal.class)

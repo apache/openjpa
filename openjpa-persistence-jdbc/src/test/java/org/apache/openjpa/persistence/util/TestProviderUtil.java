@@ -258,7 +258,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
         }
         Set<Integer> ints = new HashSet<>();
         for (int i = 0; i < 12; i++) {
-            ints.add(new Integer(i));
+            ints.add(i);
         }
         emb.setIntVals(ints);
 

@@ -439,7 +439,7 @@ public class RowImpl
     @Override
     public void setByte(Column col, byte val)
         throws SQLException {
-        setObject(col, new Byte(val), JavaTypes.BYTE, false);
+        setObject(col, val, JavaTypes.BYTE, false);
     }
 
     @Override
@@ -457,7 +457,7 @@ public class RowImpl
     @Override
     public void setChar(Column col, char val)
         throws SQLException {
-        setObject(col, new Character(val), JavaTypes.CHAR, false);
+        setObject(col, val, JavaTypes.CHAR, false);
     }
 
     @Override
@@ -493,13 +493,13 @@ public class RowImpl
     @Override
     public void setDouble(Column col, double val)
         throws SQLException {
-        setObject(col, new Double(val), JavaTypes.DOUBLE, false);
+        setObject(col, val, JavaTypes.DOUBLE, false);
     }
 
     @Override
     public void setFloat(Column col, float val)
         throws SQLException {
-        setObject(col, new Float(val), JavaTypes.FLOAT, false);
+        setObject(col, val, JavaTypes.FLOAT, false);
     }
 
     @Override
@@ -547,7 +547,7 @@ public class RowImpl
     @Override
     public void setShort(Column col, short val)
         throws SQLException {
-        setObject(col, new Short(val), JavaTypes.SHORT, false);
+        setObject(col, val, JavaTypes.SHORT, false);
     }
 
     @Override
@@ -635,7 +635,7 @@ public class RowImpl
     @Override
     public void whereByte(Column col, byte val)
         throws SQLException {
-        whereObject(col, new Byte(val), JavaTypes.BYTE);
+        whereObject(col, val, JavaTypes.BYTE);
     }
 
     @Override
@@ -653,7 +653,7 @@ public class RowImpl
     @Override
     public void whereChar(Column col, char val)
         throws SQLException {
-        whereObject(col, new Character(val), JavaTypes.CHAR);
+        whereObject(col, val, JavaTypes.CHAR);
     }
 
     @Override
@@ -689,13 +689,13 @@ public class RowImpl
     @Override
     public void whereDouble(Column col, double val)
         throws SQLException {
-        whereObject(col, new Double(val), JavaTypes.DOUBLE);
+        whereObject(col, val, JavaTypes.DOUBLE);
     }
 
     @Override
     public void whereFloat(Column col, float val)
         throws SQLException {
-        whereObject(col, new Float(val), JavaTypes.FLOAT);
+        whereObject(col, val, JavaTypes.FLOAT);
     }
 
     @Override
@@ -737,7 +737,7 @@ public class RowImpl
     @Override
     public void whereShort(Column col, short val)
         throws SQLException {
-        whereObject(col, new Short(val), JavaTypes.SHORT);
+        whereObject(col, val, JavaTypes.SHORT);
     }
 
     @Override

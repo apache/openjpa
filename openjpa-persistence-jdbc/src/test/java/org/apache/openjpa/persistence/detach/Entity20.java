@@ -57,7 +57,7 @@ public class Entity20 implements Serializable {
     }
 
     public Entity20(int id) {
-        this.id = new Integer(id);
+        this.id = id;
         this.name = this.id.toString();
         Long time = System.currentTimeMillis();
         this.sqlTime = new Time(time);

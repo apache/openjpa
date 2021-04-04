@@ -108,8 +108,8 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
 
         try {
             EGeneric generic = new EGeneric();
-            generic.setId(new Integer(1));
-            generic.setLongVal(new Long(10));
+            generic.setId(1);
+            generic.setLongVal(10L);
             generic.setStrVal("Nope");
 
             em.getTransaction().begin();

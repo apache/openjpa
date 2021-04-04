@@ -453,7 +453,7 @@ public abstract class AbstractResult
             null, joins));
         if (val == null)
             return false;
-        return Boolean.valueOf(val.toString()).booleanValue();
+        return Boolean.valueOf(val.toString());
     }
 
     @Override
@@ -612,7 +612,7 @@ public abstract class AbstractResult
         if (val == null)
             return 0;
         if (val instanceof Character)
-            return ((Character) val).charValue();
+            return (Character) val;
 
         String str = val.toString();
         return (str.length() == 0) ? 0 : str.charAt(0);

@@ -31,7 +31,7 @@ public final class IntId extends OpenJPAId {
     private final int key;
 
     public IntId(Class cls, Integer key) {
-        this(cls, (key == null) ? 0 : key.intValue());
+        this(cls, (key == null) ? 0 : key);
     }
 
     public IntId(Class cls, String key) {

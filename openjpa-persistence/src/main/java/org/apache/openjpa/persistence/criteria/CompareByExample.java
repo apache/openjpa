@@ -107,7 +107,7 @@ class CompareByExample<T> extends PredicateImpl {
         if (cls == Boolean.class || cls == boolean.class) {
            return Boolean.FALSE.equals(val);
         } else if (cls == Character.class || cls == char.class) {
-            return ((Character) val).charValue() == 0;
+            return (Character) val == 0;
         } else if (cls == Byte.class || cls == byte.class
                 || cls == Double.class || cls == double.class
                 || cls == Float.class || cls == float.class

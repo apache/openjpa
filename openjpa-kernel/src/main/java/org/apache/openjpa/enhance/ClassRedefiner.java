@@ -108,6 +108,6 @@ public class ClassRedefiner {
                 _canRedefine = Boolean.FALSE;
             }
         }
-        return _canRedefine.booleanValue();
+        return _canRedefine;
     }
 }

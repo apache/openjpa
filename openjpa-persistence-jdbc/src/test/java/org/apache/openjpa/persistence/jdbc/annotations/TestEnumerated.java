@@ -75,7 +75,7 @@ public class TestEnumerated
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(1));
+        pc = em.find(AnnoTest1.class, 1L);
         assertEquals(InheritanceType.TABLE_PER_CLASS, pc.getEnumeration());
         assertEquals(InheritanceType.TABLE_PER_CLASS,
             pc.getOrdinalEnumeration());
@@ -89,7 +89,7 @@ public class TestEnumerated
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(1));
+        pc = em.find(AnnoTest1.class, 1L);
         assertEquals(InheritanceType.JOINED, pc.getEnumeration());
         assertEquals(InheritanceType.JOINED, pc.getOrdinalEnumeration());
         assertEquals(InheritanceType.TABLE_PER_CLASS,

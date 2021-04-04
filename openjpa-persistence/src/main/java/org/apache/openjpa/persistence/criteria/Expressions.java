@@ -601,7 +601,7 @@ class Expressions {
     }
 
     public static class Trim extends BinarayFunctionalExpression<String> {
-        static Expression<Character> defaultTrim = new Constant<>(Character.class, Character.valueOf(' '));
+        static Expression<Character> defaultTrim = new Constant<>(Character.class, ' ');
         static Trimspec defaultSpec = Trimspec.BOTH;
         private Trimspec ts;
 

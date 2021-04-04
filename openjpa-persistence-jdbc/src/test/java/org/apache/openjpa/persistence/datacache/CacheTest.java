@@ -754,9 +754,9 @@ public abstract class CacheTest extends AbstractTestCase {
             q.setCandidateExtent(broker.newExtent(CacheObjectA.class, false));
             start = System.currentTimeMillis();
             assertInCache(q, inCache, new Object[]{ ORIG_NAME,
-                new Integer(ORIG_AGE) });
+                    ORIG_AGE});
             l = (List) q.execute(new Object[]{ ORIG_NAME,
-                new Integer(ORIG_AGE) });
+                    ORIG_AGE});
             iterate(l);
             q2p1 = System.currentTimeMillis() - start;
 
@@ -764,7 +764,7 @@ public abstract class CacheTest extends AbstractTestCase {
 
             start = System.currentTimeMillis();
             l2 = (List) q.execute(new Object[]{ ORIG_NAME,
-                new Integer(ORIG_AGE) });
+                    ORIG_AGE});
             iterate(l2);
             q2p2 = System.currentTimeMillis() - start;
 

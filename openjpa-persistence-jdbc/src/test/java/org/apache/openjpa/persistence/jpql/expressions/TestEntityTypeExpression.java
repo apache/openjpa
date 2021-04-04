@@ -191,7 +191,7 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         query = "select sum(e.age) FROM CompUser e GROUP BY e.age" +
             " HAVING ABS(e.age) = :param";
         Long sum = (Long) em.createQuery(query).
-            setParameter("param",  new Double(36)).getSingleResult();
+            setParameter("param", 36.0).getSingleResult();
         assertEquals(sum.intValue(), 72);
 
         String[] queries = {

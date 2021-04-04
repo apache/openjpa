@@ -63,7 +63,7 @@ public class AttachVersionA {
     }
 
     public Object getVersionObject() {
-        return new Integer(version);
+        return version;
     }
 
     public String getStringField() {

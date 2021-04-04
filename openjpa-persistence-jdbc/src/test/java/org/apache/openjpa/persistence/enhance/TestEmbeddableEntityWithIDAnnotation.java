@@ -41,7 +41,7 @@ public class TestEmbeddableEntityWithIDAnnotation extends SQLListenerTestCase{
             em.persist(e);
             em.getTransaction().commit();
             assertTrue(em.createQuery("select count(c) from IDOwningClassTestEntity c", Long.class)
-                    .getSingleResult().longValue() > 0);
+                    .getSingleResult() > 0);
         }finally{
             em.close();
         }

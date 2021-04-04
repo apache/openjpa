@@ -817,8 +817,8 @@ public class InMemoryExpressionFactory
                 return (_asc) ? -1 : 1;
 
             if (o1 instanceof Boolean && o2 instanceof Boolean) {
-                int i1 = ((Boolean) o1).booleanValue() ? 1 : 0;
-                int i2 = ((Boolean) o2).booleanValue() ? 1 : 0;
+                int i1 = (Boolean) o1 ? 1 : 0;
+                int i2 = (Boolean) o2 ? 1 : 0;
                 return i1 - i2;
             }
 

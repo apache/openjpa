@@ -92,7 +92,7 @@ public class TestOptimizeForClause
                     "select o from AllFieldTypes o where o.intField = :p");
                     q.setParameter("p", 0);
                     q.setHint("openjpa.hint.OptimizeResultCount"
-                         ,new Integer(8));
+                         , 8);
                     q.getResultList();
                 }
                 else {
@@ -100,7 +100,7 @@ public class TestOptimizeForClause
                         ("select o from AllFieldTypes o where o.intField " +
                          "= :p"));
                     q.setParameter("p", 0);
-                    q.setHint(OpenJPAQuery.HINT_RESULT_COUNT, new Integer(8));
+                    q.setHint(OpenJPAQuery.HINT_RESULT_COUNT, 8);
                     q.getResultList();
                }
                if (dict instanceof DB2Dictionary) {

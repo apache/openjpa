@@ -1123,7 +1123,7 @@ public class LogicalUnion
          */
         private Object getOrderingValue(ResultSet rs, Object i) {
             try {
-                return _dict.getObject(rs, ((Integer) i).intValue() + 1, null);
+                return _dict.getObject(rs, (Integer) i + 1, null);
             } catch (SQLException se) {
                 throw SQLExceptions.getStore(se, _dict);
             }

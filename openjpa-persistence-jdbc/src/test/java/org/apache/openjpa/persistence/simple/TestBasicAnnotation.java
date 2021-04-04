@@ -60,7 +60,7 @@ public class TestBasicAnnotation extends SingleEMFTestCase {
                 System.currentTimeMillis()));
         aft.setStringField("aft");
         aft.setWByteLob(new Byte[1]);
-        aft.setWDoubleField(new Double(1));
+        aft.setWDoubleField(1.0);
 
         aft.setLocalDateField(LocalDate.parse(VAL_LOCAL_DATE));
         aft.setLocalTimeField(LocalTime.parse(VAL_LOCAL_TIME));

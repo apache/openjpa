@@ -97,7 +97,7 @@ class CacheTestHelper {
         if (res instanceof Collection)
             return res instanceof CacheTestBroker.CachedQueryResult;
         // no way to tell if unique results from cache
-        return expected.booleanValue();
+        return expected;
     }
 
     static void iterate(Collection c) {

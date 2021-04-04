@@ -356,7 +356,7 @@ public class TestIncrementalFlushes extends BaseKernelTest {
         assertSize(0, readPM.createNativeQuery("stringField == '" + name + "'",
             ModRuntimeTest1.class));
 
-        ModRuntimeTest1 a = new ModRuntimeTest1(name, randomInt().intValue());
+        ModRuntimeTest1 a = new ModRuntimeTest1(name, randomInt());
 
         flushPM.persist(a);
 

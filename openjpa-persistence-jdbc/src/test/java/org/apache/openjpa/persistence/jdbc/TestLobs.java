@@ -34,7 +34,7 @@ public class TestLobs extends SingleEMFTestCase {
      * Support method to get a random Byte for testing.
      */
     public static Byte randomByte() {
-        return new Byte((byte) (Math.random() * Byte.MAX_VALUE));
+        return (byte) (Math.random() * Byte.MAX_VALUE);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class TestLobs extends SingleEMFTestCase {
         Blobs lobs = new Blobs();
         byte[] bytes = new byte[10];
         for (int i = 0; i < bytes.length; i++)
-            bytes[i] = randomByte().byteValue();
+            bytes[i] = randomByte();
 
         em.getTransaction().begin();
         lobs.setLobNotNullable(bytes);
@@ -125,7 +125,7 @@ public class TestLobs extends SingleEMFTestCase {
         // test with large data
         byte[] bytes = new byte[5000];
         for (int i = 0; i < bytes.length; i++)
-            bytes[i] = randomByte().byteValue();
+            bytes[i] = randomByte();
 
         EntityManager em = emf.createEntityManager();
         Blobs lobs = new Blobs();

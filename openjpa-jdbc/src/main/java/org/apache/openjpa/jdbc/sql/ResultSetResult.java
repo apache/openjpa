@@ -438,19 +438,19 @@ public class ResultSetResult
                 break;
             case JavaTypes.BYTE:
             case JavaTypes.BYTE_OBJ:
-                val = new Byte(getByteInternal(obj, joins));
+                val = getByteInternal(obj, joins);
                 break;
             case JavaTypes.CHAR:
             case JavaTypes.CHAR_OBJ:
-                val = new Character(getCharInternal(obj, joins));
+                val = getCharInternal(obj, joins);
                 break;
             case JavaTypes.DOUBLE:
             case JavaTypes.DOUBLE_OBJ:
-                val = new Double(getDoubleInternal(obj, joins));
+                val = getDoubleInternal(obj, joins);
                 break;
             case JavaTypes.FLOAT:
             case JavaTypes.FLOAT_OBJ:
-                val = new Float(getFloatInternal(obj, joins));
+                val = getFloatInternal(obj, joins);
                 break;
             case JavaTypes.INT:
             case JavaTypes.INT_OBJ:
@@ -462,7 +462,7 @@ public class ResultSetResult
                 break;
             case JavaTypes.SHORT:
             case JavaTypes.SHORT_OBJ:
-                val = new Short(getShortInternal(obj, joins));
+                val = getShortInternal(obj, joins);
                 break;
             case JavaTypes.STRING:
                 return getStringInternal(obj, joins, isClob);

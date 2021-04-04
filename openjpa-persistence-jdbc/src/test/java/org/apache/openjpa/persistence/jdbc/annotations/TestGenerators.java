@@ -94,7 +94,7 @@ public class TestGenerators extends SingleEMFTestCase {
     private void assertPks(Generator g) {
         assertNotEquals(0, g.getPk());
         assertNotNull(g.getPk2());
-        assertNotEquals(new Integer(0), g);
+        assertNotEquals(0, g);
         assertNotEquals(0, g.getPk3());
     }
 }

@@ -209,8 +209,8 @@ public abstract class AbstractTask extends MatchingTask {
             String[] dsFiles = ds.getIncludedFiles();
             for (int j = 0; j < dsFiles.length; j++) {
                 File f = new File(dsFiles[j]);
-                if (!( AccessController.doPrivileged(J2DoPrivHelper
-                    .isFileAction(f))).booleanValue())
+                if (!AccessController.doPrivileged(J2DoPrivHelper
+                        .isFileAction(f)))
                     f = new File(ds.getBasedir(), dsFiles[j]);
                 files.add(AccessController.doPrivileged(
                     J2DoPrivHelper.getAbsolutePathAction(f)));

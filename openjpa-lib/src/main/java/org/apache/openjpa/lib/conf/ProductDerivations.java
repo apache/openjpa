@@ -407,15 +407,13 @@ public class ProductDerivations {
                 }
 
                 File f = new File(propertiesLocation);
-                if (((Boolean) J2DoPrivHelper.isFileAction(f).run())
-                    .booleanValue()) {
+                if ((Boolean) J2DoPrivHelper.isFileAction(f).run()) {
                     addAll(fqAnchors, propertiesLocation,
                         _derivations[i].getAnchorsInFile(f));
                 } else {
                     f = new File("META-INF" + File.separatorChar
                         + propertiesLocation);
-                    if (((Boolean) J2DoPrivHelper.isFileAction(f).run())
-                        .booleanValue()) {
+                    if ((Boolean) J2DoPrivHelper.isFileAction(f).run()) {
                         addAll(fqAnchors, propertiesLocation,
                             _derivations[i].getAnchorsInFile(f));
                     } else {

@@ -100,35 +100,35 @@ public class ReflectingPersistenceCapable
         switch (meta.getField(i).getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
                 sm.providedBooleanField(this, i, value == null ? false :
-                    ((Boolean) value).booleanValue());
+                        (Boolean) value);
                 break;
             case JavaTypes.BYTE:
                 sm.providedByteField(this, i, value == null ? 0 :
-                    ((Byte) value).byteValue());
+                        (Byte) value);
                 break;
             case JavaTypes.CHAR:
                 sm.providedCharField(this, i, value == null ? 0 :
-                    ((Character) value).charValue());
+                        (Character) value);
                 break;
             case JavaTypes.DOUBLE:
                 sm.providedDoubleField(this, i, value == null ? 0 :
-                    ((Double) value).doubleValue());
+                        (Double) value);
                 break;
             case JavaTypes.FLOAT:
                 sm.providedFloatField(this, i, value == null ? 0 :
-                    ((Float) value).floatValue());
+                        (Float) value);
                 break;
             case JavaTypes.INT:
                 sm.providedIntField(this, i, value == null ? 0 :
-                    ((Integer) value).intValue());
+                        (Integer) value);
                 break;
             case JavaTypes.LONG:
                 sm.providedLongField(this, i, value == null ? 0 :
-                    ((Long) value).longValue());
+                        (Long) value);
                 break;
             case JavaTypes.SHORT:
                 sm.providedShortField(this, i, value == null ? 0 :
-                    ((Short) value).shortValue());
+                        (Short) value);
                 break;
             case JavaTypes.STRING:
                 sm.providedStringField(this, i, (String) value);
@@ -149,29 +149,28 @@ public class ReflectingPersistenceCapable
     public void pcReplaceField(int i) {
         switch(meta.getField(i).getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
-                setValue(i, o, Boolean.valueOf(
-                    sm.replaceBooleanField(this, i)));
+                setValue(i, o, sm.replaceBooleanField(this, i));
                 break;
             case JavaTypes.BYTE:
-                setValue(i, o, Byte.valueOf(sm.replaceByteField(this, i)));
+                setValue(i, o, sm.replaceByteField(this, i));
                 break;
             case JavaTypes.CHAR:
-                setValue(i, o, Character.valueOf(sm.replaceCharField(this, i)));
+                setValue(i, o, sm.replaceCharField(this, i));
                 break;
             case JavaTypes.DOUBLE:
-                setValue(i, o, new Double(sm.replaceDoubleField(this, i)));
+                setValue(i, o, sm.replaceDoubleField(this, i));
                 break;
             case JavaTypes.FLOAT:
-                setValue(i, o, new Float(sm.replaceFloatField(this, i)));
+                setValue(i, o, sm.replaceFloatField(this, i));
                 break;
             case JavaTypes.INT:
-                setValue(i, o, Integer.valueOf(sm.replaceIntField(this, i)));
+                setValue(i, o, sm.replaceIntField(this, i));
                 break;
             case JavaTypes.LONG:
-                setValue(i, o, Long.valueOf(sm.replaceLongField(this, i)));
+                setValue(i, o, sm.replaceLongField(this, i));
                 break;
             case JavaTypes.SHORT:
-                setValue(i, o, Short.valueOf(sm.replaceShortField(this, i)));
+                setValue(i, o, sm.replaceShortField(this, i));
                 break;
             case JavaTypes.STRING:
                 setValue(i, o, sm.replaceStringField(this, i));
@@ -273,7 +272,7 @@ public class ReflectingPersistenceCapable
     @Override
     public Boolean pcIsDetached() {
         if (sm != null)
-            return Boolean.valueOf(sm.isDetached());
+            return sm.isDetached();
 
         // ##### we could do a lot more here if a detached state field
         // ##### was specified.

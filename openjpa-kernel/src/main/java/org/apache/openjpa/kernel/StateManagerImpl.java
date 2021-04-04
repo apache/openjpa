@@ -908,19 +908,19 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 return (fetchBooleanField(field)) ? Boolean.TRUE
                     : Boolean.FALSE;
             case JavaTypes.BYTE:
-                return Byte.valueOf(fetchByteField(field));
+                return fetchByteField(field);
             case JavaTypes.CHAR:
-                return Character.valueOf(fetchCharField(field));
+                return fetchCharField(field);
             case JavaTypes.DOUBLE:
-                return Double.valueOf(fetchDoubleField(field));
+                return fetchDoubleField(field);
             case JavaTypes.FLOAT:
-                return Float.valueOf(fetchFloatField(field));
+                return fetchFloatField(field);
             case JavaTypes.INT:
                 return fetchIntField(field);
             case JavaTypes.LONG:
                 return fetchLongField(field);
             case JavaTypes.SHORT:
-                return Short.valueOf(fetchShortField(field));
+                return fetchShortField(field);
             default:
                 return fetchObjectField(field);
         }
@@ -1042,19 +1042,19 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 return (fm.fetchBooleanField(field)) ? Boolean.TRUE
                     : Boolean.FALSE;
             case JavaTypes.BYTE:
-                return Byte.valueOf(fm.fetchByteField(field));
+                return fm.fetchByteField(field);
             case JavaTypes.CHAR:
-                return Character.valueOf(fm.fetchCharField(field));
+                return fm.fetchCharField(field);
             case JavaTypes.DOUBLE:
-                return Double.valueOf(fm.fetchDoubleField(field));
+                return fm.fetchDoubleField(field);
             case JavaTypes.FLOAT:
-                return Float.valueOf(fm.fetchFloatField(field));
+                return fm.fetchFloatField(field);
             case JavaTypes.INT:
                 return fm.fetchIntField(field);
             case JavaTypes.LONG:
                 return fm.fetchLongField(field);
             case JavaTypes.SHORT:
-                return Short.valueOf(fm.fetchShortField(field));
+                return fm.fetchShortField(field);
             case JavaTypes.STRING:
                 return fm.fetchStringField(field);
             default:
@@ -1840,10 +1840,10 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             if (active) {
                 if (_broker.getOptimistic())
                     setPCState(_state.beforeOptimisticWrite(this, field,
-                        mutate.booleanValue()));
+                            mutate));
                 else
                     setPCState(_state.beforeWrite(this, field,
-                        mutate.booleanValue()));
+                            mutate));
             } else if (fmd.getManagement() == FieldMetaData.MANAGE_PERSISTENT) {
                 if (isPersistent() && !_broker.getNontransactionalWrite())
                     throw new InvalidStateException(_loc.get
@@ -1851,7 +1851,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                         (getManagedInstance());
 
                 setPCState(_state.beforeNontransactionalWrite(this, field,
-                    mutate.booleanValue()));
+                        mutate));
             }
 
             if ((_flags & FLAG_FLUSHED) != 0) {
@@ -2398,7 +2398,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             return fetchBooleanField(field);
 
         Object val = fetchField(field, false);
-        return ((Boolean) fmd.getExternalValue(val, _broker)).booleanValue();
+        return (Boolean) fmd.getExternalValue(val, _broker);
     }
 
     @Override
@@ -2446,7 +2446,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             return fetchCharField(field);
 
         Object val = fetchField(field, false);
-        return ((Character) fmd.getExternalValue(val, _broker)).charValue();
+        return (Character) fmd.getExternalValue(val, _broker);
     }
 
     @Override
@@ -2661,7 +2661,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         if (!fmd.isExternalized())
             storeByteField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(Byte.valueOf(externalVal),
+            storeField(field, fmd.getFieldValue(externalVal,
                 _broker));
     }
 
@@ -2684,7 +2684,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         if (!fmd.isExternalized())
             storeCharField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(Character.valueOf(externalVal),
+            storeField(field, fmd.getFieldValue(externalVal,
                 _broker));
     }
 
@@ -2707,7 +2707,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         if (!fmd.isExternalized())
             storeDoubleField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(Double.valueOf(externalVal), _broker));
+            storeField(field, fmd.getFieldValue(externalVal, _broker));
     }
 
     @Override
@@ -2729,7 +2729,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         if (!fmd.isExternalized())
             storeFloatField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(Float.valueOf(externalVal), _broker));
+            storeField(field, fmd.getFieldValue(externalVal, _broker));
     }
 
     @Override
@@ -2821,7 +2821,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         if (!fmd.isExternalized())
             storeShortField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(Short.valueOf(externalVal),
+            storeField(field, fmd.getFieldValue(externalVal,
                 _broker));
     }
 
@@ -2872,7 +2872,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
-                boolean bool = val != null && ((Boolean) val).booleanValue();
+                boolean bool = val != null && (Boolean) val;
                 fm.storeBooleanField(field, bool);
                 break;
             case JavaTypes.BYTE:
@@ -2880,7 +2880,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
                 fm.storeByteField(field, b);
                 break;
             case JavaTypes.CHAR:
-                char c = (val == null) ? 0 : ((Character) val).charValue();
+                char c = (val == null) ? 0 : (Character) val;
                 fm.storeCharField(field, c);
                 break;
             case JavaTypes.DOUBLE:

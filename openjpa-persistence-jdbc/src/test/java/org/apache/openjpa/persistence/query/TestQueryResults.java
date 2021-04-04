@@ -395,7 +395,7 @@ public class TestQueryResults extends BaseQueryTest {
                 "SELECT r FROM RuntimeTest1 ORDER BY r.stringField ASC");
             q.setSubclasses(false);
             q.setFirstResult(0);
-            Long l = new Long(Long.MAX_VALUE);
+            Long l = Long.MAX_VALUE;
             q.setMaxResults(l.intValue());
 
             List res = (List) q.getResultList();
@@ -423,7 +423,7 @@ public class TestQueryResults extends BaseQueryTest {
             OpenJPAQuery q = em.createQuery(
                 "SELECT r FROM RuntimeTest1 ORDER BY r.stringField ASC");
             q.setFirstResult(0);
-            Long l = new Long(Long.MAX_VALUE);
+            Long l = Long.MAX_VALUE;
             q.setMaxResults(l.intValue());
 
             List res = (List) q.getResultList();
@@ -478,7 +478,7 @@ public class TestQueryResults extends BaseQueryTest {
 
         for (int i = 0; i < 7; i++) {
             q.setFirstResult(i);
-            Long l = new Long(Long.MAX_VALUE);
+            Long l = Long.MAX_VALUE;
             q.setMaxResults(100000);
 
             List res = (List) q.getResultList();

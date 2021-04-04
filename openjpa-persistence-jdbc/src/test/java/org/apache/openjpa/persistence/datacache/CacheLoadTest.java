@@ -48,9 +48,9 @@ public class CacheLoadTest
 
     private EntityManagerFactory emf;
     protected int threadCount =
-        Integer.getInteger("cachetest.threads", 30).intValue();
+            Integer.getInteger("cachetest.threads", 30);
     protected int interationCount =
-        Integer.getInteger("cachetest.iterations", 1000).intValue();
+            Integer.getInteger("cachetest.iterations", 1000);
 
     @Override
     public void setUp() throws Exception {
@@ -71,8 +71,8 @@ public class CacheLoadTest
 
     public void testCacheLoad()
         throws Exception {
-        mttest(Integer.getInteger("cachetest.threads", 30).intValue(),
-            Integer.getInteger("cachetest.iterations", 1000).intValue());
+        mttest(Integer.getInteger("cachetest.threads", 30),
+                Integer.getInteger("cachetest.iterations", 1000));
 
         switch ((int) (Math.random() * 4)) {
             case 0:
@@ -91,7 +91,7 @@ public class CacheLoadTest
     }
 
     private int rnd(int num) {
-        return randomInt().intValue() % num;
+        return randomInt() % num;
     }
 
     private void insert()
@@ -126,7 +126,7 @@ public class CacheLoadTest
             try {
                 new ArrayList((Collection) em
                     .createQuery("org.apache.openjpa.kernel.jpql.JPQL",
-                        filters[randomInt().intValue() % filters.length]).
+                        filters[randomInt() % filters.length]).
                     getResultList());
             } catch (IllegalStateException e) {
                 e.printStackTrace();

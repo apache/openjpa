@@ -54,7 +54,7 @@ public class TestRelationOrphanRemoval extends SingleEMTestCase {
         tx.commit();
 
         tx.begin();
-        parent = em.find(Parent.class, new Integer(origId));
+        parent = em.find(Parent.class, origId);
         child = parent.getChilds().iterator().next();
         grandChild = child.getGrandChilds().iterator().next();
         child.setName("Test");

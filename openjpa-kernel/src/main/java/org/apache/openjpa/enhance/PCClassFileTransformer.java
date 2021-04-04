@@ -185,7 +185,7 @@ public class PCClassFileTransformer
 
         if (_names != null) {
             if (_names.contains(clsName.replace('/', '.')))
-                return Boolean.valueOf(!isEnhanced(bytes));
+                return !isEnhanced(bytes);
             return null;
         }
 

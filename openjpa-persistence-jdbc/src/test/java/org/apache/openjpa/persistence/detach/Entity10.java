@@ -53,8 +53,8 @@ public class Entity10 {
 
     private void initialize() {
         intCollection = new ArrayList<>();
-        intCollection.add(new Integer(1));
-        intCollection.add(new Integer(99));
+        intCollection.add(1);
+        intCollection.add(99);
 
         stringCollection = new HashSet<>();
         stringCollection.add(new String("xxx"));

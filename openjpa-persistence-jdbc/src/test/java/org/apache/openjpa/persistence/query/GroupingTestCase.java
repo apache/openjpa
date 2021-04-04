@@ -115,8 +115,8 @@ public abstract class GroupingTestCase
         List res = q.getResultList();
         assertEquals(2, res.size());
         Iterator itr = res.iterator();
-        assertEquals(new Integer(1), itr.next());
-        assertEquals(new Integer(2), itr.next());
+        assertEquals(1, itr.next());
+        assertEquals(2, itr.next());
         assertTrue(!itr.hasNext());
     }
 
@@ -130,8 +130,8 @@ public abstract class GroupingTestCase
         List res = q.getResultList();
         assertEquals(2, res.size());
         Iterator itr = res.iterator();
-        assertEquals(new Long(-4), itr.next());
-        assertEquals(new Long(-2), itr.next());
+        assertEquals((long) -4, itr.next());
+        assertEquals((long) -2, itr.next());
         assertTrue(!itr.hasNext());
     }
 
@@ -142,8 +142,8 @@ public abstract class GroupingTestCase
         List res = q.getResultList();
         assertEquals(2, res.size());
         Iterator itr = res.iterator();
-        assertEquals(new Integer(2), itr.next());
-        assertEquals(new Integer(1), itr.next());
+        assertEquals(2, itr.next());
+        assertEquals(1, itr.next());
         assertTrue(!itr.hasNext());
     }
 
@@ -154,10 +154,10 @@ public abstract class GroupingTestCase
         List res = q.getResultList();
         assertEquals(4, res.size());
         Iterator itr = res.iterator();
-        assertEquals(new Integer(1), itr.next());
-        assertEquals(new Integer(1), itr.next());
-        assertEquals(new Integer(2), itr.next());
-        assertEquals(new Integer(2), itr.next());
+        assertEquals(1, itr.next());
+        assertEquals(1, itr.next());
+        assertEquals(2, itr.next());
+        assertEquals(2, itr.next());
         assertTrue(!itr.hasNext());
     }
 
@@ -182,8 +182,8 @@ public abstract class GroupingTestCase
         List res = q.getResultList();
         assertEquals(2, res.size());
         Iterator itr = res.iterator();
-        assertEquals(new Integer(1), itr.next());
-        assertEquals(new Integer(2), itr.next());
+        assertEquals(1, itr.next());
+        assertEquals(2, itr.next());
         assertTrue(!itr.hasNext());
     }
 
@@ -214,9 +214,9 @@ public abstract class GroupingTestCase
         List res = q.getResultList();
         assertEquals(3, res.size());
         Iterator itr = res.iterator();
-        assertEquals(new Long(1), itr.next());
-        assertEquals(new Long(2), itr.next());
-        assertEquals(new Long(1), itr.next());
+        assertEquals(1L, itr.next());
+        assertEquals(2L, itr.next());
+        assertEquals(1L, itr.next());
         assertTrue(!itr.hasNext());
     }
 
@@ -228,11 +228,11 @@ public abstract class GroupingTestCase
         assertEquals(2, res.size());
         Iterator itr = res.iterator();
         Object[] o = (Object[]) itr.next();
-        assertEquals(new Long(2), o[0]);
-        assertEquals(new Long(4), o[1]);
+        assertEquals(2L, o[0]);
+        assertEquals(4L, o[1]);
         o = (Object[]) itr.next();
-        assertEquals(new Long(2), o[0]);
-        assertEquals(new Long(2), o[1]);
+        assertEquals(2L, o[0]);
+        assertEquals(2L, o[1]);
         assertTrue(!itr.hasNext());
     }
 
@@ -245,11 +245,11 @@ public abstract class GroupingTestCase
         assertEquals(2, res.size());
         Iterator itr = res.iterator();
         Object[] o = (Object[]) itr.next();
-        assertEquals(new Long(2), o[0]);
-        assertEquals(new Short((short) -1), o[1]);
+        assertEquals(2L, o[0]);
+        assertEquals((short) -1, o[1]);
         o = (Object[]) itr.next();
-        assertEquals(new Long(2), o[0]);
-        assertEquals(new Short((short) -2), o[1]);
+        assertEquals(2L, o[0]);
+        assertEquals((short) -2, o[1]);
         assertTrue(!itr.hasNext());
     }
 
@@ -257,14 +257,14 @@ public abstract class GroupingTestCase
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField having o.intField < 2");
         prepareQuery(q);
-        assertEquals(new Integer(1), q.getSingleResult());
+        assertEquals(1, q.getSingleResult());
     }
 
     public void testAggregateHaving() {
         Query q = em.createQuery("select o.byteField from AllFieldTypes o " +
             "group by o.byteField having count(o) > 1");
         prepareQuery(q);
-        assertEquals(new Byte((byte) 1), q.getSingleResult());
+        assertEquals((byte) 1, q.getSingleResult());
     }
 
     public void testMixedHaving() {
@@ -275,8 +275,8 @@ public abstract class GroupingTestCase
         List res = q.getResultList();
         assertEquals(2, res.size());
         Iterator itr = res.iterator();
-        assertEquals(new Byte((byte) 0), itr.next());
-        assertEquals(new Byte((byte) 1), itr.next());
+        assertEquals((byte) 0, itr.next());
+        assertEquals((byte) 1, itr.next());
         assertTrue(!itr.hasNext());
     }
 
@@ -289,8 +289,8 @@ public abstract class GroupingTestCase
         List res = q.getResultList();
         assertEquals(2, res.size());
         Iterator itr = res.iterator();
-        assertEquals(new Long(2), itr.next());
-        assertEquals(new Long(4), itr.next());
+        assertEquals(2L, itr.next());
+        assertEquals(4L, itr.next());
         assertTrue(!itr.hasNext());
     }
 
@@ -307,6 +307,6 @@ public abstract class GroupingTestCase
             "where other member of o.selfOneMany " +
             "group by other.byteField having sum(other.intField) = 2");
         prepareQuery(q);
-        assertEquals(new Long(3), ((Object[])q.getSingleResult())[0]);
+        assertEquals(3L, ((Object[])q.getSingleResult())[0]);
     }
 }

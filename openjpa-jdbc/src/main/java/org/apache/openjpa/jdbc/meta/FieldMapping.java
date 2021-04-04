@@ -144,7 +144,7 @@ public class FieldMapping
             try {
                 strategy.setFieldMapping(this);
                 if (adapt != null)
-                    strategy.map(adapt.booleanValue());
+                    strategy.map(adapt);
             } catch (RuntimeException re) {
                 // reset strategy
                 _strategy = orig;
@@ -1280,7 +1280,7 @@ public class FieldMapping
      */
     public boolean isBidirectionalJoinTableMappingOwner() {
     	if (_bidirectionalJoinTableOwner != null)
-    		return _bidirectionalJoinTableOwner.booleanValue();
+    		return _bidirectionalJoinTableOwner;
 
     	_bidirectionalJoinTableOwner = false;
         ForeignKey fk = getForeignKey();
@@ -1313,7 +1313,7 @@ public class FieldMapping
         		}
         	}
         }
-        return _bidirectionalJoinTableOwner.booleanValue();
+        return _bidirectionalJoinTableOwner;
     }
 
     /**
@@ -1323,7 +1323,7 @@ public class FieldMapping
      */
     public boolean isBidirectionalJoinTableMappingNonOwner() {
     	if (_bidirectionalJoinTableNonOwner != null)
-    		return _bidirectionalJoinTableNonOwner.booleanValue();
+    		return _bidirectionalJoinTableNonOwner;
 
     	_bidirectionalJoinTableNonOwner = false;
         ForeignKey fk = getForeignKey();
@@ -1358,7 +1358,7 @@ public class FieldMapping
         		}
         	}
         }
-        return _bidirectionalJoinTableNonOwner.booleanValue();
+        return _bidirectionalJoinTableNonOwner;
     }
 
     public boolean isBiMTo1JT() {

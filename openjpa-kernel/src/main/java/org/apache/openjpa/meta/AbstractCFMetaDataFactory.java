@@ -108,8 +108,8 @@ public abstract class AbstractCFMetaDataFactory
             File file;
             for (int i = 0; i < strs.length; i++) {
                 file = new File(strs[i]);
-                if ((AccessController.doPrivileged(
-                    J2DoPrivHelper.existsAction(file))).booleanValue())
+                if (AccessController.doPrivileged(
+                        J2DoPrivHelper.existsAction(file)))
                     this.files.add(file);
             }
         }
@@ -377,8 +377,8 @@ public abstract class AbstractCFMetaDataFactory
         for (int i = 0; i < metas.length; i++) {
             if (getSourceFile(metas[i]) == null)
                 setSourceFile(metas[i], defaultSourceFile(metas[i]));
-            if ((AccessController.doPrivileged(J2DoPrivHelper
-                .existsAction(getSourceFile(metas[i])))).booleanValue()) {
+            if (AccessController.doPrivileged(J2DoPrivHelper
+                    .existsAction(getSourceFile(metas[i])))) {
                 if (files == null)
                     files = new HashSet();
                 files.add(getSourceFile(metas[i]));
@@ -393,9 +393,8 @@ public abstract class AbstractCFMetaDataFactory
                 queries[i].setSource(defaultFile, queries[i].getSourceScope(), queries[i].getSourceType(),
                     defaultFile == null ? "" : defaultFile.getPath());
             }
-            if ((AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(queries[i].getSourceFile())))
-                .booleanValue()) {
+            if (AccessController.doPrivileged(
+                    J2DoPrivHelper.existsAction(queries[i].getSourceFile()))) {
                 if (files == null)
                     files = new HashSet();
                 files.add(queries[i].getSourceFile());
@@ -406,9 +405,8 @@ public abstract class AbstractCFMetaDataFactory
                 if (getSourceFile(seqs[i]) == null)
                     setSourceFile(seqs[i], defaultSourceFile(seqs[i],
                         clsNames));
-                if ((AccessController.doPrivileged(
-                    J2DoPrivHelper.existsAction(getSourceFile(seqs[i]))))
-                    .booleanValue()) {
+                if (AccessController.doPrivileged(
+                        J2DoPrivHelper.existsAction(getSourceFile(seqs[i])))) {
                     if (files == null)
                         files = new HashSet();
                     files.add(getSourceFile(seqs[i]));
@@ -436,9 +434,8 @@ public abstract class AbstractCFMetaDataFactory
                 queries[i].setSource(defaultFile, queries[i].getSourceScope(), queries[i].getSourceType(),
                     defaultFile == null ? "" : defaultFile.getPath());
             }
-            if ((AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(queries[i].getSourceFile())))
-                .booleanValue()) {
+            if (AccessController.doPrivileged(
+                    J2DoPrivHelper.existsAction(queries[i].getSourceFile()))) {
                 if (files == null)
                     files = new HashSet();
                 files.add(queries[i].getSourceFile());
@@ -650,8 +647,8 @@ public abstract class AbstractCFMetaDataFactory
             File file;
             for (Iterator itr = files.iterator(); itr.hasNext();) {
                 file = (File) itr.next();
-                if ((AccessController.doPrivileged(J2DoPrivHelper
-                    .isDirectoryAction(file))).booleanValue()) {
+                if (AccessController.doPrivileged(J2DoPrivHelper
+                        .isDirectoryAction(file))) {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-directory", file));
                     scan(new FileMetaDataIterator(file, newMetaDataFilter()),
@@ -699,9 +696,8 @@ public abstract class AbstractCFMetaDataFactory
                             .getAbsoluteFileAction(new File(url.getFile())));
                     if (files != null && files.contains(file)) {
                         continue;
-                    } else if ((AccessController
-                        .doPrivileged(J2DoPrivHelper.isDirectoryAction(file)))
-                        .booleanValue()) {
+                    } else if (AccessController
+                            .doPrivileged(J2DoPrivHelper.isDirectoryAction(file))) {
                         if (log.isTraceEnabled())
                             log.trace(_loc.get("scanning-directory", file));
                         scan(

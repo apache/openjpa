@@ -1757,8 +1757,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                     && (tranStatus != Status.STATUS_COMMITTED))
                 _runtime.setRollbackOnly(cause);
             else if (_log.isTraceEnabled())
-                _log.trace(_loc.get("invalid-tran-status", Integer.valueOf(
-                        tranStatus), "setRollbackOnly"));
+                _log.trace(_loc.get("invalid-tran-status", tranStatus, "setRollbackOnly"));
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
@@ -4784,7 +4783,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             return true;
         Boolean detached = pc.pcIsDetached();
         if (detached != null)
-            return detached.booleanValue();
+            return detached;
 
         if(!find){
             return false;

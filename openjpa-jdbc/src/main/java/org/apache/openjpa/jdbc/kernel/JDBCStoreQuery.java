@@ -915,7 +915,7 @@ public class JDBCStoreQuery
         Boolean where = trimVal.getWhere();
         if (where == null) { //trim both
             return trimLeading(trimTrailing(valStr, trimCharObj), trimCharObj);
-        } else if (where.booleanValue()) { // trim leading
+        } else if (where) { // trim leading
             return trimLeading(valStr, trimCharObj);
         } else { // trim trailing
             return trimTrailing(valStr, trimCharObj);
@@ -964,13 +964,13 @@ public class JDBCStoreQuery
         Object val = getValue(absVal.getValue(), ob, params, sm);
         Class c = val.getClass();
         if (c == Integer.class)
-            return Integer.valueOf(java.lang.Math.abs(((Integer) val).intValue()));
+            return Math.abs(((Integer) val).intValue());
         else if (c == Float.class)
-            return Float.valueOf(java.lang.Math.abs(((Float) val).floatValue()));
+            return Math.abs(((Float) val).floatValue());
         else if (c == Double.class)
-            return Double.valueOf(java.lang.Math.abs(((Double) val).doubleValue()));
+            return Math.abs(((Double) val).doubleValue());
         else if (c == Long.class)
-            return Long.valueOf(java.lang.Math.abs(((Long) val).longValue()));
+            return Math.abs(((Long) val).longValue());
         throw new UnsupportedException();
     }
 
@@ -981,13 +981,13 @@ public class JDBCStoreQuery
         Object val = getValue(sqrtVal.getValue(), ob, params, sm);
         Class c = val.getClass();
         if (c == Integer.class)
-            return Double.valueOf(java.lang.Math.sqrt(((Integer) val).doubleValue()));
+            return Math.sqrt(((Integer) val).doubleValue());
         else if (c == Float.class)
-            return Double.valueOf(java.lang.Math.sqrt(((Float) val).floatValue()));
+            return Math.sqrt(((Float) val).floatValue());
         else if (c == Double.class)
-            return Double.valueOf(java.lang.Math.sqrt(((Double) val).doubleValue()));
+            return Math.sqrt(((Double) val).doubleValue());
         else if (c == Long.class)
-            return Double.valueOf(java.lang.Math.sqrt(((Long) val).doubleValue()));
+            return Math.sqrt(((Long) val).doubleValue());
         throw new UnsupportedException();
     }
 

@@ -62,7 +62,7 @@ public class NumberVersionStrategy
     @Override
     protected int getJavaType() {
         if (_javaType == null && vers.getClassMapping().getVersionFieldMapping() != null) {
-            _javaType = Integer.valueOf(vers.getClassMapping().getVersionFieldMapping().getTypeCode());
+            _javaType = vers.getClassMapping().getVersionFieldMapping().getTypeCode();
         } else {
             return JavaTypes.INT;
         }

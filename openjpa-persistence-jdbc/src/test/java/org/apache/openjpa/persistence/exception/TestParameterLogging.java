@@ -132,14 +132,14 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
             props =
                 new Object[] { PObject.class, CLEAR_TABLES, "openjpa.DataCache", "true",
                     "openjpa.Log", "org.apache.openjpa.persistence.exception.TestParameterLogging",
-                    "openjpa.ConnectionFactoryProperties", "PrintParameters=" + printParameters.booleanValue() };
+                    "openjpa.ConnectionFactoryProperties", "PrintParameters=" + printParameters};
         }
         EntityManagerFactory emf = createEMF(props);
         EntityManager em = emf.createEntityManager();
         String queryStr = "SELECT c FROM PObject c WHERE c.id=:id";
         em.createQuery(queryStr).setParameter("id", Integer.MIN_VALUE).getResultList();
         em.createQuery(queryStr).setParameter("id", Integer.MIN_VALUE).getResultList();
-        boolean expected = (printParameters == null) ? false : printParameters.booleanValue();
+        boolean expected = (printParameters == null) ? false : printParameters;
         boolean actual = false;
 
         // Look through all trace messages for the ID before doing asserts

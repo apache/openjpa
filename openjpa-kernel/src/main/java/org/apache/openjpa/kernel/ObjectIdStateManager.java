@@ -46,11 +46,11 @@ import org.apache.openjpa.util.ImplHelper;
 public class ObjectIdStateManager
     implements OpenJPAStateManager {
 
-    private static final Byte ZERO_BYTE = Byte.valueOf((byte)0);
-    private static final Character ZERO_CHAR = Character.valueOf((char)0);
-    private static final Double ZERO_DOUBLE = Double.valueOf(0);
-    private static final Float ZERO_FLOAT = Float.valueOf(0);
-    private static final Short ZERO_SHORT = Short.valueOf((short)0);
+    private static final Byte ZERO_BYTE = (byte) 0;
+    private static final Character ZERO_CHAR = (char) 0;
+    private static final Double ZERO_DOUBLE = (double) 0;
+    private static final Float ZERO_FLOAT = (float) 0;
+    private static final Short ZERO_SHORT = (short) 0;
 
     private Object _oid;
     private final OpenJPAStateManager _owner;
@@ -429,7 +429,7 @@ public class ObjectIdStateManager
             case JavaTypes.BOOLEAN:
                 return Boolean.FALSE.equals(val);
             case JavaTypes.CHAR:
-                return ((Character) val).charValue() == 0;
+                return (Character) val == 0;
             case JavaTypes.BYTE:
             case JavaTypes.DOUBLE:
             case JavaTypes.FLOAT:
@@ -551,12 +551,12 @@ public class ObjectIdStateManager
 
     @Override
     public void storeByte(int field, byte extVal) {
-        setValue(field, Byte.valueOf(extVal), true);
+        setValue(field, extVal, true);
     }
 
     @Override
     public void storeChar(int field, char extVal) {
-        setValue(field, Character.valueOf(extVal), true);
+        setValue(field, extVal, true);
     }
 
     @Override
@@ -566,7 +566,7 @@ public class ObjectIdStateManager
 
     @Override
     public void storeShort(int field, short extVal) {
-        setValue(field, Short.valueOf(extVal), true);
+        setValue(field, extVal, true);
     }
 
     @Override
@@ -576,12 +576,12 @@ public class ObjectIdStateManager
 
     @Override
     public void storeFloat(int field, float extVal) {
-        setValue(field, Float.valueOf(extVal), true);
+        setValue(field, extVal, true);
     }
 
     @Override
     public void storeDouble(int field, double extVal) {
-        setValue(field, Double.valueOf(extVal), true);
+        setValue(field, extVal, true);
     }
 
     @Override
@@ -661,7 +661,7 @@ public class ObjectIdStateManager
 
     @Override
     public boolean fetchBoolean(int field) {
-        return ((Boolean) getValue(field)).booleanValue();
+        return (Boolean) getValue(field);
     }
 
     @Override
@@ -671,7 +671,7 @@ public class ObjectIdStateManager
 
     @Override
     public char fetchChar(int field) {
-        return ((Character) getValue(field)).charValue();
+        return (Character) getValue(field);
     }
 
     @Override

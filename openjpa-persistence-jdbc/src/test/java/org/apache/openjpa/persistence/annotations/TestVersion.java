@@ -64,7 +64,7 @@ public class TestVersion extends AnnotationTestCase
 		OpenJPAEntityManager em = currentEntityManager();
 		startTx(em);
 		AnnoTest1 test1 = new AnnoTest1();
-		test1.setPk(new Long(5));
+		test1.setPk(5L);
 		test1.setBasic(50);
 		test1.setTransient(500);
 		em.persist(test1);
@@ -76,7 +76,7 @@ public class TestVersion extends AnnotationTestCase
 		em.persist(test2);
 
 		AnnoTest3 test3 = new AnnoTest3();
-		test3.setPk(new Long(3));
+		test3.setPk(3L);
 		test3.setBasic2(50);
 		em.persist(test3);
 		oid = em.getObjectId(test1);

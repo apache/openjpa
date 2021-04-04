@@ -80,7 +80,7 @@ public class AccountId implements java.io.Serializable {
             String hashStr = this.groupId + ":" + this.accountHolder + ":" + this.accountId;
             hashcode = hashStr.hashCode();
         }
-        return hashcode.intValue();
+        return hashcode;
     }
 
 }

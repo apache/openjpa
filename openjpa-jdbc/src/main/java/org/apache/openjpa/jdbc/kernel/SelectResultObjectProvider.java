@@ -86,7 +86,7 @@ public abstract class SelectResultObjectProvider
                 ra = _sel.supportsRandomAccess(_fetch.getReadLockLevel() > 0);
             _ra = (ra) ? Boolean.TRUE : Boolean.FALSE;
         }
-        return _ra.booleanValue();
+        return _ra;
     }
 
     @Override

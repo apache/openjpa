@@ -151,12 +151,12 @@ public class EmpressDictionary
         // which can prove to be difficult to handle
         if (val == Float.POSITIVE_INFINITY) {
             val = Float.MAX_VALUE;
-            storageWarning(new Float(Float.POSITIVE_INFINITY),
-                new Float(val));
+            storageWarning(Float.POSITIVE_INFINITY,
+                    val);
         } else if (val == Float.NEGATIVE_INFINITY) {
             val = Float.MIN_VALUE + 1;
-            storageWarning(new Float(Float.NEGATIVE_INFINITY),
-                new Float(val));
+            storageWarning(Float.NEGATIVE_INFINITY,
+                    val);
         }
         super.setFloat(stmnt, idx, val, col);
     }
@@ -169,12 +169,12 @@ public class EmpressDictionary
         // which can prove to be difficult to handle
         if (val == Double.POSITIVE_INFINITY) {
             val = Double.MAX_VALUE;
-            storageWarning(new Double(Double.POSITIVE_INFINITY),
-                new Double(val));
+            storageWarning(Double.POSITIVE_INFINITY,
+                    val);
         } else if (val == Double.NEGATIVE_INFINITY) {
             val = Double.MIN_VALUE + 1;
-            storageWarning(new Double(Double.NEGATIVE_INFINITY),
-                new Double(val));
+            storageWarning(Double.NEGATIVE_INFINITY,
+                    val);
         }
         super.setDouble(stmnt, idx, val, col);
     }

@@ -358,7 +358,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      * Support method to get a random Integer for testing.
      */
     public static Integer randomInt() {
-        return new Integer((int) (Math.random() * Integer.MAX_VALUE));
+        return (int) (Math.random() * Integer.MAX_VALUE);
     }
 
     /**
@@ -371,50 +371,50 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
             's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1',
             '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        return new Character(TEST_CHAR_ARRAY[
-                (int) (Math.random() * TEST_CHAR_ARRAY.length)]);
+        return TEST_CHAR_ARRAY[
+                (int) (Math.random() * TEST_CHAR_ARRAY.length)];
     }
 
     /**
      * Support method to get a random Long for testing.
      */
     public static Long randomLong() {
-        return new Long((long) (Math.random() * Long.MAX_VALUE));
+        return (long) (Math.random() * Long.MAX_VALUE);
     }
 
     /**
      * Support method to get a random Short for testing.
      */
     public static Short randomShort() {
-        return new Short((short) (Math.random() * Short.MAX_VALUE));
+        return (short) (Math.random() * Short.MAX_VALUE);
     }
 
     /**
      * Support method to get a random Double for testing.
      */
     public static Double randomDouble() {
-        return new Double((double) (Math.round(Math.random() * 5000d)) / 1000d);
+        return (double) (Math.round(Math.random() * 5000d)) / 1000d;
     }
 
     /**
      * Support method to get a random Float for testing.
      */
     public static Float randomFloat() {
-        return new Float((float) (Math.round(Math.random() * 5000f)) / 1000f);
+        return (float) (Math.round(Math.random() * 5000f)) / 1000f;
     }
 
     /**
      * Support method to get a random Byte for testing.
      */
     public static Byte randomByte() {
-        return new Byte((byte) (Math.random() * Byte.MAX_VALUE));
+        return (byte) (Math.random() * Byte.MAX_VALUE);
     }
 
     /**
      * Support method to get a random Boolean for testing.
      */
     public static Boolean randomBoolean() {
-        return new Boolean(Math.random() > 0.5 ? true : false);
+        return Math.random() > 0.5 ? true : false;
     }
 
     /**
@@ -515,7 +515,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         // up to 100K blob
         byte [] blob = new byte [(int) (Math.random() * 1024 * 100)];
         for (int i = 0; i < blob.length; i++)
-            blob[i] = randomByte().byteValue();
+            blob[i] = randomByte();
 
         return blob;
     }
@@ -1182,7 +1182,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         if (collection instanceof List) {
             List ll = new ArrayList();
             for (int i = 0; i < 100; i++)
-                ll.add(new Integer(i));
+                ll.add(i);
             validateList((List) ll);
             validateList((List) collection);
         }
@@ -1244,12 +1244,12 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         // fill random access list
         List indices = new LinkedList();
         for (int i = 0; i < list.size(); i++)
-            indices.add(new Integer(i));
+            indices.add(i);
 
         for (int i = 0; i < list.size(); i++) {
             int rand = (int) (Math.random() * indices.size());
             Integer randIndex = (Integer) indices.remove(rand);
-            values4[randIndex.intValue()] = list.get(randIndex.intValue());
+            values4[randIndex] = list.get(randIndex);
         }
 
         assertEquals(Arrays.asList(coreValues), Arrays.asList(values1));

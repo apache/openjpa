@@ -113,7 +113,7 @@ public class Discriminator
             try {
                 strategy.setDiscriminator(this);
                 if (adapt != null)
-                    strategy.map(adapt.booleanValue());
+                    strategy.map(adapt);
             } catch (RuntimeException re) {
                 // reset strategy
                 _strategy = orig;

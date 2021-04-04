@@ -340,7 +340,7 @@ public class PersistenceProductDerivation
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
         Boolean ret = load(cp, rsrc, name, m, null, explicit);
         if (ret != null)
-            return (ret.booleanValue()) ? cp : null;
+            return (ret) ? cp : null;
         if (explicit)
             return null;
 

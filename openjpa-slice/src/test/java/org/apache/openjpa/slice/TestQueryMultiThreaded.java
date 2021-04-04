@@ -126,7 +126,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                     Integer old = Integer.MIN_VALUE;
                     for (Object row : result) {
                         Object[] line = (Object[]) row;
-                        int value = ((Integer) line[0]).intValue();
+                        int value = (Integer) line[0];
                         PObject pc = (PObject) line[1];
                         assertTrue(value >= old);
                         old = value;
@@ -212,7 +212,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                     int i = 0;
                     for (Object row : result) {
                         Object[] line = (Object[]) row;
-                        int value = ((Integer) line[0]).intValue();
+                        int value = (Integer) line[0];
                         PObject pc = (PObject) line[1];
                     }
                     assertEquals(limit, result.size());

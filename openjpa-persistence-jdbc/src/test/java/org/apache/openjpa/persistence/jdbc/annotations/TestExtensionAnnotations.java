@@ -122,10 +122,10 @@ public class TestExtensionAnnotations
             ("externalValues");
         assertEquals(JavaTypes.CHAR, externalValues.getDeclaredTypeCode());
         assertEquals(JavaTypes.INT, externalValues.getTypeCode());
-        assertEquals(new Integer(1), externalValues.getExternalValueMap().
-            get(new Character('M')));
-        assertEquals(new Integer(2), externalValues.getExternalValueMap().
-            get(new Character('F')));
+        assertEquals(1, externalValues.getExternalValueMap().
+            get('M'));
+        assertEquals(2, externalValues.getExternalValueMap().
+            get('F'));
     }
 
     public void testExternalizer() {

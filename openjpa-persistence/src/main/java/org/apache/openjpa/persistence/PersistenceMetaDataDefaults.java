@@ -168,8 +168,8 @@ public class PersistenceMetaDataDefaults
         if (member == null)
             return null;
         AnnotatedElement el = (AnnotatedElement) member;
-        if (!ignoreTransient && (AccessController.doPrivileged(J2DoPrivHelper
-            .isAnnotationPresentAction(el, Transient.class))).booleanValue())
+        if (!ignoreTransient && AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(el, Transient.class)))
             return TRANSIENT;
         if (fmd != null
             && fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
@@ -240,8 +240,8 @@ public class PersistenceMetaDataDefaults
         }
 
         //### EJB3: what if defined in XML?
-        if ((AccessController.doPrivileged(J2DoPrivHelper
-            .isAnnotationPresentAction(type, Embeddable.class))).booleanValue())
+        if (AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(type, Embeddable.class)))
             return EMBEDDED;
         if (Serializable.class.isAssignableFrom(type))
             return BASIC;
@@ -660,9 +660,9 @@ public class PersistenceMetaDataDefaults
 
     private boolean isAnnotatedTransient(Member member) {
         return member instanceof AnnotatedElement
-            && (AccessController.doPrivileged(J2DoPrivHelper
+            && AccessController.doPrivileged(J2DoPrivHelper
                 .isAnnotationPresentAction(((AnnotatedElement) member),
-                    Transient.class))).booleanValue();
+                        Transient.class));
     }
 
     /**

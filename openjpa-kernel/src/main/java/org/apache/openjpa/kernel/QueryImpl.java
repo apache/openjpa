@@ -480,7 +480,7 @@ public class QueryImpl implements Query {
         try {
             assertOpen();
             if (_unique != null)
-                return _unique.booleanValue();
+                return _unique;
             if ((_query == null && _language.endsWith("JPQL")) || _compiling || _broker == null)
                 return false;
 
@@ -488,7 +488,7 @@ public class QueryImpl implements Query {
             if (_compiled == null) {
                 compileForCompilation();
                 if (_unique != null)
-                    return _unique.booleanValue();
+                    return _unique;
             }
 
             // no explicit setting; default
@@ -1171,7 +1171,7 @@ public class QueryImpl implements Query {
             switch (fmd.getDeclaredTypeCode()) {
                 case JavaTypes.BOOLEAN:
                     sm.settingBooleanField(into, i, sm.fetchBooleanField(i),
-                        val == null ? false : ((Boolean) val).booleanValue(),
+                        val == null ? false : (Boolean) val,
                         set);
                     break;
                 case JavaTypes.BYTE:

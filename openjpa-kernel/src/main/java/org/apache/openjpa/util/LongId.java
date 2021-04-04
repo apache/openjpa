@@ -31,7 +31,7 @@ public final class LongId extends OpenJPAId {
     private final long key;
 
     public LongId(Class cls, Long key) {
-        this(cls, (key == null) ? 0L : key.longValue());
+        this(cls, (key == null) ? 0L : key);
     }
 
     public LongId(Class cls, String key) {

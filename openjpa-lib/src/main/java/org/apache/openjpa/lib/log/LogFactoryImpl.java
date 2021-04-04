@@ -114,7 +114,7 @@ public class LogFactoryImpl
             l = newLogImpl();
             l.setChannel(channel);  // TODO add to interface?
             Short lvl = _configuredLevels.get(shorten(channel));
-            l.setLevel(lvl == null ? _defaultLogLevel : lvl.shortValue());
+            l.setLevel(lvl == null ? _defaultLogLevel : lvl);
             _logs.put(channel, l);
         }
         return l;
@@ -282,7 +282,7 @@ public class LogFactoryImpl
             for (Iterator<Map.Entry<Object, Object>> iter =
                 opts.entrySet().iterator(); iter.hasNext();) {
                 e = iter.next();
-                _configuredLevels.put(shorten((String) e.getKey()), Short.valueOf(getLevel((String) e.getValue())));
+                _configuredLevels.put(shorten((String) e.getKey()), getLevel((String) e.getValue()));
             }
             opts.clear();
         }

@@ -81,10 +81,10 @@ public class TestSecondClassValues extends BaseKernelTest {
         SCOTest test = new SCOTest();
         pm.persist(test);
         Map map = new HashMap();
-        map.put("foo", new Integer(1));
-        map.put("bar", new Integer(2));
+        map.put("foo", 1);
+        map.put("bar", 2);
         for (int i = 0; i < 10; i++)
-            map.put("baz#" + i, new Integer(i));
+            map.put("baz#" + i, i);
 
         test.setStrIntMap(map);
         Object id = pm.getObjectId(test);
@@ -95,8 +95,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         assertNotNull(test);
         map = test.getStrIntMap();
         assertEquals(12, map.size());
-        assertEquals(new Integer(1), map.get("foo"));
-        assertEquals(new Integer(2), map.get("bar"));
+        assertEquals(1, map.get("foo"));
+        assertEquals(2, map.get("bar"));
         map.remove("bar");
         endTx(pm);
 
@@ -105,7 +105,7 @@ public class TestSecondClassValues extends BaseKernelTest {
         assertNotNull(test);
         map = test.getStrIntMap();
         assertEquals(11, map.size());
-        assertEquals(new Integer(1), map.get("foo"));
+        assertEquals(1, map.get("foo"));
         assertTrue(map.get("bar") == null);
 
         map.clear();

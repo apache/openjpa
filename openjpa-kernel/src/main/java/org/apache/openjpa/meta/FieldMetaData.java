@@ -659,7 +659,7 @@ public class FieldMetaData
             _enumField =  Enum.class.isAssignableFrom(decl)
                 ? Boolean.TRUE : Boolean.FALSE;
         }
-        return _enumField.booleanValue();
+        return _enumField;
     }
 
     private boolean isSerializable() {
@@ -670,7 +670,7 @@ public class FieldMetaData
             else
                 _serializableField = Boolean.FALSE;
         }
-        return _serializableField.booleanValue();
+        return _serializableField;
     }
 
     private boolean isLobArray() {
@@ -683,7 +683,7 @@ public class FieldMetaData
             else
                 _lobField = Boolean.FALSE;
         }
-        return _lobField.booleanValue();
+        return _lobField;
     }
 
     /**
@@ -1537,7 +1537,7 @@ public class FieldMetaData
                 return Float.valueOf(val);
             case JavaTypes.CHAR:
             case JavaTypes.CHAR_OBJ:
-                return Character.valueOf(val.charAt(0));
+                return val.charAt(0);
             case JavaTypes.STRING:
                 return val;
             case JavaTypes.ENUM:
@@ -2467,7 +2467,7 @@ public class FieldMetaData
 
     public boolean isDelayCapable() {
         if (_delayCapable != null) {
-            return _delayCapable.booleanValue();
+            return _delayCapable;
         }
         if (getTypeCode() != JavaTypes.COLLECTION || isLRS()) {
            _delayCapable = Boolean.FALSE;

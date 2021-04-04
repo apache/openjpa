@@ -1951,8 +1951,8 @@ public class ReverseMappingTool
         File customFile = Files.getFile
             (opts.removeProperty("customizerProperties", "cp", null), null);
         Properties customProps = new Properties();
-        if (customFile != null && (AccessController.doPrivileged(
-            J2DoPrivHelper.existsAction(customFile))).booleanValue()) {
+        if (customFile != null && AccessController.doPrivileged(
+                J2DoPrivHelper.existsAction(customFile))) {
             FileInputStream fis = null;
             try {
                 fis = AccessController.doPrivileged(

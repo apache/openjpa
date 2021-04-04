@@ -45,7 +45,7 @@ public class PostPersistEntity {
     @PostPersist
     public void postPersist() {
         postPersistCallbackCount++;
-        idOnCallback = ((Long)getByReflection("id")).longValue();
+        idOnCallback = (Long) getByReflection("id");
     }
 
     public String getName() {

@@ -162,7 +162,7 @@ public class JavaTypes {
 
         Integer code = _typeCodes.get(type);
         if (code != null) {
-            return code.intValue();
+            return code;
         }
 
         // have to do this first to catch custom collection and map types;
@@ -342,7 +342,7 @@ public class JavaTypes {
                 if (val instanceof Byte)
                     return val;
                 if (val instanceof Number)
-                    return Byte.valueOf(((Number) val).byteValue());
+                    return ((Number) val).byteValue();
                 // no break
             case BYTE:
                 if (val instanceof String)
@@ -353,9 +353,9 @@ public class JavaTypes {
                 if (val instanceof Character)
                     return val;
                 if (val instanceof String)
-                    return Character.valueOf(val.toString().charAt(0));
+                    return val.toString().charAt(0);
                 if (val instanceof Number)
-                    return Character.valueOf((char) ((Number) val).intValue());
+                    return (char) ((Number) val).intValue();
                 return val;
             case DATE:
                 if (val instanceof String)
@@ -365,7 +365,7 @@ public class JavaTypes {
                 if (val instanceof Double)
                     return val;
                 if (val instanceof Number)
-                    return Double.valueOf(((Number) val).doubleValue());
+                    return ((Number) val).doubleValue();
                 // no break
             case DOUBLE:
                 if (val instanceof String)
@@ -375,7 +375,7 @@ public class JavaTypes {
                 if (val instanceof Float)
                     return val;
                 if (val instanceof Number)
-                    return Float.valueOf(((Number) val).floatValue());
+                    return ((Number) val).floatValue();
                 // no break
             case FLOAT:
                 if (val instanceof String)
@@ -411,7 +411,7 @@ public class JavaTypes {
                 if (val instanceof Short)
                     return val;
                 if (val instanceof Number)
-                    return Short.valueOf(((Number) val).shortValue());
+                    return ((Number) val).shortValue();
                 // no break
             case SHORT:
                 if (val instanceof String)

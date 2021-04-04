@@ -148,7 +148,7 @@ public class PersistenceProviderImpl
             throw new IllegalArgumentException(poolValue.toString());
         }
 
-        if (poolValue == null || !((Boolean) poolValue).booleanValue())
+        if (poolValue == null || !(Boolean) poolValue)
             return Bootstrap.newBrokerFactory(cp, loader);
         else
             return Bootstrap.getBrokerFactory(cp, loader);

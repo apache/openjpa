@@ -164,8 +164,8 @@ public class FileMetaDataIterator implements MetaDataIterator {
 
         @Override
         public byte[] getContent() throws IOException {
-            long len = (AccessController.doPrivileged(
-                J2DoPrivHelper.lengthAction(_file))).longValue();
+            long len = AccessController.doPrivileged(
+                    J2DoPrivHelper.lengthAction(_file));
             FileInputStream fin = null;
             try {
                 fin = AccessController.doPrivileged(

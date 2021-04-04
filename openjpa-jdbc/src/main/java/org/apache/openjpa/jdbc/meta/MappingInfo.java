@@ -810,7 +810,7 @@ public abstract class MappingInfo implements Serializable {
         if (defStr != null)
             col.setDefaultString(defStr);
         if (notNull != null)
-            col.setNotNull(notNull.booleanValue());
+            col.setNotNull(notNull);
 
         // add other details if adapting
         if (adapt) {

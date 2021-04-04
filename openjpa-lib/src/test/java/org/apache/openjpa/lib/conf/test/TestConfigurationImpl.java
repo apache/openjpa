@@ -136,7 +136,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
         Map props3 = _conf.toProperties(false);
         _conf.setTestKey("changed");
         Map props4 = _conf.toProperties(false);
-        _conf.setPluginKey(new Integer(1));
+        _conf.setPluginKey(1);
         Map props5 = _conf.toProperties(false);
         assertEquals(props1, props2);
         assertEquals(props1, props3);
@@ -195,8 +195,8 @@ public class TestConfigurationImpl extends AbstractTestCase {
             else if (param == String.class)
                 setVal = randomString();
             else if (param == boolean.class)
-                setVal = new Boolean(!(((Boolean) getter.invoke(_conf,
-                    (Object[]) null)).booleanValue()));
+                setVal = !(((Boolean) getter.invoke(_conf,
+                        (Object[]) null)).booleanValue());
             else
                 continue;
 

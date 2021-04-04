@@ -107,7 +107,7 @@ public class EnumValueHandler extends AbstractValueHandler {
         if (val == null)
             return null;
         if (_ordinal)
-            return Integer.valueOf(((Enum) val).ordinal());
+            return ((Enum) val).ordinal();
         return ((Enum) val).name();
     }
 

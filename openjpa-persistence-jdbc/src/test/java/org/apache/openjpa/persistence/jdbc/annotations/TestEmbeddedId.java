@@ -176,7 +176,7 @@ public class TestEmbeddedId
 
         q = em.createQuery("select e.id.pk2 from EmbeddedIdEntity e "
             + "where e.id.pk1 = 1");
-        assertEquals(new Long(_oid.getPk2()), q.getSingleResult());
+        assertEquals(_oid.getPk2(), q.getSingleResult());
 
         q = em.createQuery("select e.id from EmbeddedIdEntity e "
             + "where e.id.pk1 = 1");

@@ -79,7 +79,7 @@ public class ParentId implements java.io.Serializable {
             String hashStr = this.id + ":" + this.name + ":" + this.addrId;
             hashcode = hashStr.hashCode();
         }
-        return hashcode.intValue();
+        return hashcode;
     }
 
 }

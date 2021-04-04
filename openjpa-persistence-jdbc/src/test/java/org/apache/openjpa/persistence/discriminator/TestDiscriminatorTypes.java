@@ -43,15 +43,15 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
 
         Discriminator discrim = getMapping("CharAbstractEntity")
                 .getDiscriminator();
-        assertEquals(new Character('C'), discrim.getValue()); // Generated
+        assertEquals('C', discrim.getValue()); // Generated
         assertEquals(JavaTypes.CHAR, discrim.getJavaType());
 
         discrim = getMapping("chrLeaf").getDiscriminator();
-        assertEquals(new Character('c'), discrim.getValue());
+        assertEquals('c', discrim.getValue());
         assertEquals(JavaTypes.CHAR, discrim.getJavaType());
 
         discrim = getMapping("CharRootEntity").getDiscriminator();
-        assertEquals(new Character('R'), discrim.getValue());
+        assertEquals('R', discrim.getValue());
         assertEquals(JavaTypes.CHAR, discrim.getJavaType());
 
         CharLeafEntity leaf = new CharLeafEntity();
@@ -79,16 +79,16 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
 
         Discriminator discrim = getMapping("IntegerAbstractEntity")
                 .getDiscriminator();
-        assertEquals(new Integer("IntegerAbstractEntity".hashCode()), discrim
+        assertEquals("IntegerAbstractEntity".hashCode(), discrim
                 .getValue()); // Generated value
         assertEquals(JavaTypes.INT, discrim.getJavaType());
 
         discrim = getMapping("intLeaf").getDiscriminator();
-        assertEquals(new Integer("intLeaf".hashCode()), discrim.getValue());
+        assertEquals("intLeaf".hashCode(), discrim.getValue());
         assertEquals(JavaTypes.INT, discrim.getJavaType());
 
         discrim = getMapping("IntegerRootEntity").getDiscriminator();
-        assertEquals(new Integer(10101), discrim.getValue());
+        assertEquals(10101, discrim.getValue());
         assertEquals(JavaTypes.INT, discrim.getJavaType());
 
         IntegerLeafEntity leaf = new IntegerLeafEntity();

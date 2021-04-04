@@ -52,7 +52,7 @@ public class TestJoinedInheritance extends AnnotationTestCase
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest3 pc = new AnnoTest3();
-        pc.setPk(new Long(1));
+        pc.setPk(1L);
         pc.setBasic(10);
         pc.setBasic2(20);
         em.persist(pc);

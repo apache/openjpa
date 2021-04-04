@@ -534,7 +534,7 @@ public class AnnotationPersistenceMetaDataParser
         if (num == null)
             num = mode;
         else
-            num = num.intValue() | mode;
+            num = num | mode;
         _pkgs.put(pkg, num);
     }
 
@@ -548,12 +548,10 @@ public class AnnotationPersistenceMetaDataParser
         // setup defaults (ie: Basic fields).
         ClassMetaData m = getRepository().getCachedMetaData(_cls);
         if (m == null) {
-            if (!(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Entity.class)))
-                .booleanValue()
-                && !(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Embeddable.class)))
-                    .booleanValue()
-                && !(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls,
-                    MappedSuperclass.class))).booleanValue())
+            if (!AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Entity.class))
+                && !AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Embeddable.class))
+                && !AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls,
+                    MappedSuperclass.class)))
                 return null;
         }
         // find / create metadata
@@ -931,9 +929,8 @@ public class AnnotationPersistenceMetaDataParser
                 J2DoPrivHelper.getDeclaredFieldsAction(
                     meta.getDescribedType()));
             for (int i = 0; i < fields.length; i++)
-                if ((AccessController.doPrivileged(J2DoPrivHelper
-                    .isAnnotationPresentAction(fields[i], DetachedState.class)))
-                    .booleanValue())
+                if (AccessController.doPrivileged(J2DoPrivHelper
+                        .isAnnotationPresentAction(fields[i], DetachedState.class)))
                     meta.setDetachedState(fields[i].getName());
         }
     }
@@ -1173,8 +1170,8 @@ public class AnnotationPersistenceMetaDataParser
         fmd.setExplicit(true);
 
         AnnotatedElement el = (AnnotatedElement) member;
-        boolean lob = (AccessController.doPrivileged(J2DoPrivHelper
-            .isAnnotationPresentAction(el, Lob.class))).booleanValue();
+        boolean lob = AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(el, Lob.class));
         if (isMetaDataMode()) {
             switch (pstrat) {
                 case BASIC:

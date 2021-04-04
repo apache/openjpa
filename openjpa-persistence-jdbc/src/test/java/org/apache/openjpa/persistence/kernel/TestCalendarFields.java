@@ -232,7 +232,7 @@ public class TestCalendarFields extends BaseKernelTest {
             // Equivalent to: cal.setTimeInMillis (millis);
             cal.getClass().getMethod("setTimeInMillis",
                 new Class[]{ long.class }).invoke(cal,
-                new Object[]{ new Long(millis) });
+                new Object[]{millis});
         } catch (Exception e) {
             cal.setTime(new Date(millis));
         }

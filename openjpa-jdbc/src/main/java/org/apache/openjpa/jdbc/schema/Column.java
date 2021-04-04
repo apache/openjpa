@@ -451,7 +451,7 @@ public class Column extends ReferenceCounter {
                 break;
             case JavaTypes.CHAR:
             case JavaTypes.CHAR_OBJ:
-                _default = Character.valueOf(_defaultStr.charAt(0));
+                _default = _defaultStr.charAt(0);
                 break;
             case JavaTypes.DOUBLE:
             case JavaTypes.DOUBLE_OBJ:

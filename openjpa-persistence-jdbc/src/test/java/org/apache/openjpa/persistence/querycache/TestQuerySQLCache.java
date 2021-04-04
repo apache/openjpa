@@ -40,8 +40,8 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         em = emf.createEntityManager();
 
         em.getTransaction().begin();
-        QCEntity qc1 = new QCEntity("pk1", "description", Long.valueOf(1));
-        QCEntity qc2 = new QCEntity("pk2", "description-2", Long.valueOf(1));
+        QCEntity qc1 = new QCEntity("pk1", "description", 1L);
+        QCEntity qc2 = new QCEntity("pk2", "description-2", 1L);
         QCEntity qc3 = new QCEntity("pk3", null, null);
 
         em.persist(qc1);
@@ -77,7 +77,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
 
         // Test with non-NULL paramter, SQL should contain the = predicate
         resetSQL();
-        q.setParameter(1, new Long(1));
+        q.setParameter(1, 1L);
         List resultListNotNull = q.getResultList();
         assertTrue((getLastSQL(sql) != null) && !(getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNotNull);
@@ -117,7 +117,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         // Test with non-NULL paramter, SQL should contain the = predicate
         resetSQL();
         Query q3 = em.createQuery("SELECT o from QCEntity o WHERE o.amount=?1");
-        q3.setParameter(1, new Long(1));
+        q3.setParameter(1, 1L);
         List resultListNotNull = q3.getResultList();
         assertTrue((getLastSQL(sql) != null) && !(getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNotNull);
@@ -159,7 +159,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
 
         // Test with non-NULL parameter, SQL should contain the = predicate
         resetSQL();
-        q.setParameter("amount", new Long(1));
+        q.setParameter("amount", 1L);
         List resultListNotNull = q.getResultList();
         assertTrue((getLastSQL(sql) != null) && !(getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNotNull);
@@ -203,7 +203,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         // Test with non-NULL parameter, SQL should contain the = predicate
         resetSQL();
         Query q2 = em.createNamedQuery("QCEntity.getByAmount");
-        q2.setParameter("amount", new Long(1));
+        q2.setParameter("amount", 1L);
         List resultListNotNull = q2.getResultList();
         assertTrue((getLastSQL(sql) != null) && !(getLastSQL(sql).contains("IS NULL")));
         assertNotNull(resultListNotNull);

@@ -63,7 +63,7 @@ public class BooleanValue extends Value {
 
     @Override
     protected void setInternalString(String val) {
-        set(Boolean.valueOf(val).booleanValue());
+        set(Boolean.valueOf(val));
     }
 
     @Override
@@ -71,6 +71,6 @@ public class BooleanValue extends Value {
         if (obj == null)
             set(false);
         else
-            set(((Boolean) obj).booleanValue());
+            set((Boolean) obj);
     }
 }

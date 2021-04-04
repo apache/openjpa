@@ -212,7 +212,7 @@ public class LRSProxyCollection
                     throw SQLExceptions.getStore(se, _store.getDBDictionary());
                 }
             }
-            return _next.booleanValue();
+            return _next;
         }
 
         @Override

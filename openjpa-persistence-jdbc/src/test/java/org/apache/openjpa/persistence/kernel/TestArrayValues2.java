@@ -66,7 +66,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         int max = ((int) (Math.random() * 20)) + 5;
         long[] array = new long[max];
         for (int i = 0; i < max; i++)
-            array[i] = randomLong().longValue();
+            array[i] = randomLong();
         try {
             saveArray(array, true, false);
         } catch (AssertionFailedError afe) {
@@ -87,7 +87,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         int max = ((int) (Math.random() * 20)) + 5;
         short[] array = new short[max];
         for (int i = 0; i < max; i++)
-            array[i] = randomShort().shortValue();
+            array[i] = randomShort();
         saveArray(array, true, false);
     }
 
@@ -105,7 +105,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         int max = ((int) (Math.random() * 20)) + 5;
         int[] array = new int[max];
         for (int i = 0; i < max; i++)
-            array[i] = randomInt().intValue();
+            array[i] = randomInt();
         saveArray(array, true, false);
     }
 // FixMe: Both tests hangs on Mysql
@@ -140,7 +140,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         Character[] array = new Character[max];
-        array[0] = new Character((char) 1);
+        array[0] = (char) 1;
         for (int i = 1; i < max; i++)
             array[i] = randomChar();
         saveArray(array, false, false);
@@ -152,7 +152,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         char[] array = new char[max];
         array[0] = 1;
         for (int i = 1; i < max; i++)
-            array[i] = randomChar().charValue();
+            array[i] = randomChar();
         saveArray(array, true, false);
     }
 
@@ -162,7 +162,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         char[] array = new char[max];
         array[0] = 1;
         for (int i = 1; i < max; i++)
-            array[i] = randomChar().charValue();
+            array[i] = randomChar();
         saveArray(array, true, true);
     }
 
@@ -171,7 +171,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         int max = ((int) (Math.random() * 20)) + 5;
         boolean[] array = new boolean[max];
         for (int i = 0; i < max; i++)
-            array[i] = randomBoolean().booleanValue();
+            array[i] = randomBoolean();
         saveArray(array, true, false);
     }
 
@@ -189,7 +189,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         int max = ((int) (Math.random() * 20)) + 5;
         float[] array = new float[max];
         for (int i = 0; i < max; i++)
-            array[i] = randomFloat().floatValue();
+            array[i] = randomFloat();
         saveArray(array, true, false);
     }
 
@@ -207,7 +207,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         int max = ((int) (Math.random() * 20)) + 5;
         double[] array = new double[max];
         for (int i = 0; i < max; i++)
-            array[i] = randomDouble().doubleValue();
+            array[i] = randomDouble();
         saveArray(array, true, false);
     }
 
@@ -315,12 +315,12 @@ public class TestArrayValues2 extends BaseKernelTest {
         // compare them to a certain precision, after which
         // we give up.
         if (o1 instanceof Double)
-            assertEquals(((Double) o1).doubleValue(),
-                ((Double) o2).doubleValue(),
+            assertEquals((Double) o1,
+                    (Double) o2,
                 DOUBLE_PRECISION);
         else if (o1 instanceof Float)
-            assertEquals(((Float) o1).floatValue(),
-                ((Float) o2).floatValue(),
+            assertEquals((Float) o1,
+                    (Float) o2,
                 FLOAT_PRECISION);
         else
             assertEquals("Object did not match (class1="

@@ -350,7 +350,7 @@ public class PrimitiveFieldStrategy
                 if (autoInc == null)
                     sm.storeBoolean(idx, false);
                 else if (autoInc instanceof Boolean)
-                    sm.storeBoolean(idx, ((Boolean) autoInc).booleanValue());
+                    sm.storeBoolean(idx, (Boolean) autoInc);
                 else
                     sm.storeBoolean(idx, ((Number) autoInc).intValue() != 0);
                 break;
@@ -364,7 +364,7 @@ public class PrimitiveFieldStrategy
                 if (autoInc == null)
                     sm.storeChar(idx, (char) 0);
                 else if (autoInc instanceof Character)
-                    sm.storeChar(idx, ((Character) autoInc).charValue());
+                    sm.storeChar(idx, (Character) autoInc);
                 else if (autoInc instanceof String)
                     sm.storeChar(idx, ((String) autoInc).charAt(0));
                 else

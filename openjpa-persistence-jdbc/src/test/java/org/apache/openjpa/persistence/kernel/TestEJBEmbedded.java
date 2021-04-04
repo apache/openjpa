@@ -185,7 +185,7 @@ public class TestEJBEmbedded extends BaseKernelTest {
         EmbeddedPC embed1 = pc1.getEmbedded();
 
         pm.persist(embed1);
-        Integer oid = new Integer(1);
+        Integer oid = 1;
         endTx(pm);
 
         assertEquals("embedString1", embed1.getStringField());
@@ -200,7 +200,7 @@ public class TestEJBEmbedded extends BaseKernelTest {
         assertNotNull("pc1 is null in testshare 2nd find", pc1);
         pc2 = pm.find(EmbeddedOwnerPC.class, id2);
         assertNotNull("pc2 is null in testshare 2nd find", pc2);
-        embed1 = pm.find(EmbeddedPC.class, oid.intValue());
+        embed1 = pm.find(EmbeddedPC.class, oid);
 
         if (embed1 != null) {
             assertEquals("embedString1", embed1.getStringField());

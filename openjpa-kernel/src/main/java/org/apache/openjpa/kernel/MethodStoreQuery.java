@@ -193,7 +193,7 @@ public class MethodStoreQuery
                             continue;
 
                         args[OBJ_INDEX] = obj;
-                        if (((Boolean) invoke(q, args)).booleanValue())
+                        if ((Boolean) invoke(q, args))
                             results.add(obj);
                     }
                 }
@@ -284,7 +284,7 @@ public class MethodStoreQuery
             int base = positionalParameterBase(userParams.keySet());
             for (Object key : paramTypes.keySet()) {
                 int idx = (key instanceof Integer)
-                    ? ((Integer)key).intValue() - base
+                    ? (Integer) key - base
                     : paramTypes.indexOf(key);
                 if (idx >= arr.length || idx < 0)
                         throw new UserException(_loc.get("gap-query-param",

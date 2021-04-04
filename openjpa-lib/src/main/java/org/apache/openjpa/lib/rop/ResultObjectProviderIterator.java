@@ -83,7 +83,7 @@ public class ResultObjectProviderIterator implements Iterator, Closeable {
         }
 
         // close if we reach the end of the list
-        if (!_hasNext.booleanValue()) {
+        if (!_hasNext) {
             close();
             return false;
         }

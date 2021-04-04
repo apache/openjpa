@@ -58,13 +58,13 @@ public class Options extends TypedProperties {
     // maps primitive types to the appropriate wrapper class and default value
     private static Object[][] _primWrappers = new Object[][]{
         { boolean.class, Boolean.class, Boolean.FALSE },
-        { byte.class, Byte.class, Byte.valueOf((byte) 0) },
-        { char.class, Character.class, Character.valueOf((char) 0) },
-        { double.class, Double.class, Double.valueOf(0D) },
-        { float.class, Float.class, Float.valueOf(0F) },
-        { int.class, Integer.class, Integer.valueOf(0) },
-        { long.class, Long.class, Long.valueOf(0L) },
-        { short.class, Short.class, Short.valueOf((short) 0) }, };
+        { byte.class, Byte.class, (byte) 0},
+        { char.class, Character.class, (char) 0},
+        { double.class, Double.class, 0D},
+        { float.class, Float.class, 0F},
+        { int.class, Integer.class, 0},
+        { long.class, Long.class, 0L},
+        { short.class, Short.class, (short) 0}, };
 
     private static Localizer _loc = Localizer.forPackage(Options.class);
 

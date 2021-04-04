@@ -57,7 +57,7 @@ public class TestStoreBlob extends BaseKernelTest {
         BlobTest blob = new BlobTest();
         byte[] bytes = new byte[2048];
         for (int i = 0; i < bytes.length; i++)
-            bytes[i] = randomByte().byteValue();
+            bytes[i] = randomByte();
 
         blob.setBlob(bytes);
         pm.persist(blob);

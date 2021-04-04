@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 
 public class TestMappedSuperClass extends AnnotationTestCase {
 
-    public static Long pkey = new Long(1500);
+    public static Long pkey = 1500L;
     public static String pstr = "TestParty";
     public static int ikey = 1501;
     public static PartyId pid = new PartyId(pstr, ikey);

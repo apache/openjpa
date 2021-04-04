@@ -30,7 +30,7 @@ public final class ByteId extends OpenJPAId {
     private final byte key;
 
     public ByteId(Class cls, Byte key) {
-        this(cls, (key == null) ? (byte) 0 : key.byteValue());
+        this(cls, (key == null) ? (byte) 0 : key);
     }
 
     public ByteId(Class cls, String key) {
@@ -53,7 +53,7 @@ public final class ByteId extends OpenJPAId {
 
     @Override
     public Object getIdObject() {
-        return Byte.valueOf(key);
+        return key;
     }
 
     @Override

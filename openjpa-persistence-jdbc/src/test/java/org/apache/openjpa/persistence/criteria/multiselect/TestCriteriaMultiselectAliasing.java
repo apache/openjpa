@@ -141,7 +141,7 @@ public class TestCriteriaMultiselectAliasing extends SQLListenerTestCase {
             //the 'outer' query has an affect....is it OK to use 'day' from the outer query??   I'm
             //assuming so since 'testGeneratedCriteriaQueryString' generates the expected SQL.
 //            subQueryPredicates.add(cb.greaterThanOrEqualTo(day.get(DimDay_.monthStrtDate), new Long(20150201L)));
-            subQueryPredicates.add(cb.equal(day.get(DimDay_.monthStrtDate), new Long(20150201L)));
+            subQueryPredicates.add(cb.equal(day.get(DimDay_.monthStrtDate), 20150201L));
 
             //Doing this places the 'T_DIM_DAY t3' in the 'inner'/sub query.  Is this the proper solution??  Or just a
             //hacky work around?

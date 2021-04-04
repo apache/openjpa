@@ -250,7 +250,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         for (Object[] resultElement : fResult) {
             Long oid = (Long)resultElement[0];
             Contractor c = (Contractor)resultElement[1];
-            assertTrue(oid.longValue() == c.getOID());
+            assertTrue(oid == c.getOID());
             assertEquals(dept.getOID(), c.getDept().getOID());
         }
 

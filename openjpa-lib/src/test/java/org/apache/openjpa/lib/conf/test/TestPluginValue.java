@@ -66,9 +66,9 @@ public class TestPluginValue extends AbstractTestCase {
         val.setDefault("foo");
         val.setString("x=y");
         assertEquals("foo(x=y)", val.getString());
-        val.set(new Integer(1));
+        val.set(1);
         assertEquals("java.lang.Integer", val.getString());
-        assertEquals(new Integer(1), val.get());
+        assertEquals(1, val.get());
         val.set(null);
         assertEquals("foo", val.getString());
         assertEquals(null, val.get());

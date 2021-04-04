@@ -152,7 +152,7 @@ public class ApplicationIds {
                 case JavaTypes.CHAR:
                 case JavaTypes.CHAR_OBJ:
                     return new CharId(meta.getDescribedType(),
-                        val == null ? 0 : ((Character) val).charValue());
+                        val == null ? 0 : (Character) val);
                 case JavaTypes.DOUBLE:
                 case JavaTypes.DOUBLE_OBJ:
                     if (!convert && !(val instanceof Double))
@@ -611,17 +611,17 @@ public class ApplicationIds {
 
         @Override
         public void storeByteField(int field, byte val) {
-            store(Byte.valueOf(val));
+            store(val);
         }
 
         @Override
         public void storeCharField(int field, char val) {
-            store(Character.valueOf(val));
+            store(val);
         }
 
         @Override
         public void storeShortField(int field, short val) {
-            store(Short.valueOf(val));
+            store(val);
         }
 
         @Override
@@ -636,12 +636,12 @@ public class ApplicationIds {
 
         @Override
         public void storeFloatField(int field, float val) {
-            store(Float.valueOf(val));
+            store(val);
         }
 
         @Override
         public void storeDoubleField(int field, double val) {
-            store(Double.valueOf(val));
+            store(val);
         }
 
         @Override
@@ -661,7 +661,7 @@ public class ApplicationIds {
 
         @Override
         public char fetchCharField(int field) {
-            return ((Character) retrieve(field)).charValue();
+            return (Character) retrieve(field);
         }
 
         @Override

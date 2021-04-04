@@ -146,7 +146,7 @@ public class AggEntity {
 
     public void init() {
         setPshortVal((short) 1);
-        setShortVal(Short.valueOf((short) 1));
+        setShortVal((short) 1);
         setIntVal(1);
         setPintVal(1);
         setLongVal(1L);

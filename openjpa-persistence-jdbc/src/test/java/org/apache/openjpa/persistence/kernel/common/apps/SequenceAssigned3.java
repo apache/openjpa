@@ -59,7 +59,7 @@ public class SequenceAssigned3 {
 
         @Override
         public int hashCode() {
-            return (int) (pk == null ? 0 : pk.longValue()
+            return (int) (pk == null ? 0 : pk
                 % Integer.MAX_VALUE);
         }
 

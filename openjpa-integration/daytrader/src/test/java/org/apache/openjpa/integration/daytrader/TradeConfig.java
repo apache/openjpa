@@ -388,7 +388,7 @@ public class TradeConfig {
 		return (new Float(random() * i)).intValue();
 	}
 	public static float rndFloat(int i) {
-		return (new Float(random() * i)).floatValue();
+		return new Float(random() * i);
 	}
 	public static BigDecimal rndBigDecimal(float f) {
 		return (new BigDecimal(random() * f)).setScale(
@@ -465,7 +465,7 @@ public class TradeConfig {
 		if (deck == null) {
 			deck = new ArrayList(numUsers);
 			for (int i = 0; i < numUsers; i++)
-				deck.add(i, new Integer(i));
+				deck.add(i, i);
 			java.util.Collections.shuffle(deck, r0);
 		}
 		if (card >= numUsers)

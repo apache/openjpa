@@ -366,14 +366,14 @@ public final class SQLBuffer
 
                 } else if ( type == Character.class ) {
                     if (_dict.storeCharsAsNumbers) {
-                        _sql.append(Integer.toString(((Character)o).charValue()));
+                        _sql.append(Integer.toString((Character) o));
                     } else {
                         _sql.append("'" + o.toString().replace("'", "''") + "'");
                     }
                 } else if (type == Boolean.class) {
                     Boolean b = (Boolean) o;
                     // We store B(b)ooleans as ints. Convert
-                    _sql.append(_dict.getBooleanRepresentation().getRepresentation(b.booleanValue()));
+                    _sql.append(_dict.getBooleanRepresentation().getRepresentation(b));
                 } else {
                     _sql.append(o.toString());
                 }

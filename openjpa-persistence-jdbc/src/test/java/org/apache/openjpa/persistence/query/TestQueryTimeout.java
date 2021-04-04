@@ -246,7 +246,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         getLog().trace("testQueryTimeout21b() - Map(timeout=0)");
         OpenJPAEntityManagerFactory emf = null;
         OpenJPAEntityManager em = null;
-        Integer setTime = new Integer(0);
+        Integer setTime = 0;
         // create the Map to test overrides
         Map<String,String >props = new HashMap<>();
         props.put("javax.persistence.query.timeout", "0");
@@ -354,7 +354,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 "being skipped for " + dict.platform);
             return;
         }
-        Integer setTime = new Integer(0);
+        Integer setTime = 0;
         getLog().trace("testQueryTimeout23b() - setHint(" + setTime + ")");
         EntityManager em = null;
         try {
@@ -415,7 +415,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             "executeUpdate timeout");
         OpenJPAEntityManagerFactory emf = null;
         OpenJPAEntityManager em = null;
-        Integer setTime = new Integer(1000);
+        Integer setTime = 1000;
         boolean bRetry = true;
 
         try {
@@ -495,7 +495,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             "QueryHint(1000)");
         OpenJPAEntityManagerFactory emf = null;
         OpenJPAEntityManager em = null;
-        Integer setTime = new Integer(0);
+        Integer setTime = 0;
 
         // create the Map to test overrides
         Map<String,String> props = new HashMap<>();
@@ -566,7 +566,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 "being skipped for " + dict.platform);
             return;
         }
-        Integer setTime = new Integer(1000);
+        Integer setTime = 1000;
         getLog().trace("testQueryTimeout33b() - setHint(" + setTime + ")");
         EntityManager em = null;
 
@@ -630,7 +630,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             " executeUpdate timeout");
         OpenJPAEntityManagerFactory emf = null;
         OpenJPAEntityManager em = null;
-        Integer setTime = new Integer(0);
+        Integer setTime = 0;
         boolean bRetry = true;
 
         try {
@@ -722,7 +722,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 "being skipped for " + dict.platform);
             return;
         }
-        Integer setTime = new Integer(-1);
+        Integer setTime = -1;
         getLog().trace("testQueryTimeout4() - setHint(" + setTime + ")");
         EntityManager em = null;
         try {
@@ -776,7 +776,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: IllegalArgumentException
      */
     public void testQueryTimeout5() {
-        Integer setTime = new Integer(-2000);
+        Integer setTime = -2000;
         getLog().trace("testQueryTimeout5() - setHint(" + setTime + ")");
         EntityManager em = null;
         try {
@@ -821,7 +821,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         getLog().trace("testQueryTimeout6() - No EM.find() update timeout");
         OpenJPAEntityManagerFactory emf = null;
         OpenJPAEntityManager em = null;
-        Integer setTime = new Integer(1000);
+        Integer setTime = 1000;
 
         try {
             // create our EMF with our PU set timeout property
@@ -839,7 +839,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
 
             try {
                 long startTime = System.currentTimeMillis();
-                QTimeout qt = em.find(QTimeout.class, new Integer(1));
+                QTimeout qt = em.find(QTimeout.class, 1);
                 em.getTransaction().begin();
                 qt.setStringField("updated");
                 em.flush();
@@ -852,7 +852,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 assertTrue("Should have taken 2+ secs, but was msecs=" +
                     runTime, runTime > 1900);
                 em.clear();
-                qt = em.find(QTimeout.class, new Integer(1));
+                qt = em.find(QTimeout.class, 1);
                 assertEquals("Verify the entity was updated.",
                     qt.getStringField(), "updated");
             } catch (Exception e) {

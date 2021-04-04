@@ -106,7 +106,7 @@ public class TestMapKey
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(1));
+        pc = em.find(AnnoTest1.class, 1L);
         assertEquals(2, pc.getDefaultMapKey().size());
         assertEquals(1, pc.getDefaultMapKey().get(1).getPk());
         assertEquals(2, pc.getDefaultMapKey().get(2).getPk());

@@ -1699,9 +1699,9 @@ public class AnnotationPersistenceMappingParser
             }
             if (xmlRootElementClass != null
                 && StringUtil.isEmpty(pcols[i].columnDefinition())
-                && (AccessController.doPrivileged(J2DoPrivHelper
+                && AccessController.doPrivileged(J2DoPrivHelper
                     .isAnnotationPresentAction(fm.getDeclaredType(),
-                        (Class<? extends Annotation>) xmlRootElementClass))).booleanValue()) {
+                            (Class<? extends Annotation>) xmlRootElementClass))) {
                 DBDictionary dict = ((MappingRepository) getRepository())
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)

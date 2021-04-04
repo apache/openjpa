@@ -53,7 +53,7 @@ public class TestEJBTransactions extends AbstractTestCase {
             public void run() {
                 try {
                     endTx(em);
-                    list.add(new Integer(0));
+                    list.add(0);
                 }
                 catch (Exception e) {
                     list.add(e);

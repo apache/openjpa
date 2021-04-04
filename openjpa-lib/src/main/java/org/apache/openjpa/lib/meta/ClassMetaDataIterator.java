@@ -192,8 +192,8 @@ public class ClassMetaDataIterator implements MetaDataIterator {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
         File file = new File(URLDecoder.decode((_urls.get(_url)).getFile()));
-        return ((AccessController.doPrivileged(
-            J2DoPrivHelper.existsAction(file))).booleanValue()) ? file:null;
+        return (AccessController.doPrivileged(
+                J2DoPrivHelper.existsAction(file))) ? file:null;
     }
 
     @Override

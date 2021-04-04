@@ -64,11 +64,11 @@ public class TestDepthFirstAnalysis
 
     public void setUpGraph2() {
         Graph graph = new Graph();
-        Integer node1 = new Integer(1);
-        Integer node2 = new Integer(2);
-        Integer node3 = new Integer(3);
-        Integer node4 = new Integer(4);
-        Integer node5 = new Integer(5);
+        Integer node1 = 1;
+        Integer node2 = 2;
+        Integer node3 = 3;
+        Integer node4 = 4;
+        Integer node5 = 5;
         graph.addNode(node2);  // has to be first node for testcase
         graph.addNode(node5);
         graph.addNode(node4);

@@ -95,7 +95,7 @@ public class TestUnionPlaceholderTypes
         broker.begin();
         sql.clear();
         ptb = (PlaceholderTypesB) broker.find(broker.newObjectId
-            (PlaceholderTypesB.class, new Long(idb)), true, null);
+            (PlaceholderTypesB.class, idb), true, null);
         assertEquals(2, ptb.getIntA());
         assertEquals(3, ptb.getIntB());
         assertTrue(ptb.getBooleanB());

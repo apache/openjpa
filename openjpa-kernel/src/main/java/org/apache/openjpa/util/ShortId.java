@@ -30,7 +30,7 @@ public final class ShortId extends OpenJPAId {
     private final short key;
 
     public ShortId(Class cls, Short key) {
-        this(cls, (key == null) ? (short) 0 : key.shortValue());
+        this(cls, (key == null) ? (short) 0 : key);
     }
 
     public ShortId(Class cls, String key) {
@@ -53,7 +53,7 @@ public final class ShortId extends OpenJPAId {
 
     @Override
     public Object getIdObject() {
-        return Short.valueOf(key);
+        return key;
     }
 
     @Override

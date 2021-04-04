@@ -119,7 +119,7 @@ public class TestEnumsInJPQL
     }
 
     public void testMemberOf() {
-        assertEquals(Long.valueOf(1),
+        assertEquals(1L,
             em.createQuery("select count(o) from EnumFieldType o where " +
                 "(:param member of o.enumList or :param2 member of o.enumList)")
                 .setParameter("param", SampleEnum.FOO)

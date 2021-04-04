@@ -61,7 +61,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that an in-place detached entity does not use the proxy classes.
      */
     public void testDetach20() {
-        Integer id = new Integer(0);
+        Integer id = 0;
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy2New", "org/apache/openjpa/persistence/detach/persistence2.xml");
@@ -108,7 +108,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that a detachCopy() returned entity does not contain any proxy classes.
      */
     public void testDetachCopy20() {
-        Integer id = new Integer(0);
+        Integer id = 0;
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy2New", "org/apache/openjpa/persistence/detach/persistence2.xml");
@@ -183,7 +183,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
 
         ArrayList<Entity20> e20List = new ArrayList<>(numEntities);
         for (int i=0; i<numEntities; i++) {
-            Entity20 e20 = em.find(Entity20.class, new Integer(i));
+            Entity20 e20 = em.find(Entity20.class, i);
             e20List.add(e20);
             if (log.isTraceEnabled())
                 log.trace("** testDetachAll20() - after find Entity20(" + i + ")");
@@ -238,7 +238,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
 
         ArrayList<Entity20> e20List = new ArrayList<>(numEntities);
         for (int i=0; i<numEntities; i++) {
-            Entity20 e20 = em.find(Entity20.class, new Integer(i));
+            Entity20 e20 = em.find(Entity20.class, i);
             e20List.add(e20);
             if (log.isTraceEnabled())
                 log.trace("** testClear10Compat() - after find Entity20(" + i + ")");
@@ -292,7 +292,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
 
         ArrayList<Entity20> e20List = new ArrayList<>(numEntities);
         for (int i=0; i<numEntities; i++) {
-            Entity20 e20 = em.find(Entity20.class, new Integer(i));
+            Entity20 e20 = em.find(Entity20.class, i);
             e20List.add(e20);
             if (log.isTraceEnabled())
                 log.trace("** testClear20Compat() - after find Entity20(" + i + ")");
@@ -346,7 +346,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
 
         ArrayList<Entity20> e20List = new ArrayList<>(numEntities);
         for (int i=0; i<numEntities; i++) {
-            Entity20 e20 = em.find(Entity20.class, new Integer(i));
+            Entity20 e20 = em.find(Entity20.class, i);
             e20List.add(e20);
             if (log.isTraceEnabled())
                 log.trace("** testClear20New() - after find Entity20(" + i + ")");

@@ -669,13 +669,13 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
 
     protected void setTestsDisabled(boolean disable) {
         synchronized (testsDisabled) {
-            testsDisabled = new Boolean(disable);
+            testsDisabled = disable;
         }
     }
 
     protected boolean isTestsDisabled() {
         synchronized (testsDisabled) {
-            return testsDisabled.booleanValue();
+            return testsDisabled;
         }
     }
 

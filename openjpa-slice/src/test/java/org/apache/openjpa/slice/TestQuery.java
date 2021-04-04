@@ -91,7 +91,7 @@ public class TestQuery extends SliceTestCase {
         Integer old = Integer.MIN_VALUE;
         for (Object row : result) {
             Object[] line = (Object[])row;
-            int value = ((Integer)line[0]).intValue();
+            int value = (Integer) line[0];
             PObject pc = (PObject)line[1];
             assertTrue(value >= old);
             old = value;

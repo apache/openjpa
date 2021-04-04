@@ -353,7 +353,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                 && !((OpenJPAId) oid).hasSubclasses()) {
                 Boolean custom = customLoad(sm, mapping, state, fetch);
                 if (custom != null)
-                    return custom.booleanValue();
+                    return custom;
                 res = getInitializeStateResult(sm, mapping, fetch,
                     Select.SUBS_EXACT);
                 if (res == null && !selectPrimaryKey(sm, mapping, fetch))
@@ -367,7 +367,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                     mapping = mappings[0];
                     Boolean custom = customLoad(sm, mapping, state, fetch);
                     if (custom != null)
-                        return custom.booleanValue();
+                        return custom;
                     res = getInitializeStateResult(sm, mapping, fetch,
                         Select.SUBS_ANY_JOINABLE);
                     if (res == null && !selectPrimaryKey(sm, mapping, fetch))

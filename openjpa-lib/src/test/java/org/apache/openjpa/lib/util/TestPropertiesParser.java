@@ -247,8 +247,8 @@ public class TestPropertiesParser {
             's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1',
             '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        return new Character(TEST_CHAR_ARRAY[
-            (int) (Math.random() * TEST_CHAR_ARRAY.length)]);
+        return TEST_CHAR_ARRAY[
+                (int) (Math.random() * TEST_CHAR_ARRAY.length)];
     }
 
     static String randomString(int len) {

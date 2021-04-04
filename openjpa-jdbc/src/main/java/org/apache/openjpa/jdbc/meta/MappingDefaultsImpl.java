@@ -590,9 +590,9 @@ public class MappingDefaultsImpl
 
         switch (disc.getJavaType()) {
             case JavaTypes.INT:
-                return Integer.valueOf(alias.hashCode());
+                return alias.hashCode();
             case JavaTypes.CHAR:
-                return Character.valueOf(alias.charAt(0));
+                return alias.charAt(0);
             case JavaTypes.STRING:
             default:
                 return alias;

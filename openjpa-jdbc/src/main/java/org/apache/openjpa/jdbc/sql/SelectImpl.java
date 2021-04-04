@@ -1206,7 +1206,7 @@ public class SelectImpl
         boolean seld = sel && select(col, pj, false);
         if (asc != null) {
             String alias = (as != null) ? as : getColumnAlias(col, pj);
-            appendOrdering(alias, asc.booleanValue());
+            appendOrdering(alias, asc);
         }
         return seld;
     }
@@ -2170,13 +2170,13 @@ public class SelectImpl
         }
 
         if (i != null)
-            return i.intValue();
+            return i;
 
         // check out existing aliases
         i = findAlias(table, key);
 
         if (i != null)
-            return i.intValue();
+            return i;
         if (!create)
             return -1;
 
@@ -2187,7 +2187,7 @@ public class SelectImpl
 //                " created alias: "+
 //                i.intValue()+ " "+ key);
         recordTableAlias(table, key, i);
-        return i.intValue();
+        return i;
     }
 
     private Integer findAliasForQuery(Table table, PathJoins pj, Object key,
@@ -2249,7 +2249,7 @@ public class SelectImpl
 //                "Query created alias: "+
 //                i.intValue()+ " "+ key);
         recordTableAlias(table, key, i);
-        return i.intValue();
+        return i;
     }
 
     private Integer findAlias(Table table, Object key) {
@@ -2278,7 +2278,7 @@ public class SelectImpl
         _aliases.put(key, alias);
 
         String tableString = _dict.getFullName(table, false) + " "
-            + toAlias(alias.intValue());
+            + toAlias(alias);
         if (_tables == null)
             _tables = new TreeMap();
         _tables.put(alias, tableString);
@@ -2644,7 +2644,7 @@ public class SelectImpl
             if (pk == null)
                 pk = (obj instanceof Column && ((Column) obj).isPrimaryKey())
                     ? Boolean.TRUE : Boolean.FALSE;
-            if (pk.booleanValue()) {
+            if (pk) {
                 for (int i = _pos - 1; i >= 0 && i >= _pos - 3; i--)
                     if (_sel._selects.get(i).equals(obj))
                         return i + 1;
@@ -3262,7 +3262,7 @@ public class SelectImpl
             boolean found2 = false;
 
             for (int i = 0; i < aliases.length; i++) {
-                int alias = ((Integer)aliases[i]).intValue();
+                int alias = (Integer) aliases[i];
                 if (alias == j.getIndex1())
                     found1 = true;
                 if (alias == j.getIndex2())
@@ -3306,7 +3306,7 @@ public class SelectImpl
             boolean found2 = false;
 
             for (int i = 0; i < aliases.length; i++) {
-                int alias = ((Integer)aliases[i]).intValue();
+                int alias = (Integer) aliases[i];
                 if (alias == join.getIndex1())
                     found1 = true;
                 if (alias == join.getIndex2())

@@ -60,11 +60,11 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
                 continue;
 
             File file = new File(tokens[i]);
-            if (!(AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(file))).booleanValue())
+            if (!AccessController.doPrivileged(
+                    J2DoPrivHelper.existsAction(file)))
                 continue;
             if (AccessController.doPrivileged(J2DoPrivHelper
-                .isDirectoryAction(file)).booleanValue())
+                    .isDirectoryAction(file)))
                 addIterator(new FileMetaDataIterator(file, filter));
             else if (tokens[i].endsWith(".jar")) {
                 try {

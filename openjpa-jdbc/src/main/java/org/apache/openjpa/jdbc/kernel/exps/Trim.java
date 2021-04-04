@@ -170,7 +170,7 @@ public class Trim
         if (_where == null) {
             func = dict.trimBothFunction;
             dict.assertSupport(func != null, "TrimBothFunction");
-        } else if (_where.booleanValue()) {
+        } else if (_where) {
             func = dict.trimLeadingFunction;
             dict.assertSupport(func != null, "TrimLeadingFunction");
         } else {

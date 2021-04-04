@@ -57,18 +57,18 @@ public class TestFloatingPointIds
 
     public void testPersistDoubleObj() {
         DoubleObjIdEntity e = new DoubleObjIdEntity();
-        e.setId(new Double(4D));
+        e.setId(4D);
         e.setData(44);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(e);
         em.getTransaction().commit();
-        assertEquals(new Double(4D), e.getId());
+        assertEquals(4D, e.getId());
         em.close();
 
         em = emf.createEntityManager();
-        e = em.find(DoubleObjIdEntity.class, new Double(4D));
+        e = em.find(DoubleObjIdEntity.class, 4D);
         assertEquals(44, e.getData());
         em.close();
     }

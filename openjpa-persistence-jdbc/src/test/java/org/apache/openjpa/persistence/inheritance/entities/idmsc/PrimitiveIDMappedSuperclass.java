@@ -39,11 +39,11 @@ public abstract class PrimitiveIDMappedSuperclass {
     }
 
     public Object fetchId() {
-        return new Integer(getId());
+        return getId();
     }
 
     public void updateId(Object obj) {
         Integer i = (Integer) obj;
-        setId(i.intValue());
+        setId(i);
     }
 }

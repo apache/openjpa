@@ -201,8 +201,8 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
 
             ObOcEntity ent = new ObOcEntity();
             List<Integer> intList = new ArrayList<>();
-            intList.add(new Integer(10));
-            intList.add(new Integer(20));
+            intList.add(10);
+            intList.add(20);
             ent.setIntList(intList);
 
             em.getTransaction().begin();

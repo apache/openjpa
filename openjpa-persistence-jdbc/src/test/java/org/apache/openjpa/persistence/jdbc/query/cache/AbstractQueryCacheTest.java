@@ -134,7 +134,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         String qry = "select p from PartBase p where p.cost > ?1";
         for (int i=120; i<155; i++) {
             Query q = em.createQuery(qry);
-            q.setParameter(1, new Double(i));
+            q.setParameter(1, (double) i);
             q.getResultList();
         }
         em.getTransaction().commit();
@@ -261,7 +261,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         em = emf.createEntityManager();
         em.getTransaction().begin();
         Query q = em.createQuery("select p from PartBase p where p.cost>?1");
-        q.setParameter(1, new Double(120));
+        q.setParameter(1, 120.0);
         int jpalistSize = q.getResultList().size();
 
         em.getTransaction().commit();

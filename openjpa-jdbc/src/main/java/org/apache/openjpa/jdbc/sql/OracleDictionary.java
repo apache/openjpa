@@ -585,7 +585,7 @@ public class OracleDictionary
                         new Class[]{ int.class, short.class }).
                         invoke(inner,
                             new Object[]{
-                                Integer.valueOf(idx),
+                                    idx,
                                 oraclePreparedStatementFormNvarcharField.get(null)
                             });
                 } catch (Exception e) {
@@ -613,7 +613,7 @@ public class OracleDictionary
                         setFixedCharMethod.setAccessible(true);
                     }
 
-                    setFixedCharMethod.invoke(inner, new Object[]{ new Integer(idx), val });
+                    setFixedCharMethod.invoke(inner, new Object[]{idx, val });
                     return;
                 } catch (Exception e) {
                     log.warn(e);
@@ -711,7 +711,7 @@ public class OracleDictionary
             return null;
         if (oracleClob_isEmptyLob_Method != null && clob.getClass().getName().equals("oracle.sql.CLOB")) {
             try {
-                if (((Boolean) oracleClob_isEmptyLob_Method.invoke(clob, new Object[0])).booleanValue()) {
+                if ((Boolean) oracleClob_isEmptyLob_Method.invoke(clob, new Object[0])) {
                     return null;
                 }
             } catch (Exception e) {

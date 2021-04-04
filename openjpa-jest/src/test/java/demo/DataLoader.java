@@ -70,7 +70,7 @@ public class DataLoader {
 
     public void populate(EntityManager em) throws Exception {
         Long count = em.createQuery("select count(m) from Movie m", Long.class).getSingleResult();
-        if (count != null && count.longValue() > 0) {
+        if (count != null && count > 0) {
             System.err.println("Found " + count + " Movie records in the database");
             return;
         }

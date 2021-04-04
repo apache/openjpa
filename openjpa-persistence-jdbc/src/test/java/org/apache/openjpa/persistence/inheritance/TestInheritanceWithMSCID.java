@@ -77,7 +77,7 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
                 for (InheritanceEntityMapping tEntity : tEntities) {
                     RootEntity entity = (RootEntity)
                         EntityMapping.createEntityObjectInstance(tEntity);
-                    entity.updateId(new Integer(idx++));
+                    entity.updateId(idx++);
                     entity.setRootEntityData("Root " + (idx - 1));
 
                     em.getTransaction().begin();
@@ -127,7 +127,7 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
                 for (InheritanceEntityMapping tEntity : tEntities) {
                     RootEntity entity = (RootEntity)
                         EntityMapping.createEntityObjectInstance(tEntity);
-                    entity.updateId(new Integer(idx++));
+                    entity.updateId(idx++);
                     entity.setRootEntityData("Root " + (idx - 1));
 
                     em.getTransaction().begin();
@@ -219,7 +219,7 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
                 for (InheritanceEntityMapping tEntity : tEntities) {
                     RootEntity entity = (RootEntity)
                         EntityMapping.createEntityObjectInstance(tEntity);
-                    entity.updateId(new Integer(idx++));
+                    entity.updateId(idx++);
                     entity.setRootEntityData("Root " + (idx - 1));
 
                     em.getTransaction().begin();

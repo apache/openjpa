@@ -133,7 +133,7 @@ public class TradeAction extends TradeJPADirect {
         setAttribute(sb, "Page", "Buy");
         try {
             OrderDataBean orderData = buy(userID, symbol, new Double(
-                    quantity).doubleValue(), TradeConfig.orderProcessingMode);
+                    quantity), TradeConfig.orderProcessingMode);
             setAttribute(sb, "orderData", orderData);
             setAttribute(sb, "results", results);
         } catch (java.lang.IllegalArgumentException e) {

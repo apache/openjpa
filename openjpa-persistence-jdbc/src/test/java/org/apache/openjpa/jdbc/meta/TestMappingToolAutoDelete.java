@@ -73,7 +73,7 @@ public class TestMappingToolAutoDelete
         MappingTool.run(_conf, new String[0], flags, null);
 
         EntityManager em = emf.createEntityManager();
-        assertEquals(Long.valueOf(0),
+        assertEquals(0L,
             em.createQuery("select count(o) from AllFieldTypes o")
                 .getSingleResult());
         em.close();

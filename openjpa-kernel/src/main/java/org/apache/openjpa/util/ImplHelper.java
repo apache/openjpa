@@ -262,11 +262,11 @@ public class ImplHelper {
         }
 
         if (isAssignable == null) {// we don't have a record of this pair...
-            isAssignable = Boolean.valueOf(from.isAssignableFrom(to));
+            isAssignable = from.isAssignableFrom(to);
             assignableTo.put(to, isAssignable);
         }
 
-        return isAssignable.booleanValue();
+        return isAssignable;
     }
 
     /**

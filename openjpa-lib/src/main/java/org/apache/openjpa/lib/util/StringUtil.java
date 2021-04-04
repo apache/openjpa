@@ -26,13 +26,13 @@ public final class StringUtil {
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 
-    private static final Byte      BYTE_ZERO    = Byte.valueOf((byte) 0);
-    private static final Character CHAR_ZERO    = Character.valueOf((char) 0);
-    private static final Double    DOUBLE_ZERO  = Double.valueOf(0.0d);
-    private static final Float     FLOAT_ZERO   = Float.valueOf(0.0f);
-    private static final Integer   INTEGER_ZERO = Integer.valueOf(0);
-    private static final Long      LONG_ZERO    = Long.valueOf(0);
-    private static final Short     SHORT_ZERO   = Short.valueOf((short) 0);
+    private static final Byte      BYTE_ZERO    = (byte) 0;
+    private static final Character CHAR_ZERO    = (char) 0;
+    private static final Double    DOUBLE_ZERO  = 0.0d;
+    private static final Float     FLOAT_ZERO   = 0.0f;
+    private static final Integer   INTEGER_ZERO = 0;
+    private static final Long      LONG_ZERO    = 0L;
+    private static final Short     SHORT_ZERO   = (short) 0;
 
     private StringUtil() {
     }
@@ -446,7 +446,7 @@ public final class StringUtil {
 
     private static Character parseCharString(String val) {
         if (val.length() ==  0) {
-            return Character.valueOf((char) 0);
+            return (char) 0;
         }
         if (val.length() ==  1) {
             return val.charAt(0);

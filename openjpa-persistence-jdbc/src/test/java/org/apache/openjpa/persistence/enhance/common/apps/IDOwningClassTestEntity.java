@@ -25,7 +25,7 @@ import javax.persistence.Entity;
 @Entity
 public class IDOwningClassTestEntity {
     @EmbeddedId
-    EmbeddableEntityWithIDAnnotation pk = new EmbeddableEntityWithIDAnnotation(new Long(2012), new Long(2000));
+    EmbeddableEntityWithIDAnnotation pk = new EmbeddableEntityWithIDAnnotation(2012L, 2000L);
 
     String name;
 

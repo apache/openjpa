@@ -80,8 +80,8 @@ public class URLMetaDataIterator implements MetaDataIterator {
         if (_url == null)
             return null;
         File file = new File(URLDecoder.decode(_url.getPath()));
-        return ((AccessController.doPrivileged(
-            J2DoPrivHelper.existsAction(file))).booleanValue()) ? file:null;
+        return (AccessController.doPrivileged(
+                J2DoPrivHelper.existsAction(file))) ? file:null;
     }
 
     @Override

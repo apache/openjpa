@@ -94,7 +94,7 @@ public class XMLStoreManager
     private static void incrementVersion(OpenJPAStateManager sm) {
         long version = 0;
         if (sm.getVersion() != null)
-            version = ((Long) sm.getVersion()).longValue() + 1;
+            version = (Long) sm.getVersion() + 1;
         sm.setNextVersion(version);
     }
 

@@ -209,7 +209,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
             Object[] result = new Object[calculateMaxKey(positionalKeys)];
             for (Integer pos : positionalKeys) {
                 Parameter<?> param = getParameter(pos);
-                result[pos.intValue() - 1] = isBound(param) ? getParameterValue(pos) : null;
+                result[pos - 1] = isBound(param) ? getParameterValue(pos) : null;
             }
             return result;
         } finally {
@@ -666,7 +666,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
             if (value instanceof String) {
                 _relaxBindParameterTypeChecking = "true".equalsIgnoreCase(value.toString());
             } else if (value instanceof Boolean) {
-                _relaxBindParameterTypeChecking = ((Boolean) value).booleanValue();
+                _relaxBindParameterTypeChecking = (Boolean) value;
             }
         }
     }

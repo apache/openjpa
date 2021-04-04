@@ -118,7 +118,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
 
     public void testFactoryPropertiesContainUserSpecifiedValue() {
         Map<String, Object> props = emf.getProperties();
-        assertEquals(new Integer(300), props.get("openjpa.DataCacheTimeout"));
+        assertEquals(300, props.get("openjpa.DataCacheTimeout"));
     }
 
     public void testFactoryPropertiesAddPlatformOrVendor() {
@@ -230,7 +230,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
         Boolean original = (Boolean)props.get("openjpa.IgnoreChanges");
         assertNotNull(original);
 
-        Boolean invert = !original.booleanValue();
+        Boolean invert = !original;
         em.setIgnoreChanges(invert);
 
         assertProperty("openjpa.IgnoreChanges", em.getProperties(), invert);
@@ -245,7 +245,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
         assertNotNull(original);
 
         Map<String,Boolean> config = new HashMap<>();
-        Boolean invert = !original.booleanValue();
+        Boolean invert = !original;
         config.put("openjpa.IgnoreChanges", invert);
 
         EntityManager em2 = emf.createEntityManager(config);

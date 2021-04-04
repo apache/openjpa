@@ -58,7 +58,7 @@ public class TestManyToMany extends AnnotationTestCase
         endEm(em);
 
         em =(OpenJPAEntityManager) currentEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(lid));
+        pc = em.find(AnnoTest1.class, lid);
         Set<AnnoTest2> many = pc.getManyMany();
         assertEquals(3, many.size());
         for (AnnoTest2 manyPc2 : many) {
@@ -95,7 +95,7 @@ public class TestManyToMany extends AnnotationTestCase
         endEm(em);
 
         em =(OpenJPAEntityManager) currentEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(lid));
+        pc = em.find(AnnoTest1.class, lid);
         Set<AnnoTest2> many = pc.getInverseOwnerManyMany();
         assertEquals(3, many.size());
         for (AnnoTest2 manyPc2 : many) {

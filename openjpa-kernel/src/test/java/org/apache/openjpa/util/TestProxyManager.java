@@ -85,11 +85,11 @@ public class TestProxyManager {
      * Populate the given list with arbitrary data.
      */
     private static void populate(Collection coll) {
-        coll.add(new Integer(1));
+        coll.add(1);
         coll.add("foo");
-        coll.add(new Long(99));
+        coll.add(99L);
         coll.add("bar");
-        coll.add(new Short((short) 50));
+        coll.add((short) 50);
     }
 
     /**
@@ -145,11 +145,11 @@ public class TestProxyManager {
      * Populate the given sorted set with arbitrary data.
      */
     private static void populate(SortedSet coll) {
-        coll.add(new Integer(1));
-        coll.add(new Integer(99));
-        coll.add(new Integer(50));
-        coll.add(new Integer(-5));
-        coll.add(new Integer(10));
+        coll.add(1);
+        coll.add(99);
+        coll.add(50);
+        coll.add(-5);
+        coll.add(10);
     }
 
     /**
@@ -422,10 +422,10 @@ public class TestProxyManager {
      * Populate the given map with arbitrary data.
      */
     private static void populate(Map map) {
-        map.put(new Integer(1), "1");
-        map.put(new Integer(99), "99");
-        map.put(new Integer(-2), "-2");
-        map.put(new Integer(50), "50");
+        map.put(1, "1");
+        map.put(99, "99");
+        map.put(-2, "-2");
+        map.put(50, "50");
     }
 
     /**

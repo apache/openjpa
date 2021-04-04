@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestByteArray extends SingleEMFTestCase {
     protected CriteriaBuilder cb;
     String pic = "IamNotAPicture";
-    Character[] chars = new Character[] { new Character('a'), new Character('b') };
+    Character[] chars = new Character[] {'a', 'b'};
     @Override
     public void setUp() {
         super.setUp(BlogUser.class

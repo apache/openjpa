@@ -163,7 +163,7 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
 
             Set<Map.Entry<Object,Object>> userSet = userParams.entrySet();
             for (Map.Entry<Object,Object> userEntry : userSet) {
-                int idx = ((Integer)userEntry.getKey()).intValue();
+                int idx = (Integer) userEntry.getKey();
                 array[idx] = userEntry.getValue();
             }
             return array;

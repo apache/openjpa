@@ -418,7 +418,7 @@ public class ClassMapping
             try {
                 strategy.setClassMapping(this);
                 if (adapt != null)
-                    strategy.map(adapt.booleanValue());
+                    strategy.map(adapt);
             } catch (RuntimeException re) {
                 // reset strategy
                 _strategy = orig;

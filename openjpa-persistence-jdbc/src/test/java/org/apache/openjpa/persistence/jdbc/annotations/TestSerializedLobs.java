@@ -60,8 +60,8 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
 
         em = emf.createEntityManager();
-        pc1 = em.find(AnnoTest1.class, new Long(1));
-        pc2 = em.find(AnnoTest1.class, new Long(2));
+        pc1 = em.find(AnnoTest1.class, 1L);
+        pc2 = em.find(AnnoTest1.class, 2L);
         assertEquals("ASDASD", pc1.getSerialized());
         assertEquals(DATE, pc2.getSerialized());
         em.close();
@@ -79,7 +79,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(1));
+        pc = em.find(AnnoTest1.class, 1L);
         assertEquals("Not Null", new String(pc.getBlob()));
         Connection conn = (Connection) em.getConnection();
         Statement stmnt = conn.createStatement();
@@ -129,7 +129,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(1));
+        pc = em.find(AnnoTest1.class, 1L);
         String str = pc.getClob();
         assertEquals(1000, str.length());
         for (int i = 0; i < str.length(); i++)
@@ -147,7 +147,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(1));
+        pc = em.find(AnnoTest1.class, 1L);
         String str = pc.getClob();
         assertNull(str);
         em.close();
@@ -163,7 +163,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(1));
+        pc = em.find(AnnoTest1.class, 1L);
         byte[] bl = pc.getBlob();
         assertNull(bl);
         em.close();

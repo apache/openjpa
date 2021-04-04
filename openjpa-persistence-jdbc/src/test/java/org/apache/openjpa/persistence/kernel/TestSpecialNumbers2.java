@@ -56,7 +56,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
     public void testShortMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestshort(Short.MAX_VALUE);
-        saveAndQuery(aftt, "testshort =", new Short(Short.MAX_VALUE));
+        saveAndQuery(aftt, "testshort =", Short.MAX_VALUE);
     }
 
     public void testShortMin() {
@@ -64,7 +64,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         aftt.setTestshort(Short.MIN_VALUE);
         try {
             saveAndQuery(aftt, "testshort =",
-                    new Short(Short.MIN_VALUE));
+                    Short.MIN_VALUE);
         } catch (Throwable t) {
             bug(AbstractTestCase.Platform.EMPRESS, 889, t,
                     "Empress cannot store min values");
@@ -74,14 +74,14 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
     public void testLongMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestlong(Long.MAX_VALUE);
-        saveAndQuery(aftt, "testlong =", new Long(Long.MAX_VALUE));
+        saveAndQuery(aftt, "testlong =", Long.MAX_VALUE);
     }
 
     public void testLongMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestlong(Long.MIN_VALUE);
-            saveAndQuery(aftt, "testlong =", new Long(Long.MIN_VALUE));
+            saveAndQuery(aftt, "testlong =", Long.MIN_VALUE);
         } catch (Throwable t) {
             bug(AbstractTestCase.Platform.HYPERSONIC, 474, t,
                     "Some databases cannot store Long.MIN_VALUE");
@@ -92,7 +92,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestint(Integer.MAX_VALUE);
         saveAndQuery(aftt, "testint =",
-                new Integer(Integer.MAX_VALUE));
+                Integer.MAX_VALUE);
     }
 
     public void testIntegerMin() {
@@ -100,7 +100,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         aftt.setTestint(Integer.MIN_VALUE);
         try {
             saveAndQuery(aftt, "testint =",
-                    new Integer(Integer.MIN_VALUE));
+                    Integer.MIN_VALUE);
         } catch (Throwable t) {
             bug(AbstractTestCase.Platform.EMPRESS, 889, t,
                     "Empress cannot store min values");
@@ -112,7 +112,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         	AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.MAX_VALUE);
             saveAndQuery(aftt, "testfloat =",
-                    new Float(Float.MAX_VALUE));
+                    Float.MAX_VALUE);
         } catch (Exception e) {
             bug(getCurrentPlatform(), 494, e,
                     "Some datastores cannot store Float.MAX_VALUE");
@@ -124,7 +124,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.MIN_VALUE);
             saveAndQuery(aftt, "testfloat =",
-                    new Float(Float.MIN_VALUE));
+                    Float.MIN_VALUE);
         } catch (Exception e) {
             bug(getCurrentPlatform(), 494, e,
                     "Some databases cannot store Float.MIN_VALUE");
@@ -138,7 +138,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.NaN);
-            saveAndQuery(aftt, "testfloat =", new Float(Float.NaN));
+            saveAndQuery(aftt, "testfloat =", Float.NaN);
         } catch (Throwable t) {
             bug(461, t, "NaN problems");
         }
@@ -149,7 +149,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.NEGATIVE_INFINITY);
             saveAndQuery(aftt, "testfloat =",
-                    new Float(Float.NEGATIVE_INFINITY));
+                    Float.NEGATIVE_INFINITY);
         } catch (Exception e) {
             bug(getCurrentPlatform(), 494, e,
                     "Some databases cannot store Float.NEGATIVE_INFINITY");
@@ -161,7 +161,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.POSITIVE_INFINITY);
             saveAndQuery(aftt, "testfloat =",
-                    new Float(Float.POSITIVE_INFINITY));
+                    Float.POSITIVE_INFINITY);
         } catch (Exception e) {
             bug(getCurrentPlatform(), 494, e,
                     "Some databases cannot store Float.POSITIVE_INFINITY");
@@ -173,7 +173,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.MAX_VALUE);
             saveAndQuery(aftt, "testdouble =",
-                    new Double(Double.MAX_VALUE));
+                    Double.MAX_VALUE);
         } catch (Exception e) {
             bug(getCurrentPlatform(), 494, e,
                     "Some databases cannot store Double.MAX_VALUE");
@@ -185,7 +185,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.MIN_VALUE);
             saveAndQuery(aftt, "testdouble =",
-                    new Double(Double.MIN_VALUE));
+                    Double.MIN_VALUE);
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POSTGRESQL,
                 AbstractTestCase.Platform.SQLSERVER,
@@ -205,7 +205,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.NaN);
-            saveAndQuery(aftt, "testdouble =", new Double(Double.NaN));
+            saveAndQuery(aftt, "testdouble =", Double.NaN);
         } catch (Throwable t) {
             bug(461, t, "NaN problems");
         }
@@ -216,7 +216,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.NEGATIVE_INFINITY);
             saveAndQuery(aftt, "testdouble =",
-                    new Double(Double.NEGATIVE_INFINITY));
+                    Double.NEGATIVE_INFINITY);
         } catch (Throwable t) {
             bug(461, t, "infinity problems");
         }
@@ -227,7 +227,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.POSITIVE_INFINITY);
             saveAndQuery(aftt, "testdouble =",
-                    new Double(Double.POSITIVE_INFINITY));
+                    Double.POSITIVE_INFINITY);
         } catch (Throwable t) {
             bug(461, t, "infinity problems");
         }
@@ -237,7 +237,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestbyte(Byte.MIN_VALUE);
         try {
-            saveAndQuery(aftt, "testbyte =", new Byte(Byte.MIN_VALUE));
+            saveAndQuery(aftt, "testbyte =", Byte.MIN_VALUE);
         } catch (Throwable t) {
             //bug(AbstractTestCase.Platform.EMPRESS, 889, t,
             //    "Empress cannot store min values");
@@ -250,7 +250,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
     public void testByteMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestbyte(Byte.MAX_VALUE);
-        saveAndQuery(aftt, "testbyte =", new Byte(Byte.MAX_VALUE));
+        saveAndQuery(aftt, "testbyte =", Byte.MAX_VALUE);
     }
 
     public void testZeroBigInteger() {

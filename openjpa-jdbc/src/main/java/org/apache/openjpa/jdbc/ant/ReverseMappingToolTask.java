@@ -272,8 +272,8 @@ public class ReverseMappingToolTask
         // load customizer properties
         Properties customProps = new Properties();
         File propsFile = Files.getFile(customizerProperties, loader);
-        if (propsFile != null && (AccessController.doPrivileged(
-            J2DoPrivHelper.existsAction(propsFile))).booleanValue()) {
+        if (propsFile != null && AccessController.doPrivileged(
+                J2DoPrivHelper.existsAction(propsFile))) {
             FileInputStream fis = null;
             try {
                 fis = AccessController.doPrivileged(

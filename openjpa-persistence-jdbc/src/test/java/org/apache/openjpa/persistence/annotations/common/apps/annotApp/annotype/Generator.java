@@ -88,7 +88,7 @@ public class Generator {
             StringTokenizer tok = new StringTokenizer(str, ",");
             pk = Integer.parseInt(tok.nextToken());
             pk2 = Integer.valueOf(tok.nextToken());
-            pk3 = Long.valueOf(tok.nextToken());
+            pk3 = Long.parseLong(tok.nextToken());
         }
 
         @Override

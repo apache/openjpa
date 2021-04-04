@@ -99,7 +99,7 @@ public class QueryMetaData
      * Whether the query has been marked read-only.
      */
     public boolean isReadOnly() {
-        return _readOnly != null && _readOnly.booleanValue();
+        return _readOnly != null && _readOnly;
     }
 
     /**
@@ -217,7 +217,7 @@ public class QueryMetaData
         if (_res != null)
             query.setResultType(_res);
         if (_readOnly != null)
-            query.setReadOnly(_readOnly.booleanValue());
+            query.setReadOnly(_readOnly);
         if (_resultSetMappingName != null)
             query.setResultMapping(null, _resultSetMappingName);
     }

@@ -53,7 +53,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestEmbeddable extends SQLListenerTestCase {
     private static final Calendar cal = new GregorianCalendar();
-    private static final Integer timeHash = new Integer(cal.hashCode());
+    private static final Integer timeHash = cal.hashCode();
     public int numEmbeddables = 1;
     public int numBasicTypes = 1;
     public int numProgramManagers = 2;

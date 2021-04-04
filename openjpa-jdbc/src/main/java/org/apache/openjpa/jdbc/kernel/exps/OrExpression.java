@@ -68,7 +68,7 @@ class OrExpression
             entry = (Map.Entry) itr.next();
             val2 = (Integer) entry.getValue();
             val1 = (Integer) contains.get(entry.getKey());
-            if (val1 == null || val2.intValue() > val1.intValue())
+            if (val1 == null || val2 > val1)
                 contains.put(entry.getKey(), val2);
         }
         return ret;

@@ -37,12 +37,12 @@ public class TestReferenceSet {
 
     private ReferenceHashSet _coll = new ReferenceHashSet(ReferenceStrength.WEAK);
 
-    private Object _heldValue = new Integer(2);
+    private Object _heldValue = 2;
 
     @Before
     public void setUp() {
         _coll.add(_heldValue);
-        _coll.add(new Integer(1));
+        _coll.add(1);
     }
 
     /**
@@ -89,7 +89,7 @@ public class TestReferenceSet {
 
         System.gc();
         System.gc();
-        assertTrue(!_coll.contains(new Integer(1)));
+        assertTrue(!_coll.contains(1));
         assertEquals(1, _coll.size());
 
         int size = 0;
@@ -102,7 +102,7 @@ public class TestReferenceSet {
         assertEquals(2, _coll.size());
         assertTrue(_coll.contains("foo"));
         assertTrue(_coll.contains(_heldValue));
-        assertTrue(!_coll.contains(new Integer(1)));
+        assertTrue(!_coll.contains(1));
     }
 
     /**
@@ -113,7 +113,7 @@ public class TestReferenceSet {
         if (JavaVersions.VERSION >= 5)
             return;
 
-        Object held = new Integer(1);
+        Object held = 1;
         assertTrue(_coll.remove(held));
         assertTrue(_coll.add(held));
         System.gc();

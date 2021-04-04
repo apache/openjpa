@@ -39,7 +39,7 @@ public class TestJoinedInheritance extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest3 pc = new AnnoTest3();
-        pc.setPk(new Long(1));
+        pc.setPk(1L);
         pc.setBasic(10);
         pc.setBasic2(20);
         em.persist(pc);

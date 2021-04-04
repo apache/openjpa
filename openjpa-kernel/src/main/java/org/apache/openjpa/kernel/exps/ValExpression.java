@@ -45,7 +45,7 @@ class ValExpression
     protected boolean eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object o = _val.eval(candidate, orig, ctx, params);
-        return o != null && ((Boolean) o).booleanValue();
+        return o != null && (Boolean) o;
     }
 
     @Override
@@ -53,7 +53,7 @@ class ValExpression
         Object[] params) {
         Collection c = _val.eval(candidates, null, ctx, params);
         Object o = (c == null || c.isEmpty()) ? null : c.iterator().next();
-        return o != null && ((Boolean) o).booleanValue();
+        return o != null && (Boolean) o;
     }
 
     @Override

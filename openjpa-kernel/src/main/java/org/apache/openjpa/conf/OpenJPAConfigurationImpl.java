@@ -868,7 +868,7 @@ public class OpenJPAConfigurationImpl
     @Override
     public void setRefreshFromDataCache(Boolean flag) {
     	if (flag != null) {
-    		refreshFromDataCache.set(flag.booleanValue());
+    		refreshFromDataCache.set(flag);
     	}
     }
 

@@ -670,10 +670,10 @@ public class DBDictionary
             return getBigDecimal(rs, column);
         } catch (Exception e1) {
             try {
-                return Double.valueOf(getDouble(rs, column));
+                return getDouble(rs, column);
             } catch (Exception e2) {
                 try {
-                    return Float.valueOf(getFloat(rs, column));
+                    return getFloat(rs, column);
                 } catch (Exception e3) {
                     try {
                         return getLong(rs, column);
@@ -1381,9 +1381,9 @@ public class DBDictionary
         // check for known floating point types to give driver a chance to
         // handle special numbers like NaN and infinity; bug #1053
         if (num instanceof Double)
-            setDouble(stmnt, idx, ((Double) num).doubleValue(), col);
+            setDouble(stmnt, idx, (Double) num, col);
         else if (num instanceof Float)
-            setFloat(stmnt, idx, ((Float) num).floatValue(), col);
+            setFloat(stmnt, idx, (Float) num, col);
         else
             setBigDecimal(stmnt, idx, new BigDecimal(num.toString()), col);
     }
@@ -1472,7 +1472,7 @@ public class DBDictionary
         switch (type) {
             case JavaTypes.BOOLEAN:
             case JavaTypes.BOOLEAN_OBJ:
-                setBoolean(stmnt, idx, ((Boolean) val).booleanValue(), col);
+                setBoolean(stmnt, idx, (Boolean) val, col);
                 break;
             case JavaTypes.BYTE:
             case JavaTypes.BYTE_OBJ:
@@ -1480,7 +1480,7 @@ public class DBDictionary
                 break;
             case JavaTypes.CHAR:
             case JavaTypes.CHAR_OBJ:
-                setChar(stmnt, idx, ((Character) val).charValue(), col);
+                setChar(stmnt, idx, (Character) val, col);
                 break;
             case JavaTypes.DOUBLE:
             case JavaTypes.DOUBLE_OBJ:
@@ -1642,21 +1642,21 @@ public class DBDictionary
         else if (val instanceof String)
             setString(stmnt, idx, val.toString(), col);
         else if (val instanceof Integer)
-            setInt(stmnt, idx, ((Integer) val).intValue(), col);
+            setInt(stmnt, idx, (Integer) val, col);
         else if (val instanceof Boolean)
-            setBoolean(stmnt, idx, ((Boolean) val).booleanValue(), col);
+            setBoolean(stmnt, idx, (Boolean) val, col);
         else if (val instanceof Long)
-            setLong(stmnt, idx, ((Long) val).longValue(), col);
+            setLong(stmnt, idx, (Long) val, col);
         else if (val instanceof Float)
-            setFloat(stmnt, idx, ((Float) val).floatValue(), col);
+            setFloat(stmnt, idx, (Float) val, col);
         else if (val instanceof Double)
-            setDouble(stmnt, idx, ((Double) val).doubleValue(), col);
+            setDouble(stmnt, idx, (Double) val, col);
         else if (val instanceof Byte)
-            setByte(stmnt, idx, ((Byte) val).byteValue(), col);
+            setByte(stmnt, idx, (Byte) val, col);
         else if (val instanceof Character)
-            setChar(stmnt, idx, ((Character) val).charValue(), col);
+            setChar(stmnt, idx, (Character) val, col);
         else if (val instanceof Short)
-            setShort(stmnt, idx, ((Short) val).shortValue(), col);
+            setShort(stmnt, idx, (Short) val, col);
         else if (val instanceof Locale)
             setLocale(stmnt, idx, (Locale) val, col);
         else if (val instanceof BigDecimal)
@@ -5163,7 +5163,7 @@ public class DBDictionary
                 timeout = 0;
             } else if (timeout < 0) {
                 if (log.isWarnEnabled())
-                    log.warn(_loc.get("invalid-timeout", Integer.valueOf(timeout)));
+                    log.warn(_loc.get("invalid-timeout", timeout));
                 return;
             } else if (timeout > 0 && timeout < 1000) {
                 // round up to 1 sec
@@ -5755,7 +5755,7 @@ public class DBDictionary
      * @param supportsDelimitedIds the supportsDelimitedIds to set
      */
     public void setSupportsDelimitedIdentifiers(boolean supportsDelimitedIds) {
-        supportsDelimitedIdentifiers = Boolean.valueOf(supportsDelimitedIds);
+        supportsDelimitedIdentifiers = supportsDelimitedIds;
     }
 
     /**
@@ -5763,12 +5763,11 @@ public class DBDictionary
      */
     private void setSupportsDelimitedIdentifiers(DatabaseMetaData metaData) {
         try {
-            supportsDelimitedIdentifiers = Boolean.valueOf(
-                metaData.supportsMixedCaseQuotedIdentifiers() ||
-                metaData.storesLowerCaseQuotedIdentifiers() ||
-                metaData.storesUpperCaseQuotedIdentifiers());
+            supportsDelimitedIdentifiers = metaData.supportsMixedCaseQuotedIdentifiers() ||
+                    metaData.storesLowerCaseQuotedIdentifiers() ||
+                    metaData.storesUpperCaseQuotedIdentifiers();
         } catch (SQLException e) {
-            supportsDelimitedIdentifiers = Boolean.valueOf(false);
+            supportsDelimitedIdentifiers = Boolean.FALSE;
             getLog().warn(_loc.get("unknown-delim-support", e));
         }
     }

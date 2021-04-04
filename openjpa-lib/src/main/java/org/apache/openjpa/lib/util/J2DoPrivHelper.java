@@ -644,7 +644,7 @@ public abstract class J2DoPrivHelper {
         return new PrivilegedAction<Long>() {
             @Override
             public Long run() {
-                return Long.valueOf(f.length());
+                return f.length();
             }
         };
     }

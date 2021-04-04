@@ -481,7 +481,7 @@ public class Reflection {
      */
     public static boolean getBoolean(Object target, Method getter) {
         Object o = get(target, getter);
-        return (o == null) ? false : ((Boolean) o).booleanValue();
+        return (o == null) ? false : (Boolean) o;
     }
 
     /**
@@ -497,7 +497,7 @@ public class Reflection {
      */
     public static char getChar(Object target, Method getter) {
         Object o = get(target, getter);
-        return (o == null) ? (char) 0 : ((Character) o).charValue();
+        return (o == null) ? (char) 0 : (Character) o;
     }
 
     /**

@@ -76,7 +76,7 @@ public final class FetchStatsCollector {
     }
 
     public static AtomicInteger registerField(String field) {
-        return _used.putIfAbsent(field, new AtomicInteger(Integer.valueOf(0)));
+        return _used.putIfAbsent(field, new AtomicInteger(0));
     }
 
     public static void hit(String field) {
@@ -111,7 +111,7 @@ public final class FetchStatsCollector {
 
         StringBuilder message = new StringBuilder();
         message.append(_loc.get("fields-never-fetched",
-            new Object[] { _entities, new Integer(zeroAccessFieldSet.size()) }).getMessage());
+            new Object[] { _entities, zeroAccessFieldSet.size()}).getMessage());
 
         for (String field : zeroAccessFieldSet) {
             message.append("\n\t" + field);

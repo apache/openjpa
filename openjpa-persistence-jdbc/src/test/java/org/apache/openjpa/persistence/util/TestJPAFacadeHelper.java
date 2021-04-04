@@ -180,7 +180,7 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
             // expected
         }
 
-        Integer id = Integer.valueOf(1);
+        Integer id = 1;
         Person entity = new Person();
         entity.setId(id);
 
@@ -206,7 +206,7 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
             // expected
         }
 
-        Double id = Double.valueOf(1);
+        Double id = 1.0;
         DoubleObjIdEntity entity = new DoubleObjIdEntity();
         entity.setId(id);
 
@@ -232,7 +232,7 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
             // expected
         }
 
-        Float id = Float.valueOf(1);
+        Float id = 1F;
         FloatIdEntity entity = new FloatIdEntity();
         entity.setId(id);
 
@@ -258,7 +258,7 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
             // expected
         }
 
-        Boolean id = Boolean.valueOf(true);
+        Boolean id = Boolean.TRUE;
         BooleanIdEntity entity = new BooleanIdEntity();
         entity.setId(id);
 

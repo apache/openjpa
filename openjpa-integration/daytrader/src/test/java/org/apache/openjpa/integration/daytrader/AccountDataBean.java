@@ -147,7 +147,7 @@ public class AccountDataBean implements Serializable {
     }
 
     public static AccountDataBean getRandomInstance() {
-        return new AccountDataBean(new Integer(TradeConfig.rndInt(100000)), //accountID
+        return new AccountDataBean(TradeConfig.rndInt(100000), //accountID
                 TradeConfig.rndInt(10000), //loginCount
                 TradeConfig.rndInt(10000), //logoutCount
                 new java.util.Date(), //lastLogin

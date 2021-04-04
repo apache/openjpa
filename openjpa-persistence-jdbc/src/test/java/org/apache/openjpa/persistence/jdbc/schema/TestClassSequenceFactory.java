@@ -146,12 +146,12 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
         // hold a and c and start b
 
         Seq seq = conf.getSequenceInstance();
-        long aid = ((Long) seq.next(_broker, aMapping)).longValue();
+        long aid = (Long) seq.next(_broker, aMapping);
         for (int i = 0; i < 5; i++)
             seq.next(_broker, bMapping);
 
-        assertEquals(new Long(aid + 1), seq.next(_broker, aMapping));
-        assertEquals(new Long(aid + 2), seq.next(_broker, cMapping));
+        assertEquals(aid + 1, seq.next(_broker, aMapping));
+        assertEquals(aid + 2, seq.next(_broker, cMapping));
     }
 
     /**

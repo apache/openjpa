@@ -93,7 +93,7 @@ abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
      * Affirms if the alias of this expression is assigned automatically.
      */
     boolean isAutoAliased() {
-        return _autoAliased == null ? true : _autoAliased.booleanValue();
+        return _autoAliased == null ? true : _autoAliased;
     }
 
     /**

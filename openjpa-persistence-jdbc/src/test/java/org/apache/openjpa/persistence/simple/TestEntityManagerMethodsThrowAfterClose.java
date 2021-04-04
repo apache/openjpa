@@ -77,7 +77,7 @@ public class TestEntityManagerMethodsThrowAfterClose
 
     public void testFindAfterClose() {
         try {
-            em.find(AllFieldTypes.class, Integer.valueOf(1));
+            em.find(AllFieldTypes.class, 1);
             fail("Expected exception not thrown " +
                     "when calling em.find " +
                     "after calling em.close");
@@ -88,7 +88,7 @@ public class TestEntityManagerMethodsThrowAfterClose
 
     public void testGetReferenceAfterClose() {
         try {
-            em.getReference(AllFieldTypes.class, Integer.valueOf(1));
+            em.getReference(AllFieldTypes.class, 1);
             fail("Expected exception not thrown " +
                     "when calling em.getReference " +
                     "after calling em.close");

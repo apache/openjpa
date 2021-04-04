@@ -48,7 +48,7 @@ public class TestOneToMany
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(5));
+        pc = em.find(AnnoTest1.class, 5L);
         Collection<AnnoTest2> many = pc.getOneMany();
         assertEquals(2, many.size());
         for (AnnoTest2 pc2 : many) {
@@ -82,7 +82,7 @@ public class TestOneToMany
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(5));
+        pc = em.find(AnnoTest1.class, 5L);
         Collection<AnnoTest2> many = pc.getInverseOwnerOneMany();
         assertEquals(2, many.size());
         for (AnnoTest2 pc3 : many) {

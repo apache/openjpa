@@ -361,13 +361,13 @@ class LRSProxyMap
             if (_next == null) {
                 try {
                     _next = (_res[0].next()) ? Boolean.TRUE : Boolean.FALSE;
-                    if (_next.booleanValue() && _res[1] != _res[0])
+                    if (_next && _res[1] != _res[0])
                         _res[1].next();
                 } catch (SQLException se) {
                     throw SQLExceptions.getStore(se, _store.getDBDictionary());
                 }
             }
-            return _next.booleanValue();
+            return _next;
         }
 
         @Override

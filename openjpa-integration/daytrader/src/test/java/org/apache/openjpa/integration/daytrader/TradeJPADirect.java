@@ -522,7 +522,7 @@ public class TradeJPADirect {
                 Query updateStatus = entityManager.createNativeQuery(
                         "UPDATE orderejb o SET o.orderStatus = 'completed' WHERE "
                         + "o.orderStatus = 'closed' AND o.ACCOUNT_ACCOUNTID  = ?");
-                updateStatus.setParameter(1, accountid.intValue());
+                updateStatus.setParameter(1, accountid);
                 updateStatus.executeUpdate();
             }
             if (entityManager != null) {

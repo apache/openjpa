@@ -88,7 +88,7 @@ public class TestSequenceAssigned
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
         pc.setPK(-100);
-        pc2.setPK(new Long(-100));
+        pc2.setPK((long) -100);
         pm.persist(pc);
         pm.persist(pc2);
         pm.flush();
@@ -131,8 +131,8 @@ public class TestSequenceAssigned
         pm.flush();
         assertNotNull(pc.getPK());
         assertNotNull(pc2.getPK());
-        assertTrue(0 != pc.getPK().longValue());
-        assertTrue(0 != pc2.getPK().longValue());
+        assertTrue(0 != pc.getPK());
+        assertTrue(0 != pc2.getPK());
         assertNotEquals(pc.getPK(), pc2.getPK());
         endTx(pm);
         endEm(pm);

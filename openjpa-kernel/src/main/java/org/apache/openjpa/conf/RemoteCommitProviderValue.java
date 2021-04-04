@@ -114,7 +114,7 @@ public class RemoteCommitProviderValue
     public void configureEventManager(RemoteCommitEventManager mgr) {
         parseOptions();
         if (_transmitPersIds != null)
-            mgr.setTransmitPersistedObjectIds(_transmitPersIds.booleanValue());
+            mgr.setTransmitPersistedObjectIds(_transmitPersIds);
     }
 
     /**

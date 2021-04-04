@@ -36,7 +36,7 @@ public class EmbeddableEntityWithIDAnnotation implements java.io.Serializable
 
 	private Long id;
 
-    private Long seqNo = new Long(2012);
+    private Long seqNo = 2012L;
 
     public EmbeddableEntityWithIDAnnotation( )
     {

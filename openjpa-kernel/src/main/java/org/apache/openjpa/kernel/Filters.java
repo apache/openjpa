@@ -309,7 +309,7 @@ public class Filters {
             else if (type == Character.class) {
                 String str = o.toString();
                 if (str != null && str.length() == 1) {
-                    return Character.valueOf(str.charAt(0));
+                    return str.charAt(0);
                 }
             }
             else if (Calendar.class.isAssignableFrom(type) && o instanceof Date) {
@@ -398,9 +398,9 @@ public class Filters {
         if (type == Integer.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
             return ((Number) o).intValue();
         } else if (type == Float.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
-            return Float.valueOf(((Number) o).floatValue());
+            return ((Number) o).floatValue();
         } else if (type == Double.class) {
-            return Double.valueOf(((Number) o).doubleValue());
+            return ((Number) o).doubleValue();
         } else if (type == Long.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
             return ((Number) o).longValue();
         } else if (type == BigDecimal.class) {
@@ -410,20 +410,20 @@ public class Filters {
             // and Float versions, despite wanting to cast it to BigDecimal
             double dval = ((Number) o).doubleValue();
             if (Double.isNaN(dval) || Double.isInfinite(dval)) {
-                return Double.valueOf(dval);
+                return dval;
             }
             float fval = ((Number) o).floatValue();
             if (Float.isNaN(fval) || Float.isInfinite(fval)) {
-                return Float.valueOf(fval);
+                return fval;
             }
 
             return new BigDecimal(o.toString());
         } else if (type == BigInteger.class) {
             return new BigInteger(o.toString());
         } else if (type == Short.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
-            return Short.valueOf(((Number) o).shortValue());
+            return ((Number) o).shortValue();
         } else if (type == Byte.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
-            return Byte.valueOf(((Number) o).byteValue());
+            return ((Number) o).byteValue();
         } else if (type == Character.class) {
             return (char) ((Number) o).intValue();
         } else if (!strictNumericConversion) {
@@ -576,7 +576,7 @@ public class Filters {
             default:
                 throw new InternalException();
         }
-        return Float.valueOf(tot);
+        return tot;
     }
 
     /**
@@ -603,7 +603,7 @@ public class Filters {
             default:
                 throw new InternalException();
         }
-        return Double.valueOf(tot);
+        return tot;
     }
 
     /**
@@ -1084,15 +1084,15 @@ public class Filters {
 
     public static Object getDefaultForNull(Class<?> nType) {
         if (nType == Long.class)
-            return Long.valueOf(0);
+            return 0L;
         if (nType == Integer.class)
-            return Integer.valueOf(0);
+            return 0;
         if (nType == Double.class)
-            return Double.valueOf(0.0);
+            return 0.0;
         if (nType == Float.class)
-            return new Float(0.0);
+            return 0.0F;
         if (nType == Short.class)
-            return Short.valueOf((short)0);
+            return (short) 0;
         return null;
     }
 

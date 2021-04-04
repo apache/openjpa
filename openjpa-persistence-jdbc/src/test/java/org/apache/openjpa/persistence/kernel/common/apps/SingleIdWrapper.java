@@ -41,11 +41,11 @@ public class SingleIdWrapper implements SingleId {
     }
 
     public int getPk() {
-        return pk.intValue();
+        return pk;
     }
 
     public void setPk(int i) {
-        pk = new Integer(i);
+        pk = i;
     }
 
     @Override

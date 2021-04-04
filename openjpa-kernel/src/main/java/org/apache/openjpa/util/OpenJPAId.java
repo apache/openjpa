@@ -119,9 +119,9 @@ public abstract class OpenJPAId
                     superclass = base.getSuperclass();
                 }
                 _typeHash = base.getName().hashCode();
-                _typeCache.put(type, Integer.valueOf(_typeHash));
+                _typeCache.put(type, _typeHash);
             } else {
-                _typeHash = typeHashInt.intValue();
+                _typeHash = typeHashInt;
             }
         }
         return _typeHash ^ idHash();

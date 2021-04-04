@@ -216,8 +216,8 @@ public class ClassArgParser {
                 return new String[]{ getFromClassFile(file) };
             if (arg.endsWith(".java"))
                 return new String[]{ getFromJavaFile(file) };
-            if ((AccessController.doPrivileged(
-                J2DoPrivHelper.existsAction(file))).booleanValue()) {
+            if (AccessController.doPrivileged(
+                    J2DoPrivHelper.existsAction(file))) {
                 Collection<String> col = getFromMetaDataFile(file);
                 return col.toArray(new String[col.size()]);
             }

@@ -117,7 +117,7 @@ public final class Id
      * Construct from key value.
      */
     public Id(Class cls, Long key) {
-        this(cls, (key == null) ? 0L : key.longValue());
+        this(cls, (key == null) ? 0L : key);
     }
 
     /**

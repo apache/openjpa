@@ -47,7 +47,7 @@ public class TestOneToOne
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(5));
+        pc = em.find(AnnoTest1.class, 5L);
         pc2 = pc.getOneOne();
         assertNotNull(pc2);
         assertEquals(15, pc2.getPk1());
@@ -67,7 +67,7 @@ public class TestOneToOne
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(5));
+        pc = em.find(AnnoTest1.class, 5L);
         pc2 = pc.getSelfOneOne();
         assertNotNull(pc2);
         assertEquals(new Long(15), pc2.getPk());
@@ -86,7 +86,7 @@ public class TestOneToOne
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(5));
+        pc = em.find(AnnoTest1.class, 5L);
         pc2 = pc.getSelfOneOne();
         assertNotNull(pc2);
         assertEquals(new Long(15), pc2.getPk());
@@ -105,7 +105,7 @@ public class TestOneToOne
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(5));
+        pc = em.find(AnnoTest1.class, 5L);
         pc2 = pc.getOtherTableOneOne();
         assertNotNull(pc2);
         assertEquals(15, pc2.getPk1());
@@ -125,7 +125,7 @@ public class TestOneToOne
         em.close();
 
         em = emf.createEntityManager();
-        pc = em.find(AnnoTest1.class, new Long(5));
+        pc = em.find(AnnoTest1.class, 5L);
         pc2 = pc.getInverseOwnerOneOne();
         assertNotNull(pc2);
         assertEquals(15, pc2.getPk1());

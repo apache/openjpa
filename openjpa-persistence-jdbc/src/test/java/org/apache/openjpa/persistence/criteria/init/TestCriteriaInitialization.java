@@ -37,11 +37,11 @@ public class TestCriteriaInitialization extends SingleEMFTestCase {
         try {
             em.getTransaction().begin();
 
-            em.persist(new MyUserEntity("wayne", Long.valueOf(1)));
-            em.persist(new MyUserEntity("garth", Long.valueOf(2)));
+            em.persist(new MyUserEntity("wayne", 1L));
+            em.persist(new MyUserEntity("garth", 2L));
 
-            em.persist(new AddressEntity(new AddressPk("street_1", Long.valueOf(1))));
-            em.persist(new AddressEntity(new AddressPk("street_2", Long.valueOf(2))));
+            em.persist(new AddressEntity(new AddressPk("street_1", 1L)));
+            em.persist(new AddressEntity(new AddressPk("street_2", 2L)));
 
             em.getTransaction().commit();
         } finally {

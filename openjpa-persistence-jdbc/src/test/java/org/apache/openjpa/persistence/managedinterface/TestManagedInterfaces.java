@@ -158,9 +158,9 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         em.getTransaction().begin();
         ManagedIface pc = em.createInstance(ManagedIface.class);
         Set set = new HashSet();
-        set.add(new Integer(3));
-        set.add(new Integer(4));
-        set.add(new Integer(5));
+        set.add(3);
+        set.add(4);
+        set.add(5);
         pc.setSetInteger(set);
         em.persist(pc);
         Object oid = em.getObjectId(pc);
@@ -171,13 +171,13 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         pc = em.find(ManagedIface.class, oid);
         set = pc.getSetInteger();
         assertEquals(3, set.size());
-        assertTrue(set.contains(new Integer(3)));
-        assertTrue(set.contains(new Integer(4)));
-        assertTrue(set.contains(new Integer(5)));
+        assertTrue(set.contains(3));
+        assertTrue(set.contains(4));
+        assertTrue(set.contains(5));
         em.getTransaction().begin();
-        set.remove(new Integer(4));
-        set.add(new Integer(14));
-        set.add(new Integer(15));
+        set.remove(4);
+        set.add(14);
+        set.add(15);
         em.getTransaction().commit();
         em.close();
 
@@ -185,10 +185,10 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         pc = em.find(ManagedIface.class, oid);
         set = pc.getSetInteger();
         assertEquals(4, set.size());
-        assertTrue(set.contains(new Integer(3)));
-        assertTrue(set.contains(new Integer(5)));
-        assertTrue(set.contains(new Integer(14)));
-        assertTrue(set.contains(new Integer(15)));
+        assertTrue(set.contains(3));
+        assertTrue(set.contains(5));
+        assertTrue(set.contains(14));
+        assertTrue(set.contains(15));
         em.getTransaction().begin();
         pc.setSetInteger(null);
         em.getTransaction().commit();
@@ -289,14 +289,14 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         ManagedIface toRem = null;
         for (Iterator it = set.iterator(); it.hasNext();) {
             rel = (ManagedIface) it.next();
-            seen.add(new Integer(rel.getIntField()));
+            seen.add(rel.getIntField());
             if (rel.getIntField() == 4)
                 toRem = rel;
         }
         assertEquals(3, seen.size());
-        assertTrue(seen.contains(new Integer(3)));
-        assertTrue(seen.contains(new Integer(4)));
-        assertTrue(seen.contains(new Integer(5)));
+        assertTrue(seen.contains(3));
+        assertTrue(seen.contains(4));
+        assertTrue(seen.contains(5));
         em.getTransaction().begin();
         assertNotNull(toRem);
         set.remove(toRem);
@@ -312,13 +312,13 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         seen.clear();
         for (Iterator it = set.iterator(); it.hasNext();) {
             rel = (ManagedIface) it.next();
-            seen.add(new Integer(rel.getIntField()));
+            seen.add(rel.getIntField());
         }
         assertEquals(4, seen.size());
-        assertTrue(seen.contains(new Integer(3)));
-        assertTrue(seen.contains(new Integer(5)));
-        assertTrue(seen.contains(new Integer(14)));
-        assertTrue(seen.contains(new Integer(15)));
+        assertTrue(seen.contains(3));
+        assertTrue(seen.contains(5));
+        assertTrue(seen.contains(14));
+        assertTrue(seen.contains(15));
         em.getTransaction().begin();
         pc.setSetPC(null);
         em.getTransaction().commit();

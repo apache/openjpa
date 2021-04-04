@@ -78,7 +78,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         pm.persist(b);
         b.setAint(5);
         b.setBstr("5");
-        b.getStringIntMap().put("5", new Integer(5));
+        b.getStringIntMap().put("5", 5);
 
         AttachE e = new AttachE();
         e.setEstr("E");
@@ -114,7 +114,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         b.setAint(12);
         b.setBstr("12");
         TreeMap map = new TreeMap();
-        map.put("12", new Integer(12));
+        map.put("12", 12);
         b.setStringIntMap(map);
 
         pm = getPM();
@@ -123,7 +123,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         assertEquals(12, attached.getAint());
         assertEquals("12", attached.getBstr());
         assertNull(attached.getStringIntMap().get("12"));
-        assertEquals(new Integer(5), attached.getStringIntMap().get("5"));
+        assertEquals(5, attached.getStringIntMap().get("5"));
         endTx(pm);
         endEm(pm);
 
@@ -132,7 +132,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         assertEquals(12, b.getAint());
         assertEquals("12", b.getBstr());
         assertNull(b.getStringIntMap().get("12"));
-        assertEquals(new Integer(5), b.getStringIntMap().get("5"));
+        assertEquals(5, b.getStringIntMap().get("5"));
         endEm(pm);
     }
 
@@ -158,16 +158,16 @@ public class TestDetachedStateManager extends BaseKernelTest {
 
         b.setAint(12);
         b.setBstr("12");
-        b.getStringIntMap().put("12", new Integer(12));
+        b.getStringIntMap().put("12", 12);
 
         pm = getPM();
         startTx(pm);
         AttachB attached = (AttachB) pm.merge(b);
         assertEquals("not 12", 12, attached.getAint());
         assertEquals("not 12str", "12", attached.getBstr());
-        assertEquals("not newInteger(12)", new Integer(12),
+        assertEquals("not newInteger(12)", 12,
             attached.getStringIntMap().get("12"));
-        assertEquals("not newInteger(5)", new Integer(5),
+        assertEquals("not newInteger(5)", 5,
             attached.getStringIntMap().get("5"));
         endTx(pm);
         endEm(pm);
@@ -176,9 +176,9 @@ public class TestDetachedStateManager extends BaseKernelTest {
         b = (AttachB) pm.find(AttachB.class, oid);
         assertEquals("not equal 12", 12, b.getAint());
         assertEquals("not equal 12str", "12", b.getBstr());
-        assertEquals("not equal newinteger(12)", new Integer(12),
+        assertEquals("not equal newinteger(12)", 12,
             b.getStringIntMap().get("12"));
-        assertEquals("not equal newInteger(5)", new Integer(5),
+        assertEquals("not equal newInteger(5)", 5,
             b.getStringIntMap().get("5"));
         endEm(pm);
     }
@@ -222,7 +222,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         b.setAint(12);
         b.setBstr("12");
         TreeMap map = new TreeMap();
-        map.put("12", new Integer(12));
+        map.put("12", 12);
         b.setStringIntMap(map);
 
         pm = getPM();
@@ -454,7 +454,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         DetachSMPC rel = new DetachSMPC();
         rel.setIntField(2);
         pc.getRelSet().add(rel);
-        pc.getStringIntMap().put("a", new Integer(99));
+        pc.getStringIntMap().put("a", 99);
         pm.persist(pc);
         endTx(pm);
         Object pcoid = pm.getObjectId(pc);
@@ -478,7 +478,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
 
         pc.setIntField(3);
         ((DetachSMPC) pc.getRelSet().iterator().next()).setIntField(4);
-        pc.getStringIntMap().put("b", new Integer(100));
+        pc.getStringIntMap().put("b", 100);
 
         pc = (DetachSMPC) roundtrip(pc, false);
 
@@ -488,7 +488,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         //assertDetachedSM (b.getDs ().iterator ().next ());
         assertEquals(4, ((DetachSMPC) pc.getRelSet().iterator().next())
             .getIntField());
-        assertEquals(new Integer(100), pc.getStringIntMap().get("b"));
+        assertEquals(100, pc.getStringIntMap().get("b"));
 
         pm = (OpenJPAEntityManager) factory.createEntityManager();
         startTx(pm);
@@ -498,7 +498,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         assertEquals(4, ((DetachSMPC) pc.getRelSet().iterator().next())
             .getIntField());
         assertEquals(2, pc.getStringIntMap().size());
-        assertEquals(new Integer(100), pc.getStringIntMap().get("b"));
+        assertEquals(100, pc.getStringIntMap().get("b"));
         endTx(pm);
         endEm(pm);
 
@@ -509,7 +509,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         assertEquals(4, ((DetachSMPC) pc.getRelSet().iterator().next())
             .getIntField());
         assertEquals(2, pc.getStringIntMap().size());
-        assertEquals(new Integer(100), pc.getStringIntMap().get("b"));
+        assertEquals(100, pc.getStringIntMap().get("b"));
 
         startTx(pm);
         deleteAll(DetachSMPC.class, pm);

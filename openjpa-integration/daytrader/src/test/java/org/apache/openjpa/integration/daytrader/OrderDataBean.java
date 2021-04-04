@@ -169,7 +169,7 @@ public class OrderDataBean implements Serializable
 
     public static OrderDataBean getRandomInstance() {
         return new OrderDataBean(
-            new Integer(TradeConfig.rndInt(100000)),
+                TradeConfig.rndInt(100000),
             TradeConfig.rndBoolean() ? "buy" : "sell",
             "open",
             new java.util.Date(TradeConfig.rndInt(Integer.MAX_VALUE)),

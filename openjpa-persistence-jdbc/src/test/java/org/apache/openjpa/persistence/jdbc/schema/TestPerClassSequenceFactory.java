@@ -104,7 +104,7 @@ public class TestPerClassSequenceFactory
 
         @Override
         public Object current(StoreContext ctx, ClassMetaData meta) {
-            return new Long(_val);
+            return _val;
         }
 
         @Override

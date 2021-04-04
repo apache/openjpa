@@ -31,7 +31,7 @@ public final class DoubleId
     private final double key;
 
     public DoubleId(Class cls, Double key) {
-        this(cls, (key == null) ? 0D : key.doubleValue());
+        this(cls, (key == null) ? 0D : key);
     }
 
     public DoubleId(Class cls, String key) {
@@ -54,7 +54,7 @@ public final class DoubleId
 
     @Override
     public Object getIdObject() {
-        return Double.valueOf(key);
+        return key;
     }
 
     @Override

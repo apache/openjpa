@@ -184,7 +184,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
     private long getResults(Query q, boolean shouldFail) {
         try {
 
-            Integer result = new Integer(q.getResultList().size());
+            Integer result = q.getResultList().size();
             if (shouldFail) {
                 fail("should have failed");
             }
