@@ -150,8 +150,7 @@ public class TestDetach extends SingleEMFTestCase {
         }
 
         List<DMCustomerInventory> newInventories =
-            new ArrayList<>();
-        newInventories.addAll(inventories);
+                new ArrayList<>(inventories);
         DMCustomerInventory newInventory = new DMCustomerInventory();
         newInventory.setCustomer(detached);
         newInventories.add(newInventory);

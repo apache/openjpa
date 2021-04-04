@@ -52,9 +52,7 @@ public class QueryLanguages {
                     J2DoPrivHelper.newInstanceAction(classes[i]));
             } catch (PrivilegedActionException pae) {
                 throw new InternalException(pae.getException());
-            } catch (InstantiationException e) {
-                throw new InternalException(e);
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new InternalException(e);
             }
             _expressionParsers.put(ep.getLanguage(), ep);

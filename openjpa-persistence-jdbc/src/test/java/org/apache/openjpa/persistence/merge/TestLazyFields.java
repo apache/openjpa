@@ -38,7 +38,7 @@ public class TestLazyFields extends SingleEMFTestCase {
             em.getTransaction().begin();
             Outer o1 = new Outer();
             Inner i1 = new Inner();
-            o1.setInners(new ArrayList<Inner>());
+            o1.setInners(new ArrayList<>());
             o1.getInners().add(i1);
 
             em.persist(o1);

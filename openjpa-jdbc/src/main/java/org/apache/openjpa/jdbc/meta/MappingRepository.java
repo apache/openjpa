@@ -1572,7 +1572,7 @@ public class MappingRepository extends MetaDataRepository {
                     cls = itr.next();
                     Class<?> supcl = cls.getSuperclass();
                     while (supcl != null &&
-                           !supcl.getClass().equals(java.lang.Object.class)) {
+                           !supcl.equals(java.lang.Object.class)) {
                         if (!supcl.isInterface() &&
                             supcl.equals(mapping.getDescribedType())) {
                             baseMapping = mapping;

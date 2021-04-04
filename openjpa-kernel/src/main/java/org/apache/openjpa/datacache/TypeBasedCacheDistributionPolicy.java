@@ -78,8 +78,7 @@ public class TypeBasedCacheDistributionPolicy extends DefaultCacheDistributionPo
         if (StringUtil.isEmpty(types))
             return Collections.emptySet();
         String[] names = StringUtil.split(types, ";", 0);
-        Set<String> set = new HashSet<>();
-        set.addAll(Arrays.asList(names));
+        Set<String> set = new HashSet<>(Arrays.asList(names));
 
         return  Collections.unmodifiableSet(set);
     }

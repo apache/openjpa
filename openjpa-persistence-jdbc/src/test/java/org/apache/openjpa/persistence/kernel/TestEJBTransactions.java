@@ -55,11 +55,8 @@ public class TestEJBTransactions extends AbstractTestCase {
                     endTx(em);
                     list.add(0);
                 }
-                catch (Exception e) {
+                catch (Throwable e) {
                     list.add(e);
-                }
-                catch (Throwable t) {
-                    list.add(t);
                 }
             }
         };

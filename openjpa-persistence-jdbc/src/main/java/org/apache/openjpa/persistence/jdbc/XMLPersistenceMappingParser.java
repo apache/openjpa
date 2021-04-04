@@ -1449,11 +1449,7 @@ public class XMLPersistenceMappingParser
     private void deferEmbeddableOverrides(
         Class<?> cls, DeferredEmbeddableOverrides defMap) {
         ArrayList<DeferredEmbeddableOverrides> defMappings =
-            _deferredMappings.get(cls);
-        if (defMappings == null) {
-            defMappings = new ArrayList<>();
-            _deferredMappings.put(cls, defMappings);
-        }
+                _deferredMappings.computeIfAbsent(cls, k -> new ArrayList<>());
         defMappings.add(defMap);
     }
 

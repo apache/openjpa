@@ -101,11 +101,8 @@ public class TestEJBEntityManager extends AbstractTestCase {
                     em.close();
                     result.add(0);
                 }
-                catch (Exception jdoe) {
+                catch (Throwable jdoe) {
                     result.add(jdoe);
-                }
-                catch (Throwable t) {
-                    result.add(t);
                 }
             }
         }.start();

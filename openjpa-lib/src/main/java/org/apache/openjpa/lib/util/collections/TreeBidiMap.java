@@ -1372,9 +1372,7 @@ public class TreeBidiMap<K extends Comparable<K>, V extends Comparable<V>>
                         return false;
                     }
                 }
-            } catch (final ClassCastException ex) {
-                return false;
-            } catch (final NullPointerException ex) {
+            } catch (final ClassCastException | NullPointerException ex) {
                 return false;
             }
         }

@@ -1141,7 +1141,7 @@ public class FetchConfigurationImpl
     List<FetchConfigurationImpl> getPath() {
         if (isRoot())
             return Collections.emptyList();
-        return trackPath(new ArrayList<FetchConfigurationImpl>());
+        return trackPath(new ArrayList<>());
     }
 
     List<FetchConfigurationImpl> trackPath(List<FetchConfigurationImpl> path) {

@@ -903,11 +903,7 @@ public class ClassMetaData
     public void setInterfacePropertyAlias(Class<?> iface, String orig,
         String local) {
         synchronized (_ifaceMap) {
-            Map<String,String> fields = _ifaceMap.get(iface);
-            if (fields == null) {
-                fields = new HashMap<>();
-                _ifaceMap.put(iface, fields);
-            }
+            Map<String, String> fields = _ifaceMap.computeIfAbsent(iface, k -> new HashMap<>());
             if (fields.containsKey(orig))
                 throw new MetaDataException(_loc.get("duplicate-iface-alias",
                     this, orig, local));

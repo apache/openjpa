@@ -70,7 +70,7 @@ public class ComparatorChain<E> implements Comparator<E>, Serializable {
      * UnsupportedOperationException is thrown
      */
     public ComparatorChain() {
-        this(new ArrayList<Comparator<E>>(), new BitSet());
+        this(new ArrayList<>(), new BitSet());
     }
 
     /**

@@ -67,7 +67,7 @@ public class DepthFirstAnalysis {
         for (Object node : nodes) {
             info = _nodeInfo.get(node);
             if (info.color == NodeInfo.COLOR_WHITE)
-                visit(graph, node, info, 0, new LinkedList<Edge>());
+                visit(graph, node, info, 0, new LinkedList<>());
         }
     }
 

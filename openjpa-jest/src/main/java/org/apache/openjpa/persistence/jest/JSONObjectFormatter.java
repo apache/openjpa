@@ -99,13 +99,13 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
      * @param parent the parent node to which the new node be attached.
      */
     private JSON encodeManagedInstance(final OpenJPAStateManager sm, Metamodel model) {
-        return encodeManagedInstance(sm, new HashSet<OpenJPAStateManager>(), 0, false, model);
+        return encodeManagedInstance(sm, new HashSet<>(), 0, false, model);
     }
 
     private JSON encodeManagedInstances(final Collection<OpenJPAStateManager> sms, Metamodel model) {
         JSONObject.Array result = new JSONObject.Array();
         for (OpenJPAStateManager sm : sms) {
-            result.add(encodeManagedInstance(sm, new HashSet<OpenJPAStateManager>(), 0, false, model));
+            result.add(encodeManagedInstance(sm, new HashSet<>(), 0, false, model));
         }
         return result;
     }

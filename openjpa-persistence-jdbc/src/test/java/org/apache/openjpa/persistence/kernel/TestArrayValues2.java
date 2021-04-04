@@ -234,11 +234,10 @@ public class TestArrayValues2 extends BaseKernelTest {
         throws Exception {
         try {
             saveArrayInternal(array, primitive, lob);
-        } catch (Exception e) {
+        } catch (Exception | Error e) {
             throw e;
-        } catch (Error error) {
-            throw error;
-        } finally {
+        }
+        finally {
             //
         }
     }

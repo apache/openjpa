@@ -130,8 +130,7 @@ public class QueryCacheStoreQuery
             AbstractQueryCache qcache = (AbstractQueryCache) _cache;
             if (qcache.getEvictPolicy() == EvictPolicy.TIMESTAMP) {
                 Set<String> classNames = qk.getAcessPathClassNames();
-                List<String> keyList = new ArrayList<>();
-                keyList.addAll(classNames);
+                List<String> keyList = new ArrayList<>(classNames);
 
                 List<Long> timestamps =
                     qcache.getAllEntityTimestamp(keyList);

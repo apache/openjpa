@@ -416,11 +416,10 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             if (_log.isTraceEnabled())
                 _log.trace("verifySerializable() - after deserialize");
             verifyEntities(e20new, usesProxyAfter);
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             fail(e.toString());
-        } catch (ClassNotFoundException e) {
-            fail(e.toString());
-        } finally {
+        }
+        finally {
             try {
                 if (ois != null)
                     ois.close();

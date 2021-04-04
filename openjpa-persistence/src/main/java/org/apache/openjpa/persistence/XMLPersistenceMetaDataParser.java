@@ -2342,11 +2342,7 @@ public class XMLPersistenceMetaDataParser
      * Add the fmd to the defer list for for the given embeddable type
      */
     protected void deferEmbeddable(Class<?> embedType, MetaDataContext fmd) {
-        ArrayList<MetaDataContext> fmds = _embeddables.get(embedType);
-        if (fmds == null) {
-            fmds = new ArrayList<>();
-            _embeddables.put(embedType, fmds);
-        }
+        ArrayList<MetaDataContext> fmds = _embeddables.computeIfAbsent(embedType, k -> new ArrayList<>());
         fmds.add(fmd);
     }
 

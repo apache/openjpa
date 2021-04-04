@@ -41,7 +41,7 @@ public class TestMultipleMerge extends SingleEMFTestCase {
     public void testMultiMerge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Order order = new Order( 1l );
+        Order order = new Order(1L);
 
         LineItem item = new LineItem( "my product", 44, 4.99f );
         order.addItem(item);
@@ -70,15 +70,15 @@ public class TestMultipleMerge extends SingleEMFTestCase {
         //OK, good, we no longer get an exception, to be double certain
         //all is well, lets verify that the expected LineItems are in the DB.
         LineItemPK liPK = new LineItemPK();
-        liPK.setItemId(1l);
-        liPK.setOrderId(1l);
+        liPK.setItemId(1L);
+        liPK.setOrderId(1L);
         LineItem li = em.find(LineItem.class, liPK);
 
         assertNotNull(li);
         assertEquals(item.getProductName(), li.getProductName());
 
-        liPK.setItemId(2l);
-        liPK.setOrderId(1l);
+        liPK.setItemId(2L);
+        liPK.setOrderId(1L);
         li = em.find(LineItem.class, liPK);
         assertNotNull(li);
         assertEquals(additional.getProductName(), li.getProductName());

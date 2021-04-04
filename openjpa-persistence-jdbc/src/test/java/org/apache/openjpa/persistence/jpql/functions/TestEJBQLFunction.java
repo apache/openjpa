@@ -445,7 +445,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertTrue(result.contains(6l));
+        assertTrue(result.contains(6L));
 
         endEm(em);
     }
@@ -487,7 +487,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertTrue(result.contains(153l));
+        assertTrue(result.contains(153L));
 
         endEm(em);
     }

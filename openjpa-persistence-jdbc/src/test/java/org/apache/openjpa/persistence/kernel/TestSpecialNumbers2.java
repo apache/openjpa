@@ -125,10 +125,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
             aftt.setTestfloat(Float.MIN_VALUE);
             saveAndQuery(aftt, "testfloat =",
                     Float.MIN_VALUE);
-        } catch (Exception e) {
-            bug(getCurrentPlatform(), 494, e,
-                    "Some databases cannot store Float.MIN_VALUE");
-        } catch (AssertionFailedError e) {
+        } catch (Exception | AssertionFailedError e) {
             bug(getCurrentPlatform(), 494, e,
                     "Some databases cannot store Float.MIN_VALUE");
         }

@@ -89,8 +89,7 @@ public abstract class ResultListTest extends AbstractTestCase {
             try {
                 itr.next();
                 fail("After last.");
-            } catch (IndexOutOfBoundsException ioob) {
-            } catch (NoSuchElementException nse) {
+            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
@@ -121,8 +120,7 @@ public abstract class ResultListTest extends AbstractTestCase {
             try {
                 itr.next();
                 fail("After last.");
-            } catch (IndexOutOfBoundsException ioob) {
-            } catch (NoSuchElementException nse) {
+            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
@@ -140,8 +138,7 @@ public abstract class ResultListTest extends AbstractTestCase {
             try {
                 itr.next();
                 fail("After last.");
-            } catch (IndexOutOfBoundsException ioob) {
-            } catch (NoSuchElementException nse) {
+            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
@@ -159,8 +156,7 @@ public abstract class ResultListTest extends AbstractTestCase {
             try {
                 itr.previous();
                 fail("Before first.");
-            } catch (IndexOutOfBoundsException ioob) {
-            } catch (NoSuchElementException nse) {
+            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
@@ -230,8 +226,7 @@ public abstract class ResultListTest extends AbstractTestCase {
             try {
                 _lists[i].get(-1);
                 fail("Before begin.");
-            } catch (IndexOutOfBoundsException ioob) {
-            } catch (NoSuchElementException nse) {
+            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }
@@ -251,8 +246,7 @@ public abstract class ResultListTest extends AbstractTestCase {
             try {
                 _lists[i].get(100);
                 fail("Past end.");
-            } catch (IndexOutOfBoundsException ioob) {
-            } catch (NoSuchElementException nse) {
+            } catch (IndexOutOfBoundsException | NoSuchElementException ioob) {
             }
         }
     }

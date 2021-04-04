@@ -112,22 +112,22 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     // to metadatas
     private Map<Class<?>, ClassMetaData> _metas = new HashMap<>();
     private Map<String, ClassMetaData> _metaStringMap = new ConcurrentHashMap<>();
-    private Map<Class<?>, Class<?>> _oids = Collections.synchronizedMap(new HashMap<Class<?>, Class<?>>());
+    private Map<Class<?>, Class<?>> _oids = Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, Collection<Class<?>>> _impls =
-        Collections.synchronizedMap(new HashMap<Class<?>, Collection<Class<?>>>());
-    private Map<Class<?>, Class<?>> _ifaces = Collections.synchronizedMap(new HashMap<Class<?>, Class<?>>());
+        Collections.synchronizedMap(new HashMap<>());
+    private Map<Class<?>, Class<?>> _ifaces = Collections.synchronizedMap(new HashMap<>());
     private Map<String, QueryMetaData> _queries = new HashMap<>();
     private Map<String, SequenceMetaData> _seqs = new HashMap<>();
-    private Map<String, List<Class<?>>> _aliases = Collections.synchronizedMap(new HashMap<String, List<Class<?>>>());
+    private Map<String, List<Class<?>>> _aliases = Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, NonPersistentMetaData> _pawares =
-        Collections.synchronizedMap(new HashMap<Class<?>, NonPersistentMetaData>());
+        Collections.synchronizedMap(new HashMap<>());
     private Map<Class<?>, NonPersistentMetaData> _nonMapped =
-        Collections.synchronizedMap(new HashMap<Class<?>, NonPersistentMetaData>());
-    private Map<Class<?>, Class<?>> _metamodel = Collections.synchronizedMap(new HashMap<Class<?>, Class<?>>());
+        Collections.synchronizedMap(new HashMap<>());
+    private Map<Class<?>, Class<?>> _metamodel = Collections.synchronizedMap(new HashMap<>());
 
     // map of classes to lists of their subclasses
     private Map<Class<?>, Collection<Class<?>>> _subs =
-            Collections.synchronizedMap(new HashMap<Class<?>, Collection<Class<?>>>());
+            Collections.synchronizedMap(new HashMap<>());
 
     // xml mapping
     protected final XMLMetaData[] EMPTY_XMLMETAS;
@@ -1885,7 +1885,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 comp.setBase(key);
                 coll = new TreeSet<Class<?>>(comp);
             } else
-                coll = new LinkedList<Class<?>>();
+                coll = new LinkedList<>();
             map.put(key, coll);
         }
         coll.add(value);

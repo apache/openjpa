@@ -19,6 +19,7 @@
 package org.apache.openjpa.integration.validation;
 
 import java.lang.annotation.ElementType;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.util.HashMap;
@@ -261,9 +262,7 @@ public class TestTraversableResolver extends TestCase {
             assertNotNull(getLeafNode);
             Object path = createPathFromString.invoke(null, s);
             node = (Path.Node) getLeafNode.invoke(path, null);
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalAccessException ae) {
-        } catch (java.lang.reflect.InvocationTargetException te) {
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
         }
         return node;
     }

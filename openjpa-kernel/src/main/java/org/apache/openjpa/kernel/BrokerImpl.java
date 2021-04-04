@@ -1376,16 +1376,14 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             default:
                 throw new UserException(_loc.get("meta-unknownid", cls));
             }
-        } catch (IllegalArgumentException iae) {
+        } catch (IllegalArgumentException | ClassCastException iae) {
         	// OPENJPA-365
         	throw new UserException(_loc.get("bad-id-value", val,
                 val.getClass().getName(), cls)).setCause(iae);
         } catch (OpenJPAException ke) {
             throw ke;
-        } catch (ClassCastException cce) {
-            throw new UserException(_loc.get("bad-id-value", val,
-                val.getClass().getName(), cls)).setCause(cce);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         } finally {
             endOperation();
@@ -2248,10 +2246,9 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             // dependents
             _flags |= FLAG_DEREFDELETING;
             if (flush && _derefCache != null && !_derefCache.isEmpty()) {
-                Set<StateManagerImpl> statesMarkedForDelete = new HashSet<>();
                 // mark for delete all elements in deref, otherwise in some situations it
                 // throws ConcurrentModificationException
-                statesMarkedForDelete.addAll(_derefCache);
+                Set<StateManagerImpl> statesMarkedForDelete = new HashSet<>(_derefCache);
                 for (StateManagerImpl state: statesMarkedForDelete) {
                     deleteDeref(state);
                 }

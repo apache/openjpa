@@ -356,8 +356,7 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Set<Parameter<?>> getParameters() {
-        Set<Parameter<?>> result = new HashSet<>();
-        result.addAll(getDeclaredParameters().values());
+        Set<Parameter<?>> result = new HashSet<>(getDeclaredParameters().values());
         return result;
     }
 

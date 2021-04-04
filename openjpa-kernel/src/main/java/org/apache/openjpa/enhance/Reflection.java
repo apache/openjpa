@@ -917,8 +917,7 @@ public class Reflection {
             && canReflect(f)) {
                 try {
                     result.add((T)f.get(null));
-                } catch (IllegalArgumentException e) {
-                } catch (IllegalAccessException e) {
+                } catch (IllegalArgumentException | IllegalAccessException e) {
                 }
             }
         }

@@ -79,13 +79,11 @@ public class TestGeneratedValues extends SingleEMFTestCase {
             em.getTransaction().begin();
             em.persist(gv);
             em.getTransaction().commit();
-        } catch (InvalidStateException ise) {
+        } catch (InvalidStateException | EntityExistsException ise) {
             // expected result
             return;
-        }  catch (EntityExistsException eee) {
-            // also ok
-            return;
-        } finally {
+        }  // also ok
+        finally {
             closeEM(em);
         }
 
@@ -103,13 +101,11 @@ public class TestGeneratedValues extends SingleEMFTestCase {
             em.getTransaction().begin();
             em.persist(gv);
             em.getTransaction().commit();
-        } catch (InvalidStateException ise) {
+        } catch (InvalidStateException | EntityExistsException ise) {
             // expected result
             return;
-        }  catch (EntityExistsException eee) {
-            // also ok
-            return;
-        } finally {
+        }  // also ok
+        finally {
             closeEM(em);
         }
 

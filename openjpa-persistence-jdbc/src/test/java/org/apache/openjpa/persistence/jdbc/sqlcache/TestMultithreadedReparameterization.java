@@ -77,7 +77,7 @@ public class TestMultithreadedReparameterization extends TestCase {
                     + "where p.id=:id and p.firstName=:first and p.lastName=:last and p.age=:age";
         int nRepeats = 20;
         Thread[] threads = new Thread[nThreads];
-        final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<Throwable>());
+        final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<>());
 
         for (int i = 0; i < nThreads; i++) {
             Object[] args = {"id", baseId+i, "first", "First"+i, "last", "Last"+i, "age", (short)(20+i)};
@@ -121,7 +121,7 @@ public class TestMultithreadedReparameterization extends TestCase {
         // ("openjpa.jdbc.QuerySQLCache", "true(MaxCacheSize=2")
         final int nQueries = 10;
 
-        final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<Throwable>());
+        final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<>());
 
         for (int y = 0; y < nRuns; y++) {
             Thread[] threads = new Thread[nThreads];

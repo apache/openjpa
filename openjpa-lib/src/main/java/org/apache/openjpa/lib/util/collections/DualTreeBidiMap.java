@@ -64,7 +64,7 @@ public class DualTreeBidiMap<K, V> extends AbstractDualBidiMap<K, V>
      * Creates an empty <code>DualTreeBidiMap</code>
      */
     public DualTreeBidiMap() {
-        super(new TreeMap<K, V>(), new TreeMap<V, K>());
+        super(new TreeMap<>(), new TreeMap<>());
         this.comparator = null;
         this.valueComparator = null;
     }
@@ -76,7 +76,7 @@ public class DualTreeBidiMap<K, V> extends AbstractDualBidiMap<K, V>
      * @param map  the map whose mappings are to be placed in this map
      */
     public DualTreeBidiMap(final Map<? extends K, ? extends V> map) {
-        super(new TreeMap<K, V>(), new TreeMap<V, K>());
+        super(new TreeMap<>(), new TreeMap<>());
         putAll(map);
         this.comparator = null;
         this.valueComparator = null;
@@ -89,7 +89,7 @@ public class DualTreeBidiMap<K, V> extends AbstractDualBidiMap<K, V>
      * @param valueComparator  the values comparator to use
      */
     public DualTreeBidiMap(final Comparator<? super K> keyComparator, final Comparator<? super V> valueComparator) {
-        super(new TreeMap<K, V>(keyComparator), new TreeMap<V, K>(valueComparator));
+        super(new TreeMap<>(keyComparator), new TreeMap<>(valueComparator));
         this.comparator = keyComparator;
         this.valueComparator = valueComparator;
     }

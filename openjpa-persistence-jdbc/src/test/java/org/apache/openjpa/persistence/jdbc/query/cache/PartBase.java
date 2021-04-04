@@ -75,10 +75,10 @@ public class PartBase extends Part  {
 
     @Override
     public String toString() {
-        String sup= "";
+        StringBuilder sup= new StringBuilder();
         if (getSuppliers()!=null)
             for (Supplier s : getSuppliers()){
-                sup= sup+s.sid+",";
+                sup.append(s.sid).append(",");
             }
         return "PartBase:"+partno+" name:+"+name+" cost:"+cost+" mass:"+
             mass+" supplies=["+sup+"]";

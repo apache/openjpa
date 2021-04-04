@@ -465,11 +465,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             _parsed = new HashMap<>();
 
         ClassLoader loader = currentClassLoader();
-        Set<String> set = _parsed.get(loader);
-        if (set == null) {
-            set = new HashSet<>();
-            _parsed.put(loader, set);
-        }
+        Set<String> set = _parsed.computeIfAbsent(loader, k -> new HashSet<>());
         boolean added = set.add(src);
         if (!added && _log != null && _log.isTraceEnabled())
             _log.trace(_loc.get("already-parsed", src));

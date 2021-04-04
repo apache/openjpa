@@ -54,7 +54,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             em.persist(items[n++]);
         }
         p = new Purchase();
-        p.setOrders(new ArrayList<Order>());
+        p.setOrders(new ArrayList<>());
         o1 = new Order();
         o1.setItem(em.find(Item.class, 1));
         o1.setQuantity(2);

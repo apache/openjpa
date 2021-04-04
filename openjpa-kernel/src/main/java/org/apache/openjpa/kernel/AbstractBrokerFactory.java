@@ -83,7 +83,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
 
     // static mapping of configurations to pooled broker factories
     private static final Map<Object,AbstractBrokerFactory> _pool =
-       Collections.synchronizedMap(new HashMap<Object,AbstractBrokerFactory>());
+       Collections.synchronizedMap(new HashMap<>());
 
     // configuration
     private final OpenJPAConfiguration _conf;

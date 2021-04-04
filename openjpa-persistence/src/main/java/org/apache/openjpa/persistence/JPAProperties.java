@@ -87,7 +87,7 @@ public class JPAProperties {
      * (which is a bean property name without any suffix).
      */
     static String getUserName(String beanProperty) {
-        return _names.containsKey(beanProperty) ? _names.get(beanProperty) : beanProperty;
+        return _names.getOrDefault(beanProperty, beanProperty);
     }
 
     /**

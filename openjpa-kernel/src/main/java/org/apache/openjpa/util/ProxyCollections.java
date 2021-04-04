@@ -466,9 +466,7 @@ public class ProxyCollections
      */
     public static boolean retainAll(ProxyCollection coll, Collection<?> vals) {
         int size = coll.size();
-        for (Iterator<?> itr = coll.iterator(); itr.hasNext();)
-            if (!vals.contains(itr.next()))
-                itr.remove();
+        coll.removeIf(o -> !vals.contains(o));
         return coll.size() < size;
     }
 

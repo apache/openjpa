@@ -152,9 +152,8 @@ public class CacheLoadTest
 
             endTx(em);
             endEm(em);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }

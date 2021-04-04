@@ -517,9 +517,7 @@ public abstract class PersistenceTestCase
             AllowFailure anno = runMethod.getAnnotation(AllowFailure.class);
             if (anno != null)
                 return anno;
-        } catch (SecurityException e) {
-            //ignore
-        } catch (NoSuchMethodException e) {
+        } catch (SecurityException | NoSuchMethodException e) {
             //ignore
         }
         return getClass().getAnnotation(AllowFailure.class);

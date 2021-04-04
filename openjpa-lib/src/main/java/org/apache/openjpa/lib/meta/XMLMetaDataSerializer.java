@@ -122,10 +122,8 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
 
                 if (output != null)
                     output.put(file, ((StringWriter) writer).toString());
-            } catch (SAXException se) {
+            } catch (SAXException | TransformerConfigurationException se) {
                 throw new IOException(se.toString());
-            } catch (TransformerConfigurationException tce) {
-                throw new IOException(tce.toString());
             }
         }
     }

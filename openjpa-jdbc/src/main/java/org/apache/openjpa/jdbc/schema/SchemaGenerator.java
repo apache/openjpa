@@ -131,11 +131,7 @@ public class SchemaGenerator {
             if (DBIdentifier.isNull(table) && !schemas.containsKey(schema))
                 schemas.put(schema, null);
             else if (!DBIdentifier.isNull(table)) {
-                tables = schemas.get(schema);
-                if (tables == null) {
-                    tables = new LinkedList<>();
-                    schemas.put(schema, tables);
-                }
+                tables = schemas.computeIfAbsent(schema, k -> new LinkedList<>());
                 tables.add(table);
             }
         }

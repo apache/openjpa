@@ -162,7 +162,7 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
     public boolean add(E e) {
         if (contains(e))
             return false;
-        relations.add(new PersistentRelation<E,E>(e,null));
+        relations.add(new PersistentRelation<>(e, null));
         return true;
     }
 }

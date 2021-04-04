@@ -203,15 +203,13 @@ public class PCClassFileTransformer
             if (_repos.getMetaData(c, null, false) != null)
                 return Boolean.TRUE;
             return null;
-        } catch (ClassNotFoundException cnfe) {
+        } catch (ClassNotFoundException | LinkageError cnfe) {
             // cannot load the class: this might mean that it is a proxy
             // or otherwise inaccessible class which can't be an entity
             return Boolean.FALSE;
-        } catch (LinkageError cce) {
-            // this can happen if we are loading classes that this
-            // class depends on; these will never be enhanced anyway
-            return Boolean.FALSE;
-        } catch (RuntimeException re) {
+        } // this can happen if we are loading classes that this
+        // class depends on; these will never be enhanced anyway
+        catch (RuntimeException re) {
             throw re;
         } catch (Throwable t) {
             throw new GeneralException(t);

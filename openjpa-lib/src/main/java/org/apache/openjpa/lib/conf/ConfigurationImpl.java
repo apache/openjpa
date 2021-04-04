@@ -496,11 +496,7 @@ public class ConfigurationImpl
             val = (Value) _vals.get(i);
             try {
                 _pds[i] = getPropertyDescriptor(val);
-            } catch (MissingResourceException mre) {
-                if (failures == null)
-                    failures = new ArrayList<>();
-                failures.add(val.getProperty());
-            } catch (IntrospectionException ie) {
+            } catch (MissingResourceException | IntrospectionException mre) {
                 if (failures == null)
                     failures = new ArrayList<>();
                 failures.add(val.getProperty());

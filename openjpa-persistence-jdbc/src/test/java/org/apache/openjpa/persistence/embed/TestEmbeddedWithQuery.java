@@ -51,8 +51,7 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
             List resultList = q1.getResultList();
             assertNotNull(resultList);
 
-            List <EParent> pList = new ArrayList<>();
-            pList.addAll(resultList);
+            List<EParent> pList = new ArrayList<>(resultList);
             em.clear();
             assertNotEquals(0, pList.size());
 
@@ -81,8 +80,7 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
             List resultList = q1.getResultList();
             assertNotNull(resultList);
 
-            List <EParent> pList = new ArrayList<>();
-            pList.addAll(resultList);
+            List<EParent> pList = new ArrayList<>(resultList);
             em.clear();
             assertNotEquals(0, pList.size());
 

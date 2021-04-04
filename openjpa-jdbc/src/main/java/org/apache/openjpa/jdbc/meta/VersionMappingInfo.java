@@ -87,7 +87,7 @@ public class VersionMappingInfo
     					col.getIdentifier().toString(), tableName));
     		}
     		if (!assign.containsKey(table))
-    			assign.put(table, new ArrayList<Column>());
+    			assign.put(table, new ArrayList<>());
     		assign.get(table).add(col);
     	}
     	MappingDefaults def = vers.getMappingRepository().getMappingDefaults();

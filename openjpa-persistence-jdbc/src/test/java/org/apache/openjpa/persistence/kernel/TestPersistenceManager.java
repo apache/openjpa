@@ -144,10 +144,9 @@ public class TestPersistenceManager extends BaseKernelTest {
                 try {
                     endEm(pm);
                     result.add(0);
-                } catch (Exception jdoe) {
+                }
+                catch (Throwable jdoe) {
                     result.add(jdoe);
-                } catch (Throwable t) {
-                    result.add(t);
                 }
             }
         }.start();

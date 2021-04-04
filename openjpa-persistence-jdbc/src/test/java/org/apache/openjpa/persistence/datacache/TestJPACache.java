@@ -55,7 +55,7 @@ public class TestJPACache extends SingleEMFTestCase {
         m.setFirstName("Joan");
         m.setLastName("Baker");
         m.setId(12);
-        m.setEmployees(new ArrayList<CachedEmployee>());
+        m.setEmployees(new ArrayList<>());
         em.persist(m);
 
         CachedEmployee e = new CachedEmployee();

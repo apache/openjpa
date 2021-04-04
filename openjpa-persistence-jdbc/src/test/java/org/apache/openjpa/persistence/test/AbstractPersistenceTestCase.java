@@ -590,9 +590,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             if (anno != null) {
                 return anno;
             }
-        } catch (SecurityException e) {
-            // ignore
-        } catch (NoSuchMethodException e) {
+        } catch (SecurityException | NoSuchMethodException e) {
             // ignore
         }
         return getClass().getAnnotation(AllowFailure.class);

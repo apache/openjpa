@@ -34,7 +34,7 @@ import org.apache.openjpa.lib.instrumentation.InstrumentationProvider;
 public class InstrumentationManagerImpl implements InstrumentationManager {
 
     public Set<InstrumentationProvider> _providers =
-        Collections.synchronizedSet(new HashSet<InstrumentationProvider>());
+        Collections.synchronizedSet(new HashSet<>());
 
     private boolean _closed = false;
 

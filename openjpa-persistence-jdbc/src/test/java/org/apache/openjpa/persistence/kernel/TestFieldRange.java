@@ -125,7 +125,7 @@ public class TestFieldRange extends BaseKernelTest {
         allFieldSaveState(
             (int) (Integer.MIN_VALUE + 1),
             (short) (Short.MIN_VALUE + 1),
-            (long) (Long.MIN_VALUE + 1l),
+            (long) (Long.MIN_VALUE + 1L),
             (float) (Float.MIN_VALUE + 1.0f),
             (double) (Double.MIN_VALUE + 1.0d),
             (byte) (Byte.MIN_VALUE + 1),
@@ -143,7 +143,7 @@ public class TestFieldRange extends BaseKernelTest {
         allFieldSaveState(
             (int) (0),
             (short) (0),
-            (long) (0l),
+            (long) (0L),
             (float) (10.0f / 3.0f),
             (double) (100.0d / 3.0d),
             (byte) (0),
@@ -161,7 +161,7 @@ public class TestFieldRange extends BaseKernelTest {
         allFieldSaveState(
             (int) (0),
             (short) (0),
-            (long) (0l),
+            (long) (0L),
             (float) (0.0f),
             (double) (0.0d),
             (byte) (0),

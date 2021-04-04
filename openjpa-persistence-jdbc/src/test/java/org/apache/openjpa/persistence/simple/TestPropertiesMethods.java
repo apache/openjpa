@@ -51,8 +51,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         super.setUp();
-        Map config = new HashMap();
-        config.putAll(System.getProperties());
+        Map config = new HashMap(System.getProperties());
 
 /* numeric   */ config.put("openjpa.DataCacheTimeout", 300);
 /* num enum  */ config.put("openjpa.AutoClear", 0);

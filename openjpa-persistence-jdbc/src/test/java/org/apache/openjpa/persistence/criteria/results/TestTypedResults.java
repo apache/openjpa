@@ -68,7 +68,7 @@ public class TestTypedResults extends SingleEMFTestCase {
 
         s.setId(1);
         s.setName("eBay.com");
-        s.setOrders(new HashSet<Order>());
+        s.setOrders(new HashSet<>());
 
         for (int i = 1; i <= N_ORDERS; i++) {
             order = new Order();
@@ -76,7 +76,7 @@ public class TestTypedResults extends SingleEMFTestCase {
             order.setDate(df.parse(ORDER_DATES[i % ORDER_DATES.length]));
             order.setFilled(i % 2 == 0 ? true : false);
             order.setShop(s);
-            order.setItems(new HashSet<Item>());
+            order.setItems(new HashSet<>());
             s.getOrders().add(order);
             for (int j = 1; j <= N_ITEMS_PER_ORDER; j++) {
                 item = new Item();

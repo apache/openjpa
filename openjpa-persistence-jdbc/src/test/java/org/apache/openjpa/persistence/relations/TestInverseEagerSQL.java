@@ -144,11 +144,11 @@ public class TestInverseEagerSQL
         PPhone phone;
         for(int i =0; i < _nPeople; i++) {
             person = new PPerson();
-            person.setPhones(new ArrayList<PPhone>());
+            person.setPhones(new ArrayList<>());
             em.persist(person);
             for(int j = 0; j < _nPhones; j++) {
                 phone = new PPhone();
-                phone.setPeople(new ArrayList<PPerson>());
+                phone.setPeople(new ArrayList<>());
                 phone.getPeople().add(person);
                 person.getPhones().add(phone);
                 em.persist(phone);

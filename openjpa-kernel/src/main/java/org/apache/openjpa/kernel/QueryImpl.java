@@ -1766,8 +1766,7 @@ public class QueryImpl implements Query {
                 getClassLoader(_class, _broker.getClassLoader());
         try {
             return ClassUtil.toClass(name, _loader);
-        } catch (RuntimeException re) {
-        } catch (NoClassDefFoundError ncdfe) {
+        } catch (RuntimeException | NoClassDefFoundError re) {
         }
         return null;
     }

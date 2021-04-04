@@ -108,7 +108,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
         em.close(); // will not load anything anymore
 
         byte[][] actualTransitionMatrix = new byte[5][5];
-        fillTransitionMatrix(actualTransitionMatrix, new HashSet<State>(), qs1);
+        fillTransitionMatrix(actualTransitionMatrix, new HashSet<>(), qs1);
         assertMatrixEqual(transitions, actualTransitionMatrix);
 
     }

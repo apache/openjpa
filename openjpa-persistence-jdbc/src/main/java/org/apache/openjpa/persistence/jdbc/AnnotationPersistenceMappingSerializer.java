@@ -170,11 +170,7 @@ public class AnnotationPersistenceMappingSerializer
     {
         if (_rsmAnnos == null)
             _rsmAnnos = new HashMap<>();
-        List<AnnotationBuilder> list = _rsmAnnos.get(meta);
-        if (list == null) {
-            list = new ArrayList<>();
-            _rsmAnnos.put(meta, list);
-        }
+        List<AnnotationBuilder> list = _rsmAnnos.computeIfAbsent(meta, k -> new ArrayList<>());
         list.add(ab);
     }
 

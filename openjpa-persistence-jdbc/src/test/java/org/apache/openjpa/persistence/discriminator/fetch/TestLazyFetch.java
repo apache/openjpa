@@ -52,7 +52,7 @@ public class TestLazyFetch extends AbstractPersistenceTestCase {
         tran.begin();
         Manager m = new Manager();
         m.setId(10);
-        m.setEmployees(new HashSet<Employee>());
+        m.setEmployees(new HashSet<>());
         em.persist(m);
 
         Employee e;

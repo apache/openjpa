@@ -118,11 +118,9 @@ public class TestVersion extends AnnotationTestCase
 			em2.getTransaction().commit();
 			fail("Optimistic fail");
 		}
-		catch (RuntimeException re)
-		{}
-		catch (Exception e)
-		{}
-		finally
+        catch (Exception re)
+        {}
+        finally
 		{
 			em2.close();
 		}
@@ -155,11 +153,9 @@ public class TestVersion extends AnnotationTestCase
 			em2.getTransaction().commit();
 			fail("Optimistic fail");
 		}
-		catch (RuntimeException re)
-		{}
-		catch (Exception e)
-		{}
-		finally
+        catch (Exception re)
+        {}
+        finally
 		{
 			em2.close();
 		}
@@ -194,11 +190,9 @@ public class TestVersion extends AnnotationTestCase
 			em2.getTransaction().commit();
 			fail("Optimistic fail");
 		}
-		catch (RuntimeException re)
-		{}
-		catch (Exception e)
-		{}
-		finally
+        catch (Exception re)
+        {}
+        finally
 		{
 			em2.close();
 		}

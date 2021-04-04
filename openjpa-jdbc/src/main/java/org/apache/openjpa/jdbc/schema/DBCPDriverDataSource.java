@@ -63,11 +63,11 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
                     ((org.apache.commons.dbcp2.BasicDataSource)_dbcpClass.cast(_ds)).close();
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Throwable e) {
             // no-op
-        } catch (Throwable t) {
-            // no-op
-        } finally {
+        }
+        finally {
             _ds = null;
         }
     }

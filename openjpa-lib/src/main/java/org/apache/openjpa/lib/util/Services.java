@@ -101,9 +101,7 @@ public class Services {
 
             return (String[]) resourceList.toArray(new String[resourceList
                 .size()]);
-        } catch (PrivilegedActionException pae) {
-            // silently swallow all exceptions.
-        } catch (IOException ioe) {
+        } catch (PrivilegedActionException | IOException pae) {
             // silently swallow all exceptions.
         }
         return new String[0];
@@ -219,15 +217,14 @@ public class Services {
         for (int i = 0; i < names.length; i++) {
             try {
                 classes.add(Class.forName(names[i], false, loader));
-            } catch (ClassNotFoundException e) {
-                if (!skipMissing)
-                    throw e;
-            } catch (UnsupportedClassVersionError ecve) {
+            }
+            catch (UnsupportedClassVersionError ecve) {
                 if (!skipMissing)
                     throw ecve;
-            } catch (LinkageError le) {
+            }
+            catch (ClassNotFoundException | LinkageError e) {
                 if (!skipMissing)
-                    throw le;
+                    throw e;
             }
         }
         return (Class[]) classes.toArray(new Class[classes.size()]);

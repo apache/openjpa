@@ -83,7 +83,7 @@ public class ResultShape<T> implements Serializable {
      * If the shape is declared as primitive then the given class can not be an array.
      */
     public ResultShape(Class<T> cls, boolean primitive) {
-        this(cls, cls.isArray() ? new FillStrategy.Array<>(cls) : new FillStrategy.Assign<T>(), primitive);
+        this(cls, cls.isArray() ? new FillStrategy.Array<>(cls) : new FillStrategy.Assign<>(), primitive);
         if (cls.isArray() && primitive)
             throw new IllegalArgumentException(cls.getSimpleName() + " can not be primitive shape");
     }

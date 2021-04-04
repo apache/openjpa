@@ -128,7 +128,7 @@ abstract class AbstractPath extends ExpressionImpl implements
 	}
 
 	LinkedList<AbstractPath> split() {
-		return _split(this, new LinkedList<AbstractPath>());
+		return _split(this, new LinkedList<>());
 	}
 
 	private LinkedList<AbstractPath> _split(AbstractPath path,

@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.proxy;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -553,7 +554,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
             throw new RuntimeException("Annuity: IPayor list not the same (payors was null)!");
         if (payors.size() != payors2.size())
             throw new RuntimeException("Annuity: IPayor list not the same (payors size not the same)! payors=" +
-                payors.toArray().toString() + ", payors2=" + payors2.toString());
+                    Arrays.toString(payors.toArray()) + ", payors2=" + payors2.toString());
         for (int i = 0; i < payors.size(); i++) {
             IPayor payor = payors.get(i);
             boolean found = false;

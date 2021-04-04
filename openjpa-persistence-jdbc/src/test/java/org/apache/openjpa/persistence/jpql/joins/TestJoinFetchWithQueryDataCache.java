@@ -51,19 +51,19 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
 
         Department dept;
         dept = new Department(10, "department 10");
-        dept.setEmployees(new ArrayList<Employee>());
+        dept.setEmployees(new ArrayList<>());
         dept.getEmployees().add(new Employee(11, "Emp11", dept));
         dept.getEmployees().add(new Employee(12, "Emp12", dept));
-        dept.setEmployee2s(new ArrayList<Employee>());
+        dept.setEmployee2s(new ArrayList<>());
         dept.getEmployee2s().add(new Employee(211, "Emp211", dept));
         dept.getEmployee2s().add(new Employee(212, "Emp212", dept));
         em.persist(dept);
 
         dept = new Department(20, "department 20");
-        dept.setEmployees(new ArrayList<Employee>());
+        dept.setEmployees(new ArrayList<>());
         dept.getEmployees().add(new Employee(21, "Emp21", dept));
         dept.getEmployees().add(new Employee(22, "Emp22", dept));
-        dept.setEmployee2s(new ArrayList<Employee>());
+        dept.setEmployee2s(new ArrayList<>());
         dept.getEmployee2s().add(new Employee(221, "Emp221", dept));
         dept.getEmployee2s().add(new Employee(222, "Emp222", dept));
         em.persist(dept);

@@ -369,10 +369,8 @@ public abstract class AbstractBrokerSerializationTest<T>
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             ObjectInputStream ois = new ObjectInputStream(bais);
             return ois.readObject();
-        } catch (IOException ioe) {
+        } catch (IOException | ClassNotFoundException ioe) {
             throw new RuntimeException(ioe);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 

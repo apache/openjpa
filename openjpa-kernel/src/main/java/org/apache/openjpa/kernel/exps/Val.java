@@ -46,9 +46,7 @@ public abstract class Val
         StoreContext ctx, Object[] params) {
         try {
             return eval(candidate, candidate, ctx, params);
-        } catch (NullPointerException npe) {
-            return null;
-        } catch (ClassCastException cce) {
+        } catch (NullPointerException | ClassCastException npe) {
             return null;
         }
     }
@@ -64,9 +62,7 @@ public abstract class Val
             if (c.isEmpty())
                 return null;
             return c.iterator().next();
-        } catch (NullPointerException npe) {
-            return null;
-        } catch (ClassCastException cce) {
+        } catch (NullPointerException | ClassCastException npe) {
             return null;
         }
     }

@@ -52,7 +52,7 @@ public class TestJointableOneToMany extends SingleEMFTestCase {
                 aPackage = new UMLPackage();
                 aPackage.setId("org.apache.openjpa");
                 aPackage.setName("org.apache.openjpa");
-                aPackage.setOwnedType(new ArrayList<UMLType>());
+                aPackage.setOwnedType(new ArrayList<>());
                 em.persist(aPackage);
 
                 // Create a UMLClass and add the UMLPackage to it.

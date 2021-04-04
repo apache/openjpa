@@ -527,7 +527,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             for (int j = ((i * 5) + 4); j >= (i * 5); j--) {
                 trained.add(players[j]);
                 if (players[j].getTrainers() == null)
-                    players[j].setTrainers(new ArrayList<Trainer>());
+                    players[j].setTrainers(new ArrayList<>());
                 players[j].getTrainers().add(trainers[i]);
             }
             trainers[i].setPlayersTrained(trained);
@@ -585,7 +585,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             for (int j = ((i * 5) + 4); j >= (i * 5); j--) {
                 playedIn.add(players[j]);
                 if (players[j].getGamesPlayedIn() == null)
-                    players[j].setGamesPlayedIn(new ArrayList<Game>());
+                    players[j].setGamesPlayedIn(new ArrayList<>());
                 players[j].getGamesPlayedIn().add(games[i]);
             }
             games[i].setPlayedIn(playedIn);
@@ -873,8 +873,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
         List rlist = qry.getResultList();
         assertNotNull(rlist);
         assertEquals(2, rlist.size());
-        assertEquals(0l, rlist.get(0));
-        assertEquals(1l, rlist.get(1));
+        assertEquals(0L, rlist.get(0));
+        assertEquals(1L, rlist.get(1));
 
         queryString = "SELECT INDEX(w) FROM Course c JOIN c.waitList w" +
             " WHERE c.name = :cname AND w.name = 'Student11'";

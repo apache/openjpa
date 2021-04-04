@@ -375,9 +375,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             if (anno != null) {
                 return anno;
             }
-        } catch (SecurityException e) {
-            // ignore
-        } catch (NoSuchMethodException e) {
+        } catch (SecurityException | NoSuchMethodException e) {
             // ignore
         }
         return getClass().getAnnotation(AllowFailure.class);
@@ -385,7 +383,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
 
     public class SQLAuditor extends FilteringJDBCListener {
         public SQLAuditor() {
-            super(new ArrayList<String>());
+            super(new ArrayList<>());
         }
 
         List<String> getSQLs() {

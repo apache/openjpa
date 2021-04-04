@@ -142,7 +142,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
                 printMapping(fmd);
                 fail("Expected a value handler for " + pcClass.getName() + "." + field + " but found null");
             }
-            if (!handler.getClass().equals(actualHandler.getClass())) {
+            if (!handler.equals(actualHandler.getClass())) {
                 printMapping(fmd);
                 assertEquals(handler, fmd.getHandler().getClass());
             }

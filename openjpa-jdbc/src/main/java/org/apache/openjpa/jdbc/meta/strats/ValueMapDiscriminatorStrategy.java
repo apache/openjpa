@@ -129,7 +129,7 @@ public class ValueMapDiscriminatorStrategy
                 return clz;
             throw new ClassNotFoundException(_loc.get("unknown-discrim-value",
                     new Object[]{ className, disc.getClassMapping().getDescribedType().
-                    getName(), new TreeSet<String>(_vals.keySet()) }).getMessage());
+                    getName(), new TreeSet<>(_vals.keySet()) }).getMessage());
         } finally {
             _writeLock.unlock();
         }
@@ -142,7 +142,7 @@ public class ValueMapDiscriminatorStrategy
         //Build the cache map
         ClassMapping cls = disc.getClassMapping();
         ClassMapping[] subs = cls.getJoinablePCSubclassMappings();
-        Map<String, Class<?>> map = new HashMap<String, Class<?>>((int) ((subs.length + 1) * 1.33 + 1));
+        Map<String, Class<?>> map = new HashMap<>((int) ((subs.length + 1) * 1.33 + 1));
         mapDiscriminatorValue(cls, map);
         for (int i = 0; i < subs.length; i++)
             mapDiscriminatorValue(subs[i], map);

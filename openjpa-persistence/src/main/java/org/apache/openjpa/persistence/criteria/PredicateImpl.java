@@ -51,7 +51,7 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
     private static Predicate TRUE;
     private static Predicate FALSE;
 
-    protected final List<Predicate> _exps = Collections.synchronizedList(new ArrayList<Predicate>());
+    protected final List<Predicate> _exps = Collections.synchronizedList(new ArrayList<>());
     private final BooleanOperator _op;
     private boolean _negated = false;
 

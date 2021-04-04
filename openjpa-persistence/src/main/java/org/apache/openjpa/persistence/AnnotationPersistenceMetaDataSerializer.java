@@ -483,11 +483,7 @@ public class AnnotationPersistenceMetaDataSerializer
     protected void addAnnotation(AnnotationBuilder ab, ClassMetaData meta) {
         if (_clsAnnos == null)
             _clsAnnos = new HashMap<>();
-        List<AnnotationBuilder> list = _clsAnnos.get(meta);
-        if (list == null) {
-            list = new ArrayList<>();
-            _clsAnnos.put(meta, list);
-        }
+        List<AnnotationBuilder> list = _clsAnnos.computeIfAbsent(meta, k -> new ArrayList<>());
         list.add(ab);
     }
 
@@ -498,11 +494,7 @@ public class AnnotationPersistenceMetaDataSerializer
     protected void addAnnotation(AnnotationBuilder ab, FieldMetaData meta) {
         if (_fldAnnos == null)
             _fldAnnos = new HashMap<>();
-        List<AnnotationBuilder> list = _fldAnnos.get(meta);
-        if (list == null) {
-            list = new ArrayList<>();
-            _fldAnnos.put(meta, list);
-        }
+        List<AnnotationBuilder> list = _fldAnnos.computeIfAbsent(meta, k -> new ArrayList<>());
         list.add(ab);
     }
 
@@ -513,11 +505,7 @@ public class AnnotationPersistenceMetaDataSerializer
     protected void addAnnotation(AnnotationBuilder ab, SequenceMetaData meta) {
         if (_seqAnnos == null)
             _seqAnnos = new HashMap<>();
-        List<AnnotationBuilder> list = _seqAnnos.get(meta);
-        if (list == null) {
-            list = new ArrayList<>();
-            _seqAnnos.put(meta, list);
-        }
+        List<AnnotationBuilder> list = _seqAnnos.computeIfAbsent(meta, k -> new ArrayList<>());
         list.add(ab);
     }
 
@@ -528,11 +516,7 @@ public class AnnotationPersistenceMetaDataSerializer
     protected void addAnnotation(AnnotationBuilder ab, QueryMetaData meta) {
         if (_qryAnnos == null)
             _qryAnnos = new HashMap<>();
-        List<AnnotationBuilder> list = _qryAnnos.get(meta);
-        if (list == null) {
-            list = new ArrayList<>();
-            _qryAnnos.put(meta, list);
-        }
+        List<AnnotationBuilder> list = _qryAnnos.computeIfAbsent(meta, k -> new ArrayList<>());
         list.add(ab);
     }
 

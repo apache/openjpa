@@ -369,9 +369,7 @@ public class ExpressionStoreQuery
                     range.end = ((Number) ((Constant) exps.range[1]).
                         getValue(params)).longValue();
                     return;
-                } catch (ClassCastException cce) {
-                    // fall through to exception below
-                } catch (NullPointerException npe) {
+                } catch (ClassCastException | NullPointerException cce) {
                     // fall through to exception below
                 }
             }
@@ -562,11 +560,7 @@ public class ExpressionStoreQuery
                         getValue2 = cls.getMethod("getValue2");
                         getValue2.setAccessible(true);
                         value2 = getValue2.invoke(exps.having, (Object[]) null);
-                    } catch (NoSuchMethodException name) {
-                        // skip
-                    } catch (IllegalAccessException iae) {
-                        // skip
-                    } catch (InvocationTargetException ite) {
+                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException name) {
                         // skip
                     }
                     if (value2 != null && value2 instanceof Subquery)

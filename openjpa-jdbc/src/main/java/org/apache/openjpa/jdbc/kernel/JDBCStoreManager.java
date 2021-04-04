@@ -106,7 +106,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     private Log _log = null;
 
     // track the pending statements so we can cancel them
-    private List<Statement> _stmnts = Collections.synchronizedList(new ArrayList<Statement>());
+    private List<Statement> _stmnts = Collections.synchronizedList(new ArrayList<>());
 
     // pool statements so that we can try to reuse rather than recreate
     private List<CancelPreparedStatement> _cancelPreparedStatementsPool = new ArrayList<>();

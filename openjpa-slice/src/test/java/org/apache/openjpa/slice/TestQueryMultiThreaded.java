@@ -68,7 +68,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         }
         group = new ThreadPoolExecutor(THREADS, THREADS,
                 60, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(), new ThreadFactory() {
+                new SynchronousQueue<>(), new ThreadFactory() {
                     @Override
                     public Thread newThread(Runnable r) {
                         return new Thread(r);

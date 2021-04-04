@@ -78,7 +78,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     public String combineNames(IdentifierConfiguration config, IdentifierRule rule,
         IdentifierRule[] rules, String[] names) {
         boolean delimited = false;
-        String combined = null;
+        StringBuilder combined = null;
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
             if (isDelimited(rules[i], name)) {
@@ -86,18 +86,18 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
                 name = removeDelimiters(config, rules[i], name);
             }
             if (i == 0) {
-                combined = name;
+                combined = new StringBuilder(name);
             }
             else {
-                combined = combined + config.getIdentifierConcatenator() + name;
+                combined.append(config.getIdentifierConcatenator()).append(name);
             }
         }
 
         if (delimited) {
-            combined = delimit(config, rule, combined);
+            combined = new StringBuilder(delimit(config, rule, combined.toString()));
         }
 
-        return combined;
+        return combined.toString();
     }
 
     public String combineNames(IdentifierConfiguration config, IdentifierRule rule, String name1, String name2) {

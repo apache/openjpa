@@ -1681,8 +1681,7 @@ public class ProxyManagerImpl
         Options opts = new Options();
         args = opts.setFromCmdLine(args);
 
-        List types = new ArrayList();
-        types.addAll(Arrays.asList(args));
+        List types = new ArrayList(Arrays.asList(args));
         int utils = opts.removeIntProperty("utils", "u", 0);
         if (utils >= 4) {
             types.addAll(Arrays.asList(new String[] {

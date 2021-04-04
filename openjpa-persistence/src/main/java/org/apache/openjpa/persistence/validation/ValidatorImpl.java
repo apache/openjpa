@@ -344,7 +344,7 @@ public class ValidatorImpl extends AbstractValidator {
                 new ConstraintViolationException(
                     // A validation constraint failure occurred for
                     // value "{2}" of property "{1}" in class "{0}".
-                    _loc.get("validate-value-failed", arg0.getClass().getName(),
+                    _loc.get("validate-value-failed", arg0.getName(),
                         arg1, arg2.toString()).getMessage(),
                     (Set)violations),
                 true);

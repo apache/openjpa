@@ -230,7 +230,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      */
     @Override
     public java.util.Set<Attribute<X, ?>> getDeclaredAttributes() {
-        return filter(attrs, new TreeSet<Attribute<X, ?>>(),
+        return filter(attrs, new TreeSet<>(),
                 declaredAttributeFilter);
     }
 
@@ -240,7 +240,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      */
     @Override
     public java.util.Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
-        return filter(attrs, new TreeSet<SingularAttribute<? super X, ?>>(),
+        return filter(attrs, new TreeSet<>(),
                 singularAttributeFilter);
     }
 
@@ -250,7 +250,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      */
     @Override
     public java.util.Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
-        return filter(attrs, new TreeSet<SingularAttribute<X, ?>>(),
+        return filter(attrs, new TreeSet<>(),
                 declaredAttributeFilter,
                 singularAttributeFilter);
     }
@@ -262,8 +262,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      */
     public <Y> Attribute<? super X, Y> getAttribute(String name, Class<Y> type) {
         Attribute<? super X, ?> result = pick(attrs,
-                new AttributeNameFilter<X>(name),
-                new AttributeTypeFilter<X, Y>(type));
+                new AttributeNameFilter<>(name),
+                new AttributeTypeFilter<>(type));
         if (result == null)
             notFoundException("attr-not-found", name, type);
 
@@ -278,8 +278,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     @Override
     public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
         Attribute<? super X, ?> result = pick(attrs,
-                new AttributeNameFilter<X>(name),
-                new AttributeTypeFilter<X, Y>(type),
+                new AttributeNameFilter<>(name),
+                new AttributeTypeFilter<>(type),
                 singularAttributeFilter);
         if (result == null)
             notFoundException("attr-not-found-single", name, type);
@@ -294,8 +294,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      */
     public <Y> Attribute<X, Y> getDeclaredAttribute(String name, Class<Y> type) {
         Attribute<? super X, ?> result = pick(attrs,
-                new AttributeNameFilter<X>(name),
-                new AttributeTypeFilter<X, Y>(type),
+                new AttributeNameFilter<>(name),
+                new AttributeTypeFilter<>(type),
                 declaredAttributeFilter);
         if (result == null)
             notFoundException("attr-not-found-decl-single",name, type);
@@ -311,8 +311,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     @Override
     public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type) {
         Attribute<? super X, ?> result = pick(attrs,
-                new AttributeNameFilter<X>(name),
-                new AttributeTypeFilter<X, Y>(type),
+                new AttributeNameFilter<>(name),
+                new AttributeTypeFilter<>(type),
                 declaredAttributeFilter,
                 singularAttributeFilter);
         if (result == null)
@@ -327,7 +327,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      */
     @Override
     public java.util.Set<PluralAttribute<? super X, ?, ?>> getPluralAttributes() {
-        return filter(attrs, new HashSet<PluralAttribute<? super X, ?, ?>>(),
+        return filter(attrs, new HashSet<>(),
                 pluralAttributeFilter);
     }
 
@@ -337,7 +337,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      */
     @Override
     public java.util.Set<PluralAttribute<X, ?, ?>> getDeclaredPluralAttributes() {
-        return filter(attrs, new HashSet<PluralAttribute<X, ?, ?>>(),
+        return filter(attrs, new HashSet<>(),
                 declaredAttributeFilter,
                 pluralAttributeFilter);
     }
@@ -351,9 +351,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     @Override
     public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
-                new PluralCategoryFilter<X>(CollectionType.COLLECTION),
-                new ElementTypeFilter<X, E>(elementType),
-                new AttributeNameFilter<X>(name));
+                new PluralCategoryFilter<>(CollectionType.COLLECTION),
+                new ElementTypeFilter<>(elementType),
+                new AttributeNameFilter<>(name));
         if (result == null)
             notFoundException("attr-not-found-coll", name, elementType);
 
@@ -369,9 +369,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     @Override
     public <E> SetAttribute<? super X, E> getSet(String name, Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
-                new PluralCategoryFilter<X>(CollectionType.SET),
-                new ElementTypeFilter<X, E>(elementType),
-                new AttributeNameFilter<X>(name));
+                new PluralCategoryFilter<>(CollectionType.SET),
+                new ElementTypeFilter<>(elementType),
+                new AttributeNameFilter<>(name));
         if (result == null)
             notFoundException("attr-not-found-set",name, elementType);
 
@@ -387,9 +387,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     @Override
     public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
-                new PluralCategoryFilter<X>(CollectionType.LIST),
-                new ElementTypeFilter<X, E>(elementType),
-                new AttributeNameFilter<X>(name));
+                new PluralCategoryFilter<>(CollectionType.LIST),
+                new ElementTypeFilter<>(elementType),
+                new AttributeNameFilter<>(name));
         if (result == null)
             notFoundException("attr-not-found-list",name, elementType);
 
@@ -406,9 +406,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType,
         Class<V> valueType) {
         Attribute<? super X, ?> result = pick(attrs,
-                new AttributeNameFilter<X>(name),
-                new PluralCategoryFilter<X>(CollectionType.MAP),
-                new EntryTypeFilter<X, K, V>(keyType, valueType));
+                new AttributeNameFilter<>(name),
+                new PluralCategoryFilter<>(CollectionType.MAP),
+                new EntryTypeFilter<>(keyType, valueType));
         if (result == null)
             notFoundException("attr-not-found-map", name, keyType, valueType);
 
@@ -425,9 +425,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name,  Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
-                new PluralCategoryFilter<X>(CollectionType.COLLECTION),
-                new ElementTypeFilter<X, E>(elementType),
-                new AttributeNameFilter<X>(name));
+                new PluralCategoryFilter<>(CollectionType.COLLECTION),
+                new ElementTypeFilter<>(elementType),
+                new AttributeNameFilter<>(name));
         if (result == null)
             notFoundException("attr-not-found-decl-coll", name, elementType);
 
@@ -444,8 +444,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     public <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
-                new PluralCategoryFilter<X>(CollectionType.SET),
-                new AttributeNameFilter<X>(name));
+                new PluralCategoryFilter<>(CollectionType.SET),
+                new AttributeNameFilter<>(name));
         if (result == null)
             notFoundException("attr-not-found-decl-set", name, elementType);
 
@@ -462,9 +462,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
         Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
-                new PluralCategoryFilter<X>(CollectionType.LIST),
-                new ElementTypeFilter<X, E>(elementType),
-                new AttributeNameFilter<X>(name));
+                new PluralCategoryFilter<>(CollectionType.LIST),
+                new ElementTypeFilter<>(elementType),
+                new AttributeNameFilter<>(name));
         if (result == null)
             notFoundException("attr-not-found-decl-list", name, elementType);
 
@@ -482,9 +482,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         Class<V> valueType) {
         Attribute<? super X, ?> result = pick(attrs,
                 declaredAttributeFilter,
-                new AttributeNameFilter<X>(name),
-                new PluralCategoryFilter<X>(CollectionType.MAP),
-                new EntryTypeFilter<X, K, V>(keyType, valueType));
+                new AttributeNameFilter<>(name),
+                new PluralCategoryFilter<>(CollectionType.MAP),
+                new EntryTypeFilter<>(keyType, valueType));
         if (result == null)
             notFoundException("attr-not-found-decl-map", name, keyType, valueType);
 
@@ -627,8 +627,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         if (meta.isOpenJPAIdentity())
             throw new IllegalArgumentException(meta + " does not use IdClass. Object Id type = " +
                 meta.getObjectIdType() + " Identity Type = " + meta.getIdentityType());
-        return filter(attrs, new HashSet<SingularAttribute<? super X, ?>>(),
-                new IdAttributeFilter<X>());
+        return filter(attrs, new HashSet<>(),
+                new IdAttributeFilter<>());
     }
 
     /**
@@ -639,8 +639,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      */
      public final <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
          Attribute<? super X, ?> result =  pick(attrs,
-                 new AttributeTypeFilter<X, Y>(type),
-                 new IdAttributeFilter<X>());
+                 new AttributeTypeFilter<>(type),
+                 new IdAttributeFilter<>());
          if (result != null)
              return (SingularAttribute<? super X, Y>) result;
          throw new IllegalArgumentException();
@@ -655,8 +655,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      public final <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
          Attribute<? super X, ?> result =  pick(attrs,
                  declaredAttributeFilter,
-                 new AttributeTypeFilter<X, Y>(type),
-                 new IdAttributeFilter<X>());
+                 new AttributeTypeFilter<>(type),
+                 new IdAttributeFilter<>());
          if (result != null)
              return (SingularAttribute<X, Y>) result;
          throw new IllegalArgumentException();
@@ -670,8 +670,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
       */
      public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
          Attribute<? super X, ?> result = pick(attrs,
-                 new VersionAttributeFilter<X>(),
-                 new AttributeTypeFilter<X,Y>(type));
+                 new VersionAttributeFilter<>(),
+                 new AttributeTypeFilter<>(type));
          if (result == null)
              notFoundException("version-not-found", "", type);
          return (SingularAttribute<? super X, Y>)result;
@@ -686,8 +686,8 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
          Attribute<? super X, ?> result = pick(attrs,
                  declaredAttributeFilter,
-                 new VersionAttributeFilter<X>(),
-                 new AttributeTypeFilter<X,Y>(type));
+                 new VersionAttributeFilter<>(),
+                 new AttributeTypeFilter<>(type));
          if (result == null)
              notFoundException("decl-version-not-found", "", type);
          return (SingularAttribute<X, Y>)result;

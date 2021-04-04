@@ -66,11 +66,7 @@ public abstract class CFMetaDataSerializer extends XMLMetaDataSerializer {
         for (Iterator<Object> itr = objs.iterator(); itr.hasNext();) {
             obj = itr.next();
             packageName = getPackage(obj);
-            packageObjs = packages.get(packageName);
-            if (packageObjs == null) {
-                packageObjs = new LinkedList<>();
-                packages.put(packageName, packageObjs);
-            }
+            packageObjs = packages.computeIfAbsent(packageName, k -> new LinkedList<>());
             packageObjs.add(obj);
         }
         return packages;

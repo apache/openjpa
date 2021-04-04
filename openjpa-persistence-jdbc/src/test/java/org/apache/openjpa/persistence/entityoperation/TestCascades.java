@@ -100,11 +100,9 @@ public class TestCascades extends AbstractTestCase {
              fail ("Allowed flush with deleted object in non-cascade-persist "
                  + "relation field");
          }
-         catch (RuntimeException re)
+         catch (Exception re)
          {
          }
-         catch (Exception e)
-         {}
 
          assertTrue (!em.getTransaction().isActive ());
          endEm(em);
@@ -122,9 +120,6 @@ public class TestCascades extends AbstractTestCase {
              endTx(em);
              fail ("Allowed flush with deleted object in non-cascade-persist "
                  + "relation field");
-         }
-         catch (RuntimeException re)
-         {
          }
          catch (Exception re)
          {
@@ -192,9 +187,6 @@ public class TestCascades extends AbstractTestCase {
              fail ("Allowed flush with transient object in non-cascade-persist "
                  + "relation field");
          }
-         catch (RuntimeException re)
-         {
-         }
          catch (Exception re)
          {
          }
@@ -215,9 +207,6 @@ public class TestCascades extends AbstractTestCase {
              endTx(em);
              fail ("Allowed flush with transient object in non-cascade-persist "
                  + "relation field");
-         }
-         catch (RuntimeException re)
-         {
          }
          catch (Exception re)
          {

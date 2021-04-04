@@ -688,11 +688,10 @@ public class EntityManagerImpl
     public void commit() {
         try {
             _broker.commit();
-        } catch (RollbackException e) {
+        } catch (RollbackException | IllegalStateException e) {
             throw e;
-        } catch (IllegalStateException e) {
-            throw e;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
         	// Per JPA 2.0 spec, if the exception was due to a JSR-303
             // constraint violation, the ConstraintViolationException should be
             // thrown.  Since JSR-303 is optional, the cast to RuntimeException

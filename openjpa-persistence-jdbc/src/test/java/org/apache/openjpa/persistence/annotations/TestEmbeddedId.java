@@ -145,12 +145,8 @@ public class TestEmbeddedId extends AnnotationTestCase
             e.getId().setPk1(9);
             endTx(em);
             fail("Committed with changed oid field.");
-        } catch (RuntimeException re) {
-            if (isActiveTx(em))
-            	rollbackTx(em);
         }
-        catch (Exception exc)
-        {
+        catch (Exception re) {
             if (isActiveTx(em))
             	rollbackTx(em);
         }

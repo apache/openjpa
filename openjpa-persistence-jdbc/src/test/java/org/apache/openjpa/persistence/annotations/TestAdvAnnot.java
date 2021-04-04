@@ -46,8 +46,8 @@ public class TestAdvAnnot extends AnnotationTestCase
 		for(int i = 0; i<5; i++)
 		{
 			Calendar cal = Calendar.getInstance();
-			Date date = new Date(01012006l);
-			Date edate = new Date(10031980l);
+			Date date = new Date(01012006L);
+			Date edate = new Date(10031980L);
 			String name = "AmericaWest"+i;
 			String schedname = "Schedule"+i;
             FlightSchedule sched = new FlightSchedule(schedname, cal, date,

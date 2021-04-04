@@ -292,9 +292,7 @@ public class PersistenceUnitInfoImpl
                         .doPrivileged(J2DoPrivHelper
                             .toURLAction(new File(cp[i]))));
                     return;
-                } catch (PrivilegedActionException pae) {
-                    break;
-                } catch (MalformedURLException mue) {
+                } catch (PrivilegedActionException | MalformedURLException pae) {
                     break;
                 }
             }

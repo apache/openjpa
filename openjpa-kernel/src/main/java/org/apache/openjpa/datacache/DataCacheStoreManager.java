@@ -546,11 +546,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             if (sm.getManagedInstance() == null
                 || load != FORCE_LOAD_NONE
                 || sm.getPCState() == PCState.HOLLOW) {
-                smList = caches.get(cache);
-                if (smList == null) {
-                    smList = new ArrayList<>();
-                    caches.put(cache, smList);
-                }
+                smList = caches.computeIfAbsent(cache, k -> new ArrayList<>());
                 smList.add(sm);
             } else if (!cache.contains(sm.getObjectId()))
                 unloaded = addUnloaded(sm, null, unloaded);

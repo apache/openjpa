@@ -140,9 +140,8 @@ public class DataSourceFactory {
         DecoratingDataSource dds = new DecoratingDataSource(ds);
         try {
             // add user-defined decorators
-            List<ConnectionDecorator> decorators = new ArrayList<>();
-            decorators.addAll(Arrays.asList(conf.
-                getConnectionDecoratorInstances()));
+            List<ConnectionDecorator> decorators = new ArrayList<>(Arrays.asList(conf.
+                    getConnectionDecoratorInstances()));
 
             // add jdbc events decorator
             JDBCEventConnectionDecorator ecd =

@@ -39,7 +39,7 @@ public class TestAnnoExceptionEntity extends SingleEMFTestCase {
         AnnoExceptionEntity e = new AnnoExceptionEntity();
         e.setId(1);
         em.persist(e);
-        e.setExceptions(new ArrayList<Exception>());
+        e.setExceptions(new ArrayList<>());
         e.getExceptions().add(new Exception("Exception 1"));
         e.getExceptions().add(new Exception("Exception 2"));
         em.getTransaction().commit();
@@ -66,7 +66,7 @@ public class TestAnnoExceptionEntity extends SingleEMFTestCase {
         AnnoExceptionEntity e = new AnnoExceptionEntity();
         e.setId(1);
         em.persist(e);
-        e.setPersCollExceptions(new ArrayList<Exception>());
+        e.setPersCollExceptions(new ArrayList<>());
         e.getPersCollExceptions().add(new Exception("Exception 1"));
         e.getPersCollExceptions().add(new Exception("Exception 2"));
         em.getTransaction().commit();
@@ -93,7 +93,7 @@ public class TestAnnoExceptionEntity extends SingleEMFTestCase {
         AnnoExceptionEntity e = new AnnoExceptionEntity();
         e.setId(1);
         em.persist(e);
-        e.setElemCollExceptions(new ArrayList<String>());
+        e.setElemCollExceptions(new ArrayList<>());
         e.getElemCollExceptions().add(new Exception("Exception 1").toString());
         e.getElemCollExceptions().add(new Exception("Exception 2").toString());
         em.getTransaction().commit();

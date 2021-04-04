@@ -346,11 +346,10 @@ public class XMLFileHandler {
             throws SAXException {
             try {
                 startElement(qName, attrs);
-            } catch (RuntimeException re) {
+            } catch (RuntimeException | SAXException re) {
                 throw re;
-            } catch (SAXException se) {
-                throw se;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new SAXException(e);
             }
         }
@@ -408,11 +407,10 @@ public class XMLFileHandler {
             throws SAXException {
             try {
                 endElement(qName);
-                } catch (RuntimeException re) {
+                } catch (RuntimeException | SAXException re) {
                 throw re;
-            } catch (SAXException se) {
-                throw se;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new SAXException(e);
             }
         }
