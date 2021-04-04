@@ -19,9 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.sql.Timestamp;
-import java.util.List;
 
-import javax.persistence.Parameter;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;

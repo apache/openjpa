@@ -33,7 +33,8 @@ import org.apache.openjpa.lib.util.Localizer;
  *
  */
 public class CompileTimeLogger {
-    private static enum Level {TRACE, INFO, WARN, ERROR};
+    private static enum Level {TRACE, INFO, WARN, ERROR}
+
     private static Localizer _loc = Localizer.forPackage(CompileTimeLogger.class);
     private static Level DEFAULT_LEVEL = Level.WARN;
     private int logLevel;

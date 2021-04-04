@@ -567,7 +567,7 @@ public class DB2Dictionary
         if (sel != null && sel.getExpectedResultCount() > 0) {
             StringBuilder buf = new StringBuilder();
             buf.append(" ").append(optimizeClause).append(" ")
-                .append(String.valueOf(sel.getExpectedResultCount()))
+                .append(sel.getExpectedResultCount())
                 .append(" ").append(rowClause);
             return buf.toString();
         }
@@ -577,7 +577,7 @@ public class DB2Dictionary
 
     @Override
     public OpenJPAException newStoreException(String msg, SQLException[] causes, Object failed) {
-        if (appendExtendedExceptionText == true && causes != null && causes.length > 0) {
+        if (appendExtendedExceptionText && causes != null && causes.length > 0) {
             msg = appendExtendedExceptionMsg(msg, causes[0]);
         }
         return super.newStoreException(msg, causes, failed);
@@ -844,7 +844,7 @@ public class DB2Dictionary
         if (col.getType() != Types.VARCHAR) {
             doCast = true;
         }
-        if (doCast == true) {
+        if (doCast) {
             if (func.indexOf("VARCHAR") == -1) {
                 func = addCastAsString(func, "{0}", " AS VARCHAR(" + varcharCastLength + ")");
             }

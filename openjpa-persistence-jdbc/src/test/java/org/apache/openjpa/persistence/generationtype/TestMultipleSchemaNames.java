@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence.generationtype;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;

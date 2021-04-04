@@ -19,5 +19,5 @@
 package org.apache.openjpa.persistence.proxy.entities;
 
 public enum RiderType {
-	REPLACE, OVERRIDE;
+	REPLACE, OVERRIDE
 }

@@ -91,11 +91,11 @@ public class TestEfficientAttach extends TestSQLListenerTestCase {
 
     private void attachTest() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager) currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         AttachE e = new AttachE();
         e.setB(new AttachB());
         pm.persist(e);
-        endTx(pm);;
+        endTx(pm);
         //FIXME jthomas - could not find equivalent for detachCopy()
         //attachCopy() etc
 /*

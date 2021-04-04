@@ -332,7 +332,7 @@ public class TestPersistentMaps extends BaseKernelTest {
             // now try to execute queries against multiple other
             // map instances, so we can make sure the joins are robust
             for (int j = 0; j < mapNames.length; j++) {
-                StringBuffer query = new StringBuffer(selectWhere);
+                StringBuilder query = new StringBuilder(selectWhere);
 
                 for (int k = 0; k < j; k++) {
                     query.append(mapNames[k] + ".isEmpty() && ");

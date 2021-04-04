@@ -269,7 +269,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         testSchemaGenMetadataCreate();
 
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.schema-generation.database.action", "drop");;
+        properties.put("javax.persistence.schema-generation.database.action", "drop");
         properties.put("javax.persistence.schema-generation.drop-script-source",
                        "org/apache/openjpa/persistence/jdbc/schema/drop.sql");
 

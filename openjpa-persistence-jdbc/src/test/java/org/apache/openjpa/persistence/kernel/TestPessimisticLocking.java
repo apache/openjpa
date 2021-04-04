@@ -240,7 +240,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
                         getLog().trace(
                             Thread.currentThread().getName()
                                 + ": obtained and locked: " + a);
-                        yield();
+                        Thread.yield();
                         super.wait(50);
                         getLog().trace(
                             Thread.currentThread().getName()
@@ -261,7 +261,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
                                     + Thread.currentThread().getName()
                                     + ")", ex);
                         }
-                        yield();
+                        Thread.yield();
                     }
                     finally {
                         if (_lock != null)

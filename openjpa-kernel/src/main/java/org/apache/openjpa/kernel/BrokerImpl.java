@@ -2457,7 +2457,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             }
         }
         if (opt && !failed.isEmpty()) {
-            if(_suppressBatchOLELogging == true){
+            if(_suppressBatchOLELogging){
                 return new OptimisticException(_loc.get("broker-suppressing-exceptions",t.length));
             }else{
                 return new OptimisticException(failed, t);
@@ -3568,7 +3568,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     }
 
     private void detachAllInternal(OpCallbacks call) {
-        if(_conf.getDetachStateInstance().getLiteAutoDetach() == true){
+        if(_conf.getDetachStateInstance().getLiteAutoDetach()){
             detachAllInternalLite();
             return;
         }

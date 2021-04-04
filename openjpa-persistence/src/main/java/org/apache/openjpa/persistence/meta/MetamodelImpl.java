@@ -368,7 +368,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      */
     ParameterizedType getParameterizedType(Field mf) {
         java.lang.reflect.Type t = mf.getGenericType();
-        if (t instanceof ParameterizedType == false) {
+        if (!(t instanceof ParameterizedType)) {
         	repos.getLog().warn(_loc.get("meta-field-not-param",
             mf.getDeclaringClass(), mf.getName(), toTypeName(t)).getMessage());
         	return null;
@@ -391,7 +391,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
             return toTypeName(((GenericArrayType)type).
                 getGenericComponentType())+"[]";
         }
-        if (type instanceof ParameterizedType == false) {
+        if (!(type instanceof ParameterizedType)) {
             Class<?> cls = (Class<?>)type;
             return cls.getName();
         }

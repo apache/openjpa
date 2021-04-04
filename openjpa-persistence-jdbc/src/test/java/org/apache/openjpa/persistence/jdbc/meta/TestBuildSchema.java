@@ -60,7 +60,7 @@ public class TestBuildSchema
 
         BufferedReader in = new BufferedReader(new InputStreamReader
             (getClass().getResourceAsStream("TestBuildSchema-schema.rsrc")));
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int ch; (ch = in.read()) != -1;)
             buf.append((char) ch);
         in.close();

@@ -946,9 +946,9 @@ public class Reflection {
     */
     static boolean canReflect(Reflectable cls, Reflectable member) {
         if (cls == null || cls.value()) {
-            return member == null || member.value() == true;
+            return member == null || member.value();
         } else {
-            return member != null && member.value() == true;
+            return member != null && member.value();
         }
     }
 

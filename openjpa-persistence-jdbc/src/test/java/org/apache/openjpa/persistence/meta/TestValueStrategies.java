@@ -354,7 +354,6 @@ public class TestValueStrategies
         }
         if (isActiveTx(pm))
             rollbackTx(pm);
-        ;
         endEm(pm);
     }
 

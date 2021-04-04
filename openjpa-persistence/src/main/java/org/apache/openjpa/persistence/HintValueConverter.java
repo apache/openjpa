@@ -154,7 +154,7 @@ public interface HintValueConverter {
 
         @Override
         public Object convert(Object s) {
-            if (s instanceof String == false)
+            if (!(s instanceof String))
                 return s;
             String str = s.toString();
             if (strings == null) {

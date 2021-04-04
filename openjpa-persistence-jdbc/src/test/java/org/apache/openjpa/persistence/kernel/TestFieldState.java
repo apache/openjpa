@@ -75,7 +75,7 @@ public class TestFieldState extends BaseKernelTest {
         a.setStringField(a.getStringField());
         OpenJPAStateManager sm = getStateManager(a, pm);
         FieldMetaData fmd = sm.getMetaData().getField("stringField");
-        assertTrue(sm.getDirty().get(fmd.getIndex()) == false);
+        assertTrue(!sm.getDirty().get(fmd.getIndex()));
 
         endTx(pm);
         endEm(pm);

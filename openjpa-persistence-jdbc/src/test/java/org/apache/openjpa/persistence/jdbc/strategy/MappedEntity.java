@@ -28,7 +28,7 @@ public class MappedEntity {
 
     public enum Key {
         A, B, C
-    };
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

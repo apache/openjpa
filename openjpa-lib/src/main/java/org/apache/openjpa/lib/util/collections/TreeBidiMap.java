@@ -1355,7 +1355,7 @@ public class TreeBidiMap<K extends Comparable<K>, V extends Comparable<V>>
         if (obj == this) {
             return true;
         }
-        if (obj instanceof Map == false) {
+        if (!(obj instanceof Map)) {
             return false;
         }
         final Map<?, ?> other = (Map<?, ?>) obj;
@@ -1368,7 +1368,7 @@ public class TreeBidiMap<K extends Comparable<K>, V extends Comparable<V>>
                 for (final MapIterator<?, ?> it = getMapIterator(dataElement); it.hasNext(); ) {
                     final Object key = it.next();
                     final Object value = it.getValue();
-                    if (value.equals(other.get(key)) == false) {
+                    if (!value.equals(other.get(key))) {
                         return false;
                     }
                 }
@@ -1571,7 +1571,7 @@ public class TreeBidiMap<K extends Comparable<K>, V extends Comparable<V>>
 
         @Override
         public boolean contains(final Object obj) {
-            if (obj instanceof Map.Entry == false) {
+            if (!(obj instanceof Map.Entry)) {
                 return false;
             }
             final Entry<?, ?> entry = (Entry<?, ?>) obj;
@@ -1582,7 +1582,7 @@ public class TreeBidiMap<K extends Comparable<K>, V extends Comparable<V>>
 
         @Override
         public boolean remove(final Object obj) {
-            if (obj instanceof Map.Entry == false) {
+            if (!(obj instanceof Map.Entry)) {
                 return false;
             }
             final Entry<?, ?> entry = (Entry<?, ?>) obj;
@@ -1612,7 +1612,7 @@ public class TreeBidiMap<K extends Comparable<K>, V extends Comparable<V>>
 
         @Override
         public boolean contains(final Object obj) {
-            if (obj instanceof Map.Entry == false) {
+            if (!(obj instanceof Map.Entry)) {
                 return false;
             }
             final Entry<?, ?> entry = (Entry<?, ?>) obj;
@@ -1623,7 +1623,7 @@ public class TreeBidiMap<K extends Comparable<K>, V extends Comparable<V>>
 
         @Override
         public boolean remove(final Object obj) {
-            if (obj instanceof Map.Entry == false) {
+            if (!(obj instanceof Map.Entry)) {
                 return false;
             }
             final Entry<?, ?> entry = (Entry<?, ?>) obj;

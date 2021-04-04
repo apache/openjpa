@@ -241,7 +241,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 	String createSelfJoinSQL(String table, int depth, int id)
 	{
 
-		StringBuffer sql = new StringBuffer("SELECT ");
+		StringBuilder sql = new StringBuilder("SELECT ");
 		for (int i=0; i<depth; i++)
 			sql.append("t"+i+".ID AS T"+i+"_ID, ")
 			   .append("t"+i+".NAME AS T"+i+"_NAME, ")

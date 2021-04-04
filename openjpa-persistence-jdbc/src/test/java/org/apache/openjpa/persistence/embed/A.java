@@ -50,7 +50,7 @@ public class A implements java.io.Serializable {
     int value;
 
     @ElementCollection
-    protected Set<Embed> embeds = new HashSet();
+    protected Set<Embed> embeds = new HashSet<>();
 
     @CollectionTable(name = "collectionTemporalOrderColumnTable",
             joinColumns = @JoinColumn(name = "parent_id"))

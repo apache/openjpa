@@ -63,7 +63,7 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
 
     @Override
     public boolean setQuery(Object query) {
-        if (query instanceof PreparedQueryImpl == false) {
+        if (!(query instanceof PreparedQueryImpl)) {
             throw new InternalException(query.getClass() + " not recognized");
         }
         _cached = (PreparedQueryImpl)query;

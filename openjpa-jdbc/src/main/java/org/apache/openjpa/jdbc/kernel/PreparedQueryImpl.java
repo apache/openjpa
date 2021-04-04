@@ -187,14 +187,14 @@ public class PreparedQueryImpl implements PreparedQuery {
             return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-select", _id).getMessage());
         SQLBuffer buffer = selector.getSQL();
         if (buffer == null)
-            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-sql", _id).getMessage());;
+            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-sql", _id).getMessage());
         if (isUsingFieldStrategy())
             return new PreparedQueryCacheImpl.StrongExclusion(_id,
-                _loc.get("exclude-user-strategy", _id).getMessage());;
+                _loc.get("exclude-user-strategy", _id).getMessage());
 
         if (isPaginated())
             return new PreparedQueryCacheImpl.StrongExclusion(_id,
-                _loc.get("exclude-pagination", _id).getMessage());;
+                _loc.get("exclude-pagination", _id).getMessage());
 
         setTargetQuery(buffer.getSQL());
         setParameters(buffer.getParameters());
@@ -212,14 +212,14 @@ public class PreparedQueryImpl implements PreparedQuery {
      * not be extracted.
      */
     private Object[] extractSelectExecutor(Object result) {
-        if (result instanceof ResultList == false)
+        if (!(result instanceof ResultList))
             return new Object[]{null, _loc.get("exclude-not-result", _id)};
         Object userObject = ((ResultList<?>)result).getUserObject();
         if (userObject == null || !userObject.getClass().isArray() || ((Object[])userObject).length != 2)
             return new Object[]{null, _loc.get("exclude-no-user-object", _id)};
         Object provider = ((Object[])userObject)[0];
         Object executor = ((Object[])userObject)[1];
-        if (executor instanceof StoreQuery.Executor == false)
+        if (!(executor instanceof StoreQuery.Executor))
             return new Object[]{null, _loc.get("exclude-not-executor", _id)};
         _exps = ((StoreQuery.Executor)executor).getQueryExpressions();
         for (int i = 0; i < _exps.length; i++) {

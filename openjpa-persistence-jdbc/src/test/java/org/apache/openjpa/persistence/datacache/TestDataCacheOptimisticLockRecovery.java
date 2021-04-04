@@ -25,12 +25,10 @@ import java.sql.SQLException;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.RollbackException;
-import javax.sql.DataSource;
 
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 

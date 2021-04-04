@@ -44,12 +44,12 @@ public class FetchStatisticsAuxEnhancer implements AuxiliaryEnhancer {
     @Override
     public void run(BCClass bcc, ClassMetaData cmd) {
         addEnhancement(bcc, cmd);
-    };
+    }
 
     @Override
     public boolean skipEnhance(BCMethod arg0) {
         return false;
-    };
+    }
 
     private void addEnhancement(BCClass bcc, ClassMetaData cmd) {
         Log log = cmd.getRepository().getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);

@@ -855,7 +855,7 @@ extends AbstractCachedEMFTestCase {
             "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
         map.put("openjpa.Compatibility", "StrictIdentityValues=true");
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (Class<?> c : types) {
             if (buf.length() > 0) {
                 buf.append(";");
@@ -880,7 +880,7 @@ extends AbstractCachedEMFTestCase {
     }
 
     public String toString(List<String> list) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (String s : list)
             buf.append(s).append("\r\n");
         return buf.toString();

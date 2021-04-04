@@ -220,7 +220,7 @@ public class ClassSelector {
 	 * Gets a printable description of the currently set selection criteria.
 	 */
 	public String getSpecification() {
-		StringBuffer tmp = new StringBuffer();
+		StringBuilder tmp = new StringBuilder();
 		String and = "";
 		if (!_supers.isEmpty()) {
 			tmp.append("\textends ");

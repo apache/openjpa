@@ -47,7 +47,7 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
     private static final String CLOB;
 
     static {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < 1000; i++)
             buf.append('a');
         CLOB = buf.toString();

@@ -337,7 +337,7 @@ public class TCPRemoteCommitProvider
     public void broadcast(final RemoteCommitEvent event) {
         // build a packet notifying other JVMs of object changes.
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(baos);) {
+                ObjectOutputStream oos = new ObjectOutputStream(baos)) {
 
             oos.writeLong(PROTOCOL_VERSION);
             oos.writeLong(_id);

@@ -133,7 +133,7 @@ public abstract class AbstractTestCase {
      * Support method to get a random String for testing.
      */
     public static String randomString(int len) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < (int) (Math.random() * len) + 1; i++)
             buf.append(randomChar());
         return buf.toString();

@@ -49,7 +49,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestPersistentGraph extends SingleEMFTestCase {
     private static enum Emotion {
         LOVES, HATES, KNOWS
-    };
+    }
 
     // Identity of People is their SSN
     private static final long[] SSN = { 123456781, 123456782, 123456783, 123456784, 123456785 };

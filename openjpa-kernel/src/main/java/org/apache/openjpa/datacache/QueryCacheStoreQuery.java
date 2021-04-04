@@ -157,7 +157,7 @@ public class QueryCacheStoreQuery
         if (projs == 0) {
             // We're only going to return the cached results if we have ALL results cached. This could be improved
             // in the future to be a little more intelligent.
-            if (getContext().getStoreContext().isCached(res) == false) {
+            if (!getContext().getStoreContext().isCached(res)) {
                 return null;
             }
         }

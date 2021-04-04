@@ -888,7 +888,7 @@ public class TestContainerSpecCompatibilityOptions
     }
 
     public String toString(List<String> list) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (String s : list)
             buf.append(s).append("\r\n");
         return buf.toString();

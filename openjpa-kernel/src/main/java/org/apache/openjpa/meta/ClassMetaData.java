@@ -1051,7 +1051,7 @@ public class ClassMetaData
             }
             List<FieldMetaData> res = new ArrayList<>();
             for (FieldMetaData fmd : _allFields) {
-                if(fmd.isLRS()==true){
+                if(fmd.isLRS()){
                     res.add(fmd);
                 }
             }
@@ -1127,7 +1127,6 @@ public class ClassMetaData
         if (_fields == null) {
             List<FieldMetaData> fields =
             	new ArrayList<>(_fieldMap.size());
-            ;
             for (FieldMetaData fmd : _fieldMap.values()) {
                 if (fmd.getManagement() != FieldMetaData.MANAGE_NONE) {
                     fmd.setDeclaredIndex(fields.size());
@@ -1290,7 +1289,6 @@ public class ClassMetaData
     public FieldMetaData[] getDeclaredUnmanagedFields() {
         if (_unmgdFields == null) {
             List<FieldMetaData> unmanaged = new ArrayList<>(3);
-            ;
             for (FieldMetaData field : _fieldMap.values()) {
                 if (field.getManagement() == FieldMetaData.MANAGE_NONE)
                     unmanaged.add(field);
@@ -2714,7 +2712,7 @@ public class ClassMetaData
         // declares a PKField.
         Boolean temp = Boolean.FALSE;
 
-        if (isAbstract() == true) {
+        if (isAbstract()) {
             FieldMetaData[] declaredFields = getDeclaredFields();
             if (declaredFields != null && declaredFields.length != 0) {
                 for (FieldMetaData fmd : declaredFields) {

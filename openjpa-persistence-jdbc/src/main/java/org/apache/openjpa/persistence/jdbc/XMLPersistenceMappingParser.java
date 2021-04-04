@@ -665,7 +665,7 @@ public class XMLPersistenceMappingParser
 
         FieldMapping fm = (FieldMapping) currentElement();
         String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
-            + String.valueOf(type == EnumType.ORDINAL) + ")";
+            + (type == EnumType.ORDINAL) + ")";
         if (fm.isElementCollection())
             fm.getElementMapping().getValueInfo().setStrategy(strat);
         else
@@ -683,7 +683,7 @@ public class XMLPersistenceMappingParser
 
         FieldMapping fm = (FieldMapping) currentElement();
         String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
-            + String.valueOf(type == EnumType.ORDINAL) + ")";
+            + (type == EnumType.ORDINAL) + ")";
         fm.getKeyMapping().getValueInfo().setStrategy(strat);
     }
 

@@ -81,7 +81,7 @@ public class InstrumentationFactory {
      * Exceptions are encountered.
      */
     public static synchronized Instrumentation getInstrumentation(final Log log) {
-        if (log.isTraceEnabled() == true) {
+        if (log.isTraceEnabled()) {
             log.trace(_name + ".getInstrumentation() _inst:" + _inst
                 + " _dynamicallyInstall:" + _dynamicallyInstall);
         }
@@ -106,7 +106,7 @@ public class InstrumentationFactory {
                 File toolsJar = null;
                 // When running on IBM, the attach api classes are packaged in vm.jar which is a part
                 // of the default vm classpath.
-                if (vendor.isIBM() == false) {
+                if (!vendor.isIBM()) {
                     // If we can't find the tools.jar and we're not on IBM we can't load the agent.
                     toolsJar = findToolsJar(log);
                     if (toolsJar == null) {
@@ -160,7 +160,7 @@ public class InstrumentationFactory {
             .println("Agent-Class: " + InstrumentationFactory.class.getName());
         writer.println("Can-Redefine-Classes: true");
         // IBM doesn't support retransform
-        writer.println("Can-Retransform-Classes: " + Boolean.toString(JavaVendors.getCurrentVendor().isIBM() == false));
+        writer.println("Can-Retransform-Classes: " + (!JavaVendors.getCurrentVendor().isIBM()));
 
         writer.close();
 
@@ -179,27 +179,27 @@ public class InstrumentationFactory {
         File javaHomeFile = new File(javaHome);
 
         File toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
-        if (toolsJarFile.exists() == false) {
-            if (log.isTraceEnabled() == true) {
+        if (!toolsJarFile.exists()) {
+            if (log.isTraceEnabled()) {
                 log.trace(_name + ".findToolsJar() -- couldn't find default " + toolsJarFile.getAbsolutePath());
             }
             // If we're on an IBM SDK, then remove /jre off of java.home and try again.
-            if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre") == true) {
+            if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre")) {
                 javaHomeFile = javaHomeFile.getParentFile();
                 toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
-                if (toolsJarFile.exists() == false) {
-                    if (log.isTraceEnabled() == true) {
+                if (!toolsJarFile.exists()) {
+                    if (log.isTraceEnabled()) {
                         log.trace(_name + ".findToolsJar() -- for IBM SDK couldn't find " +
                             toolsJarFile.getAbsolutePath());
                     }
                 }
             } else if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).indexOf("mac") >= 0) {
                 // If we're on a Mac, then change the search path to use ../Classes/classes.jar.
-                if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "Home") == true) {
+                if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "Home")) {
                     javaHomeFile = javaHomeFile.getParentFile();
                     toolsJarFile = new File(javaHomeFile, "Classes" + File.separator + "classes.jar");
-                    if (toolsJarFile.exists() == false) {
-                        if (log.isTraceEnabled() == true) {
+                    if (!toolsJarFile.exists()) {
+                        if (log.isTraceEnabled()) {
                             log.trace(_name + ".findToolsJar() -- for Mac OS couldn't find " +
                                 toolsJarFile.getAbsolutePath());
                         }
@@ -208,10 +208,10 @@ public class InstrumentationFactory {
             }
         }
 
-        if (toolsJarFile.exists() == false) {
+        if (!toolsJarFile.exists()) {
             return null;
         } else {
-            if (log.isTraceEnabled() == true) {
+            if (log.isTraceEnabled()) {
                 log.trace(_name + ".findToolsJar() -- found " + toolsJarFile.getAbsolutePath());
             }
             return toolsJarFile;
@@ -245,26 +245,26 @@ public class InstrumentationFactory {
         // class defined as the Agent-Class.
         boolean createJar = false;
         if (cs == null || agentJarFile == null
-            || agentJarFile.isDirectory() == true) {
+            || agentJarFile.isDirectory()) {
             createJar = true;
-        }else if(validateAgentJarManifest(agentJarFile, log, _name) == false){
+        }else if(!validateAgentJarManifest(agentJarFile, log, _name)){
             // We have an agentJarFile, but this class isn't the Agent-Class.
             createJar=true;
         }
 
         String agentJar;
-        if (createJar == true) {
+        if (createJar) {
             // This can happen when running in eclipse as an OpenJPA
             // developer or for some reason the CodeSource is null. We
             // should log a warning here because this will create a jar
             // in your temp directory that doesn't always get cleaned up.
             try {
                 agentJar = createAgentJar();
-                if (log.isInfoEnabled() == true) {
+                if (log.isInfoEnabled()) {
                     log.info(_loc.get("temp-file-creation", agentJar));
                 }
             } catch (IOException ioe) {
-                if (log.isTraceEnabled() == true) {
+                if (log.isTraceEnabled()) {
                     log.trace(_name + ".getAgentJar() caught unexpected "
                         + "exception.", ioe);
                 }
@@ -310,7 +310,7 @@ public class InstrumentationFactory {
             vmClass.getMethod("detach", new Class[] {}).invoke(vm,
                 new Object[] {});
         } catch (Throwable t) {
-            if (log.isTraceEnabled() == true) {
+            if (log.isTraceEnabled()) {
                 // Log the message from the exception. Don't log the entire
                 // stack as this is expected when running on a JDK that doesn't
                 // support the Attach API.
@@ -336,7 +336,7 @@ public class InstrumentationFactory {
         try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             String cls = vendor.getVirtualMachineClassName();
-            if (vendor.isIBM() == false) {
+            if (!vendor.isIBM()) {
                 loader = new URLClassLoader(new URL[] { toolsJar.toURI().toURL() }, loader);
             }
             return loader.loadClass(cls);
@@ -374,7 +374,7 @@ public class InstrumentationFactory {
                 return true;
             }
         } catch (Exception e) {
-            if (log.isTraceEnabled() == true) {
+            if (log.isTraceEnabled()) {
                 log.trace(_name
                     + ".validateAgentJarManifest() caught unexpected "
                     + "exception " + e.getMessage());

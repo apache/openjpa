@@ -387,7 +387,7 @@ public class TestSequence extends SingleEMFTestCase {
                     // get to everyone starting at the same time, the
                     // better chance we have for identifying MT problems.
                     while (System.currentTimeMillis() < startMillis)
-                        yield();
+                        Thread.yield();
 
                     int thisIteration = 1;
                     try {

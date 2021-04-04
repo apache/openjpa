@@ -95,7 +95,7 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
         log.info("TestDaytrader.testTrade() calling TradeScenario.performUserTasks(" + TEST_USERS + ")");
         for (int i = 0; i < TEST_USERS; i++) {
             String userID = "uid:" + i;
-            if (scenario.performUserTasks(userID) == false) {
+            if (!scenario.performUserTasks(userID)) {
                 fail("TestDaytrader.testTrade() call to TradeScenario.performUserTask(" + userID + ") failed");
             }
         }

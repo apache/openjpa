@@ -105,9 +105,9 @@ public class TestSubclassJoinRelations
         rel.getBaseSub1Sub2List().add(sub1sub2);
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         pm.persist(rel);
-        endTx(pm);;
+        endTx(pm);
         _oid = pm.getObjectId(rel);
         pm.close();
     }

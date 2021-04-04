@@ -51,8 +51,8 @@ public class ManyOneCompoundIdOwnerId implements Serializable {
 
 	@Override
     public String toString() {
-		return String.valueOf(entityId)
-			+ "::" + String.valueOf(longId);
+		return entityId
+			+ "::" + longId;
 	}
 
 	@Override

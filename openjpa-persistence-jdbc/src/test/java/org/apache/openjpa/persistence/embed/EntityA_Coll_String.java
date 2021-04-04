@@ -127,6 +127,6 @@ public class EntityA_Coll_String implements Serializable {
         lobs.add(lob);
     }
 
-    public enum CreditRating { POOR, GOOD, EXCELLENT };
+    public enum CreditRating { POOR, GOOD, EXCELLENT }
 }
 

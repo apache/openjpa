@@ -495,7 +495,7 @@ public class EntityMapping {
         public String getEntityName() {
             return getEntityClass().getSimpleName();
         }
-    };
+    }
 
     public final static InheritanceEntityMapping[] PIdJTIDMSC = {
         InheritanceEntityMapping.PIdJTIDMSCRootEntity,

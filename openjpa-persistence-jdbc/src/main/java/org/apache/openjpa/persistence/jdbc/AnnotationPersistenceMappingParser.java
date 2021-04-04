@@ -1589,7 +1589,7 @@ public class AnnotationPersistenceMappingParser
      */
     private void parseEnumerated(FieldMapping fm, Enumerated anno) {
         String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
-            + String.valueOf(anno.value() == EnumType.ORDINAL) + ")";
+            + (anno.value() == EnumType.ORDINAL) + ")";
         if (fm.isElementCollection())
             fm.getElementMapping().getValueInfo().setStrategy(strat);
         else
@@ -1601,7 +1601,7 @@ public class AnnotationPersistenceMappingParser
      */
     private void parseMapKeyEnumerated(FieldMapping fm, MapKeyEnumerated anno) {
         String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
-            + String.valueOf(anno.value() == EnumType.ORDINAL) + ")";
+            + (anno.value() == EnumType.ORDINAL) + ")";
         fm.getKeyMapping().getValueInfo().setStrategy(strat);
     }
 

@@ -88,7 +88,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         map.put("openjpa.Compatibility", "QuotedNumbersInQueries=true");
         map.put("openjpa.jdbc.JDBCListeners", new JDBCListener[] { getAuditor() });
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (Class<?> c : types) {
             if (buf.length() > 0)
                 buf.append(";");

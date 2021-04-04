@@ -131,7 +131,7 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
         }
 
         boolean ref = !visited.add(sm);
-        JSONObject root =  new JSONObject(typeOf(sm), sm.getObjectId(), ref);;
+        JSONObject root =  new JSONObject(typeOf(sm), sm.getObjectId(), ref);
         if (ref) {
             return root;
         }

@@ -42,7 +42,7 @@ import org.apache.openjpa.persistence.PersistentCollection;
 @Entity
 public class AllFieldTypes {
 
-    public enum EnumType {Value1, Value2};
+    public enum EnumType {Value1, Value2}
 
     // @Basic types
     private short shortField;

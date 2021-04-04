@@ -91,7 +91,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
         _name = name;
     }
     public void setEnableStatistics(boolean enable){
-        if(enable == true){
+        if(enable){
             _stats.enable();
         }
     }

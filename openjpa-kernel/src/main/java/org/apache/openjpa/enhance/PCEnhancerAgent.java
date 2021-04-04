@@ -88,7 +88,7 @@ public class PCEnhancerAgent {
      * @return True if the agent is loaded successfully
      */
     public static synchronized boolean loadDynamicAgent(Log log) {
-        if (loadAttempted == false && disableDynamicAgent == false) {
+        if (!loadAttempted && !disableDynamicAgent) {
             Instrumentation inst =
                 InstrumentationFactory.getInstrumentation(log);
             if (inst != null) {
@@ -113,7 +113,7 @@ public class PCEnhancerAgent {
         // The agent will be disabled when running in an application
         // server.
         synchronized (PCEnhancerAgent.class) {
-            if (loadAttempted == true) {
+            if (loadAttempted) {
                 return;
             }
             // See the comment in loadDynamicAgent as to why we set this to true

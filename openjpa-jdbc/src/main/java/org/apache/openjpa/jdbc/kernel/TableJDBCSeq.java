@@ -461,8 +461,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
                 }
                 catch(NotSupportedException nse) {
                     SQLException sqlEx = new SQLException(
-                            nse.getLocalizedMessage());
-                    sqlEx.initCause(nse);
+                            nse.getLocalizedMessage(), nse);
                     throw sqlEx;
                 }
             } else {
@@ -953,8 +952,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
                 if (conn != null) {
                     closeConnection(conn);
                 }
-                RuntimeException re = new RuntimeException(e.getMessage());
-                re.initCause(e);
+                RuntimeException re = new RuntimeException(e.getMessage(), e);
                 throw re;
             }
         }
@@ -991,8 +989,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
                 if (cur != -1 ) // USE the constant
                     current = cur;
             } catch (SQLException sqle) {
-                RuntimeException re = new RuntimeException(sqle.getMessage());
-                re.initCause(sqle);
+                RuntimeException re = new RuntimeException(sqle.getMessage(), sqle);
                 throw re;
             } finally {
                 if (conn != null) {

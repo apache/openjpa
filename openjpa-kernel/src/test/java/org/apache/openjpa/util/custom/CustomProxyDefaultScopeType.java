@@ -40,5 +40,5 @@ class CustomProxyDefaultScopeType {
 
     public static Object instance() {
         return new CustomProxyDefaultScopeType();
-    };
+    }
 }

@@ -34,7 +34,6 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 import org.junit.Assert;
 import static junit.framework.TestCase.assertEquals;
-import org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex6.Division;
 
 
 public class TestSpec10_1_27_Ex8 extends SQLListenerTestCase {

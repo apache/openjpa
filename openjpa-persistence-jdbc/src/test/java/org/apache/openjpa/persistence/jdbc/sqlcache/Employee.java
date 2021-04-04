@@ -33,9 +33,9 @@ import javax.persistence.Table;
 @Table(name="EMPLOYEE_PQC")
 
 public class Employee {
-    public enum Category {PERMANENT, CONTRACTOR, TEMP};
+    public enum Category {PERMANENT, CONTRACTOR, TEMP}
 
-	@Id
+    @Id
 	@GeneratedValue
 	private long id;
 

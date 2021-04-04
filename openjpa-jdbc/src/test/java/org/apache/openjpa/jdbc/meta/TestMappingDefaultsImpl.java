@@ -25,7 +25,6 @@ import org.apache.openjpa.jdbc.schema.Table;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
 public class TestMappingDefaultsImpl {

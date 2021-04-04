@@ -45,7 +45,7 @@ public class BeneContactId implements Serializable {
 
 	@Override
     public int hashCode() {
-		String hash = beneficiaryPK + Integer.toString(type.ordinal());
+		String hash = beneficiaryPK + type.ordinal();
 		return hash.hashCode();
 	}
 
@@ -73,5 +73,5 @@ public class BeneContactId implements Serializable {
 		this.type = type;
 	}
 
-	public enum ContactType {HOME, BUSINESS, OTHER;}
+	public enum ContactType {HOME, BUSINESS, OTHER}
 }

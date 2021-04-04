@@ -19,5 +19,5 @@
 package org.apache.openjpa.persistence.proxy.entities;
 
 public enum AnnuityHolderCategory {
-	METAL, BRONZE, SILVER, GOLD;
+	METAL, BRONZE, SILVER, GOLD
 }

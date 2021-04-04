@@ -66,7 +66,7 @@ public class PropertiesCommand extends AbstractCommand {
 
     private void removeBadEntries(Map<String,Object> map) {
         Iterator<String> keys = map.keySet().iterator();
-        for (; keys.hasNext();) {
+        while (keys.hasNext()) {
             if (keys.next().indexOf(DOT) == -1) keys.remove();
         }
     }

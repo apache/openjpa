@@ -57,7 +57,7 @@ public class ReservedWords {
             "UNKNOWN[50]", "UPDATE", "UPPER",
             "VALUE",
             "WHEN", "WHERE"));
-    };
+    }
 
     /**
      * Affirms if the given string matches any of the JPA reserved words in a case-insensitive manner.

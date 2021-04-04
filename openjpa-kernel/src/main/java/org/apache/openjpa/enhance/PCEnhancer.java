@@ -1181,7 +1181,7 @@ public class PCEnhancer {
             addCopyKeyFieldsToObjectIdMethod(false);
             addCopyKeyFieldsFromObjectIdMethod(true);
             addCopyKeyFieldsFromObjectIdMethod(false);
-            if (_meta.hasAbstractPKField() == true) {
+            if (_meta.hasAbstractPKField()) {
                 addGetIDOwningClass();
             }
 
@@ -2745,7 +2745,7 @@ public class PCEnhancer {
             // new ObjectId (cls, oid)
             code.anew().setType(ObjectId.class);
             code.dup();
-            if(_meta.isEmbeddedOnly() || _meta.hasAbstractPKField() == true) {
+            if(_meta.isEmbeddedOnly() || _meta.hasAbstractPKField()) {
                 code.aload().setThis();
                 code.invokevirtual().setMethod(PRE + "GetIDOwningClass",
                     Class.class, null);
@@ -2760,7 +2760,7 @@ public class PCEnhancer {
         if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE)) {
             if ((_meta.isEmbeddedOnly()
                 && !(_meta.isEmbeddable() && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION))
-                || _meta.hasAbstractPKField() == true) {
+                || _meta.hasAbstractPKField()) {
                 code.aload().setThis();
                 code.invokevirtual().setMethod(PRE + "GetIDOwningClass", Class.class, null);
             } else {
@@ -3879,7 +3879,7 @@ public class PCEnhancer {
         loadManagedInstance(code, true, fmd);
         code.xload().setParam(firstParamOffset);
         addSetManagedValueCode(code, fmd);
-        if(fmd.isVersion()==true && _addVersionInitFlag){
+        if(fmd.isVersion() && _addVersionInitFlag){
             // if we are setting the version, flip the versionInit flag to true
             loadManagedInstance(code, true);
             code.constant().setValue(1);

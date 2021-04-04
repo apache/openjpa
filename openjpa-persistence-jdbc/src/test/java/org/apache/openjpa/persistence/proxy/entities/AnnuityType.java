@@ -19,5 +19,5 @@
 package org.apache.openjpa.persistence.proxy.entities;
 
 public enum AnnuityType {
-    BASIC, EQUITY, FIXED;
+    BASIC, EQUITY, FIXED
 }

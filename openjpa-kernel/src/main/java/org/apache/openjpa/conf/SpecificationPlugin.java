@@ -72,7 +72,7 @@ public class SpecificationPlugin extends ObjectValue implements ValueListener {
             super.set(null);
             return;
         }
-        if (obj instanceof Specification == false) {
+        if (!(obj instanceof Specification)) {
             throw new UserException(_loc.get("spec-wrong-obj", obj,
                 obj.getClass())).setFatal(true);
         }

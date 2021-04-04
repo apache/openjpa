@@ -187,7 +187,7 @@ public class IteratorChain<E> implements Iterator<E> {
      * Checks whether the iterator chain is now locked and in use.
      */
     private void checkLocked() {
-        if (isLocked == true) {
+        if (isLocked) {
             throw new UnsupportedOperationException(
                     "IteratorChain cannot be changed after the first use of a method from the Iterator interface");
         }
@@ -198,7 +198,7 @@ public class IteratorChain<E> implements Iterator<E> {
      * from all Iterator interface methods.
      */
     private void lockChain() {
-        if (isLocked == false) {
+        if (!isLocked) {
             isLocked = true;
         }
     }
@@ -219,7 +219,7 @@ public class IteratorChain<E> implements Iterator<E> {
             lastUsedIterator = currentIterator;
         }
 
-        while (currentIterator.hasNext() == false && !iteratorChain.isEmpty()) {
+        while (!currentIterator.hasNext() && !iteratorChain.isEmpty()) {
             currentIterator = iteratorChain.remove();
         }
     }

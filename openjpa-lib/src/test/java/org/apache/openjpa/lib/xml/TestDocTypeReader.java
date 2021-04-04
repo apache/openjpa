@@ -55,7 +55,7 @@ public class TestDocTypeReader {
 
     @Before
     public void setUp() {
-        StringBuffer docType = new StringBuffer();
+        StringBuilder docType = new StringBuilder();
         docType.append("<!DOCTYPE foo [\n");
         docType.append("\t<!ELEMENT foo (bar)>\n");
         docType.append("\t<!ELEMENT bar EMPTY>\n");
@@ -64,19 +64,19 @@ public class TestDocTypeReader {
         docType.append("]>\n");
         _docType = docType.toString();
 
-        StringBuffer expectedXML = new StringBuffer();
+        StringBuilder expectedXML = new StringBuilder();
         String header = "<?xml version=\"1.0\"?>\n";
         String comment = "<!-- some < ... > <! funky -> - comment -->\n";
         expectedXML.append(header);
         expectedXML.append(comment);
         expectedXML.append(docType.toString());
 
-        StringBuffer xmlWithDocType = new StringBuffer();
+        StringBuilder xmlWithDocType = new StringBuilder();
         xmlWithDocType.append(header);
         xmlWithDocType.append(comment);
         xmlWithDocType.append(docType.toString());
 
-        StringBuffer validXML = new StringBuffer();
+        StringBuilder validXML = new StringBuilder();
         validXML.append("<foo>\n");
         validXML.append("\t<bar attr=\"newValue\"/>\n");
         validXML.append("</foo>");
@@ -86,18 +86,18 @@ public class TestDocTypeReader {
         _expectedXML = expectedXML.toString();
         _xmlWithDocType = xmlWithDocType.toString();
 
-        StringBuffer invalidXML = new StringBuffer();
+        StringBuilder invalidXML = new StringBuilder();
         invalidXML.append("<?xml version=\"1.0\"?>\n");
         invalidXML.append("<foo>\n");
         invalidXML.append("\t<xxx />\n");
         invalidXML.append("</foo>");
         _invalidXML = invalidXML.toString();
 
-        StringBuffer expectedHTML = new StringBuffer();
+        StringBuilder expectedHTML = new StringBuilder();
         header = "   \n  ";
         expectedHTML.append(header);
         expectedHTML.append(docType.toString());
-        StringBuffer validHTML = new StringBuffer();
+        StringBuilder validHTML = new StringBuilder();
         validHTML.append("some junk <html><body></body></html>  ");
         expectedHTML.append(validHTML.toString());
         _validHTML = header + validHTML.toString();

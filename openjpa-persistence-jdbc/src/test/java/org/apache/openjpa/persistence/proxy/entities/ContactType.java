@@ -19,5 +19,5 @@
 package org.apache.openjpa.persistence.proxy.entities;
 
 public enum ContactType {
-	HOME, BUSINESS, OTHER;
+	HOME, BUSINESS, OTHER
 }

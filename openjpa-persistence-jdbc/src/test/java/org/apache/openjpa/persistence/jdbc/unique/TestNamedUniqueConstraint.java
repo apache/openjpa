@@ -102,7 +102,7 @@ public class TestNamedUniqueConstraint extends SQLListenerTestCase {
         for (int i = 2; i < tokens.size(); i++) {
             tokens1.add(tokens.get(i));
         }
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (String token : tokens1) {
             buf.append(token).append(" ");
         }

@@ -37,7 +37,7 @@ public class Slice implements Comparable<Slice>,Serializable {
         ACTIVE,
         INACTIVE, // configured but not available
         EXCLUDED  // configured but not used
-    };
+    }
 
     private final String name;
     private transient final OpenJPAConfiguration conf;

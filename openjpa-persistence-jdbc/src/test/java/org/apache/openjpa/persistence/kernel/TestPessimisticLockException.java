@@ -76,7 +76,7 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
             if (t1.gotPLEx && t2.gotPLEx) {
                 fail("Both threads got a PersistenceLockException!  "
                     + "Only one thread should have received a PersistenceLockException");
-            } else if (t1.gotPLEx == false && t2.gotPLEx == false) {
+            } else if (!t1.gotPLEx && !t2.gotPLEx) {
                 fail("Neither thread got a PersistenceLockException!  "
                     + "One thread should have received a PersistenceLockException");
             } else if (t1.count < 2 && t2.count < 2) {

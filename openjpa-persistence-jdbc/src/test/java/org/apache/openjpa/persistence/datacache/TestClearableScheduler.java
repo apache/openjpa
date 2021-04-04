@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestClearableScheduler extends SingleEMFTestCase {
 
     private static String getMinutesString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < 60; i++) {
             if (i % 2 == 0)
                 buf.append(i).append(',');

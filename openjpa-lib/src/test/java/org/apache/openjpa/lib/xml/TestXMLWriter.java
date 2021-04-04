@@ -58,7 +58,7 @@ public class TestXMLWriter {
         trans.transform(source, result);
 
         // read the correct output into a buffer
-        StringBuffer correct = new StringBuffer();
+        StringBuilder correct = new StringBuilder();
         InputStreamReader reader = new InputStreamReader
             (getClass().getResourceAsStream("formatted-result.xml"));
         for (int c; (c = reader.read()) != -1; correct.append((char) c)) ;

@@ -72,9 +72,9 @@ public class Customer {
 		}
 	}
 
-	public enum CreditRating { POOR, GOOD, EXCELLENT };
+	public enum CreditRating { POOR, GOOD, EXCELLENT }
 
-	@EmbeddedId
+    @EmbeddedId
 	CustomerKey cid;
 	@Column(length=30)
 	String name;

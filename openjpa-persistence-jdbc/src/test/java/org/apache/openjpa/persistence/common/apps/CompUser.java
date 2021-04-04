@@ -132,7 +132,7 @@ public class CompUser {
 
     public enum CreditRating {
         POOR, GOOD, EXCELLENT
-    };
+    }
 
     public String[] getNicknames() {
         return nicknames;

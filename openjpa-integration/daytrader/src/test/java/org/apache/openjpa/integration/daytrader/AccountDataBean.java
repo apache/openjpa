@@ -283,7 +283,7 @@ public class AccountDataBean implements Serializable {
 
     public void login(String password) {
         AccountProfileDataBean profile = getProfile();
-        if ((profile == null) || (profile.getPassword().equals(password) == false)) {
+        if ((profile == null) || (!profile.getPassword().equals(password))) {
             String error = "AccountBean:Login failure for account: " + getAccountID() +
                     ((profile == null) ? "null AccountProfile" :
                             "\n\tIncorrect password-->" + profile.getUserID() + ":" + profile.getPassword());

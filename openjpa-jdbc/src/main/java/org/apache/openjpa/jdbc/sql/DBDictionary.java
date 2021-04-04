@@ -336,7 +336,8 @@ public class DBDictionary
      * database will become '2010-01-01 12:00:00.687' in the Date field
      * of the entity.
      */
-    public enum DateMillisecondBehaviors { DROP, ROUND, RETAIN };
+    public enum DateMillisecondBehaviors { DROP, ROUND, RETAIN }
+
     private DateMillisecondBehaviors dateMillisecondBehavior;
 
     /**

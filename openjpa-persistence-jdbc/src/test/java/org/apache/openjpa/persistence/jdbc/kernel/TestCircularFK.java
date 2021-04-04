@@ -108,13 +108,13 @@ public class TestCircularFK extends BaseJDBCTest{
         CircularFKPC pc1 = (CircularFKPC) pm.find(CircularFKPC.class,_oid1);
         CircularFKPC2 pc2 = (CircularFKPC2) pm.find(CircularFKPC2.class,_oid2);
 
-        startTx(pm);;
+        startTx(pm);
         CircularFKPC2 pc3 = new CircularFKPC2();
         pc3.setStringField("pc3");
         pc3.setFKField(pc1);
         pc1.setFKField(pc3);
         pc2.setFKField(null);
-        endTx(pm);;
+        endTx(pm);
         pm.close();
 
         pm = getPM();

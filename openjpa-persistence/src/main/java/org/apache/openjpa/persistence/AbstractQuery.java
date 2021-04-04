@@ -125,8 +125,8 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public OpenJPAQuery<X> setParameter(int pos, Object value) {
-        if (_convertPositionalParams == true) {
-            return setParameter("_" + String.valueOf(pos), value);
+        if (_convertPositionalParams) {
+            return setParameter("_" + pos, value);
         }
 
         assertOpen();
@@ -322,8 +322,8 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public <T> Parameter<T> getParameter(int pos, Class<T> type) {
-        if (_convertPositionalParams == true) {
-            return getParameter("_" + String.valueOf(pos), type);
+        if (_convertPositionalParams) {
+            return getParameter("_" + pos, type);
         }
         Parameter<?> param = getParameter(pos);
         if (param.getParameterType().isAssignableFrom(type))
@@ -419,8 +419,8 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
      */
     @Override
     public Parameter<?> getParameter(int pos) {
-        if (_convertPositionalParams == true) {
-            return getParameter("_" + String.valueOf(pos));
+        if (_convertPositionalParams) {
+            return getParameter("_" + pos);
         }
         Parameter<?> param = getDeclaredParameters().get(pos);
         if (param == null)

@@ -91,7 +91,7 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      */
     @Override
     public Bindable<X> getModel() {
-        if (_member instanceof Bindable<?> == false) {
+        if (!(_member instanceof Bindable<?>)) {
             throw new IllegalArgumentException(this + " represents a basic path and not a bindable");
         }
         return (Bindable<X>)_member;

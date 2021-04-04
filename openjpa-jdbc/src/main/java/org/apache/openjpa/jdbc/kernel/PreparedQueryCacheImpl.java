@@ -333,7 +333,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
      *            - If true, a read lock will be acquired. Else a write lock will be acquired.
      */
     protected void lock(boolean readOnly) {
-        if (readOnly == true) {
+        if (readOnly) {
             _readLock.lock();
         } else {
             _writeLock.lock();
@@ -345,7 +345,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
      *            - If true, the read lock will be released. Else a write lock will be released.
      */
     protected void unlock(boolean readOnly) {
-        if (readOnly == true) {
+        if (readOnly) {
             _readLock.unlock();
         } else {
             _writeLock.unlock();

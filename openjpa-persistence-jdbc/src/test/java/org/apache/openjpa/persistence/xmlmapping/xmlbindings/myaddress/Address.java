@@ -148,7 +148,7 @@ public class Address {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.name);
         for (int i=0; i< this.getStreet().size(); i++)
                sb.append("\n         "+this.getStreet().get(i));

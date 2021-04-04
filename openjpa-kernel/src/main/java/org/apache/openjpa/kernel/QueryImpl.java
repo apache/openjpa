@@ -1258,7 +1258,7 @@ public class QueryImpl implements Query {
             s = toString();
 
         String msg = "executing-query";
-        if (params.isEmpty() == false) {
+        if (!params.isEmpty()) {
             msg = "executing-query-with-params";
         }
 

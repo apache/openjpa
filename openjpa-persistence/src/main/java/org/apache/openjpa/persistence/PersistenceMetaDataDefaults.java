@@ -701,7 +701,7 @@ public class PersistenceMetaDataDefaults
     public Member getMemberByProperty(ClassMetaData meta, String property,
     	int access, boolean applyDefaultRule) {
     	Class<?> cls = meta.getDescribedType();
-        Field field = Reflection.findField(cls, property, false);;
+        Field field = Reflection.findField(cls, property, false);
         Method getter = Reflection.findGetter(cls, property, false);
         Method setter = Reflection.findSetter(cls, property, false);
         int accessCode = AccessCode.isUnknown(access) ? meta.getAccessType() :

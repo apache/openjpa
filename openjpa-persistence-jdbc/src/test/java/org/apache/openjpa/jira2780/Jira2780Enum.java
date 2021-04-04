@@ -22,5 +22,5 @@
 package org.apache.openjpa.jira2780;
 
 public enum Jira2780Enum {
-    A, B, C;
+    A, B, C
 }

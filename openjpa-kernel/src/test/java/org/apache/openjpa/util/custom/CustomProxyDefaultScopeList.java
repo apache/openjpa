@@ -39,5 +39,5 @@ class CustomProxyDefaultScopeList<E> extends AbstractSequentialList<E> {
 
     public static Object instance() {
         return new CustomProxyDefaultScopeList<Integer>();
-    };
+    }
 }

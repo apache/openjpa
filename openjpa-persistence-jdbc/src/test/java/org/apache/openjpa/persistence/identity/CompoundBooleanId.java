@@ -32,7 +32,7 @@ public class CompoundBooleanId {
     public int hashCode() {
         int result = 1;
         result = result + ((stringId == null) ? 0 : stringId.hashCode());
-        result = result + ((booleanId == false) ? 0 : 1);
+        result = result + ((!booleanId) ? 0 : 1);
         return result;
     }
 

@@ -195,10 +195,10 @@ public class TestEagerDistinct
         pc3.getHelperCollection().add(new HelperPC());
         eager2.getRecurseCollection().add(pc3);
 
-        startTx(pm);;
+        startTx(pm);
         pm.persist(eager1);
         pm.persist(eager2);
-        endTx(pm);;
+        endTx(pm);
         // make sure subclasses selected, etc
         //FIXME jthomas
         pm.createNativeQuery("",EagerPC.class).getResultList();

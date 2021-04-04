@@ -97,7 +97,7 @@ public class TestQueryEscapeCharacters
         JDBCConfiguration conf = (JDBCConfiguration)ojpaEmf.getConfiguration();
 
         if (conf.getDBDictionaryInstance().
-                requiresSearchStringEscapeForLike == true) {
+                requiresSearchStringEscapeForLike) {
             return;
         }
 

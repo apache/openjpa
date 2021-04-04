@@ -79,7 +79,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         Query q = em.createQuery(jpql);
         List<FeatureXml> fList = (List<FeatureXml>) q.getResultList();
         for (FeatureXml f : fList) {
-            List<AttributeXml> aList = f.getAttributes();;
+            List<AttributeXml> aList = f.getAttributes();
             assertEquals(1, aList.size());
         }
         em.close();

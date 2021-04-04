@@ -63,8 +63,8 @@ public class UnenhancedCompoundPKFieldAccessSuperclass {
 
         @Override
         public String toString() {
-            return String.valueOf(id0)
-                + "::" + String.valueOf(id1);
+            return id0
+                + "::" + id1;
         }
 
         @Override

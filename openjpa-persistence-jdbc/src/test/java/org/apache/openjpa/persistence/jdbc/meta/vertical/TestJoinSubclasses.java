@@ -75,7 +75,7 @@ public class TestJoinSubclasses
        deleteAll(JoinSubclassBase.class);
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         JoinSubclassBase base = new JoinSubclassBase();
         base.setBaseField(1);
         pm.persist(base);
@@ -91,7 +91,7 @@ public class TestJoinSubclasses
         sub2.setBaseSubFlatField(5);
         pm.persist(sub2);
 
-        endTx(pm);;
+        endTx(pm);
         _base = pm.getObjectId(base);
         _baseSubFlat = pm.getObjectId(sub2);
         pm.close();

@@ -89,7 +89,7 @@ public class TradeAction extends TradeJPADirect {
         setAttribute(sb, "Page", "Account Update");
         // First verify input data
         boolean doUpdate = true;
-        if (password.equals(cpassword) == false) {
+        if (!password.equals(cpassword)) {
             results = "Update profile error: passwords do not match";
             doUpdate = false;
         } else if (password.length() <= 0 || fullName.length() <= 0

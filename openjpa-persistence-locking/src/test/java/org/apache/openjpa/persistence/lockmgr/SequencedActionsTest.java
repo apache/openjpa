@@ -255,7 +255,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         TestLockMode,      // (int id, LockModeType lockMode)
 
         Test,              // Open-ended testing actions
-    };
+    }
 
     public void launchActionSequence(String testName, Object parameters,
         Object[][]... actions) {
@@ -1045,7 +1045,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
     protected enum DBType {
         access, db2, derby, empress, foxpro, h2, hsql, informix, ingres, jdatastore, mariadb, mysql, oracle, pointbase,
         postgres, sqlserver, sybase
-    };
+    }
 
     protected DBType getDBType(EntityManager em) {
         JDBCConfigurationImpl conf = (JDBCConfigurationImpl) getConfiguration(em);

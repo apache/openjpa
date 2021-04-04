@@ -306,10 +306,10 @@ public abstract class ResultListTest extends AbstractTestCase {
             ResultList list = getResultList(rops[i]);
             try {
                 List subList = list.subList(0, 0);
-                if (subListSupported == false)
+                if (!subListSupported)
                     fail("Should not support subList.");
             } catch (UnsupportedOperationException e) {
-                if (subListSupported == true)
+                if (subListSupported)
                     fail("Should support subList.");
             }
         }

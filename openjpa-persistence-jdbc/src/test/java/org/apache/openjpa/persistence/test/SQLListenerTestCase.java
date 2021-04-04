@@ -211,7 +211,7 @@ public abstract class SQLListenerTestCase
     }
 
     public String toString(List<String> list) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (String s : list)
             buf.append(s).append("\r\n");
         return buf.toString();
@@ -230,7 +230,7 @@ public abstract class SQLListenerTestCase
     public enum SQLAssertType {
         SQL, NotSQL, ContainsSQL, AllSQLInOrder, AllExactSQLInOrder,
         AllSQLAnyOrder, NoneSQLAnyOrder, AnySQLAnyOrder
-    };
+    }
 
     public class SQLAssertions {
         SQLAssertType type;

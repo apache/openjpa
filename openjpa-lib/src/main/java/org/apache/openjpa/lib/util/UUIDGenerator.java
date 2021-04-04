@@ -99,7 +99,7 @@ public class UUIDGenerator {
      * the node portion of the UUID using the IP address.
      */
     private static synchronized void initializeForType1() {
-        if (type1Initialized == true) {
+        if (type1Initialized) {
             return;
         }
         // note that secure random is very slow the first time
@@ -140,7 +140,7 @@ public class UUIDGenerator {
      * Creates a type 1 UUID
      */
     public static byte[] createType1() {
-        if (type1Initialized == false) {
+        if (!type1Initialized) {
             initializeForType1();
         }
         // set ip addr

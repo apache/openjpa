@@ -2362,13 +2362,11 @@ public class FieldMetaData
                             cls, memberName, parameterTypes));
                 }
             } catch (SecurityException e) {
-                IOException ioe = new IOException(e.getMessage());
-                ioe.initCause(e);
+                IOException ioe = new IOException(e.getMessage(), e);
                 throw ioe;
             } catch (PrivilegedActionException pae) {
                 IOException ioe = new IOException(
-                    pae.getException().getMessage());
-                ioe.initCause(pae);
+                    pae.getException().getMessage(), pae);
                 throw ioe;
             }
         }
@@ -2465,7 +2463,7 @@ public class FieldMetaData
     	}
     	return _relationType;
     }
-    private class Unknown{};
+    private class Unknown{}
 
     public boolean isDelayCapable() {
         if (_delayCapable != null) {

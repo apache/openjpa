@@ -117,23 +117,23 @@ public class TestClassDBSequenceFactory
     public void testNoSequenceHolesOnAttach() {
         PerClassTestObject3 pc = new PerClassTestObject3();
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         pm.persist(pc);
-        endTx(pm);;
+        endTx(pm);
         long id1 = pc.getId();
 
         pc = new PerClassTestObject3();
-        startTx(pm);;
+        startTx(pm);
         pm.persist(pc);
         long id2 = pc.getId();
-        endTx(pm);;
+        endTx(pm);
         pm.close();
 
         pc = new PerClassTestObject3();
         pm = (OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         pm.persist(pc);
-        endTx(pm);;
+        endTx(pm);
         long id3 = pc.getId();
         pm.close();
 

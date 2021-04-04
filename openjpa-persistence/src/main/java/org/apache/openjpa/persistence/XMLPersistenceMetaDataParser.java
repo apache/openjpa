@@ -1955,7 +1955,7 @@ public class XMLPersistenceMetaDataParser
             lm = lm.toLowerCase();
             if (lm.contains("pessimistic")) {
                 if (lmt == LockModeType.NONE && !optimistic) {
-                    if (log != null && log.isWarnEnabled() == true) {
+                    if (log != null && log.isWarnEnabled()) {
                         log.warn(_loc.get("override-named-query-lock-mode", new String[] { "xml", queryName,
                             _cls.getName() }));
                     }

@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import static java.util.Collections.singleton;
-
 import java.security.AccessController;
 import java.util.Collections;
 import java.util.HashSet;

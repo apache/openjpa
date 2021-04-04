@@ -444,7 +444,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      * Support method to get a random String for testing.
      */
     public static String randomString(int len) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < (int) (Math.random() * len) + 1; i++)
             buf.append(randomChar());
         return buf.toString();
@@ -454,7 +454,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      * Support method to get a random clob for testing.
      */
     public static String randomClob() {
-        StringBuffer sbuf = new StringBuffer();
+        StringBuilder sbuf = new StringBuilder();
         while (sbuf.length() < (5 * 1024)) // at least 5K
         {
             sbuf.append(randomString(1024));
@@ -832,7 +832,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
                         // get to everyone starting at the same time, the
                         // better chance we have for identifying MT problems.
                         while (System.currentTimeMillis() < startMillis)
-                            yield();
+                            Thread.yield();
 
                         int thisIteration = 1;
                         try {
@@ -980,7 +980,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
             // skip our own methods!
             if (shortMethodName.equals("callingMethod"))
                 continue;
-            if (exclude != null && shortMethodName.equals(exclude))
+            if (shortMethodName.equals(exclude))
                 continue;
 
             return shortMethodName;

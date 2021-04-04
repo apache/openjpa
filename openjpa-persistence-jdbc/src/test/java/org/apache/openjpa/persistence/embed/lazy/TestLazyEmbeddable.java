@@ -156,7 +156,7 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
 
 
     private static String toString(List<String> list) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (String s : list)
             buf.append(s).append("\r\n");
         return buf.toString();

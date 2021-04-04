@@ -860,10 +860,10 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
 
         @Override
         public boolean remove(final Object obj) {
-            if (obj instanceof Map.Entry == false) {
+            if (!(obj instanceof Map.Entry)) {
                 return false;
             }
-            if (contains(obj) == false) {
+            if (!contains(obj)) {
                 return false;
             }
             final Entry<?, ?> entry = (Entry<?, ?>) obj;
@@ -1110,7 +1110,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
             if (obj == this) {
                 return true;
             }
-            if (obj instanceof Map.Entry == false) {
+            if (!(obj instanceof Map.Entry)) {
                 return false;
             }
             final Entry<?, ?> other = (Entry<?, ?>) obj;
@@ -1316,7 +1316,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
         if (obj == this) {
             return true;
         }
-        if (obj instanceof Map == false) {
+        if (!(obj instanceof Map)) {
             return false;
         }
         final Map<?,?> map = (Map<?,?>) obj;
@@ -1329,11 +1329,11 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
                 final Object key = it.next();
                 final Object value = it.getValue();
                 if (value == null) {
-                    if (map.get(key) != null || map.containsKey(key) == false) {
+                    if (map.get(key) != null || !map.containsKey(key)) {
                         return false;
                     }
                 } else {
-                    if (value.equals(map.get(key)) == false) {
+                    if (!value.equals(map.get(key))) {
                         return false;
                     }
                 }

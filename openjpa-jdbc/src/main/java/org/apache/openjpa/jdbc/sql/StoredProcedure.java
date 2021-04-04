@@ -66,7 +66,7 @@ public class StoredProcedure {
      */
     public enum PARAM {UNKNOW, IN, INOUT, RESULT, OUT, RETURN}
 
-    public enum SQL {NONE,MODIFY,READ, CONTAINS};
+    public enum SQL {NONE,MODIFY,READ, CONTAINS}
 
     /**
      * Create a procedure of the given name.

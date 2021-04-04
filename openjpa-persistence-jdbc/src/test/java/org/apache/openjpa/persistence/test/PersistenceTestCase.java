@@ -173,7 +173,7 @@ public abstract class PersistenceTestCase
         }
 
         if (!types.isEmpty()) {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             for (Class<?> c : types) {
                 if (buf.length() > 0)
                     buf.append(";");

@@ -49,7 +49,7 @@ public class TestJDBCStoreOptSelect extends SQLListenerTestCase {
         try {
             sql.clear();
 
-            if (store instanceof JDBCStoreManager == false) {
+            if (!(store instanceof JDBCStoreManager)) {
                 fail("StoreManager is not an instanceof JDBCStoreManager");
             }
             // Set this JDBCFetchPlan property so that we will select FKs for fields that are in the DFG, but not

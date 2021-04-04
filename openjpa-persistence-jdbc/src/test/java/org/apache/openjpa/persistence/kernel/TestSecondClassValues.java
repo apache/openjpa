@@ -616,7 +616,7 @@ public class TestSecondClassValues extends BaseKernelTest {
 
         }
 
-        StringBuffer buf = new StringBuffer().append("[")
+        StringBuilder buf = new StringBuilder().append("[")
             .append("(size=").append(list.size()).append(")");
 
         Iterator it = list.iterator();
@@ -630,7 +630,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     private String dumpDates(Collection coll) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (Iterator i = coll.iterator(); i.hasNext();)
             buf.append(((Date) i.next()).getTime()).append(
                 i.hasNext() ? "," : "");

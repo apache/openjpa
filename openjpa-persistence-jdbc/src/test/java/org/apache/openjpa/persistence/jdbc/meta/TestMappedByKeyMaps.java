@@ -128,9 +128,9 @@ public class TestMappedByKeyMaps
         try {
             OpenJPAEntityManager pm =
                 (OpenJPAEntityManager)currentEntityManager();
-            startTx(pm);;
+            startTx(pm);
             pm.persist(pc);
-            endTx(pm);;
+            endTx(pm);
             Object oid = pm.getObjectId(pc);
 
             assertFalse(pc.getHelpers().containsKey("foo"));
@@ -140,7 +140,7 @@ public class TestMappedByKeyMaps
             assertEquals(h2, pc.getHelpers().get("h2"));
             pm.close();
 
-            pm = (OpenJPAEntityManager)currentEntityManager();;
+            pm = (OpenJPAEntityManager)currentEntityManager();
             pc = (MappedByMapPC) pm.getObjectId(oid);
             if (lrs)
                 assertTrue(pc.getHelpers() instanceof AbstractLRSProxyMap);
@@ -173,7 +173,7 @@ public class TestMappedByKeyMaps
                     getStringField());
             pm.close();
 
-            pm = (OpenJPAEntityManager)currentEntityManager();;
+            pm = (OpenJPAEntityManager)currentEntityManager();
             pc = (MappedByMapPC) pm.getObjectId(oid);
             assertEquals(3, pc.getHelpers().size());
             assertFalse(pc.getHelpers().containsKey("h1"));
@@ -231,7 +231,7 @@ public class TestMappedByKeyMaps
         pm.commit();
         pm.close();
 
-        pm = (OpenJPAEntityManager)currentEntityManager();;
+        pm = (OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createNativeQuery("stringField == 'h2'",
                 HelperPC.class);
         //FIXME jthomas

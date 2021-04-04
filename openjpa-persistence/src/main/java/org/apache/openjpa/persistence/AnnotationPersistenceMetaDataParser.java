@@ -1927,7 +1927,7 @@ public class AnnotationPersistenceMetaDataParser
                 lm = lm.toLowerCase();
                 if (lm.contains("pessimistic")) {
                     if (lmt == LockModeType.NONE && !optimistic) {
-                        if (_log.isWarnEnabled() == true) {
+                        if (_log.isWarnEnabled()) {
                             _log.warn(_loc.get("override-named-query-lock-mode", new String[] { "annotation",
                                 query.name(), _cls.getName() }));
                         }

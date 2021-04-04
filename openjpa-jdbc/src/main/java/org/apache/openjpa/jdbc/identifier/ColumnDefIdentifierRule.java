@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.identifier;
 
-import java.util.Set;
-
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 
 /**

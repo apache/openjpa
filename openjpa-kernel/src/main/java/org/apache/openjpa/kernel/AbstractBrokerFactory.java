@@ -896,7 +896,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
 
         // Don't get a MetaDataRepository yet if not preloading because it is possible that someone has extended the MDR
         // and the extension hasn't been plugged in yet.
-        if (MetaDataRepository.needsPreload(_conf) == true) {
+        if (MetaDataRepository.needsPreload(_conf)) {
             // Don't catch any exceptions here because we want to fail-fast if something bad happens when we're
             // preloading.
             MetaDataRepository mdr = _conf.getMetaDataRepositoryInstance();

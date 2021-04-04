@@ -160,7 +160,7 @@ class CriteriaExpressionBuilder {
         exps.grouping = new Value[groupByCount];
         for (int i = 0; i < groupByCount; i++) {
             Expression<?> groupBy = groups.get(i);
-            exps.grouping[i] = Expressions.toValue((ExpressionImpl<?>)groupBy, factory, q);;
+            exps.grouping[i] = Expressions.toValue((ExpressionImpl<?>)groupBy, factory, q);
         }
 
         exps.having = having == null ? null : having.toKernelExpression(factory, q);

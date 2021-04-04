@@ -478,7 +478,7 @@ public class EmbedFieldStrategy
         }
 
         // A field expected to be loaded eagerly was missing from the ResultSet.
-        if (containsUnloadedEagerField == true) {
+        if (containsUnloadedEagerField) {
             return false;
         }
 

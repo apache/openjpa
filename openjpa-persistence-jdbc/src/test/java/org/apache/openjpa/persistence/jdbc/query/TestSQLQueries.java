@@ -79,9 +79,9 @@ public class TestSQLQueries
         pc1.setSelfOneOne(pc2);
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         pm.persist(pc1);
-        endTx(pm);;
+        endTx(pm);
 
         JDBCConfiguration conf =
             (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pm)

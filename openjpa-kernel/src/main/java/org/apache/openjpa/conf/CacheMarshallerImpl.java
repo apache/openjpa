@@ -253,8 +253,7 @@ public class CacheMarshallerImpl
         } catch (IOException ioe) {
             IllegalStateException ise = new IllegalStateException(
                 _loc.get("cache-marshaller-bad-url", getId(),
-                    _inputResourceLocation).getMessage());
-            ise.initCause(ioe);
+                    _inputResourceLocation).getMessage(), ioe);
             throw ise;
         }
     }

@@ -310,7 +310,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             for(int i = 0; i < oids.size(); i++) {
                 Object oid = oids.get(i);
                 // Only check the cache if we haven't found the current oid.
-                if (edata.get(i) == false && cache.contains(oid)) {
+                if (!edata.get(i) && cache.contains(oid)) {
                     edata.set(i);
                 }
             }

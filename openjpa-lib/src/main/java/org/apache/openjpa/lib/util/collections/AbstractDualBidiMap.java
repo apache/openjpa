@@ -421,7 +421,7 @@ public abstract class AbstractDualBidiMap<K, V> implements BidiMap<K, V> {
             boolean modified = false;
             final Iterator<E> it = iterator();
             while (it.hasNext()) {
-                if (coll.contains(it.next()) == false) {
+                if (!coll.contains(it.next())) {
                     it.remove();
                     modified = true;
                 }
@@ -508,7 +508,7 @@ public abstract class AbstractDualBidiMap<K, V> implements BidiMap<K, V> {
 
         @Override
         public void remove() {
-            if (canRemove == false) {
+            if (!canRemove) {
                 throw new IllegalStateException("Iterator remove() can only be called once after next()");
             }
             final Object value = parent.normalMap.get(lastKey);
@@ -593,7 +593,7 @@ public abstract class AbstractDualBidiMap<K, V> implements BidiMap<K, V> {
 
         @Override
         public void remove() {
-            if (canRemove == false) {
+            if (!canRemove) {
                 throw new IllegalStateException("Iterator remove() can only be called once after next()");
             }
             super.remove(); // removes from maps[0]
@@ -628,7 +628,7 @@ public abstract class AbstractDualBidiMap<K, V> implements BidiMap<K, V> {
 
         @Override
         public boolean remove(final Object obj) {
-            if (obj instanceof Map.Entry == false) {
+            if (!(obj instanceof Map.Entry)) {
                 return false;
             }
             final Entry<?, ?> entry = (Entry<?, ?>) obj;
@@ -678,7 +678,7 @@ public abstract class AbstractDualBidiMap<K, V> implements BidiMap<K, V> {
 
         @Override
         public void remove() {
-            if (canRemove == false) {
+            if (!canRemove) {
                 throw new IllegalStateException("Iterator remove() can only be called once after next()");
             }
             // store value as remove may change the entry in the decorator (eg.TreeMap)
@@ -762,7 +762,7 @@ public abstract class AbstractDualBidiMap<K, V> implements BidiMap<K, V> {
 
         @Override
         public void remove() {
-            if (canRemove == false) {
+            if (!canRemove) {
                 throw new IllegalStateException("Iterator remove() can only be called once after next()");
             }
             // store value as remove may change the entry in the decorator (eg.TreeMap)

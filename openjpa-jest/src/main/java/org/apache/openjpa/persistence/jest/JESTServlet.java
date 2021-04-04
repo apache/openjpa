@@ -154,7 +154,7 @@ public class JESTServlet extends HttpServlet  {
     @Override
     public void destroy() {
         _emf = null;
-        _unit = null;;
+        _unit = null;
     }
 
     private void debug(HttpServletRequest r) {

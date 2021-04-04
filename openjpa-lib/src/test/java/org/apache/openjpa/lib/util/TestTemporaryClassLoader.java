@@ -21,7 +21,6 @@ package org.apache.openjpa.lib.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

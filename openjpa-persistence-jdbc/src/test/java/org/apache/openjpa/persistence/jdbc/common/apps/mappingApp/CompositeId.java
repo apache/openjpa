@@ -77,7 +77,7 @@ public class CompositeId implements Serializable {
 	@Override
 	public boolean equals (Object other)
 	{
-		if (other instanceof CompositeId==false)
+		if (!(other instanceof CompositeId))
 			return false;
 
 		CompositeId that = (CompositeId) other;

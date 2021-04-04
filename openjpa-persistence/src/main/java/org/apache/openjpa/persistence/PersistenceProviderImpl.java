@@ -361,9 +361,9 @@ public class PersistenceProviderImpl
         OpenJPAConfiguration conf = factory.getConfiguration();
         Log log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
 
-        if (conf.getDynamicEnhancementAgent() == true) {
+        if (conf.getDynamicEnhancementAgent()) {
             boolean res = PCEnhancerAgent.loadDynamicAgent(log);
-            if (log.isInfoEnabled() && res == true ){
+            if (log.isInfoEnabled() && res){
                 log.info(_loc.get("dynamic-agent"));
             }
         }
@@ -379,7 +379,7 @@ public class PersistenceProviderImpl
         OpenJPAConfiguration conf = factory.getConfiguration();
         Log log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
 
-        if ((ValidationUtils.setupValidation(conf) == true) &&
+        if ((ValidationUtils.setupValidation(conf)) &&
                 log.isInfoEnabled()) {
             log.info(_loc.get("vlem-creation-info"));
         }

@@ -85,10 +85,10 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 		IMPLICIT_CASCADE,
 		CHILD_THEN_PARENT,
 		PARENT_THEN_CHILD
-	};
+	}
 
 
-	// The options are added in a static block, so that we can count on
+    // The options are added in a static block, so that we can count on
 	// total number of combinations before the test is set up.
 	static {
         getHelper().addOption(Key_MappingDefaults, Option_MappingDefaults);

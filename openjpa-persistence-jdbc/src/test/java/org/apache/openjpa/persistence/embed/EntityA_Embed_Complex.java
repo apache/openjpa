@@ -153,7 +153,7 @@ public class EntityA_Embed_Complex implements Serializable {
         lobs.add(lob);
     }
 
-    public enum CreditRating { POOR, GOOD, EXCELLENT };
+    public enum CreditRating { POOR, GOOD, EXCELLENT }
 
     public Embed_Embed getEmbed() {
         return embed;

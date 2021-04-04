@@ -96,7 +96,7 @@ public class TestPersistenceProductDerivation {
         // really matter since we generate a new file every time.
         boolean deleted = AccessController.doPrivileged(J2DoPrivHelper
             .deleteAction(targetFile));
-        if(deleted==false){
+        if(!deleted){
             System.out.println("The file " + targetFile + " wasn't deleted.");
         }
     }

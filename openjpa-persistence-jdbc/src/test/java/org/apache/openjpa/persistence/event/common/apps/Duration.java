@@ -182,7 +182,7 @@ public class Duration
 
         double time = 0.0;
 
-        StringBuffer buf = new StringBuffer(256);
+        StringBuilder buf = new StringBuilder(256);
 
         if (wasStarted()) {
 

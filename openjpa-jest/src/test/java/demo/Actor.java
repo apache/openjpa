@@ -46,7 +46,8 @@ import org.apache.openjpa.persistence.FetchGroups;
     })
 })
 public class Actor {
-    public static enum Gender {Male, Female};
+    public static enum Gender {Male, Female}
+
     @Id
     private String id;
     private String firstName;

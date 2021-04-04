@@ -253,7 +253,7 @@ public class FetchConfigurationImpl
 
 
     void copyHints(FetchConfiguration fetch) {
-        if (fetch instanceof FetchConfigurationImpl == false)
+        if (!(fetch instanceof FetchConfigurationImpl))
             return;
         FetchConfigurationImpl from = (FetchConfigurationImpl)fetch;
         if (from._state == null || from._state.hints == null)

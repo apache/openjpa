@@ -170,7 +170,7 @@ public class CombinatorialTestHelper {
 	 * Gets the key and values of the current options as printable string.
 	 */
 	public String getOptionsAsString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i <propertyKeys.size(); i++) {
 			String key = propertyKeys.get(i);
 			if (!runtimeKeys.get(i))

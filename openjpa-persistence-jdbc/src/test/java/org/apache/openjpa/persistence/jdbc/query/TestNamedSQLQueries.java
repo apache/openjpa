@@ -51,7 +51,7 @@ public class TestNamedSQLQueries
     public void setUp() {
        deleteAll(NamedSQL.class);
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         NamedSQL pc;
         for (int i = 0; i < 10; i++) {
             pc = new NamedSQL();
@@ -61,7 +61,7 @@ public class TestNamedSQLQueries
                 pc.setNum(i + 10);
             pm.persist(pc);
         }
-        endTx(pm);;
+        endTx(pm);
         pm.close();
     }
 

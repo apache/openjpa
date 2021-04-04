@@ -635,7 +635,7 @@ public class JDBCExpressionFactory
     }
 
     @Override
-    public Value coalesceExpression(Value[] vals) {;
+    public Value coalesceExpression(Value[] vals) {
         Object[] values = new Val[vals.length];
         for (int i = 0; i < vals.length; i++) {
             values[i] = getLiteralRawString(vals[i]);

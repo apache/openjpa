@@ -64,8 +64,7 @@ public class WASRegistryManagedRuntime extends RegistryManagedRuntime {
 
         }
         catch(Exception e ) {
-            RuntimeException re = new RuntimeException(e.getMessage());
-            re.initCause(e);
+            RuntimeException re = new RuntimeException(e.getMessage(), e);
             throw re;
         }
     }

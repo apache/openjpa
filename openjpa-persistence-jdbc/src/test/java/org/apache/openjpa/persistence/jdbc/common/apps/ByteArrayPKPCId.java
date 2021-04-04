@@ -94,7 +94,7 @@ public class ByteArrayPKPCId implements Serializable {
         if (b == null)
             return "null";
 
-        StringBuffer r = new StringBuffer(b.length * 2);
+        StringBuilder r = new StringBuilder(b.length * 2);
         for (int i = 0; i < b.length; i++)
             for (int j = 1; j >= 0; j--)
                 r.append(HEX[(b[i] >> (j * 4)) & 0xF]);

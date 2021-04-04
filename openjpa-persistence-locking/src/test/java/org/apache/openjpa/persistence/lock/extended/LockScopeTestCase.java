@@ -81,7 +81,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     protected final String DB2Lock          = DB2LockClause + "{1}";
     protected final String NoDB2Lock        = DB2LockClause + "{0}";
 
-    protected List<String> empTableName = new ArrayList<>();;
+    protected List<String> empTableName = new ArrayList<>();
 
     protected Map<String, Object> normalProps;
     protected Map<String, Object> extendedProps;
@@ -123,7 +123,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     protected enum DBType {
         access, db2, derby, empress, foxpro, h2, hsql, informix, ingres, jdatastore, mariadb, mysql, oracle, pointbase,
         postgres, sqlserver, sybase
-    };
+    }
 
     protected DBType getDBType(EntityManager em) {
         JDBCConfigurationImpl conf = (JDBCConfigurationImpl) getConfiguration(em);

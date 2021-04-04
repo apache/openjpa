@@ -3018,7 +3018,7 @@ public class SelectImpl
         @Override
         public String toString() {
             return "PathJoinsImpl<" + hashCode() + ">: "
-                + String.valueOf(path);
+                + path;
         }
 
     @Override

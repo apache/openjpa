@@ -291,7 +291,7 @@ public class DetachManager
             _copy = false;
         }
         else {
-            _copy = compatibility.getCopyOnDetach();;
+            _copy = compatibility.getCopyOnDetach();
         }
     }
 

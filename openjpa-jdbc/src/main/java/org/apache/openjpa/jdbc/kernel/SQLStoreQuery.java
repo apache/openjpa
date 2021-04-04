@@ -281,7 +281,7 @@ public class SQLStoreQuery
             PreparedStatement stmnt, SQLBuffer buf)
             throws SQLException {
             int count = 0;
-            if (_call && stmnt.execute() == false) {
+            if (_call && !stmnt.execute()) {
                 count = stmnt.getUpdateCount();
             }
             else {

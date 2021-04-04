@@ -60,6 +60,6 @@ public class Item4 {
         return images.get(cat);
     }
 
-    public enum Catagory { A1, A2, A3, A4 };
+    public enum Catagory { A1, A2, A3, A4 }
 
 }

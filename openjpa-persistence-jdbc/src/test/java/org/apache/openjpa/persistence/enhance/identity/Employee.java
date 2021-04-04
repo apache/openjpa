@@ -74,7 +74,7 @@ public class Employee {
         return true;
     }
 
-    public enum EmpType { A1, A2, A3, A4 };
+    public enum EmpType { A1, A2, A3, A4 }
 
 
 }

@@ -32,7 +32,7 @@ import java.util.Map;
 import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.ArgumentException;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * Executes query.

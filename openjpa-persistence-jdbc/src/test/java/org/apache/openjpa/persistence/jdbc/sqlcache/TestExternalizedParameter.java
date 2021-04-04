@@ -95,7 +95,7 @@ public class TestExternalizedParameter extends TestCase {
         if (userObject == null || !userObject.getClass().isArray() || ((Object[])userObject).length != 2)
             return null;
         Object executor = ((Object[])userObject)[1];
-        if (executor instanceof StoreQuery.Executor == false)
+        if (!(executor instanceof StoreQuery.Executor))
             return null;
         return ((StoreQuery.Executor)executor).getQueryExpressions();
     }

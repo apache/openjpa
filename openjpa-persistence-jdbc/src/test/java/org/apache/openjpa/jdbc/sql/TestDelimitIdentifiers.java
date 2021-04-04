@@ -171,7 +171,7 @@ public class TestDelimitIdentifiers {
 
         public enum EnumType {
             Value1, Value2
-        };
+        }
 
         // @Basic types
         private short shortField;

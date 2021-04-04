@@ -27,5 +27,5 @@ package org.apache.openjpa.persistence.query;
  */
 public enum ConditionalOperator {
 	AND,
-	OR;
+	OR
 }

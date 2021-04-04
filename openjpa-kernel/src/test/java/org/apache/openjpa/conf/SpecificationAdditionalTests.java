@@ -20,10 +20,6 @@ package org.apache.openjpa.conf;
 
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
-import org.apache.openjpa.lib.meta.ClassMetaDataIterator;
-import org.apache.openjpa.meta.ClassMetaData;
 import org.junit.Assert;
 import org.apache.openjpa.conf.*;
 

@@ -288,7 +288,7 @@ public abstract class AbstractMetaDataDefaults
     public static String getFieldName(Member member) {
         if (member instanceof Field)
             return member.getName();
-        if (member instanceof Method == false)
+        if (!(member instanceof Method))
         	return null;
         Method method = (Method) member;
         String name = method.getName();

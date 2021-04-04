@@ -39,7 +39,7 @@ public class AllFieldTypes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static enum EnumType {Value1, Value2};
+    public static enum EnumType {Value1, Value2}
 
     // @Basic types
     private short shortField;

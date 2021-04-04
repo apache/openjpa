@@ -79,7 +79,7 @@ public class TestRangeQuery extends
     @SuppressWarnings("unchecked")
     private void insertManyStringList() {
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
-        startTx(em);;
+        startTx(em);
         for (int i = 0; i < 10; i++) {
             EagerOuterJoinPC pc = new EagerOuterJoinPC();
             pc.setName(String.valueOf(i));
@@ -87,7 +87,7 @@ public class TestRangeQuery extends
             pc.getStringList().add(i + ".2");
             em.persist(pc);
         }
-        endTx(em);;
+        endTx(em);
         em.close();
     }
 }

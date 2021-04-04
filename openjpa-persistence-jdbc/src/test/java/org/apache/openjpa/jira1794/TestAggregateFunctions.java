@@ -202,7 +202,6 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
                         + "(SELECT " + func + "("
                         + attr.replaceFirst("^ae.", "ae2.")
                         + ") FROM AggEntity ae2)";
-                ;
                 Query q = em.createQuery(sql);
                 verifyQueryResult(q, expectNull, isString);
             }

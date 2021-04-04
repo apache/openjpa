@@ -551,7 +551,7 @@ public class SourceAnnotationHandler
                 return (TypeMirror)target;
             }
 
-        };
+        }
         return null;
     }
 

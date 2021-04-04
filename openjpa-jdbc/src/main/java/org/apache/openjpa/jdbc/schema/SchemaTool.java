@@ -40,8 +40,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -883,7 +881,7 @@ public class SchemaTool {
             for (int i = 0; i < schemas.length; i++) {
                 tabs = schemas[i].getTables();
                 for (int j = 0; j < tabs.length; j++)
-                    if (!!isDroppable(tabs[j])
+                    if (isDroppable(tabs[j])
                         && repos.findTable(tabs[j]) == null)
                         drops.add(tabs[j]);
             }

@@ -78,7 +78,7 @@ public class TestSubclassJoinExtent
        deleteAll(Base.class);
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         Base base = new Base();
         base.setBaseField(1);
         pm.persist(base);
@@ -99,7 +99,7 @@ public class TestSubclassJoinExtent
         sub1sub2.setBaseSub1Sub2Field(6);
         pm.persist(sub1sub2);
 
-        endTx(pm);;
+        endTx(pm);
         pm.close();
     }
 

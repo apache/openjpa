@@ -193,7 +193,7 @@ class VersionAttachStrategy
                 Object pcField = Reflection.get(pc, pcVersionInitField);
                 if (pcField != null) {
                     boolean bool = (Boolean) pcField;
-                    if (bool == false) {
+                    if (!bool) {
                         // If this field if false, that means that the pcGetVersion returned a default value rather than
                         // and actual value.
                         version = null;

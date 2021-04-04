@@ -96,7 +96,7 @@ public class TradeJPADirect {
         TradeJPADirect.log = log;
         TradeJPADirect.emf = emf;
         _poolEm = poolEm;
-        if (initialized == false)
+        if (!initialized)
             init();
     }
 

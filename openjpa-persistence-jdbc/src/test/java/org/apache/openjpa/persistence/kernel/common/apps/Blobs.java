@@ -38,7 +38,7 @@ public class Blobs implements Serializable {
 
     @Lob
     @Column(name = "lobNotNullable", nullable = false)
-    protected byte[] lobNotNullable;;
+    protected byte[] lobNotNullable;
 
     @Id
     public int id;

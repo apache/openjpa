@@ -168,7 +168,7 @@ public class MapEntry
 
         @Override
         public boolean equals(Object other) {
-            if (other instanceof Map.Entry == false)
+            if (!(other instanceof Map.Entry))
                 return false;
             Map.Entry that = (Map.Entry)other;
             return (this.key == null ?

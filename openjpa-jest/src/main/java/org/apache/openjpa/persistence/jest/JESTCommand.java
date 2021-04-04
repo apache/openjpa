@@ -60,7 +60,7 @@ public interface JESTCommand {
     /**
      * Supported format monikers.
      */
-    public static enum Format {xml, json};
+    public static enum Format {xml, json}
 
     /**
      * Get the execution context of this command.

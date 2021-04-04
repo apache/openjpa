@@ -94,7 +94,7 @@ public class MappingTest2ID	implements Serializable
 	@Override
     public String toString ()
 	{
-		return String.valueOf (this.pk1)
-			+ "::" + String.valueOf (this.pk2);
+		return this.pk1
+			+ "::" + this.pk2;
 	}
 }

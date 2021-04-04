@@ -394,7 +394,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             ClassLoader newLoader = null;
 
             try {
-                if (overrideCL == true) {
+                if (overrideCL) {
                     oldLoader =
                         (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
                     newLoader = XMLMetaDataParser.class.getClassLoader();
@@ -432,11 +432,10 @@ public abstract class XMLMetaDataParser extends DefaultHandler
                 parser.parse(is, this);
                 finish();
             } catch (SAXException se) {
-                IOException ioe = new IOException(se.toString());
-                ioe.initCause(se);
+                IOException ioe = new IOException(se.toString(), se);
                 throw ioe;
             } finally {
-                if (overrideCL == true) {
+                if (overrideCL) {
                     // Restore the old ContextClassloader
                     try {
                         if (_log != null && _log.isTraceEnabled()) {

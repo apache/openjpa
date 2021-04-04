@@ -168,10 +168,10 @@ public class TestEagerOuterToManyJoins
         }
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
 
-        startTx(pm);;
+        startTx(pm);
         pm.persist(pc1);
         pm.persist(pc2);
-        endTx(pm);;
+        endTx(pm);
         Object oid = pm.getObjectId(pc1);
         pm.close();
         return oid;
@@ -235,7 +235,7 @@ public class TestEagerOuterToManyJoins
         startTx(pm);
         pm.persist(pc1);
         pm.persist(pc2);
-        endTx(pm);;
+        endTx(pm);
         Object oid = pm.getObjectId(pc1);
         pm.close();
         return oid;
@@ -409,7 +409,7 @@ public class TestEagerOuterToManyJoins
         startTx(pm);
         pm.persist(pc1);
         pm.persist(pc2);
-        endTx(pm);;
+        endTx(pm);
         Object oid = pm.getObjectId(pc1);
         pm.close();
         return oid;
@@ -528,10 +528,10 @@ public class TestEagerOuterToManyJoins
         }
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         pm.persist(pc1);
         pm.persist(pc2);
-        endTx(pm);;
+        endTx(pm);
         Object oid = pm.getObjectId(pc1);
         pm.close();
         return oid;
@@ -625,10 +625,10 @@ public class TestEagerOuterToManyJoins
         pc2.getManyManyList().add(hpc);
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         pm.persist(pc1);
         pm.persist(pc2);
-        endTx(pm);;
+        endTx(pm);
         Object oid = pm.getObjectId(pc1);
         pm.close();
         return oid;
@@ -686,7 +686,7 @@ public class TestEagerOuterToManyJoins
 
     private void insertManyStringList() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         for (int i = 0; i < 10; i++) {
             EagerOuterJoinPC pc = new EagerOuterJoinPC();
             pc.setName(String.valueOf(i));
@@ -694,7 +694,7 @@ public class TestEagerOuterToManyJoins
             pc.getStringList().add(i + ".2");
             pm.persist(pc);
         }
-        endTx(pm);;
+        endTx(pm);
         pm.close();
     }
 
@@ -860,9 +860,9 @@ public class TestEagerOuterToManyJoins
         pc1.setHelper(hpc3);
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         pm.persist(pc1);
-        endTx(pm);;
+        endTx(pm);
         Object oid = pm.getObjectId(pc1);
         pm.close();
         return oid;

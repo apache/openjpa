@@ -53,7 +53,7 @@ public class TestPropertiesParser {
 
     @Test
     public void testSimpleProperties() throws IOException {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("key: value" + LS);
         buf.append("key2: value2"); // no EOL -- this is intentional
         Properties p = toProperties(buf.toString());
@@ -63,7 +63,7 @@ public class TestPropertiesParser {
 
     @Test
     public void testComments() throws IOException {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("# this is a comment" + LS);
         buf.append(" # another one, with leading whitespace	" + LS);
         buf.append(" 	# 	and more with interesting whitespace	" + LS);
@@ -76,7 +76,7 @@ public class TestPropertiesParser {
 
     @Test
     public void testMixedContent() throws IOException {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("# this is a comment" + LS);
         buf.append(" # another one, with leading whitespace	" + LS);
         buf.append("foo: bar#baz" + LS);
@@ -137,7 +137,7 @@ public class TestPropertiesParser {
 
     @Test
     public void testLineTypes() throws IOException {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("   !comment" + LS + " \t  " + LS + "name = no" + LS + "    "
             + "#morec\tomm\\" + LS + "ents" + LS + LS + "  dog=no\\cat   " + LS
             + "burps    :" + LS + "test=" + LS + "date today" + LS + LS + LS
@@ -252,7 +252,7 @@ public class TestPropertiesParser {
     }
 
     static String randomString(int len) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < (int) (Math.random() * len) + 1; i++)
             buf.append(randomChar());
         return buf.toString();
@@ -307,7 +307,7 @@ public class TestPropertiesParser {
     static String stripComments(byte[] bytes) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader
             (new ByteArrayInputStream(bytes)));
-        StringBuffer sbuf = new StringBuffer();
+        StringBuilder sbuf = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
             // skip comments

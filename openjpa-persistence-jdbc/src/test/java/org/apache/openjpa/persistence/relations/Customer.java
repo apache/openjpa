@@ -70,7 +70,7 @@ public class Customer {
         }
     }
 
-    public enum CreditRating { POOR, GOOD, EXCELLENT };
+    public enum CreditRating { POOR, GOOD, EXCELLENT }
 
     @EmbeddedId
     CustomerKey cid;

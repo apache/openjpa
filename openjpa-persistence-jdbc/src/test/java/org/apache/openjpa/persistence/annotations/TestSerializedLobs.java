@@ -121,7 +121,7 @@ public class TestSerializedLobs extends AnnotationTestCase
         startTx(em);
 
         AnnoTest1 pc = new AnnoTest1(1);
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < 1000; i++)
             buf.append((char) ('a' + (i % 24)));
         pc.setClob(buf.toString());

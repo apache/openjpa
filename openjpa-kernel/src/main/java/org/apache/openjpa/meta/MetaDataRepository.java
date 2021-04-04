@@ -314,11 +314,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * MetaData for all persistent classes and will remove locking from this class.
      */
     public synchronized void preload() {
-        if (_preload == false) {
+        if (!_preload) {
             return;
         }
         // If pooling EMFs, this method may be invoked more than once. Only perform this work once.
-        if (_preloadComplete == true) {
+        if (_preloadComplete) {
             return;
         }
 
@@ -341,7 +341,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (classes == null || classes.size() == 0) {
             throw new MetaDataException(_loc.get("repos-initializeEager-none"));
         }
-        if (_log.isTraceEnabled() == true) {
+        if (_log.isTraceEnabled()) {
             _log.trace(_loc.get("repos-initializeEager-found", classes));
         }
 
@@ -1960,7 +1960,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         initializeMetaDataFactory();
         if (_implGen == null)
             _implGen = new InterfaceImplGenerator(this);
-        if (_preload == true) {
+        if (_preload) {
             _oids = new HashMap<>();
             _impls = new HashMap<>();
             _ifaces = new HashMap<>();
@@ -2533,7 +2533,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (conf == null)
             return false;
         Options o = Configurations.parseProperties(Configurations.getProperties(conf.getMetaDataRepository()));
-        if (o.getBooleanProperty(PRELOAD_STR) == true || o.getBooleanProperty(PRELOAD_STR.toLowerCase()) == true) {
+        if (o.getBooleanProperty(PRELOAD_STR) || o.getBooleanProperty(PRELOAD_STR.toLowerCase())) {
             return true;
         }
         return false;
@@ -2544,12 +2544,12 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * is older than the current version.
      */
     private void checkEnhancementLevel(Class<?> cls) {
-        if (_logEnhancementLevel == false) {
+        if (!_logEnhancementLevel) {
             return;
         }
         Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
         boolean res = PCEnhancer.checkEnhancementLevel(cls, _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME));
-        if (log.isTraceEnabled() == false && res == true) {
+        if (!log.isTraceEnabled() && res) {
             // Since trace isn't enabled flip the flag so we only log this once.
             _logEnhancementLevel = false;
             log.info(_loc.get("down-level-entity"));

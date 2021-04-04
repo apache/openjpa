@@ -220,7 +220,7 @@ public class TradeScenario {
 					 * The 'z' action from getScenario denotes that this is a sell action that was switched from a buy
 					 * to reduce a sellDeficit
 					 */
-					if (userID.startsWith(TradeConfig.newUserPrefix) == false)
+					if (!userID.startsWith(TradeConfig.newUserPrefix))
 					{
 						TradeConfig.incrementSellDeficit();
 					}
