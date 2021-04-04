@@ -161,17 +161,6 @@ public class HSQLDictionary extends DBDictionary {
         }
     }
 
-    @Override
-    public int getJDBCType(int metaTypeCode, boolean lob) {
-        int type = super.getJDBCType(metaTypeCode, lob);
-        switch (type) {
-            case Types.BIGINT:
-                if (metaTypeCode == JavaTypes.BIGINTEGER)
-                    return Types.NUMERIC;
-                break;
-        }
-        return type;
-    }
 
     @Override
     public int getPreferredType(int type) {
