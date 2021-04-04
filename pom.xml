@@ -75,10 +75,10 @@
         <createSources>false</createSources>
         <!-- common JDBC driver versions -->
         <derby.version>10.14.2.0</derby.version>
-        <hsqldb.version>2.4.1</hsqldb.version>
+        <hsqldb.version>2.5.1</hsqldb.version>
         <mysql.connector.version>5.1.47</mysql.connector.version>
         <mariadb.connector.version>2.7.2</mariadb.connector.version>
-        <postgresql.connector.version>42.2.9</postgresql.connector.version>
+        <postgresql.connector.version>42.2.19</postgresql.connector.version>
         <mssql.connector.version>9.2.1.jre8</mssql.connector.version>
 
         <!-- other common versions -->
@@ -96,7 +96,8 @@
 
         <xbean.version>4.18</xbean.version>
         <bval.version>1.1.2</bval.version>
-        <log4j2.version>2.14.0</log4j2.version>
+        <log4j2.version>2.14.1</log4j2.version>
+        <ant.version>1.10.9</ant.version>
 
         <jmock.version>2.9.0</jmock.version>
         <automatic-module-name>-SUBMODULES-NEED-TO-OVERRIDE-THIS-</automatic-module-name>
@@ -1804,7 +1805,7 @@
             <dependency>
                 <groupId>org.apache.ant</groupId>
                 <artifactId>ant</artifactId>
-                <version>1.9.7</version>
+                <version>${ant.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jmock</groupId>
@@ -2028,7 +2029,7 @@
                         <dependency>
                             <groupId>org.apache.ant</groupId>
                             <artifactId>ant-jsch</artifactId>
-                            <version>1.10.5</version>
+                            <version>1.10.9</version>
                         </dependency>
                         <dependency>
                             <groupId>ant-contrib</groupId>
