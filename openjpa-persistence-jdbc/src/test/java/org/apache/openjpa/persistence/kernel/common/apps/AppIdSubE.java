@@ -40,21 +40,4 @@ public class AppIdSubE
         return this.stringFieldE;
     }
 
-    /*
-     public static class ID
-         extends AppIdSubD.ID
-     {
-         public ID ()
-         {
-             super ();
-         }
-
-
-         public ID (String str)
-         {
-             super ();
-             fromString (str);
-         }
-     }
-     */
 }

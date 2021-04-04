@@ -275,7 +275,7 @@ public class TestStatistics extends SingleEMFTestCase {
     /**
      * Assert that the passed in hit/eviction/read/write match those values collected by stats.
      */
-    private static final void assertion(String cls, int hit, int read, int write, CacheStatistics stats) {
+    private static void assertion(String cls, int hit, int read, int write, CacheStatistics stats) {
         if (cls == null) {
             throw new RuntimeException("invalid assertion. Null class");
         } else {

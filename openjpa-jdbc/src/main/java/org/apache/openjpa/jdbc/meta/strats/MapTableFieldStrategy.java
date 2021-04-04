@@ -274,24 +274,6 @@ public abstract class MapTableFieldStrategy
 
             return;
         }
-/*
-        // this is necessary to support openjpa 3 mappings, which didn't
-        // differentiate between secondary table joins and relations built
-        // around an inverse key: check to see if we're mapped as a secondary
-        // table join but we're in the table of the related type, and if so
-        // switch our join mapping info to our value mapping info
-        String tableName = field.getMappingInfo().getTableName();
-        Table table = field.getTypeMapping().getTable();
-        ValueMappingInfo vinfo = field.getValueInfo();
-        if (tableName != null && table != null
-            && (tableName.equalsIgnoreCase(table.getName())
-            || tableName.equalsIgnoreCase(table.getFullName()))) {
-            vinfo.setJoinDirection(MappingInfo.JOIN_INVERSE);
-            vinfo.setColumns(field.getMappingInfo().getColumns());
-            field.getMappingInfo().setTableName(null);
-            field.getMappingInfo().setColumns(null);
-        }
-*/
     }
 
     protected boolean isTypeUnjoinedSubclass(ValueMapping mapped) {

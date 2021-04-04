@@ -39,9 +39,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-//import org.apache.geronimo.samples.daytrader.util.Log;
-//import org.apache.geronimo.samples.daytrader.util.TradeConfig;
-
 @Entity(name = "accountejb")
 @Table(name = "accountejb")
 @NamedQueries( {

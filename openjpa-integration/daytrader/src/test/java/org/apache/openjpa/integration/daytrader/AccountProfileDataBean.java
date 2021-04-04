@@ -25,9 +25,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-// import org.apache.geronimo.samples.daytrader.util.Log;
-// import org.apache.geronimo.samples.daytrader.util.TradeConfig;
-
 @Entity(name = "accountprofileejb")
 @Table(name = "accountprofileejb")
 @NamedQueries( {
