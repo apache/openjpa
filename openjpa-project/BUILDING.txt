@@ -210,7 +210,7 @@ For running against a h2 based installation:
  -ea -Dopenjpa.ConnectionDriverName=org.h2.Driver -Dopenjpa.ConnectionURL=jdbc:h2:./target/database/openjpa-h2-database -Dopenjpa.ConnectionUserName=root -Dopenjpa.ConnectionPassword=openjpatst
 
 For running against a hsqldb based installation:
- -ea -Dopenjpa.ConnectionDriverName=org.hsqldb.Driver -Dopenjpa.ConnectionURL=jdbc:hsqldb:mem:openjpa20-hsqldb-database -Dopenjpa.ConnectionUserName=sa -Dopenjpa.ConnectionPassword=
+ -ea -Dopenjpa.ConnectionDriverName=org.hsqldb.jdbcDriver -Dopenjpa.ConnectionURL=jdbc:hsqldb:mem:openjpa20-hsqldb-database -Dopenjpa.ConnectionUserName=sa -Dopenjpa.ConnectionPassword=
 
 For running tests against a Microsoft SQLServer Docker based installation:
  -ea -Dopenjpa.ConnectionDriverName=com.microsoft.sqlserver.jdbc.SQLServerDriver -Dopenjpa.ConnectionURL=jdbc:sqlserver://localhost:1433;sendTimeAsDatetime=false -Dopenjpa.ConnectionUserName=SA -Dopenjpa.ConnectionPassword=OpenJP8tst

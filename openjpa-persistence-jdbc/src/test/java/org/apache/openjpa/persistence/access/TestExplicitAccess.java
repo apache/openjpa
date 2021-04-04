@@ -1114,17 +1114,17 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         assertTrue(ing2.containsKey("Peanut Butter"));
         Quantity q = ing2.get("Peanut Butter").getQuantity();
         assertNotNull(q);
-        assertEquals(1.0, q.getAmount());
+        assertEquals(1.0d, q.getAmount(), 0.001d);
         assertEquals("Tbsp", q.getUnitOfMeasure());
         assertTrue(ing2.containsKey("Jelly"));
         q = ing2.get("Jelly").getQuantity();
         assertNotNull(q);
-        assertEquals(1.5, q.getAmount());
+        assertEquals(1.5d, q.getAmount(), 0.001d);
         assertEquals("Tbsp", q.getUnitOfMeasure());
         assertTrue(ing2.containsKey("Bread"));
         q = ing2.get("Bread").getQuantity();
         assertNotNull(q);
-        assertEquals(2.0, q.getAmount());
+        assertEquals(2.0d, q.getAmount(), 0.001d);
         assertEquals("Slice", q.getUnitOfMeasure());
 
         em.remove(mi2);

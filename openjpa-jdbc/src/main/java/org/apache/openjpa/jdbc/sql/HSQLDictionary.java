@@ -80,8 +80,6 @@ public class HSQLDictionary extends DBDictionary {
         supportsSelectEndIndex = true;
         supportsDeferredConstraints = false;
 
-        doubleTypeName = "NUMERIC";
-
         supportsNullTableForGetPrimaryKeys = false;
         supportsNullTableForGetIndexInfo = false;
 
