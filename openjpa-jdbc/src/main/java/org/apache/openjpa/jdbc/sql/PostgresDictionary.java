@@ -176,7 +176,6 @@ public class PostgresDictionary extends DBDictionary {
         booleanRepresentation = BooleanRepresentationFactory.BOOLEAN;
 
         supportsLockingWithDistinctClause = false;
-        supportsQueryTimeout = false;
         supportsLockingWithOuterJoin = false;
 
         reservedWordSet.addAll(Arrays.asList(new String[]{
@@ -212,7 +211,12 @@ public class PostgresDictionary extends DBDictionary {
         _timestampTypes.add(timestampTypeName.toUpperCase(Locale.ENGLISH)); // handle user configured timestamp types.
 
         indexPhysicalForeignKeys = true; // PostgreSQL does not automatically create an index for a foreign key so we will
+
+        // PostgreSQL requires to escape search strings
+        requiresSearchStringEscapeForLike = true;
     }
+
+
 
     @Override
     public Date getDate(ResultSet rs, int column)
@@ -796,7 +800,7 @@ public class PostgresDictionary extends DBDictionary {
     }
 
     /**
-     * Determine XML column support and backslash handling.
+     * Determine XML column support and backslash handling, etc
      */
     @Override
     public void connectedConfiguration(Connection conn) throws SQLException {
@@ -825,14 +829,23 @@ public class PostgresDictionary extends DBDictionary {
         if ((maj >= 9 || (maj == 8 && min >= 3))) {
             supportsXMLColumn = true;
         }
-
-        // PostgreSQL requires to escape search strings
-        requiresSearchStringEscapeForLike = true;
+        if (maj < 10) {
+            // setQueryTimeout only got implemented pretty late
+            supportsQueryTimeout = false;
+        }
 
         // Old PostgreSQL requires double-escape for strings.
         if ((maj <= 8 || (maj == 9 && min == 0))) {
             searchStringEscape = "\\\\";
         }
+    }
+
+    @Override
+    public boolean isFatalException(int subtype, SQLException ex) {
+        if ((subtype == StoreException.LOCK  && "57014".equals(ex.getSQLState()))) {
+            return false;
+        }
+        return super.isFatalException(subtype, ex);
     }
 
     /**

@@ -1317,8 +1317,7 @@ public class SchemaTool {
                     }
                 }
                 if (!tables.isEmpty())
-                    gen.generateSchemas((DBIdentifier[]) tables.toArray
-                        (new DBIdentifier[tables.size()]));
+                    gen.generateSchemas(tables.toArray(new DBIdentifier[tables.size()]));
             }
             _db = gen.getSchemaGroup();
         }

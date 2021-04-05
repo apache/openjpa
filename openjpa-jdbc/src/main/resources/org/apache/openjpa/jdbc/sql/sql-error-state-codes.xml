@@ -191,7 +191,7 @@
 	</dictionary>
 
 	<dictionary class="org.apache.openjpa.jdbc.sql.PostgresDictionary">
-		<lock>55P03,40P01</lock>
+		<lock>55P03,40P01,57014</lock>
 		<referential-integrity>23000,23502,23503,23514</referential-integrity>
 		<object-exists>23505</object-exists>
 		<object-not-found></object-not-found>

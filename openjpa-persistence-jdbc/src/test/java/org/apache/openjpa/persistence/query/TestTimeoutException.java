@@ -53,6 +53,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
         assertNotNull(dict);
         if (!dict.supportsSelectForUpdate || !dict.supportsQueryTimeout || dict instanceof SolidDBDictionary)
             setTestsDisabled(true);
+
         if (emf == null) {
             closeEMF(tempEMF);
         }
